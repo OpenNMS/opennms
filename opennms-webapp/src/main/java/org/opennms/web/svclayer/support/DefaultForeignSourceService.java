@@ -15,6 +15,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
@@ -171,7 +172,14 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         if (m_policies == null) {
             Map<String,String> policies = new TreeMap<String,String>();
             for (OnmsPolicy p : m_extensionManager.findExtensions(OnmsPolicy.class)) {
-                policies.put(p.getClass().getSimpleName(), p.getClass().getName());
+                String policyName = p.getClass().getSimpleName();
+                if (p.getClass().isAnnotationPresent(Policy.class)) {
+                    Policy annotation = p.getClass().getAnnotation(Policy.class);
+                    if (annotation.value() != null && annotation.value().length() > 0) {
+                        policyName = annotation.value();
+                    }
+                }
+                policies.put(policyName, p.getClass().getName());
             }
 
             m_policies = new LinkedHashMap<String,String>();
