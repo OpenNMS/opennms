@@ -2,7 +2,7 @@
 <rancid-configuration delay="900000" retries="0">
   <mapping sysoid-mask=".1.3.6.1.4.1.9.1" type="cisco"/>
   <mapping sysoid-mask=".1.3.6.1.4.1.9.5" type="cat5"/>
-  <mapping sysoid-mask=".1.3.6.1.4.1.1916.2" type="Extreme"/>
+  <mapping sysoid-mask=".1.3.6.1.4.1.1916.2" type="extreme"/>
   <mapping sysoid-mask=".1.3.6.1.4.1.2636.1" type="juniper"/>
   <mapping sysoid-mask=".1.3.6.1.4.1.4874.1" type="erx"/>
   <mapping sysoid-mask=".1.3.6.1.4.1.11.2.3.7.11" type="hp"/>  
