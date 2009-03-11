@@ -12,7 +12,7 @@
 		<detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector" />
 		<detector name="NRPE" class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" />
 		<detector name="POP3" class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" />
-		<detector name="Radius" class="org.opennms.netmgt.provision.detector.radius.RadiusDetector" />
+		<detector name="Radius" class="org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector" />
 		<detector name="SMB" class="org.opennms.netmgt.provision.detector.smb.SmbDetector" />
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
