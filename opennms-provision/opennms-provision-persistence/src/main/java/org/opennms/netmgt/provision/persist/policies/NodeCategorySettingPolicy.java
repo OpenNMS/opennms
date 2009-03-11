@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-@Policy("Node Category Setting")
+@Policy("Set Node Category")
 public class NodeCategorySettingPolicy extends BasePolicy implements NodePolicy {
     private String m_category;
     private String m_type;

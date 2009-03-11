@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-@Policy("SNMP Interface Matching")
+@Policy("Match SNMP Interface")
 public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
     
     public static enum Action { ENABLE_COLLECTION, DISABLE_COLLECTION, DO_NOT_PERSIST };

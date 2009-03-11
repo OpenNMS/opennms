@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-@Policy("IP Interface Matching")
+@Policy("Match IP Interface")
 public class MatchingIpInterfacePolicy extends BasePolicy implements IpInterfacePolicy {
     private String m_ipAddress;
     private String m_hostName;
