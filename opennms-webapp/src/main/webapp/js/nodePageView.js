@@ -66,8 +66,10 @@ function initPageView(elementId, nodeId){
 	});
 	
 	function getIpStatusColor(isDown, isManaged) {
-		var bgStyle = 'grid-status-blue';
-		if (isManaged) {
+		var bgStyle;
+		if (isManaged == 'U' || isManaged == 'F' || isManaged == 'N') {
+			bgStyle = 'grid-status-blue';
+		} else {
 			bgStyle = 'grid-status-green';
 			if (isDown == 'true') {
 				bgStyle = 'grid-status-red';
