@@ -116,7 +116,7 @@ javaCheck() {
     ret="`$JP -version 2>&1 | grep '^java version' | sed 's/^java version \"//;s/\".*//'`"
     if echo "$ret" | egrep '^1\.[5-9]\.' > /dev/null; then
 	# Check for Sun Java
-	if $JP -version 2>&1 | egrep '^Java\(TM\)' > /dev/null; then
+	if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
 	    return 0
 	fi
 	if $JP -version 2>&1 | egrep 'OpenJDK Core VM' >/dev/null; then
