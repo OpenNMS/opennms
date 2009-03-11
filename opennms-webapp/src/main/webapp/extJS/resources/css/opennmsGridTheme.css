@@ -13,15 +13,15 @@ table {
 /*Overriting style*/ /*Cutom Style begin*/
 	/*These are the styles for the event Severity levels on the eventGrid*/
 
-.snmp-status-blue{
+.grid-status-blue{
 	background-color: #b5d5ff;
 }
 
-.snmp-status-green{
+.grid-status-green{
 	background-color: #d7e1cd;
 }
 
-.snmp-status-red{
+.grid-status-red{
 	background-color: #ffd7cd;
 }
 
