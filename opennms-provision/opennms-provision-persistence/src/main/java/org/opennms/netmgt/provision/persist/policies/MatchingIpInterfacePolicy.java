@@ -3,6 +3,7 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.annotations.Allow;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,34 +11,55 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Policy("Match IP Interface")
-public class MatchingIpInterfacePolicy extends BasePolicy implements IpInterfacePolicy {
-    private String m_ipAddress;
-    private String m_hostName;
+public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> implements IpInterfacePolicy {
+    
+    
 
-    public OnmsIpInterface apply(OnmsIpInterface iface) {
-        if (m_ipAddress != null) {
-            if (!match(iface.getIpAddress(), m_ipAddress)) {
-                return null;
-            }
-        }
-        if (m_hostName != null) {
-            if (!match(iface.getIpHostName(), m_hostName)) {
-                return null;
-            }
-        }
-        return iface;
+    public static enum Action { MANAGE, UNMANAGE, DO_NOT_PERSIST };
+    
+    private Action m_action = Action.DO_NOT_PERSIST;
+
+    @Allow({"MANAGE", "UNMANAGE", "DO_NOT_PERSIST"})
+    public String getAction() {
+        return m_action.toString();
     }
- 
+    
+    public void setAction(String action) {
+        if (Action.MANAGE.toString().equalsIgnoreCase(action)) {
+            m_action = Action.MANAGE;
+        } else if (Action.UNMANAGE.toString().equalsIgnoreCase(action)) {
+            m_action = Action.UNMANAGE;
+        } else {
+            m_action = Action.DO_NOT_PERSIST;
+        }
+    }
+    
+    @Override
+    public OnmsIpInterface act(OnmsIpInterface iface) {
+        switch (m_action) {
+        case DO_NOT_PERSIST: 
+            return null;
+        case MANAGE:
+            iface.setIsManaged("M");
+            return iface;
+        case UNMANAGE:
+            iface.setIsManaged("U");
+            return iface;
+        default:
+            return iface;    
+        }
+    }
+    
     public void setIpAddress(String ipAddress) {
-        m_ipAddress = ipAddress;
+        putCriteria("ipAddress", ipAddress);
     }
     public String getIpAddress() {
-        return m_ipAddress;
+        return getCriteria("ipAddress");
     }
     public void setHostName(String hostName) {
-        m_hostName = hostName;
+        putCriteria("ipHostName", hostName);
     }
     public String getHostName() {
-        return m_hostName;
+        return getCriteria("ipHostName");
     }
 }
