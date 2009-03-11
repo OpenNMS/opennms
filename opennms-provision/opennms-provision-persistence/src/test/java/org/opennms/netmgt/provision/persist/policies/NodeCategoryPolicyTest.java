@@ -57,7 +57,7 @@ public class NodeCategoryPolicyTest {
     @Test
     @Transactional
     public void testMatchingLabel() {
-        NodeCategoryPolicy p = new NodeCategoryPolicy();
+        NodeCategorySettingPolicy p = new NodeCategorySettingPolicy();
         p.setForeignId("1");
         p.setCategory("PolicyTest");
 
@@ -68,7 +68,7 @@ public class NodeCategoryPolicyTest {
     @Test
     @Transactional
     public void testMatchingNothing() {
-        NodeCategoryPolicy p = new NodeCategoryPolicy();
+        NodeCategorySettingPolicy p = new NodeCategorySettingPolicy();
         p.setLabel("~^wankerdoodle$");
         p.setCategory("PolicyTest");
 
@@ -76,7 +76,7 @@ public class NodeCategoryPolicyTest {
         assertEquals(0, matchedNodes.size());
     }
 
-    private List<OnmsNode> matchPolicy(NodeCategoryPolicy p, String matchingId) {
+    private List<OnmsNode> matchPolicy(NodeCategorySettingPolicy p, String matchingId) {
         OnmsNode o;
         List<OnmsNode> populatedNodes = new ArrayList<OnmsNode>();
         List<OnmsNode> matchedNodes = new ArrayList<OnmsNode>();

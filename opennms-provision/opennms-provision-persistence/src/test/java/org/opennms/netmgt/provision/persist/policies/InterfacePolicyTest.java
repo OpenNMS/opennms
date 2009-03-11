@@ -57,7 +57,7 @@ public class InterfacePolicyTest {
     public void testMatchingPolicy() {
         OnmsIpInterface o = null;
         
-        MatchingInterfacePolicy p = new MatchingInterfacePolicy();
+        MatchingIpInterfacePolicy p = new MatchingIpInterfacePolicy();
         p.setIpAddress("~^10\\..*$");
 
         List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
