@@ -38,6 +38,6 @@ import org.opennms.netmgt.model.OnmsNode;
  *
  * @author brozow
  */
-public interface NodePolicy extends Policy {
+public interface NodePolicy extends OnmsPolicy {
     public OnmsNode apply(OnmsNode node);
 }

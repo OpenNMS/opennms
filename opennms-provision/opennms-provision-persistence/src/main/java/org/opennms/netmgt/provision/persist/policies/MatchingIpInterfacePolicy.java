@@ -3,12 +3,14 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class MatchingInterfacePolicy extends BasePolicy implements IpInterfacePolicy {
+@Policy("IP Interface Matching")
+public class MatchingIpInterfacePolicy extends BasePolicy implements IpInterfacePolicy {
     private String m_ipAddress;
     private String m_hostName;
 

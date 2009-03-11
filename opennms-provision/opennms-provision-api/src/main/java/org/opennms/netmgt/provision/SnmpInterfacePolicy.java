@@ -38,6 +38,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
  *
  * @author brozow
  */
-public interface SnmpInterfacePolicy extends Policy {
+public interface SnmpInterfacePolicy extends OnmsPolicy {
     OnmsSnmpInterface apply(OnmsSnmpInterface snmpIface);
 }

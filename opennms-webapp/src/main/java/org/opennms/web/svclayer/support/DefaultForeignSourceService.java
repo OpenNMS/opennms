@@ -13,7 +13,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
-import org.opennms.netmgt.provision.Policy;
+import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -170,7 +170,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
             Map<String,String> policies = new TreeMap<String,String>();
-            for (Policy p : m_extensionManager.findExtensions(Policy.class)) {
+            for (OnmsPolicy p : m_extensionManager.findExtensions(OnmsPolicy.class)) {
                 policies.put(p.getClass().getSimpleName(), p.getClass().getName());
             }
 
