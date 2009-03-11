@@ -377,6 +377,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Transient
+    @XmlElement(name="isDown")
     public boolean isDown() {
         boolean down = true;
         for (OnmsMonitoredService svc : m_monitoredServices) {
