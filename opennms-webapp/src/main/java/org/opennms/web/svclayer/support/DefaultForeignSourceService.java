@@ -61,6 +61,13 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         m_activeForeignSourceRepository.delete(m_activeForeignSourceRepository.getForeignSource(name));
         return m_activeForeignSourceRepository.getForeignSource(name);
     }
+    public ForeignSource cloneForeignSource(String name, String target) {
+        ForeignSource fs = m_activeForeignSourceRepository.getForeignSource(name);
+        fs.setDefault(false);
+        fs.setName(target);
+        m_activeForeignSourceRepository.save(fs);
+        return m_activeForeignSourceRepository.getForeignSource(target);
+    }
 
     public ForeignSource addParameter(String foreignSourceName, String pathToAdd) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSourceName);
