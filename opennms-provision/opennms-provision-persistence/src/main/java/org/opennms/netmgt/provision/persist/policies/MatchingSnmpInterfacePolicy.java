@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.provision.Allow;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.opennms.netmgt.provision.annotations.Allow;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.annotation.Scope;

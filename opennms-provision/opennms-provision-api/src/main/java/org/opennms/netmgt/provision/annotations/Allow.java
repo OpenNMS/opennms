@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
