@@ -4,6 +4,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.annotations.Allow;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,212 +12,134 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Policy("Set Node Category")
-public class NodeCategorySettingPolicy extends BasePolicy implements NodePolicy {
-    private String m_category;
-    private String m_type;
-    private String m_sysObjectId;
-    private String m_sysName;
-    private String m_sysDescription;
-    private String m_sysLocation;
-    private String m_sysContact;
-    private String m_label;
-    private String m_labelSource;
-    private String m_netBiosName;
-    private String m_netBiosDomain;
-    private String m_operatingSystem;
-    private String m_foreignId;
-    private String m_foreignSource;
+public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
     
-    public OnmsNode apply(OnmsNode node) {
-        if (node == null) {
-            return null;
-        }
-
-        String category = m_category;
-        if (category == null) {
+    @Override
+    public OnmsNode act(OnmsNode node) {
+        if (getCategory() == null) {
             return node;
         }
 
-        if (m_type != null) {
-            if (!match(node.getType(), m_type)) {
-                return node;
-            }
-        }
-        if (m_sysObjectId != null) {
-            if (!match(node.getSysObjectId(), m_sysObjectId)) {
-                return node;
-            }
-        }
-        if (m_sysName != null) {
-            if (!match(node.getSysName(), m_sysName)) {
-                return node;
-            }
-        }
-        if (m_sysDescription != null) {
-            if (!match(node.getSysDescription(), m_sysDescription)) {
-                return node;
-            }
-        }
-        if (m_sysLocation != null) {
-            if (!match(node.getSysLocation(), m_sysLocation)) {
-                return node;
-            }
-        }
-        if (m_sysContact != null) {
-            if (!match(node.getSysContact(), m_sysContact)) {
-                return node;
-            }
-        }
-        if (m_label != null) {
-            if (!match(node.getLabel(), m_label)) {
-                return node;
-            }
-        }
-        if (m_labelSource != null) {
-            if (!match(node.getLabelSource(), m_labelSource)) {
-                return node;
-            }
-        }
-        if (m_netBiosName != null) {
-            if (!match(node.getNetBiosName(), m_netBiosName)) {
-                return node;
-            }
-        }
-        if (m_netBiosDomain != null) {
-            if (!match(node.getNetBiosDomain(), m_netBiosDomain)) {
-                return node;
-            }
-        }
-        if (m_operatingSystem != null) {
-            if (!match(node.getOperatingSystem(), m_operatingSystem)) {
-                return node;
-            }
-        }
-        if (m_foreignId != null) {
-            if (!match(node.getForeignId(), m_foreignId)) {
-                return node;
-            }
-        }
-        if (m_foreignSource != null) {
-            if (!match(node.getForeignSource(), m_foreignSource)) {
-                return node;
-            }
-        }
-
-        node.addCategory(new OnmsCategory(category));
-
+        OnmsCategory category = new OnmsCategory(getCategory());
+        
+        node.addCategory(category);
+        
         return node;
+        
     }
 
+    
+    @Allow(value = { }) 
     public String getCategory() {
-        return m_category;
+        return getCriteria("category");
     }
 
     public void setCategory(String category) {
-        m_category = category;
+        putCriteria("category", category);
     }
 
     public String getType() {
-        return m_type;
+        return getCriteria("type");
     }
 
     public void setType(String type) {
-        m_type = type;
+        putCriteria("type", type);
     }
 
     public String getSysObjectId() {
-        return m_sysObjectId;
+        return getCriteria("sysObjectId");
     }
 
     public void setSysObjectId(String sysObjectId) {
-        m_sysObjectId = sysObjectId;
+        putCriteria("sysObjectId", sysObjectId);
     }
 
     public String getSysName() {
-        return m_sysName;
+        return getCriteria("sysName");
     }
 
     public void setSysName(String sysName) {
-        m_sysName = sysName;
+        putCriteria("sysName", sysName);
     }
 
     public String getSysDescription() {
-        return m_sysDescription;
+        return getCriteria("sysDescription");
     }
 
     public void setSysDescription(String sysDescription) {
-        m_sysDescription = sysDescription;
+        putCriteria("sysDescription", sysDescription);
     }
 
     public String getSysLocation() {
-        return m_sysLocation;
+        return getCriteria("sysLocation");
     }
 
     public void setSysLocation(String sysLocation) {
-        m_sysLocation = sysLocation;
+        putCriteria("sysLocation", sysLocation);
     }
 
     public String getSysContact() {
-        return m_sysContact;
+        return getCriteria("sysContact");
     }
 
     public void setSysContact(String sysContact) {
-        m_sysContact = sysContact;
+        putCriteria("sysContact", sysContact);
     }
 
     public String getLabel() {
-        return m_label;
+        return getCriteria("label");
     }
 
     public void setLabel(String label) {
-        m_label = label;
+        putCriteria("label", label);
     }
 
     public String getLabelSource() {
-        return m_labelSource;
+        return getCriteria("labelSource");
     }
 
     public void setLabelSource(String labelSource) {
-        m_labelSource = labelSource;
+        putCriteria("labelSource", labelSource);
     }
 
     public String getNetBiosName() {
-        return m_netBiosName;
+        return getCriteria("netBiosName");
     }
 
     public void setNetBiosName(String netBiosName) {
-        m_netBiosName = netBiosName;
+        putCriteria("netBiosName", netBiosName);
     }
 
     public String getNetBiosDomain() {
-        return m_netBiosDomain;
+        return getCriteria("netBiosDomain");
     }
 
     public void setNetBiosDomain(String netBiosDomain) {
-        m_netBiosDomain = netBiosDomain;
+        putCriteria("netBiosDomain", netBiosDomain);
     }
 
     public String getOperatingSystem() {
-        return m_operatingSystem;
+        return getCriteria("operatingSystem");
     }
 
     public void setOperatingSystem(String operatingSystem) {
-        m_operatingSystem = operatingSystem;
+        putCriteria("operatingSystem", operatingSystem);
     }
 
     public String getForeignId() {
-        return m_foreignId;
+        return getCriteria("foreignId");
     }
 
     public void setForeignId(String foreignId) {
-        m_foreignId = foreignId;
+        putCriteria("foreignId", foreignId);
     }
 
     public String getForeignSource() {
-        return m_foreignSource;
+        return getCriteria("foreignSource");
     }
 
     public void setForeignSource(String foreignSource) {
-        m_foreignSource = foreignSource;
+        putCriteria("foreignSource", foreignSource);
     }
+
 }
