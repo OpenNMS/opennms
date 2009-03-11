@@ -196,6 +196,18 @@ public class DefaultManualProvisioningService implements
         return m_provisioningDao.get(groupName);
     }
 
+    public ModelImport cloneProvisioningGroup(String name, String target) {
+        ModelImport group = m_provisioningDao.get(name);
+        if (group == null) {
+            group = new ModelImport();
+            group.setForeignSource(name);
+            m_provisioningDao.save(name, group);
+        }
+        group.setForeignSource(target);
+        m_provisioningDao.save(target, group);
+        return group;
+    }
+
     public Collection<String> getProvisioningGroupNames() {
         return m_provisioningDao.getProvisioningGroupNames();
     }

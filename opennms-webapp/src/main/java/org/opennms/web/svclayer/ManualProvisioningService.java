@@ -50,6 +50,8 @@ public interface ManualProvisioningService {
     ModelImport getProvisioningGroup(String name);
     
     ModelImport createProvisioningGroup(String name);
+
+    ModelImport cloneProvisioningGroup(String groupName, String actionTarget);
     
     ModelImport saveProvisioningGroup(String groupName, ModelImport groupData);
     

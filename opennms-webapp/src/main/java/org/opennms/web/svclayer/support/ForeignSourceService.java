@@ -17,6 +17,7 @@ public interface ForeignSourceService {
     ForeignSource saveForeignSource(String name, ForeignSource fs);
     ForeignSource deployForeignSource(String name);
     ForeignSource deleteForeignSource(String name);
+    ForeignSource cloneForeignSource(String name, String target);
 
     ForeignSource deletePath(String foreignSourceName, String dataPath);
     ForeignSource addParameter(String foreignSourceName, String dataPath);
@@ -30,5 +31,5 @@ public interface ForeignSourceService {
     Map<String,String> getDetectorTypes();
     Map<String,String> getPolicyTypes();
     Map<String,PluginWrapper> getWrappers();
-
+    
 }

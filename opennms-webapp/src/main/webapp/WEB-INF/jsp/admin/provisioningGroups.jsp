@@ -26,7 +26,7 @@
 </form>
 
 <br />
-<form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="submit" value="Add New Group"/></form>
+<form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="hidden" name="actionTarget" value="" /><input type="submit" value="Add New Group"/></form>
 
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
   <h3 style="vertical-align: middle; margin: 25px 0px 5px 0px; padding: 5px">
@@ -54,7 +54,11 @@
   	  	<span style="font-size: smaller">Define node and interface data for import.</span>
   	  </td>
   	  <td>
-  	  	<a href="javascript:editRequisition('${foreignSourceName}')">EDIT</a><br />
+  	  	<a href="javascript:editRequisition('${foreignSourceName}')">EDIT</a>
+        <c:if test="${!empty groups[foreignSourceName]}">
+          | <a href="javascript:cloneRequisition('${foreignSourceName}')">CLONE</a>
+        </c:if>
+  	  	<br />
         <span style="font-size: smaller">
           <c:choose>
             <c:when test="${empty groups[foreignSourceName]}">
@@ -85,7 +89,9 @@
   	    <span style="font-size: smaller">Define scanning behavior for import.</span>
   	  </td>
   	  <td>
-  	  	<a href="javascript:editForeignSource('${foreignSourceName}')">EDIT</a><br />
+  	  	<a href="javascript:editForeignSource('${foreignSourceName}')">EDIT</a> |
+  	  	<a href="javascript:cloneForeignSource('${foreignSourceName}')">CLONE</a>
+  	  	<br />
   	  	<c:if test="${!empty foreignSources[foreignSourceName]}">
           <span style="font-size: smaller">
             last modified:
