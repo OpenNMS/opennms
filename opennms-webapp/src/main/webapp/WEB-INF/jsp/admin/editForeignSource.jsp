@@ -36,7 +36,9 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${detectorTypes}" />
-			<tree:action label="[Add Parameter]"  action="addParameter" />
+			<c:if test="${!empty classParameters[detector.pluginClass]}">
+				<tree:action label="[Add Parameter]"  action="addParameter" />
+			</c:if>
 		</tree:nodeForm>
 
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
@@ -55,7 +57,9 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${policyTypes}" />
-			<tree:action label="[Add Parameter]"  action="addParameter" />
+			<c:if test="${!empty classParameters[policy.pluginClass]}">
+				<tree:action label="[Add Parameter]"  action="addParameter" />
+			</c:if>
 		</tree:nodeForm>
 		
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
