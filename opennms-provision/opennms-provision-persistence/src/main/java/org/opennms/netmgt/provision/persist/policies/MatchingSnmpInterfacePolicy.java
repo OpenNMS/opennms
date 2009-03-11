@@ -7,6 +7,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.annotation.Scope;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
+@Policy("SNMP Interface Matching")
 public class MatchingSnmpInterfacePolicy extends BasePolicy implements SnmpInterfacePolicy {
     
     public static enum Action { ENABLE_COLLECTION, DISABLE_COLLECTION, DO_NOT_PERSIST };

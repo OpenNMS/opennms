@@ -40,5 +40,5 @@ package org.opennms.netmgt.provision;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
-public interface Policy {
+public interface OnmsPolicy {
 }

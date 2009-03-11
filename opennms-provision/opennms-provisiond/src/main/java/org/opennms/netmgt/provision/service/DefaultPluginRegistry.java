@@ -40,7 +40,7 @@ import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.Policy;
+import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
@@ -87,9 +87,9 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         Assert.notNull(m_extensionManager, "ExtensionManager must not be null");
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
-        addAllExtensions(m_nodePolicies, NodePolicy.class, Policy.class);
-        addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, Policy.class);
-        addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, Policy.class);
+        addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);
+        addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, OnmsPolicy.class);
+        addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
     
     private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
