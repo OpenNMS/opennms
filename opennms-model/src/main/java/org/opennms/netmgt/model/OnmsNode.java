@@ -68,8 +68,6 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
@@ -542,13 +540,11 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 	public void visit(EntityVisitor visitor) {
 		visitor.visitNode(this);
 		
-		for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
-			OnmsIpInterface iface = it.next();
+		for (OnmsIpInterface iface : getIpInterfaces()) {
 			iface.visit(visitor);
 		}
 		
-		for (Iterator<OnmsSnmpInterface> it = getSnmpInterfaces().iterator(); it.hasNext();) {
-			OnmsSnmpInterface snmpIface = it.next();
+		for (OnmsSnmpInterface snmpIface : getSnmpInterfaces()) {
 			snmpIface.visit(visitor);
 		}
 		
@@ -563,8 +559,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 	@Transient
     public boolean isDown() {
         boolean down = true;
-        for (Iterator<OnmsIpInterface> it = m_ipInterfaces.iterator(); it.hasNext();) {
-            OnmsIpInterface ipIf = it.next();
+        for (OnmsIpInterface ipIf : m_ipInterfaces) {
             if (!ipIf.isDown()) {
                 return !down;
             }
@@ -765,6 +760,12 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
+    public void mergeAssets(OnmsNode scannedNode) {
+        if (!getAssetRecord().equals(scannedNode.getAssetRecord())) {
+            setAssetRecord(scannedNode.getAssetRecord());
+        }
+    }
+
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder) {
         
         mergeNodeAttributes(scannedNode);
@@ -774,6 +775,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         mergeIpInterfaces(scannedNode, eventForwarder);
         
     	mergeCategories(scannedNode);
+    	
+    	mergeAssets(scannedNode);
     }
 
 }
