@@ -63,11 +63,12 @@
   <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
-<c:set var="totalRecords" value="${fn:length(model.resourceTypes)}"/>
+
 <script language="Javascript" type="text/javascript"> 
   var data = {total:"${totalRecords}", records:[
 	<c:forEach var="resourceType" items="${model.resourceTypes}">
        <c:forEach var="resource" items="${resourceType.value}">
+       <c:set var="totalRecords" value="${fn:length(resourceType.value)}"/>
             { id: "${resource.id}", value: "${resource.label}", type: "${resourceType.key.label}" },
         </c:forEach>
     </c:forEach>
