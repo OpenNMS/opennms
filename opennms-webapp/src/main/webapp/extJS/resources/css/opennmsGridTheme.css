@@ -67,7 +67,11 @@ table {
 }
 
 .search-criteria-icon {
-	background-image: url(../extJS/resources/images/onmsTheme/magnifier.png);
+	background-image: url(../images/onmsTheme/magnifier.png) !important;
+}
+
+.search-criteria-star {
+	background-image: url(../images/onmsTheme/star.png) !important;
 }
 
 /*Custom delete button*/

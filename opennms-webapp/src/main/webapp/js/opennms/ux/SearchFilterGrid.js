@@ -1,6 +1,4 @@
-/**
- * @author thedesloge
- */
+Ext.BLANK_IMAGE_URL = "extJS/resources/images/default/s.gif";
 Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	
@@ -15,6 +13,9 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	
 		var searchButton = new Ext.Button({
 			text:'Search',
+			id:'searchBtn',
+			cls:'x-btn-text-icon',
+			iconCls:'search-criteria-icon',
 			scope: this,
 			handler: this.showSearchPanel,
 		})
@@ -65,7 +66,18 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 		});
 		
 		var searchTextField = new Ext.form.TextField({
-			fieldLabel:'Search Text'
+			fieldLabel:'Search Text',
+			enableKeyEvents:true, 
+			listeners:{
+				'keydown':{
+					scope:this,
+					fn:function(tf, event){
+						if(event.keyCode == 13){
+							this.search();
+						}
+					}
+				}
+			}
 		});
 		
 		Ext.apply(this, {
@@ -77,7 +89,6 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	    	   {    
 	    		    xtype:'form',
 	    		   	cls: 'o-panel',
-	    		   	
 	    		   	items: [
 	    		   	        comboBox,
 	    		   	        searchTextField
@@ -85,6 +96,7 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	    		   	
 	    		   	buttons:[
 	    		   	    {
+	    		   	    	id:'cancelBtn',
 	    		   	    	text:'Cancel',
 	    		   	    	scope: this,
 	    		   	    	handler:this.cancel
@@ -103,10 +115,19 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
    
    showSearchPanel:function(event){
    		this.getLayout().setActiveItem(1);
+   		
+   		if(this.searchText.getValue() != ""){
+   			Ext.getCmp('cancelBtn').setText('Reset');
+   		}else{
+   			Ext.getCmp('cancelBtn').setText('Cancel');
+   		}
    },
    
    cancel:function(event){
+   	   this.searchText.setValue("");
 	   this.getLayout().setActiveItem(0);
+	   Ext.getCmp('searchBtn').setIconClass('search-criteria-icon');
+	   this.grid.loadSearch({});
    },
    
    search:function(event){
@@ -116,9 +137,14 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	   searchParams[dataIndex] = searchVal;
 	   searchParams.comparator = "contains";
 	   
+	   if(searchVal != ""){
+	   		Ext.getCmp('searchBtn').setIconClass('search-criteria-star');
+	   }else{
+	   		Ext.getCmp('searchBtn').setIconClass('search-criteria-icon');
+	   }
+	   
 	   this.getLayout().setActiveItem(0);
 	   this.grid.loadSearch(searchParams); 
-	   
 	   
    }
 	
