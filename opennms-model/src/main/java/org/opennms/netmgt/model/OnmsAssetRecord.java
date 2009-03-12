@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.model;
 
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -48,6 +49,8 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.style.ToStringCreator;
 
 /** 
@@ -741,49 +744,6 @@ public class OnmsAssetRecord implements Serializable {
         m_managedObjectInstance = moi;
     }
     
-    public String toString() {
-        return new ToStringCreator(this)
-            .append("category", getCategory())
-            .append("manufacturer", getManufacturer())
-            .append("vendor", getVendor())
-            .append("modelnumber", getModelNumber())
-            .append("serialnumber", getSerialNumber())
-            .append("description", getDescription())
-            .append("circuitid", getCircuitId())
-            .append("assetnumber", getAssetNumber())
-            .append("operatingsystem", getOperatingSystem())
-            .append("rack", getRack())
-            .append("slot", getSlot())
-            .append("port", getPort())
-            .append("region", getRegion())
-            .append("division", getDivision())
-            .append("department", getDepartment())
-            .append("address1", getAddress1())
-            .append("address2", getAddress2())
-            .append("city", getCity())
-            .append("state", getState())
-            .append("zip", getZip())
-            .append("building", getBuilding())
-            .append("floor", getFloor())
-            .append("room", getRoom())
-            .append("vendorphone", getVendorPhone())
-            .append("vendorfax", getVendorFax())
-            .append("vendorassetnumber", getVendorAssetNumber())
-            .append("userlastmodified", getLastModifiedBy())
-            .append("lastmodifieddate", getLastModifiedDate())
-            .append("dateinstalled", getDateInstalled())
-            .append("lease", getLease())
-            .append("leaseexpires", getLeaseExpires())
-            .append("supportphone", getSupportPhone())
-            .append("maintcontract", getMaintContractNumber())
-            .append("maintcontractexpires", getMaintContractExpiration())
-            .append("displaycategory", getDisplayCategory())
-            .append("notifycategory", getNotifyCategory())
-            .append("pollercategory", getPollerCategory())
-            .append("thresholdcategory", getThresholdCategory())
-            .append("comment", getComment())
-            .toString();
-    }
 
     @Column(name="username", length=32)
     public String getUsername() {
@@ -830,4 +790,107 @@ public class OnmsAssetRecord implements Serializable {
         m_autoenable = autoenable;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringCreator(this)
+            .append("category", getCategory())
+            .append("manufacturer", getManufacturer())
+            .append("vendor", getVendor())
+            .append("modelnumber", getModelNumber())
+            .append("serialnumber", getSerialNumber())
+            .append("description", getDescription())
+            .append("circuitid", getCircuitId())
+            .append("assetnumber", getAssetNumber())
+            .append("operatingsystem", getOperatingSystem())
+            .append("rack", getRack())
+            .append("slot", getSlot())
+            .append("port", getPort())
+            .append("region", getRegion())
+            .append("division", getDivision())
+            .append("department", getDepartment())
+            .append("address1", getAddress1())
+            .append("address2", getAddress2())
+            .append("city", getCity())
+            .append("state", getState())
+            .append("zip", getZip())
+            .append("building", getBuilding())
+            .append("floor", getFloor())
+            .append("room", getRoom())
+            .append("vendorphone", getVendorPhone())
+            .append("vendorfax", getVendorFax())
+            .append("vendorassetnumber", getVendorAssetNumber())
+            .append("userlastmodified", getLastModifiedBy())
+            .append("lastmodifieddate", getLastModifiedDate())
+            .append("dateinstalled", getDateInstalled())
+            .append("lease", getLease())
+            .append("leaseexpires", getLeaseExpires())
+            .append("supportphone", getSupportPhone())
+            .append("maintcontract", getMaintContractNumber())
+            .append("maintcontractexpires", getMaintContractExpiration())
+            .append("displaycategory", getDisplayCategory())
+            .append("notifycategory", getNotifyCategory())
+            .append("pollercategory", getPollerCategory())
+            .append("thresholdcategory", getThresholdCategory())
+            .append("comment", getComment())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = false;
+        
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj == null || obj.getClass() != this.getClass()) {
+            throw new IllegalArgumentException("the Operation Object passed is either null or of the wrong class");
+        }
+
+        OnmsAssetRecord cmpAsset = (OnmsAssetRecord)obj;
+        
+        Integer currentNodeId = m_node.getId();
+        Integer newNodeId = cmpAsset.getNode().getId();
+        
+        if (newNodeId == null) {
+            return false;
+        }
+        
+        if (m_node.getId().equals(cmpAsset.getNode().getId())) {
+            equals = true;
+        }
+        
+        return equals;
+        
+    }
+    
+    /**
+     * Used to merge the contents of one asset record to another.  If equals implementation
+     * returns false, the merge is aborted.
+     * @param newRecord
+     */
+    public void mergeRecord(OnmsAssetRecord newRecord) {
+        
+        if (!this.equals(newRecord)) {
+            return;
+        }
+        
+        //this works because all asset properties are strings
+        //if the model dependencies ever change to not include spring, this will break
+        BeanWrapper currentBean = new BeanWrapperImpl(this);
+        BeanWrapper newBean = new BeanWrapperImpl(newRecord);
+        PropertyDescriptor[] pds = newBean.getPropertyDescriptors();
+        
+        for (PropertyDescriptor pd : pds) {
+            String propertyName = pd.getName();
+            
+            if (propertyName.equals("class")) {
+                continue;
+            }
+            
+            if (newBean.getPropertyValue(propertyName) != null) {
+                currentBean.setPropertyValue(propertyName, newBean.getPropertyValue(propertyName));
+            }
+        }
+    }
 }
