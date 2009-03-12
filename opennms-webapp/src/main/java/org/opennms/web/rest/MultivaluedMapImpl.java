@@ -1,6 +1,7 @@
 package org.opennms.web.rest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +32,10 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
 		List<String> list=new ArrayList<String>();
 		list.add(value);
 		super.put(key, list);
+	}
+	
+	public void put(String key, String...values){
+	    put(key, new ArrayList<String>(Arrays.asList(values)));
 	}
 
 }
