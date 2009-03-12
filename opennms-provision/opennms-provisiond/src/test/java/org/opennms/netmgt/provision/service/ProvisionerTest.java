@@ -346,10 +346,10 @@ public class ProvisionerTest {
         assertEquals(2, getInterfaceDao().countAll());
         
         //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
         
         //Verify service count
-        assertEquals(2, getServiceTypeDao().countAll());
+        assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
