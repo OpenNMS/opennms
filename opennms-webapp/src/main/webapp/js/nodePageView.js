@@ -1,3 +1,4 @@
+Ext.BLANK_IMAGE_URL = "extJS/resources/images/default/s.gif";
 
 function initPageView(elementId, nodeId){
 	var interfacesPanel;
