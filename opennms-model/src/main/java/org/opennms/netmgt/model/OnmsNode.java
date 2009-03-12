@@ -760,10 +760,22 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
+    /**
+     * Truly merges the node's assert record
+     * @param scannedNode
+     */
     public void mergeAssets(OnmsNode scannedNode) {
-        if (!getAssetRecord().equals(scannedNode.getAssetRecord())) {
-            setAssetRecord(scannedNode.getAssetRecord());
-        }
+        this.getAssetRecord().mergeRecord(scannedNode.getAssetRecord());
+    }
+    
+    /**
+     * Simply replaces the current asset record with the new record
+     * @param scnannedNode
+     */
+    public void replaceCurrentAssetRecord(OnmsNode scannedNode) {
+        scannedNode.getAssetRecord().setId(this.getAssetRecord().getId());
+        scannedNode.setId(this.m_id);  //just in case
+        this.setAssetRecord(scannedNode.getAssetRecord());
     }
 
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder) {
