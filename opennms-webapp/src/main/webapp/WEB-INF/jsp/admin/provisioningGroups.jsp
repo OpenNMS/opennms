@@ -26,7 +26,11 @@
 </form>
 
 <br />
-<form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="hidden" name="actionTarget" value="" /><input type="submit" value="Add New Group"/></form>
+<form action="${relativeRequestPath}" name="takeAction" method="post"><input type="text" name="groupName" size="20"/><input type="hidden" name="action" value="addGroup" /><input type="hidden" name="actionTarget" value="" />
+<input type="submit" value="Add New Group"/>
+<input type="button" value="Edit Default Foreign Source" onclick="javascript:editForeignSource('default')" />
+<input type="button" value="Reset Default Foreign Source" onclick="javascript:resetDefaultForeignSource()" />
+</form>
 
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
   <h3 style="vertical-align: middle; margin: 25px 0px 5px 0px; padding: 5px">
@@ -44,8 +48,6 @@
     <c:if test="${!empty groups[foreignSourceName]}">
       <input type="button" value="Import" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
     </c:if>
-    <input type="button" value="Edit Default Foreign Source" onclick="javascript:editForeignSource('default')" />
-    <input type="button" value="Reset Default Foreign Source" onclick="javascript:resetDefaultForeignSource()" />
   </span>
   <br />
  

@@ -36,14 +36,14 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${detectorTypes}" />
-			<c:if test="${!empty classParameters[detector.pluginClass]}">
+			<c:if test="${!empty pluginInfo[detector.pluginClass].optionalItems}">
 				<tree:action label="[Add Parameter]"  action="addParameter" />
 			</c:if>
 		</tree:nodeForm>
 
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
 			<tree:nodeForm>
-				<tree:select label="key" property="key" items="${classParameters[detector.pluginClass]}" />
+				<tree:select label="key" property="key" items="${pluginInfo[detector.pluginClass].optionalKeys}" />
 				<tree:field label="value" property="value" />
 			</tree:nodeForm>
 		</tree:tree>
@@ -57,40 +57,33 @@
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${policyTypes}" />
-			<c:if test="${!empty classParameters[policy.pluginClass]}">
+			<c:if test="${!empty pluginInfo[policy.pluginClass].optionalItems}">
 				<tree:action label="[Add Parameter]"  action="addParameter" />
 			</c:if>
 		</tree:nodeForm>
-		
+
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
 			
 			<c:choose>
 				<c:when test="${pluginInfo[policy.pluginClass].required[parameter.key]}">
-					<c:set var="showDelete" value="false" scope="session" />
+					<c:set var="showDelete" value="false" scope="request" />
 					<tree:nodeForm>
 						<tree:readOnlyField label="key" property="key" />
 						<c:choose>
-							<c:when test="${empty pluginInfo[policy.pluginClass].requiredValues[parameter.key]}">
+							<c:when test="${empty pluginInfo[policy.pluginClass].requiredItems[parameter.key]}">
 		                		<tree:field label="value" property="value" />
 							</c:when>
 							<c:otherwise>
-		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredValues[parameter.key]}" />
+		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredItems[parameter.key]}" />
 							</c:otherwise>
 						</c:choose>
 					</tree:nodeForm>
 				</c:when>
 				<c:otherwise>
-					<c:set var="showDelete" value="true" scope="session" />
+					<c:set var="showDelete" value="true" scope="request" />
 					<tree:nodeForm>
-						<tree:select label="key" property="key" items="${classParameters[policy.pluginClass]}" />
-						<c:choose>
-							<c:when test="${empty pluginInfo[policy.pluginClass].requiredValues[parameter.key]}">
-		                		<tree:field label="value" property="value" />
-							</c:when>
-							<c:otherwise>
-		                		<tree:select label="value" property="value" fieldSize="${valueFieldWidth}" items="${pluginInfo[policy.pluginClass].requiredValues[parameter.key]}" />
-							</c:otherwise>
-						</c:choose>
+						<tree:select label="key" property="key" items="${pluginInfo[policy.pluginClass].optionalKeys}" />
+	               		<tree:field label="value" property="value" />
 					</tree:nodeForm>
 				</c:otherwise>
 			</c:choose>

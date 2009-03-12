@@ -4,7 +4,7 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     
     private Action m_action = Action.DO_NOT_PERSIST;
 
-    @Allow({"ENABLE_COLLECTION", "DISABLE_COLLECTION", "DO_NOT_PERSIST"})
+    @Require({"ENABLE_COLLECTION", "DISABLE_COLLECTION", "DO_NOT_PERSIST"})
     public String getAction() {
         return m_action.toString();
     }

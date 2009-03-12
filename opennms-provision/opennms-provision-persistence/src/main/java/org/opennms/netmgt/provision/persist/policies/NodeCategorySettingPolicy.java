@@ -4,7 +4,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements N
     }
 
     
-    @Allow(value = { }) 
+    @Require(value = { }) 
     public String getCategory() {
         return getCriteria("category");
     }
