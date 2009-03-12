@@ -59,9 +59,12 @@
   	  </td>
   	  <td>
   	  	<a href="javascript:editRequisition('${foreignSourceName}')">EDIT</a>
+  	  	<%--
+  	  	Is this really a useful use case?
         <c:if test="${!empty groups[foreignSourceName]}">
           | <a href="javascript:cloneRequisition('${foreignSourceName}')">CLONE</a>
         </c:if>
+        --%>
   	  	<br />
         <span style="font-size: smaller">
           <c:choose>
