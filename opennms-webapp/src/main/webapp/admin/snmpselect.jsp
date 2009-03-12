@@ -89,10 +89,17 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
+	<jsp:param value="true" name="enableExtJS"/>
 </jsp:include>
 
+<script type='text/javascript' src='js/opennms/ux/EditorPageableGrid.js'></script>
+<script type='text/javascript' src='js/opennms/ux/EditorSNMPInterfaceGrid.js'></script>
+<script type='text/javascript' src='js/SNMPCollectionView.js'></script>
 <script type="text/javascript" >
-
+	Ext.onReady(function(){
+		snmpCollectionViewInit("snmp-grid", <%=nodeId%>);
+	});
+	
 	function applyChanges() {
 		if (confirm("Are you sure you want to proceed? This action can be undone by returning to this page.")) {
 			document.chooseSnmpNodes.submit();
@@ -140,7 +147,7 @@
 <form method="post" name="chooseSnmpNodes" action="admin/changeCollectStatus">
 	<input type="hidden" name="node" value="<%=nodeId%>" />
 
-	<h3>Choose SNMP Interfaces for Data Collection</h3>
+	<h3 class="o-box">Choose SNMP Interfaces for Data Collection</h3>
 
 	<p>
 		Listed below are all the interfaces discovered for the selected node. If
@@ -162,12 +169,13 @@
 		for data collection.  To remove them, edit the IP address range in the
 		collectd configuration file.
 	</p>
-
+	<br/>
 	<%=listNodeName(nodeId, nodeLabel)%>
 	<br/>
-
+	
+	<div id="snmp-grid"></div>
 	<% if (interfaces.size() > 0) { %>
-	<table class="standardfirst">
+	<%-- <table class="standardfirst">
 		<tr>
 			<td class="standardheader" width="5%" align="center">ifIndex</td>
 			<td class="standardheader" width="10%" align="center">IP Address</td>
@@ -184,13 +192,13 @@
 			</td>
 		</tr>
 		<%=buildTableRows(interfaces, nodeId, interfaces.size())%>
-	</table>
+	</table>--%>
 	<% } /*end if*/ %>
 
-	<br/>
+	<%--<br/>
 	<input type="button" value="Update Collection" onClick="applyChanges()" />
 	<input type="button" value="Cancel" onClick="cancel()" /> 
-	<input type="reset" />
+	<input type="reset" />--%>
 </form>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
@@ -198,10 +206,10 @@
 	public String listNodeName(int intnodeid, String nodelabel) {
 		StringBuffer nodename = new StringBuffer();
 
-		nodename.append("<strong>Node ID</strong>: ");
+		nodename.append("<strong style='font-weight:bold;'>Node ID</strong>: ");
 		nodename.append(intnodeid);
 		nodename.append("<br/>");
-		nodename.append("<strong>Node Label</strong>: ");
+		nodename.append("<strong style='font-weight:bold;'>Node Label</strong>: ");
 		nodename.append(nodelabel);
 		nodename.append("<br/>\n");
 		return nodename.toString();

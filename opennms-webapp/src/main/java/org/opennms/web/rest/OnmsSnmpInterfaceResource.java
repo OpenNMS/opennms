@@ -2,6 +2,7 @@ package org.opennms.web.rest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -114,6 +115,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
     public Response updateSnmpInterface(@PathParam("nodeId") int nodeId, @PathParam("ifIndex") int ifIndex, MultivaluedMapImpl params) {
+        
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null)
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node with id " + nodeId);
