@@ -1,20 +1,14 @@
 <foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="default">
 	<scan-interval>1d</scan-interval>
 	<detectors>
-		<detector name="Citrix" class="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
-		<detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" />
 		<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
-		<detector name="DominoIIOP" class="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector" />
 		<detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
 		<detector name="HTTP" class="org.opennms.netmgt.provision.detector.simple.HttpDetector" />
-		<detector name="HTTPS" class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" />
-		<detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" />
 		<detector name="IMAP" class="org.opennms.netmgt.provision.detector.simple.ImapDetector" />
 		<detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector" />
 		<detector name="NRPE" class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" />
 		<detector name="POP3" class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" />
 		<detector name="Radius" class="org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector" />
-		<detector name="SMB" class="org.opennms.netmgt.provision.detector.smb.SmbDetector" />
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
 		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector">
