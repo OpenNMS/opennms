@@ -90,7 +90,7 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         } catch (Exception e) {
         }
     }
-
+    
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(true);
 
