@@ -38,9 +38,12 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -83,6 +86,7 @@ import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
@@ -609,6 +613,45 @@ public class ProvisionerTest {
         assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
         assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
         
+    }
+    
+    @Test
+    @Transactional
+    public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
+        
+        final String TEST_CATEGORY = "TEST_CATEGORY";
+        
+        final String LABEL = "apknd";
+        
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        Collection<OnmsNode> nodes = m_nodeDao.findByLabel(LABEL);
+        assertNotNull(nodes);
+        assertEquals(1, nodes.size());
+        
+        OnmsNode node = nodes.iterator().next();
+        assertNotNull(node);
+        assertEquals(LABEL, node.getLabel());
+        assertFalse(node.hasCategory(TEST_CATEGORY));
+        
+        NodeCategorySettingPolicy policy = new NodeCategorySettingPolicy();
+        policy.setCategory(TEST_CATEGORY);
+        policy.setLabel(LABEL);
+        
+        node = policy.apply(node);
+        
+        assertTrue(node.hasCategory(TEST_CATEGORY));
+        
+        m_provisionService.updateNodeAttributes(node);
+        
+        // flush here to force a write so we are sure that the OnmsCategories are correctly created
+        m_nodeDao.flush();
+        
+        OnmsNode node2 = m_nodeDao.findByLabel(LABEL).iterator().next();
+
+        assertTrue(node2.hasCategory(TEST_CATEGORY));
+        
+
     }
     
     

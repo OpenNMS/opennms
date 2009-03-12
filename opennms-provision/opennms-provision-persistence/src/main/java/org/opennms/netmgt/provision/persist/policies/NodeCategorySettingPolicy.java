@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 @Policy("Set Node Category")
 public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
     
+    private String m_category; 
+    
     @Override
     public OnmsNode act(OnmsNode node) {
         if (getCategory() == null) {
@@ -31,11 +33,11 @@ public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements N
     
     @Require(value = { }) 
     public String getCategory() {
-        return getCriteria("category");
+        return m_category;
     }
 
     public void setCategory(String category) {
-        putCriteria("category", category);
+        m_category = category;
     }
 
     public String getType() {
