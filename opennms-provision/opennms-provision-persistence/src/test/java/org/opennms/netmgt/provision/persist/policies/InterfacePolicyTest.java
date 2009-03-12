@@ -58,6 +58,8 @@ public class InterfacePolicyTest {
         OnmsIpInterface o = null;
         
         MatchingIpInterfacePolicy p = new MatchingIpInterfacePolicy();
+        p.setAction("DO_NOT_PERSIST");
+        p.setMatchBehavior("NO_PARAMETERS");
         p.setIpAddress("~^10\\..*$");
 
         List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
