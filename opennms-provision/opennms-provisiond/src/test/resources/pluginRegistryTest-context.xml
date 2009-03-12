@@ -8,7 +8,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean class="org.opennms.netmgt.dao.support.DefaultExtensionManager" />
-    <bean class="org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy" />
+    <bean class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy" />
     <bean class="org.opennms.netmgt.provision.service.NodePolicyImpl" />
     <bean class="org.opennms.netmgt.provision.service.SubNodePolicy" />
     <bean class="org.opennms.netmgt.provision.service.IpInterfacePolicyImpl" />
