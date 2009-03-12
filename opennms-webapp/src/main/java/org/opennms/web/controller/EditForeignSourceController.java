@@ -262,7 +262,6 @@ public class EditForeignSourceController extends SimpleFormController {
         }
 
         map.put("pluginInfo", m_foreignSourceService.getWrappers());
-        map.put("classParameters", classParameters);
         map.put("classFieldWidth", classFieldWidth);
         map.put("valueFieldWidth", valueFieldWidth);
         

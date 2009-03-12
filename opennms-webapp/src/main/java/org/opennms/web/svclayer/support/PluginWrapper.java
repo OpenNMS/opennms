@@ -1,14 +1,15 @@
-package org.opennms.web.svclayer.support;
+ package org.opennms.web.svclayer.support;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -19,7 +20,11 @@ public class PluginWrapper {
     private final String m_className;
 
     public PluginWrapper(String className) throws ClassNotFoundException {
-        m_className = className;
+        this(Class.forName(className));
+    }
+    
+    public PluginWrapper(Class<?> clazz) throws ClassNotFoundException {
+        m_className = clazz.getName();
         BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(m_className));
 
         for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
@@ -27,15 +32,15 @@ public class PluginWrapper {
                 continue;
             }
             Method m = pd.getReadMethod();
-            if (m.isAnnotationPresent(Allow.class)) {
+            if (m.isAnnotationPresent(Require.class)) {
                 Set<String> values = new TreeSet<String>();
-                Allow a = m.getAnnotation(Allow.class);
+                Require a = m.getAnnotation(Require.class);
                 for (String key: a.value()) {
                     values.add(key);
                 }
                 m_required.put(pd.getName(), values);
             } else {
-                m_optional.put(pd.getName(), null);
+                m_optional.put(pd.getName(), new HashSet<String>());
             }
         }
     }
@@ -55,10 +60,17 @@ public class PluginWrapper {
         return ret;
     }
 
-    public Map<String,Set<String>> getRequiredValues() {
+    public Set<String> getRequiredKeys() {
+        return m_required.keySet();
+    }
+    public Set<String> getOptionalKeys() {
+        return m_optional.keySet();
+    }
+
+    public Map<String,Set<String>> getRequiredItems() {
         return m_required;
     }
-    public Map<String,Set<String>> getOptionalValues() {
+    public Map<String,Set<String>> getOptionalItems() {
         return m_optional;
     }
 }

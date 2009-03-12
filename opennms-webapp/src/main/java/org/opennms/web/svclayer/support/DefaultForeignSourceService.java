@@ -207,7 +207,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
 
     public Map<String,PluginWrapper> getWrappers() {
-        if (m_wrappers == null) {
+        if (m_wrappers == null && m_policies != null && m_detectors != null) {
             m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());
             for (String key : m_policies.keySet()) {
                 try {
@@ -243,7 +243,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
             PluginWrapper w = m_wrappers.get(pc.getPluginClass());
             if (w != null) {
                 Map<String,String> parameters = pc.getParameterMap();
-                Map<String,Set<String>> required = w.getRequiredValues();
+                Map<String,Set<String>> required = w.getRequiredItems();
                 for (String key : required.keySet()) {
                     String value = "";
                     if (!parameters.containsKey(key)) {

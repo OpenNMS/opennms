@@ -3,7 +3,7 @@ package org.opennms.netmgt.provision;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -30,7 +30,7 @@ public abstract class BasePolicy<T> {
     }
 
 
-    @Allow( { "ANY_PARAMETER", "ALL_PARAMETERS", "NO_PARAMETERS" })
+    @Require( { "ANY_PARAMETER", "ALL_PARAMETERS", "NO_PARAMETERS" })
     public String getMatchBehavior() {
         return getMatch().toString();
     }
