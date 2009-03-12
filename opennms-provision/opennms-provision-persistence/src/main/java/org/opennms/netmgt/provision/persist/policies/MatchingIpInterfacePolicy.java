@@ -3,7 +3,7 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
-import org.opennms.netmgt.provision.annotations.Allow;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
     
     private Action m_action = Action.DO_NOT_PERSIST;
 
-    @Allow({"MANAGE", "UNMANAGE", "DO_NOT_PERSIST"})
+    @Require({"MANAGE", "UNMANAGE", "DO_NOT_PERSIST"})
     public String getAction() {
         return m_action.toString();
     }
