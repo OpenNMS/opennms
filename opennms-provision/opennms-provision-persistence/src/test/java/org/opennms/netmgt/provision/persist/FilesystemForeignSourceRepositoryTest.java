@@ -89,8 +89,7 @@ public class FilesystemForeignSourceRepositoryTest {
     @Test
     public void testDefaultForeignSource() throws Exception {
         createRequisition();
-        List<String> detectorList = Arrays.asList(new String[]{ "Citrix", "DHCP", "DNS", "DominoIIOP", "FTP", "HTTP", "HTTPS", "ICMP",
-                "IMAP", "LDAP", "NRPE", "POP3", "Radius", "SMB", "SMTP", "SNMP", "SSH" });
+        List<String> detectorList = Arrays.asList(new String[]{ "DNS", "FTP", "HTTP", "IMAP", "LDAP", "NRPE", "POP3", "Radius", "SMTP", "SNMP", "SSH" });
         String uuid = UUID.randomUUID().toString();
         ForeignSource defaultForeignSource = m_foreignSourceRepository.getForeignSource(uuid);
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());
