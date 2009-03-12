@@ -529,6 +529,15 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public boolean removeCategory(OnmsCategory category) {
         return getCategories().remove(category);
     }
+    
+    public boolean hasCategory(String categoryName) {
+        for(OnmsCategory category : getCategories()) {
+            if (category.getName().equals(categoryName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public String toString() {
         return new ToStringCreator(this)
@@ -674,6 +683,12 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
         
         mergeAgentAttributes(scannedNode);
+        
+        mergeAdditionalCategories(scannedNode);
+    }
+    
+    public void mergeAdditionalCategories(OnmsNode scannedNode) {
+        getCategories().addAll(scannedNode.getCategories());
     }
 
     public void mergeSnmpInterfaces(OnmsNode scannedNode) {
@@ -754,7 +769,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
-    public void mergeCategories(OnmsNode scannedNode) {
+    public void mergeCategorySet(OnmsNode scannedNode) {
         if (!getCategories().equals(scannedNode.getCategories())) {
             setCategories(scannedNode.getCategories());
         }
@@ -786,7 +801,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         
         mergeIpInterfaces(scannedNode, eventForwarder);
         
-    	mergeCategories(scannedNode);
+    	mergeCategorySet(scannedNode);
     	
     	mergeAssets(scannedNode);
     }
