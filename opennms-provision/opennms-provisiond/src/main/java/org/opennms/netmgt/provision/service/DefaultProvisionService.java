@@ -37,6 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -137,7 +139,6 @@ public class DefaultProvisionService implements ProvisionService {
 
         node.visit(eventAccumlator);
         
-        //TODO: Update node in schedule
     }
     
     @Transactional
@@ -149,7 +150,7 @@ public class DefaultProvisionService implements ProvisionService {
     
         m_nodeDao.update(dbNode);
         EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder);
-        //TODO: update the node in the scheduledList of Nodes
+
         node.visit(eventAccumlator);
         
     }
@@ -165,7 +166,6 @@ public class DefaultProvisionService implements ProvisionService {
             node.visit(new DeleteEventVisitor(m_eventForwarder));
         }
         
-        //TODO: Should remove the node from the scheduled list of nodes
     
     }
     
@@ -538,16 +538,36 @@ public class DefaultProvisionService implements ProvisionService {
             
             node.setDistPoller(dbPoller);
             
-            m_nodeDao.save(node);
+            return saveOrUpdate(node);
             
-            return node;
             
         } else {
             dbNode.mergeNodeAttributes(node);
-            m_nodeDao.saveOrUpdate(dbNode);
             
-            return dbNode;
+            return saveOrUpdate(dbNode);
         }
+    }
+    
+    private OnmsNode saveOrUpdate(OnmsNode node) {
+        
+
+        Set<OnmsCategory> updatedCategories = new HashSet<OnmsCategory>();
+        for(Iterator<OnmsCategory> it = node.getCategories().iterator(); it.hasNext(); ) {
+            OnmsCategory category = it.next();
+            if (category.getId() == null) {
+                it.remove();
+                
+                OnmsCategory newCategory = createCategoryIfNecessary(category.getName());
+                updatedCategories.add(newCategory);
+            }
+        }
+        
+        node.getCategories().addAll(updatedCategories);
+        
+        m_nodeDao.saveOrUpdate(node);
+        
+        return node;
+        
     }
 
     public List<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
