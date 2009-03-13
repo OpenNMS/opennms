@@ -91,8 +91,16 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private ConnectionProperties m_cp;
     
     private List<String> m_rancid_categories;
+    
     private TransactionTemplate m_template;
     
+    public TransactionTemplate getTemplate() {
+        return m_template;
+    }
+    public void setTemplate(TransactionTemplate template) {
+        m_template = template;
+    }
+
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
     private static final String ADAPTER_NAME="RancidProvisioningAdapter";
     private static final String RANCID_COMMENT="node provisioned by opennms";
