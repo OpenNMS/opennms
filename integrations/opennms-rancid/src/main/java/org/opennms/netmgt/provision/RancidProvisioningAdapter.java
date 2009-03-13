@@ -66,7 +66,9 @@ import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -89,6 +91,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private ConnectionProperties m_cp;
     
     private List<String> m_rancid_categories;
+    private TransactionTemplate m_template;
     
     private static final String MESSAGE_PREFIX = "Rancid provisioning failed: ";
     private static final String ADAPTER_NAME="RancidProvisioningAdapter";
@@ -98,9 +101,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
 
     @Override
-    AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType type) {
+    AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType type) {
         if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
-            String ipaddress = getSuitableIpForRancid(nodeId);
+            final String ipaddress =
+            (String)m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    return getSuitableIpForRancid(nodeId);
+                }
+            });
             return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000, m_rancidAdapterConfig.getRetries(ipaddress), TimeUnit.MILLISECONDS);
         }
         return new AdapterOperationSchedule();
@@ -118,7 +126,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         
         createMessageSelectorAndSubscribe();
         getRancidCategories();
-        buildRancidNodeMap();
+        
+        m_template.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus arg0) {
+                buildRancidNodeMap();
+                return null;
+            }
+        });
+
+        
     }
 
     private void getRancidCategories() {
@@ -140,7 +156,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
 
-    @Transactional
     private void buildRancidNodeMap() {
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNodeContainer>(nodes.size());
@@ -207,7 +222,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
-    @Transactional
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
         try {
@@ -233,7 +247,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
-    @Transactional
     public void doUpdate(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
         try {
@@ -267,7 +280,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
     
-    @Transactional
     public void doDelete(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
 
         log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode");
@@ -367,7 +379,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return ADAPTER_NAME;
     }
 
-    @Transactional
     public String getSuitableIpForRancid(int nodeid){
         OnmsNode node = m_nodeDao.get(nodeid);
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
@@ -442,6 +453,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             r_auth_node.setEnablePass(asset_node.getEnable());
         }
         
+        //FIXME: We need to put this in a better place and should be enums
         if (asset_node.getAutoenable() != null) {
             r_auth_node.setAutoEnable(asset_node.getAutoenable().equals(OnmsAssetRecord.AUTOENABLED));
         }
@@ -470,15 +482,35 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     @Override
-    public void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException {
+    public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         if (op.getType() == AdapterOperationType.ADD) {
-            doAdd(op.getNodeId(),m_cp,true);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doAdd(op.getNodeId(),m_cp,true);
+                    return null;
+                }
+            });
         } else if (op.getType() == AdapterOperationType.UPDATE) {
-            doUpdate(op.getNodeId(),m_cp,true);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doUpdate(op.getNodeId(),m_cp,true);
+                    return null;
+                }
+            });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            doDelete(op.getNodeId(),m_cp,true);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doDelete(op.getNodeId(),m_cp,true);
+                    return null;
+                }
+            });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-            doNodeConfigChanged(op.getNodeId(),m_cp,true);
+            m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    doNodeConfigChanged(op.getNodeId(),m_cp,true);
+                    return null;
+                }
+            });
         }
     }
     
