@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -92,6 +93,22 @@ import org.springframework.util.Assert;
 @Service
 public class DefaultProvisionService implements ProvisionService {
     
+    /**
+     * ServiceTypeFulfiller
+     *
+     * @author brozow
+     */
+    private final class ServiceTypeFulfiller extends AbstractEntityVisitor {
+        @Override
+        public void visitMonitoredService(OnmsMonitoredService monSvc) {
+            OnmsServiceType dbType = monSvc.getServiceType();
+            if (dbType.getId() == null) {
+                dbType = createServiceTypeIfNecessary(dbType.getName());
+            }
+            monSvc.setServiceType(dbType);
+        }
+    }
+
     @Autowired
     private DistPollerDao m_distPollerDao;
     
@@ -185,7 +202,7 @@ public class DefaultProvisionService implements ProvisionService {
         OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
         if (dbIface != null) {
             dbIface.mergeInterfaceAttributes(scannedIface);
-            m_ipInterfaceDao.save(dbIface);
+            m_ipInterfaceDao.update(dbIface);
             return dbIface;
         } else {
             OnmsNode dbNode = m_nodeDao.load(nodeId);
@@ -193,7 +210,7 @@ public class DefaultProvisionService implements ProvisionService {
             // for performance reasons we don't add the ip interface to the node so we avoid loading all the interfaces
             // setNode only sets the node in the interface
             scannedIface.setNode(dbNode);
-            m_ipInterfaceDao.save(scannedIface);
+            saveOrUpdate(scannedIface);
             AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
             scannedIface.visit(visitor);
             return scannedIface;
@@ -292,7 +309,21 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsNode getRequisitionedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
         Assert.notNull(nodeReq, "nodeReq for node "+foreignSource+":"+foreignId+" cannot be null!");
-        return nodeReq.constructOnmsNodeFromRequisition();
+        OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
+        
+        // fill in real db categories
+        HashSet<OnmsCategory> dbCategories = new HashSet<OnmsCategory>();
+        for(OnmsCategory category : node.getCategories()) {
+            OnmsCategory dbCategory = createCategoryIfNecessary(category.getName());
+            dbCategories.add(dbCategory);
+        }
+        
+        node.setCategories(dbCategories);
+        
+        // fill in reall service types
+        node.visit(new ServiceTypeFulfiller());
+        
+        return node;
     }
     
     @Transactional
@@ -569,7 +600,17 @@ public class DefaultProvisionService implements ProvisionService {
         return node;
         
     }
-
+    
+    private OnmsIpInterface saveOrUpdate(OnmsIpInterface iface) {
+        
+        iface.visit(new ServiceTypeFulfiller());
+        
+        m_ipInterfaceDao.saveOrUpdate(iface);
+        
+        return iface;
+        
+    }
+    
     public List<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
