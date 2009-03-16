@@ -48,7 +48,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RancidAdapterConfig;
-import org.opennms.netmgt.config.rws.StandbyUrl;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -181,27 +180,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
 
     private ConnectionProperties getRWSConnection() {
-        log().debug("Connections used : " +m_rwsConfig.getBaseUrl().getServer_url()+m_rwsConfig.getBaseUrl().getDirectory());
-        log().debug("RWS timeout(sec): "+m_rwsConfig.getBaseUrl().getTimeout());
-        if (m_rwsConfig.getBaseUrl().getUsername() == null)
-            return new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
-        String password = "";
-        if (m_rwsConfig.getBaseUrl().getPassword() != null)
-            password = m_rwsConfig.getBaseUrl().getPassword();
-        return new ConnectionProperties(m_rwsConfig.getBaseUrl().getUsername(),password,m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
+        return m_rwsConfig.getBase();
     }
 
     private ConnectionProperties getStandByRWSConnection() {
-        if (! m_rwsConfig.hasStandbyUrl()) return null; 
-        StandbyUrl standByUrl = m_rwsConfig.getNextStandbyUrl();
-        log().debug("Connections used : " +standByUrl.getServer_url()+standByUrl.getDirectory());
-        log().debug("RWS timeout(sec): "+standByUrl.getTimeout());
-        if (standByUrl.getUsername() == null)
-            return new ConnectionProperties(standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
-        String password = "";
-        if (standByUrl.getPassword() != null)
-            password = standByUrl.getPassword();
-        return new ConnectionProperties(standByUrl.getUsername(),password,standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
+        return m_rwsConfig.getNextStandBy();
     }
 
     private class RancidNodeContainer {
