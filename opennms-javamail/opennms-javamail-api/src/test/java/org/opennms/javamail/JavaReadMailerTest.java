@@ -46,6 +46,7 @@ import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.config.common.ReadmailHost;
@@ -58,12 +59,18 @@ import org.opennms.netmgt.config.common.UserAuth;
 
 public class JavaReadMailerTest {
     
-    
+    /**
+     * This un-ignore this test with a proper gmail account
+     * @throws JavaMailerException
+     * @throws MessagingException
+     * @throws InterruptedException
+     */
     @Test
+    @Ignore
     public void testReadMessagesWithSearchTerm() throws JavaMailerException, MessagingException, InterruptedException {
         
-        String gmailAccount = "bamboo.opennms";
-        String gmailPassword = "w00tisawerd";
+        String gmailAccount = "foo";
+        String gmailPassword = "bar";
         
         JavaSendMailer sendMailer = createSendMailer(gmailAccount, gmailPassword);
         
