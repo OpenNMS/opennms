@@ -378,11 +378,14 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             // Now look at each
             for(String key : entityMap.keySet()) {
             	for (ThresholdEntity threshold : entityMap.get(key)) {
-	                if(passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
+            	    
+	                if (passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
 	                    log().info("Processing threshold "+key+ " : " +threshold);
+	                    
 	                    Collection<String> requiredDatasources=threshold.getRequiredDatasources();
 	                    Map<String, Double> values=new HashMap<String,Double>();
 	                    boolean valueMissing=false;
+	                    
 	                    for(String ds: requiredDatasources) {
 	                        log().info("Looking for datasource "+ds);
 	                        Double dsValue=getValue(resource, ds);
@@ -614,11 +617,14 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 try {
                     final Pattern p = Pattern.compile(f.getContent());
                     final Matcher m = p.matcher(attr);
-                    boolean pass = m.find();
+                    boolean pass = m.matches();
+                    
                     if (log().isDebugEnabled()) {
                         log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
                     }
-                    if (pass) return true;
+                    if (pass) {
+                        return true;
+                    }
                 } catch (PatternSyntaxException e) {
                     log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
                     return false;
