@@ -197,12 +197,14 @@
     nodeModel.put("status", getStatusStringWithDefault(node_db));
     nodeModel.put("showIpRoute", NetworkElementFactory.isRouteInfoNode(nodeId));
     nodeModel.put("showBridge", NetworkElementFactory.isBridgeNode(nodeId));
+    nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
     
     pageContext.setAttribute("model", nodeModel);
 %>
 
+<%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
@@ -309,6 +311,15 @@
   <h3 class="o-box">General (Status: ${model.status})</h3>
   <div class="boxWrapper">
     <ul class="plain o-box">
+      <c:if test="${model.showRancid}">
+        <c:url var="rancidLink" value="inventory/rancid.htm">
+          <c:param name="node" value="${model.id}"/>
+        </c:url>
+        <li>
+          <a href="${rancidLink}">View Node Rancid Inventory Info </a>
+        </li>
+      </c:if>
+
       <c:if test="${model.showIpRoute}">
         <c:url var="ipRouteLink" value="element/routeipnode.jsp">
           <c:param name="node" value="${model.id}"/>
