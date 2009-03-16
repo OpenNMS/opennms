@@ -62,4 +62,8 @@ public class MockServiceDetector implements SyncServiceDetector {
         return true;
     }
 
+    public void dispose() {
+        
+    }
+
 }
