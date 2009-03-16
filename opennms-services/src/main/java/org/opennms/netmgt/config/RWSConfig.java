@@ -38,6 +38,7 @@ package org.opennms.netmgt.config;
 
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.StandbyUrl;
+import org.opennms.rancid.ConnectionProperties;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -46,7 +47,12 @@ import org.opennms.netmgt.config.rws.StandbyUrl;
  * Preferences - Java - Code Style - Code Templates
  */
 public interface RWSConfig {
-
+    public ConnectionProperties getBase();
+    
+    public ConnectionProperties[] getStandBy();
+    
+    public ConnectionProperties getNextStandBy();
+    
     public BaseUrl getBaseUrl();
     
     public StandbyUrl[] getStanbyUrls();

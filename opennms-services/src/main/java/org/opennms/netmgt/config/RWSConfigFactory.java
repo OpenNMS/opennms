@@ -50,6 +50,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.rws.StandbyUrl;
+import org.opennms.rancid.ConnectionProperties;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS

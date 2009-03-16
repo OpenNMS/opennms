@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rws.StandbyUrl;
 
 import org.opennms.netmgt.config.rws.BaseUrl;
+import org.opennms.rancid.ConnectionProperties;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -57,6 +58,35 @@ import org.opennms.netmgt.config.rws.BaseUrl;
 abstract public class RWSConfigManager implements RWSConfig {
     
     private int cursor = 0;
+    public ConnectionProperties getBase() {
+        log().debug("Connections used : " +getBaseUrl().getServer_url()+getBaseUrl().getDirectory());
+        log().debug("RWS timeout(sec): "+getBaseUrl().getTimeout());
+        if (getBaseUrl().getUsername() == null)
+            return new ConnectionProperties(getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
+        String password = "";
+        if (getBaseUrl().getPassword() != null)
+            password = getBaseUrl().getPassword();
+        return new ConnectionProperties(getBaseUrl().getUsername(),password,getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
+    }
+
+    public ConnectionProperties getNextStandBy() {
+        if (! hasStandbyUrl()) return null; 
+        StandbyUrl standByUrl = getNextStandbyUrl();
+        log().debug("Connections used : " +standByUrl.getServer_url()+standByUrl.getDirectory());
+        log().debug("RWS timeout(sec): "+standByUrl.getTimeout());
+        if (standByUrl.getUsername() == null)
+            return new ConnectionProperties(standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
+        String password = "";
+        if (standByUrl.getPassword() != null)
+            password = standByUrl.getPassword();
+        return new ConnectionProperties(standByUrl.getUsername(),password,standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
+    }
+
+    public ConnectionProperties[] getStandBy() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     
     public synchronized BaseUrl getBaseUrl() {
         
