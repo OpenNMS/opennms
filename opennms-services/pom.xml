@@ -315,5 +315,9 @@
       <groupId>org.krupczak</groupId>
       <artifactId>Xmp</artifactId>
     </dependency>
+        <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>rancid-api</artifactId>
+    </dependency>
   </dependencies>
 </project>
