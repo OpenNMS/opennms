@@ -296,22 +296,22 @@ public class JavaMailAckReaderImplTest {
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(0).getAckAction());
         Assert.assertEquals(Integer.valueOf(1), acks.get(0).getRefId());
-        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(0).getAckUser());
+        Assert.assertEquals("foo@gmail.com", acks.get(0).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(1).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(1).getAckAction());
         Assert.assertEquals(Integer.valueOf(2), acks.get(1).getRefId());
-        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(1).getAckUser());
+        Assert.assertEquals("foo@gmail.com", acks.get(1).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(2).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(2).getAckAction());
         Assert.assertEquals(Integer.valueOf(3), acks.get(2).getRefId());
-        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(2).getAckUser());
+        Assert.assertEquals("foo@gmail.com", acks.get(2).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(3).getAckType());
         Assert.assertEquals(AckAction.CLEAR, acks.get(3).getAckAction());
         Assert.assertEquals(Integer.valueOf(4), acks.get(3).getRefId());
-        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(3).getAckUser());
+        Assert.assertEquals("foo@gmail.com", acks.get(3).getAckUser());
     }
 
     private SendmailMessage createAckMessage(String gmailAccount, String noticeId, String body) {
