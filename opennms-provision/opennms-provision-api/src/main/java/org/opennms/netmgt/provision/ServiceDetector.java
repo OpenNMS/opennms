@@ -43,5 +43,7 @@ public interface ServiceDetector {
     public String getServiceName();
     
     public void setServiceName(String serviceName);
+    
+    public void dispose();
 
 }
