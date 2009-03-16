@@ -139,7 +139,7 @@ public class OnmsAcknowledgment {
     public OnmsAcknowledgment(final Acknowledgeable a, String user, Date ackTime) {
         this();
         if (a == null) {
-            throw new IllegalArgumentException("OnmsAlarm is null.");
+            throw new IllegalArgumentException("Acknowledgable is null.");
         }
         
         m_ackType = a.getType();
