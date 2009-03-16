@@ -112,6 +112,10 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         }
         return false;
     }
+    
+    public void dispose(){
+        
+    }
 
     /**
      * @return

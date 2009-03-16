@@ -43,6 +43,8 @@ public abstract class AbstractDetector implements SyncServiceDetector {
 
     abstract public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
     
+    abstract public void dispose();
+    
     public void setPort(int port) {
         m_port = port;
     }

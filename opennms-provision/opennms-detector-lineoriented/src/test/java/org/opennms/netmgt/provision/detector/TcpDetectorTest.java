@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
+import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +40,10 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     @After
     public void tearDown() throws IOException {
-        m_server.stopServer();
+        if(m_server != null){
+            m_server.stopServer();
+        }
+        
     }
     
     @Test
@@ -102,6 +107,31 @@ public class TcpDetectorTest implements ApplicationContextAware {
         future.awaitUninterruptibly();
         assertFalse(future.isServiceDetected());
     
+    }
+    
+    @Test
+    //@Repeat(10000)
+    public void testNoServerPresent() throws Exception {
+            
+        m_detector.setPort(1999);
+        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        future.addListener(new IoFutureListener<DetectFuture>() {
+
+            public void operationComplete(DetectFuture future) {
+                TcpDetector detector = m_detector;
+                m_detector = null;
+                detector.dispose();
+            }
+            
+        });
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertFalse(future.isServiceDetected());
+        
+        
+        
+        System.err.println("Finish test");
     }
 
     /* (non-Javadoc)

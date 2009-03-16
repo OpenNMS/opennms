@@ -33,7 +33,7 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 
 /**
- * @author thedesloge
+ * @author Donald Desloge
  *
  */
 public interface AsyncServiceDetector extends ServiceDetector {

@@ -403,6 +403,8 @@ public class CoreScanActivities {
                     cb.complete(detector.isServiceDetected(ipAddress, new NullDetectorMonitor()));
                 } catch (Throwable t) {
                     cb.handleException(t);
+                }finally{
+                    detector.dispose();
                 }
             }
             @Override
@@ -441,10 +443,14 @@ public class CoreScanActivities {
         private IoFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {
             return new IoFutureListener<DetectFuture>() {
                 public void operationComplete(DetectFuture future) {
-                    if (future.getException() != null) {
-                        cb.handleException(future.getException());
-                    } else {
-                        cb.complete(future.isServiceDetected());
+                    try {
+                        if (future.getException() != null) {
+                            cb.handleException(future.getException());
+                        } else {
+                            cb.complete(future.isServiceDetected());
+                        }
+                    } finally{
+                       m_detector.dispose();
                     }
                 }
             };
