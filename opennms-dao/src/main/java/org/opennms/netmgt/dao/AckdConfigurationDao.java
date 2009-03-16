@@ -35,10 +35,20 @@
  */
 package org.opennms.netmgt.dao;
 
+import java.util.List;
+
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 
 public interface AckdConfigurationDao {
     
     AckdConfiguration getConfig();
+    
+    Boolean acknowledgmentMatch(List<String> messageText);
+    
+    Boolean clearMatch(List<String> messageText);
+    
+    Boolean escalationMatch(List<String> messageText);
+    
+    Boolean unAcknowledgmentMatch(List<String> messageText);
 
 }

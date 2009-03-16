@@ -36,16 +36,46 @@
 package org.opennms.netmgt.ackd.readers;
 
 import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import javax.mail.Address;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import junit.framework.Assert;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.ackd.AckReader;
+import org.opennms.javamail.JavaMailerException;
+import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.ackd.Ackd;
+import org.opennms.netmgt.config.common.ReadmailConfig;
+import org.opennms.netmgt.config.common.ReadmailHost;
+import org.opennms.netmgt.config.common.ReadmailProtocol;
+import org.opennms.netmgt.config.common.SendmailConfig;
+import org.opennms.netmgt.config.common.SendmailHost;
+import org.opennms.netmgt.config.common.SendmailMessage;
+import org.opennms.netmgt.config.common.SendmailProtocol;
+import org.opennms.netmgt.config.common.UserAuth;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -53,8 +83,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-
-import org.opennms.javamail.JavaMailerException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
@@ -70,27 +98,113 @@ import org.opennms.javamail.JavaMailerException;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-ackd.xml" })
 
+/**
+ * Integration test of for the Javamail Acknowledgement Reader Implementation.
+ */
 public class JavaMailAckReaderImplTest {
 
-    @Autowired
-    private AckReader m_ackReader;
-    
     @Autowired
     private Ackd m_daemon;
     
     @Autowired
     private JavaMailConfigurationDao m_jmDao;
+    
+    @Autowired
+    private MailAckProcessor m_processor;
 
+    
     @Test
     public void verifyWiring() {
         Assert.assertNotNull(m_daemon);
         Assert.assertNotNull(m_jmDao);
-        Assert.assertNotNull(m_ackReader);
+        Assert.assertNotNull(m_processor);
     }
     
-    @Ignore
-    public void detectAcks() throws JavaMailerException {
-        fail("Not yet implemented");
+    /**
+     * tests the ability to detect an aknowledgable ID
+     */
+    @Test
+    public void detectId() {
+        String expression = m_daemon.getConfigDao().getConfig().getNotifyidMatchExpression();
+        Integer id = MailAckProcessor.detectId("Notice #1234", expression);
+        Assert.assertEquals(new Integer(1234), id);
+    }
+
+    /**
+     * tests the ability to create acknowledgments from an email for plain text.  This test
+     * creates a message from scratch rather than reading from an inbox. 
+     */
+    @Test
+    public void workingWithSimpleTextMessages() {
+        Properties props = new Properties();
+        Message msg = new MimeMessage(Session.getDefaultInstance(props));
+        try {
+            Address[] addrs = new Address[1];
+            addrs[0] = new InternetAddress("david@opennms.org");
+            msg.addFrom(addrs);
+            msg.addRecipient(javax.mail.internet.MimeMessage.RecipientType.TO, addrs[0]);
+            msg.setSubject("Notice #1234 JavaMailReaderImplTest Test Message");
+            msg.setText("ack");
+        } catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        List<Message> msgs = new ArrayList<Message>(1);
+        msgs.add(msg);
+        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        
+        Assert.assertEquals(1, acks.size());
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
+        Assert.assertEquals("david@opennms.org", acks.get(0).getAckUser());
+        Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(0).getAckAction());
+        Assert.assertEquals(new Integer(1234), acks.get(0).getRefId());
+    }
+    
+    /**
+     * tests the ability to create acknowledgments from an email for a multi-part text.  This test
+     * creates a message from scratch rather than reading from an inbox.  This message creation
+     * may not actually represent what comes from a mail server.
+     */
+    @Test
+    public void workingWithMultiPartMessages() throws JavaMailerException, MessagingException {
+        List<Message> msgs = new ArrayList<Message>();
+        Properties props = new Properties();
+        Message msg = new MimeMessage(Session.getDefaultInstance(props));
+        Address[] addrs = new Address[1];
+        addrs[0] = new InternetAddress("david@opennms.org");
+        msg.addFrom(addrs);
+        msg.addRecipient(RecipientType.TO, new InternetAddress("david@opennms.org"));
+        msg.setSubject("Notice #1234 JavaMailReaderImplTest Test Message");
+        Multipart mpContent = new MimeMultipart();
+        BodyPart textBp = new MimeBodyPart();
+        BodyPart htmlBp = new MimeBodyPart();
+        textBp.setText("ack");
+        htmlBp.setContent("<html>\n" + 
+        		" <head>\n" + 
+        		"  <title>\n" + 
+        		"   Acknowledge\n" + 
+        		"  </title>\n" + 
+        		" </head>\n" + 
+        		" <body>\n" + 
+        		"  <h1>\n" + 
+        		"   ack\n" + 
+        		"  </h1>\n" + 
+        		" </body>\n" + 
+        		"</html>", "text/html");
+        
+        mpContent.addBodyPart(textBp);
+        mpContent.addBodyPart(htmlBp);
+        msg.setContent(mpContent);
+        
+        msgs.add(msg);
+        
+        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        Assert.assertEquals(1, acks.size());
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
+        Assert.assertEquals("david@opennms.org", acks.get(0).getAckUser());
+        Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(0).getAckAction());
+        Assert.assertEquals(new Integer(1234), acks.get(0).getRefId());
     }
 
     @Ignore
@@ -98,10 +212,6 @@ public class JavaMailAckReaderImplTest {
         fail("Not yet implemented");
     }
 
-    @Ignore
-    public void detectId() {
-        fail("Not yet implemented");
-    }
 
     @Ignore
     public void createAcknowledgment() {
@@ -131,6 +241,140 @@ public class JavaMailAckReaderImplTest {
     @Ignore
     public void stop() {
         fail("Not yet implemented");
+    }
+
+    
+    /**
+     * This test requires that 4 emails can be read from a Google account.  The mails should be
+     * in this order:
+     * Subject matching ackd-configuration expression of action type ack
+     * Subject matching ackd-configuration expression of action type ack
+     * Subject matching ackd-configuration expression of action type ack
+     * Subject matching ackd-configuration expression of action type clear
+     * 
+     * The test has been updated to now include sending an email message to a gmail account.  Just correct
+     * the account details for your own local testing.
+     * 
+     * @throws JavaMailerException 
+     * 
+     */
+    @Test
+    @Ignore
+    public void integration() throws JavaMailerException {
+        
+        String gmailAccount = "foo";
+        String gmailPassword = "bar";
+        
+        JavaSendMailer sendMailer = createSendMailer(gmailAccount, gmailPassword);
+        
+        SendmailMessage sendMsg = createAckMessage(gmailAccount, "1", "ack");
+        sendMailer.setMessage(sendMailer.buildMimeMessage(sendMsg));
+        sendMailer.send();
+        sendMsg = createAckMessage(gmailAccount, "2", "ack");
+        sendMailer.setMessage(sendMailer.buildMimeMessage(sendMsg));
+        sendMailer.send();
+        sendMsg = createAckMessage(gmailAccount, "3", "ack");
+        sendMailer.setMessage(sendMailer.buildMimeMessage(sendMsg));
+        sendMailer.send();
+        sendMsg = createAckMessage(gmailAccount, "4", "clear");
+        sendMailer.setMessage(sendMailer.buildMimeMessage(sendMsg));
+        sendMailer.send();
+        
+        //this is bad mojo
+        String readmailConfig = m_daemon.getConfigDao().getConfig().getReadmailConfig();
+        Assert.assertNotNull(readmailConfig);
+        ReadmailConfig config = m_jmDao.getReadMailConfig(readmailConfig);
+        updateConfigWithGoogleReadConfiguration(config, gmailAccount, gmailPassword);
+        
+        List<Message> msgs = MailAckProcessor.getInstance().retrieveAckMessages();
+        
+        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        
+        Assert.assertNotNull(acks);
+        Assert.assertEquals(4, acks.size());
+        
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
+        Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(0).getAckAction());
+        Assert.assertEquals(Integer.valueOf(1), acks.get(0).getRefId());
+        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(0).getAckUser());
+        
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(1).getAckType());
+        Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(1).getAckAction());
+        Assert.assertEquals(Integer.valueOf(2), acks.get(1).getRefId());
+        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(1).getAckUser());
+        
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(2).getAckType());
+        Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(2).getAckAction());
+        Assert.assertEquals(Integer.valueOf(3), acks.get(2).getRefId());
+        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(2).getAckUser());
+        
+        Assert.assertEquals(AckType.NOTIFICATION, acks.get(3).getAckType());
+        Assert.assertEquals(AckAction.CLEAR, acks.get(3).getAckAction());
+        Assert.assertEquals(Integer.valueOf(4), acks.get(3).getRefId());
+        Assert.assertEquals("bamboo.opennms@gmail.com", acks.get(3).getAckUser());
+    }
+
+    private SendmailMessage createAckMessage(String gmailAccount, String noticeId, String body) {
+        SendmailMessage sendMsg = new SendmailMessage();
+        sendMsg.setTo(gmailAccount+"@gmail.com");
+        sendMsg.setFrom(gmailAccount+"@gmail.com");
+        sendMsg.setSubject("re:Notice #"+noticeId+":");
+        sendMsg.setBody(body);
+        return sendMsg;
+    }
+
+    private JavaSendMailer createSendMailer(String gmailAccount, String gmailPassword) throws JavaMailerException {
+        
+        SendmailConfig config = new SendmailConfig();
+        
+        config.setAttemptInterval(1000);
+        config.setDebug(true);
+        config.setName("test");
+        
+        SendmailMessage sendmailMessage = new SendmailMessage();
+        sendmailMessage.setBody("service is down");
+        sendmailMessage.setFrom("bamboo.opennms@gmail.com");
+        sendmailMessage.setSubject("Notice #1234: service down");
+        sendmailMessage.setTo("bamboo.opennms@gmail.com");
+        config.setSendmailMessage(sendmailMessage);
+        
+        SendmailHost host = new SendmailHost();
+        host.setHost("smtp.gmail.com");
+        host.setPort(465);
+        config.setSendmailHost(host);
+        
+        SendmailProtocol protocol = new SendmailProtocol();
+        protocol.setSslEnable(true);
+        protocol.setTransport("smtps");
+        config.setSendmailProtocol(protocol);
+        
+        config.setUseAuthentication(true);
+        config.setUseJmta(false);
+        UserAuth auth = new UserAuth();
+        auth.setUserName(gmailAccount);
+        auth.setPassword(gmailPassword);
+        config.setUserAuth(auth);
+        
+        return new JavaSendMailer(config);
+    }
+    
+    private void updateConfigWithGoogleReadConfiguration(ReadmailConfig config, String gmailAccount, String gmailPassword) {
+        config.setDebug(true);
+        config.setDeleteAllMail(false);
+        config.setMailFolder("INBOX");
+        ReadmailHost readmailHost = new ReadmailHost();
+        readmailHost.setHost("imap.gmail.com");
+        readmailHost.setPort(993);
+        ReadmailProtocol readmailProtocol = new ReadmailProtocol();
+        readmailProtocol.setSslEnable(true);
+        readmailProtocol.setStartTls(false);
+        readmailProtocol.setTransport("imaps");
+        readmailHost.setReadmailProtocol(readmailProtocol);
+        config.setReadmailHost(readmailHost);
+        UserAuth userAuth = new UserAuth();
+        userAuth.setPassword(gmailPassword);
+        userAuth.setUserName(gmailAccount);
+        config.setUserAuth(userAuth);
     }
 
 }
