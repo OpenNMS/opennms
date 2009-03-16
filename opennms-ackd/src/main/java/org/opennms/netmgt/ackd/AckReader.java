@@ -35,7 +35,6 @@
  */
 package org.opennms.netmgt.ackd;
 
-import org.opennms.netmgt.dao.AckdConfigurationDao;
 
 /**
  * Acknowledgment reader API
@@ -46,7 +45,7 @@ import org.opennms.netmgt.dao.AckdConfigurationDao;
  */
 public interface AckReader {
     
-    void start(AckdConfigurationDao dao);
+    void start();
     void pause();
     void resume();
     void stop();

@@ -37,18 +37,21 @@ package org.opennms.javamail;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.search.SearchTerm;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.common.JavamailProperty;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 
@@ -66,16 +69,59 @@ import org.opennms.netmgt.config.common.ReadmailConfig;
             mailFolder.fetch(msgs, fp);
             SearchTerm st = new SubjectTerm(subjectMatch);
 */            
-
-
 /**
+ * JavaMail implementation for reading electronic mail.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class JavaReadMailer {
+public class JavaReadMailer extends JavaMailer2 {
+    
+    private List<Message> m_messages;
+    final private ReadmailConfig m_config;
+    private Session m_session;
+    private Boolean m_deleteOnClose = false;
 
-    public JavaReadMailer() {
+
+    /**
+     * Finalizer to be sure and close with the appropriate mode
+     * any open folders
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        if (m_messages != null && !m_messages.isEmpty() && m_messages.get(0).getFolder() != null && m_messages.get(0).getFolder().isOpen()) {
+            m_messages.get(0).getFolder().close(m_deleteOnClose);
+        }
+        super.finalize();
+        
+    }
+    
+    //TODO figure out why need this throws here
+    public JavaReadMailer(final ReadmailConfig config, Boolean closeOnDelete) throws JavaMailerException {
+        if (closeOnDelete != null) {
+            m_deleteOnClose = closeOnDelete;
+        }
+        m_config = config;
+        m_session = Session.getInstance(configureProperties(), createAuthenticator(config.getUserAuth().getUserName(), config.getUserAuth().getPassword()));
+    }
+    
+    public List<Message> retrieveMessages() throws JavaMailerException {
+        Message[] msgs;
+        Folder mailFolder = null;
+        
+        try {
+            Store store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
+            store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+            mailFolder = store.getFolder(m_config.getMailFolder());
+            mailFolder.open(Folder.READ_WRITE);
+            msgs = mailFolder.getMessages();
+        } catch (NoSuchProviderException e) {
+            throw new JavaMailerException("No provider matching:"+m_config.getReadmailHost().getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
+        } catch (MessagingException e) {
+            throw new JavaMailerException("Problem reading messages from configured mail store", e);
+        }
+        
+        return new ArrayList<Message>(Arrays.asList(msgs));
     }
 
     /*
@@ -86,69 +132,55 @@ public class JavaReadMailer {
      * TODO: Need to make this more efficient... probably needs state so that message contents can be retrieved from the
      *       store after they are read via this message.
      */
-    public List<OpenNMSJavaMailMessage> readMessages(ReadmailConfig config, String subjectMatch) throws JavaMailerException {
+    
+    /**
+     * @param term
+     */
+    public List<Message> retrieveMessages(SearchTerm term) throws JavaMailerException {
         Message[] msgs;
         Folder mailFolder = null;
         
-        Session sess = Session.getInstance(configureProperties(config), configureAuthenticator(config));
         try {
-            Store store = sess.getStore(config.getReadmailHost().getReadmailProtocol().getTransport());
-            store.connect(config.getReadmailHost().getHost(), (int)config.getReadmailHost().getPort(), config.getUserAuth().getUserName(), config.getUserAuth().getPassword());
-            mailFolder = store.getFolder(config.getMailFolder());
+            Store store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
+            store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+            mailFolder = store.getFolder(m_config.getMailFolder());
             mailFolder.open(Folder.READ_WRITE);
-            msgs = mailFolder.getMessages();
+            msgs = mailFolder.search(term);
         } catch (NoSuchProviderException e) {
-            throw new JavaMailerException("No provider matching:"+config.getReadmailHost().getReadmailProtocol().getTransport()+" from config:"+config.getName(), e);
+            throw new JavaMailerException("No provider matching:"+m_config.getReadmailHost().getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
         } catch (MessagingException e) {
             throw new JavaMailerException("Problem reading messages from configured mail store", e);
-        } finally {
-            if (mailFolder.isOpen()) {
-                try {
-                    mailFolder.close(true);
-                } catch (MessagingException e) {
-                    throw new JavaMailerException("problem closing mail folder:"+config.getMailFolder(), e);
-                }
-            }
         }
         
-        List<OpenNMSJavaMailMessage> omsgs = new ArrayList<OpenNMSJavaMailMessage>(msgs.length);
-        for (int i = 0; i < msgs.length; i++) {
-            try {
-                omsgs.add(new OpenNMSJavaMailMessage(msgs[i], sess));
-            } catch (MessagingException e) {
-                throw new JavaMailerException("Problem creating message", e);
-            } catch (IOException e) {
-                throw new JavaMailerException("IO Problem creating message", e);
-            }
-        }
-        return omsgs;
+        List<Message> msgList = Arrays.asList(msgs);
+        
+        return msgList;
     }
 
     /**
      * Configures the java mail api properties based on the settings ReadMailConfig
-     * @param config
-     * @return
+     * @return A set of javamail properties based on the mail configuration 
      */
-    private Properties configureProperties(ReadmailConfig config) {
+    private Properties configureProperties() {
         Properties props = new Properties();
         
-        props.setProperty("mail.debug", String.valueOf(config.isDebug()));
+        props.setProperty("mail.debug", String.valueOf(m_config.isDebug()));
         
         //first set the actual properties defined in the sendmail configuration
-        List<JavamailProperty> jmps = config.getJavamailPropertyCollection();
+        List<JavamailProperty> jmps = m_config.getJavamailPropertyCollection();
         for (JavamailProperty jmp : jmps) {
             props.setProperty(jmp.getName(), jmp.getValue());
         }
         
-        String protocol = config.getReadmailHost().getReadmailProtocol().getTransport();
-        props.put("mail." + protocol + ".host", config.getReadmailHost().getHost());
-        props.put("mail." + protocol + ".user", config.getUserAuth().getUserName());
-        props.put("mail." + protocol + ".port", config.getReadmailHost().getPort());
-        props.put("mail." + protocol + ".starttls.enable", config.getReadmailHost().getReadmailProtocol().isStartTls());
+        String protocol = m_config.getReadmailHost().getReadmailProtocol().getTransport();
+        props.put("mail." + protocol + ".host", m_config.getReadmailHost().getHost());
+        props.put("mail." + protocol + ".user", m_config.getUserAuth().getUserName());
+        props.put("mail." + protocol + ".port", m_config.getReadmailHost().getPort());
+        props.put("mail." + protocol + ".starttls.enable", m_config.getReadmailHost().getReadmailProtocol().isStartTls());
         props.put("mail.smtp.auth", "true");
 
-        if (config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
-            props.put("mail." + protocol + ".socketFactory.port", config.getReadmailHost().getPort());
+        if (m_config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
+            props.put("mail." + protocol + ".socketFactory.port", m_config.getReadmailHost().getPort());
             props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.put("mail." + protocol + ".socketFactory.fallback", "false");
         }
@@ -161,20 +193,63 @@ public class JavaReadMailer {
         return props;
     }
 
+    public List<Message> getMessages() {
+        return m_messages;
+    }
+
     /**
-     * Creates an authenticator using setting from the ReadmailConfig
+     * Attempts to reteive the string portion of a message... tries to handle
+     * multipart messages as well.  This seems to be working so far with my tests
+     * but could use some tweaking later as more types of mail servers are used
+     * with this feature.
      * 
-     * @param config
-     * @return an instance of Authenticator overriding the getPasswordAuthentication attribute
+     * @param msg
+     * @return The text portion of an email with each line being an element of the list.
+     * @throws MessagingException
+     * @throws IOException
      */
-    private static Authenticator configureAuthenticator(final ReadmailConfig config) {
-        Authenticator auth = new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(config.getUserAuth().getUserName(), config.getUserAuth().getPassword());
+    public static List<String> getText(Message msg) throws MessagingException, IOException {
+        List<String> lines = new ArrayList<String>();
+        
+        String content = null;
+        if (msg.isMimeType("text/*")) {
+            try {
+                content = (String)msg.getContent();
+            } catch (ClassCastException cce) {
+                Object c = msg.getContent();
+                if (c instanceof MimeMultipart) {
+                    for (int cnt = 0; cnt < ((MimeMultipart)c).getCount(); cnt++) {
+                        BodyPart bp = ((MimeMultipart)c).getBodyPart(cnt);
+                        if (bp.isMimeType("text/*")) {
+                            content = (String)bp.getContent();
+                            break;
+                        }
+                    }
+                }
             }
-        };
-        return auth;
+            return string2Lines(content);
+        }
+        
+        return lines;
+    }
+    
+    public Boolean isDeleteOnClose() {
+        return m_deleteOnClose;
+    }
+
+    public void setDeleteOnClose(Boolean deleteOnClose) {
+        m_deleteOnClose = deleteOnClose;
+    }
+
+    public static List<String> string2Lines(String text) {
+        if (text == null) {
+            return null;
+        }
+        String[] linea = StringUtils.split(text, "\n");
+        for (int i = 0; i < linea.length; i++) {
+            linea[i] = StringUtils.chomp(linea[i]);
+        }
+        return Arrays.asList(linea);
     }
 
 

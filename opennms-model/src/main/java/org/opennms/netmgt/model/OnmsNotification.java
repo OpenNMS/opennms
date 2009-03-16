@@ -32,6 +32,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -299,10 +300,10 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_notifConfigName = notifConfigName;
     }
 
-    public void acknowledge(Date ackDate, String ackUser) {
+    public void acknowledge(String ackUser) {
         if(m_answeredBy == null || m_respondTime == null) {
             m_answeredBy = ackUser;
-            m_respondTime = ackDate;
+            m_respondTime = Calendar.getInstance().getTime();
         }
     }
     
@@ -326,16 +327,21 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_respondTime;
     }
 
-    public void clear() {
-        //this should be handled by auto resolves in the notificaiton service
+    public void clear(String ackUser) {
+        /* Note: this currently works based on the way Notifd currently processes queued notifications.
+         * Outstanding notifications are not removed from the queue when a response is received, instead,
+         * when the queued notification task is ran, the task checks to see if the notice is still outstanding.
+         */
+        m_respondTime = Calendar.getInstance().getTime();
+        m_answeredBy = ackUser;
     }
 
-    public void escalate() {
+    public void escalate(String ackUser) {
         //does nothing for there is no severity state in a notification object
         //escalation of a notification is handled in the notification path
     }
 
-    public void unacknowledge() {
+    public void unacknowledge(String ackUser) {
         m_respondTime = null;
         m_answeredBy = null;
     }

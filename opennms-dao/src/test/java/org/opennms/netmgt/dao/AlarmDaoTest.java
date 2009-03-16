@@ -82,13 +82,13 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         
         assertEquals(OnmsSeverity.MAJOR, newAlarm.getSeverity());
         
-        newAlarm.escalate();
+        newAlarm.escalate("admin");
         assertEquals(OnmsSeverity.CRITICAL, newAlarm.getSeverity());
         
-        newAlarm.clear();
+        newAlarm.clear("admin");
         assertEquals(OnmsSeverity.CLEARED, newAlarm.getSeverity());
         
-        newAlarm.unacknowledge();
+        newAlarm.unacknowledge("admin");
         assertNull(newAlarm.getAckUser());
         assertNull(newAlarm.getAlarmAckTime());
         

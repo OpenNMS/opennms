@@ -42,13 +42,13 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 
 /**
- * TODO: Needs IOC work
- * TODO: Needs to support Ack/Unack/Clear/Escalate
- * TODO: Create eventconf acknowledgment verb entries (acknowledge and acknowledged)
+ * This class provides the work of acknowledging <code>Acknowledgables</code> associated with
+ * an <code>Acknowledgment</code>.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
@@ -58,10 +58,6 @@ public class DefaultAckService implements AckService {
     private AcknowledgmentDao m_ackDao;
     private EventForwarder m_eventForwarder;
     
-    public DefaultAckService() {
-        
-    }
-
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         for (OnmsAcknowledgment ack : acks) {
             processAck(ack);
@@ -73,7 +69,7 @@ public class DefaultAckService implements AckService {
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         EventBuilder ebuilder;
         
-        if (ackables == null) {
+        if (ackables == null || ackables.size() < 1) {
             throw new IllegalStateException("No acknowlegables in the datbase for ack: "+ack);
         }
         
@@ -81,13 +77,13 @@ public class DefaultAckService implements AckService {
             
             switch (ack.getAckAction()) {
             case ACKNOWLEDGE:
-                ackable.acknowledge(ack.getAckTime(), ack.getAckUser());
+                ackable.acknowledge(ack.getAckUser());
                 break;
             case CLEAR:
-                ackable.clear();
+                ackable.clear(ack.getAckUser());
                 break;
             case ESCALATE:
-                ackable.escalate();
+                ackable.escalate(ack.getAckUser());
             default:
                 break;
             }
@@ -96,7 +92,8 @@ public class DefaultAckService implements AckService {
             m_ackDao.save(ack);
             m_ackDao.flush();
             ebuilder = new EventBuilder(EventConstants.EVENT_ACKNOWLEDGED_UEI, "Ackd");
-            ebuilder.setNode(ackable.getNode());
+            OnmsNode node = ackable.getNode();
+            ebuilder.setNode(node == null ? null : node);
             //ebuilder.setTime(ack.getAckTime());
             ebuilder.addParam("ackId", ack.getId().intValue());
             ebuilder.addParam("refId", ack.getRefId().intValue());
