@@ -74,6 +74,7 @@
     }
 %>
 
+<%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node Management" />
   <jsp:param name="headTitle" value="Node Management" />
@@ -126,6 +127,14 @@
     <a href="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>">
     Configure Path Outage</a>
   </p>
+  
+      <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
+  <p>
+    <a href="admin/rancid/rancidAdmin.htm?node=<%=nodeId%>">
+    Configure Rancid Integration</a>
+  
+  </p>
+  <% } %>
 </div>
       
 <div class="TwoColRAdmin">
@@ -166,6 +175,14 @@
     <b>Configure Path Outage</b> Set the critical path and service to test
     before sending Node Down notifications for this node.
   </p>
+  
+        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) { %>
+  <p>
+    <b>Configure Rancid</b> Configure rancid group router.db files and rancid cloginrc
+     authentication data.
+  </p>
+  <% } %>
+  
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
