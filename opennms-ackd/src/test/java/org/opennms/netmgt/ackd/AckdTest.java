@@ -211,9 +211,10 @@ public class AckdTest {
     /**
      * This tests acknowledging a notification and a related alarm.  If events are being deduplicated
      * they should all have the same alarm ID.
+     * @throws InterruptedException 
      */
     @Test
-    public void testAcknowledgeNotification() {
+    public void testAcknowledgeNotification() throws InterruptedException {
         
         VerificationObject vo = createAckStructure();
         Assert.assertTrue(vo.m_nodeId > 0);
@@ -226,6 +227,7 @@ public class AckdTest {
         m_ackDao.save(ack);
         m_ackDao.flush();
         
+        Thread.sleep(1);
         m_ackService.processAck(ack);
         
         OnmsNotification notif = m_notificationDao.get(ack.getRefId());
@@ -236,7 +238,13 @@ public class AckdTest {
         Assert.assertNotNull(alarm);
         Assert.assertEquals("admin", alarm.getAlarmAckUser());
         
-        Assert.assertEquals(alarm.getAlarmAckTime(), notif.getRespondTime());
+        long ackTime = ack.getAckTime().getTime();
+        long respondTime = notif.getRespondTime().getTime();
+        
+        //the DAOs now set the acknowledgment time for each Acknowledgable and should
+        //be later (by a few millis in this test) than the time the acknowledgment was created
+        //this will give us an idea about the processing time of an acknowledgment
+        Assert.assertTrue(ackTime < respondTime);
         
     }
     
