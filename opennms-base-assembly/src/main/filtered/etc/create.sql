@@ -2060,6 +2060,7 @@ CREATE TABLE acks (
     ackUser   varchar(64) not null default 'admin',
     ackType   integer not null default 1,
     ackAction integer not null default 1,
+    log       varchar(128),
     refId     integer,
     
     constraint pk_acks_id primary key (id)

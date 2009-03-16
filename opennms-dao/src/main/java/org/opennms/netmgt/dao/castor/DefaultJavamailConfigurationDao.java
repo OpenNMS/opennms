@@ -45,15 +45,15 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
         super(JavamailConfiguration.class, "Javamail configuration");
     }
     
+    public DefaultJavamailConfigurationDao(Class<JavamailConfiguration> entityClass, String description) {
+        super(entityClass, description);
+    }
+
     @Override
     public JavamailConfiguration translateConfig(JavamailConfiguration castorConfig) {
         return castorConfig;
     }
     
-    public DefaultJavamailConfigurationDao(Class<JavamailConfiguration> entityClass, String description) {
-        super(entityClass, description);
-    }
-
     public ReadmailConfig getDefaultReadmailConfig() {
         String name = getContainer().getObject().getDefaultReadConfigName();
         return getReadMailConfig(name);

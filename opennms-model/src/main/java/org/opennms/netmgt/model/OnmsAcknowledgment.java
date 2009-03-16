@@ -63,6 +63,7 @@ public class OnmsAcknowledgment {
     private String m_ackUser;
     private AckType m_ackType;
     private AckAction m_ackAction;
+    private String m_log;
     private Integer m_refId;
     
     //main constructor
@@ -204,6 +205,15 @@ public class OnmsAcknowledgment {
         m_ackAction = ackAction;
     }
     
+    @Column(name="log", nullable=true)
+    public String getLog() {
+        return m_log;
+    }
+    
+    public void setLog(String log) {
+        m_log = log;
+    }
+
     @Override
     public String toString() {
         StringBuilder bldr = new StringBuilder("Acknowledgment ID:");

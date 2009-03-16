@@ -14,10 +14,22 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
   
+  <bean id="javaMailReadScheduler" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor" >
+    <constructor-arg>
+      <value>1</value>
+    </constructor-arg>
+  </bean>
+  
   <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReaderImpl" >
+    <property name="executor" ref="javaMailReadScheduler" />
+  </bean>
+
+  <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >
+    <property name="ackdConfigDao" ref="ackdConfigurationDao" />
     <property name="ackService" ref="ackService" />
     <property name="jmConfigDao" ref="javamailConfigDao" />
   </bean>
+
 
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
     <property name="configDao" ref="ackdConfigurationDao" />

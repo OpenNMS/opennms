@@ -38,6 +38,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -614,24 +615,26 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_ifIndex = ifIndex;
     }
 
-    public void acknowledge(Date date, String user) {
+    public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
-            m_alarmAckTime = date;
+            m_alarmAckTime = Calendar.getInstance().getTime();
             m_alarmAckUser = user;
         }
     }
     
-    public void unacknowledge() {
+    public void unacknowledge(String ackUser) {
         m_alarmAckTime = null;
         m_alarmAckUser = null;
     }
     
-    public void clear() {
+    public void clear(String ackUser) {
         m_severity = OnmsSeverity.CLEARED;
     }
     
-    public void escalate() {
+    public void escalate(String ackUser) {
         m_severity = OnmsSeverity.escalate(m_severity);
+        m_alarmAckUser = ackUser;
+        m_alarmAckTime = Calendar.getInstance().getTime();
     }
 
     @Transient

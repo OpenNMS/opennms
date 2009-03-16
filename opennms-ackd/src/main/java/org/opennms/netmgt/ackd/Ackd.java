@@ -39,7 +39,6 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -56,20 +55,16 @@ import org.springframework.beans.factory.DisposableBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
-//TODO: need a transactional service layer to process acknowledgments
 @EventListener(name="Ackd")
 public class Ackd implements SpringServiceDaemon, DisposableBean {
-	
     
-    //TODO: add a queue for processing acknowledgements from the reads, ReST, Events
-    
-	public static final String NAME = "Ackd";
-	
-	public AckdConfigurationDao m_configDao;
+	private static final String NAME = "Ackd";
+	private AckdConfigurationDao m_configDao;
 
     private volatile EventSubscriptionService m_eventSubscriptionService;
 	private volatile EventForwarder m_eventForwarder;
-	
+
+	//FIXME change this to be like provisiond's adapters
 	private List<AckReader> m_ackReaders;
 	private AckService m_ackService;
 	
@@ -89,31 +84,10 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 		m_eventSubscriptionService = eventManager;
 	}
 
-	public void afterPropertiesSet() throws Exception {
-	    m_ackService.setEventForwarder(m_eventForwarder);
-	}
-
-	public void destroy() throws Exception {
-	}
-
-	public String getName() {
-		return NAME;
-	}
-
-    public void start() throws Exception {
-        for (AckReader reader : m_ackReaders) {
-            reader.start(m_configDao);
-        }
-    }
-    
     public void setAckReaders(List<AckReader> ackReaders) {
         m_ackReaders = ackReaders;
     }
 
-    public List<AckReader> getAckReaders() {
-        return m_ackReaders;
-    }
-    
     public AckService getAckService() {
         return m_ackService;
     }
@@ -122,6 +96,31 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         m_ackService = ackService;
     }
 
+    public AckdConfigurationDao getConfigDao() {
+        return m_configDao;
+    }
+
+    public void setConfigDao(AckdConfigurationDao config) {
+        m_configDao = config;
+    }
+
+	public void afterPropertiesSet() throws Exception {
+	    //FIXME wire this instead
+	    m_ackService.setEventForwarder(m_eventForwarder);
+	}
+
+    public String getName() {
+        return NAME;
+    }
+
+	public void destroy() throws Exception {
+	}
+
+    public void start() {
+        for (AckReader reader : m_ackReaders) {
+            reader.start();
+        }
+    }
     
     @EventHandler(uei=EventConstants.ACKNOWLEDGE_EVENT_UEI)
     public void handleAckEvent(Event event) {
@@ -136,12 +135,4 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         }
     }
     
-    public AckdConfigurationDao getConfigDao() {
-        return m_configDao;
-    }
-
-    public void setConfigDao(AckdConfigurationDao config) {
-        m_configDao = config;
-    }
-
 }
