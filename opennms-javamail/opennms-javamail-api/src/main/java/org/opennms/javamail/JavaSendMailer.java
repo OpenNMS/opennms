@@ -200,6 +200,10 @@ public class JavaSendMailer extends JavaMailer2 {
         }
         
         //this sets any javamail properties that were set in the SendmailConfig object
+        if (props == null) {
+            props = new Properties();
+        }
+        
         props.putAll(sendmailConfigDefinedProps);
         
         if (!props.containsKey("mail.smtp.auth")) {
