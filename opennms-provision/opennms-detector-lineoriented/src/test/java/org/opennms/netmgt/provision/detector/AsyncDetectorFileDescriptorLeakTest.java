@@ -80,37 +80,6 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     
     @Test
     @Repeat(10000)
-    public void testFailureNoBannerSent() throws Exception {
-       m_server = new SimpleServer() {
-            
-            public void onInit() {
-               
-            }
-            
-        };
-        m_server.init();
-        m_server.startServer();
-        m_detector.setPort(m_server.getLocalPort());
-        
-        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
-        future.addListener(new IoFutureListener<DetectFuture>() {
-
-            public void operationComplete(DetectFuture future) {
-                TcpDetector detector = m_detector;
-                m_detector = null;
-                detector.dispose();
-            }
-            
-        });
-        
-        assertNotNull(future);
-        future.awaitUninterruptibly();
-        assertFalse(future.isServiceDetected());
-    
-    }
-    
-    @Test
-    @Repeat(10000)
     public void testNoServerPresent() throws Exception {
         
         m_detector.setPort(1999);
