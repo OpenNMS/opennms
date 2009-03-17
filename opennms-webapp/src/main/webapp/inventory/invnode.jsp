@@ -59,33 +59,35 @@
 
 <%
 
-	Node node_db = ElementUtil.getNodeByParams(request);
-	int nodeId = node_db.getNodeId();
-	
-	
-	//nodeModel.put("id", Integer.toString(nodeId));
-	//nodeModel.put("label", node_db.getLabel());
-	String elementID = node_db.getLabel();
-	
-    String groupID = request.getParameter("groupname");
-    String versionId = request.getParameter("version");
-    
+	Node node_db;
+	int nodeId=0;
+	String elementID="";
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
-	Map<String, Object> nodeModel2 = new TreeMap<String, Object>();
-	try {	
 
+	try {
+		node_db = ElementUtil.getNodeByParams(request);
+		nodeId = node_db.getNodeId();
+
+	
+		//nodeModel.put("id", Integer.toString(nodeId));
+		//nodeModel.put("label", node_db.getLabel());
+		elementID = node_db.getLabel();
+		
+	    String groupID = request.getParameter("groupname");
+	    String versionId = request.getParameter("version");
+	    
 		nodeModel = InventoryLayer.getInventoryNode(elementID, groupID, versionId);
 		//nodeModel2 = InventoryLayer.getInventoryNodeList(elementID);
-
-	} catch (Exception e) {
-		//throw new ServletException("Could node get Rancid Node ", e);
-	}
+	
+		} catch (Exception e) {
+			//throw new ServletException("Could node get Rancid Node ", e);
+		}
     nodeModel.put("id", elementID);
     pageContext.setAttribute("model", nodeModel);
 %>
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Rancid</a>";
+String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Rancid</a>";
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
 <jsp:param name="title" value="Inventory" />
@@ -107,7 +109,7 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 	<table>
   	<tr>
   		<th>Node</th>
-  		<td><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></td>
+  		<th><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></th>
   </tr>
   </table>
   <h3>Element info</h3>
@@ -130,20 +132,20 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Ra
 	    <th>${model.creationdate}</th>
 	</tr>
    </table>
-
-	<h3>Software configuration</h3>
 	
 	 <h3>Configuration info</h3>
 
 	 <table>
+	    <!--
 	    <tr>
 		<th>Software Configuration Url</th>
 		<th><a href = "${model.swconfigurationurl}" > ${model.devicename} </a></th>
 		</tr>
-    <tr>
-	<th>CVS Configuration Url</th>
-	<th><a href = "${model.configurationurl}" > ${model.devicename} </a></th>
-	</tr>
+		-->
+	    <tr>
+		<th>CVS Configuration Url</th>
+		<th><a href = "${model.configurationurl}" > ${model.devicename} </a></th>
+		</tr>
 	</table>
 	
 </div>
