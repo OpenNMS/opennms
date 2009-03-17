@@ -10,7 +10,7 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 	 
 	var simpleStore = new Ext.data.Store({
 		autoLoad:true,
-		proxy: new OpenNMS.ux.LocalPageableProxy(dataArray, pagesize),
+		proxy: new OpenNMS.ux.LocalPageableProxy(dataArray, pagesize, fields),
 		reader:new Ext.data.JsonReader({id:"resources", root:"records", totalProperty:"total"}, fields)
 	});
 
@@ -206,7 +206,10 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 	}
 	
 	function addAllRecords(){
-		addRecordsToGraphGrid(simpleStore.getRange(0, simpleStore.getCount() - 1 ));
+		//simpleStore.proxy.getAllData()
+		//alert(simpleStore.proxy.getAllData().toSource());
+		removeAllFromGraphGrid();
+		addRecordsToGraphGrid(simpleStore.proxy.getAllData());//simpleStore.getRange(0, simpleStore.getCount() - 1 ));
 	}
 	
 	function graphSelectedResources(){
