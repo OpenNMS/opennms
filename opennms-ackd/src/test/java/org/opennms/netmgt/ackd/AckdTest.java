@@ -44,7 +44,6 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
@@ -179,7 +178,6 @@ public class AckdTest {
      * This tests the acknowledgment of an alarm and any related notifications.
      */
     @Test
-    @Ignore("test is broken at the moment, ack time = respond time")
     public void testAcknowledgeAlarm() {
         
         VerificationObject vo = createAckStructure();
@@ -205,7 +203,7 @@ public class AckdTest {
         Assert.assertNotNull(notif);
         Assert.assertEquals("admin", notif.getAnsweredBy());
         
-        Assert.assertEquals(alarm.getAlarmAckTime(), notif.getRespondTime());
+        Assert.assertTrue(alarm.getAlarmAckTime().before(notif.getRespondTime()));
         
     }
     
