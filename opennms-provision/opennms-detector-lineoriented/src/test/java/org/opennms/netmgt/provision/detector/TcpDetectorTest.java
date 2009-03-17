@@ -110,6 +110,27 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     @Test
+    public void testServerCloses() throws Exception{
+        m_server = new SimpleServer() {
+            
+            public void onInit() {
+               shutdownServer("Closing");
+            }
+            
+        };
+        m_server.init();
+        //m_server.startServer();
+        m_detector.setPort(m_server.getLocalPort());
+        
+        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        
+        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertFalse(future.isServiceDetected());
+    }
+    
+    @Test
     //@Repeat(10000)
     public void testNoServerPresent() throws Exception {
             
