@@ -90,19 +90,9 @@ public interface ProvisionService {
      * @param node
      *            The node that has been updated and should be written to the
      *            database
-     * @param snmpDataForNodeUpToDate
-     *            a flag to indicate whether SNMP data has been updated on
-     *            this node. if true, then the SNMP attributes of the node
-     *            will be updated, if false they won't be
-     * @param snmpDataForInterfacesUpToDate
-     *            a flag to indicate whether SNMP interfaces have been loaded
-     *            from the SNMP agent and their information and relationships
-     *            should be updated.
      */
     @Transactional
-    public abstract void updateNode(OnmsNode node,
-            boolean snmpDataForNodeUpToDate,
-            boolean snmpDataForInterfacesUpToDate);
+    public abstract void updateNode(OnmsNode node);
     
     @Transactional
     public abstract OnmsNode updateNodeAttributes(OnmsNode node);

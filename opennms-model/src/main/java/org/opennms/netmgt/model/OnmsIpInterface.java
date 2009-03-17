@@ -421,7 +421,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
 
-    public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder) {
+    public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
     
         // create map of services to serviceType
         Map<OnmsServiceType, OnmsMonitoredService> serviceTypeMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
@@ -436,12 +436,14 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             // find the corresponding scanned service
             OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
             if (imported == null) {
-                // there is no scanned service... delete it from the database 
-                it.remove();
-                svc.visit(new DeleteEventVisitor(eventForwarder));
+                if (deleteMissing) {
+                    // there is no scanned service... delete it from the database 
+                    it.remove();
+                    svc.visit(new DeleteEventVisitor(eventForwarder));
+                }
             }
             else {
-                // othersice update the service attributes
+                // otherwice update the service attributes
                 svc.mergeServiceAttributes(imported);
             }
             
@@ -481,10 +483,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         
     }
 
-    public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder) {
+    public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
         mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
-        mergeMonitoredServices(scannedIface, eventForwarder);
+        mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
     }
 
 }

@@ -124,6 +124,15 @@
                 </constructor-arg>
             </bean>
             <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+                <constructor-arg value="noAgent" />
+                <constructor-arg>
+                    <list>
+                      <value>stampProvisionedInterfaces</value>
+                      <value>deleteUnprovisionedInterfaces</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+            <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
                 <constructor-arg value="ipInterfaceScan" />
                 <constructor-arg>
                     <list>

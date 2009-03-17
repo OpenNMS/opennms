@@ -691,7 +691,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         getCategories().addAll(scannedNode.getCategories());
     }
 
-    public void mergeSnmpInterfaces(OnmsNode scannedNode) {
+    public void mergeSnmpInterfaces(OnmsNode scannedNode, boolean deleteMissing) {
         
         // we need to skip this step if there is an indication that snmp data collection failed
         if (scannedNode.getSnmpInterfaces().size() == 0) {
@@ -716,8 +716,10 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     
             // remove it since there is no corresponding scanned interface
             if (imported == null) {
-                it.remove();
-                scannedInterfaceMap.remove(iface.getIfIndex());
+                if (deleteMissing) {
+                    it.remove();
+                    scannedInterfaceMap.remove(iface.getIfIndex());
+                }
             } else {
                 // merge the data from the corresponding scanned interface
                 iface.mergeSnmpInterfaceAttributes(imported);
@@ -732,7 +734,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
-    public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder) {
+    public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
         // build a map of ipAddrs to ipInterfaces for the scanned node
         Map<String, OnmsIpInterface> ipInterfaceMap = new HashMap<String, OnmsIpInterface>();
         for (OnmsIpInterface iface : scannedNode.getIpInterfaces()) {
@@ -747,11 +749,13 @@ public class OnmsNode extends OnmsEntity implements Serializable,
             
             // if we can't find a scanned interface remove from the database
             if (scannedIface == null) {
-                it.remove();
-                dbIface.visit(new DeleteEventVisitor(eventForwarder));
+                if (deleteMissing) {
+                    it.remove();
+                    dbIface.visit(new DeleteEventVisitor(eventForwarder));
+                }
             } else {
                 // else update the database with scanned info
-                dbIface.mergeInterface(scannedIface, eventForwarder);
+                dbIface.mergeInterface(scannedIface, eventForwarder, deleteMissing);
             }
             
             // now remove the interface form the map to indicate it was processed
@@ -793,13 +797,13 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         this.setAssetRecord(scannedNode.getAssetRecord());
     }
 
-    public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder) {
+    public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
         
         mergeNodeAttributes(scannedNode);
     
-    	mergeSnmpInterfaces(scannedNode);
+    	mergeSnmpInterfaces(scannedNode, deleteMissing);
         
-        mergeIpInterfaces(scannedNode, eventForwarder);
+        mergeIpInterfaces(scannedNode, eventForwarder, deleteMissing);
         
     	mergeCategorySet(scannedNode);
     	

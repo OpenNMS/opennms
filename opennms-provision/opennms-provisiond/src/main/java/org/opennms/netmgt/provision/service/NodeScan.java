@@ -129,39 +129,35 @@ public class NodeScan implements Runnable {
             .trigger();
     }
 
-    private AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
+    public void doNoAgentScan(Phase detectAgents) {
+        // we could not find an agent so do a noAgent lifecycle
+        detectAgents.createNestedLifeCycle("noAgent")
+            .setAttribute("noAgentScan",createNoAgentScan())
+            .trigger();
+    }
+
+
+    private BaseAgentScan createAgentScan(InetAddress agentAddress, String agentType) {
         return new AgentScan(m_node, agentAddress, agentType);
     }
     
     
+    private BaseAgentScan createNoAgentScan() {
+        return new NoAgentScan(m_node);
+    }
     /**
      * AgentScan
      *
      * @author brozow
      */
-    public class AgentScan {
+    public class AgentScan extends BaseAgentScan {
 
-        private OnmsNode m_node;
         private InetAddress m_agentAddress;
         private String m_agentType;
-        private Date m_scanStamp;
-        
         public AgentScan(OnmsNode node, InetAddress agentAddress, String agentType) {
-            m_node = node;
+            super(node);
             m_agentAddress = agentAddress;
             m_agentType = agentType;
-        }
-        
-        public OnmsNode getNode() {
-            return m_node;
-        }
-        
-        public String getForeignSource() {
-            return m_node.getForeignSource();
-        }
-        
-        public String getForeignId() {
-            return m_node.getForeignId();
         }
         
         public InetAddress getAgentAddress() {
@@ -177,6 +173,56 @@ public class NodeScan implements Runnable {
                 return;
             }
             m_nodeId = m_provisionService.updateNodeAttributes(getNode()).getId();
+        }
+
+        public void setNode(OnmsNode node) {
+            m_node = node;
+        }
+            
+
+    }
+    
+    public class NoAgentScan extends BaseAgentScan {
+        private NoAgentScan(OnmsNode node) {
+            super(node);
+        }
+    }
+    
+    public class BaseAgentScan {
+
+        private Date m_scanStamp;
+        private OnmsNode m_node;
+        
+        private BaseAgentScan(OnmsNode node) {
+            m_node = node;
+        }
+
+        public void setScanStamp(Date scanStamp) {
+            m_scanStamp = scanStamp;
+        }
+
+        public Date getScanStamp() {
+            return m_scanStamp;
+        }
+
+        public OnmsNode getNode() {
+            return m_node;
+        }
+
+        public boolean isAborted() {
+            return m_aborted;
+        }
+
+        public void abort() {
+            m_aborted = true;
+        }
+
+        public String getForeignSource() {
+            return m_node.getForeignSource();
+        }
+
+        public String getForeignId() {
+            return m_node.getForeignId();
         }
 
         public Integer getNodeId() {
@@ -200,28 +246,7 @@ public class NodeScan implements Runnable {
         private IpInterfaceScan createIpInterfaceScan(Integer nodeId, InetAddress ipAddress) {
             return new IpInterfaceScan(nodeId, ipAddress);
         }
-
-        public void setScanStamp(Date scanStamp) {
-            m_scanStamp = scanStamp;
-        }
-
-        public Date getScanStamp() {
-            return m_scanStamp;
-        }
-
-        public void setNode(OnmsNode node) {
-            m_node = node;
-        }
-
-        public boolean isAborted() {
-            return m_aborted;
-        }
-
-        public void abort() {
-            m_aborted = true;
-        }
-            
-
+        
     }
     
     public class IpInterfaceScan {
