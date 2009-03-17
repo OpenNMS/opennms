@@ -30,12 +30,9 @@
  */
 package org.opennms.netmgt.provision.support;
 
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -157,19 +154,15 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
                
                 if(cause instanceof ConnectException) {
                     if(retryAttempt == 0) {
-                        System.out.println("service detected is false");
-                        detectFuture.setServiceDetected(false); 
+                        System.out.println("service " + getServiceName() + " detected false");
+                        detectFuture.setServiceDetected(false);
                     }else {
+                        System.out.println("Connection exception occurred " + cause + " for service " + getServiceName() + " retrying attempt: "  + retryAttempt);
                         future = connector.connect(address);
                         future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
                     }
-                }else if(cause instanceof NoRouteToHostException) {
-                    detectFuture.setServiceDetected(false);
-                }else if(cause instanceof InterruptedIOException) {
-                    detectFuture.setServiceDetected(false);
-                }else if(cause instanceof IOException) {
-                    detectFuture.setServiceDetected(false);
                 }else if(cause instanceof Throwable) {
+                    System.out.println("Threw a Throwable and detection is false for service " + getServiceName() + " Throwable: " + cause);
                     detectFuture.setServiceDetected(false);
                 } 
             }

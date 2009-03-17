@@ -82,9 +82,9 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         super.exceptionCaught(session, cause);
         System.out.println("Exception was caught in the handler");
         cause.printStackTrace();
+        
     }
 
-    @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {    
         System.out.printf("Client Receiving: %s\n", message.toString().trim());
@@ -108,7 +108,10 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
             }
             
         }catch(Exception e){
-              e.printStackTrace();  
+              e.printStackTrace();
+              if(!session.isClosing()){
+                  session.close(true);
+              }
         }
         
     }
