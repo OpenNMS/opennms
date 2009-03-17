@@ -64,7 +64,11 @@
 		<tr>
 			<th>Device Name</th>
 			<th>${model.id}</th>
-		</tr>	
+		</tr>
+		<tr>
+		<th>Group</th>
+		<th>${model.groupname}</th>
+	</tr>	
 		<tr>
 			<th>Device Type</th>
 			<th>${model.devicetype}</th>

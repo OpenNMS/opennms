@@ -30,16 +30,9 @@
 package org.opennms.web.inventory;
 
 import org.opennms.rancid.*;
-//<<<<<<< .mine
 import org.opennms.web.acegisecurity.Authentication;
-//import org.opennms.core.utils.ThreadCategory;
-//=======
-////import org.opennms.core.utils.ThreadCategory;
-//>>>>>>> .r12300
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RWSConfigFactory;
-import org.opennms.netmgt.config.rws.BaseUrl;
-import org.opennms.netmgt.model.OnmsNode;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Category;
 import javax.servlet.http.HttpServletRequest;
@@ -51,12 +44,10 @@ import java.util.*;
 public class InventoryLayer {
     
     //static String _URL = "http://www.rionero.com:9080";
-    
-    private  static String _URL = "errore";
-     
-    private static BaseUrl burl;
-    
+             
     private static RWSConfig rwsCfgFactory;
+    
+    private static ConnectionProperties m_cp;
    
     
     static public void init(){
@@ -69,10 +60,10 @@ public class InventoryLayer {
             RWSConfigFactory.init();
             rwsCfgFactory = RWSConfigFactory.getInstance();
             
+           
+            m_cp = rwsCfgFactory.getBase();
             
-            burl = rwsCfgFactory.getBaseUrl();
-            _URL = burl.getServer_url();
-            log().debug("RWS Url " + _URL);            
+            log().debug("RWS Url " + m_cp.getUrl());            
         }
         catch (Exception e) {
             
@@ -92,7 +83,7 @@ public class InventoryLayer {
             String group = "laboratorio";
             
             
-            RancidNode rn = RWSClientApi.getRWSRancidNode(_URL, group, rancidName);
+            RancidNode rn = RWSClientApi.getRWSRancidNode(m_cp, group, rancidName);
     
             
     
@@ -126,7 +117,7 @@ public class InventoryLayer {
             nodeModel.put("ramsize", ie.getRamSize());        
             nodeModel.put("nwramsize", ie.getNwRamSize());
             nodeModel.put("group", group);;
-            nodeModel.put("url", _URL);
+            nodeModel.put("url", m_cp.getUrl());
 
     
             
@@ -136,50 +127,7 @@ public class InventoryLayer {
             throw e;
         }
     }
-//
-//    static public Map<String, Object> getInventoryNodeList(String rancidName) throws RancidApiException{
-//        
-//        try {
-//        
-//            String group = "laboratorio";
-//      
-//            
-//            RancidNode rn = RWSClientApi.getRWSRancidNode(_URL, group, rancidName);
-//    
-//    
-//            InventoryNode in = new InventoryNode(rn);
-//            
-//            List<InventoryElement> lista = new LinkedList();
-//            InventoryElement i1 = new InventoryElement(in);
-//            i1.setElementName("Bridge1");
-//            lista.add(i1);
-//            InventoryElement i2 = new InventoryElement(in);
-//            i2.setElementName("Bridge2");
-//            lista.add(i2);
-//            InventoryElement i3 = new InventoryElement(in);
-//            i3.setElementName("Bridge3");
-//            lista.add(i3);
-//            InventoryElement i4 = new InventoryElement(in);
-//            i4.setElementName("Bridge4");
-//            lista.add(i4);
-//            in.setNodeElements(lista);
-//
-//            
-//            Map<String, Object> nodeModel = new TreeMap<String, Object>();    
-//
-//            nodeModel.put("inventory", lista);
-//            return nodeModel;
-//        }
-//        catch (RancidApiException e) {
-//            throw e;
-//        }
-//    }
-//   
-
-    
-    
-   // NEW CODE
-
+   
    static public Map<String, Object> getRancidNode(String rancidName, HttpServletRequest request) throws RancidApiException{
         
             
@@ -189,7 +137,7 @@ public class InventoryLayer {
             List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
             
             // Group list            
-            RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(_URL);
+            RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
             
             List<String> grouplist = groups.getResource();
             Iterator<String> iter1 = grouplist.iterator();
@@ -202,7 +150,7 @@ public class InventoryLayer {
                 log().debug("getRancidNode " + rancidName + " group " + groupname);
 
                 try {
-                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL ,groupname, rancidName);
+                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
                     String vs = rn.getHeadRevision();
                     InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
 
@@ -225,12 +173,12 @@ public class InventoryLayer {
             
             //Groups invariant            
             nodeModel.put("grouptable", ranlist);
-            nodeModel.put("url", _URL);
+            nodeModel.put("url", m_cp.getUrl());
             
             //CLOGIN
             if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
 
-                RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(_URL,rancidName);
+                RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(m_cp,rancidName);
                 nodeModel.put("isadmin", "true");
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
@@ -263,8 +211,7 @@ public class InventoryLayer {
        List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
        
        // Group list 
-       ConnectionProperties cp = new ConnectionProperties(_URL,"/rws",60);
-       RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(cp);
+       RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
        
        List<String> grouplist = groups.getResource();
        Iterator<String> iter1 = grouplist.iterator();
@@ -278,7 +225,7 @@ public class InventoryLayer {
            
            try {
                if (first){
-                   RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, groupname, rancidName);
+                   RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupname, rancidName);
                    nodeModel.put("devicename", rn.getDeviceName());
                    nodeModel.put("status", rn.getState());
                    nodeModel.put("devicetype", rn.getDeviceType());
@@ -287,7 +234,7 @@ public class InventoryLayer {
 
                    first = false;
                } 
-               RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(cp ,groupname, rancidName);
+               RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
                String vs = rn.getHeadRevision();
                InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
 
@@ -304,12 +251,12 @@ public class InventoryLayer {
        
        //Groups invariant            
        nodeModel.put("grouptable", ranlist);
-       nodeModel.put("url", cp.getUrl());
+       nodeModel.put("url", m_cp.getUrl());
        
        //CLOGIN
        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
 
-           RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(cp,rancidName);
+           RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(m_cp,rancidName);
            nodeModel.put("isadmin", "true");
            nodeModel.put("cloginuser", rn5.getUser());
            nodeModel.put("cloginpassword", rn5.getPassword());
@@ -336,7 +283,7 @@ public class InventoryLayer {
            
            List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
            
-           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, groupname, rancidName);
+           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, groupname, rancidName);
 
            nodeModel.put("devicename", rn.getDeviceName());
            
@@ -345,7 +292,7 @@ public class InventoryLayer {
          
            RWSResourceList versionList;
            
-           versionList = RWSClientApi.getRWSResourceConfigList(_URL, groupname, rancidName);
+           versionList = RWSClientApi.getRWSResourceConfigList(m_cp, groupname, rancidName);
            
            List<String> versionListStr= versionList.getResource();
            
@@ -361,7 +308,7 @@ public class InventoryLayer {
            }
            
            nodeModel.put("grouptable", ranlist);
-           nodeModel.put("url", _URL);
+           nodeModel.put("url", m_cp.getUrl());
            
            
            return nodeModel;
@@ -379,7 +326,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            
            Map<String, Object> nodeModel = new TreeMap<String, Object>();
            
-           RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(_URL);
+           RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
            
            List<InventoryWrapper> ranlist = new ArrayList<InventoryWrapper>();
            
@@ -391,7 +338,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            while (iter2.hasNext()) {
                groupname = iter2.next();
            
-               RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, groupname, rancidName);
+               RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, groupname, rancidName);
     
                if (first){
                    nodeModel.put("devicename", rn.getDeviceName());
@@ -403,7 +350,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
              
                RWSResourceList versionList;
                
-               versionList = RWSClientApi.getRWSResourceConfigList(_URL, groupname, rancidName);
+               versionList = RWSClientApi.getRWSResourceConfigList(m_cp, groupname, rancidName);
                
                List<String> versionListStr= versionList.getResource();
                
@@ -420,7 +367,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            }
            
            nodeModel.put("grouptable", ranlist);
-           nodeModel.put("url", _URL);
+           nodeModel.put("url", m_cp.getUrl());
            
            
            return nodeModel;
@@ -429,59 +376,6 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            throw e;
        }
    }
-    //*******************************************************************************
-    // Update status configuration
-    //*******************************************************************************
-//    static  public int updateStatus(String device, String group){
-//        try {
-//            ConnectionProperties cp = new ConnectionProperties(_URL, "/rws", 60);
-//            log().debug("updateStatus :" + device + " " + group);
-//    
-//            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, group, device);
-//            if (rn.isStateUp()){
-//                log().debug("updateStatus :down");
-//
-//                rn.setStateUp(false);
-//            }else {
-//                log().debug("updateStatus :up");
-//
-//                rn.setStateUp(true);
-//            }
-//            RWSClientApi.updateRWSRancidNode(cp, rn);
-//            return 0;
-//        }
-//        catch (RancidApiException e) {
-//            e.printStackTrace();
-//            return -1;
-//        }
-//    }
-//    
-    //*******************************************************************************
-//    static public int updateCloginInfo(String device, String user, String password, String method, String autoenable, String enablepass) {
-//       
-//       try {
-//           
-//           log().debug("updateCloginInfo " + device);
-//
-//           
-//           RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(_URL, device);
-//           rna.setUser(user);
-//           rna.setPassword(password);
-//           rna.setConnectionMethod(method);
-//           rna.setEnablePass(enablepass);
-//           boolean autoe = false;
-//           if (autoenable.compareTo("1")==0) {
-//               autoe = true;
-//           }
-//           rna.setAutoEnable(autoe);
-//           RWSClientApi.createOrUpdateRWSAuthNode(_URL,rna);
-//           
-//           return 0;
-//       }
-//       catch (RancidApiException e) {
-//           return -1;
-//       }
-//   }
    
    static public Map<String, Object> getInventoryNode(String rancidName, String group, String version) throws RancidApiException{
        
@@ -490,7 +384,7 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            log().debug("getInventoryNode " + rancidName);
 
     
-           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(_URL, group, rancidName);
+           RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, group, rancidName);
        
            InventoryNode in = (InventoryNode)rn.getNodeVersions().get(version);
            
@@ -503,9 +397,10 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            nodeModel.put("version", version);
            nodeModel.put("status", in.getParent().getState());
            nodeModel.put("creationdate", in.getCreationDate());
+           nodeModel.put("swconfigurationurl", in.getSoftwareImageUrl());
            log().debug("getInventoryNode date" + in.getCreationDate());
            nodeModel.put("configurationurl", in.getConfigurationUrl());
-           nodeModel.put("url", _URL);
+           nodeModel.put("url", m_cp.getUrl());
            
            return nodeModel;
        }

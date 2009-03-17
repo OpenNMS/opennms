@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.config.RWSConfig;
-import org.opennms.rancid.ConnectionProperties;
-import org.opennms.rancid.RWSClientApi;
-import org.opennms.rancid.RancidNodeAuthentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -31,32 +28,11 @@ public class AdminRancidCloginController extends SimpleFormController {
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
         
-        log().debug("AdminRancidCloginController ModelAndView onSubmit following changes"+
-                    "userID ["+ bean.getUserID() +"] "+
-                    "pass [" + bean.getPass() +"] "+
-                    "enpass [" + bean.getEnpass()+"] "+
-                    "loginM [" + bean.getLoginM()+"] "+
-                    "autoE [" + bean.getAutoE()+"] "+
-                    "groupName [" + bean.getGroupName()+"] "+
-                    "deviceName [" + bean.getDeviceName() + "] "); 
-
-        ConnectionProperties cp = new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
-
-        RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(cp, bean.getDeviceName());
-        rna.setUser(bean.getUserID());
-        rna.setPassword(bean.getPass());
-        rna.setConnectionMethod(bean.getLoginM());
-        rna.setEnablePass(bean.getAutoE());
-        boolean autoe = false;
-        if (bean.getAutoE().compareTo("1")==0) {
-            autoe = true;
+        boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
+                                        bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
+        if (!done){
+            log().debug("AdminRancidCloginController error on submitting cLogin changes");
         }
-        rna.setAutoEnable(autoe);
-        RWSClientApi.createOrUpdateRWSAuthNode(cp,rna);
-        log().debug("AdminRancidCloginController ModelAndView onSubmit changes submitted");
-
-
-        
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);
         return super.onSubmit(request, response, command, errors);

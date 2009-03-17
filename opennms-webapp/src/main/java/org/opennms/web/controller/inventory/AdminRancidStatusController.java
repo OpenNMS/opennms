@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.netmgt.config.RWSConfig;
-import org.opennms.rancid.ConnectionProperties;
-import org.opennms.rancid.RWSClientApi;
-import org.opennms.rancid.RancidNode;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -47,21 +44,13 @@ public class AdminRancidStatusController extends SimpleFormController {
         log().debug("AdminRancidStatusController ModelAndView onSubmit");
 
         AdminRancidStatusCommClass bean = (AdminRancidStatusCommClass) command;
-        
-        ConnectionProperties cp = new ConnectionProperties(m_rwsConfig.getBaseUrl().getServer_url(),m_rwsConfig.getBaseUrl().getDirectory(),m_rwsConfig.getBaseUrl().getTimeout());
-                
+                       
         log().debug("AdminRancidStatusController ModelAndView onSubmit setting state to device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
 
-        RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(cp, bean.getGroupName(), bean.getDeviceName());
-        if (rn.isStateUp()){
-            log().debug("AdminRancidStatusController ModelAndView onSubmit :down");
-            rn.setStateUp(false);
-        }else {
-            log().debug("AdminRancidStatusController ModelAndView onSubmit :up");
-            rn.setStateUp(true);
+        boolean done = m_inventoryService.updateStatus(bean.getGroupName(), bean.getDeviceName());
+        if (!done){
+            log().debug("AdminRancidStatusController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
         }
-        RWSClientApi.updateRWSRancidNode(cp, rn);
-
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);
         return super.onSubmit(request, response, command, errors);
