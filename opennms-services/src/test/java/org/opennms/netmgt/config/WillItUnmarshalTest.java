@@ -545,6 +545,10 @@ public class WillItUnmarshalTest {
         unmarshal("rws-configuration.xml", RwsConfiguration.class);
     }
     @Test
+    public void testExampleRwsConfiguration() throws Exception {
+        unmarshalExample("rws-configuration.xml", RwsConfiguration.class);
+    }
+    @Test
     public void testMapsAdapterConfiguration() throws Exception {
         unmarshal("mapsadapter-configuration.xml", MapsAdapterConfiguration.class);
     }

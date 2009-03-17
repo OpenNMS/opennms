@@ -1,0 +1,12 @@
+<rws-configuration>
+<!-- This example configuration file overwrites the standard values for
+      timeout (in seconds defaults 3 seconds) and directory under 
+      where is placed the rws service under the http server 
+      (here is just under the root, the default is under /rws) and also
+      show how add secondary url that will be used by the rancid provisioning
+      adapter to get access to rws service in case the base url is not responding
+      (the gui uses the base url only)-->
+    <base-url server_url="http://localhost" timeout="1" directory="/"/>
+    <standby-url server_url="http://somewhere1" timeout="5" directory="/"/>
+    <standby-url server_url="http://somewhere2" timeout="5" directory="/"/>
+</rws-configuration>
