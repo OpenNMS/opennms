@@ -1,12 +1,9 @@
 package org.opennms.web.rest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +40,8 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
 		Enumeration<String> en = m_httpServletRequest.getParameterNames();
 		while(en.hasMoreElements()) {
 		    String parmName = en.nextElement();
-            result.put(parmName, m_httpServletRequest.getParameterValues(parmName));
+		    String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
+            result.put(URLDecoder.decode(parmName, "UTF-8"), URLDecoder.decode(parmValue[0],"UTF-8"));
 
 		}
 
@@ -59,9 +57,9 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
 //		String postBody = buffer.toString();
 //		System.out.println("postBody: " + postBody);
 //		for (String item : postBody.split("&")) {
-//			String[] kv = item.split("=");
-//			result.add(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
-//		}
+//      String[] kv = item.split("=");
+//      result.add(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
+//  }
 		
 		
 
