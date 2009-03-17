@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -175,12 +176,13 @@ public abstract class AbstractSpringJerseyRestTestCase {
         assertEquals(200, response.getStatus());
     }
 
-    private Map<String, String> parseParamData(String data) {
+    private Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
         Map<String, String> retVal = new HashMap<String, String>();
         for (String item : data.split("&")) {
             String[] kv = item.split("=");
             if(kv.length > 1){
-                retVal.put(kv[0], kv[1]);
+                
+                retVal.put(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
             }
             //result.add(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
         }
