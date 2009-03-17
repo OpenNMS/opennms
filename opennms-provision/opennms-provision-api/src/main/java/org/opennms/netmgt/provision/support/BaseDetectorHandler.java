@@ -82,7 +82,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         super.exceptionCaught(session, cause);
         System.out.println("Exception was caught in the handler");
         cause.printStackTrace();
-        
+        session.close(true);
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
