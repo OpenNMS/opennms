@@ -159,11 +159,11 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     @Transactional
-    public void updateNode(OnmsNode node, boolean x, boolean xx) {
+    public void updateNode(OnmsNode node) {
         
         OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
-        dbNode.mergeNode(node, m_eventForwarder);
+        dbNode.mergeNode(node, m_eventForwarder, false);
     
         m_nodeDao.update(dbNode);
         EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder);
@@ -672,6 +672,12 @@ public class DefaultProvisionService implements ProvisionService {
     }
 
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
+        List<OnmsIpInterface> obsoleteInterfaces = m_nodeDao.findObsoleteIpInterfaces(nodeId, scanStamp);
+        
+        for(OnmsIpInterface iface : obsoleteInterfaces) {
+            iface.visit(new DeleteEventVisitor(m_eventForwarder));
+        }
+        
         m_nodeDao.deleteObsoleteInterfaces(nodeId, scanStamp);
     }
 

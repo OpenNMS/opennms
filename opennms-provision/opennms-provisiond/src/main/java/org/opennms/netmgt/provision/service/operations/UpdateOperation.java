@@ -52,6 +52,6 @@ public class UpdateOperation extends SaveOrUpdateOperation {
 
 	@Override
     protected void doPersist() {
-        getProvisionService().updateNode(getNode(), getScanManager().isSnmpDataForNodeUpToDate(), getScanManager().isSnmpDataForInterfacesUpToDate());
+        getProvisionService().updateNode(getNode());
     }
 }

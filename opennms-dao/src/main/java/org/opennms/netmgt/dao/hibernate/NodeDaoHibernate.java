@@ -191,6 +191,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public List<OnmsNode> findAllProvisionedNodes() {
         return find("from OnmsNode n where n.foreignSource is not null");
     }
+    
+    public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+    }
 
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
         getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
