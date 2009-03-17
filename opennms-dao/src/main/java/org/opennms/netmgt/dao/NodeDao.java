@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.stereotype.Repository;
 
@@ -75,6 +76,8 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract int getNodeCountForForeignSource(String groupName);
     
     public abstract List<OnmsNode> findAllProvisionedNodes();
+    
+    public abstract List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp);
 
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
