@@ -70,24 +70,27 @@
 %>
 
 <%
-
-	Node node_db = ElementUtil.getNodeByParams(request);
-	int nodeId = node_db.getNodeId();
-
-	String elementID = node_db.getLabel();
-
-    String groupID = request.getParameter("groupname");
-	
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
-	try {	
+	Node node_db=null;
+	int nodeId=0;
+	String elementID="";
 
+	try {
+		
+		node_db = ElementUtil.getNodeByParams(request);
+		nodeId = node_db.getNodeId();
+		
+		elementID = node_db.getLabel();
+	
+	    String groupID = request.getParameter("groupname");
+			
         if (groupID.compareTo("*") == 0){
         	nodeModel = InventoryLayer.getRancidNodeList(elementID);
         }
         else {
         	nodeModel = InventoryLayer.getRancidNodeList(elementID, groupID);
         }
-
+	
 	} catch (Exception e) {
 		//throw new ServletException("Could node get Rancid Node ", e);
 	}
@@ -97,7 +100,7 @@
 
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-String nodeBreadCrumb2 = "<a href='inventory/rancid.jsp?node=" + nodeId  + "'>Rancid</a>";
+String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Rancid</a>";
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
