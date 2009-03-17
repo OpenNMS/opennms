@@ -3,7 +3,6 @@ package org.opennms.web.rest;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +40,7 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
 		while(en.hasMoreElements()) {
 		    String parmName = en.nextElement();
 		    String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
-            result.put(URLDecoder.decode(parmName, "UTF-8"), URLDecoder.decode(parmValue[0],"UTF-8"));
-
+            result.put(parmName, parmValue);
 		}
 
 //		BufferedReader in = new BufferedReader(new InputStreamReader(
