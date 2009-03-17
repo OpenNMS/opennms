@@ -20,12 +20,14 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class TcpDetectorTest implements ApplicationContextAware {
+public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAware {
+    
     private SimpleServer m_server;
     private TcpDetector m_detector;
     private ApplicationContext m_applicationContext;
@@ -43,9 +45,11 @@ public class TcpDetectorTest implements ApplicationContextAware {
         if(m_server != null){
             m_server.stopServer();
         }
+        
     }
     
     @Test
+    @Repeat(10000)
     public void testSucessServer() throws Exception {
         m_server = new SimpleServer() {
             
@@ -75,6 +79,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     @Test
+    @Repeat(10000)
     public void testFailureNoBannerSent() throws Exception {
        m_server = new SimpleServer() {
             
@@ -86,29 +91,18 @@ public class TcpDetectorTest implements ApplicationContextAware {
         m_server.init();
         m_server.startServer();
         m_detector.setPort(m_server.getLocalPort());
-        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
-        assertNotNull(future);
-        future.awaitUninterruptibly();
-        assertFalse(future.isServiceDetected());
-    
-    }
-    
-    @Test
-    public void testFailureClosedPort() throws Exception {
-        m_server = new SimpleServer() {
-            
-            public void onInit() {
-               setBanner("BLIP");
+        future.addListener(new IoFutureListener<DetectFuture>() {
+
+            public void operationComplete(DetectFuture future) {
+                TcpDetector detector = m_detector;
+                m_detector = null;
+                detector.dispose();
             }
             
-        };
-        m_server.init();
-        m_detector.setPort(m_server.getLocalPort());
+        });
         
-        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
-        
-        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
         assertNotNull(future);
         future.awaitUninterruptibly();
         assertFalse(future.isServiceDetected());
@@ -116,31 +110,11 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     @Test
-    public void testServerCloses() throws Exception{
-        m_server = new SimpleServer() {
-            
-            public void onInit() {
-               shutdownServer("Closing");
-            }
-            
-        };
-        m_server.init();
-        //m_server.startServer();
-        m_detector.setPort(m_server.getLocalPort());
-        
-        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
-        
-        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
-        assertNotNull(future);
-        future.awaitUninterruptibly();
-        assertFalse(future.isServiceDetected());
-    }
-    
-    @Test
+    @Repeat(10000)
     public void testNoServerPresent() throws Exception {
-            
+        
         m_detector.setPort(1999);
-        //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
+        
         DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
         future.addListener(new IoFutureListener<DetectFuture>() {
 
@@ -159,10 +133,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         System.err.println("Finish test");
     }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
+    
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
