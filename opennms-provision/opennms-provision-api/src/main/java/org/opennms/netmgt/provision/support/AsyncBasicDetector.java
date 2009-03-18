@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.apache.log4j.Logger;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.future.IoFutureListener;
@@ -51,6 +52,7 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.SocketConnector;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
@@ -154,15 +156,15 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
                
                 if(cause instanceof ConnectException) {
                     if(retryAttempt == 0) {
-                        System.out.println("service " + getServiceName() + " detected false");
+                        info("service %s detected false",getServiceName());
                         detectFuture.setServiceDetected(false);
                     }else {
-                        System.out.println("Connection exception occurred " + cause + " for service " + getServiceName() + " retrying attempt: "  + retryAttempt);
+                        info("Connection exception occurred %s for service %s retrying attempt: ", cause, getServiceName());
                         future = connector.connect(address);
                         future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
                     }
                 }else if(cause instanceof Throwable) {
-                    System.out.println("Threw a Throwable and detection is false for service " + getServiceName() + " Throwable: " + cause);
+                    info("Threw a Throwable and detection is false for service %s", getServiceName());
                     detectFuture.setServiceDetected(false);
                 } 
             }
@@ -278,6 +280,12 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     public boolean isUseSSLFilter() {
         return useSSLFilter;
     }
-       
+    
+    private void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
+    }
 
 }

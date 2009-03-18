@@ -29,44 +29,53 @@
  */
 package org.opennms.netmgt.provision.support;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 
 public class NullDetectorMonitor implements DetectorMonitor{
 
-    public void attempt(ServiceDetector detector, int attempt, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
+    public void attempt(ServiceDetector detector, int attempt, String format, Object... args) {
+        info(format, args);
     }
 
-    public void error(ServiceDetector detector, Throwable t, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
-        
+    public void error(ServiceDetector detector, Throwable t, String format, Object... args) {
+        info(t, format, args);
     }
 
-    public void failure(ServiceDetector detector, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
+    public void failure(ServiceDetector detector, String format, Object... args) {
+        info(format, args);
     }
 
-    public void info(ServiceDetector detector, Exception e, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
+    public void info(ServiceDetector detector, Exception e, String format, Object... args) {
+        info(format, args);
     }
 
     public void start(ServiceDetector detector, String format, Object... args) {
-        System.out.println(String.format(format, args));
+        info(format, args);
     }
 
-    public void stopped(ServiceDetector detector, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
+    public void stopped(ServiceDetector detector, String format, Object... args) {
+        info(format, args);
     }
 
-    public void success(ServiceDetector detector, String format,
-            Object... args) {
-        System.out.println(String.format(format, args));
+    public void success(ServiceDetector detector, String format, Object... args) {
+        info(format, args);
+    }
+    
+    private void info(Throwable t, String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args), t);
+        }
+    }
+    
+    private void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
     }
 
 }

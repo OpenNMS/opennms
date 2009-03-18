@@ -87,23 +87,17 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
                 
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
-                System.out.println("put before");
-                cE.printStackTrace();
                 detectorMonitor.info(this, cE, "%s: Excpetion attempting to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr,port, attempts);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
-                e.printStackTrace();
                 detectorMonitor.info(this, e, "%s: No route to address %s was available", getServiceName(), ipAddr);
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                e.printStackTrace();
                 detectorMonitor.info(this, e, "%s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
-                e.printStackTrace();
                 detectorMonitor.info(this, e, "%s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
-                t.printStackTrace();
                 detectorMonitor.failure(this, "%s: Failed to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
                 detectorMonitor.error(this, t, "%s: An undeclared throwable exception was caught contating address %s port %d", getServiceName(), ipAddr, port);
             } finally {

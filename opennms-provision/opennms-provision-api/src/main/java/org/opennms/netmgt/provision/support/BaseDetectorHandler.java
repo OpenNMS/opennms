@@ -54,11 +54,10 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
     
     public void sessionCreated(IoSession session) throws Exception {
-        System.out.println("Session created");
+        
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-        System.out.println("Session opened");
         if(!m_conversation.hasBanner()) {
             Object request = m_conversation.getRequest();
            session.write(request);
@@ -66,22 +65,18 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     public void sessionClosed(IoSession session) throws Exception {
-        System.out.println("Session closed");
         if(!getFuture().isDone()) {
             getFuture().setServiceDetected(false);
         }
     }
 
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        System.out.println("Session idle");
         getFuture().setServiceDetected(false);
         session.close(false);
     }
 
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         super.exceptionCaught(session, cause);
-        System.out.println("Exception was caught in the handler");
-        cause.printStackTrace();
         session.close(true);
     }
 
@@ -108,7 +103,6 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
             }
             
         }catch(Exception e){
-              e.printStackTrace();
               if(!session.isClosing()){
                   session.close(true);
               }
