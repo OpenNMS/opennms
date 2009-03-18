@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.provision.server.exchange.Exchange;
-import org.opennms.netmgt.provision.server.exchange.ResponseHandler;
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 
 public class Conversation {    
     
@@ -95,7 +95,7 @@ public class Conversation {
                 }
            }catch(Exception e) {
                isFinished = true;
-               e.printStackTrace();
+               info(e, "SimpleServer conversation attempt failed");
            }
             
         }
@@ -161,6 +161,13 @@ public class Conversation {
             }
             
         };
+    }
+    
+    private void info(Throwable t, String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args), t);
+        }
     }
 
     
