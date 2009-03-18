@@ -660,8 +660,8 @@ public class DefaultProvisionService implements ProvisionService {
         List<T> plugins = new ArrayList<T>(configs.size());
         for(PluginConfig config : configs) {
             T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
-            if (plugin == null) {
-                error("Configured plugin does not exist: %s", config);
+            if (plugin == null && required) {
+                debug("Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }
