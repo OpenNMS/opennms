@@ -67,6 +67,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         super(OnmsNode.class);
     }
 
+    public OnmsNode get(String lookupCriteria) {
+        if (lookupCriteria.contains(":")) {
+            String[] criteria = lookupCriteria.split(":");
+            return findByForeignId(criteria[0], criteria[1]);
+        }
+        return get(Integer.parseInt(lookupCriteria));
+    }
+
     public Collection<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);
     }
