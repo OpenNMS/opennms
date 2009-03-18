@@ -59,10 +59,10 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeId") int nodeId) {
-        log().debug("getIpInterfaces: reading interfaces for node " + nodeId);
+    public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") String nodeCriteria) {
+        log().debug("getIpInterfaces: reading interfaces for node " + nodeCriteria);
         
-        //OnmsNode node = m_nodeDao.get(nodeId);        
+        OnmsNode node = m_nodeDao.get(nodeCriteria);        
         //if (node == null)
             //throwException(Status.BAD_REQUEST, "getIpInterfaces: can't find node " + nodeId);
         
@@ -71,13 +71,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         setLimitOffset(params, criteria, 20);
         addFiltersToCriteria(params, criteria, OnmsIpInterface.class);
         
-        criteria.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
         
         OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria));
         
         //kind of a hack to get the total count of items. rework this
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
-        crit.createCriteria("node").add(Restrictions.eq("id", nodeId));
+        crit.createCriteria("node").add(Restrictions.eq("id", node.getId()));
         addFiltersToCriteria(params, crit, OnmsIpInterface.class);
         interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(crit));
         
@@ -87,21 +87,24 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
-    public OnmsIpInterface getIpInterface(@PathParam("nodeId") int nodeId, @PathParam("ipAddress") String ipAddress) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeId);
+    public OnmsIpInterface getIpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeCriteria);
+        }
         return node.getIpInterfaceByIpAddress(ipAddress);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addIpInterface(@PathParam("nodeId") int nodeId, OnmsIpInterface ipInterface) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "addIpInterface: can't find node with id " + nodeId);
-        if (ipInterface == null)
+    public Response addIpInterface(@PathParam("nodeCriteria") String nodeCriteria, OnmsIpInterface ipInterface) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "addIpInterface: can't find node " + nodeCriteria);
+        }
+        if (ipInterface == null) {
             throwException(Status.BAD_REQUEST, "addIpInterface: ip interface object cannot be null");
+        }
         log().debug("addIpInterface: adding interface " + ipInterface);
         node.addIpInterface(ipInterface);
         m_ipInterfaceDao.save(ipInterface);
@@ -122,13 +125,15 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
-    public Response updateIpInterface(@PathParam("nodeId") int nodeId, @PathParam("ipAddress") String ipAddress, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "deleteIpInterface: can't find node with id " + nodeId);
+    public Response updateIpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, MultivaluedMapImpl params) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
+        }
         OnmsIpInterface ipInterface = node.getIpInterfaceByIpAddress(ipAddress);
-        if (ipInterface == null)
-            throwException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node with id " + nodeId);
+        if (ipInterface == null) {
+            throwException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+        }
         log().debug("updateIpInterface: updating ip interface " + ipInterface);
         BeanWrapper wrapper = new BeanWrapperImpl(ipInterface);
         for(String key : params.keySet()) {
@@ -145,19 +150,21 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
 
     @DELETE
     @Path("{ipAddress}")
-    public Response deleteIpInterface(@PathParam("nodeId") int nodeId, @PathParam("ipAddress") String ipAddress) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "deleteIpInterface: can't find node with id " + nodeId);
+    public Response deleteIpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "deleteIpInterface: can't find node " + nodeCriteria);
+        }
         OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
-        if (intf == null)
-            throwException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node with id " + nodeId);
-        log().debug("deleteIpInterface: deleting interface " + ipAddress + " from node " + nodeId);
+        if (intf == null) {
+            throwException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
+        }
+        log().debug("deleteIpInterface: deleting interface " + ipAddress + " from node " + nodeCriteria);
         node.getIpInterfaces().remove(intf);
         m_nodeDao.save(node);
         Event e = new Event();
         e.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-        e.setNodeid(nodeId);
+        e.setNodeid(node.getId());
         e.setInterface(ipAddress);
         e.setSource(getClass().getName());
         e.setTime(EventConstants.formatToString(new java.util.Date()));
