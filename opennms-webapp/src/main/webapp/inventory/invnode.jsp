@@ -73,6 +73,7 @@
 		//nodeModel.put("label", node_db.getLabel());
 		elementID = node_db.getLabel();
 		
+		
 	    String groupID = request.getParameter("groupname");
 	    String versionId = request.getParameter("version");
 	    
@@ -82,7 +83,10 @@
 		} catch (Exception e) {
 			//throw new ServletException("Could node get Rancid Node ", e);
 		}
-    nodeModel.put("id", elementID);
+    nodeModel.put("devicename", elementID);
+    nodeModel.put("id", nodeId);
+    //nodeModel.put("general_status", node_db.node.getType());
+
     pageContext.setAttribute("model", nodeModel);
 %>
 <%
@@ -91,7 +95,7 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
 <jsp:param name="title" value="Inventory" />
-<jsp:param name="headTitle" value="${model.id}" />
+<jsp:param name="headTitle" value="${model.devicename}" />
 <jsp:param name="headTitle" value="Rancid" />
 <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
 <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
@@ -100,12 +104,12 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 </jsp:include>
 
 
-<h2>Node: ${model.id}</h2>
+<h2>Node: ${model.devicename}</h2>
 
 
 <div class="TwoColLeft">
   <!-- general info box -->
-  <h3>General (Status: ${model.status})</h3>
+  <h3>General (Status: ${model.general_status})</h3>
 	<table>
   	<tr>
   		<th>Node</th>
@@ -127,6 +131,8 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 		<th>Rancid Name</th>
 		<th>${model.devicename}</th>
 	</tr>
+	    <th>Status</th>
+	    <th>${model.status}</th>
 	<tr>
 	    <th>Creation Date</th>
 	    <th>${model.creationdate}</th>
@@ -144,7 +150,9 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 		-->
 	    <tr>
 		<th>CVS Configuration Url</th>
-		<th><a href = "${model.configurationurl}" > ${model.devicename} </a></th>
+		<th><a href="inventory/rancidViewVc.htm?node=${model.id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">${model.devicename}</th>
+
+		<!--th><a href = "${model.configurationurl}" > ${model.devicename} </a></th -->
 		</tr>
 	</table>
 	

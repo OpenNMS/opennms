@@ -49,60 +49,10 @@
 
 <h2>Node: ${model.id} </h2>
 
-<div class="TwoColLeft">
-	<!-- general info box -->
-	<h3>General (Status: ${model.status_general})</h3>
-  	<table>
-  		<tr>
-	  		<th>Node</th>
-	  		<th><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></th>
-	  	</tr>
-	</table>
 
-	<h3>Rancid info</h3>
-	<table>
-		<tr>
-			<th>Device Name</th>
-			<th>${model.id}</th>
-		</tr>	
-		<tr>
-			<th>Device Type</th>
-			<th>${model.devicetype}</th>
-		</tr>
-		<tr>
-			<th>Comment</th>
-			<th>${model.comment}</th>
-		</tr>
-		<tr>
-			<th>Status</th>
-			<th>${model.status}</th>
-		</tr>
-	</table>
 
-</div>
+<iframe src =${model.iframelink} width="100%" height="300">
+  <p>Your browser does not support iframes.</p>
+</iframe>
 
-<div class="TwoColRight">
-<!-- general info box -->
-	<h3>Associated Elements</h3>
-	
-	<table>
-	<tr>
-		<th>Group</th>
-		<th>CVS Root repository</th>
-		<th>Total revisions</th>
-		<th>Head version</th>
-		<th>Last Update</th>
-	</tr>
-	<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
-		<tr>
-			<th>${groupelm.group}</th>
-			<th><a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}&viewvc=${groupelm.rootConfigurationUrl}">${model.id}</th>
-			<th>${groupelm.totalRevisions} <a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=${groupelm.group}">(list)</a></th>
-			<th><a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</th>
-			<th>${groupelm.creationDate}</th>
-		</tr>
-	</c:forEach>
-		<th colspan="5" ><a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=*">entire group list...</a></th>
-	</table>
-</div>
 <jsp:include page="/includes/footer.jsp" flush="false" />

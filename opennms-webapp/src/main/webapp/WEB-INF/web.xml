@@ -1184,11 +1184,6 @@
     <servlet-name>filterOutage</servlet-name>
     <url-pattern>/outage/list</url-pattern>
   </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>invClogin</servlet-name>
-    <url-pattern>/inventory/invClogin</url-pattern>
-  </servlet-mapping-->
    
   <servlet-mapping>
     <servlet-name>gwtDispatcher</servlet-name>
@@ -1213,7 +1208,7 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/frontPage.htm</url-pattern>
   </servlet-mapping>
-  
+    
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/graph/graph.png</url-pattern>
