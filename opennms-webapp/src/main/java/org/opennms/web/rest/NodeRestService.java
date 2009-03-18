@@ -102,9 +102,9 @@ public class NodeRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    @Path("{nodeId}")
-    public OnmsNode getNode(@PathParam("nodeId") int nodeId) {
-        return m_nodeDao.get(nodeId);
+    @Path("{nodeCriteria}")
+    public OnmsNode getNode(@PathParam("nodeCriteria") String nodeCriteria) {
+        return m_nodeDao.get(nodeCriteria);
     }
 
     @POST
@@ -122,11 +122,12 @@ public class NodeRestService extends OnmsRestService {
     
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{nodeId}")
-    public Response updateNode(@PathParam("nodeId") int nodeId, MultivaluedMapImpl params) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "updateNode: Can't find node with id " + nodeId);
+    @Path("{nodeCriteria}")
+    public Response updateNode(@PathParam("nodeCriteria") String nodeCriteria, MultivaluedMapImpl params) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
+        }
         log().debug("updateNode: updating node " + node);
         BeanWrapper wrapper = new BeanWrapperImpl(node);
         for(String key : params.keySet()) {
@@ -142,32 +143,33 @@ public class NodeRestService extends OnmsRestService {
     }
     
     @DELETE
-    @Path("{nodeId}")
-    public Response deleteNode(@PathParam("nodeId") int nodeId) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null)
-            throwException(Status.BAD_REQUEST, "deleteNode: Can't find node with id " + nodeId);
-        log().debug("deleteNode: deleting node " + nodeId);
+    @Path("{nodeCriteria}")
+    public Response deleteNode(@PathParam("nodeCriteria") String nodeCriteria) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throwException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
+        }
+        log().debug("deleteNode: deleting node " + nodeCriteria);
         m_nodeDao.delete(node);
         try {
-            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, nodeId);
+            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
         } catch (EventProxyException ex) {
             throwException(Status.BAD_REQUEST, ex.getMessage());
         }
         return Response.ok().build();
     }
 
-    @Path("{nodeId}/ipinterfaces")
+    @Path("{nodeCriteria}/ipinterfaces")
     public OnmsIpInterfaceResource getIpInterfaceResource() {
         return m_context.getResource(OnmsIpInterfaceResource.class);
     }
 
-    @Path("{nodeId}/snmpinterfaces")
+    @Path("{nodeCriteria}/snmpinterfaces")
     public OnmsSnmpInterfaceResource getSnmpInterfaceResource() {
         return m_context.getResource(OnmsSnmpInterfaceResource.class);
     }
 
-    @Path("{nodeId}/categories")
+    @Path("{nodeCriteria}/categories")
     public OnmsCategoryResource getCategoryResource() {
         return m_context.getResource(OnmsCategoryResource.class);
     }
@@ -190,4 +192,5 @@ public class NodeRestService extends OnmsRestService {
         e.setTime(EventConstants.formatToString(new java.util.Date()));
         m_eventProxy.send(e);
     }
+    
 }

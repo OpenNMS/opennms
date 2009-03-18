@@ -45,6 +45,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
 	
+    /**
+     * Get a node based on it's node ID or foreignSource:foreignId
+     * @param lookupCriteria the criteria, either the node ID, or a colon-separated string of foreignSource:foreignId
+     * @return the node
+     */
+    public abstract OnmsNode get(String lookupCriteria);
+    
     public abstract Collection<OnmsNode> findByLabel(String label);
     
     public abstract Collection<OnmsNode> findNodes(OnmsDistPoller dp);
