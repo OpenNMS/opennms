@@ -34,7 +34,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -115,18 +114,19 @@ public class SimpleServer extends SimpleConversationEndPoint {
         getServerThread().start();
     }
     
-    @SuppressWarnings("deprecation")
     public void stopServer() throws IOException {
-
+        getServerSocket().close();
         if(getServerThread() != null && getServerThread().isAlive()) { 
             
             if(getSocket() != null && !getSocket().isClosed()) {
                getSocket().close();  
             }
             
-            getServerSocket().close();
-            getServerThread().stop();
         }
+    }
+    
+    public void dispose(){
+        
     }
     
     protected Runnable getRunnable() throws Exception {
@@ -146,7 +146,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
                     BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
                     attemptConversation(in, out);
                 }catch(Exception e){
-                    throw new UndeclaredThrowableException(e);
+                    e.printStackTrace();
                 } finally {
                     try {
                         stopServer();
