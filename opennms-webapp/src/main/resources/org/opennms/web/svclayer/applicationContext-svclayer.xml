@@ -263,4 +263,17 @@
        <property name="rwsConfig" ref="rwsConfig"/>
    </bean>  
 
+      <bean id="urlMapping3" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                inventory/rancidViewVc.htm=rancidViewVcController
+            </value>
+        </property>
+   </bean>
+
+   <bean id="rancidViewVcController" class="org.opennms.web.controller.inventory.RancidViewVcController">
+       <property name="inventoryService" ref="inventoryService"/>
+   </bean>  
+
+
 </beans>

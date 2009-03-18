@@ -212,6 +212,10 @@
   <bean name="/inventory/rancid.htm" class="org.opennms.web.controller.inventory.RancidController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean>  
+    <bean name="/inventory/rancidViewVc.htm" class="org.opennms.web.controller.inventory.RancidViewVcController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>  
+  
   <bean name="/admin/rancid/rancidAdmin.htm" class="org.opennms.web.controller.inventory.AdminRancidController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean> 
