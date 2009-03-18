@@ -49,7 +49,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
-    @Repeat(1000)
+    @Repeat(10000)
     public void testSucessServer() throws Exception {
         m_server = new SimpleServer() {
             
@@ -60,6 +60,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         };
         m_server.init();
         m_server.startServer();
+       
         m_detector.setPort(m_server.getLocalPort());
         
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
@@ -76,10 +77,11 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         future.awaitUninterruptibly();
         assertNotNull(future);
         assertTrue(future.isServiceDetected());
+       
     }
     
     @Test
-    @Repeat(1000)
+    @Repeat(10000)
     public void testNoServerPresent() throws Exception {
         
         m_detector.setPort(1999);
