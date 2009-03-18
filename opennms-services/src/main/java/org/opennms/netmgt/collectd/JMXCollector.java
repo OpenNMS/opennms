@@ -830,10 +830,16 @@ public abstract class JMXCollector implements ServiceCollector {
     
     class JMXCollectionResource extends AbstractCollectionResource {
         String m_resourceName;
+        private int m_nodeId;
         
         JMXCollectionResource(CollectionAgent agent, String resourceName) { 
             super(agent);
             m_resourceName=resourceName;
+            m_nodeId = agent.getNodeId();
+        }
+        
+        public String toString() {
+            return "node["+m_nodeId+']';
         }
         
         public int getType() {
