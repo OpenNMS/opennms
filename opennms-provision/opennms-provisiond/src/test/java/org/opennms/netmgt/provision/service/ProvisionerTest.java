@@ -173,10 +173,7 @@ public class ProvisionerTest {
     @BeforeClass
     public static void setUpSnmpConfig() {
         SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
-    }
-    
-    @Before
-    public void setUp() throws Exception {
+
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
@@ -185,6 +182,10 @@ public class ProvisionerTest {
         MockLogAppender.setupLogging(props);
         
         //System.setProperty("mock.debug", "false");
+    }
+    
+    @Before
+    public void setUp() throws Exception {
         
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         

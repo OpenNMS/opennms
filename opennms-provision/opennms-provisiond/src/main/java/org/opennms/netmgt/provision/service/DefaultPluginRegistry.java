@@ -31,11 +31,14 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -92,11 +95,27 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
     
+    private void debug(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(format, args));
+        }
+    }
+    
+    private void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
+    }
+    
     private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
-        if (extensions == null) {
+        if (extensions == null || extensions.isEmpty()) {
+            info("Found NO Extensions for ExtensionPoints %s", Arrays.toString(extensionPoints));
             return;
         }
         for(T extension : extensions) {
+            info("Register Extension %s for ExtensionPoints %s", extension, Arrays.toString(extensionPoints));
             m_extensionManager.registerExtension(extension, extensionPoints);
         }
     }
@@ -127,7 +146,9 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
-        return beans.get(beanName);
+        T bean = beans.get(beanName);
+        debug("Found bean %s with name %s of type %s", bean, beanName, pluginClass);
+        return bean;
     }
     
     
