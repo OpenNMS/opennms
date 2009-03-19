@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.poller.monitors;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -52,6 +53,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
+import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
+import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -83,15 +86,28 @@ public class MailTransportMonitor extends IPv4Monitor {
 
         try {
             MailTransportParameters mailParms = MailTransportParameters.get(parameters);
-            if ("${ipaddr}".equals(mailParms.getReadTestHost())) {
+            
+            try {
+                if ("${ipaddr}".equals(mailParms.getReadTestHost())) {
                 mailParms.setReadTestHost(svc.getIpAddr());
+                }
+            } catch (IllegalStateException ise) {
+                //just ignore, don't have to have a both a read and send test configured
             }
-            if ("${ipaddr}".equals(mailParms.getSendTestHost())) {
-                mailParms.setSendTestHost(svc.getIpAddr());
+
+            try {
+                if ("${ipaddr}".equals(mailParms.getSendTestHost())) {
+                    mailParms.setSendTestHost(svc.getIpAddr());
+                }
+            } catch (IllegalStateException ise) {
+                //just ignore, don't have to have a both a read and send test configured
             }
             
             parseJavaMailProperties(mailParms);
             status = doMailTest(mailParms);
+        } catch (IllegalStateException ise) {
+            //ignore this because we don't have to have both a send and read
+            
         } catch (Exception e) {
             log.error("poll, Exception from mailer: ", e);
             status = PollStatus.down("Exception from mailer: " + e.getLocalizedMessage());
@@ -102,10 +118,20 @@ public class MailTransportMonitor extends IPv4Monitor {
 
     private void parseJavaMailProperties(final MailTransportParameters mailParms) {
         
-        List<JavamailProperty> propertyList = mailParms.getReadTest().getJavamailPropertyCollection();
-        propertyList.addAll(mailParms.getSendTest().getJavamailPropertyCollection());
-        Properties props = mailParms.getJavamailProperties();
+        ReadmailTest readTest = mailParms.getReadTest();
+
+        List<JavamailProperty> propertyList = new ArrayList<JavamailProperty>();
+        if (readTest != null) {
+            propertyList = readTest.getJavamailPropertyCollection();
+        }
+
+        SendmailTest sendTest = mailParms.getSendTest();
+        if (sendTest != null) {
+            List<JavamailProperty> sendTestProperties = sendTest.getJavamailPropertyCollection();
+            propertyList.addAll(sendTestProperties);
+        }
         
+        Properties props = mailParms.getJavamailProperties();
         for (JavamailProperty property : propertyList) {
             props.setProperty(property.getName(), property.getValue());
         }
