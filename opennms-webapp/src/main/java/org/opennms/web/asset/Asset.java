@@ -58,6 +58,15 @@ public class Asset extends Object {
     public static final String AUTOENABLE = "A";
     
     public static final String[] AUTOENABLES = new String[] { AUTOENABLE };
+
+    public static final String TELNET_CONNECTION = "telnet";
+    
+    public static final String SSH_CONNECTION = "ssh";
+    
+    public static final String RSH_CONNECTION = "rsh";
+    
+    public static final String[] CONNECTIONS = new String[] { TELNET_CONNECTION,SSH_CONNECTION, RSH_CONNECTION};
+
     protected int nodeId;
 
     protected Date lastModifiedDate;
