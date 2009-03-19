@@ -68,11 +68,15 @@ public class OnmsAssetRecord implements Serializable {
     
     public static final String AUTOENABLED = "A";
 
-    public static final String SSH_CONNECTION = "SSH";
+    //public enum Autoenable {AUTOENABLED};
+    
+    public static final String SSH_CONNECTION = "ssh";
 
-    public static final String TELNET_CONNECTION = "Telnet";
+    public static final String TELNET_CONNECTION = "telnet";
 
-    public static final String RSH_CONNECTION = "RSH";
+    public static final String RSH_CONNECTION = "rsh";
+    
+    //public enum AssetConnections {TELNET_CONNECTION,SSH_CONNECTION,RSH_CONNECTION};
 
     private Integer m_id;
     
@@ -778,7 +782,18 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     public void setConnection(String connection) {
-        m_connection = connection;
+        if (connection == null) {
+            m_connection = connection;            
+        } else {
+            if (connection.equalsIgnoreCase(TELNET_CONNECTION))
+                m_connection = TELNET_CONNECTION;
+            else if (connection.equalsIgnoreCase(SSH_CONNECTION))
+                m_connection = SSH_CONNECTION;
+            else if (connection.equalsIgnoreCase(RSH_CONNECTION))
+                m_connection = RSH_CONNECTION;
+            else
+                m_connection = connection;
+        }
     }
 
     @Column(name="autoenable", length=1)
@@ -787,7 +802,10 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     public void setAutoenable(String autoenable) {
-        m_autoenable = autoenable;
+        if (autoenable != null && autoenable.equals(AUTOENABLED))
+            m_autoenable = autoenable;
+        else 
+            m_autoenable = autoenable;
     }
 
     @Override
@@ -816,6 +834,11 @@ public class OnmsAssetRecord implements Serializable {
             .append("building", getBuilding())
             .append("floor", getFloor())
             .append("room", getRoom())
+            .append("username", getUsername())
+            .append("password", getPassword())
+            .append("enable",getEnable())
+            .append("autoenable",getAutoenable())
+            .append("connection", getConnection())
             .append("vendorphone", getVendorPhone())
             .append("vendorfax", getVendorFax())
             .append("vendorassetnumber", getVendorAssetNumber())
@@ -849,7 +872,6 @@ public class OnmsAssetRecord implements Serializable {
 
         OnmsAssetRecord cmpAsset = (OnmsAssetRecord)obj;
         
-        Integer currentNodeId = m_node.getId();
         Integer newNodeId = cmpAsset.getNode().getId();
         
         if (newNodeId == null) {
