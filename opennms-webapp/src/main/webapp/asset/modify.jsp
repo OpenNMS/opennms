@@ -264,7 +264,14 @@
           </tr>
           <tr>
             <td>Connection</td>
-            <td><input type="text" name="connection" value="<%=asset.getConnection()%>" size="20" maxlength="32"/></td>
+            <td>
+              <select name="connection" size="1">
+              	<option></option>
+              <% for( int i=0; i < Asset.CONNECTIONS.length; i++ ) { %>
+                <option <%=(Asset.CONNECTIONS[i].equals(asset.getConnection()))?"selected":""%>><%=Asset.CONNECTIONS[i]%></option> 
+              <% } %>
+              </select>            
+            </td>
             <td>AutoEnable</td>
             <td>
               <select name="autoenable" size="1">

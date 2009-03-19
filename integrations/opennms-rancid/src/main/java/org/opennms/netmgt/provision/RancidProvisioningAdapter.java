@@ -214,7 +214,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED addNode");
+        log().debug("RANCID PROVISIONING ADAPTER CALLED addNode: nodeid: " + nodeId);
         try {
             OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
             Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
@@ -239,15 +239,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     public void doUpdate(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
+        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode: nodeid: " + nodeId);
         try {
             OnmsNode node = m_nodeDao.get(nodeId);
             Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
             // if the node exists and has different label then first delete old data
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();            
-            RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
+                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();            
+                RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
                 if (!rNode.getDeviceName().equals(node.getLabel())) {
                     RWSClientApi.deleteRWSRancidNode(cp, rNode);
                     RWSClientApi.deleteRWSAuthNode(cp, rAuth);
@@ -273,7 +273,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     
     public void doDelete(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
 
-        log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode");
+        log().debug("RANCID PROVISIONING ADAPTER CALLED deleteNode: nodeid: " + nodeId);
         
         /*
          * The work to maintain the hashmap boils down to needing to do deletes, so
@@ -281,13 +281,17 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
          */
         try {
 
-            RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
-            RWSClientApi.deleteRWSRancidNode(cp, rNode);
+            if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
+                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+                RWSClientApi.deleteRWSRancidNode(cp, rNode);
+  
+                RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
+                RWSClientApi.deleteRWSAuthNode(cp, rAuth);
+                m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
+            } else {
+                log().warn("No node found in nodeRancid Map for nodeid: " + nodeId);                
+            }
             
-            RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
-            RWSClientApi.deleteRWSAuthNode(cp, rAuth);
-            
-            m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
@@ -299,7 +303,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     public void doNodeConfigChanged(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode");
+        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode: nodeid: " + nodeId);
         try {
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
@@ -318,7 +322,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
     
     private void sendAndThrow(int nodeId, Exception e) {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow");
+            log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow: nodeid: " + nodeId);
+            log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow: Exception: " + e.getMessage());
             Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
             m_eventForwarder.sendNow(event);
             throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
@@ -444,7 +449,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             r_auth_node.setEnablePass(asset_node.getEnable());
         }
         
-        //FIXME: We need to put this in a better place and should be enums
         if (asset_node.getAutoenable() != null) {
             r_auth_node.setAutoEnable(asset_node.getAutoenable().equals(OnmsAssetRecord.AUTOENABLED));
         }
