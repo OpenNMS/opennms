@@ -93,10 +93,7 @@ public class OnmsRestService {
 		    String nodeId = params.getFirst("node.id");
 		    Integer id = new Integer(nodeId);
 		    criteria.createCriteria("node").add(Restrictions.eq("id", id));
-		    //criteria.add(Restrictions.eq("id", 13255));
 		    params.remove("node.id");
-		    //criteria.add(Restrictions.like("id", "13508")); //.createCriteria("node").add(Restrictions.eq("id",147));
-	        
 		}
 		
 		params.remove("_dc");
@@ -184,7 +181,7 @@ public class OnmsRestService {
 			params.remove("orderBy");
 			boolean orderAsc=true;
 			if(params.containsKey("order")) {
-				if("desc".equals(params.getFirst("order"))) {
+				if("desc".equalsIgnoreCase(params.getFirst("order"))) {
 					orderAsc=false;
 				}
 				params.remove("order");
