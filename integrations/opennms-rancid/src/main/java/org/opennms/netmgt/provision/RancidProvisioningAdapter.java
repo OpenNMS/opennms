@@ -231,7 +231,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
-                doNodeConfigChanged(nodeId, cp, false);
+                log().info("Rancid Provisioning Adapter: retry Add on standByConn: " + cp.getUrl());
+                doAdd(nodeId, cp, false);
             } else {
                 sendAndThrow(nodeId, e);            
             }
@@ -264,7 +265,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
-                doNodeConfigChanged(nodeId, cp, false);
+                log().info("Rancid Provisioning Adapter: retry Update on standByConn: " + cp.getUrl());
+                doUpdate(nodeId, cp, false);
             } else {
                 sendAndThrow(nodeId, e);            
             }
@@ -295,7 +297,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
-                doNodeConfigChanged(nodeId, cp, false);
+                log().info("Rancid Provisioning Adapter: retry Delete on standByConn: " + cp.getUrl());
+                doDelete(nodeId, cp, false);
             } else {
                 sendAndThrow(nodeId, e);            
             }
@@ -314,6 +317,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
+                log().info("Rancid Provisioning Adapter: retry ConfigChange on standByConn: " + cp.getUrl());
                 doNodeConfigChanged(nodeId, cp, false);
             } else {
                 sendAndThrow(nodeId, e);            
@@ -330,7 +334,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private EventBuilder buildEvent(String uei, int nodeId) {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED EventBuilder");
         EventBuilder builder = new EventBuilder(uei, "Provisioner", new Date());
         builder.setNodeid(nodeId);
         return builder;
