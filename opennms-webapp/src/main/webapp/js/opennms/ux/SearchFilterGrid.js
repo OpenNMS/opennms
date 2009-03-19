@@ -10,15 +10,18 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 		this.setLayout(new OpenNMS.ux.SearchFilterLayout({
 			deferredRender: this.deferredRender
 		}));
-	
+		
+		this.cancelId = newGuid();
+		this.searchBtnId = newGuid();
+		
 		var searchButton = new Ext.Button({
 			text:'Search',
-			id:'searchBtn',
+			id:this.searchBtnId,
 			cls:'x-btn-text-icon',
 			iconCls:'search-criteria-icon',
 			scope: this,
 			handler: this.showSearchPanel,
-		})
+		});
 		
 		if (this.grid !== undefined && this.grid.title !== undefined) {
 			this.title = this.grid.title;
@@ -29,8 +32,6 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 				pagingBarButtons:[searchButton]
 			})
 		}
-		
-		
 		
 		var comboData = [];
 		
@@ -95,12 +96,12 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	    		   	 ],
 	    		   	
 	    		   	buttons:[
-	    		   	    {
-	    		   	    	id:'cancelBtn',
-	    		   	    	text:'Cancel',
-	    		   	    	scope: this,
-	    		   	    	handler:this.cancel
-	    		   		},{
+	    		   		{
+	    		   	    	id:this.cancelId, //'cancelBtn',
+				   	    	text:'Cancel',
+				   	    	scope: this,
+				   	    	handler:this.cancel
+	    	   			},{
 	    		   			text:'Search',
 	    		   			scope: this,
 	    		   			handler: this.search
@@ -117,16 +118,18 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
    		this.getLayout().setActiveItem(1);
    		
    		if(this.searchText.getValue() != ""){
-   			Ext.getCmp('cancelBtn').setText('Reset');
+   			//this.cancelBtn.setText('Reset');
+   			Ext.getCmp(this.cancelId).setText('Reset');
    		}else{
-   			Ext.getCmp('cancelBtn').setText('Cancel');
+   			//this.cancelBtn.setText('Cancel');
+   			Ext.getCmp(this.cancelId).setText('Cancel');
    		}
    },
    
    cancel:function(event){
    	   this.searchText.setValue("");
 	   this.getLayout().setActiveItem(0);
-	   Ext.getCmp('searchBtn').setIconClass('search-criteria-icon');
+	   Ext.getCmp(this.searchBtnId).setIconClass('search-criteria-icon');
 	   this.grid.loadSearch({});
    },
    
@@ -138,9 +141,9 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 	   searchParams.comparator = "contains";
 	   
 	   if(searchVal != ""){
-	   		Ext.getCmp('searchBtn').setIconClass('search-criteria-star');
+	   		Ext.getCmp(this.searchBtnId).setIconClass('search-criteria-star');
 	   }else{
-	   		Ext.getCmp('searchBtn').setIconClass('search-criteria-icon');
+	   		Ext.getCmp(this.searchBtnId).setIconClass('search-criteria-icon');
 	   }
 	   
 	   this.getLayout().setActiveItem(0);
@@ -149,5 +152,12 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
    }
 	
 });
+
+function newGuid() {
+    var g = "";
+    for(var i = 0; i < 16; i++)
+    g += Math.floor(Math.random() * 0xF).toString(0xF) + (i == 8 || i == 12 || i == 16 || i == 20 ? "-" : "")
+    return g;
+}
 
 Ext.reg('o-searchfiltergrid', OpenNMS.ux.SearchFilterGrid);
