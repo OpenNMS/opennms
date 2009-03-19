@@ -660,8 +660,8 @@ public class DefaultProvisionService implements ProvisionService {
         List<T> plugins = new ArrayList<T>(configs.size());
         for(PluginConfig config : configs) {
             T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
-            if (plugin == null && required) {
-                debug("Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
+            if (plugin == null) {
+                info("Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }
@@ -686,6 +686,10 @@ public class DefaultProvisionService implements ProvisionService {
     }
 
     private void error(String format, Object... args) {
-        ThreadCategory.getInstance(getClass()).error(String.format(format, args));
+        log().error(String.format(format, args));
+    }
+
+    private void info(String format, Object... args) {
+        log().info(String.format(format, args));
     }
 }
