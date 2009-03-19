@@ -12,9 +12,11 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	  forceFit: true,
 	  scrollOffset:2
 	},
+	remoteSort:true,
 	
 	initComponent:function(){
 		this.on('rowdblclick', this.onDoubleClick, this);
+		
 		var tpl = new Ext.XTemplate(this.urlTemplate);
 		
 		this.url = tpl.apply(this);
@@ -28,11 +30,12 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 				paramNames:{
 				"start" : "offset",
 				"limit" : "limit",
-				"sort" : "orderby",
-				"dir" : "dir"
+				"sort" : "orderBy",
+				dir: "order"
 				},
 				autoLoad:true,
-				reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
+				reader:new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap),
+				remoteSort:this.remoteSort
 			});
 		}
 	
