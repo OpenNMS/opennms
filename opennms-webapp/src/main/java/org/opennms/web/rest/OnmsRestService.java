@@ -15,6 +15,8 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+
 public class OnmsRestService {
 
 	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS}
@@ -80,29 +82,33 @@ public class OnmsRestService {
 	 * @param objectClass the type of thing being filtered.
 	 */
 	protected void addFiltersToCriteria(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, Class objectClass) {
-		
+	   
+        
 		setOrdering(params, criteria);
 		
-		if(params.containsKey("query")) {
-			String query=params.getFirst("query");
+		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
+	    paramsCopy.putAll(params);
+		
+		if(paramsCopy.containsKey("query")) {
+			String query=paramsCopy.getFirst("query");
 			criteria.add(Restrictions.sqlRestriction(query));
-			params.remove("query");
+			paramsCopy.remove("query");
 		}
 		
-		if(params.containsKey("node.id")) {
-		    String nodeId = params.getFirst("node.id");
+		if(paramsCopy.containsKey("node.id")) {
+		    String nodeId = paramsCopy.getFirst("node.id");
 		    Integer id = new Integer(nodeId);
 		    criteria.createCriteria("node").add(Restrictions.eq("id", id));
-		    params.remove("node.id");
+		    paramsCopy.remove("node.id");
 		}
 		
-		params.remove("_dc");
+		paramsCopy.remove("_dc");
 
 		//By default, just do equals comparision
 		ComparisonOperation op=ComparisonOperation.EQ;
-		if(params.containsKey("comparator")) {
-			String comparatorLabel=params.getFirst("comparator");
-			params.remove("comparator");
+		if(paramsCopy.containsKey("comparator")) {
+			String comparatorLabel=paramsCopy.getFirst("comparator");
+			paramsCopy.remove("comparator");
 	
 			if(comparatorLabel.equals("equals")) {
 				op=ComparisonOperation.EQ;
@@ -126,9 +132,9 @@ public class OnmsRestService {
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
-		for(String key: params.keySet()) {
+		for(String key: paramsCopy.keySet()) {
 		    
-		    String stringValue=params.getFirst(key);
+		    String stringValue=paramsCopy.getFirst(key);
 		   
 			if("null".equals(stringValue)) {
 				criteria.add(Restrictions.isNull(key));
@@ -176,7 +182,8 @@ public class OnmsRestService {
 	 * @param criteria - the criteria object which will be updated with ordering configuration
 	 */
 	private void setOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
-		if(params.containsKey("orderBy")) {
+		System.out.println("order by params: " + params);
+	    if(params.containsKey("orderBy")) {
 			String orderBy=params.getFirst("orderBy");
 			params.remove("orderBy");
 			boolean orderAsc=true;

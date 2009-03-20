@@ -67,19 +67,21 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             //throwException(Status.BAD_REQUEST, "getIpInterfaces: can't find node " + nodeId);
         
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+        
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         setLimitOffset(params, criteria, 20);
         addFiltersToCriteria(params, criteria, OnmsIpInterface.class);
         
         criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
-        
         OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria));
         
         //kind of a hack to get the total count of items. rework this
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.createCriteria("node").add(Restrictions.eq("id", node.getId()));
+        
         addFiltersToCriteria(params, crit, OnmsIpInterface.class);
-        interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(crit));
+        int count = m_ipInterfaceDao.countMatching(crit);
+        interfaceList.setTotalCount(count);
         
         return interfaceList;
     }
