@@ -107,66 +107,73 @@ public class InventoryService implements InitializingBean {
         log().debug("getRancidNode start");
         Map<String, Object> nodeModel = new TreeMap<String, Object>();
 
-        try {
         
-            OnmsNode node = m_nodeDao.get(nodeid);
-            String rancidName = node.getLabel();
-    
-            log().debug("getRancidNode: " + rancidName);
-    
-    
-            nodeModel.put("id", rancidName);
-            nodeModel.put("db_id", nodeid);
-            nodeModel.put("status_general", node.getType());
+        OnmsNode node = m_nodeDao.get(nodeid);
+        String rancidName = node.getLabel();
+
+        log().debug("getRancidNode: " + rancidName);
+
+
+        nodeModel.put("id", rancidName);
+        nodeModel.put("db_id", nodeid);
+        nodeModel.put("status_general", node.getType());
+        
+        List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
+        
+        // Group list 
+        RWSResourceList groups;
+        try {
+            groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
+        } catch (RancidApiException e1) {
+            log().error(e1.getLocalizedMessage());
+            return nodeModel;
+        }
             
-            List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
+        List<String> grouplist = groups.getResource();
+        Iterator<String> iter1 = grouplist.iterator();
+        
+      
+        String groupname;
+        boolean first = true;
+        while (iter1.hasNext()){
+            groupname = iter1.next();
+            log().debug("getRancidNode " + rancidName + " group " + groupname);        
             
-            // Group list 
-           RWSResourceList groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
-            
-            List<String> grouplist = groups.getResource();
-            Iterator<String> iter1 = grouplist.iterator();
-            
-          
-            String groupname;
-            boolean first = true;
-            while (iter1.hasNext()){
-                groupname = iter1.next();
-                log().debug("getRancidNode " + rancidName + " group " + groupname);        
+            try {
+                if (first){
+                    RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupname, rancidName);
+                    nodeModel.put("devicename", rn.getDeviceName());
+                    nodeModel.put("status", rn.getState());
+                    nodeModel.put("devicetype", rn.getDeviceType());
+                    nodeModel.put("comment", rn.getComment());
+                    nodeModel.put("groupname", groupname);
+                    first = false;
+                } 
+                RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
+                String vs = rn.getHeadRevision();
+                InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
+
+                RancidNodeWrapper rnw = new RancidNodeWrapper(rn.getDeviceName(), groupname, rn.getDeviceType(), rn.getComment(), rn.getHeadRevision(),
+                  rn.getTotalRevisions(), in.getCreationDate(), rn.getRootConfigurationUrl());
+
+                ranlist.add(rnw); 
                 
-                try {
-                    if (first){
-                        RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupname, rancidName);
-                        nodeModel.put("devicename", rn.getDeviceName());
-                        nodeModel.put("status", rn.getState());
-                        nodeModel.put("devicetype", rn.getDeviceType());
-                        nodeModel.put("comment", rn.getComment());
-                        nodeModel.put("groupname", groupname);
-                        first = false;
-                    } 
-                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
-                    String vs = rn.getHeadRevision();
-                    InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
-    
-                    RancidNodeWrapper rnw = new RancidNodeWrapper(rn.getDeviceName(), groupname, rn.getDeviceType(), rn.getComment(), rn.getHeadRevision(),
-                      rn.getTotalRevisions(), in.getCreationDate(), rn.getRootConfigurationUrl());
-    
-                    ranlist.add(rnw); 
-                    
-                }
-                catch (RancidApiException e){
-                    log().debug("No inventory information associated to " + rancidName);
-                }
             }
+            catch (RancidApiException e){
+                log().debug("No device found in router.db for:" + rancidName + "on Group: " + groupname);
+            }
+        }
             
-            //Groups invariant            
-            nodeModel.put("grouptable", ranlist);
-            nodeModel.put("url", m_cp.getUrl());
-            
-            //CLOGIN
-            if (adminRole) {
-    
-                RancidNodeAuthentication rn5 = RWSClientApi.getRWSAuthNode(m_cp,rancidName);
+        //Groups invariant            
+        nodeModel.put("grouptable", ranlist);
+        nodeModel.put("url", m_cp.getUrl());
+        
+        //CLOGIN
+        if (adminRole) {
+            log().debug("getRancidNode: getting clogin info for: " + rancidName);        
+            RancidNodeAuthentication rn5;
+            try {
+                rn5 = RWSClientApi.getRWSAuthNode(m_cp,rancidName);
                 nodeModel.put("isadmin", "true");
                 nodeModel.put("cloginuser", rn5.getUser());
                 nodeModel.put("cloginpassword", rn5.getPassword());
@@ -177,9 +184,9 @@ public class InventoryService implements InitializingBean {
                     autoen = "1";
                 }
                 nodeModel.put("cloginautoenable", autoen);
+            }catch (RancidApiException e){
+                log().error("getRancidNode: clogin get failed with reason: " + e.getLocalizedMessage());
             }
-        }catch (Exception e){
-            log().debug("getRancidNode has given exception " + e.getMessage());
         }
         return nodeModel;
     }
