@@ -42,25 +42,7 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
 		    String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
             result.put(parmName, parmValue);
 		}
-
-//		BufferedReader in = new BufferedReader(new InputStreamReader(
-//				entityStream));
-
-//		StringBuffer buffer = new StringBuffer();
-//		String line = null;
-//		while ((line = in.readLine()) != null) {
-//			buffer.append(line);
-//		}
-//		
-//		String postBody = buffer.toString();
-//		System.out.println("postBody: " + postBody);
-//		for (String item : postBody.split("&")) {
-//      String[] kv = item.split("=");
-//      result.add(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1],"UTF-8"));
-//  }
 		
-		
-
 		return result;
 	}
 
