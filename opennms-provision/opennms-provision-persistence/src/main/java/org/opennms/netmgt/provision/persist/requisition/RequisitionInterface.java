@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -26,10 +27,10 @@ import javax.xml.bind.annotation.XmlType;
 public class RequisitionInterface {
 
     @XmlElement(name="monitored-service")
-    protected List<RequisitionMonitoredService> m_monitoredServices;
+    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories;
+    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
 
     @XmlAttribute(name="descr")
     protected String m_description;
@@ -45,6 +46,17 @@ public class RequisitionInterface {
     
     @XmlAttribute(name="status")
     protected Integer m_status;
+
+    @XmlTransient
+    public int getMonitoredServiceCount() {
+        return (m_monitoredServices == null) ? 0 : m_monitoredServices.size();
+    }
+
+    /* backwards-compat with ModelImport */
+    @XmlTransient
+    public RequisitionMonitoredService[] getMonitoredService() {
+        return getMonitoredServices().toArray(new RequisitionMonitoredService[] {});
+    }
 
     public List<RequisitionMonitoredService> getMonitoredServices() {
         if (m_monitoredServices == null) {
@@ -69,6 +81,19 @@ public class RequisitionInterface {
         return null;
     }
 
+    public void removeMonitoredService(RequisitionMonitoredService service) {
+        if (m_monitoredServices != null) {
+            Iterator<RequisitionMonitoredService> i = m_monitoredServices.iterator();
+            while (i.hasNext()) {
+                RequisitionMonitoredService svc = i.next();
+                if (svc.getServiceName().equals(service.getServiceName())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteMonitoredService(String service) {
         if (m_monitoredServices != null) {
             Iterator<RequisitionMonitoredService> i = m_monitoredServices.iterator();
@@ -82,7 +107,18 @@ public class RequisitionInterface {
         }
     }
 
-    public void putService(RequisitionMonitoredService service) {
+    public void insertMonitoredService(RequisitionMonitoredService service) {
+        Iterator<RequisitionMonitoredService> iterator = m_monitoredServices.iterator();
+        while (iterator.hasNext()) {
+            RequisitionMonitoredService existingService = iterator.next();
+            if (existingService.getServiceName().equals(service.getServiceName())) {
+                iterator.remove();
+            }
+        }
+        m_monitoredServices.add(0, service);
+    }
+
+    public void putMonitoredService(RequisitionMonitoredService service) {
         Iterator<RequisitionMonitoredService> iterator = m_monitoredServices.iterator();
         while (iterator.hasNext()) {
             RequisitionMonitoredService existingService = iterator.next();
@@ -116,6 +152,19 @@ public class RequisitionInterface {
         return null;
     }
 
+    public void removeCategory(RequisitionCategory category) {
+        if (m_categories != null) {
+            Iterator<RequisitionCategory> i = m_categories.iterator();
+            while (i.hasNext()) {
+                RequisitionCategory cat = i.next();
+                if (cat.getName().equals(category.getName())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+    
     public void deleteCategory(String category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();

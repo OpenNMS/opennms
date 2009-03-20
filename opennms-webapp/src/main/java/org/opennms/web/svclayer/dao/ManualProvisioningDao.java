@@ -36,7 +36,7 @@ package org.opennms.web.svclayer.dao;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
  * 
@@ -46,9 +46,9 @@ public interface ManualProvisioningDao {
 
     Collection<String> getProvisioningGroupNames();
 
-    ModelImport get(String name);
+    Requisition get(String name);
 
-    void save(String groupName, ModelImport group);
+    void save(String groupName, Requisition group);
 
     String getUrlForGroup(String groupName);
 

@@ -63,7 +63,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         try {
             foreignSource.updateDateStamp();
             writer = new FileWriter(outputFile);
-            getMarshaller().marshal(foreignSource, writer);
+            getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
@@ -120,7 +120,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         try {
             requisition.updateDateStamp();
             writer = new FileWriter(outputFile);
-            getMarshaller().marshal(requisition, writer);
+            getMarshaller(Requisition.class).marshal(requisition, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
@@ -146,7 +146,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     
     private synchronized ForeignSource get(File file) throws ForeignSourceRepositoryException {
         try {
-            return getUnmarshaller().unmarshal(new StreamSource(file), ForeignSource.class).getValue();
+            return getUnmarshaller(ForeignSource.class).unmarshal(new StreamSource(file), ForeignSource.class).getValue();
         } catch (JAXBException e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
         }
@@ -154,7 +154,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     private synchronized Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return getUnmarshaller().unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
+            return getUnmarshaller(Requisition.class).unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
@@ -195,8 +195,8 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    private synchronized Unmarshaller getUnmarshaller() throws JAXBException {
-        return getJaxbContext().createUnmarshaller();
+    private Unmarshaller getUnmarshaller(Class<?> objectType) throws JAXBException {
+        return getJaxbContext(objectType).createUnmarshaller();
     }
 
 }

@@ -429,7 +429,7 @@ public class RequisitionRestService extends OnmsRestService {
             if (node != null) {
                 RequisitionInterface iface = node.getInterface(ipAddress);
                 if (iface != null) {
-                    iface.putService(service);
+                    iface.putMonitoredService(service);
                     m_pendingForeignSourceRepository.save(req);
                     return Response.ok(req).build();
                 }

@@ -43,7 +43,6 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,9 +50,9 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.NonTransientDataAccessResourceException;
@@ -78,7 +77,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         }
     }
 
-    public ModelImport get(String name) {
+    public Requisition get(String name) {
         checkGroupName(name);
         
         File importFile = getImportFile(name);
@@ -91,7 +90,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
             throw new PermissionDeniedDataAccessException("Unable to read file "+importFile, null);
         }
         
-        return CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, new FileSystemResource(importFile));
+        return CastorUtils.unmarshalWithTranslatedExceptions(Requisition.class, new FileSystemResource(importFile));
     }
 
     private void checkGroupName(String name) {
@@ -110,14 +109,14 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         return Arrays.asList(groupNames);
     }
 
-    public void save(String groupName, ModelImport group) {
+    public void save(String groupName, Requisition group) {
         checkGroupName(groupName);
         
         File importFile = getImportFile(groupName);
         
         if (importFile.exists()) {
-            ModelImport currentData = get(groupName);
-            if (currentData.getDateStamp().after(group.getDateStamp())) {
+            Requisition currentData = get(groupName);
+            if (currentData.getDateStamp().compare(group.getDateStamp()) > 0) {
                 throw new OptimisticLockingFailureException("Data in file "+importFile+" is newer than data to be saved!");
             }
         }
@@ -127,7 +126,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         try {
             // write to a string to check constraints
             StringWriter strWriter = new StringWriter();
-            group.setDateStamp(new Date());
+            group.updateDateStamp();
             Marshaller.marshal(group, strWriter);
             
             // if we successfully get here then the file is correct

@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,11 +19,11 @@ import javax.xml.bind.annotation.XmlType;
 public class RequisitionNode {
 
     @XmlElement(name = "interface")
-    protected List<RequisitionInterface> m_interfaces;
+    protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories;
+    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
     @XmlElement(name="asset")
-    protected List<RequisitionAsset> m_assets;
+    protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
     
     @XmlAttribute
     protected String building;
@@ -41,6 +42,17 @@ public class RequisitionNode {
 
     @XmlAttribute(name = "parent-node-label")
     protected String parentNodeLabel;
+
+    @XmlTransient
+    public int getInterfaceCount() {
+        return (m_interfaces == null)? 0 : m_interfaces.size();
+    }
+
+    /* backwards-compat with ModelImport */
+    @XmlTransient
+    public RequisitionInterface[] getInterface() {
+        return getInterfaces().toArray(new RequisitionInterface[] {});
+    }
 
     public List<RequisitionInterface> getInterfaces() {
         if (m_interfaces == null) {
@@ -65,6 +77,19 @@ public class RequisitionNode {
         return null;
     }
 
+    public void removeInterface(RequisitionInterface iface) {
+        if (m_interfaces != null) {
+            Iterator<RequisitionInterface> i = m_interfaces.iterator();
+            while (i.hasNext()) {
+                RequisitionInterface ri = i.next();
+                if (ri.getIpAddr().equals(iface.getIpAddr())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteInterface(String ipAddress) {
         if (m_interfaces != null) {
             Iterator<RequisitionInterface> i = m_interfaces.iterator();
@@ -78,6 +103,17 @@ public class RequisitionNode {
         }
     }
 
+    public void insertInterface(RequisitionInterface iface) {
+        Iterator<RequisitionInterface> iterator = m_interfaces.iterator();
+        while (iterator.hasNext()) {
+            RequisitionInterface existingIface = iterator.next();
+            if (existingIface.getIpAddr().equals(iface.getIpAddr())) {
+                iterator.remove();
+            }
+        }
+        m_interfaces.add(0, iface);
+    }
+
     public void putInterface(RequisitionInterface iface) {
         Iterator<RequisitionInterface> iterator = m_interfaces.iterator();
         while (iterator.hasNext()) {
@@ -87,6 +123,17 @@ public class RequisitionNode {
             }
         }
         m_interfaces.add(iface);
+    }
+
+    @XmlTransient
+    public int getCategoryCount() {
+        return (m_categories == null)? 0 : m_categories.size();
+    }
+
+    /* backwards compatibility with ModelImport */
+    @XmlTransient
+    public RequisitionCategory[] getCategory() {
+        return m_categories.toArray(new RequisitionCategory[] {});
     }
 
     public List<RequisitionCategory> getCategories() {
@@ -112,6 +159,19 @@ public class RequisitionNode {
         return null;
     }
 
+    public void deleteCategory(RequisitionCategory category) {
+        if (m_categories != null) {
+            Iterator<RequisitionCategory> i = m_categories.iterator();
+            while (i.hasNext()) {
+                RequisitionCategory cat = i.next();
+                if (cat.getName().equals(category.getName())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteCategory(String category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
@@ -125,6 +185,17 @@ public class RequisitionNode {
         }
     }
 
+    public void insertCategory(RequisitionCategory category) {
+        Iterator<RequisitionCategory> iterator = m_categories.iterator();
+        while (iterator.hasNext()) {
+            RequisitionCategory existing = iterator.next();
+            if (existing.getName().equals(category.getName())) {
+                iterator.remove();
+            }
+        }
+        m_categories.add(0, category);
+    }
+
     public void putCategory(RequisitionCategory category) {
         Iterator<RequisitionCategory> iterator = m_categories.iterator();
         while (iterator.hasNext()) {
@@ -134,6 +205,17 @@ public class RequisitionNode {
             }
         }
         m_categories.add(category);
+    }
+
+    @XmlTransient
+    public int getAssetCount() {
+        return (m_assets == null)? 0 : m_assets.size();
+    }
+    
+    /* backwards compatibility with ModelImport */
+    @XmlTransient
+    public RequisitionAsset[] getAsset() {
+        return m_assets.toArray(new RequisitionAsset[] {});
     }
 
     public List<RequisitionAsset> getAssets() {
@@ -159,6 +241,19 @@ public class RequisitionNode {
         return null;
     }
 
+    public void removeAsset(RequisitionAsset asset) {
+        if (m_assets != null) {
+            Iterator<RequisitionAsset> i = m_assets.iterator();
+            while (i.hasNext()) {
+                RequisitionAsset a = i.next();
+                if (a.getName().equals(asset.getName())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+    
     public void deleteAsset(String name) {
         if (m_assets != null) {
             Iterator<RequisitionAsset> i = m_assets.iterator();
@@ -172,6 +267,17 @@ public class RequisitionNode {
         }
     }
 
+    public void insertAsset(RequisitionAsset asset) {
+        Iterator<RequisitionAsset> iterator = m_assets.iterator();
+        while (iterator.hasNext()) {
+            RequisitionAsset existing = iterator.next();
+            if (existing.getName().equals(asset.getName())) {
+                iterator.remove();
+            }
+        }
+        m_assets.add(0, asset);
+    }
+    
     public void putAsset(RequisitionAsset asset) {
         Iterator<RequisitionAsset> iterator = m_assets.iterator();
         while (iterator.hasNext()) {

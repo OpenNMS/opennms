@@ -53,6 +53,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import junit.framework.AssertionFailedError;
 
 import org.exolab.castor.util.LocalConfiguration;
@@ -82,7 +86,7 @@ import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
-import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -92,8 +96,9 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
-import org.opennms.netmgt.config.rws.RwsConfiguration;
+import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
+import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.server.LocalServer;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
@@ -117,9 +122,8 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
-import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
-import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
@@ -314,11 +318,11 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testExampleHypericImportsHQ() throws Exception {
-        unmarshalExample("hyperic-integration/imports-HQ.xml", ModelImport.class);
+        unmarshalJaxbExample("hyperic-integration/imports-HQ.xml", Requisition.class);
     }
     @Test
     public void testExampleHypericImportsOpennmsAdmin() throws Exception {
-        unmarshalExample("hyperic-integration/imports-opennms-admin.xml", ModelImport.class);
+        unmarshalJaxbExample("hyperic-integration/imports-opennms-admin.xml", Requisition.class);
     }
     @Test
     public void testMonitoringLocations() throws Exception {
@@ -660,6 +664,28 @@ public class WillItUnmarshalTest {
         }
     }
     
+    @SuppressWarnings("unused")
+    private static <T>T unmarshalJaxb(String configFile, Class<T> clazz) throws JAXBException {
+        return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
+    }
+
+    private static <T>T unmarshalJaxbExample(String configFile, Class<T> clazz) throws JAXBException {
+        return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T>T unmarshalJaxb(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(clazz);
+        Unmarshaller um = context.createUnmarshaller();
+        um.setSchema(null);
+        T object = (T) um.unmarshal(file);
+
+        assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), object);
+        testedSet.add(fileName);
+
+        return object;
+    }
+
     private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
         return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }

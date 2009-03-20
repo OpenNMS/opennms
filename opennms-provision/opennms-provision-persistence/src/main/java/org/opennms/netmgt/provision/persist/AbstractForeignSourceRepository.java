@@ -18,15 +18,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
-    private JAXBContext m_jaxbContext;
+    private final ProvisionPrefixContextResolver m_jaxbContextResolver;
 
     public AbstractForeignSourceRepository() {
         try {
-            m_jaxbContext = JAXBContext.newInstance(ForeignSource.class, Requisition.class);
+            m_jaxbContextResolver = new ProvisionPrefixContextResolver();
         } catch (JAXBException e) {
-            throw new ForeignSourceRepositoryException("unable to create JAXB context", e);
-        } catch (Exception e) {
-            throw new ForeignSourceRepositoryException("unable to get schema", e);
+            throw new ForeignSourceRepositoryException("unable to get JAXB context resolver", e);
         }
     }
     public Requisition importRequisition(Resource resource) throws ForeignSourceRepositoryException {
@@ -74,7 +72,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         try {
             foreignSource.updateDateStamp();
             writer = new FileWriter(outputFile);
-            getMarshaller().marshal(foreignSource, writer);
+            getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
@@ -95,13 +93,13 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
     
-    protected synchronized Marshaller getMarshaller() throws JAXBException {
-        Marshaller marshaller = m_jaxbContext.createMarshaller();
+    protected synchronized Marshaller getMarshaller(Class<?> clazz) throws JAXBException {
+        Marshaller marshaller = m_jaxbContextResolver.getContext(clazz).createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         return marshaller;
     }
-
-    protected JAXBContext getJaxbContext() {
-        return m_jaxbContext;
+    
+    protected JAXBContext getJaxbContext(Class<?> objectType) {
+        return m_jaxbContextResolver.getContext(objectType);
     }
 }
