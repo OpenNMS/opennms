@@ -62,16 +62,18 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") String nodeCriteria) {
         log().debug("getIpInterfaces: reading interfaces for node " + nodeCriteria);
         
-        OnmsNode node = m_nodeDao.get(nodeCriteria);        
-        //if (node == null)
-            //throwException(Status.BAD_REQUEST, "getIpInterfaces: can't find node " + nodeId);
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
         
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         setLimitOffset(params, criteria, 20);
-        addFiltersToCriteria(params, criteria, OnmsIpInterface.class);
         
+        if(params.containsKey("orderBy") && params.containsKey("order")){
+           addOrdering(params, criteria);
+        }
+        
+        addFiltersToCriteria(params, criteria, OnmsIpInterface.class);
         criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
         OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(criteria));
         

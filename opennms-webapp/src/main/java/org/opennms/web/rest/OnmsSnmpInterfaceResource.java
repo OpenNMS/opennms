@@ -56,6 +56,11 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
         setLimitOffset(params, criteria, 20);
+        
+        if(params.containsKey("orderBy") && params.containsKey("order")){
+            addOrdering(params, criteria);
+        }
+        
         addFiltersToCriteria(params, criteria, OnmsSnmpInterface.class);
         
         criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
