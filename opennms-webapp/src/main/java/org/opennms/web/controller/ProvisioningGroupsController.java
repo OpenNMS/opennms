@@ -44,8 +44,8 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.opennms.web.svclayer.support.ForeignSourceService;
 import org.springframework.validation.BindException;
@@ -169,10 +169,10 @@ public class ProvisioningGroupsController extends SimpleFormController {
         Map<String, Object> refData = new HashMap<String, Object>();
 
         Set<String>               names          = new TreeSet<String>();
-        Map<String,ModelImport>   groups         = new TreeMap<String,ModelImport>();
+        Map<String,Requisition>   groups         = new TreeMap<String,Requisition>();
         Map<String,ForeignSource> foreignSources = new TreeMap<String,ForeignSource>();
 
-        for (ModelImport mi : m_provisioningService.getAllGroups()) {
+        for (Requisition mi : m_provisioningService.getAllGroups()) {
             names.add(mi.getForeignSource());
             groups.put(mi.getForeignSource(), mi);
         }

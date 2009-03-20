@@ -14,7 +14,6 @@ public class ProvisionNamespacePrefixMapper extends NamespacePrefixMapper {
 
     @Override
     public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
-        System.err.println(String.format("getPreferredprefix(%s, %s, %s) called", namespaceUri, suggestion, requirePrefix));
         if("http://www.w3.org/2001/XMLSchema-instance".equals(namespaceUri)) {
             return "xsi";
         }

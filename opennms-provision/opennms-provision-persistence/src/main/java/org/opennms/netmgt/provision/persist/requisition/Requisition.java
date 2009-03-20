@@ -45,7 +45,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
-    protected List<RequisitionNode> m_nodes;
+    protected List<RequisitionNode> m_nodes = new ArrayList<RequisitionNode>();
     
     @XmlAttribute(name="date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
@@ -68,6 +68,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return null;
     }
 
+    public void removeNode(RequisitionNode node) {
+        if (m_nodes != null) {
+            Iterator<RequisitionNode> i = m_nodes.iterator();
+            while (i.hasNext()) {
+                RequisitionNode n = i.next();
+                if (n.getForeignId().equals(node.getForeignId())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteNode(String foreignId) {
         if (m_nodes != null) {
             Iterator<RequisitionNode> i = m_nodes.iterator();
@@ -81,16 +94,28 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
+    /* backwards-compat with ModelImport */
+    @XmlTransient
+    public RequisitionNode[] getNode() {
+        return getNodes().toArray(new RequisitionNode[] {});
+    }
+
     public List<RequisitionNode> getNodes() {
-        if (m_nodes == null) {
-            m_nodes = new ArrayList<RequisitionNode>();
-        }
         return m_nodes;
     }
 
     public void setNodes(List<RequisitionNode> nodes) {
         m_nodes = nodes;
         updateNodeCache();
+    }
+
+    public void insertNode(RequisitionNode node) {
+        if (m_nodeReqs.containsKey(node.getForeignId())) {
+            RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            m_nodes.remove(n);
+        }
+        m_nodes.add(0, node);
+        m_nodeReqs.put(node.getForeignId(), new OnmsNodeRequisition(getForeignSource(), node));
     }
 
     public void putNode(RequisitionNode node) {
@@ -145,6 +170,11 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         updateDateStamp();
     }
 
+    public Requisition(String foreignSource) {
+        this();
+        m_foreignSource = foreignSource;
+    }
+    
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {
@@ -175,6 +205,11 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return m_nodeReqs.get(foreignId);
     }
     
+    @XmlTransient
+    public int getNodeCount() {
+        return (m_nodes == null) ? 0 : m_nodes.size();
+    }
+
     private Category log() {
         return ThreadCategory.getInstance(Requisition.class);
     }

@@ -29,5 +29,4 @@ public class RequisitionCategory {
     public void setName(String value) {
         m_name = value;
     }
-
 }
