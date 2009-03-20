@@ -82,9 +82,6 @@ public class OnmsRestService {
 	 * @param objectClass the type of thing being filtered.
 	 */
 	protected void addFiltersToCriteria(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, Class objectClass) {
-	   
-        
-		setOrdering(params, criteria);
 		
 		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
 	    paramsCopy.putAll(params);
@@ -181,7 +178,7 @@ public class OnmsRestService {
 	 * @param params - set of values to look in for the "order" and "orderBy" values
 	 * @param criteria - the criteria object which will be updated with ordering configuration
 	 */
-	private void setOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
+	protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
 		System.out.println("order by params: " + params);
 	    if(params.containsKey("orderBy")) {
 			String orderBy=params.getFirst("orderBy");
