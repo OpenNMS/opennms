@@ -49,6 +49,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -76,6 +77,9 @@ public class ImportOperationsManager {
 	private int m_writeThreads = 4;
     private String m_foreignSource;
     
+    private boolean m_nonIpInterfaces = false;
+    private String m_nonIpSnmpPrimary = "N";
+    
     public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory) {
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_operationFactory = operationFactory;
@@ -95,14 +99,14 @@ public class ImportOperationsManager {
     }
     
     private SaveOrUpdateOperation insertNode(String foreignId, String nodeLabel, String building, String city) {
-        InsertOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city);
+        InsertOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city, m_nonIpInterfaces, m_nonIpSnmpPrimary);
         m_inserts.add(insertOperation);
         return insertOperation;
     }
 
     private SaveOrUpdateOperation updateNode(String foreignId, String nodeLabel, String building, String city) {
         Integer nodeId = processForeignId(foreignId);
-        UpdateOperation updateOperation = m_operationFactory.createUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city);
+        UpdateOperation updateOperation = m_operationFactory.createUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_nonIpInterfaces, m_nonIpSnmpPrimary);
         m_updates.add(updateOperation);
         return updateOperation;
     }
@@ -295,13 +299,9 @@ public class ImportOperationsManager {
 		m_writeThreads = writeThreads;
 	}
 
-
-
 	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
 	}
-
-
 
 	public void setEventMgr(EventIpcManager eventMgr) {
 		m_eventMgr = eventMgr;
@@ -322,4 +322,25 @@ public class ImportOperationsManager {
     public String getForeignSource() {
         return m_foreignSource;
     }
+    
+    public void setNonIpInterfaces(Boolean nonIpInterfaces) {
+        m_nonIpInterfaces = nonIpInterfaces;
+    }
+    
+    public Boolean getNonIpInterfaces() {
+        return m_nonIpInterfaces;
+    }
+    
+    public void setNonIpSnmpPrimary(String nonIpSnmpPrimary) {
+        if ("N".equals(nonIpSnmpPrimary) || "C".equals(nonIpSnmpPrimary)) {
+            m_nonIpSnmpPrimary = nonIpSnmpPrimary;
+        } else {
+            throw new IllegalArgumentException("Value must be one of 'N', 'C'");
+        }
+    }
+    
+    public String getNonIpSnmpPrimary() {
+        return m_nonIpSnmpPrimary;
+    }
+    
 }

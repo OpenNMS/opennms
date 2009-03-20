@@ -37,22 +37,28 @@
 
 package org.opennms.netmgt.importer.operations;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IpAddrTableEntry;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
 
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
+    private boolean m_shouldSendSnmpPrimaryEvent = false;
     
     public class ServiceUpdater {
         
@@ -120,8 +126,104 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
     }
 
-    public class InterfaceUpdater {
+    public class NonIpIpInterfaceUpdater {
+        private OnmsNode m_dbNode, m_importedNode;
+        private Map<Integer,OnmsSnmpInterface> m_dbNodeIfsByIfIndex;
+        private List<Integer> m_nonIpIfIndexesOnActualNode;
         
+        public NonIpIpInterfaceUpdater(OnmsNode node, OnmsNode imported) {
+            m_dbNode = node;
+            m_importedNode = imported; 
+            m_dbNodeIfsByIfIndex = new HashMap<Integer,OnmsSnmpInterface>();
+            
+            for (OnmsSnmpInterface dbIface : m_dbNode.getSnmpInterfaces()) {
+                m_dbNodeIfsByIfIndex.put(dbIface.getIfIndex(), dbIface);
+            }
+        }
+        
+        public void execute() {
+            if (m_collector == null || !m_collector.hasIfTable()) {
+                log().debug("Not finding non-IP interfaces for this node because the node does not support SNMP (wrong community string?) or lacks an ifTable (lame SNMP agent?)");
+                return;
+            }
+            
+            m_nonIpIfIndexesOnActualNode = getNonIpIfIndexesOnActualNode();
+            if (log().isDebugEnabled()) {
+                log().debug("NonIpIpInterfaceUpdater.execute: Will create a total of " + m_nonIpIfIndexesOnActualNode.size() + " non-IP interfaces on node " + m_importedNode.getLabel());
+            }
+            
+            Map<Integer,OnmsIpInterface> importedIfsByIfIndex = new HashMap<Integer,OnmsIpInterface>();
+            
+            // Create an snmpInterface and a sham ipInterface on the imported node for each non-IP interface
+            for (Integer newIfIndex : m_nonIpIfIndexesOnActualNode) {
+                OnmsSnmpInterface newSnmpIf = new OnmsSnmpInterface("0.0.0.0", newIfIndex, m_importedNode);
+                updateSnmpInterface(newSnmpIf);
+                OnmsIpInterface newIpIf = new OnmsIpInterface("0.0.0.0", m_importedNode);
+                newIpIf.setSnmpInterface(newSnmpIf);
+                newIpIf.setIsSnmpPrimary(CollectionType.get(m_nonIpSnmpPrimary));
+                newIpIf.setIpStatus(2);
+                newIpIf.setIsManaged("U");
+                importedIfsByIfIndex.put(newIpIf.getIfIndex(), newIpIf);
+            }
+            
+            // Finally, update the SNMP Primary status of non-IP interfaces already in the database
+            for (OnmsIpInterface dbIface : m_dbNode.getIpInterfaces()) {
+                if (! "0.0.0.0".equals(dbIface.getIpAddress())) {
+                    continue;
+                }
+
+                if (importedIfsByIfIndex.containsKey(dbIface.getIfIndex())) {
+                    dbIface.setIsSnmpPrimary(CollectionType.get(m_nonIpSnmpPrimary));
+                    // If we have some non-IP interfaces, then we should probably send this
+                    m_shouldSendSnmpPrimaryEvent = true;
+                }
+            }
+            
+        }
+        
+        List<Integer> getNonIpIfIndexesOnActualNode() {
+            List<Integer> ifIndexes = new ArrayList<Integer>();
+            
+            // Start with a list of all the ifIndexes on the actual node
+            for (IfTableEntry ite: m_collector.getIfTable().getEntries()) {
+                ifIndexes.add(ite.getIfIndex());
+            }
+            
+            if (log().isDebugEnabled()) {
+                log().debug("NonIpIpInterfaceUpdater.getNonIpIfIndexesOnActualNode: Found a total of " + ifIndexes.size() + " ifIndexes on actual node");
+            }
+            
+            // Add only those ifIndexes not associated with an IP address
+            for (IpAddrTableEntry ipadEnt : m_collector.getIpAddrTable().getEntries()) {
+                Integer ipadEntIfIndex = ipadEnt.getIpAdEntIfIndex();
+                if (ifIndexes.contains(ipadEntIfIndex)) {
+                    if (log().isDebugEnabled()) {
+                        log().debug("NonIpIpInterfaceUpdater.getNonIpIfIndexesOnActualNode: Excluding ifIndex " + ipadEntIfIndex + " on node " + m_importedNode.getLabel() + " because it appears in ipAddrTable");
+                    }
+                    ifIndexes.remove(ipadEntIfIndex);
+                }
+            }
+            return ifIndexes;
+        }
+        
+        private void updateSnmpInterface(OnmsSnmpInterface snmpIf) {
+            if (m_collector == null || !m_collector.hasIfTable() || !m_collector.hasIfXTable()) {
+                log().info("Not updating SNMP interface with ifIndex " + snmpIf.getIfIndex() + " because this node lacks an ifTable or ifXTable");
+                return;
+            }
+            Integer ifIndex = snmpIf.getIfIndex();
+            snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
+            snmpIf.setIfName(m_collector.getIfName(ifIndex));
+            snmpIf.setIfType(getIfType(ifIndex));
+            snmpIf.setNetMask(getNetMask(ifIndex));
+            snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+            snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
+            snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+            snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
+        }
+    }
+
+    public class InterfaceUpdater {
         private OnmsNode m_node;
         private Map<String, OnmsIpInterface> m_ipAddrToImportIfs;
 
@@ -135,11 +237,14 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
                 OnmsIpInterface iface = it.next();
                 OnmsIpInterface imported = getImportedVersion(iface);
                 
-                if (imported == null) {
+                if (! ipInterfaceBelongs(iface, imported)) {
                     it.remove();
                     iface.visit(new DeleteEventVisitor(events));
                     markAsProcessed(iface);
                 } else {
+                    if (imported == null) {
+                        imported = iface;
+                    }
                     update(imported, iface, events);
                     markAsProcessed(iface);
                 }
@@ -147,7 +252,19 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             }
             addNewInterfaces(events);
         }
-
+        
+        private boolean ipInterfaceBelongs(OnmsIpInterface iface, OnmsIpInterface imported) {
+            if (! m_nonIpInterfaces) {
+                return (imported != null);
+            } else {
+                if (imported == null) {
+                    return ("0.0.0.0".equals(iface.getIpAddress()));
+                } else {
+                    return true;
+                }
+            }
+        }
+        
         private void addNewInterfaces(List<Event> events) {
             for (OnmsIpInterface iface : getNewInterfaces()) {
                 m_node.addIpInterface(iface);
@@ -176,6 +293,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             
             if (!nullSafeEquals(iface.getIsSnmpPrimary(), imported.getIsSnmpPrimary())) {
                 iface.setIsSnmpPrimary(imported.getIsSnmpPrimary());
+                if (log().isDebugEnabled()) log().debug("InterfaceUpdater.update: Set snmpPrimary to '" + m_nonIpSnmpPrimary + "' for ipInterface with ifIndex " + iface.getIfIndex());
                 // TODO: send snmpPrimary event
             }
             
@@ -208,9 +326,6 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
                 OnmsSnmpInterface snmpIface = m_node.getSnmpInterfaceWithIfIndex(imported.getIfIndex());
                 iface.setSnmpInterface(snmpIface);
             }
-            
-            
-            
 		}
         
         private void updateServices(OnmsIpInterface iface, OnmsIpInterface imported, List<Event> events) {
@@ -330,8 +445,9 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     }
 
 
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-		super(nodeId, foreignSource, foreignId, nodeLabel, building, city);
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city,
+            Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
+		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
 	public List<Event> doPersist() {
@@ -378,6 +494,8 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 			
 		}
 
+        updateNonIpInterfaces(db, imported);
+        
         if (isSnmpDataForInterfacesUpToDate())
             updateSnmpInterfaces(db, imported);
 
@@ -385,6 +503,11 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 		updateCategories(db, imported);
 
 		getNodeDao().update(db);
+		
+		// If we did any non-IP interface stuff or changed the primary interface, add an event for that
+		if (m_shouldSendSnmpPrimaryEvent) {
+		    db.visit(new SnmpPrimaryChangeEventVisitor(events));
+		}
         
 		return events;
 
@@ -398,11 +521,15 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         if (!db.getCategories().equals(imported.getCategories()))
             db.setCategories(imported.getCategories());
     }
+	
+	private void updateNonIpInterfaces(OnmsNode db, OnmsNode imported) {
+	    new NonIpIpInterfaceUpdater(db, imported).execute();
+	}
 
     private void updateInterfaces(OnmsNode db, OnmsNode imported, List<Event> events) {
         new InterfaceUpdater(db, imported).execute(events);
     }
-
+    
     public String toString() {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }

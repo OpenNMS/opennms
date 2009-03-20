@@ -257,17 +257,17 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         startNewTransaction();
     }
 
-    public void testImportToOperationsMgr() throws Exception {
+    public void testImportToOperationsMgrNoNonIpIfs() throws Exception {
         createAndFlushCategories();
         
         testDoubleImport(new ClassPathResource("/tec_dump.xml"));
         
         Collection<OnmsIpInterface> c = getIpInterfaceDao().findByIpAddress("172.20.1.201");
         assertEquals(1, c.size());
-        
 
+        c = getIpInterfaceDao().findByIpAddress("0.0.0.0");
+        assertEquals(0, c.size());
     }
-
 
 	private void testDoubleImport(Resource specFileResource) throws ModelImportException, IOException {
         

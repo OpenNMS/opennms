@@ -13,6 +13,22 @@
       <attribute name="date-stamp" type="dateTime" />
       <attribute name="last-import" type="dateTime" />
       <attribute name="foreign-source" type="string" use="optional" default="imported:" />
+      <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false" />
+      <attribute name="non-ip-snmp-primary" use="optional" default="N">
+        <annotation>
+          <documentation>
+            This attribute is used by OpenNMS to control SNMP data collection for non-IP interfaces when "non-ip-interfaces" is set to "true". 
+            C - Collectable interface. Data for non-IP interfaces will be collected if the snmpStorageFlag for the package is "all" or "select".
+            N - Not a collectable interface. Data for non-IP interfaces will never be collected regardless of the snmpStorageFlag setting.
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(C|N)" />
+            <length value="1" />
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
   <element name="node">

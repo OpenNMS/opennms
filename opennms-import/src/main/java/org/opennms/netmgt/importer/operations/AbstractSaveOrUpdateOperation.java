@@ -38,14 +38,17 @@ package org.opennms.netmgt.importer.operations;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IpAddrTableEntry;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -70,13 +73,18 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private ThreadLocal<HashMap<String, OnmsServiceType>> m_types;
     private ThreadLocal<HashMap<String, OnmsCategory>> m_categories;
     
-    private IfSnmpCollector m_collector;
+    IfSnmpCollector m_collector;
+    
+    protected Boolean m_nonIpInterfaces;
+    protected String m_nonIpSnmpPrimary;
 
-    public AbstractSaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-		this(null, foreignSource, foreignId, nodeLabel, building, city);
+    public AbstractSaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city,
+            Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
+		this(null, foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
-	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city,
+	        Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
         m_node = new OnmsNode();
         m_node.setId(nodeId);
 		m_node.setLabel(nodeLabel);
@@ -86,6 +94,8 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_node.setForeignId(foreignId);
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
+        m_nonIpInterfaces = nonIpInterfaces;
+        m_nonIpSnmpPrimary = nonIpSnmpPrimary;
 	}
 
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
@@ -100,6 +110,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
+        if (log().isDebugEnabled()) log().debug("foundInterface: Set snmpPrimary to '" + m_nonIpSnmpPrimary + "' for ipInterface with ifIndex " + m_currentInterface.getIfIndex());
         m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
         if ("P".equals(snmpPrimary)) {
@@ -130,46 +141,78 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 			m_collector.run();
 		
 		updateSnmpDataForNode();
-		
+
 		updateSnmpDataForSnmpInterfaces();
-		
+
 		for (OnmsIpInterface ipIf : m_node.getIpInterfaces()) {
             resolveIpHostname(ipIf);
-            updateSnmpDataForInterface(ipIf);
+            updateSnmpDataForIpInterface(ipIf);
 		}
 	}
 	
 	private void updateSnmpDataForSnmpInterfaces() {
-	    if (m_collector != null && m_collector.hasIfTable()) {
-            String ipAddress = m_node.getPrimaryInterface().getIpAddress();
-
-            for(IfTableEntry entry : m_collector.getIfTable().getEntries()) {
-	            
-	            Integer ifIndex = entry.getIfIndex();
-	            
-	            if (ifIndex == null) continue;
-	            
-                log().debug("Updating SNMP Interface with ifIndex "+ifIndex);
-                
-	            // first look to see if an snmpIf was created already
-	            OnmsSnmpInterface snmpIf = m_node.getSnmpInterfaceWithIfIndex(ifIndex);
-	            
-	            if (snmpIf == null) {
-	                // if not then create one
-                    snmpIf = new OnmsSnmpInterface(ipAddress, ifIndex, m_node);
-	            }
-	            
-	            snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
-	            snmpIf.setIfName(m_collector.getIfName(ifIndex));
-	            snmpIf.setIfType(getIfType(ifIndex));
-	            snmpIf.setNetMask(getNetMask(ifIndex));
-	            snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-	            snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-	            snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
-	            snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
-	            
-	        }
+	    Set<Integer> ipIfIndexes = new HashSet<Integer>();
+	    
+	    if (m_collector == null || !m_collector.hasIfTable()) {
+	        log().debug("Not finding non-IP interfaces for this node because the node does not support SNMP (wrong community string?) or lacks an ifTable (lame SNMP agent?)");
+	        return;
 	    }
+	    
+	    if (!m_nonIpInterfaces) {
+	        log().debug("Not finding non-IP interfaces for this operation because 'non-ip-interfaces' is false");
+	        return;
+	    }
+	    
+	    for (IpAddrTableEntry ipadEnt : m_collector.getIpAddrTable().getEntries()) {
+	        ipIfIndexes.add(ipadEnt.getIpAdEntIfIndex());
+	    }
+	    
+        for(IfTableEntry entry : m_collector.getIfTable().getEntries()) {
+            
+            Integer ifIndex = entry.getIfIndex();
+            if (ipIfIndexes.contains(ifIndex)) {
+                if (log().isDebugEnabled()) log().debug("Not creating a non-IP interface for ifIndex " + ifIndex + " because it appears in the ipAddrTable");
+                continue;
+            }
+            
+            if (ifIndex == null) continue;
+            
+            log().debug("Updating SNMP Interface with ifIndex "+ifIndex);
+            
+            // first look to see if an snmpIf was created already
+            OnmsSnmpInterface newSnmpIf = m_node.getSnmpInterfaceWithIfIndex(ifIndex);
+            
+            if (newSnmpIf == null) {
+                // if not then create one
+                newSnmpIf = new OnmsSnmpInterface("0.0.0.0", ifIndex, m_node);
+            }
+            
+            newSnmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
+            newSnmpIf.setIfName(m_collector.getIfName(ifIndex));
+            newSnmpIf.setIfType(getIfType(ifIndex));
+            newSnmpIf.setNetMask(getNetMask(ifIndex));
+            newSnmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+            newSnmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
+            newSnmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+            newSnmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
+
+            OnmsIpInterface newIpIf = null;
+            for (OnmsIpInterface existingIpIf : m_node.getIpInterfaces()) {
+                if (existingIpIf.getIfIndex() != null && existingIpIf.getIfIndex() == newSnmpIf.getIfIndex()) {
+                    newIpIf = existingIpIf;
+                    break;
+                }
+            }
+            if (newIpIf == null) { 
+                newIpIf = new OnmsIpInterface("0.0.0.0", m_node);
+            }
+            
+            newIpIf.setSnmpInterface(newSnmpIf);
+            newIpIf.setIpStatus(2);
+            newIpIf.setIsManaged("U");
+            newIpIf.setIsSnmpPrimary(CollectionType.get(m_nonIpSnmpPrimary));
+            if (log().isDebugEnabled()) log().debug("updateSnmpDataForSnmpInterfaces: Set snmpPrimary to '" + m_nonIpSnmpPrimary + "' for ipInterface with ifIndex " + newIpIf.getIfIndex());
+        }
 	}
 
 	private void updateSnmpDataForNode() {
@@ -189,7 +232,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 		return m_collector != null && m_collector.hasIfTable() && m_collector.hasIpAddrTable();
 	}
 
-    private void updateSnmpDataForInterface(OnmsIpInterface ipIf) {
+    private void updateSnmpDataForIpInterface(OnmsIpInterface ipIf) {
     	if (m_collector == null || !m_collector.hasIpAddrTable() || !m_collector.hasIfTable()) return;
 
     	String ipAddr = ipIf.getIpAddress();
@@ -206,15 +249,16 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         if (snmpIf == null) {
             // if not then create one
             snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), m_node);
-            snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
-            snmpIf.setIfName(m_collector.getIfName(ifIndex));
-            snmpIf.setIfType(getIfType(ifIndex));
-            snmpIf.setNetMask(getNetMask(ifIndex));
-            snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-            snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-            snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
-            snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         }
+        
+        snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
+        snmpIf.setIfName(m_collector.getIfName(ifIndex));
+        snmpIf.setIfType(getIfType(ifIndex));
+        snmpIf.setNetMask(getNetMask(ifIndex));
+        snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+        snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
+        snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+        snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         
         if (ipIf.getIsSnmpPrimary() == CollectionType.PRIMARY) {
             // make sure the snmpIf has the ipAddr of the primary interface
@@ -228,17 +272,17 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
 	}
 
-	private Integer getAdminStatus(int ifIndex) {
+	protected Integer getAdminStatus(int ifIndex) {
 		int adminStatus = m_collector.getAdminStatus(ifIndex);
 		return (adminStatus == -1 ? null : new Integer(adminStatus));
 	}
 
-	private Integer getIfType(int ifIndex) {
+	protected Integer getIfType(int ifIndex) {
 		int ifType = m_collector.getIfType(ifIndex);
 		return (ifType == -1 ? null : new Integer(ifType));
 	}
 
-	private String getNetMask(int ifIndex) {
+	protected String getNetMask(int ifIndex) {
 		InetAddress[] ifAddressAndMask = m_collector.getIfAddressAndMask(ifIndex);
 		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null)
 			return ifAddressAndMask[1].getHostAddress();
@@ -341,7 +385,13 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
         Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
         for (OnmsIpInterface iface : imported.getIpInterfaces()) {
-            ipAddrToIface.put(iface.getIpAddress(), iface);
+            if (! m_nonIpInterfaces) {
+                // If we're not doing non-IP interfaces, include every ipInterface
+                ipAddrToIface.put(iface.getIpAddress(), iface);
+            } else if (! "0.0.0.0".equals(iface.getIpAddress())) {
+                // Otherwise include only non-zero ones
+                ipAddrToIface.put(iface.getIpAddress(), iface);
+            }
         }
         return ipAddrToIface;
     }
@@ -388,6 +438,22 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     
     public void setCategoryCache(ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
         m_categories = categoryCache;
+    }
+    
+    public void setNonIpInterfaces(Boolean nonIpInterfaces) {
+        m_nonIpInterfaces = nonIpInterfaces;
+    }
+    
+    public Boolean getNonIpInterfaces() {
+        return m_nonIpInterfaces;
+    }
+    
+    public void setNonIpSnmpPrimary(String nonIpSnmpPrimary) {
+        m_nonIpSnmpPrimary = nonIpSnmpPrimary;
+    }
+    
+    public String getNonIpSnmpPrimary() {
+        return m_nonIpSnmpPrimary;
     }
 
     protected Category log() {

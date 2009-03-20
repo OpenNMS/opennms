@@ -127,5 +127,21 @@ public class SpecFile {
     public void setForeignSource(String foreignSource) {
         m_mi.setForeignSource(foreignSource);
     }
+    
+    public Boolean getNonIpInterfaces() {
+        return m_mi.getNonIpInterfaces();
+    }
+    
+    public void setNonIpInterfaces(Boolean nonIpInterfaces) {
+        m_mi.setNonIpInterfaces(nonIpInterfaces);
+    }
+    
+    public String getNonIpSnmpPrimary() {
+        return m_mi.getNonIpSnmpPrimary();
+    }
+    
+    public void setNonIpSnmpPrimary(String nonIpSnmpPrimary) {
+        m_mi.setNonIpSnmpPrimary(nonIpSnmpPrimary);
+    }
 
 }
