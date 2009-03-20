@@ -31,216 +31,130 @@
 //
 package org.opennms.web.svclayer.support;
 
-import static org.easymock.EasyMock.expect;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.easymock.EasyMock;
-import org.opennms.netmgt.config.modelimport.Category;
-import org.opennms.netmgt.config.modelimport.Interface;
-import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.config.modelimport.MonitoredService;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.BeanUtils;
-import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 
 public class DefaultManualProvisioningServiceTest extends TestCase {
     
-    private List m_mocks = new ArrayList();
-
     private DefaultManualProvisioningService m_provisioningService;
 
-    private ManualProvisioningDao m_provisioningDao;
+    private Requisition m_testData;
     
-    private ModelImport m_testData;
-    
+    private ForeignSourceRepository m_repository = new MockForeignSourceRepository();
     
     @Override
     protected void setUp() throws Exception {
-        m_testData = CastorUtils.unmarshal(ModelImport.class, ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
-        
-        m_provisioningDao = createMock(ManualProvisioningDao.class);
-        
+        m_testData = m_repository.importRequisition(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
+
         m_provisioningService = new DefaultManualProvisioningService();
-        m_provisioningService.setProvisioningDao(m_provisioningDao);
-        
-        
+        m_provisioningService.setForeignSourceRepository(m_repository);
     }
 
-
     public void testGetProvisioningGroupNames() {
-        
-        List<String> expectedGroupNames = new LinkedList<String>();
-        
-        expect(m_provisioningDao.getProvisioningGroupNames()).andReturn(expectedGroupNames);
-        
-        replayMocks();
-        
+        Collection<String> expected = new ArrayList<String>();
+        expected.add("matt:");
         Collection<String> groupNames = m_provisioningService.getProvisioningGroupNames();
-        
-        verifyMocks();
-        
-        assertSame(expectedGroupNames, groupNames);
+        assertEquals(expected, groupNames);
     }
     
     public void testGetProvisioningGroup() {
-        String name = "groupName";
+        String name = "matt:";
         
-        ModelImport expected = m_testData;
-        expect(m_provisioningDao.get(name)).andReturn(expected);
-        
-        replayMocks();
-        
-        ModelImport actual = m_provisioningService.getProvisioningGroup(name);
-        
-        verifyMocks();
-        
-        assertSame(expected, actual);
+        Requisition expected = m_testData;
+        Requisition actual = m_provisioningService.getProvisioningGroup(name);
+        assertEquals(expected, actual);
     }
     
     public void testAddNewNodeToGroup() {
-        String groupName = "groupName";
-        String nodeLabel = "nodeLabel";
+        String groupName = "matt:";
+        String nodeLabel = "david";
         
-        ModelImport group = m_testData;
+        int initialCount = m_testData.getNodes().size();
+
+        Requisition result = m_provisioningService.addNewNodeToGroup(groupName, nodeLabel);
         
-        int initialCount = m_testData.getNodeCount();
-        
-        expect(m_provisioningDao.get(groupName)).andReturn(group).atLeastOnce();
-        m_provisioningDao.save(groupName, group);
-        
-        replayMocks();
-        
-        ModelImport result = m_provisioningService.addNewNodeToGroup(groupName, nodeLabel);
-        
-        verifyMocks();
-        
-        int newCount = result.getNodeCount();
+        int newCount = result.getNodes().size();
         
         assertEquals(initialCount+1, newCount);
-        
-        assertEquals(nodeLabel, result.getNode(0).getNodeLabel());
+        assertEquals(nodeLabel, result.getNodes().get(0).getNodeLabel());
     }
     
     public void testAddCategoryToNode() {
-        String groupName = "groupName";
+        String groupName = "matt:";
         String pathToNode = "node[0]";
         String categoryName = "categoryName";
-        
+
         int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class); 
         
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
-        m_provisioningDao.save(groupName, m_testData);
-
-        replayMocks();
-            
-        ModelImport result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
-        
-        verifyMocks();
+        Requisition result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
         
         int newCount = BeanUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
         
         assertEquals(initialCount+1, newCount);
-        Category newCategory = BeanUtils.getPathValue(result, pathToNode+".category[0]", Category.class);
+        RequisitionCategory newCategory = BeanUtils.getPathValue(result, pathToNode+".category[0]", RequisitionCategory.class);
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
     
     public void testAddInterfaceToNode() {
-        String groupName = "groupName";
+        String groupName = "matt:";
         String pathToNode = "node[0]";
         String ipAddr = "10.1.1.1";
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".interfaceCount", int.class); 
 
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
-        m_provisioningDao.save(groupName, m_testData);
-
-        replayMocks();
+        Requisition result = m_provisioningService.addInterfaceToNode(groupName, pathToNode, ipAddr);
         
-        ModelImport result = m_provisioningService.addInterfaceToNode(groupName, pathToNode, ipAddr);
-        
-        verifyMocks();
-
         int newCount = BeanUtils.getPathValue(result, pathToNode+".interfaceCount", int.class); 
         
         assertEquals(initialCount+1, newCount);
-        
-        Interface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[0]", Interface.class);
+        RequisitionInterface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[0]", RequisitionInterface.class);
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
     
     public void testAddServiceToInterface() {
-        String groupName = "groupName";
+        String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
         String serviceName = "SVC";
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
 
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
-        m_provisioningDao.save(groupName, m_testData);
+        Requisition result = m_provisioningService.addServiceToInterface(groupName, pathToInterface, serviceName);
 
-        replayMocks();
-
-        ModelImport result = m_provisioningService.addServiceToInterface(groupName, pathToInterface, serviceName);
-
-        verifyMocks();
-        
         int newCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
-        
         assertEquals(initialCount+1, newCount);
-        
-        MonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", MonitoredService.class);
+        RequisitionMonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
     }
     
     public void testDeletePath() {
-        String groupName = "groupName";
+        String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
         String pathToDelete = pathToInterface+".monitoredService[0]";
         
         int initialCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
         String svcName = BeanUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
 
-        expect(m_provisioningDao.get(groupName)).andReturn(m_testData).atLeastOnce();
-        m_provisioningDao.save(groupName, m_testData);
-
-        replayMocks();
-
-        ModelImport result = m_provisioningService.deletePath(groupName, pathToDelete);
-
-        verifyMocks();
-        
+        Requisition result = m_provisioningService.deletePath(groupName, pathToDelete);
         int newCount = BeanUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class); 
-        
         assertEquals(initialCount-1, newCount);
-        
-        MonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", MonitoredService.class);
+
+        RequisitionMonitoredService svc = BeanUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
         assertNotNull(svc);
         assertFalse(svc.getServiceName().equals(svcName));
     }
     
-    @SuppressWarnings("unchecked")
-    private <T> T createMock(Class<T> name) {
-        T mock = EasyMock.createMock(name);
-        m_mocks.add(mock);
-        return mock;
-    }
-
-    private void verifyMocks() {
-        EasyMock.verify(m_mocks.toArray());
-    }
-
-    private void replayMocks() {
-        EasyMock.replay(m_mocks.toArray());
-    }
-
 }

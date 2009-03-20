@@ -121,6 +121,7 @@
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
+    <module>integration-tests</module>
   </modules>
   <build>
   <pluginManagement>
@@ -788,6 +789,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.provisioning</groupId>
+        <artifactId>org.opennms.features.provisioning.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.provisioning</groupId>
+        <artifactId>org.opennms.features.provisioning.lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.joesnmp</artifactId>
         <version>${project.version}</version>
@@ -1000,6 +1011,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-provision-persistence</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-persistence</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

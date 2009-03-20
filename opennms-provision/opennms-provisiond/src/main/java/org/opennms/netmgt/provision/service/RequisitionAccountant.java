@@ -35,9 +35,9 @@ package org.opennms.netmgt.provision.service;
 
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
-import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;

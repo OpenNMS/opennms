@@ -66,6 +66,9 @@ public class OnmsNodeRequisition {
         m_categoryReqs = constructCategoryRequistions();
     }
     
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getForeignSource()
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }
@@ -94,6 +97,9 @@ public class OnmsNodeRequisition {
         return reqs;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#visit(org.opennms.netmgt.provision.persist.RequisitionVisitor)
+     */
     public void visit(RequisitionVisitor visitor) {
         visitor.visitNode(this);
         for (OnmsNodeCategoryRequisition catReq : m_categoryReqs) {
@@ -163,43 +169,67 @@ public class OnmsNodeRequisition {
         
     }
     
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#constructOnmsNodeFromRequisition()
+     */
     public OnmsNode constructOnmsNodeFromRequisition() {
         OnmsNodeBuilder visitor = new OnmsNodeBuilder();
         visit(visitor);
         return visitor.getNode();
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#log()
      */
     public Logger log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getNodeLabel()
+     */
     public String getNodeLabel() {
         return m_node.getNodeLabel();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getForeignId()
+     */
     public String getForeignId() {
         return m_node.getForeignId();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getBuilding()
+     */
     public String getBuilding() {
         return m_node.getBuilding();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getCity()
+     */
     public String getCity() {
         return m_node.getCity();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getParentForeignId()
+     */
     public String getParentForeignId() {
         return m_node.getParentForeignId();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getParentNodeLabel()
+     */
     public String getParentNodeLabel() {
         return m_node.getParentNodeLabel();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.NodeRequisition#getNode()
+     */
     public RequisitionNode getNode() {
         return m_node;
     }

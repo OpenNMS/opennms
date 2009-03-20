@@ -37,7 +37,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,7 +48,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
     public static class TreeCommand {
         private String m_formPath;
         private String m_action;
-        private Object m_formData;
+        private Requisition m_formData;
         private String m_currentNode;
         private String m_groupName = "hardcoded";
         
@@ -64,10 +64,10 @@ public class EditProvisioningGroupController extends SimpleFormController {
         public void setGroupName(String groupName) {
             m_groupName = groupName;
         }
-        public Object getFormData() {
+        public Requisition getFormData() {
             return m_formData;
         }
-        public void setFormData(Object importData) {
+        public void setFormData(Requisition importData) {
             m_formData = importData;
         }
         public String getFormPath() {
@@ -148,7 +148,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
 
-        ModelImport formData = m_provisioningService.getProvisioningGroup(treeCmd.getGroupName());
+        Requisition formData = m_provisioningService.getProvisioningGroup(treeCmd.getGroupName());
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode("");
@@ -165,7 +165,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doDelete(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         
-        ModelImport formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
+        Requisition formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
         treeCmd.setFormData(formData);
         
         return showForm(request, response, errors);
@@ -173,7 +173,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doAddCategory(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         
-        ModelImport formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
+        Requisition formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".category[0]");
@@ -183,7 +183,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
     }
 
     private ModelAndView doAddAssetField(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        ModelImport formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
+        Requisition formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".asset[0]");
@@ -200,7 +200,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
 
-        ModelImport formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), (ModelImport)treeCmd.getFormData());
+        Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode("");
         return showForm(request, response, errors);
@@ -208,7 +208,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doAddService(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
 
-        ModelImport formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
+        Requisition formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".monitoredService[0]");
@@ -219,7 +219,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doAddInterface(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         
-        ModelImport formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "1.1.1.1");
+        Requisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "1.1.1.1");
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".interface[0]");
@@ -250,7 +250,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
             throw new IllegalArgumentException("groupName required");
         }
         
-        ModelImport formData = m_provisioningService.getProvisioningGroup(groupName);
+        Requisition formData = m_provisioningService.getProvisioningGroup(groupName);
         if (formData == null) {
             formData = m_provisioningService.createProvisioningGroup(groupName);
         }

@@ -37,7 +37,7 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.config.modelimport.ModelImport;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
  * 
@@ -47,29 +47,29 @@ public interface ManualProvisioningService {
     
     Collection<String> getProvisioningGroupNames();
     
-    ModelImport getProvisioningGroup(String name);
+    Requisition getProvisioningGroup(String name);
     
-    ModelImport createProvisioningGroup(String name);
+    Requisition createProvisioningGroup(String name);
 
-    ModelImport cloneProvisioningGroup(String groupName, String actionTarget);
+    Requisition cloneProvisioningGroup(String groupName, String actionTarget);
     
-    ModelImport saveProvisioningGroup(String groupName, ModelImport groupData);
+    Requisition saveProvisioningGroup(String groupName, Requisition groupData);
     
-    ModelImport addNewNodeToGroup(String groupName, String nodeLabel);
+    Requisition addNewNodeToGroup(String groupName, String nodeLabel);
     
-    ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName);
+    Requisition addCategoryToNode(String groupName, String pathToNode, String categoryName);
     
-    ModelImport addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
+    Requisition addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
     
-    ModelImport addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
+    Requisition addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
     
-    ModelImport addServiceToInterface(String groupName, String pathToInterface, String serviceName);
+    Requisition addServiceToInterface(String groupName, String pathToInterface, String serviceName);
     
-    ModelImport deletePath(String groupName, String pathToDelete);
+    Requisition deletePath(String groupName, String pathToDelete);
     
     void importProvisioningGroup(String groupName);
 
-    Collection<ModelImport> getAllGroups();
+    Collection<Requisition> getAllGroups();
 
     void deleteProvisioningGroup(String groupName);
 
