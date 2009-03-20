@@ -105,7 +105,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private static final String RANCID_COMMENT="node provisioned by opennms";
 
     public static final String NAME = "RancidProvisioningAdapter";
-    private volatile static ConcurrentMap<Integer, RancidNodeContainer> m_onmsNodeRancidNodeMap;
+    private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
 
     @Override
     AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType type) {
@@ -165,15 +165,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     private void buildRancidNodeMap() {
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
-        m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNodeContainer>(nodes.size());
+        m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNode>(nodes.size());
         
 
         for (OnmsNode onmsNode : nodes) {
             RancidNode rNode = getSuitableRancidNode(onmsNode);
-            if (rNode != null) {
-                RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(onmsNode);
-            
-                m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), new RancidNodeContainer(rNode, rAuth));
+            if (rNode != null) {            
+                m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), rNode);
             }
         }
     }
@@ -187,32 +185,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return m_rwsConfig.getNextStandBy();
     }
 
-    private class RancidNodeContainer {
-        private RancidNode m_node;
-        private RancidNodeAuthentication m_auth;
-        
-        public RancidNodeContainer(RancidNode node, RancidNodeAuthentication auth) {
-            setNode(node);
-            setAuth(auth);
-        }
-
-        public void setNode(RancidNode node) {
-            m_node = node;
-        }
-
-        public RancidNode getNode() {
-            return m_node;
-        }
-
-        public void setAuth(RancidNodeAuthentication auth) {
-            m_auth = auth;
-        }
-
-        public RancidNodeAuthentication getAuth() {
-            return m_auth;
-        }
-    }
-
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode: nodeid: " + nodeId);
         try {
@@ -220,14 +192,23 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
             
             RancidNode rNode = getSuitableRancidNode(node);
-            rNode.setStateUp(true);
-            RWSClientApi.createRWSRancidNode(cp, rNode);
+            
+            if (m_onmsNodeRancidNodeMap.containsValue(rNode)) {
+                log().warn("Rancid Provisioning Adapter: Error Duplicate node: " + node);
+                ProvisioningAdapterException e = new ProvisioningAdapterException("Duplicate node has been provided: "+node); 
+                sendAndThrow(nodeId, e);
+                return;
+            }
 
-            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
-            RWSClientApi.createOrUpdateRWSAuthNode(cp, rAuth);
+            rNode.setStateUp(true);
+
+            RWSClientApi.createRWSRancidNode(cp, rNode);
+            RWSClientApi.createOrUpdateRWSAuthNode(cp, rNode.getAuth());
             
-            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), new RancidNodeContainer(rNode, rAuth));
+            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), rNode);
             
+        } catch (ProvisioningAdapterException ae) {
+                sendAndThrow(nodeId, ae);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
@@ -247,21 +228,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             
             // if the node exists and has different label then first delete old data
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();            
-                RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
+                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));            
                 if (!rNode.getDeviceName().equals(node.getLabel())) {
                     RWSClientApi.deleteRWSRancidNode(cp, rNode);
-                    RWSClientApi.deleteRWSAuthNode(cp, rAuth);
+                    RWSClientApi.deleteRWSAuthNode(cp, rNode.getAuth());
                 }
             }
             
             RancidNode rNode = getSuitableRancidNode(node);
+            
             RWSClientApi.createOrUpdateRWSRancidNode(cp, rNode);
+            RWSClientApi.createOrUpdateRWSAuthNode(cp, rNode.getAuth());
             
-            RancidNodeAuthentication rAuth = getSuitableRancidNodeAuthentication(node);
-            RWSClientApi.createOrUpdateRWSAuthNode(cp, getSuitableRancidNodeAuthentication(node));
-            
-            m_onmsNodeRancidNodeMap.replace(node.getId(), new RancidNodeContainer(rNode, rAuth));
+            m_onmsNodeRancidNodeMap.replace(node.getId(), rNode);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
@@ -284,11 +263,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         try {
 
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+
                 RWSClientApi.deleteRWSRancidNode(cp, rNode);
-  
-                RancidNodeAuthentication rAuth = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getAuth();
-                RWSClientApi.deleteRWSAuthNode(cp, rAuth);
+                RWSClientApi.deleteRWSAuthNode(cp, rNode.getAuth());
+
                 m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
             } else {
                 log().warn("No node found in nodeRancid Map for nodeid: " + nodeId);                
@@ -309,7 +288,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode: nodeid: " + nodeId);
         try {
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)).getNode();
+                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
                 RWSClientApi.updateRWSRancidNode(cp, rNode);
             } else {
                 log().warn("No node found in nodeRancid Map for nodeid: " + nodeId);
@@ -409,6 +388,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
         r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
+        r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
 
     }
@@ -541,11 +521,9 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void updateRancidNodeState(int nodeid, boolean up) {
-        RancidNodeContainer rcont = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeid));
-        RancidNode rnode = rcont.getNode();
+        RancidNode rnode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeid));
         rnode.setStateUp(up);
-        rcont.setNode(rnode);
-        m_onmsNodeRancidNodeMap.put(nodeid, rcont);
+        m_onmsNodeRancidNodeMap.put(nodeid, rnode);
     }
 
     public EventSubscriptionService getEventSubscriptionService() {
