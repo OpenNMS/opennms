@@ -39,6 +39,6 @@ public class DefaultForeignSourceServiceTest {
         assertTrue(m_active.getForeignSources().isEmpty());
         assertTrue(m_pending.getForeignSources().isEmpty());
 
-        assertEquals(0, m_service.getAllForeignSources());
+        assertEquals(0, m_service.getAllForeignSources().size());
     }
 }
