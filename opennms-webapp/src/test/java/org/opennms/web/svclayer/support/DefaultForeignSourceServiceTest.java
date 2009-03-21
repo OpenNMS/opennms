@@ -17,7 +17,7 @@ public class DefaultForeignSourceServiceTest {
     private ForeignSourceService m_service;
 
     @Before
-    void setUp() {
+    public void setUp() {
         FileUtils.deleteQuietly(new File("target/foreign-sources"));
         FileUtils.deleteQuietly(new File("target/imports"));
 
@@ -35,7 +35,7 @@ public class DefaultForeignSourceServiceTest {
     }
 
     @Test
-    void integrationTest() throws Exception {
+    public void integrationTest() throws Exception {
         assertTrue(m_active.getForeignSources().isEmpty());
         assertTrue(m_pending.getForeignSources().isEmpty());
 
