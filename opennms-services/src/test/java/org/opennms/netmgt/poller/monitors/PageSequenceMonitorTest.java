@@ -49,16 +49,31 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.mock.JUnitMockHttpServer;
+import org.opennms.netmgt.mock.JUnitMockHttpServerExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    JUnitMockHttpServerExecutionListener.class,
+})
+@ContextConfiguration(locations={})
+@JUnitMockHttpServer(port=10342)
 public class PageSequenceMonitorTest {
 	
 	PageSequenceMonitor m_monitor;
@@ -95,9 +110,9 @@ public class PageSequenceMonitorTest {
 	}
     
     @Test
-    public void testSimpleGoogle() throws Exception {
-        setPageSequenceParam("www.google.com");
-        PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
+    public void testSimple() throws Exception {
+        setPageSequenceParam("localhost");
+        PollStatus googleStatus = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
     }
 
@@ -106,13 +121,6 @@ public class PageSequenceMonitorTest {
         setPageSequenceParam(null);
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
-    }
-
-    @Test
-    public void testSimpleYahoo() throws Exception {
-        setPageSequenceParam("www.yahoo.com");
-        PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
-        assertTrue("should not be available", yahooStatus.isUnavailable());
     }
 
     private void setPageSequenceParam(String virtualHost) {
@@ -126,7 +134,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"I'm Feeling Lucky\" " + virtualHostParam + "/>\n" + 
+				"  <page path=\"/index.html\" port=\"10342\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"It was written by monkeys.\" " + virtualHostParam + "/>\n" + 
 				"</page-sequence>\n");
     }
 
