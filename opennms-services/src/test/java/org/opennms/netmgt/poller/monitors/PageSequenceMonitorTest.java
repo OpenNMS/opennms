@@ -70,7 +70,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
-    JUnitMockHttpServerExecutionListener.class,
+    JUnitMockHttpServerExecutionListener.class
 })
 @ContextConfiguration(locations={})
 @JUnitMockHttpServer(port=10342)
