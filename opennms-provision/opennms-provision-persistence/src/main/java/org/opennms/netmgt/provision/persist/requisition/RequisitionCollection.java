@@ -22,7 +22,7 @@ public class RequisitionCollection extends LinkedList<Requisition> {
         super(c);
     }
 
-    @XmlElement(name="onmsRequisition")
+    @XmlElement(name="model-import")
     public List<Requisition> getRequisitions() {
         return this;
     }
