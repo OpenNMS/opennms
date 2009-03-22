@@ -329,10 +329,10 @@ public class RequisitionRestService extends OnmsRestService {
     }
     
     /**
-     * Returns a collection of categories for a given node in the specified foreign source
+     * Returns a collection of assets for a given node in the specified foreign source
      */
     @GET
-    @Path("pending/{foreignSource}/nodes/{foreignId}/asset")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/assets")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId) throws ParseException {
         Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
@@ -349,7 +349,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Returns the requested category for a given node in the specified foreign source
      */
     @GET
-    @Path("pending/{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public RequisitionAsset getAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) throws ParseException {
         Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);
@@ -463,7 +463,7 @@ public class RequisitionRestService extends OnmsRestService {
      * Updates or adds an asset parameter to a node
      */
     @POST
-    @Path("pending/{foreignSource}/nodes/{foreignId}/asset")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/assets")
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
     public Response addOrReplaceNodeAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
@@ -666,7 +666,7 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     @DELETE
-    @Path("pending/{foreignSource}/nodes/{foreignId}/asset/{parameter}")
+    @Path("pending/{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Transactional
     public Response deleteAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("parameter") String parameter) {
         Requisition req = m_pendingForeignSourceRepository.getRequisition(foreignSource);

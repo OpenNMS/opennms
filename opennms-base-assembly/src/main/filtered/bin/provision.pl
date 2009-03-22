@@ -171,12 +171,12 @@ sub cmd_requisition {
 		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
 	}
 
-	if ($command eq 'add' or $command eq 'create') {
+	if (is_add($command)) {
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
 		post('pending', $root);
-	} elsif ($command eq 'remove' or $command eq 'delete' or $command eq 'del' or $command eq 'rm') {
+	} elsif (is_remove($command)) {
 		remove('pending/' . $foreign_source);
 	} elsif ($command eq 'import' or $command eq 'deploy') {
 		put('pending/' . $foreign_source . '/deploy');
@@ -233,7 +233,7 @@ sub cmd_node {
 		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
 	}
 
-	if ($command eq 'add' or $command eq 'create') {
+	if (is_add($command)) {
 		my $node_label = shift @args;
 		if (not defined $node_label or $node_label eq "") {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a node label!");
@@ -243,9 +243,9 @@ sub cmd_node {
 		$root->{'att'}->{'foreign-id'} = $foreign_id;
 		$root->{'att'}->{'node-label'} = $node_label;
 		post("pending/$foreign_source/nodes", $root);
-	} elsif ($command eq 'remove' or $command eq 'delete' or $command eq 'del' or $command eq 'rm') {
+	} elsif (is_remove($command)) {
 		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id);
-	} elsif ($command eq 'set') {
+	} elsif (is_set($command)) {
 		my $key   = shift @args;
 		my $value = shift @args;
 
@@ -257,8 +257,193 @@ sub cmd_node {
 		$value = uri_escape_utf8($value);
 		put('pending/' . $foreign_source . '/nodes/' . $foreign_id, "$key=$value");
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: node $command");
 	}
+}
+
+=item B<interface>
+
+=over 8
+
+=item B<interface add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt>>
+
+Add an interface to the requisition identified by the given foreign source and node foreign ID.
+
+=item B<interface remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt>>
+
+Remove an interface from the requisition identified by the given foreign source, foreign ID, and IP address.
+
+=item B<interface set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> B<E<lt>keyE<gt>> B<[value]>>
+
+Set a property on an interface, given the foreign source, foreign id, and IP address.  Valid properties are:
+
+=over 4
+
+=item * descr - the interface description
+
+=item * snmp-primary - P (primary), S (secondary), N (not eligible)
+
+=item * status - 1 for managed, 3 for unmanaged (yes, I know)
+
+=back
+
+=back
+
+=cut
+
+sub cmd_interface {
+	my @args = @_;
+
+	my $command        = shift @args;
+	my $foreign_source = shift @args;
+	my $foreign_id     = shift @args;
+	my $ip             = shift @args;
+
+	if (not defined $foreign_source or $foreign_source eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+	}
+	if (not defined $foreign_id or $foreign_id eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+	}
+	if (not defined $ip or $ip !~ /^\d+\.\d+\.\d+\.\d+$/) {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!");
+	}
+
+	if (is_add($command)) {
+		my $xml = get_element('interface');
+		my $root = $xml->root;
+		$root->{'att'}->{'ip-addr'} = $ip;
+		post("pending/$foreign_source/nodes/$foreign_id/interfaces", $root);
+	} elsif (is_remove($command)) {
+		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
+	} elsif (is_set($command)) {
+		my $key   = shift @args;
+		my $value = shift @args;
+
+		if (not defined $key or $key eq "") {
+			pod2usage(-exitval => 1, -message => "Error: You must specify a key!");
+		}
+
+		$key   = uri_escape_utf8($key);
+		$value = uri_escape_utf8($value);
+		put('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
+	} else {
+		pod2usage(-exitval => 1, -message => "Unknown command: interface $command");
+	}
+}
+
+=item B<category>
+
+=over 8
+
+=item B<category add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>category-nameE<gt>>
+
+Add a category to the node identified by the given foreign source and node foreign ID.
+
+=item B<category remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>category-nameE<gt>>
+
+Remove a category from the node identified by the given foreign source and node foreign ID.
+
+=back
+
+=cut
+
+sub cmd_category {
+	my @args = @_;
+
+	my $command        = shift @args;
+	my $foreign_source = shift @args;
+	my $foreign_id     = shift @args;
+	my $category       = shift @args;
+
+	if (not defined $foreign_source or $foreign_source eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+	}
+	if (not defined $foreign_id or $foreign_id eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+	}
+	if (not defined $category or $category eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a category!");
+	}
+
+	if (is_add($command)) {
+		my $xml = get_element('category');
+		my $root = $xml->root;
+		$root->{'att'}->{'name'} = $category;
+		post("pending/$foreign_source/nodes/$foreign_id/categories", $root);
+	} elsif (is_remove($command)) {
+		remove("pending/$foreign_source/nodes/$foreign_id/categories/$category");
+	} else {
+		pod2usage(-exitval => 1, -message => "Unknown command: category $command");
+	}
+}
+
+=item B<asset>
+
+=over 8
+
+=item B<asset add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> [value]>
+
+Add an asset to the node identified by the given foreign source and node foreign ID.
+
+=item B<asset remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt>>
+
+Remove an asset from the node identified by the given foreign source and node foreign ID.
+
+=item B<asset set E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
+
+Set an asset value given the node foreign source, foreign ID, and asset key.
+
+=back
+
+=cut
+
+sub cmd_asset {
+	my @args = @_;
+
+	my $command        = shift @args;
+	my $foreign_source = shift @args;
+	my $foreign_id     = shift @args;
+	my $key            = shift @args;
+
+	if (not defined $foreign_source or $foreign_source eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+	}
+	if (not defined $foreign_id or $foreign_id eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+	}
+	if (not defined $key or $key eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify an asset key!");
+	}
+
+	if (is_add($command) or is_set($command)) {
+		my $value = shift @args;
+
+		my $xml = get_element('asset');
+		my $root = $xml->root;
+		$root->{'att'}->{'name'}  = $key;
+		$root->{'att'}->{'value'} = $value;
+		post("pending/$foreign_source/nodes/$foreign_id/assets", $root);
+	} elsif (is_remove($command)) {
+		remove("pending/$foreign_source/nodes/$foreign_id/assets/$key");
+	} else {
+		pod2usage(-exitval => 1, -message => "Unknown command: asset $command");
+	}
+}
+
+sub is_add {
+	my $command = shift;
+	return ($command eq 'add' or $command eq 'create');
+}
+
+sub is_remove {
+	my $command = shift;
+	return ($command eq 'remove' or $command eq 'delete' or $command eq 'del' or $command eq 'rm');
+}
+
+sub is_set {
+	my $command = shift;
+	return ($command eq 'set' or $command eq 'put');
 }
 
 sub get_element {
