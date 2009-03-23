@@ -102,7 +102,7 @@ public class Vault extends Object {
         s_dataSource = dataSource;
     }
 
-    public static DataSource getDataSource() throws SQLException {
+    public static DataSource getDataSource() {
         if (s_dataSource == null) {
             throw new IllegalStateException("You must set a DataSource before requesting a data source.");
         }
