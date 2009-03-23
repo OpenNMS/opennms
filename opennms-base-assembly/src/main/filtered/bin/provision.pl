@@ -157,7 +157,7 @@ sub cmd_requisition {
 	my $foreign_source = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 
 	if (is_add($command)) {
@@ -170,7 +170,7 @@ sub cmd_requisition {
 	} elsif ($command eq 'import' or $command eq 'deploy') {
 		put('pending/' . $foreign_source . '/deploy');
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command", -verbose => 0);
 	}
 }
 
@@ -216,16 +216,16 @@ sub cmd_node {
 	my $foreign_id     = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 	if (not defined $foreign_id or $foreign_id eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!", -verbose => 0);
 	}
 
 	if (is_add($command)) {
 		my $node_label = shift @args;
 		if (not defined $node_label or $node_label eq "") {
-			pod2usage(-exitval => 1, -message => "Error: You must specify a node label!");
+			pod2usage(-exitval => 1, -message => "Error: You must specify a node label!", -verbose => 0);
 		}
 		my $xml = get_element('node');
 		my $root = $xml->root;
@@ -239,14 +239,14 @@ sub cmd_node {
 		my $value = shift @args;
 
 		if (not defined $key or $key eq "") {
-			pod2usage(-exitval => 1, -message => "Error: You must specify a key!");
+			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
 		$key   = uri_escape_utf8($key);
 		$value = uri_escape_utf8($value);
 		put('pending/' . $foreign_source . '/nodes/' . $foreign_id, "$key=$value");
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: node $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
 	}
 }
 
@@ -289,13 +289,13 @@ sub cmd_interface {
 	my $ip             = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 	if (not defined $foreign_id or $foreign_id eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!", -verbose => 0);
 	}
 	if (not defined $ip or $ip !~ /^\d+\.\d+\.\d+\.\d+$/) {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!", -verbose => 0);
 	}
 
 	if (is_add($command)) {
@@ -306,18 +306,20 @@ sub cmd_interface {
 	} elsif (is_remove($command)) {
 		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
 	} elsif (is_set($command)) {
-		my $key   = shift @args;
-		my $value = shift @args;
+		my $key     = shift @args;
+		my $value   = shift @args;
+		my $version = shift @args || 'v2c';
 
 		if (not defined $key or $key eq "") {
-			pod2usage(-exitval => 1, -message => "Error: You must specify a key!");
+			pod2usage(-exitval => 1, -message => "Error: You must specify a key!", -verbose => 0);
 		}
 
 		$key   = uri_escape_utf8($key);
 		$value = uri_escape_utf8($value);
+
 		put('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: interface $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: interface $command", -verbose => 0);
 	}
 }
 
@@ -347,16 +349,16 @@ sub cmd_service {
 	my $service        = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 	if (not defined $foreign_id or $foreign_id eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!", -verbose => 0);
 	}
 	if (not defined $ip or $ip !~ /^\d+\.\d+\.\d+\.\d+$/) {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!", -verbose => 0);
 	}
 	if (not defined $service or $service eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a service!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a service!", -verbose => 0);
 	}
 
 	if (is_add($command)) {
@@ -367,7 +369,7 @@ sub cmd_service {
 	} elsif (is_remove($command)) {
 		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: service $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: service $command", -verbose => 0);
 	}
 }
 
@@ -396,13 +398,13 @@ sub cmd_category {
 	my $category       = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 	if (not defined $foreign_id or $foreign_id eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!", -verbose => 0);
 	}
 	if (not defined $category or $category eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a category!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a category!", -verbose => 0);
 	}
 
 	if (is_add($command)) {
@@ -413,7 +415,7 @@ sub cmd_category {
 	} elsif (is_remove($command)) {
 		remove("pending/$foreign_source/nodes/$foreign_id/categories/$category");
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: category $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: category $command", -verbose => 0);
 	}
 }
 
@@ -446,13 +448,13 @@ sub cmd_asset {
 	my $key            = shift @args;
 
 	if (not defined $foreign_source or $foreign_source eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!", -verbose => 0);
 	}
 	if (not defined $foreign_id or $foreign_id eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!", -verbose => 0);
 	}
 	if (not defined $key or $key eq "") {
-		pod2usage(-exitval => 1, -message => "Error: You must specify an asset key!");
+		pod2usage(-exitval => 1, -message => "Error: You must specify an asset key!", -verbose => 0);
 	}
 
 	if (is_add($command) or is_set($command)) {
@@ -466,7 +468,76 @@ sub cmd_asset {
 	} elsif (is_remove($command)) {
 		remove("pending/$foreign_source/nodes/$foreign_id/assets/$key");
 	} else {
-		pod2usage(-exitval => 1, -message => "Unknown command: asset $command");
+		pod2usage(-exitval => 1, -message => "Unknown command: asset $command", -verbose => 0);
+	}
+}
+
+=item B<snmp>
+
+=over 8
+
+=item B<snmp get E<lt>ip-addressE<gt>>
+
+Get the SNMP configuration for the given IP address.
+
+=item B<snmp set E<lt>ip-addressE<gt> E<lt>community<gt> [options...]>
+
+Set the SNMP community (and, optionally, version) for the given IP address.
+
+Optionally, you can set additional options as key=value pairs.  For example:
+
+	snmp set 192.168.0.1 public version=v1 timeout=1000
+
+Valid options are:
+
+=over 8
+
+=item * version: v1 or v2c
+
+=item * port: the port of the SNMP agent
+
+=item * timeout: the timeout, in milliseconds
+
+=item * retries: the number of retries before giving up
+
+=back
+
+=back
+
+=cut
+
+sub cmd_snmp {
+	my @args = @_;
+
+	my $command   = shift @args;
+	my $ip        = shift @args;
+
+	if (not defined $ip or $ip eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify an IP address!", -verbose => 0);
+	}
+
+	if ($command eq 'get' or $command eq 'list') {
+		my $response = get($ip, '/snmpConfig');
+		$XML->parse($response->content);
+		my $root = $XML->root;
+		print "SNMP Configuration for $ip:\n";
+		for my $child ($root->children) {
+			print "* ", $child->tag, ": ", $child->text, "\n";
+		}
+	} elsif (is_set($command)) {
+		my $community = shift @args;
+		if (not defined $community or $community eq "") {
+			pod2usage(-exitval => 1, -message => "Error: You must specify an SNMP community string!", -verbose => 0);
+		}
+		my $arguments = "community=" . uri_escape_utf8($community);
+
+		for my $arg (@args) {
+			my ($key, $value) = split(/=/, $arg);
+			$arguments .= "&" . uri_escape_utf8($key) . "=" . uri_escape_utf8($value);
+		}
+		put($ip, $arguments, '/snmpConfig');
+	} else {
+		pod2usage(-exitval => 1, -message => "Unknown command: snmp $command", -verbose => 0);
 	}
 }
 
@@ -515,8 +586,9 @@ sub set_up_environment {
 
 sub get {
 	my $path = shift;
+	my $base = shift || '/requisitions';
 
-	my $response = $BROWSER->get( $url_root . '/requisitions/' . $path );
+	my $response = $BROWSER->get( $url_root . $base . '/' . $path );
 	if ($response->is_success) {
 		return $response;
 	}
@@ -526,8 +598,9 @@ sub get {
 sub put {
 	my $path = shift;
 	my $arguments = shift;
+	my $base      = shift || '/requisitions';
 
-	my $put = HTTP::Request->new(PUT => $url_root . '/requisitions/' . $path );
+	my $put = HTTP::Request->new(PUT => $url_root . $base . '/' . $path );
 	$put->content_type('application/x-www-form-urlencoded');
 	$put->content($arguments);
 	my $response = $BROWSER->request($put);
@@ -539,8 +612,9 @@ sub put {
 
 sub remove {
 	my $path = shift;
+	my $base = shift || '/requisitions';
 
-	my $delete = HTTP::Request->new(DELETE => $url_root . '/requisitions/' . $path );
+	my $delete = HTTP::Request->new(DELETE => $url_root . $base . '/' . $path );
 	my $response = $BROWSER->request($delete);
 	if ($response->is_success) {
 		return $response;
@@ -549,11 +623,13 @@ sub remove {
 }
 
 sub post {
-	my $path = shift;
-	my $twig = shift;
+	my $path      = shift;
+	my $twig      = shift;
+	my $base      = shift || '/requisitions';
+	my $namespace = shift || 'http://xmlns.opennms.org/xsd/config/model-import';
 
-	$twig->{'att'}->{'xmlns'} = 'http://xmlns.opennms.org/xsd/config/model-import';
-	my $post = HTTP::Request->new(POST => $url_root . '/requisitions/' . $path );
+	$twig->{'att'}->{'xmlns'} = $namespace;
+	my $post = HTTP::Request->new(POST => $url_root . $base . '/' . $path );
 	$post->content_type('application/xml');
 	$post->content($twig->sprint);
 	my $response = $BROWSER->request($post);

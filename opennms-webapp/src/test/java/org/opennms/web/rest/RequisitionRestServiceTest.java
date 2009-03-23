@@ -103,9 +103,10 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertFalse(xml.contains("172.20.1.201"));
 
         // set attributes
-        sendPut(url, "descr=Total+Crap");
+        sendPut(url, "descr=Total+Crap&snmp-primary=P");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("descr=\"Total Crap\""));
+        assertTrue(xml.contains("snmp-primary=\"P\""));
 
         // delete interface
         xml = sendRequest(DELETE, url, 200);
