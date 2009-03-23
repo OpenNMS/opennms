@@ -383,7 +383,6 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            
            log().debug("getInventoryNode " + rancidName);
 
-    
            RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, group, rancidName);
        
            InventoryNode in = (InventoryNode)rn.getNodeVersions().get(version);
@@ -408,6 +407,36 @@ static public Map<String, Object> getRancidNodeList(String rancidName) throws Ra
            throw e;
        }
    }
+   static public Map<String, Object> getInventoryNodeList(String rancidName, String group, String version) throws RancidApiException{
+       
+       try {
+           
+           log().debug("getInventoryNode " + rancidName);
+
+           RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, group, rancidName);
+           
+           List<InventoryElement2> ie = RWSClientApi.getRWSRancidNodeInventoryElement2(m_cp, rn, version);
+           
+           Map<String, Object> nodeModel = new TreeMap<String, Object>();
+                      
+           Iterator<InventoryElement2> iter1 = ie.iterator();
+                                      
+           while (iter1.hasNext()) {
+               InventoryElement2 ietmp = iter1.next();
+               
+               log().debug("INVENTORY " + ietmp.expand());
+           }
+                              
+           nodeModel.put("inventory",ie);
+           return nodeModel;
+       }
+       catch (RancidApiException e) {
+           throw e;
+       }
+
+   }
+
+   
    private static Category log() {
        return Logger.getLogger("Rancid");
    }
