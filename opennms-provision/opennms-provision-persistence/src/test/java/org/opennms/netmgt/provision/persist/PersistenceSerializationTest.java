@@ -8,9 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -63,7 +62,7 @@ public class PersistenceSerializationTest {
 //        fs.setScanInterval(scanInterval)
         fs.setDateStamp(XMLGregorianCalendarImpl.parse("2009-02-25T12:45:38.800-05:00"));
 
-        Set<PluginConfig> detectors = new LinkedHashSet<PluginConfig>();
+        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
@@ -71,7 +70,7 @@ public class PersistenceSerializationTest {
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        Set<PluginConfig> policies = new LinkedHashSet<PluginConfig>();
+        List<PluginConfig> policies = new ArrayList<PluginConfig>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");

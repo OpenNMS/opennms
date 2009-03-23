@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -13,6 +14,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = { "m_key", "m_value" })
 public class PluginParameter implements Serializable, Comparable<PluginParameter> {
     private static final long serialVersionUID = 1L;
 
