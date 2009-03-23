@@ -68,7 +68,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("parent-node-label=\"apknd\""));
         
         // set attributes
-        sendPut(url, "nodeLabel=homo+sapien");
+        sendPut(url, "node-label=homo+sapien");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("node-label=\"homo sapien\""));
 
