@@ -133,5 +133,26 @@ public class SnmpConfigRestService extends OnmsRestService {
         }
         
     }
-    
+   
+    /**
+     * Updates a specific interface
+     */
+    @PUT
+    @Path("{ipAddr}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Transactional
+    public Response updateInterface(@PathParam("ipAddr") String ipAddress, MultivaluedMapImpl params) {
+        try {
+            SnmpInfo info = new SnmpInfo();
+            setProperties(params, info);
+            SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
+            m_snmpPeerFactory.define(eventInfo);
+            SnmpPeerFactory.saveCurrent();
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+
 }

@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Category;
 import org.hibernate.criterion.MatchMode;
@@ -12,6 +13,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -81,7 +83,7 @@ public class OnmsRestService {
 	 * @param criteria the object which will be populated with the filter/ordering
 	 * @param objectClass the type of thing being filtered.
 	 */
-	protected void addFiltersToCriteria(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, Class objectClass) {
+	protected void addFiltersToCriteria(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, Class<?> objectClass) {
 		
 		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
 	    paramsCopy.putAll(params);
@@ -198,14 +200,61 @@ public class OnmsRestService {
 		}
 	}
 	
-	    protected <T> T throwException(Status status, String msg) {
-	        System.out.println("error: " + msg);
-	        log().error(msg);
-	        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
-	    }
-	    
-	    protected Category log() {
-	        return ThreadCategory.getInstance(getClass());
-	    }
+    protected <T> T throwException(Status status, String msg) {
+        System.out.println("error: " + msg);
+        log().error(msg);
+        throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+    }
+    
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    /**
+     * Convert a column name with underscores to the corresponding property name using "camel case".  A name
+     * like "customer_number" would match a "customerNumber" property name.
+     * @param name the column name to be converted
+     * @return the name using "camel case"
+     */
+    public static String convertNameToPropertyName(String name) {
+        StringBuffer result = new StringBuffer();
+        boolean nextIsUpper = false;
+        if (name != null && name.length() > 0) {
+            if (name.length() > 1 && (name.substring(1, 2).equals("_") || (name.substring(1, 2).equals("-")))) {
+                result.append(name.substring(0, 1).toUpperCase());
+            } else {
+                result.append(name.substring(0, 1).toLowerCase());
+            }
+            for (int i = 1; i < name.length(); i++) {
+                String s = name.substring(i, i + 1);
+                if (s.equals("_") || s.equals("-")) {
+                    nextIsUpper = true;
+                } else {
+                    if (nextIsUpper) {
+                        result.append(s.toUpperCase());
+                        nextIsUpper = false;
+                    } else {
+                        result.append(s.toLowerCase());
+                    }
+                }
+            }
+        }
+        return result.toString();
+    }
+
+    protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
+        BeanWrapper wrapper = new BeanWrapperImpl(req);
+        wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
+        for(String key : params.keySet()) {
+            String propertyName = convertNameToPropertyName(key);
+            if (wrapper.isWritableProperty(propertyName)) {
+                Object value = null;
+                String stringValue = params.getFirst(key);
+                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(propertyName));
+                wrapper.setPropertyValue(propertyName, value);
+            }
+        }
+    }
+
 
 }
