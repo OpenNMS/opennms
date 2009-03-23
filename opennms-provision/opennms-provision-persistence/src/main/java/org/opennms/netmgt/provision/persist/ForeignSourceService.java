@@ -1,10 +1,10 @@
-package org.opennms.web.svclayer.support;
+package org.opennms.netmgt.provision.persist;
 
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.support.PluginWrapper;
 
 public interface ForeignSourceService {
 

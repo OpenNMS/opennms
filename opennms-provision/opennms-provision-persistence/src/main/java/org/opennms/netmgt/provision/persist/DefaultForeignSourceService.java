@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.support;
+package org.opennms.netmgt.provision.persist;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -12,22 +12,29 @@ import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.log4j.Category;
+import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class DefaultForeignSourceService implements ForeignSourceService {
     
     @Autowired
     private ExtensionManager m_extensionManager;
     
+    @Autowired
+    @Qualifier("active")
     private ForeignSourceRepository m_activeForeignSourceRepository;
+    
+    @Autowired
+    @Qualifier("pending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     private static Map<String,String> m_detectors;

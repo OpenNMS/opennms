@@ -55,7 +55,7 @@
     <property name="successView" value="redirect:/admin/provisioningGroups.htm" />
   </bean>
   
-  <bean name="defaultForeignSourceService" class="org.opennms.web.svclayer.support.DefaultForeignSourceService">
+  <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
   	<property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
   	<property name="activeForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>

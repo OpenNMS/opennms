@@ -18,11 +18,16 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
+    private boolean m_updateDateStamps = true;
     
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         super();
     }
 
+    public void setUpdateDateStamps(boolean update) {
+        m_updateDateStamps = update;
+    }
+    
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
         return getForeignSources().size();
     }
@@ -61,7 +66,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         File outputFile = getOutputFileForForeignSource(foreignSource);
         FileWriter writer = null;
         try {
-            foreignSource.updateDateStamp();
+            if (m_updateDateStamps) {
+                foreignSource.updateDateStamp();
+            }
             writer = new FileWriter(outputFile);
             getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
         } catch (Exception e) {
@@ -118,7 +125,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         File outputFile = getOutputFileForRequisition(requisition);
         FileWriter writer = null;
         try {
-            requisition.updateDateStamp();
+            if (m_updateDateStamps) {
+                requisition.updateDateStamp();
+            }
             writer = new FileWriter(outputFile);
             getMarshaller(Requisition.class).marshal(requisition, writer);
         } catch (Exception e) {

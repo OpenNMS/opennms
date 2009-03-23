@@ -540,7 +540,7 @@ public class DefaultProvisionService implements ProvisionService {
      * @see org.opennms.netmgt.provision.service.ProvisionService#loadRequisition(java.lang.String, org.springframework.core.io.Resource)
      */
     public Requisition loadRequisition(Resource resource) {
-        return m_foreignSourceRepository.importRequisition(resource);
+        return m_foreignSourceRepository.deployResourceRequisition(resource);
     }
 
     /* (non-Javadoc)
