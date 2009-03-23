@@ -63,14 +63,13 @@
 	int nodeId=0;
 	String elementID="";
 	Map<String, Object> nodeModel = new TreeMap<String, Object>();
+	Map<String, Object> nodeModel2 = new TreeMap<String, Object>();
+
 
 	try {
 		node_db = ElementUtil.getNodeByParams(request);
 		nodeId = node_db.getNodeId();
 
-	
-		//nodeModel.put("id", Integer.toString(nodeId));
-		//nodeModel.put("label", node_db.getLabel());
 		elementID = node_db.getLabel();
 		
 		
@@ -78,8 +77,9 @@
 	    String versionId = request.getParameter("version");
 	    
 		nodeModel = InventoryLayer.getInventoryNode(elementID, groupID, versionId);
-		//nodeModel2 = InventoryLayer.getInventoryNodeList(elementID);
-	
+		
+		nodeModel2 = InventoryLayer.getInventoryNodeList(elementID,groupID, versionId);
+		
 		} catch (Exception e) {
 			//throw new ServletException("Could node get Rancid Node ", e);
 		}
@@ -88,6 +88,8 @@
     //nodeModel.put("general_status", node_db.node.getType());
 
     pageContext.setAttribute("model", nodeModel);
+    pageContext.setAttribute("model2", nodeModel2);
+
 %>
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
@@ -155,24 +157,36 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 		<!--th><a href = "${model.configurationurl}" > ${model.devicename} </a></th -->
 		</tr>
 	</table>
-	
 </div>
 <div class="TwoColRight">
 <!-- general info box -->
-<h3>Associated Elements</h3>
+<h3>Associated Inventory Items</h3>
 
-<table>
-<tr><th><a href="inventory/invelement.jsp?rancidnode=7206PED.wind.lab?group=laboratorio">Slot 0 (Nome) </a></th>
-<th>Inventory Type</th>
-<th>Vendor</th>
-</tr>
-<c:forEach items="${model2.inventory}" var="invel">
-<tr>
-<th>Element </th>
-<th>${invel.elementName}</th>
-</tr>
-</c:forEach>
-</table>
+	<c:forEach items="${model2.inventory}" var="invel" varStatus="status">
+	<h3>Item ${status.count}</h3>
+	<table>
+		<c:forEach items="${invel.tupleList}" var="tup">
+		<tr>
+			<th>${tup.name}</th>
+			<th>${tup.description}</th>
+		</tr>
+		</c:forEach>
+		<tr><th></th><th></th></tr>
+		<c:forEach items="${invel.softwareList}" var="sof">
+		<tr>
+			<th>Software: ${sof.type}</th>
+			<th>Version: ${sof.version}</th>
+		</tr>
+		</c:forEach>
+		<tr><th></th><th></th></tr>
+		<c:forEach items="${invel.memoryList}" var="mem">
+		<tr>
+			<th>Memory: ${mem.type}</th>
+			<th>Size: ${mem.size}</th>
+		</tr>
+		</c:forEach>
+		</table>
+	</c:forEach>
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
