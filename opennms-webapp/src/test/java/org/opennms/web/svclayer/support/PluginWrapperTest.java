@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
+import org.opennms.netmgt.provision.support.PluginWrapper;
 
 
 public class PluginWrapperTest {

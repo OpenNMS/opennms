@@ -14,11 +14,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -38,6 +38,7 @@ public class FilesystemForeignSourceRepositoryTest {
     private String m_defaultForeignSourceName;
 
     @Autowired
+    @Qualifier("pending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before
@@ -46,7 +47,7 @@ public class FilesystemForeignSourceRepositoryTest {
     }
 
     private Requisition createRequisition() throws Exception {
-        Requisition r = m_foreignSourceRepository.importRequisition(new ClassPathResource("/requisition-test.xml"));
+        Requisition r = m_foreignSourceRepository.deployResourceRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         return r;
     }

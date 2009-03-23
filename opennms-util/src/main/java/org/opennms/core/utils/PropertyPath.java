@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.support;
+package org.opennms.core.utils;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;

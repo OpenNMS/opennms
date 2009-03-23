@@ -27,7 +27,8 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             throw new ForeignSourceRepositoryException("unable to get JAXB context resolver", e);
         }
     }
-    public Requisition importRequisition(Resource resource) throws ForeignSourceRepositoryException {
+
+    public Requisition deployResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         try {
             InputStream resourceStream = resource.getInputStream();

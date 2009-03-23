@@ -1,4 +1,4 @@
- package org.opennms.web.svclayer.support;
+ package org.opennms.netmgt.provision.support;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
