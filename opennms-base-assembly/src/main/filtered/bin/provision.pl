@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 =head1 NAME
 
@@ -9,6 +9,8 @@ provision.pl - Command-line interface to the provisioner
 provision.pl [options] command [arguments ...]
 
 =cut
+
+use warnings;
 
 use Carp;
 use Data::Dumper;
@@ -39,19 +41,6 @@ use vars qw(
 
 $BUILD = (qw$LastChangedRevision 1 $)[-1];
 $XML = XML::Twig->new();
-%XMLARGS = (
-	KeyAttr => {
-		'requisition' => 'foreign-source',
-	},
-	ForceArray => [
-		'asset',
-		'category',
-		'interface',
-		'node',
-		'requisition',
-	],
-);
-
 
 # set defaults
 $url_root = 'http://localhost:8980/opennms/rest';
@@ -332,6 +321,56 @@ sub cmd_interface {
 	}
 }
 
+=item B<service>
+
+=over 8
+
+=item B<service add E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
+
+Add a service to the interface identified by the given foreign source, node ID, and IP address.
+
+=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
+
+Remove a service from the interface identified by the given foreign source, node ID, and IP address.
+
+=back
+
+=cut
+
+sub cmd_service {
+	my @args = @_;
+
+	my $command        = shift @args;
+	my $foreign_source = shift @args;
+	my $foreign_id     = shift @args;
+	my $ip             = shift @args;
+	my $service        = shift @args;
+
+	if (not defined $foreign_source or $foreign_source eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign source!");
+	}
+	if (not defined $foreign_id or $foreign_id eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a foreign id!");
+	}
+	if (not defined $ip or $ip !~ /^\d+\.\d+\.\d+\.\d+$/) {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a valid IP address!");
+	}
+	if (not defined $service or $service eq "") {
+		pod2usage(-exitval => 1, -message => "Error: You must specify a service!");
+	}
+
+	if (is_add($command)) {
+		my $xml = get_element('monitored-service');
+		my $root = $xml->root;
+		$root->{'att'}->{'service-name'} = $service;
+		post("pending/$foreign_source/nodes/$foreign_id/interfaces/$ip/services", $root);
+	} elsif (is_remove($command)) {
+		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
+	} else {
+		pod2usage(-exitval => 1, -message => "Unknown command: service $command");
+	}
+}
+
 =item B<category>
 
 =over 8
@@ -529,7 +568,7 @@ sub dump_xml {
 
 	$XML->parse($content);
 	dump_requisitions($XML->root);
-	$XML->flush;
+	#$XML->flush;
 }
 
 sub dump_requisitions {
@@ -587,28 +626,13 @@ sub dump_interface {
 	print("        * ", $interface->{'att'}->{'ip-addr'});
 	print(" (", $interface->{'att'}->{'descr'}, ")") if ($interface->{'att'}->{'descr'});
 	print "\n";
-	print("          * SNMP Primary: ", $interface->{'att'}->{'snmp-primary'}, "\n");
-	print("          * Status: ", $interface->{'att'}->{'status'}, "\n");
-}
-
-sub dump_hash {
-	my $hash   = shift;
-	my $indent = shift || -1;
-
-	if ($indent == -1) {
-		next if ($key eq "xmlns");
-		next if ($key eq "count");
-		print $hash->{'foreign-source'}, ' (', $hash->{'date-stamp'}, ")\n";
-	} else {
-
-	for my $key (sort keys %$hash) {
-		if (ref $hash->{$key}) {
-			dump_hash($hash->{$key}, $indent + 1);
-		} else {
-				print " " x $indent, $key, ": ", $hash->{$key}, "\n";
-			}
-		}
+	print("          * services:\n") if ($interface->descendants('monitored-service'));
+	for my $service ($interface->descendants('monitored-service')) {
+		print("            * " . $service->{'att'}->{'service-name'} . "\n");
 	}
+	print("          * SNMP Primary: ", $interface->{'att'}->{'snmp-primary'}, "\n") if ($interface->{'att'}->{'snmp-primary'});
+	print("          * Status: ", $interface->{'att'}->{'status'}, "\n") if ($interface->{'att'}->{'status'});
+
 }
 
 sub print_version {
