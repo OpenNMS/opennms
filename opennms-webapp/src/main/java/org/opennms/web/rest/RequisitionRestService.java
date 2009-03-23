@@ -51,14 +51,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -71,8 +69,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -679,19 +675,6 @@ public class RequisitionRestService extends OnmsRestService {
             }
         }
         return null;
-    }
-
-    private void setProperties(MultivaluedMapImpl params, Object req) {
-        BeanWrapper wrapper = new BeanWrapperImpl(req);
-        wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
-        for(String key : params.keySet()) {
-            if (wrapper.isWritableProperty(key)) {
-                Object value = null;
-                String stringValue = params.getFirst(key);
-                value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                wrapper.setPropertyValue(key, value);
-            }
-        }
     }
 
     private void debug(String format, Object... values) {
