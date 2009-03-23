@@ -85,6 +85,10 @@
   <dependencies>
 
     <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
     </dependency>

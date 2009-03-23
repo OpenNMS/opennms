@@ -60,7 +60,7 @@ public interface ForeignSourceRepository {
     public void putDefaultForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException;
 
-    public Requisition importRequisition(Resource resource) throws ForeignSourceRepositoryException;
+    public Requisition deployResourceRequisition(Resource resource) throws ForeignSourceRepositoryException;
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException;
     public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException;
     public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException;

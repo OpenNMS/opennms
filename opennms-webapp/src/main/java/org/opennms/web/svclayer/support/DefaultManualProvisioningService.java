@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.opennms.core.utils.PropertyPath;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
