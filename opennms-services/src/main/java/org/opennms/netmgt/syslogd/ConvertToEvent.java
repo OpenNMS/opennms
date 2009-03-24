@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -14,6 +14,7 @@
 // Modifications:
 //
 // 2003 Jan 31: Cleaned up some unused imports.
+// 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -135,15 +136,17 @@ final class ConvertToEvent {
      * @throws java.io.UnsupportedEncodingException
      *          Thrown if the data buffer cannot be decoded using the
      *          US-ASCII encoding.
+     * @throws MessageDiscardedException 
      */
     static ConvertToEvent make(DatagramPacket packet, String matchPattern,
                                int hostGroup, int messageGroup,
-                               UeiList ueiList, HideMessage hideMessage)
+                               UeiList ueiList, HideMessage hideMessage,
+                               String discardUei)
 
-            throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException, MessageDiscardedException {
         return make(packet.getAddress(), packet.getPort(), packet.getData(),
                 packet.getLength(), matchPattern, hostGroup, messageGroup,
-                ueiList, hideMessage);
+                ueiList, hideMessage, discardUei);
     }
 
     /**
@@ -158,11 +161,12 @@ final class ConvertToEvent {
      * @throws java.io.UnsupportedEncodingException
      *          Thrown if the data buffer cannot be decoded using the
      *          US-ASCII encoding.
+     * @throws MessageDiscardedException 
      */
     static ConvertToEvent make(InetAddress addr, int port, byte[] data,
                                int len, String matchPattern, int hostGroup, int messageGroup,
-                               UeiList ueiList, HideMessage hideMessage)
-            throws UnsupportedEncodingException {
+                               UeiList ueiList, HideMessage hideMessage, String discardUei)
+            throws UnsupportedEncodingException, MessageDiscardedException {
 
         ConvertToEvent e = new ConvertToEvent();
 
@@ -365,8 +369,16 @@ final class ConvertToEvent {
 
             uei = (UeiMatch) match.next();
             if (uei.getMatch().getType().equals("substr")) {
-                log.debug("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                if (log.isDebugEnabled()) {
+                    log.debug("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                }
             	if (message.contains(uei.getMatch().getExpression())) {
+            	    if (discardUei.equals(uei.getUei())) {
+            	        if (log.isDebugEnabled()) {
+            	            log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
+            	            throw new MessageDiscardedException();
+            	        }
+            	    }
                     //We can pass a new UEI on this
                     log.debug("Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
                     event.setUei(uei.getUei());
@@ -375,7 +387,9 @@ final class ConvertToEvent {
                     break;
                 }
             } else if (uei.getMatch().getType().equals("regex")) {
-                log.debug("Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                if (log.isDebugEnabled()) {
+                    log.debug("Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                }
                 try {
             		msgPat = Pattern.compile(uei.getMatch().getExpression(), Pattern.MULTILINE);
             		msgMat = msgPat.matcher(message);
@@ -384,7 +398,13 @@ final class ConvertToEvent {
             		msgMat = null;
             	}
             	if ((msgMat != null) && (msgMat.matches())) {
-            		// We matched a UEI
+                    if (discardUei.equals(uei.getUei())) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
+                            throw new MessageDiscardedException();
+                        }
+                    }
+            	    // We matched a UEI
             		log.debug("Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
             		event.setUei(uei.getUei());
             		if (msgMat.groupCount() > 0) {
