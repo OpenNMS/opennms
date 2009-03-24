@@ -57,6 +57,7 @@ import org.joda.time.Duration;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper;
@@ -146,6 +147,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
 
+    @Autowired
+    ForeignSourceService m_foreignSourceService;
+    
     @Autowired
     private NodeDao m_nodeDao;
     

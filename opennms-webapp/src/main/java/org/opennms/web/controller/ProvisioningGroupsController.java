@@ -110,8 +110,6 @@ public class ProvisioningGroupsController extends SimpleFormController {
             return doImport(request, response, command, errors);
         } else if ("deleteGroup".equalsIgnoreCase(action)) {
             return doDeleteGroup(request, response, command, errors);
-        } else if ("cloneRequisition".equalsIgnoreCase(action)) {
-            return doCloneRequisition(request, response, command, errors);
         } else if ("cloneForeignSource".equalsIgnoreCase(action)) {
             return doCloneForeignSource(request, response, command, errors);
         } else if ("resetDefaultForeignSource".equalsIgnoreCase(action)) {
@@ -145,11 +143,6 @@ public class ProvisioningGroupsController extends SimpleFormController {
 
     private ModelAndView doAddGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
         m_provisioningService.createProvisioningGroup(command.getGroupName());
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doCloneRequisition(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
-        m_provisioningService.cloneProvisioningGroup(command.getGroupName(), command.getActionTarget());
         return showForm(request, response, errors);
     }
 

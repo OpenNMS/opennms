@@ -8,14 +8,13 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
 
 public interface ForeignSourceService {
 
-    void setActiveForeignSourceRepository(ForeignSourceRepository repo);
+    void setDeployedForeignSourceRepository(ForeignSourceRepository repo);
     void setPendingForeignSourceRepository(ForeignSourceRepository repo);
 
     Set<ForeignSource> getAllForeignSources();
 
     ForeignSource getForeignSource(String name);
     ForeignSource saveForeignSource(String name, ForeignSource fs);
-    ForeignSource deployForeignSource(String name);
     ForeignSource cloneForeignSource(String name, String target);
     void          deleteForeignSource(String name);
 

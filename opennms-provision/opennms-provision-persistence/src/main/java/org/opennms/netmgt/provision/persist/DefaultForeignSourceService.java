@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
@@ -30,8 +31,8 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     private ExtensionManager m_extensionManager;
     
     @Autowired
-    @Qualifier("active")
-    private ForeignSourceRepository m_activeForeignSourceRepository;
+    @Qualifier("deployed")
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
     
     @Autowired
     @Qualifier("pending")
@@ -41,28 +42,30 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     private static Map<String,String> m_policies;
     private static Map<String, PluginWrapper> m_wrappers;
     
-    public void setActiveForeignSourceRepository(ForeignSourceRepository repo) {
-        m_activeForeignSourceRepository = repo;
+    public void setDeployedForeignSourceRepository(ForeignSourceRepository repo) {
+        m_deployedForeignSourceRepository = repo;
     }
     public void setPendingForeignSourceRepository(ForeignSourceRepository repo) {
         m_pendingForeignSourceRepository = repo;
     }
     
     public Set<ForeignSource> getAllForeignSources() {
-        return m_activeForeignSourceRepository.getForeignSources();
+        Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+        foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
+        for (ForeignSource fs : m_deployedForeignSourceRepository.getForeignSources()) {
+            if (!foreignSources.contains(fs)) {
+                foreignSources.add(fs);
+            }
+        }
+        return foreignSources;
     }
 
     public ForeignSource getForeignSource(String name) {
-        return m_pendingForeignSourceRepository.getForeignSource(name);
-    }
-    public ForeignSource deployForeignSource(String name) {
-        if (name.equals("default")) {
-            m_activeForeignSourceRepository.putDefaultForeignSource(m_pendingForeignSourceRepository.getForeignSource("default"));
-            return m_activeForeignSourceRepository.getDefaultForeignSource();
-        } else {
-            m_activeForeignSourceRepository.save(m_pendingForeignSourceRepository.getForeignSource(name));
-            return m_activeForeignSourceRepository.getForeignSource(name);
+        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(name);
+        if (fs == null) {
+            return m_deployedForeignSourceRepository.getForeignSource(name);
         }
+        return fs;
     }
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         normalizePluginConfigs(fs);
@@ -70,23 +73,26 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         return fs;
     }
     public void deleteForeignSource(String name) {
-        m_pendingForeignSourceRepository.delete(m_pendingForeignSourceRepository.getForeignSource(name));
         if (name.equals("default")) {
-            m_activeForeignSourceRepository.resetDefaultForeignSource();
+            m_pendingForeignSourceRepository.resetDefaultForeignSource();
+            m_deployedForeignSourceRepository.resetDefaultForeignSource();
         } else {
-            m_activeForeignSourceRepository.delete(m_activeForeignSourceRepository.getForeignSource(name));
+            ForeignSource fs = getForeignSource(name);
+            m_pendingForeignSourceRepository.delete(fs);
+            m_deployedForeignSourceRepository.delete(fs);
         }
     }
     public ForeignSource cloneForeignSource(String name, String target) {
-        ForeignSource fs = m_activeForeignSourceRepository.getForeignSource(name);
+        ForeignSource fs = getForeignSource(name);
         fs.setDefault(false);
         fs.setName(target);
-        m_activeForeignSourceRepository.save(fs);
-        return m_activeForeignSourceRepository.getForeignSource(target);
+        m_deployedForeignSourceRepository.save(fs);
+        m_pendingForeignSourceRepository.delete(fs);
+        return m_deployedForeignSourceRepository.getForeignSource(target);
     }
 
     public ForeignSource addParameter(String foreignSourceName, String pathToAdd) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSourceName);
+        ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToAdd);
         Object obj = path.getValue(fs);
         
@@ -105,7 +111,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
 
     public ForeignSource deletePath(String foreignSourceName, String pathToDelete) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSourceName);
+        ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToDelete);
         
         Object objToDelete = path.getValue(fs);
@@ -131,14 +137,14 @@ public class DefaultForeignSourceService implements ForeignSourceService {
 
 
     public ForeignSource addDetectorToForeignSource(String foreignSource, String name) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
         fs.addDetector(pc);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
     public ForeignSource deleteDetector(String foreignSource, String name) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> detectors = fs.getDetectors();
         for (Iterator<PluginConfig> i = detectors.iterator(); i.hasNext(); ) {
             PluginConfig pc = i.next();
@@ -152,14 +158,14 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     }
     
     public ForeignSource addPolicyToForeignSource(String foreignSource, String name) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
         fs.addPolicy(pc);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
     public ForeignSource deletePolicy(String foreignSource, String name) {
-        ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(foreignSource);
+        ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> policies = fs.getPolicies();
         for (Iterator<PluginConfig> i = policies.iterator(); i.hasNext(); ) {
             PluginConfig pc = i.next();
