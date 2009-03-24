@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -14,6 +14,7 @@
 // Modifications:
 //
 // 2003 Jan 31: Cleaned up some unused imports.
+// 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -111,6 +112,8 @@ public final class SyslogHandler {
      */
     private String m_logPrefix;
 
+    private String m_DiscardUei;
+
     /**
      * Set the Trapd configuration
      */
@@ -131,6 +134,8 @@ public final class SyslogHandler {
         m_MatchingGroupHost = m_syslogdConfig.getMatchingGroupHost();
 
         m_MatchingGroupMessage = m_syslogdConfig.getMatchingGroupMessage();
+        
+        m_DiscardUei = m_syslogdConfig.getDiscardUei();
 
         m_UeiList = m_syslogdConfig.getUeiList();
 
@@ -161,7 +166,8 @@ public final class SyslogHandler {
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
                     m_UeiList,
-                    m_HideMessages);
+                    m_HideMessages,
+                    m_DiscardUei);
             m_processor = new SyslogProcessor(m_NewSuspectOnMessage,
                     m_ForwardingRegexp,
                     m_MatchingGroupHost,

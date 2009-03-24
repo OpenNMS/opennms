@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -11,6 +11,7 @@
  * Modifications:
  * 
  * Created: May 30, 2006
+ * 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
  *
  * Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -61,6 +62,8 @@ public class SyslogConnection implements Runnable {
     private int _hostGroup;
 
     private int _messageGroup;
+    
+    private String _discardUei;
 
     private UeiList _ueiList;
 
@@ -69,11 +72,12 @@ public class SyslogConnection implements Runnable {
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     public SyslogConnection(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup,
-                            UeiList ueiList, HideMessage hideMessages) {
+                            UeiList ueiList, HideMessage hideMessages, String discardUei) {
         _packet = packet;
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
         _messageGroup = messageGroup;
+        _discardUei = discardUei;
         _ueiList = ueiList;
         _hideMessages = hideMessages;
 
@@ -92,9 +96,12 @@ public class SyslogConnection implements Runnable {
                         _packet.getPort(),
                         _packet.getData(),
                         _packet.getLength(), _matchPattern, _hostGroup, _messageGroup,
-                        _ueiList, _hideMessages);
+                        _ueiList, _hideMessages, _discardUei);
             } catch (UnsupportedEncodingException e1) {
                 log.debug("Failure to convert package");
+            } catch (MessageDiscardedException e) {
+                log.debug("Message discarded, returning without enqueueing event.");
+                return;
             }
 
             log.debug("Sending received packet to the queue");
