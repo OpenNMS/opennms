@@ -226,21 +226,26 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             OnmsNode node = m_nodeDao.get(nodeId);
             Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
+            RancidNode rNewNode = getSuitableRancidNode(node);
             // if the node exists and has different label then first delete old data
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));            
-                if (!rNode.getDeviceName().equals(node.getLabel())) {
-                    RWSClientApi.deleteRWSRancidNode(cp, rNode);
-                    RWSClientApi.deleteRWSAuthNode(cp, rNode.getAuth());
+                RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));            
+                if (!rCurrentNode.equals(rNewNode)) {
+                    //FIXME explain the use cases....
+                    try {
+                        RWSClientApi.deleteRWSRancidNode(cp, rCurrentNode);
+                        RWSClientApi.deleteRWSAuthNode(cp, rCurrentNode.getAuth());                        
+                    } catch (Exception e) {
+                        log().error("RANCID PROVISIONING ADAPTER Failed to delete node: " + nodeId + " Exception: " + e.getMessage());
+                    }
                 }
             }
             
-            RancidNode rNode = getSuitableRancidNode(node);
             
-            RWSClientApi.createOrUpdateRWSRancidNode(cp, rNode);
-            RWSClientApi.createOrUpdateRWSAuthNode(cp, rNode.getAuth());
+            RWSClientApi.createOrUpdateRWSRancidNode(cp, rNewNode);
+            RWSClientApi.createOrUpdateRWSAuthNode(cp, rNewNode.getAuth());
             
-            m_onmsNodeRancidNodeMap.replace(node.getId(), rNode);
+            m_onmsNodeRancidNodeMap.replace(node.getId(), rNewNode);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
