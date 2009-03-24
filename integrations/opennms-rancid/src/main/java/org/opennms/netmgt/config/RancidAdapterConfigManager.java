@@ -155,7 +155,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         m_urlIPMap = new HashMap<String, List<String>>();
     
         if (hasPolicies()) {
-            for(Package pkg : packages()) {
+            for (PolicyManage pm: policies() ) {
+                Package pkg = pm.getPackage();
         
                 for(String url : includeURLs(pkg)) {
         
