@@ -455,11 +455,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             Integer nodeid = op.getNodeId();
             updateRancidNodeState(nodeid, true);
-            if ( m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(nodeid))) {
-              return true;
-            } else {
-                return false;
-            }
+            return 
+            m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(nodeid));
         }
         return true;
     }
