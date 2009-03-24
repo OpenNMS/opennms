@@ -203,5 +203,9 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     public synchronized HideMessage getHideMessages() {
         return m_config.getHideMessage();
     }
+    
+    public synchronized String getDiscardUei() {
+        return m_config.getConfiguration().getDiscardUei();
+    }
 
 }

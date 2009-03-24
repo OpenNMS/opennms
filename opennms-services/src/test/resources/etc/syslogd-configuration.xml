@@ -6,6 +6,7 @@
             forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
             matching-group-host="6"
             matching-group-message="8"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
             />
 
     <ueiList>
@@ -16,6 +17,14 @@
         <ueiMatch>
             <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
             <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="substr" expression="JUNK"/>
+        	<uei>DISCARD-MATCHING-MESSAGES</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression="[Tt][Rr][Aa][Ss][Hh]"/>
+        	<uei>DISCARD-MATCHING-MESSAGES</uei>
         </ueiMatch>
     </ueiList>
 

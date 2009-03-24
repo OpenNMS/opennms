@@ -231,7 +231,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(testUEI, ne.getUei());
         assertEquals("syslogd", ne.getSource());
         assertEquals(testMsg, ne.getLogmsg().getContent());    
-    }    
+    }
     
     public void testSubstrTESTTestThatRemovesATESTString() throws InterruptedException {
     	String localhost = myLocalHost();
@@ -332,5 +332,81 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals(testUEI, ne.getUei());
         assertEquals("syslogd", ne.getSource());
         assertEquals(testMsg, ne.getLogmsg().getContent());      
+    }
+
+    public void testSubstrDiscard() throws InterruptedException {
+        String localhost = myLocalHost();
+        final String testPDU = "2007-01-01 www.opennms.org A JUNK message";
+        final String testUEI = "DISCARD-MATCHING-MESSAGES";
+        final String testMsg = "A JUNK message";
+        
+        Event e = new Event();
+        e.setUei(testUEI);
+        e.setSource("syslogd");
+        e.setInterface(localhost);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent(testMsg);
+        e.setLogmsg(logmsg);
+
+        EventAnticipator ea = new EventAnticipator();
+        ea.anticipateEvent(e);
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+        
+        assertEquals(1, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+        
+        assertFalse(ea.getAnticipatedEvents().isEmpty());
+        
+        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
+        assertEquals(testUEI, ne.getUei());
+        assertEquals("syslogd", ne.getSource());
+        assertEquals(testMsg, ne.getLogmsg().getContent());
+    }
+
+    public void testRegexDiscard() throws InterruptedException {
+        String localhost = myLocalHost();
+        final String testPDU = "2007-01-01 www.opennms.org A TrAsH message";
+        final String testUEI = "DISCARD-MATCHING-MESSAGES";
+        final String testMsg = "A TrAsH message";
+        
+        Event e = new Event();
+        e.setUei(testUEI);
+        e.setSource("syslogd");
+        e.setInterface(localhost);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent(testMsg);
+        e.setLogmsg(logmsg);
+
+        EventAnticipator ea = new EventAnticipator();
+        ea.anticipateEvent(e);
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+        
+        assertEquals(1, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+        
+        assertFalse(ea.getAnticipatedEvents().isEmpty());
+        
+        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
+        assertEquals(testUEI, ne.getUei());
+        assertEquals("syslogd", ne.getSource());
+        assertEquals(testMsg, ne.getLogmsg().getContent());    
     }
 }

@@ -81,7 +81,15 @@
                   </restriction>
                 </simpleType>      
             </attribute>
-
+            <attribute name="discard-uei" type="string" use="optional" default="DISCARD-MATCHING-MESSAGES">
+                <annotation>
+                    <documentation>A string which, when used as the value of a "uei"
+                                   element inside a "ueiMatch" element, results in all
+                                   matching messages to be discarded without an event
+                                   ever being created
+                    </documentation>
+                </annotation>
+            </attribute>
         </complexType>
 
     </element>

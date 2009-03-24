@@ -49,5 +49,7 @@ public interface SyslogdConfig {
     public abstract UeiList getUeiList();
 
     public abstract HideMessage getHideMessages();
+    
+    public abstract String getDiscardUei();
 }
 
