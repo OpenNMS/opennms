@@ -210,6 +210,7 @@
                   <property name="java.version" value="${java.version}" />
                   <property name="java.home" value="${java.home}" />
                 </ant>
+                <echo message="update policy is ${updatePolicy}" />
               </tasks>
             </configuration>
             <goals>
@@ -585,6 +586,8 @@
    <webstart.dnameL />
    <webstart.dnameSt />
    <webstart.dnameC />
+
+   <updatePolicy>daily</updatePolicy>
 
   </properties>
 
@@ -1380,6 +1383,7 @@
     <repository>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
       <releases>
         <enabled>false</enabled>
@@ -1404,6 +1408,7 @@
     <pluginRepository>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
       <releases>
         <enabled>false</enabled>
@@ -1426,6 +1431,7 @@
     <pluginRepository>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
       <releases>
         <enabled>false</enabled>
