@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -14,6 +14,7 @@
 // Modifications:
 //
 // 2003 Jan 31: Cleaned up some unused imports.
+// 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -85,6 +86,8 @@ class SyslogReceiver implements Runnable {
     private int m_hostGroup;
 
     private int m_messageGroup;
+    
+    private String m_discardUei;
 
     private UeiList m_UeiList;
 
@@ -99,12 +102,13 @@ class SyslogReceiver implements Runnable {
      * @param messageGroup
      */
     SyslogReceiver(DatagramSocket sock, String matchPattern, int hostGroup, int messageGroup,
-                   UeiList ueiList, HideMessage hideMessages) {
+                   UeiList ueiList, HideMessage hideMessages, String discardUei) {
         m_stop = false;
         m_dgSock = sock;
         m_matchPattern = matchPattern;
         m_hostGroup = hostGroup;
         m_messageGroup = messageGroup;
+        m_discardUei = discardUei;
         m_UeiList = ueiList;
         m_HideMessages = hideMessages;
         m_logPrefix = LOG4J_CATEGORY;
@@ -198,7 +202,7 @@ class SyslogReceiver implements Runnable {
                 if (!ioInterrupted)
                     log.debug("Wating on a datagram to arrive");
                 m_dgSock.receive(pkt);
-                Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages));
+                Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 worker.start();
                 ioInterrupted = false; // reset the flag
             } catch (InterruptedIOException e) {
