@@ -40,9 +40,12 @@ package org.opennms.netmgt.importer;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.modelimport.Category;
 import org.opennms.netmgt.config.modelimport.Interface;
@@ -52,12 +55,15 @@ import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.importer.specification.ImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.style.ToStringCreator;
@@ -71,6 +77,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     private CategoryDao m_categoryDao;
 
     private ModelImporter m_importer;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Override
     protected void setUpConfiguration() {
@@ -95,14 +102,15 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
 
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"161\" retry=\"0\" timeout=\"2000\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "                 version=\"v1\">\n" + 
-                "\n" + 
-                "</snmp-config>");
+        Reader rdr = new StringReader("<?xml version=\"1.0\"?>" +
+        		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +
+        			"read-community=\"public\" " +
+        			"version=\"v1\" " +
+        			"max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">" +
+        		"</snmp-config>");
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        
     }
 
 
@@ -261,6 +269,192 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals(3, mi.getServiceTypeDao().countAll());
     }
     
+    /* Import a model that specifies no discovery of non-IP interfaces */
+    public void testAddSnmpInterfacesNoNonIpInterfaces() throws Exception {
+        
+        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
+        
+        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+
+        try {
+            createAndFlushServiceTypes();
+            createAndFlushCategories();
+
+            ModelImporter mi = m_importer;        
+            String specFile = "/tec_dump.xml";
+            mi.importModelFromResource(new ClassPathResource(specFile));
+
+            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+
+            assertEquals(2, mi.getIpInterfaceDao().countAll());
+
+            assertEquals(2, getSnmpInterfaceDao().countAll());
+
+        } finally {
+            agent.shutDownAndWait();
+        }
+
+    }
+    
+    /* Import a model that specifies discovery of non-IP interfaces as non-collected ("N") */
+    // Once
+    public void testAddSnmpInterfacesWithNonIpInterfacesNoCollect() throws Exception {
+        addSnmpInterfacesWithNonIpInterfacesNoCollectNTimes(1);
+    }
+    
+    // And twice
+    public void testAddSnmpInterfacesWithNonIpInterfacesNoCollectTwice() throws Exception {
+        addSnmpInterfacesWithNonIpInterfacesNoCollectNTimes(2);
+    }
+    
+    /* Implementation for testAddSnmpInterfacesWithNonIpInterfacesNoCollect and ~Twice */
+    public void addSnmpInterfacesWithNonIpInterfacesNoCollectNTimes(int reps) throws Exception {
+        
+        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
+        
+        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+
+        try {
+            createAndFlushServiceTypes();
+            createAndFlushCategories();
+
+            ModelImporter mi = m_importer;        
+            String specFile = "/tec_dump_nonip_nocollect.xml";
+            
+            for (int i = 0; i < reps; i++)
+                mi.importModelFromResource(new ClassPathResource(specFile));
+
+            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+
+            assertEquals(5, mi.getIpInterfaceDao().countAll());
+            
+            assertEquals(3, mi.getIpInterfaceDao().findByIpAddress("0.0.0.0").size());
+
+            assertEquals(5, getSnmpInterfaceDao().countAll());
+            
+            int nonIpIpIfCount = 0;
+            for (OnmsSnmpInterface snmpIface : getSnmpInterfaceDao().findAll()) {
+                for (OnmsIpInterface ipIface : snmpIface.getIpInterfaces()) {
+                    if (!"0.0.0.0".equals(ipIface.getIpAddress())) continue;
+                    assertEquals('N', ipIface.getIsSnmpPrimary().getCharCode());
+                    nonIpIpIfCount++;
+                }
+            }
+            assertEquals(3, nonIpIpIfCount);
+
+        } finally {
+            agent.shutDownAndWait();
+        }
+
+    }
+
+    /* Import a model that specifies discovery of non-IP interfaces as collected ("C") */
+    // Once
+    public void testAddSnmpInterfacesWithNonIpInterfacesCollect() throws Exception {
+        addSnmpInterfacesWithNonIpInterfacesCollectNTimes(1);
+    }
+    
+    // And twice
+    public void testAddSnmpInterfacesWithNonIpInterfacesCollectTwice() throws Exception {
+        addSnmpInterfacesWithNonIpInterfacesCollectNTimes(2);
+    }
+    
+    /* Implementation for testAddSnmpInterfacesWithNonIpInterfacesCollect and ~Twice */
+    public void addSnmpInterfacesWithNonIpInterfacesCollectNTimes(int reps) throws Exception {
+        
+        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
+        
+        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+
+        try {
+            createAndFlushServiceTypes();
+            createAndFlushCategories();
+
+            ModelImporter mi = m_importer;        
+            String specFile = "/tec_dump_nonip_collect.xml";
+            
+            for (int i = 0; i < reps; i++)
+                mi.importModelFromResource(new ClassPathResource(specFile));
+
+            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+
+            assertEquals(5, mi.getIpInterfaceDao().countAll());
+            
+            assertEquals(3, mi.getIpInterfaceDao().findByIpAddress("0.0.0.0").size());
+
+            assertEquals(5, getSnmpInterfaceDao().countAll());
+            
+            int nonIpIpIfCount = 0;
+            for (OnmsSnmpInterface snmpIface : getSnmpInterfaceDao().findAll()) {
+                for (OnmsIpInterface ipIface : snmpIface.getIpInterfaces()) {
+                    if (!"0.0.0.0".equals(ipIface.getIpAddress())) continue;
+                    assertEquals('C', ipIface.getIsSnmpPrimary().getCharCode());
+                    nonIpIpIfCount++;
+                }
+            }
+            assertEquals(3, nonIpIpIfCount);
+
+        } finally {
+            agent.shutDownAndWait();
+        }
+
+    }
+    
+    
+    /* Import a model that specifies discovery of non-IP interfaces as not collected ("N") and then as collected ("C") */
+    public void testAddSnmpInterfacesWithNonIpNotCollectedThenCollected() throws Exception {
+        List<String> specFiles = new ArrayList<String>();
+        specFiles.add("/tec_dump_nonip_nocollect.xml");
+        specFiles.add("/tec_dump_nonip_collect.xml");
+        addSnmpInterfacesWithNonIpFromDifferentSpecFilesAndVerifyCollectStatus(specFiles, 'C');
+    }
+    
+    /* Import a model that specifies discovery of non-IP interfaces as collected ("C") and then as not collected ("N") */
+    public void testAddSnmpInterfacesWithNonIpCollectedThenNotCollected() throws Exception {
+        List<String> specFiles = new ArrayList<String>();
+        specFiles.add("/tec_dump_nonip_collect.xml");
+        specFiles.add("/tec_dump_nonip_nocollect.xml");
+        addSnmpInterfacesWithNonIpFromDifferentSpecFilesAndVerifyCollectStatus(specFiles, 'N');
+    }
+    
+    public void addSnmpInterfacesWithNonIpFromDifferentSpecFilesAndVerifyCollectStatus(List<String> specFiles, char expectedStatus) throws Exception {
+        ClassPathResource agentConfig = new ClassPathResource("/snmpTestData1.properties");
+        
+        MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun(agentConfig, "127.0.0.1/9161");
+
+        try {
+            createAndFlushServiceTypes();
+            createAndFlushCategories();
+
+            ModelImporter mi = m_importer;
+            
+            for (String specFile : specFiles) {
+                mi.importModelFromResource(new ClassPathResource(specFile));
+            }
+
+            assertEquals(1, mi.getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+
+            assertEquals(5, mi.getIpInterfaceDao().countAll());
+            
+            assertEquals(3, mi.getIpInterfaceDao().findByIpAddress("0.0.0.0").size());
+
+            assertEquals(5, getSnmpInterfaceDao().countAll());
+            
+            int nonIpIpIfCount = 0;
+            for (OnmsSnmpInterface snmpIface : getSnmpInterfaceDao().findAll()) {
+                for (OnmsIpInterface ipIface : snmpIface.getIpInterfaces()) {
+                    if (!"0.0.0.0".equals(ipIface.getIpAddress())) continue;
+                    assertEquals(expectedStatus, ipIface.getIsSnmpPrimary().getCharCode());
+                    nonIpIpIfCount++;
+                }
+            }
+            assertEquals(3, nonIpIpIfCount);
+
+        } finally {
+            agent.shutDownAndWait();
+        }
+    }    
+
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
@@ -384,5 +578,16 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
+    
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao; 
+    }
+    
+    
+    
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+    
 
 }

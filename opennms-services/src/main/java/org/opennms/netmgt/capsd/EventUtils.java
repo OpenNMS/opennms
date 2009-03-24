@@ -1227,6 +1227,31 @@ public class EventUtils {
 
         return newEvent;
     }
+    
+    /**
+     * Constructs a reinitializePrimarySnmpInterface event for the given nodeId
+     * 
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that service resides on
+     * @param ipAddr
+     *            the ipAddress of the interface the service resides on
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a reinitializePrimarySnmpInterface event for
+     *         the given nodeId, ipaddr
+     */
+    public static Event createReinitSnmpPrimaryEvent(String source, long nodeId, String ipAddr, long txNo) {
+        Event newEvent = new Event();
+        newEvent.setUei(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
+        newEvent.setSource(source);
+        newEvent.setInterface(ipAddr);
+        newEvent.setNodeid(nodeId);
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        return newEvent;
+    }
 
     public static String toString(Event event) {
             StringBuffer b = new StringBuffer("Event: ");

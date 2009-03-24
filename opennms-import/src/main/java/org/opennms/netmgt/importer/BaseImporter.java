@@ -150,8 +150,9 @@ public class BaseImporter implements ImportOperationFactory {
         m_transTemplate = transTemplate;
     }
 
-    public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        InsertOperation insertOperation = new InsertOperation(foreignSource, foreignId, nodeLabel, building, city);
+    public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city,
+            Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
+        InsertOperation insertOperation = new InsertOperation(foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
         insertOperation.setNodeDao(m_nodeDao);
         insertOperation.setDistPollerDao(m_distPollerDao);
         insertOperation.setServiceTypeDao(m_serviceTypeDao);
@@ -162,8 +163,9 @@ public class BaseImporter implements ImportOperationFactory {
         
     }
 
-    public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-        UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city);
+    public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city,
+            Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
+        UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
         updateOperation.setNodeDao(m_nodeDao);
         updateOperation.setDistPollerDao(m_distPollerDao);
         updateOperation.setServiceTypeDao(m_serviceTypeDao);
@@ -205,6 +207,8 @@ public class BaseImporter implements ImportOperationFactory {
         opsMgr.setForeignSource(specFile.getForeignSource());
         opsMgr.setScanThreads(m_scanThreads);
         opsMgr.setWriteThreads(m_writeThreads);
+        opsMgr.setNonIpInterfaces(specFile.getNonIpInterfaces());
+        opsMgr.setNonIpSnmpPrimary(specFile.getNonIpSnmpPrimary());
         
         auditNodes(opsMgr, specFile);
         

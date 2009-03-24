@@ -46,8 +46,9 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class InsertOperation extends AbstractSaveOrUpdateOperation {
     
-    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
-		super(foreignSource, foreignId, nodeLabel, building, city);
+    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city,
+            Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
+		super(foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
 	public List<Event> doPersist() {
