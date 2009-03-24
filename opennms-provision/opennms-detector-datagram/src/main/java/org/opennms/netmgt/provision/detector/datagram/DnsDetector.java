@@ -38,6 +38,8 @@ package org.opennms.netmgt.provision.detector.datagram;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
@@ -94,10 +96,9 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
             public boolean validate(DatagramPacket response) {
                 
                 try {
-                    System.out.println("\n Yo we got something back\n");
                     request.verifyResponse(response.getData(), response.getLength());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    info("DNSDetector failed to connect");
                     return false;
                 } 
                 
@@ -150,6 +151,13 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      */
     public String getLookup() {
         return m_lookup;
+    }
+    
+    private void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
     }
 
 }
