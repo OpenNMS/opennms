@@ -112,38 +112,38 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.general_status})</h3>
-	<table>
+	<table class="o-box">
   	<tr>
   		<th>Node</th>
-  		<th><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></th>
+  		<td><a href="element/node.jsp?node=<%=nodeId%>"><%=elementID%></a></td>
   </tr>
   </table>
   <h3>Element info</h3>
 
-  <table>
+  <table class="o-box">
 	<tr>
 		<th>Group Name</th>
-		<th>${model.groupname}</th>
+		<td>${model.groupname}</td>
 	</tr>
 	<tr>
 		<th>Version</th>
-		<th>${model.version}</th>
+		<td>${model.version}</td>
 	</tr>
 	<tr>
 		<th>Rancid Name</th>
-		<th>${model.devicename}</th>
+		<td>${model.devicename}</td>
 	</tr>
 	    <th>Status</th>
-	    <th>${model.status}</th>
+	    <td>${model.status}</td>
 	<tr>
 	    <th>Creation Date</th>
-	    <th>${model.creationdate}</th>
+	    <td>${model.creationdate}</td>
 	</tr>
    </table>
 	
 	 <h3>Configuration info</h3>
 
-	 <table>
+	 <table class="o-box">
 	    <!--
 	    <tr>
 		<th>Software Configuration Url</th>
@@ -152,7 +152,7 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 		-->
 	    <tr>
 		<th>CVS Configuration Url</th>
-		<th><a href="inventory/rancidViewVc.htm?node=${model.id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">${model.devicename}</th>
+		<td><a href="inventory/rancidViewVc.htm?node=${model.id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">${model.devicename}</td>
 
 		<!--th><a href = "${model.configurationurl}" > ${model.devicename} </a></th -->
 		</tr>
@@ -164,25 +164,25 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 
 	<c:forEach items="${model2.inventory}" var="invel" varStatus="status">
 	<h3>Item ${status.count}</h3>
-	<table>
+	<table class="o-box">
 		<c:forEach items="${invel.tupleList}" var="tup">
 		<tr>
 			<th>${tup.name}</th>
-			<th>${tup.description}</th>
+			<td>${tup.description}</td>
 		</tr>
 		</c:forEach>
-		<tr><th></th><th></th></tr>
+		<tr><th></th><td></td></tr>
 		<c:forEach items="${invel.softwareList}" var="sof">
 		<tr>
 			<th>Software: ${sof.type}</th>
-			<th>Version: ${sof.version}</th>
+			<td>Version: ${sof.version}</td>
 		</tr>
 		</c:forEach>
-		<tr><th></th><th></th></tr>
+		<tr><th></th><td></td></tr>
 		<c:forEach items="${invel.memoryList}" var="mem">
 		<tr>
-			<th>Memory: ${mem.type}</th>
-			<th>Size: ${mem.size}</th>
+			<td>Memory: ${mem.type}</th>
+			<td>Size: ${mem.size}</th>
 		</tr>
 		</c:forEach>
 		</table>
