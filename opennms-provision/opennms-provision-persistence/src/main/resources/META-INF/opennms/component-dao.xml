@@ -17,4 +17,8 @@
   	<property name="foreignSourcePath" value="${importer.foreign-source.dir}" />
   </bean>
 
+  <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
+  	<qualifier value="fused" />
+  </bean>
+
 </beans>
