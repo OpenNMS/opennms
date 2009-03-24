@@ -98,56 +98,56 @@
 
   <h3>Element info</h3>
 
-  <table>
+  <table class="o-box">
 	<tr>
 		<th>RWS Url</th>
-		<th>${model.url}</th>
+		<td>${model.url}</td>
 		</tr>
 	<tr>
 		<th>Group Name</th>
-		<th>${model.group}</th>
+		<td>${model.group}</td>
 	</tr>
 	<tr>
 		<th>Rancid Name</th>
-		<th>${model.id}</th>
+		<td>${model.id}</td>
     </tr>
 
     <tr>
         <th>Element Name</th>
-        <th>${model.name}</th>
+        <td>${model.name}</td>
     </tr>
     <tr>
 	    <th>Vendor</th>
-	    <th>${model.vendor}</th>
+	    <td>${model.vendor}</td>
     </tr>
     <tr>
 	    <th>SysOid</th>
-	    <th>${model.sysoid}</th>
+	    <td>${model.sysoid}</td>
     </tr>
     <tr>
 		<th>Model Type</th>
-		<th>${model.modeltype}</th>
+		<td>${model.modeltype}</td>
 	</tr>
 	
     <tr>
 	    <th>Serial Number</th>
-	    <th>${model.serialnumber}</th>
+	    <td>${model.serialnumber}</td>
 	   </tr>
 	<tr>
 		<th>Product Part Number</th>
-		<th>${model.productpartnumber}</th>
+		<td>${model.productpartnumber}</td>
 	</tr>
 	<tr>
 		<th>Hardware Version</th>
-		<th>${model.hardwareversion}</th>
+		<td>${model.hardwareversion}</td>
 	</tr>
 	<tr>
 		<th>Ram Size</th>
-		<th>${model.ramsize}</th>
+		<td>${model.ramsize}</td>
 	</tr>
 	<tr>
 		<th>Nw Ram Size</th>
-		<th>${model.nwramsize}</th>
+		<td>${model.nwramsize}</td>
 	</tr>
 	
 </table>

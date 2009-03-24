@@ -47,35 +47,33 @@
   <jsp:param name="breadcrumb" value="Rancid" />
 </jsp:include>
 
-<h2>Node: ${model.id} </h2>
-
 <div class="TwoColLeft">
 	<!-- general info box -->
 	<h3>General (Status: ${model.status_general})</h3>
-  	<table>
+  	<table class="o-box">
   		<tr>
 	  		<th>Node</th>
-	  		<th><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></th>
+	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
 	</table>
 
-	<h3>Rancid info</h3>
-	<table>
+	<h3>Rancid Info</h3>
+	<table class="o-box">
 		<tr>
 			<th>Device Name</th>
-			<th>${model.id}</th>
+			<td>${model.id}</td>
 		</tr>	
 		<tr>
 			<th>Device Type</th>
-			<th>${model.devicetype}</th>
+			<td>${model.devicetype}</td>
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<th>${model.comment}</th>
+			<td>${model.comment}</td>
 		</tr>
 		<tr>
 			<th>Status</th>
-			<th>${model.status}</th>
+			<td>${model.status}</td>
 		</tr>
 	</table>
 
@@ -85,7 +83,7 @@
 <!-- general info box -->
 	<h3>Associated Elements</h3>
 	
-	<table>
+	<table class="o-box">
 	<tr>
 		<th>Group</th>
 		<th>CVS Root repository</th>
@@ -95,11 +93,11 @@
 	</tr>
 	<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
 		<tr>
-			<th>${groupelm.group}</th>
-			<th><a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}&viewvc=${groupelm.rootConfigurationUrl}">${model.id}</th>
-			<th>${groupelm.totalRevisions} <a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=${groupelm.group}">(list)</a></th>
-			<th><a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</th>
-			<th>${groupelm.creationDate}</th>
+			<td>${groupelm.group}</td>
+			<td><a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}&viewvc=${groupelm.rootConfigurationUrl}">${model.id}</td>
+			<td>${groupelm.totalRevisions} <a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=${groupelm.group}">(list)</a></td>
+			<td><a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</td>
+			<td>${groupelm.creationDate}</td>
 		</tr>
 	</c:forEach>
 		<th colspan="5" ><a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=*">entire group list...</a></th>

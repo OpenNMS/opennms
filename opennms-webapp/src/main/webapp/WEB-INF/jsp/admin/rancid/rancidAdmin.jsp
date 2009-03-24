@@ -52,80 +52,82 @@
 <div class="TwoColLeft">
     <!-- general info box -->
     <h3>General (Status: ${model.status_general})</h3>
-    <table>
+    <table class="o-box">
 		<tr>
 			<th>Node</th>
-	  		<th><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></th>
+	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
 	</table>
   
-	<h3>Rancid info</h3>
-	<table>
+	<h3>Rancid Info</h3>
+	<form id="newUserForm2" method="post" name="newUserForm2">	
+	<table class="o-box">
 		<tr>
 			<th>Device Name</th>
-			<th>${model.id}</th>
+			<td>${model.id}</td>
 		</tr>
 		<tr>
 		<th>Group</th>
-		<th>${model.groupname}</th>
+		<td>${model.groupname}</td>
 	</tr>	
 		<tr>
 			<th>Device Type</th>
-			<th>${model.devicetype}</th>
+			<td>${model.devicetype}</td>
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<th>${model.comment}</th>
+			<td>${model.comment}</td>
 		</tr>
 	
-		<form id="newUserForm2" method="post" name="newUserForm2">	
 		<tr>
 			<th>Status</th>
-			<th>${model.status}
+			<td>${model.status}
 				<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
-			</th>
+			</td>
 		</tr>
-		<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
-		<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
-		<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
-		</form>
 	</table> 
+	<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
+	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
+	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+	</form>
 
-	<h3>Clogin info</h3>
+	<h3>Clogin Info</h3>
 	<form id="newUserForm" method="post" name="newUserForm">
-		<table>
+		 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
+		 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+		<table class="o-box">
 			<tr>
 			    <th><label id="userIDLabel" for="userID">User:</label></th>
-			    <th><input id="userID" type="text" name="userID" value="${model.cloginuser}"></th>
+			    <td><input id="userID" type="text" name="userID" value="${model.cloginuser}"></td>
 			 </tr>
 		
 			 <tr>
 			 	<th><label id="pass1Label" for="password">Password:</label></th>
-			 	<th><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></th>
+			 	<td><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></td>
 			 </tr>
 			 <tr>
 			 	<th><label id="enpass1Label" for="enpassword">Enable password:</label></th>
-			 	<th><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></th>
+			 	<td><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></td>
 			 </tr>
 			 <tr>
 				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
-				 <th>
+				 <td>
 					  <select name="loginM" size="1">
 					  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
 					  <option value="ssh">ssh</option>
 					  <option value="telnet">telnet</option>
 					  </select>
-				 </th>
+				 </td>
 			 </tr>
 			 <tr>
 			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
-			 	<th>
+			 	<td>
 				  <select name="autoE" size="1">
 				  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
 				  <option value="1">1</option>
 				  <option value="0">0</option>
 				  </select>
-				</th>
+				</td>
 			 </tr>
 		
 			 <tr>
@@ -133,10 +135,7 @@
 			 	<th><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()">
 			 		<input id="doOK" type="submit" value="OK" onClick="validateFormInput()">
 			 	</th>
-			 </tr>
-	
-			 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
-			 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+			 </tr>	
 		 </table>
 	 </form>
 </div>
