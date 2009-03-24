@@ -57,7 +57,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        m_testData = m_activeRepository.deployResourceRequisition(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
+        m_testData = m_activeRepository.importResourceRequisition(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
 
         m_provisioningService = new DefaultManualProvisioningService();
         m_provisioningService.setDeployedForeignSourceRepository(m_activeRepository);

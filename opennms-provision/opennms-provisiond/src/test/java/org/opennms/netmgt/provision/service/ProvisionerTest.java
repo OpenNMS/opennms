@@ -209,7 +209,7 @@ public class ProvisionerTest {
     @Transactional
     public void testVisit() throws Exception {
 
-        Requisition requisition = m_foreignSourceRepository.deployResourceRequisition(new ClassPathResource("/NewFile2.xml"));
+        Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
         CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
         verifyCounts(visitor);

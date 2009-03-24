@@ -28,7 +28,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         }
     }
 
-    public Requisition deployResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         try {
             InputStream resourceStream = resource.getInputStream();

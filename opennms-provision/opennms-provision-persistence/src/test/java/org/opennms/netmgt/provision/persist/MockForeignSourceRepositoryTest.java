@@ -35,7 +35,7 @@ public class MockForeignSourceRepositoryTest {
     }
     
     private Requisition createRequisition() throws Exception {
-        return m_repository.deployResourceRequisition(new ClassPathResource("/requisition-test.xml"));
+        return m_repository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
     }
 
     private ForeignSource createForeignSource(String foreignSource) throws Exception {
