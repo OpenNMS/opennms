@@ -30,8 +30,8 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     @Qualifier("deployed")
     private FilesystemForeignSourceRepository m_deployedForeignSourceRepository;
 
-    public synchronized Requisition deployResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
-        Requisition r = m_deployedForeignSourceRepository.deployResourceRequisition(resource);
+    public synchronized Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
+        Requisition r = m_deployedForeignSourceRepository.importResourceRequisition(resource);
         updateDeployedForeignSource(r.getForeignSource());
         m_pendingForeignSourceRepository.delete(r);
         return r;
