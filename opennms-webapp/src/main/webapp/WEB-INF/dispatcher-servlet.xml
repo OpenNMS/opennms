@@ -57,7 +57,7 @@
   
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
   	<property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
-  	<property name="activeForeignSourceRepository" ref="deployedForeignSourceRepository" />
+  	<property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>
   
   <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">

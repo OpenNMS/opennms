@@ -42,8 +42,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.utils.PropertyPath;
@@ -75,16 +76,24 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class DefaultManualProvisioningService implements
-        ManualProvisioningService {
+public class DefaultManualProvisioningService implements ManualProvisioningService {
 
-    private ForeignSourceRepository m_repository;
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
     
-    public void setForeignSourceRepository(ForeignSourceRepository repository) {
-        m_repository = repository;
+    public DefaultManualProvisioningService() {
+        
+    }
+    
+    public void setDeployedForeignSourceRepository(ForeignSourceRepository repository) {
+        m_deployedForeignSourceRepository = repository;
+    }
+    
+    public void setPendingForeignSourceRepository(ForeignSourceRepository repository) {
+        m_pendingForeignSourceRepository = repository;
     }
     
     public void setNodeDao(NodeDao nodeDao) {
@@ -100,7 +109,7 @@ public class DefaultManualProvisioningService implements
     }
 
     public Requisition addCategoryToNode(String groupName, String pathToNode, String categoryName) {
-        Requisition group = m_repository.getRequisition(groupName);
+        Requisition group = getProvisioningGroup(groupName);
         
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
         
@@ -108,13 +117,13 @@ public class DefaultManualProvisioningService implements
         category.setName(categoryName);
         node.insertCategory(category);
 
-        m_repository.save(group);
+        m_pendingForeignSourceRepository.save(group);
 
-        return m_repository.getRequisition(groupName);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
     
     public Requisition addAssetFieldToNode(String groupName, String pathToNode, String assetName, String assetValue) {
-        Requisition group = m_repository.getRequisition(groupName);
+        Requisition group = getProvisioningGroup(groupName);
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
 
         RequisitionAsset asset = new RequisitionAsset();
@@ -122,12 +131,12 @@ public class DefaultManualProvisioningService implements
         asset.setValue(assetValue);
         node.insertAsset(asset);
 
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     public Requisition addInterfaceToNode(String groupName, String pathToNode, String ipAddr) {
-        Requisition group = m_repository.getRequisition(groupName);
+        Requisition group = getProvisioningGroup(groupName);
         Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
         Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
@@ -140,8 +149,8 @@ public class DefaultManualProvisioningService implements
         RequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
         node.insertInterface(iface);
 
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     private RequisitionInterface createInterface(String ipAddr, String snmpPrimary) {
@@ -153,14 +162,14 @@ public class DefaultManualProvisioningService implements
     }
 
     public Requisition addNewNodeToGroup(String groupName, String nodeLabel) {
-        Requisition group = m_repository.getRequisition(groupName);
-        
+        Requisition group = getProvisioningGroup(groupName);
+
         RequisitionNode node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
         node.setBuilding(groupName);
         group.insertNode(node);
         
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     private RequisitionNode createNode(String nodeLabel, String foreignId) {
@@ -171,42 +180,36 @@ public class DefaultManualProvisioningService implements
     }
 
     public Requisition addServiceToInterface(String groupName, String pathToInterface, String serviceName) {
-        Requisition group = m_repository.getRequisition(groupName);
+        Requisition group = getProvisioningGroup(groupName);
         
         RequisitionInterface iface = BeanUtils.getPathValue(group, pathToInterface, RequisitionInterface.class);
         
         RequisitionMonitoredService monSvc = createService(serviceName);
         iface.insertMonitoredService(monSvc);
 
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     public Requisition getProvisioningGroup(String name) {
-        return m_repository.getRequisition(name);
+        Requisition deployed  = m_deployedForeignSourceRepository.getRequisition(name);
+        Requisition pending = m_pendingForeignSourceRepository.getRequisition(name);
+        
+        return (pending == null)? deployed : pending;
     }
     
     public Requisition saveProvisioningGroup(String groupName, Requisition group) {
         group.setForeignSource(groupName);
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
-    }
-
-    public Requisition cloneProvisioningGroup(String name, String target) {
-        Requisition group = m_repository.getRequisition(name);
-        if (group == null) {
-            group = new Requisition();
-            group.setForeignSource(name);
-            m_repository.save(group);
-        }
-        group.setForeignSource(target);
-        m_repository.save(group);
-        return m_repository.getRequisition(name);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     public Collection<String> getProvisioningGroupNames() {
-        List<String> names = new ArrayList<String>();
-        for (Requisition r : m_repository.getRequisitions()) {
+        Set<String> names = new TreeSet<String>();
+        for (Requisition r : m_deployedForeignSourceRepository.getRequisitions()) {
+            names.add(r.getForeignSource());
+        }
+        for (Requisition r : m_pendingForeignSourceRepository.getRequisitions()) {
             names.add(r.getForeignSource());
         }
         return names;
@@ -216,8 +219,8 @@ public class DefaultManualProvisioningService implements
         Requisition group = new Requisition();
         group.setForeignSource(name);
 
-        m_repository.save(group);
-        return m_repository.getRequisition(name);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(name);
     }
 
     private RequisitionMonitoredService createService(String serviceName) {
@@ -234,11 +237,10 @@ public class DefaultManualProvisioningService implements
         group.updateDateStamp();
         saveProvisioningGroup(groupName, group);
         
-        
         // then we send an event to the importer
         EventProxy proxy = Util.createEventProxy();
 
-        String url = m_repository.getRequisitionURL(groupName).toString();
+        String url = m_pendingForeignSourceRepository.getRequisitionURL(groupName).toString();
         Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
         
         EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
@@ -252,7 +254,7 @@ public class DefaultManualProvisioningService implements
     }
 
     public Requisition deletePath(String groupName, String pathToDelete) {
-        Requisition group = m_repository.getRequisition(groupName);
+        Requisition group = getProvisioningGroup(groupName);
 
         PropertyPath path = new PropertyPath(pathToDelete);
         
@@ -273,13 +275,13 @@ public class DefaultManualProvisioningService implements
             throw new IllegalArgumentException("an execption occurred deleting "+pathToDelete, e);
         }
         
-        m_repository.save(group);
-        return m_repository.getRequisition(groupName);
+        m_pendingForeignSourceRepository.save(group);
+        return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
     public Collection<Requisition> getAllGroups() {
         Collection<Requisition> groups = new LinkedList<Requisition>();
-        
+
         for(String groupName : getProvisioningGroupNames()) {
             groups.add(getProvisioningGroup(groupName));
         }
@@ -288,13 +290,23 @@ public class DefaultManualProvisioningService implements
     }
 
     public void deleteProvisioningGroup(String groupName) {
-        m_repository.delete(m_repository.getRequisition(groupName));
+        Requisition r = getProvisioningGroup(groupName);
+        m_pendingForeignSourceRepository.delete(r);
+        m_deployedForeignSourceRepository.delete(r);
     }
 
     public void deleteAllNodes(String groupName) {
-        Requisition group = m_repository.getRequisition(groupName);
-        group.setNodes(new ArrayList<RequisitionNode>());
-        m_repository.save(group);
+        Requisition group = m_deployedForeignSourceRepository.getRequisition(groupName);
+        if (group != null) {
+            group.setNodes(new ArrayList<RequisitionNode>());
+            m_deployedForeignSourceRepository.save(group);
+        }
+
+        group = m_pendingForeignSourceRepository.getRequisition(groupName);
+        if (group != null) {
+            group.setNodes(new ArrayList<RequisitionNode>());
+            m_pendingForeignSourceRepository.save(group);
+        }
     }
 
     public Map<String, Integer> getGroupDbNodeCounts() {

@@ -168,7 +168,7 @@ public class EditForeignSourceController extends SimpleFormController {
     }
 
     private ModelAndView done(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        m_foreignSourceService.deployForeignSource(treeCmd.getForeignSourceName());
+        m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         return new ModelAndView(getSuccessView());
     }
 

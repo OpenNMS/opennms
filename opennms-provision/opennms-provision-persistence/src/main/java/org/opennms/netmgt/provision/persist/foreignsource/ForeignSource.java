@@ -244,7 +244,6 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
             .append(getScanInterval(), obj.getScanInterval())
             .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), obj.getDetectors().toArray(OF_PLUGIN_CONFIGS))
             .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), obj.getPolicies().toArray(OF_PLUGIN_CONFIGS))
-//            .append(isDefault(), obj.isDefault())
             .toComparison();
     }
     
@@ -257,7 +256,6 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
                 .append(getScanInterval(), other.getScanInterval())
                 .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), other.getDetectors().toArray(OF_PLUGIN_CONFIGS))
                 .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), other.getPolicies().toArray(OF_PLUGIN_CONFIGS))
-//                .append(isDefault(), other.isDefault())
                 .isEquals();
         }
         return false;
@@ -270,7 +268,6 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
             .append(getScanInterval())
             .append(getDetectors().toArray(OF_PLUGIN_CONFIGS))
             .append(getPolicies().toArray(OF_PLUGIN_CONFIGS))
-            .append(isDefault())
             .toHashCode();
       }
 }

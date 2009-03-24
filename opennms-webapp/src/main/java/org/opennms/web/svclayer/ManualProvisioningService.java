@@ -51,8 +51,6 @@ public interface ManualProvisioningService {
     
     Requisition createProvisioningGroup(String name);
 
-    Requisition cloneProvisioningGroup(String groupName, String actionTarget);
-    
     Requisition saveProvisioningGroup(String groupName, Requisition groupData);
     
     Requisition addNewNodeToGroup(String groupName, String nodeLabel);
