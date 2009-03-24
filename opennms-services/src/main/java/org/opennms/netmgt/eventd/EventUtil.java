@@ -50,6 +50,8 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
@@ -258,6 +260,16 @@ public final class EventUtil {
 	 * The length of PARM_NUM_PREFIX
 	 */
 	final static int PARM_NUM_PREFIX_LENGTH = 6;
+	
+	/**
+	 * The string that starts a request for the name of a numbered parm
+	 */
+	final static String PARM_NAME_NUMBERED_PREFIX = "parm[name-#";
+	
+	/**
+	 * The length of PARM_NAME_NUMBERED_PREFIX
+	 */
+	final static int PARM_NAME_NUMBERED_PREFIX_LENGTH = 11;
 
 	/**
 	 * The string that ends the expansion of a parm
@@ -518,6 +530,8 @@ public final class EventUtil {
 			retParmVal = getParmCount(event);
 		} else if (parm.startsWith(PARM_NUM_PREFIX)) {
 			retParmVal = getNumParmValue(parm, event);
+		} else if (parm.startsWith(PARM_NAME_NUMBERED_PREFIX)) {
+		    retParmVal = getNumParmName(parm, event);
 		} else if (parm.startsWith(PARM_BEGIN)) {
 			if (parm.length() > PARM_BEGIN_LENGTH) {
 				retParmVal = getNamedParmValue(parm, event);
@@ -670,6 +684,109 @@ public final class EventUtil {
         	retParmVal = String.valueOf(count);
         }
         return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @param parm
+     * @param event
+     * @return The name of a parameter based on its ordinal position in the event's list of parameters
+     */
+    private static String getNumParmName(String parm, Event event) {
+        String retParmVal = null;
+        Parms eventParms = event.getParms();
+        int end = parm.lastIndexOf(PARM_END_SUFFIX);
+        if (end != -1 && eventParms != null) {
+        	// Get the string between the '#' and ']'
+        	String parmSpec = parm.substring(PARM_NAME_NUMBERED_PREFIX_LENGTH, end);
+            String eparmnum = null;
+            String eparmsep = null;
+            String eparmoffset = null;
+            String eparmrangesep = null;
+            String eparmrangelen = null;
+            if (parmSpec.matches("^\\d+$")) {
+                eparmnum = parmSpec;
+            } else {
+                Matcher m = Pattern.compile("^(\\d+)([^0-9+-]+)([+-]?\\d+)((:)([+-]?\\d+)?)?$").matcher(parmSpec);
+                if (m.matches()) {
+                    eparmnum = m.group(1);
+                    eparmsep = m.group(2);
+                    eparmoffset = m.group(3);
+                    eparmrangesep = m.group(5);
+                    eparmrangelen = m.group(6);
+                }
+            }
+        	int parmNum = -1;
+        	try {
+        		parmNum = Integer.parseInt(eparmnum);
+        	} catch (NumberFormatException nfe) {
+        		parmNum = -1;
+        		retParmVal = null;
+        	}
+    
+        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
+        		Parm evParm = eventParms.getParm(parmNum - 1);
+    
+        		// get parm name
+        		String eparmname = evParm.getParmName();
+        		
+        		// If separator and offset specified, split and extract accordingly
+        		if ((eparmsep != null) && (eparmoffset != null)) {
+        		    int parmOffset = Integer.parseInt(eparmoffset);
+        		    boolean doRange = ":".equals(eparmrangesep);
+        		    int parmRangeLen = (eparmrangelen == null) ? 0 : Integer.parseInt(eparmrangelen);
+        		    retParmVal = splitAndExtract(eparmname, eparmsep, parmOffset, doRange, parmRangeLen);
+        		} else {
+        			retParmVal = eparmname;
+        		}
+        	} else {
+        		retParmVal = null;
+        	}
+        }
+        return retParmVal;
+    }
+    
+    private static String splitAndExtract(String src, String sep, int offset, boolean doRange, int rangeLen) {
+        String sepLiteral = Pattern.quote(sep);
+        
+        // If the src string starts with the separator, lose the first separator
+        if (src.startsWith(sep)) {
+            src = src.replaceFirst(sepLiteral, "");
+        }
+        
+        String components[] = src.split(sepLiteral);
+        int startIndex, endIndex;
+        if ((Math.abs(offset) > components.length) || (offset == 0)) {
+            return null;
+        } else if (offset < 0) {
+            startIndex = components.length + offset;
+        } else {
+            // offset is, by definition, > 0
+            startIndex = offset - 1;
+        }
+        
+        endIndex = startIndex;
+        
+        if (! doRange) {
+            return components[startIndex];
+        } else if (rangeLen == 0) {
+            endIndex = components.length - 1;
+        } else if (rangeLen < 0) {
+            endIndex = startIndex + 1 + rangeLen;
+        } else {
+            // rangeLen is, by definition, > 0
+            endIndex = startIndex - 1 + rangeLen;
+        }
+        
+        StringBuffer retVal = new StringBuffer();
+        for (int i = startIndex; i <= endIndex; i++) {
+            retVal.append(components[i]);
+            if (i < endIndex) {
+                retVal.append(sep);
+            }
+        }
+        return retVal.toString();
     }
 
     /**
