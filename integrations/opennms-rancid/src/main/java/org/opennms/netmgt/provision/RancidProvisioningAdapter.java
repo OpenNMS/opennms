@@ -227,11 +227,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
             RancidNode rNewNode = getSuitableRancidNode(node);
-            // if the node exists and has different label then first delete old data
+            // if the node exists in rancid and is different 
+            // I must delete old data in Rancid
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));            
                 if (!rCurrentNode.equals(rNewNode)) {
-                    //FIXME explain the use cases....
                     try {
                         RWSClientApi.deleteRWSRancidNode(cp, rCurrentNode);
                         RWSClientApi.deleteRWSAuthNode(cp, rCurrentNode.getAuth());                        
