@@ -163,6 +163,17 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         m_lastImport = value;
     }
 
+    /**
+     * Update the last imported stamp to the current date and time
+     */
+    public void updateLastImported() {
+        try {
+            m_lastImport = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        } catch (DatatypeConfigurationException e) {
+            log().warn("unable to update last import datestamp", e);
+        }
+    }
+
     /* Start non-JAXB methods */
 
     public Requisition() {

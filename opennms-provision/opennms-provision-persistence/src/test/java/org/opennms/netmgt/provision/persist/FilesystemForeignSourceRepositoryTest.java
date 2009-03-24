@@ -47,7 +47,7 @@ public class FilesystemForeignSourceRepositoryTest {
     }
 
     private Requisition createRequisition() throws Exception {
-        Requisition r = m_foreignSourceRepository.deployResourceRequisition(new ClassPathResource("/requisition-test.xml"));
+        Requisition r = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         return r;
     }
