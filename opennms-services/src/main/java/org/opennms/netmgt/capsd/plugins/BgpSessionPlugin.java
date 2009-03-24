@@ -42,13 +42,13 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.jfree.util.Log;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <p>
