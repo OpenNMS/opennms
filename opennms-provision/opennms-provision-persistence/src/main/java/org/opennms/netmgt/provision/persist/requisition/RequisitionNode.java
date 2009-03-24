@@ -159,6 +159,19 @@ public class RequisitionNode {
         return null;
     }
 
+    public void removeCategory(RequisitionCategory cat) {
+        if (m_assets != null) {
+            Iterator<RequisitionCategory> i = m_categories.iterator();
+            while (i.hasNext()) {
+                RequisitionCategory a = i.next();
+                if (a.getName().equals(cat.getName())) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteCategory(RequisitionCategory category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
