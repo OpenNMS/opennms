@@ -93,7 +93,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         if (directory.exists()) {
             for (File file : directory.listFiles()) {
                 if (file.getName().endsWith(".xml")) {
-                    requisitions.add(getRequisition(file));
+                    try {  
+                        requisitions.add(getRequisition(file));
+                    } catch (ForeignSourceRepositoryException e) {
+                        // race condition, probably got deleted by the importer as part of moving things
+                        // need a better way to handle this; move "pending" to the database?
+                    }
                 }
             }
         }
