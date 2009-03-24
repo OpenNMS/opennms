@@ -133,6 +133,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
 
     private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
         m_provisioningService.importProvisioningGroup(command.getGroupName());
+        Thread.sleep(500);
         return showForm(request, response, errors);
     }
 
