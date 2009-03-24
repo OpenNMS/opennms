@@ -126,7 +126,8 @@
   </bean>
   
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="foreignSourceRepository" ref="pendingForeignSourceRepository" />
+  	<property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
+  	<property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
     <property name="nodeDao" ref="nodeDao" />
     <property name="categoryDao" ref="categoryDao" />
     <property name="serviceTypeDao" ref="serviceTypeDao" />

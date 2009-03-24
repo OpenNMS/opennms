@@ -189,6 +189,11 @@ public class Requisition implements Serializable, Comparable<Requisition> {
             updateNodeCache();
         }
 
+        if (visitor == null) {
+            log().warn("no visitor specified!");
+            return;
+        }
+
         visitor.visitModelImport(this);
         
         for (OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {

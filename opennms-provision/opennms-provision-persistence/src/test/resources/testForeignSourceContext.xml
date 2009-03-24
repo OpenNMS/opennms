@@ -16,7 +16,7 @@
   	<property name="foreignSourcePath" value="target/opennms-home/etc/foreign-sources/pending" />
   </bean>
 
-  <bean id="activeForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
   	<qualifier value="deployed" />
   	<property name="requisitionPath" value="target/opennms-home/etc/imports" />
   	<property name="foreignSourcePath" value="target/opennms-home/etc/foreign-sources" />
