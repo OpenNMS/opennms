@@ -49,7 +49,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
-    @Repeat(10000)
+    @Repeat(10)
     public void testSucessServer() throws Exception {
         m_server = new SimpleServer() {
             
@@ -81,7 +81,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
-    @Repeat(10000)
+    @Repeat(10)
     public void testNoServerPresent() throws Exception {
         
         m_detector.setPort(1999);
