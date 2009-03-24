@@ -6,6 +6,7 @@
             forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
             matching-group-host="6"
             matching-group-message="8"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
             />
 
     <!-- Use the following to convert UEI ad-hoc -->
@@ -23,6 +24,12 @@
                  %parm[group2[% or %parm[#2]% will have the device name
             -->
         </ueiMatch>
+        <!-- Use the following to discard a syslog message without ever creating an event for it.
+             If you change the value of "discard-uei" above, you must change the UEI used here to match. -->
+        <ueiMatch>
+            <match type="substr" expression="JUNK"/>
+            <uei>DISCARD-MATCHING-MESSAGES</uei>
+        </ueiMatch>
     </ueiList>
 
     <!-- Use the following to remove a syslog message from the event-trail -->
@@ -35,6 +42,5 @@
             <match type="regex" expression=".*(double|triple)secret.*"/>
         </hideMatch>
     </hideMessage>
-
 
 </syslogd-configuration>
