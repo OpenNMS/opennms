@@ -50,6 +50,8 @@ import org.springframework.core.io.Resource;
 
 public interface ForeignSourceRepository {
 
+    public Set<String> getActiveForeignSourceNames();
+    
     public int getForeignSourceCount() throws ForeignSourceRepositoryException;
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException;
     public ForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException;

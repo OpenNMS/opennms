@@ -107,7 +107,9 @@ set_up_environment();
 
 my $command = shift(@ARGV);
 
-if (exists &{"cmd_$command"}) {
+if (not defined $command) {
+	pod2usage(-exitval => 1);
+} elsif (exists &{"cmd_$command"}) {
 	&{"cmd_$command"}(@ARGV);
 } else {
 	pod2usage(-exitval => 1, -message => "Unknown command: $command");
@@ -124,7 +126,7 @@ List the available requisition foreign sources.
 sub cmd_list {
 	my @args = @_;
 
-	my $path = shift @args || 'pending';
+	my $path = shift @args || '';
 
 	my $response = get($path);
 	dump_xml($response->content);
@@ -164,11 +166,11 @@ sub cmd_requisition {
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
-		post('pending', $root);
+		post('', $root);
 	} elsif (is_remove($command)) {
-		remove('pending/' . $foreign_source);
+		remove($foreign_source);
 	} elsif ($command eq 'import' or $command eq 'deploy') {
-		put('pending/' . $foreign_source . '/deploy');
+		put($foreign_source . '/import');
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command", -verbose => 0);
 	}
@@ -231,9 +233,9 @@ sub cmd_node {
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-id'} = $foreign_id;
 		$root->{'att'}->{'node-label'} = $node_label;
-		post("pending/$foreign_source/nodes", $root);
+		post("$foreign_source/nodes", $root);
 	} elsif (is_remove($command)) {
-		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id);
+		remove($foreign_source . '/nodes/' . $foreign_id);
 	} elsif (is_set($command)) {
 		my $key   = shift @args;
 		my $value = shift @args;
@@ -244,7 +246,7 @@ sub cmd_node {
 
 		$key   = uri_escape_utf8($key);
 		$value = uri_escape_utf8($value);
-		put('pending/' . $foreign_source . '/nodes/' . $foreign_id, "$key=$value");
+		put($foreign_source . '/nodes/' . $foreign_id, "$key=$value");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
 	}
@@ -302,9 +304,9 @@ sub cmd_interface {
 		my $xml = get_element('interface');
 		my $root = $xml->root;
 		$root->{'att'}->{'ip-addr'} = $ip;
-		post("pending/$foreign_source/nodes/$foreign_id/interfaces", $root);
+		post("$foreign_source/nodes/$foreign_id/interfaces", $root);
 	} elsif (is_remove($command)) {
-		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
+		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
 	} elsif (is_set($command)) {
 		my $key     = shift @args;
 		my $value   = shift @args;
@@ -317,7 +319,7 @@ sub cmd_interface {
 		$key   = uri_escape_utf8($key);
 		$value = uri_escape_utf8($value);
 
-		put('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
+		put($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: interface $command", -verbose => 0);
 	}
@@ -327,7 +329,7 @@ sub cmd_interface {
 
 =over 8
 
-=item B<service add E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
+=item B<service add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
 
 Add a service to the interface identified by the given foreign source, node ID, and IP address.
 
@@ -365,9 +367,9 @@ sub cmd_service {
 		my $xml = get_element('monitored-service');
 		my $root = $xml->root;
 		$root->{'att'}->{'service-name'} = $service;
-		post("pending/$foreign_source/nodes/$foreign_id/interfaces/$ip/services", $root);
+		post("$foreign_source/nodes/$foreign_id/interfaces/$ip/services", $root);
 	} elsif (is_remove($command)) {
-		remove('pending/' . $foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
+		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: service $command", -verbose => 0);
 	}
@@ -411,9 +413,9 @@ sub cmd_category {
 		my $xml = get_element('category');
 		my $root = $xml->root;
 		$root->{'att'}->{'name'} = $category;
-		post("pending/$foreign_source/nodes/$foreign_id/categories", $root);
+		post("$foreign_source/nodes/$foreign_id/categories", $root);
 	} elsif (is_remove($command)) {
-		remove("pending/$foreign_source/nodes/$foreign_id/categories/$category");
+		remove("$foreign_source/nodes/$foreign_id/categories/$category");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: category $command", -verbose => 0);
 	}
@@ -464,9 +466,9 @@ sub cmd_asset {
 		my $root = $xml->root;
 		$root->{'att'}->{'name'}  = $key;
 		$root->{'att'}->{'value'} = $value;
-		post("pending/$foreign_source/nodes/$foreign_id/assets", $root);
+		post("$foreign_source/nodes/$foreign_id/assets", $root);
 	} elsif (is_remove($command)) {
-		remove("pending/$foreign_source/nodes/$foreign_id/assets/$key");
+		remove("$foreign_source/nodes/$foreign_id/assets/$key");
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: asset $command", -verbose => 0);
 	}
@@ -658,8 +660,8 @@ sub dump_requisitions {
 sub dump_requisition {
 	my $xml = shift;
 
-	print $xml->{'att'}->{'foreign-source'}, " (last updated: ", $xml->{'att'}->{'date-stamp'}, ")\n";
-	print "  * nodes:\n";
+	print "* ", $xml->{'att'}->{'foreign-source'}, " (last updated: ", $xml->{'att'}->{'date-stamp'}, ")\n";
+	print "  * nodes:\n" if ($xml->children);
 	for my $node ($xml->children) {
 		dump_node($node);
 	}
