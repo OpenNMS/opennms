@@ -18,6 +18,7 @@ import org.opennms.rancid.RWSResourceList;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
+import org.opennms.web.element.ElementUtil;
 import org.opennms.web.inventory.*;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -110,13 +111,21 @@ public class InventoryService implements InitializingBean {
         
         OnmsNode node = m_nodeDao.get(nodeid);
         String rancidName = node.getLabel();
+        
+        String foreignSource = node.getForeignSource();
+        if (foreignSource != null ) {
+            nodeModel.put("permitModifyClogin", false);
+            nodeModel.put("foreignSource", foreignSource);
+        } else {
+            nodeModel.put("permitModifyClogin", true);            
+        }
 
         log().debug("getRancidNode: " + rancidName);
 
 
         nodeModel.put("id", rancidName);
         nodeModel.put("db_id", nodeid);
-        nodeModel.put("status_general", node.getType());
+        nodeModel.put("status_general", ElementUtil.getNodeStatusString(node.getType().charAt(0)));
         
         List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
         

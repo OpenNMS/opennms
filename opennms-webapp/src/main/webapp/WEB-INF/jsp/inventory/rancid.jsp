@@ -81,26 +81,28 @@
 
 <div class="TwoColRight">
 <!-- general info box -->
-	<h3>Associated Elements</h3>
+	<h3>Inventory Elements</h3>
 	
 	<table class="o-box">
 	<tr>
 		<th>Group</th>
-		<th>CVS Root repository</th>
-		<th>Total revisions</th>
-		<th>Head version</th>
+		<th>Total Revisions</th>
+		<th>Last Version</th>
 		<th>Last Update</th>
 	</tr>
 	<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
 		<tr>
-			<td>${groupelm.group}</td>
-			<td><a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}&viewvc=${groupelm.rootConfigurationUrl}">${model.id}</td>
+			<td>${groupelm.group}
+			<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}&viewvc=${groupelm.rootConfigurationUrl}">(configurations)</a>
+			</td>
 			<td>${groupelm.totalRevisions} <a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=${groupelm.group}">(list)</a></td>
-			<td><a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">${groupelm.headRevision}</td>
+			<td>${groupelm.headRevision}
+			<a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">(inventory)</a>
+			</td>
 			<td>${groupelm.creationDate}</td>
 		</tr>
 	</c:forEach>
-		<th colspan="5" ><a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=*">entire group list...</a></th>
+		<th colspan="4" ><a href="inventory/rancidList.jsp?node=${model.db_id}&groupname=*">entire group list...</a></th>
 	</table>
 </div>
 <jsp:include page="/includes/footer.jsp" flush="false" />

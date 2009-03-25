@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -19,8 +18,6 @@ public class AdminRancidCloginController extends SimpleFormController {
     
     InventoryService m_inventoryService;
     
-    RWSConfig m_rwsConfig;
-
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -39,14 +36,6 @@ public class AdminRancidCloginController extends SimpleFormController {
     }
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         log().debug("AdminRancidCloginController initBinder");
-    }
-
-    public RWSConfig getRwsConfig() {
-        return m_rwsConfig;
-    }
-    public void setRwsConfig(RWSConfig rwsConfig) {
-        log().debug("AdminRancidCloginController setRwsConfig");
-        m_rwsConfig = rwsConfig;
     }
     
     public InventoryService getInventoryService() {
