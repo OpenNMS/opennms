@@ -3,6 +3,8 @@ package org.opennms.netmgt.provision;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -151,9 +153,26 @@ public abstract class BasePolicy<T> {
         }
         
         if (matches(iface)) {
+            debug("Found Match %s for %s", iface, this);
             return act(iface);
         }
         
+        debug("No Match Found: %s for %s", iface, this);
         return iface;
+    }
+    
+    protected void debug(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(format, args));
+        }
+    }
+    protected void info(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(getClass());
+        
+        if (log.isInfoEnabled()) {
+            log.info(String.format(format, args));
+        }
     }
 }
