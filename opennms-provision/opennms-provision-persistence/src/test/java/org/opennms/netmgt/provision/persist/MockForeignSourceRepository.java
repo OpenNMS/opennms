@@ -53,7 +53,14 @@ import org.springframework.util.Assert;
 public class MockForeignSourceRepository extends AbstractForeignSourceRepository {
     private final Map<String,Requisition> m_requisitions = new HashMap<String,Requisition>();
     private final Map<String,ForeignSource> m_foreignSources = new HashMap<String,ForeignSource>();
-    
+
+    public Set<String> getActiveForeignSourceNames() {
+        Set<String> fsNames = new TreeSet<String>();
+        fsNames.addAll(m_requisitions.keySet());
+        fsNames.addAll(m_foreignSources.keySet());
+        return fsNames;
+    }
+
     public int getForeignSourceCount() {
         return m_foreignSources.size();
     }

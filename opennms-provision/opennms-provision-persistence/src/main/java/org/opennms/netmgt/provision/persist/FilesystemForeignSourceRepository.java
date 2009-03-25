@@ -24,6 +24,27 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         super();
     }
 
+    public Set<String> getActiveForeignSourceNames() {
+        Set<String> fsNames = new TreeSet<String>();
+        File directory = new File(m_foreignSourcePath);
+        if (directory.exists()) {
+            for (File file : directory.listFiles()) {
+                if (file.getName().endsWith(".xml")) {
+                    fsNames.add(file.getName().replaceAll(".xml$", ""));
+                }
+            }
+        }
+        directory = new File(m_requisitionPath);
+        if (directory.exists()) {
+            for (File file : directory.listFiles()) {
+                if (file.getName().endsWith(".xml")) {
+                    fsNames.add(file.getName().replaceAll(".xml$", ""));
+                }
+            }
+        }
+        return fsNames;
+    }
+
     public void setUpdateDateStamps(boolean update) {
         m_updateDateStamps = update;
     }
