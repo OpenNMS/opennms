@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.event.EventFactory.AcknowledgeType;
 import org.opennms.web.event.EventFactory.SortStyle;
 import org.opennms.web.event.filter.EventCriteria;
@@ -96,37 +95,49 @@ public class JdbcWebEventRepository implements WebEventRepository {
 
         public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
             Event event = new Event();
-            event.id = rs.getInt("eventId");
+            event.id = new Integer(rs.getInt("eventID"));
             event.uei = rs.getString("eventUei");
-            event.dpName = rs.getString("dpName");
-            
-            event.nodeID = new Integer(rs.getInt("nodeId"));
+            event.snmp = rs.getString("eventSnmp");
+            event.time = new Date(((Timestamp) rs.getTimestamp("eventTime")).getTime());
+            event.host = rs.getString("eventHost");
+            event.snmphost = rs.getString("eventSnmpHost");
+            event.dpName = rs.getString("eventDpName");
+            event.parms = rs.getString("eventParms");
+
+            // node id can be null
+            Object element = rs.getObject("nodeID");
+            if (element == null) {
+                event.nodeID = new Integer(0);
+            } else {
+                event.nodeID = (Integer) element;
+            }
+
             event.ipAddr = rs.getString("ipAddr");
-            
-            event.serviceID = ((Integer) rs.getObject("serviceID"));
-            //event.severity = OnmsSeverity.get(rs.getInt("severity"));
-            event.description = rs.getString("description");
-            event.logMessage = rs.getString("logmsg");
-            event.troubleTicket = rs.getString("TTicketID");
-            event.operatorInstruction = rs.getString("OperInstruct");
-            
-            Integer stateCode = (Integer) rs.getObject("TTicketState");
-            for(TroubleTicketState state : TroubleTicketState.values()){
-                if(stateCode != null && state.ordinal() == stateCode.intValue()){
-                    //event.troubleTicketState = state;
-                }
-            }
-            
-            event.mouseOverText = rs.getString("MouseOverText");
+            event.serviceID = (Integer) rs.getObject("serviceID"); 
+            event.nodeLabel = rs.getString("nodeLabel");;
+            event.serviceName = rs.getString("serviceName"); 
+            event.createTime = new Date(((Timestamp) rs.getTimestamp("eventCreateTime")).getTime());
+            event.description = rs.getString("eventDescr");
+            event.logGroup = rs.getString("eventLoggroup");
+            event.logMessage = rs.getString("eventLogmsg");
+            event.severity = new Integer(rs.getInt("eventSeverity"));
+            event.operatorInstruction = rs.getString("eventOperInstruct");
+            event.autoAction = rs.getString("eventAutoAction");
+            event.operatorAction = rs.getString("eventOperAction");
+            event.operatorActionMenuText = rs.getString("eventOperActionMenuText");
+            event.notification = rs.getString("eventNotification");
+            event.troubleTicket = rs.getString("eventTticket");
+            event.troubleTicketState = (Integer) rs.getObject("eventTticketState");
+            event.forward = rs.getString("eventForward");
+            event.mouseOverText = rs.getString("eventMouseOverText");
             event.acknowledgeUser = rs.getString("eventAckUser");
-            
-            Timestamp eventAckTime = rs.getTimestamp("eventAckTimer");
-            if(eventAckTime != null){
-                event.acknowledgeTime = new Date(eventAckTime.getTime());
+
+            element = rs.getTimestamp("eventAckTime");
+            if (element != null) {
+                event.acknowledgeTime = new Date(((Timestamp) element).getTime());
             }
-            
-            event.nodeLabel = rs.getString("nodeLabel");
-            event.serviceName = rs.getString("serviceName");
+
+            event.alarmId = (Integer) rs.getObject("alarmid");
             
             return event;
         }
@@ -139,15 +150,16 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
 
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
-        String selectClause = "SELECT SEVERITY, COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)";
+        String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)";
         String sql = getSql(selectClause, criteria);
-        sql = sql + " GROUP BY SEVERITY";
+        sql = sql + " AND EVENTDISPLAY='Y'";
+        sql = sql + " GROUP BY EVENTSEVERITY";
         
         final int[] alarmCounts = new int[8];
         jdbc().query(sql, paramSetter(criteria), new RowCallbackHandler(){
 
             public void processRow(ResultSet rs) throws SQLException {
-                int severity = rs.getInt("SEVERITY");
+                int severity = rs.getInt("EVENTSEVERITY");
                 int alarmCount = rs.getInt("EVENTCOUNT");
                 
                 alarmCounts[severity] = alarmCount;
@@ -168,7 +180,9 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
 
     public Event[] getMatchingEvents(EventCriteria criteria) {
-        String sql = getSql("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME", criteria);
+        //FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE EVENTID=?
+        //SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME
+        String sql = getSql("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getEvents(sql, paramSetter(criteria));
     }
     
@@ -191,7 +205,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
     
     public void unacknowledgeAll() {
-        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");
+        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");
     }
 
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
