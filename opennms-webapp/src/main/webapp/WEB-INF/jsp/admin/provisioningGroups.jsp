@@ -33,6 +33,7 @@
 </form>
 
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
+<c:if test='${foreignSourceName != "default"}'>
   <h3 style="vertical-align: middle; margin: 25px 0px 5px 0px; padding: 5px">
     <span style="font-size: large"><c:out value="${foreignSourceName}" />
   </h3>
@@ -105,7 +106,7 @@
   	  </td>
   	</tr>
   </table>
-
+</c:if>
 </c:forEach>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

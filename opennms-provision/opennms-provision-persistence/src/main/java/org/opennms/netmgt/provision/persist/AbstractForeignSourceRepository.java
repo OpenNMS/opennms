@@ -10,7 +10,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
@@ -82,13 +84,20 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
-        File outputFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
-        if (!outputFile.delete()) {
-            throw new ForeignSourceRepositoryException("unable to remove " + outputFile.getPath());
+        File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
+        if (!deleteFile.exists()) {
+            return;
+        }
+        if (!deleteFile.delete()) {
+            log().warn("unable to remove " + deleteFile.getPath());
         }
     }
 
     
+    private Category log() {
+        return ThreadCategory.getInstance(AbstractForeignSourceRepository.class);
+    }
+
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));

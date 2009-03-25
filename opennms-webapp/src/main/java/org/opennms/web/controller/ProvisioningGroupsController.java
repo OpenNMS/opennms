@@ -143,7 +143,12 @@ public class ProvisioningGroupsController extends SimpleFormController {
     }
 
     private ModelAndView doAddGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
-        m_provisioningService.createProvisioningGroup(command.getGroupName());
+        String groupName = command.getGroupName();
+        if (groupName.equals("default") || groupName.equals("")) {
+            return showForm(request, response, errors);
+        } else {
+            m_provisioningService.createProvisioningGroup(command.getGroupName());
+        }
         return showForm(request, response, errors);
     }
 
