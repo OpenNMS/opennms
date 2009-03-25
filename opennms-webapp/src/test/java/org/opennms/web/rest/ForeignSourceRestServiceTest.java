@@ -29,27 +29,20 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     @Test
     public void testForeignSources() throws Exception {
         createForeignSource();
-        String url = "/foreignSources/pending";
+        String url = "/foreignSources";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("DHCP"));
         
-        url = "/foreignSources/pending/test";
+        url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
-        url = "/foreignSources/pending/test";
+        url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h");
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
-        
-        sendPut(url, "scanInterval=1h");
-        sendPut(url + "/deploy", "");
-        
-        url = "/foreignSources/deployed/test";
-        xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 200);
@@ -60,13 +53,13 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     public void testDetectors() throws Exception {
         createForeignSource();
 
-        String url = "/foreignSources/pending/test/detectors";
+        String url = "/foreignSources/test/detectors";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<detectors "));
         assertTrue(xml.contains("<detector "));
         assertTrue(xml.contains("name=\"DHCP\""));
         
-        url = "/foreignSources/pending/test/detectors/HTTP";
+        url = "/foreignSources/test/detectors/HTTP";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
@@ -78,14 +71,14 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
     public void testPolicies() throws Exception {
         createForeignSource();
 
-        String url = "/foreignSources/pending/test/policies";
+        String url = "/foreignSources/test/policies";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<policies "));
         assertTrue(xml.contains("<policy "));
         assertTrue(xml.contains("name=\"lower-case-node\""));
         assertTrue(xml.contains("value=\"Lower-Case-Nodes\""));
         
-        url = "/foreignSources/pending/test/policies/all-ipinterfaces";
+        url = "/foreignSources/test/policies/all-ipinterfaces";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
@@ -112,7 +105,7 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        sendPost("/foreignSources/pending", fs);
+        sendPost("/foreignSources", fs);
     }
     
 }

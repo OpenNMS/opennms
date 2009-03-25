@@ -30,6 +30,12 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     @Qualifier("deployed")
     private FilesystemForeignSourceRepository m_deployedForeignSourceRepository;
 
+    public Set<String> getActiveForeignSourceNames() {
+        Set<String> fsNames = m_pendingForeignSourceRepository.getActiveForeignSourceNames();
+        fsNames.addAll(m_deployedForeignSourceRepository.getActiveForeignSourceNames());
+        return fsNames;
+    }
+
     public synchronized Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
         Requisition r = m_deployedForeignSourceRepository.importResourceRequisition(resource);
         updateDeployedForeignSource(r.getForeignSource());
