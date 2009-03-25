@@ -114,14 +114,6 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.provisioning</groupId>
-      <artifactId>org.opennms.features.provisioning.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.provisioning</groupId>
-      <artifactId>org.opennms.features.provisioning.lib</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
     </dependency>
