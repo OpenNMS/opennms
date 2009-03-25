@@ -12,6 +12,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -29,7 +30,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath:/jdbcWebAlarmRepositoryTest.xml"})
+                                  "classpath:/jdbcWebEventRepositoryTestContext.xml"})
 @JUnitTemporaryDatabase()
 public class JdbcWebAlarmRepositoryTest{
     
@@ -41,6 +42,7 @@ public class JdbcWebAlarmRepositoryTest{
     
     @Before
     public void setUp(){
+        assertNotNull(m_alarmRepo);
         m_dbPopulator.populateDatabase();
     }
     
@@ -50,12 +52,24 @@ public class JdbcWebAlarmRepositoryTest{
     }
    
     @Test
-    public void TestCountMatchingAlarms(){
-        assertNotNull(m_alarmRepo);
-        
-        AlarmCriteria criteria = new AlarmCriteria();
+    public void testCountMatchingAlarms(){
+        AlarmCriteria criteria = new AlarmCriteria(new AlarmIdFilter(1));
         int alamrs = m_alarmRepo.countMatchingAlarms(criteria);
         
         assertEquals(1, alamrs);
+    }
+    
+    @Test
+    public void testGetAlarmById(){
+        Alarm alarm = m_alarmRepo.getAlarm(1);
+        assertNotNull(alarm);
+    }
+    
+    @Test
+    public void testCountMatchingAlarmsBySeverity(){
+        AlarmCriteria criteria = new AlarmCriteria();
+        int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
+        
+        assertEquals(8, matchingAlarms.length);
     }
 }
