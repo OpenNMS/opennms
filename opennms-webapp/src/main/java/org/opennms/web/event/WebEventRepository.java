@@ -14,7 +14,7 @@ public interface WebEventRepository {
     
     public abstract Event[] getMatchingEvents(EventCriteria criteria);
     
-    public abstract void acknowledgeMacthingEvents(String user, Date timestamp, EventCriteria criteria);
+    public abstract void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria);
     
     public abstract void acknowledgeAll(String user, Date timestamp);
     
