@@ -30,7 +30,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath:/jdbcWebEventRepositoryTestContext.xml"})
+                                  "classpath:/jdbcWebAlarmRepositoryTest.xml"})
 @JUnitTemporaryDatabase()
 public class JdbcWebAlarmRepositoryTest{
     
@@ -59,11 +59,6 @@ public class JdbcWebAlarmRepositoryTest{
         assertEquals(1, alamrs);
     }
     
-    @Test
-    public void testGetAlarmById(){
-        Alarm alarm = m_alarmRepo.getAlarm(1);
-        assertNotNull(alarm);
-    }
     
     @Test
     public void testCountMatchingAlarmsBySeverity(){
