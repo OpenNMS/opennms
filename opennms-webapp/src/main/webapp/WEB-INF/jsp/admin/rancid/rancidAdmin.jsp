@@ -54,7 +54,7 @@
     <h3>General (Status: ${model.status_general})</h3>
     <table class="o-box">
 		<tr>
-			<th>Node</th>
+			<th width="50%">Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
 	</table>
@@ -63,7 +63,7 @@
 	<form id="newUserForm2" method="post" name="newUserForm2">	
 	<table class="o-box">
 		<tr>
-			<th>Device Name</th>
+			<th width="50%">Device Name</th>
 			<td>${model.id}</td>
 		</tr>
 		<tr>
@@ -81,7 +81,7 @@
 	
 		<tr>
 			<th>Status</th>
-			<td>${model.status}
+			<td><em>${model.status}</em>
 				<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
 			</td>
 		</tr>
@@ -91,13 +91,15 @@
 	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 	</form>
 
+	<c:choose>
+    <c:when test="${model.permitModifyClogin}">
 	<h3>Clogin Info</h3>
 	<form id="newUserForm" method="post" name="newUserForm">
 		 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 		 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 		<table class="o-box">
 			<tr>
-			    <th><label id="userIDLabel" for="userID">User:</label></th>
+			    <th><label id="userIDLabel" for="userID">Username:</label></th>
 			    <td><input id="userID" type="text" name="userID" value="${model.cloginuser}"></td>
 			 </tr>
 		
@@ -138,7 +140,67 @@
 			 </tr>	
 		 </table>
 	 </form>
+	 </c:when>
+	 <c:otherwise>
+		<h3>Clogin Info for Provisioned Node</h3>
+		<table class="o-box">
+			 <tr>
+			 	<th width="50%">Provisioning group: </th>
+			 	<td>${model.foreignSource}
+					<a href="admin/provisioningGroups.htm">(provisioning)</a>
+					<a href="asset/modify.jsp?node=${model.db_id}">(asset)</a>
+				</td>
+			<tr>
+			    <th><label id="userIDLabel" for="userID">Username:</label></th>
+			    <td>${model.cloginuser}</td>
+			 </tr>
+		
+			 <tr>
+			 	<th><label id="pass1Label" for="password">Password:</label></th>
+			 	<td>${model.cloginpassword}</td>
+			 </tr>
+			 <tr>
+			 	<th><label id="enpass1Label" for="enpassword">Enable password:</label></th>
+			 	<td>${model.cloginenablepass}</td>
+			 </tr>
+			 <tr>
+				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
+				 <td>${model.cloginconnmethod}</td>
+			 </tr>
+			 <tr>
+			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
+			 	<td>${model.cloginautoenable}</td>
+			 </tr>
+		
+		 </table>
+	 
+	 </c:otherwise>
+	 </c:choose>
 </div>
+
+  <div class="TwoColRight">
+      <h3>Descriptions</h3>
+      <div class="boxWrapper">
+      <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
+      </p>
+        <p><b>Switch Status</b>: Switch the Rancid status from <em>up</em> to <em>down</em> or from <em>down</em> to <em>up</em>
+        </p>
+        
+       <p><b>Clogin box for provisioned Node</b>: In the case the node was provisioned the <b>Clogin</b> box shows the Foreign Source
+             under which the node was provisioned.
+             Click on (asset) page or on group (provisiong) page to modify asset information for the node.
+             It must reimported the Foreign Source group to modify the Clogin information on Rancid.
+        </p>
+        
+       <p><b>Clogin box </b>: Modify the data according to the authentication information.
+        Click <b>doOk</b> to commit changes to Rancid.        
+        </p>
+        
+
+ 
+      </div>
+  </div>
+  <hr />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

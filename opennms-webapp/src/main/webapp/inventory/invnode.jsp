@@ -106,9 +106,6 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 </jsp:include>
 
 
-<h2>Node: ${model.devicename}</h2>
-
-
 <div class="TwoColLeft">
   <!-- general info box -->
   <h3>General (Status: ${model.general_status})</h3>
@@ -151,8 +148,9 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 		</tr>
 		-->
 	    <tr>
-		<th>CVS Configuration Url</th>
-		<td><a href="inventory/rancidViewVc.htm?node=${model.id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">${model.devicename}</td>
+		<td>${model.devicename}(${model.version})
+		<a href="inventory/rancidViewVc.htm?node=${model.id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">(configuration)</a>
+		</td>
 
 		<!--th><a href = "${model.configurationurl}" > ${model.devicename} </a></th -->
 		</tr>
@@ -160,29 +158,29 @@ String nodeBreadCrumb2 = "<a href='inventory/rancid.htm?node=" + nodeId  + "'>Ra
 </div>
 <div class="TwoColRight">
 <!-- general info box -->
-<h3>Associated Inventory Items</h3>
+<h3>Inventory Items</h3>
 
 	<c:forEach items="${model2.inventory}" var="invel" varStatus="status">
 	<h3>Item ${status.count}</h3>
 	<table class="o-box">
 		<c:forEach items="${invel.tupleList}" var="tup">
 		<tr>
-			<th>${tup.name}</th>
+			<th width="50%">${tup.name}</th>
 			<td>${tup.description}</td>
 		</tr>
 		</c:forEach>
-		<tr><th></th><td></td></tr>
+
 		<c:forEach items="${invel.softwareList}" var="sof">
 		<tr>
-			<th>Software: ${sof.type}</th>
+			<th width="50%">Software: ${sof.type}</th>
 			<td>Version: ${sof.version}</td>
 		</tr>
 		</c:forEach>
-		<tr><th></th><td></td></tr>
+
 		<c:forEach items="${invel.memoryList}" var="mem">
 		<tr>
-			<td>Memory: ${mem.type}</th>
-			<td>Size: ${mem.size}</th>
+			<th width="50%">Memory: ${mem.type}</th>
+			<td>Size: ${mem.size}</td>
 		</tr>
 		</c:forEach>
 		</table>

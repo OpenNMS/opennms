@@ -1,8 +1,5 @@
 package org.opennms.web.controller.inventory;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-
 public class AdminRancidCloginCommClass {
 
     private String userID;
@@ -67,10 +64,6 @@ public class AdminRancidCloginCommClass {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
-    }
-
-    private static Category log() {
-        return Logger.getLogger("Rancid");
     }
     
 }
