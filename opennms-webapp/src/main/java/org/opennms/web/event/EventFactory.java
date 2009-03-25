@@ -176,6 +176,7 @@ public class EventFactory extends Object {
         public int getId() {
             return (this.id);
         }
+
     }
 
     /** Private constructor so this class cannot be instantiated. */
