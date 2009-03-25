@@ -41,6 +41,8 @@
 			</c:if>
 		</tree:nodeForm>
 
+		<c:set var="unusedKeys" value="${pluginInfo[detector.pluginClass].optionalKeys}" />
+
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
 			<tree:nodeForm>
 				<tree:select label="key" property="key" items="${pluginInfo[detector.pluginClass].optionalKeys}" />

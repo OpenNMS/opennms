@@ -84,6 +84,10 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
+        if (foreignSource.getName().equals("default")) {
+            putDefaultForeignSource(foreignSource);
+            return;
+        }
         File outputFile = getOutputFileForForeignSource(foreignSource);
         FileWriter writer = null;
         try {
