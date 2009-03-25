@@ -1,8 +1,5 @@
 package org.opennms.web.controller.inventory;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-
 public class AdminRancidStatusCommClass {
         
     private String groupName;
@@ -34,10 +31,6 @@ public class AdminRancidStatusCommClass {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
-    }
-
-    private static Category log() {
-        return Logger.getLogger("Rancid");
     }
 
 }

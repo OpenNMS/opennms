@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -19,17 +18,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class AdminRancidStatusController extends SimpleFormController {
 
     InventoryService m_inventoryService;
-    
-    RWSConfig m_rwsConfig;
-    
-    public RWSConfig getRwsConfig() {
-        return m_rwsConfig;
-    }
-    public void setRwsConfig(RWSConfig rwsConfig) {
-        log().debug("RancidStatusServlet setRwsConfig");
-        m_rwsConfig = rwsConfig;
-    }
-    
+        
     public InventoryService getInventoryService() {
         return m_inventoryService;
     }
