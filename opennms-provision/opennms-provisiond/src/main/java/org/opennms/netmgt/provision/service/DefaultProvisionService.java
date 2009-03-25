@@ -202,6 +202,7 @@ public class DefaultProvisionService implements ProvisionService {
         OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
         if (dbIface != null) {
             dbIface.mergeInterfaceAttributes(scannedIface);
+            info("Updating IpInterface %s", dbIface);
             m_ipInterfaceDao.update(dbIface);
             return dbIface;
         } else {
@@ -223,6 +224,7 @@ public class DefaultProvisionService implements ProvisionService {
         if (dbSnmpIface != null) {
             // update the interface that was found
             dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
+            info("Updating SnmpInterface %s", dbSnmpIface);
             m_snmpInterfaceDao.update(dbSnmpIface);
             return dbSnmpIface;
         } else {
@@ -232,6 +234,7 @@ public class DefaultProvisionService implements ProvisionService {
             // for performance reasons we don't add the snmp interface to the node so we avoid loading all the interfaces
             // setNode only sets the node in the interface
             snmpInterface.setNode(dbNode);
+            info("Saving SnmpInterface %s", snmpInterface);
             m_snmpInterfaceDao.save(snmpInterface);
             return snmpInterface;
         }
@@ -608,6 +611,7 @@ public class DefaultProvisionService implements ProvisionService {
         
         iface.visit(new ServiceTypeFulfiller());
         
+        info("SaveOrUpdating IpInterface %s", iface);
         m_ipInterfaceDao.saveOrUpdate(iface);
         
         return iface;
@@ -694,5 +698,9 @@ public class DefaultProvisionService implements ProvisionService {
 
     private void info(String format, Object... args) {
         log().info(String.format(format, args));
+    }
+
+    private void debug(String format, Object... args) {
+        log().debug(String.format(format, args));
     }
 }

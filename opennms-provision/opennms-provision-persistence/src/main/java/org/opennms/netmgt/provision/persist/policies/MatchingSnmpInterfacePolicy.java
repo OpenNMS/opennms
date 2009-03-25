@@ -4,8 +4,8 @@ package org.opennms.netmgt.provision.persist.policies;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.annotations.Require;
 import org.opennms.netmgt.provision.annotations.Policy;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +37,15 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     public OnmsSnmpInterface act(OnmsSnmpInterface iface) {
         switch (m_action) {
         case DO_NOT_PERSIST: 
+            info("NOT Peristing %s according to policy", iface);
             return null;
         case DISABLE_COLLECTION:
             iface.setCollectionEnabled(false);
+            info("Disabled collection for %s according to policy", iface);
             return iface;
         case ENABLE_COLLECTION:
             iface.setCollectionEnabled(true);
+            info("Enabled collection for %s according to policy", iface);
             return iface;
         default:
             return iface;    
@@ -136,5 +139,6 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     public void setIfAlias(String ifAlias) {
         putCriteria("ifAlias", ifAlias);
     }
+    
     
 }
