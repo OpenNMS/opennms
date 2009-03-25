@@ -116,13 +116,13 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             int paramIndex = 1;
             public void setValues(final PreparedStatement ps) throws SQLException {
                 for(Object arg : args) {
-                    ps.setObject(paramIndex, args);
+                    ps.setObject(paramIndex, arg);
                     paramIndex++;
                 }
                 criteria.visit(new BaseAlarmCriteriaVisitor<SQLException>() {
                     @Override
                     public void visitFilter(Filter filter) throws SQLException {
-                        paramIndex =+ filter.bindParam(ps, paramIndex);
+                        paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
             }
@@ -146,8 +146,8 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             alarm.count = rs.getInt("counter");
             alarm.severity = OnmsSeverity.get(rs.getInt("severity"));
             alarm.lastEventID = rs.getInt("lastEventID");
-            alarm.firsteventtime = new Date(rs.getTimestamp("firsteventtime").getTime());
-            alarm.lasteventtime = new Date(rs.getTimestamp("lasteventtime").getTime());
+            alarm.firsteventtime = getTimestamp("firsteventtime", rs);
+            alarm.lasteventtime = getTimestamp("lasteventtime", rs);
             alarm.description = rs.getString("description");
             alarm.logMessage = rs.getString("logmsg");
             alarm.operatorInstruction = rs.getString("OperInstruct");
@@ -161,15 +161,11 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             }
 
             alarm.mouseOverText = rs.getString("MouseOverText");
-            alarm.suppressedUntil = new Date(rs.getTimestamp("suppressedUntil").getTime());
+            alarm.suppressedUntil = getTimestamp("suppressedUntil", rs);
             alarm.suppressedUser = rs.getString("suppressedUser");
-            alarm.suppressedTime = new Date(rs.getTimestamp("suppressedTime").getTime());
+            alarm.suppressedTime = getTimestamp("suppressedTime", rs);
             alarm.acknowledgeUser = rs.getString("alarmAckUser");
-
-            Timestamp alarmAckTime = rs.getTimestamp("alarmAckTime");
-            if (alarmAckTime != null) {
-                alarm.acknowledgeTime = new Date(alarmAckTime.getTime());
-            }
+            alarm.acknowledgeTime = getTimestamp("alarmAckTime", rs);
 
             alarm.nodeLabel = rs.getString("nodeLabel");
             alarm.serviceName = rs.getString("serviceName");
@@ -177,9 +173,16 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
             return alarm;
             
         }
+        
+        private Date getTimestamp(String field, ResultSet rs) throws SQLException{
+            if(rs.getTimestamp(field) != null){
+                return new Date(rs.getTimestamp(field).getTime());
+            }else{
+                return null;
+            }
+        }
     }
-    
-   
+
     public int countMatchingAlarms(AlarmCriteria criteria) {
         String sql = getSql("SELECT COUNT(ALARMID) as ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
         return queryForInt(sql, paramSetter(criteria));
@@ -216,7 +219,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
     
     public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
-        String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME", criteria);
+        String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
         return getAlarms(sql, paramSetter(criteria));
     }
     
@@ -250,7 +253,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
     
     public void unacknowledgeAll() {
-        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL");
+        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL");
     }
     
 

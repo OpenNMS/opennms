@@ -3,6 +3,8 @@ package org.opennms.web.alarm;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Date;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +13,11 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
+import org.opennms.web.alarm.filter.SeverityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -68,6 +73,49 @@ public class JdbcWebAlarmRepositoryTest{
         assertEquals(8, matchingAlarms.length);
     }
     
+    @Test
+    public void testGetAlarm(){
+        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
+        assertNotNull(alarms);
+        assertEquals(1, alarms.length);
+        
+        Alarm alarm = m_alarmRepo.getAlarm(1);
+        assertNotNull(alarm);
+    }
     
+    @Test
+    public void testAcknowledgeUnacknowledgeMatchingAlarms(){
+        m_alarmRepo.acknowledgeMatchingAlarms("TestUser", new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
+        
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        
+        assertEquals(1, matchingAlarmCount);
+        
+        m_alarmRepo.unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
+        
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        
+        assertEquals(0, matchingAlarmCount);
+        
+    }
+    
+    @Test
+    public void testAcknowledgeUnacknowledgeAllAlarms(){
+        m_alarmRepo.acknowledgeAll("TestUser", new Date());
+        
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        assertEquals(1, matchingAlarmCount);
+        
+        m_alarmRepo.unacknowledgeAll();
+        
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        assertEquals(0, matchingAlarmCount);
+    }
+    
+    @Test
+    public void testCountMatchingBySeverity(){
+        int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
+        assertEquals(8, matchingAlarmCount.length);
+    }
     
 }
