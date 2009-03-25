@@ -1,18 +1,17 @@
-package org.opennms.web.alarm;
+package org.opennms.web.event;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.alarm.filter.AlarmIdFilter;
+import org.opennms.web.event.filter.EventCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -30,44 +29,28 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath:/jdbcWebAlarmRepositoryTest.xml"})
+                                  "classpath:/jdbcWebEventRepositoryTestContext.xml"})
 @JUnitTemporaryDatabase()
-public class JdbcWebAlarmRepositoryTest{
+public class JdbcWebEventRepositoryTest {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    WebAlarmRepository m_alarmRepo;
+    WebEventRepository m_eventRepo;
     
     @Before
     public void setUp(){
-        assertNotNull(m_alarmRepo);
+        assertNotNull(m_eventRepo);
         m_dbPopulator.populateDatabase();
     }
     
-    @After
-    public void tearDown(){
-        
-    }
-   
     @Test
-    public void testCountMatchingAlarms(){
-        AlarmCriteria criteria = new AlarmCriteria(new AlarmIdFilter(1));
-        int alamrs = m_alarmRepo.countMatchingAlarms(criteria);
+    public void testCountMatchingEvents(){ 
+        EventCriteria criteria = new EventCriteria();
+        int event = m_eventRepo.countMatchingEvents(criteria);
         
-        assertEquals(1, alamrs);
+        assertEquals(1, event);
     }
-    
-    
-    @Test
-    public void testCountMatchingAlarmsBySeverity(){
-        AlarmCriteria criteria = new AlarmCriteria();
-        int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
-        
-        assertEquals(8, matchingAlarms.length);
-    }
-    
-    
-    
+
 }
