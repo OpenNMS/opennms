@@ -315,6 +315,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("snmpifadminstatus", getIfAdminStatus())
             .append("snmpifoperstatus", getIfOperStatus())
             .append("snmpifalias", getIfAlias())
+            .append("snmpCollect", getCollect())
             .append("lastCapsdPoll", getLastCapsdPoll())
             .toString();
     }
