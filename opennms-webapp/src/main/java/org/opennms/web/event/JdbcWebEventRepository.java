@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.event.EventFactory.AcknowledgeType;
@@ -26,7 +27,6 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.sun.tools.javac.util.List;
 
 public class JdbcWebEventRepository implements WebEventRepository {
     
