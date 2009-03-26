@@ -188,7 +188,7 @@ Add a node to the requisition identified by the given foreign source.
 
 Remove a node from the requisition identified by the given foreign source and foreign ID.
 
-=item B<node set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> B<E<lt>keyE<gt>> B<[value]>>
+=item B<node set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> [value]>
 
 Set a property on a node, given the foreign source and foreign id.  Valid properties are:
 
@@ -264,7 +264,7 @@ Add an interface to the requisition identified by the given foreign source and n
 
 Remove an interface from the requisition identified by the given foreign source, foreign ID, and IP address.
 
-=item B<interface set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> B<E<lt>keyE<gt>> B<[value]>>
+=item B<interface set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>keyE<gt> [value]>
 
 Set a property on an interface, given the foreign source, foreign id, and IP address.  Valid properties are:
 
@@ -329,11 +329,11 @@ sub cmd_interface {
 
 =over 8
 
-=item B<service add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
+=item B<service add E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
 
 Add a service to the interface identified by the given foreign source, node ID, and IP address.
 
-=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>
+=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
 
 Remove a service from the interface identified by the given foreign source, node ID, and IP address.
 
