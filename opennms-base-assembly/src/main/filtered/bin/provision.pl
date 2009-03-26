@@ -140,9 +140,12 @@ sub cmd_list {
 
 Add a requisition with the given foreign source.
 
-=item B<requisition remove E<lt>foreign-sourceE<gt>>
+=item B<requisition remove E<lt>foreign-sourceE<gt> [deployed]>
 
 Remove the requisition with the given foreign source.
+
+If the optional argument "B<deployed>" is specified, it will remove
+the already-imported foreign source configuration.
 
 =item B<requisition import E<lt>foreign-sourceE<gt>>
 
@@ -168,7 +171,12 @@ sub cmd_requisition {
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
 		post('', $root);
 	} elsif (is_remove($command)) {
-		remove($foreign_source);
+		my $deployed = shift @args;
+		if (defined $deployed and ($deployed eq 'deployed' or $deployed eq 'active')) {
+			remove('deployed/' . $foreign_source);
+		} else {
+			remove($foreign_source);
+		}
 	} elsif ($command eq 'import' or $command eq 'deploy') {
 		put($foreign_source . '/import');
 	} else {
