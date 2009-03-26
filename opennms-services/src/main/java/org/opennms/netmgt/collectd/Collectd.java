@@ -208,7 +208,10 @@ public class Collectd extends AbstractServiceDaemon implements
 
         // reinitializePrimarySnmpInterface
         ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
-
+        
+        // nodeScanComplete
+        ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
+        
         // interfaceReparented
         ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
