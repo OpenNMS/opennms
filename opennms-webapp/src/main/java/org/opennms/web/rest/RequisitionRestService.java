@@ -35,6 +35,7 @@
  */
 package org.opennms.web.rest;
 
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -484,10 +485,7 @@ public class RequisitionRestService extends OnmsRestService {
         log().debug("importing requisition for foreign source " + foreignSource);
 
         Requisition req = getActiveRequisition(foreignSource);
-        // just to be sure, since there's a potential race condition
-        m_pendingForeignSourceRepository.save(req);
-
-        String url = m_pendingForeignSourceRepository.getRequisitionURL(foreignSource).toString();
+        String url = getActiveUrl(foreignSource).toString();
         EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
         bldr.addParam(EventConstants.PARM_URL, url);
         
@@ -683,6 +681,21 @@ public class RequisitionRestService extends OnmsRestService {
         Set<String> fsNames = m_pendingForeignSourceRepository.getActiveForeignSourceNames();
         fsNames.addAll(m_deployedForeignSourceRepository.getActiveForeignSourceNames());
         return fsNames;
+    }
+
+    private URL getActiveUrl(String foreignSourceName) {
+        Requisition pending = m_pendingForeignSourceRepository.getRequisition(foreignSourceName);
+        Requisition deployed = m_deployedForeignSourceRepository.getRequisition(foreignSourceName);
+        
+        if (pending == null) {
+            return m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName);
+        } else if (deployed == null) {
+            return m_pendingForeignSourceRepository.getRequisitionURL(foreignSourceName);
+        } else if (deployed.getDateStamp().compare(pending.getDateStamp()) > -1) {
+            // deployed is newer than pending
+            return m_deployedForeignSourceRepository.getRequisitionURL(foreignSourceName);
+        }
+        return m_pendingForeignSourceRepository.getRequisitionURL(foreignSourceName);
     }
 
     private Requisition getActiveRequisition(String foreignSourceName) {

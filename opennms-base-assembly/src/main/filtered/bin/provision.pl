@@ -409,7 +409,7 @@ sub cmd_category {
 		pod2usage(-exitval => 1, -message => "Error: You must specify a category!", -verbose => 0);
 	}
 
-	if (is_add($command)) {
+	if (is_add($command) or is_set($command)) {
 		my $xml = get_element('category');
 		my $root = $xml->root;
 		$root->{'att'}->{'name'} = $category;

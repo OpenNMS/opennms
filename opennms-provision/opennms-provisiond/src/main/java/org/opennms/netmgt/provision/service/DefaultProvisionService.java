@@ -311,7 +311,10 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional
     public OnmsNode getRequisitionedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
-        Assert.notNull(nodeReq, "nodeReq for node "+foreignSource+":"+foreignId+" cannot be null!");
+        if (nodeReq == null) {
+            log().warn("nodeReq for node "+foreignSource+":"+foreignId+" cannot be null!");
+            return null;
+        }
         OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
         
         // fill in real db categories

@@ -116,6 +116,9 @@ public class NodeScan implements Runnable {
 
     public void doLoadNode(Phase loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
+        if (m_node == null) {
+            m_aborted = true;
+        }
     }
 
     public void doAgentScan(Phase detectAgents, InetAddress agentAddress, String agentType) {
