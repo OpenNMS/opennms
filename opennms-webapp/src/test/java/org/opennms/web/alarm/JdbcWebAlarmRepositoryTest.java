@@ -71,6 +71,15 @@ public class JdbcWebAlarmRepositoryTest{
         int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
         
         assertEquals(8, matchingAlarms.length);
+        
+        //Make sure that the count is correct per severity
+        assertEquals(0, matchingAlarms[OnmsSeverity.CLEARED.getId()]);
+        assertEquals(0, matchingAlarms[OnmsSeverity.CRITICAL.getId()]);
+        assertEquals(0, matchingAlarms[OnmsSeverity.INDETERMINATE.getId()]);
+        assertEquals(0, matchingAlarms[OnmsSeverity.MINOR.getId()]);
+        assertEquals(1, matchingAlarms[OnmsSeverity.NORMAL.getId()]);
+        assertEquals(0, matchingAlarms[OnmsSeverity.WARNING.getId()]);
+        assertEquals(0, matchingAlarms[OnmsSeverity.MAJOR.getId()]);
     }
     
     @Test
@@ -116,6 +125,33 @@ public class JdbcWebAlarmRepositoryTest{
     public void testCountMatchingBySeverity(){
         int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
         assertEquals(8, matchingAlarmCount.length);
+    }
+    
+    @Test
+    public void testEscalateAlarms(){
+        int[] alarmIds = {1};
+        m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
+        
+        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
+        
+        assertNotNull(alarms);
+        
+        assertEquals(OnmsSeverity.WARNING.getId(), alarms[0].severity.getId());
+    }
+    
+    @Test
+    public void testClearAlarms(){
+        Alarm alarm = m_alarmRepo.getAlarm(1);
+        
+        assertNotNull(alarm);
+        assertEquals(OnmsSeverity.NORMAL.getId(), alarm.severity.getId());
+        
+        int[] alarmIds = {1};
+        m_alarmRepo.clearAlarms(alarmIds, "TestUser", new Date());
+        
+        alarm = m_alarmRepo.getAlarm(1);
+        assertNotNull(alarm);
+        assertEquals(OnmsSeverity.CLEARED.getId(), alarm.severity.getId());
     }
     
 }
