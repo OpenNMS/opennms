@@ -62,11 +62,12 @@ public class DefaultForeignSourceService implements ForeignSourceService {
 
     public ForeignSource getForeignSource(String name) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(name);
-        if (fs == null) {
+        if (fs.isDefault()) {
             return m_deployedForeignSourceRepository.getForeignSource(name);
         }
         return fs;
     }
+
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         normalizePluginConfigs(fs);
         m_pendingForeignSourceRepository.save(fs);
