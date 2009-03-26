@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<rancid-configuration delay="900000" retries="0">
+<rancid-configuration delay="3600" retries="1">
   
 <!-- Configuration example that uses policy-manage -->
 <policies>
