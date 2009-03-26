@@ -170,18 +170,18 @@ public class CoreScanActivities {
     public void detectAgents(Phase currentPhase, NodeScan nodeScan) {
         
         boolean foundAgent = false;
-        
-        // someday I'll change this to use agentDetectors
-        OnmsIpInterface primaryIface = nodeScan.getNode().getPrimaryInterface();
-        if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-            nodeScan.doAgentScan(currentPhase, primaryIface.getInetAddress(), "SNMP");
-            foundAgent = true;
+
+        if (!nodeScan.isAborted()) {
+            OnmsIpInterface primaryIface = nodeScan.getNode().getPrimaryInterface();
+            if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
+                nodeScan.doAgentScan(currentPhase, primaryIface.getInetAddress(), "SNMP");
+                foundAgent = true;
+            }
+            
+            if (!foundAgent) {
+                nodeScan.doNoAgentScan(currentPhase);
+            }
         }
-        
-        if (!foundAgent) {
-            nodeScan.doNoAgentScan(currentPhase);
-        }
-        
     }
     
     @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
