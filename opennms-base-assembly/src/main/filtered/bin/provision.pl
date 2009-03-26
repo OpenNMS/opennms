@@ -482,7 +482,7 @@ sub cmd_asset {
 
 Get the SNMP configuration for the given IP address.
 
-=item B<snmp set E<lt>ip-addressE<gt> E<lt>community<gt> [options...]>
+=item B<snmp set E<lt>ip-addressE<gt> E<lt>communityE<gt> [options...]>
 
 Set the SNMP community (and, optionally, version) for the given IP address.
 
