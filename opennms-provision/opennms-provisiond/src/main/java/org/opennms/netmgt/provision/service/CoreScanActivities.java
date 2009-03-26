@@ -356,6 +356,17 @@ public class CoreScanActivities {
         System.err.println("agentScan.deleteObsoleteResources");
     }
     
+    @Activity( lifecycle = "agentScan", phase = "agentScanCompleted", schedulingHint="write")
+    public void agentScanCompleted(Phase currentPhase, AgentScan agentScan) {
+        if (!agentScan.isAborted()) {
+            EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
+            bldr.setNodeid(agentScan.getNodeId());
+            bldr.setInterface(agentScan.getAgentAddress().getHostAddress());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
+        
+    }
+    
     @Activity( lifecycle = "noAgent", phase = "stampProvisionedInterfaces", schedulingHint="write")
     public void stampProvisionedInterfaces(Phase currentPhase, NoAgentScan scan) {
         if (scan.isAborted()) { return; }
