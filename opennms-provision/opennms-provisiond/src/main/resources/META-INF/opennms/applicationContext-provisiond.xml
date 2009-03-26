@@ -120,6 +120,7 @@
                       <value>detectPhysicalInterfaces</value>
                       <value>detectIpInterfaces</value>
                       <value>deleteObsoleteResources</value>
+                      <value>agentScanCompleted</value>
                     </list>
                 </constructor-arg>
             </bean>
