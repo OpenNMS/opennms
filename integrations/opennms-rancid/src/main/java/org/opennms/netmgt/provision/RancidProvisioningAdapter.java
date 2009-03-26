@@ -109,6 +109,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     @Override
     AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType type) {
+        log().debug("Scheduling: " + type + " for nodeid: " + nodeId);
         if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
             final String ipaddress =
             (String)m_template.execute(new TransactionCallback() {
@@ -116,7 +117,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     return getSuitableIpForRancid(nodeId);
                 }
             });
-            return new AdapterOperationSchedule(m_rancidAdapterConfig.getDelay(ipaddress),60000, m_rancidAdapterConfig.getRetries(ipaddress), TimeUnit.MILLISECONDS);
+            long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
+            int retries = m_rancidAdapterConfig.getRetries(ipaddress);
+            log().debug("Setting initialDelay: " + initialDelay);
+            log().debug("Setting retries: " + retries);
+            
+            return new AdapterOperationSchedule(initialDelay,60, retries, TimeUnit.SECONDS);
         }
         return new AdapterOperationSchedule();
     }
@@ -290,7 +296,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     public void doNodeConfigChanged(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode: nodeid: " + nodeId);
+        log().debug("RANCID PROVISIONING ADAPTER CALLED DoNodeConfigChanged: nodeid: " + nodeId);
         try {
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
@@ -452,13 +458,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     @Override
     public boolean isNodeReady(AdapterOperation op) {
+        boolean ready = true;
         if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             Integer nodeid = op.getNodeId();
             updateRancidNodeState(nodeid, true);
-            return 
+            ready =
             m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(nodeid));
         }
-        return true;
+        log().debug("is Node Ready: " + ready + " For Operation " + op.getType() + " for node: " + op.getNodeId());
+        return ready;
     }
 
     @Override
@@ -500,7 +508,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (e.hasNodeid()) {
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                updateRancidNodeState(nodeId, true);
+                updateRancidNodeState(nodeId, false);
                 doNodeConfigChanged(nodeId,m_cp,true);
             } else {
                 log().warn("node does not exist with nodeid: " + e.getNodeid());
