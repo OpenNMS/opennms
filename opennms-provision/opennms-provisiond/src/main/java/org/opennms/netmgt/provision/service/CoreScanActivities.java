@@ -187,7 +187,7 @@ public class CoreScanActivities {
     @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
     public void scanCompleted(Phase currentPhase, NodeScan nodeScan) {
         if (!nodeScan.isAborted()) {
-            EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/provisiond/nodeScanCompleted", "Provisiond");
+            EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");
             bldr.setNodeid(nodeScan.getNodeId());
             bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, nodeScan.getForeignSource());
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, nodeScan.getForeignId());
@@ -378,7 +378,7 @@ public class CoreScanActivities {
         
         m_provisionService.deleteObsoleteInterfaces(scan.getNodeId(), scan.getScanStamp());
         
-        System.err.println("agentScan.deleteObsoleteResources");
+        System.err.println("noAgentScan.deleteObsoleteResources");
     }
     
     
