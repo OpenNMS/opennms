@@ -513,7 +513,8 @@ public class DefaultProvisionService implements ProvisionService {
         try {
             fs = m_foreignSourceRepository.getForeignSource(node.getForeignSource());
         } catch (ForeignSourceRepositoryException e) {
-            log().warn("unable to get foreign source repository", e);
+            log().warn(String.format("unable to get foreign source '%s' from repository", node.getForeignSource()), e);
+            return null;
         }
 
         Duration scanInterval = fs.getScanInterval();
