@@ -687,6 +687,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handlePrimarySnmpInterfaceChanged(event);
             } else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
                 handleReinitializePrimarySnmpInterface(event);
+            } else if (event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI)) {
+                handleNodeScanCompleted(event);
             } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
                 handleInterfaceReparented(event);
             } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
@@ -1186,13 +1188,34 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        Category log = log();
+        int nodeid = (int) event.getNodeid();
+        String ipAddress = event.getInterface();
 
-        if (event.getInterface() == null) {
-            log.error("reinitializePrimarySnmpInterface event is missing an interface.");
+        reinitializeCollectable(nodeid, ipAddress);
+    }
+    
+    private void handleNodeScanCompleted(Event event) throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        
+        int nodeId = (int) event.getNodeid();
+        
+        OnmsNode node = m_nodeDao.get(nodeId);
+        
+        if (node == null) {
+            log().info("handleNodeScanCompleted: unable to locate node with nodeid "+nodeId);
             return;
         }
+        
+        OnmsIpInterface primaryIface = node.getPrimaryInterface();
+        if (primaryIface == null) {
+            log().info(String.format("handleNodeScanCompleted: node %s doesn't have a primary interface", node));
+            return;
+        }
+        
+        reinitializeCollectable(nodeId, primaryIface.getIpAddress());
+    }
 
+    private void reinitializeCollectable(int nodeid, String ipAddress) {
         // Mark the primary SNMP interface for reinitialization in
         // order to update any modified attributes associated with
         // the collectable service..
@@ -1201,6 +1224,8 @@ public class Collectd extends AbstractServiceDaemon implements
         // updates map and mark any which have the same interface
         // address for reinitialization
         //
+        Category log = log();
+
         OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
             Iterator<CollectableService> iter = getCollectableServices().iterator();
@@ -1212,11 +1237,11 @@ public class Collectd extends AbstractServiceDaemon implements
                     log.debug("Comparing CollectableService ip address = "
                             + addr.getHostAddress()
                             + " and event ip interface = "
-                            + event.getInterface());
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                            + ipAddress);
+                if (addr.getHostAddress().equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
-                    		iface = getIpInterface((int) event.getNodeid(), event.getInterface());
+                            iface = getIpInterface(nodeid, ipAddress);
                     	}
                         // Got a match! Retrieve the CollectorUpdates object
                         // associated
@@ -1227,7 +1252,7 @@ public class Collectd extends AbstractServiceDaemon implements
                         updates.markForReinitialization(iface);
                         if (log.isDebugEnabled())
                             log.debug("reinitializePrimarySnmpInterfaceHandler: marking "
-                                    + event.getInterface()
+                                    + ipAddress
                                     + " for reinitialization for service SNMP.");
                     }
                 }
