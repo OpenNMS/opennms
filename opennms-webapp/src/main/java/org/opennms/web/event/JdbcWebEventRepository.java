@@ -188,7 +188,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
         String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)";
         String sql = getSql(selectClause, criteria);
-        sql = sql + " AND EVENTDISPLAY='Y'";
+        //sql = sql + " AND EVENTDISPLAY='Y'";
         sql = sql + " GROUP BY EVENTSEVERITY";
         
         final int[] alarmCounts = new int[8];

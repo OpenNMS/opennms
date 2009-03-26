@@ -12,6 +12,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
@@ -59,10 +60,18 @@ public class JdbcWebEventRepositoryTest {
     
     @Test
     public void testCountMatchingEventsBySeverity(){
-        EventCriteria criteria = new EventCriteria(new SeverityFilter(3));
-        int[] matchingAlarms = m_eventRepo.countMatchingEventsBySeverity(criteria);
+        EventCriteria criteria = new EventCriteria();
+        int[] matchingEvents = m_eventRepo.countMatchingEventsBySeverity(criteria);
         
-        assertEquals(8, matchingAlarms.length);
+        assertEquals(8, matchingEvents.length);
+        
+        assertEquals(0, matchingEvents[OnmsSeverity.CLEARED.getId()]);
+        assertEquals(0, matchingEvents[OnmsSeverity.CRITICAL.getId()]);
+        assertEquals(1, matchingEvents[OnmsSeverity.INDETERMINATE.getId()]);
+        assertEquals(0, matchingEvents[OnmsSeverity.MAJOR.getId()]);
+        assertEquals(0, matchingEvents[OnmsSeverity.MINOR.getId()]);
+        assertEquals(0, matchingEvents[OnmsSeverity.NORMAL.getId()]);
+        assertEquals(0, matchingEvents[OnmsSeverity.WARNING.getId()]);
     }
     
     @Test
