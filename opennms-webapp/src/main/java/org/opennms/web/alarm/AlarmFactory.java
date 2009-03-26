@@ -70,7 +70,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AlarmFactory extends Object {
-
+    
     /** Convenience class to determine sort style of a query. */
     public static enum SortStyle {
         SEVERITY("severity"),
@@ -287,7 +287,7 @@ public class AlarmFactory extends Object {
     public static int getAlarmCount() throws SQLException {
         return getAlarmCount(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]);
     }
-
+    
     /**
      * Count the number of alarms for a given acknowledgement type.
      */

@@ -45,7 +45,11 @@ import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
+import org.opennms.web.alarm.filter.AlarmTypeFilter;
+import org.opennms.web.alarm.filter.ConditionalFilter;
 import org.opennms.web.alarm.filter.Filter;
+import org.opennms.web.alarm.filter.SeverityBetweenFilter;
+import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +126,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
                 criteria.visit(new BaseAlarmCriteriaVisitor<SQLException>() {
                     @Override
                     public void visitFilter(Filter filter) throws SQLException {
+                        System.out.println("filter sql: " + filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
@@ -256,7 +261,39 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL");
     }
     
-
+    public void clearAlarms(int[] alarmIds, String user){
+        clearAlarms(alarmIds, user, new Date());
+    }
+    
+    public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
+        if(alarmIds == null || user == null || timestamp == null){
+            throw new IllegalArgumentException("Cannot take null parameters");
+        }
+        
+        AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), new SeverityBetweenFilter(OnmsSeverity.NORMAL, OnmsSeverity.CRITICAL));
+        
+        String sql = getSql("UPDATE ALARMS SET SEVERITY =?, ALARMTYPE =? ", criteria);
+        System.out.println(sql);
+        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
+        
+    }
+    
+    public void excalateAlarms(int[] alarmIds, String user){
+        escalateAlarms(alarmIds, user, new Date());
+    }
+    
+    public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
+        ConditionalFilter condFilter = new ConditionalFilter("AND", new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
+        ConditionalFilter condFilter2 = new ConditionalFilter("AND", new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
+        ConditionalFilter orCondFilter = new ConditionalFilter("OR", condFilter, condFilter2);
+        
+        AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
+        
+        String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =?", criteria);
+        System.out.println(sql);
+        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
+    }
+    
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
         return (number != null ? number.intValue() : 0);

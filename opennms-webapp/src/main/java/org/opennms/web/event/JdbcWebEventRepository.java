@@ -1,3 +1,34 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ */
 package org.opennms.web.event;
 
 import java.sql.PreparedStatement;
@@ -132,14 +163,19 @@ public class JdbcWebEventRepository implements WebEventRepository {
             event.mouseOverText = rs.getString("eventMouseOverText");
             event.acknowledgeUser = rs.getString("eventAckUser");
 
-            element = rs.getTimestamp("eventAckTime");
-            if (element != null) {
-                event.acknowledgeTime = new Date(((Timestamp) element).getTime());
-            }
+            event.acknowledgeTime = getTimestamp("eventAckTime", rs);
 
             event.alarmId = (Integer) rs.getObject("alarmid");
             
             return event;
+        }
+        
+        private Date getTimestamp(String field, ResultSet rs) throws SQLException{
+            if(rs.getTimestamp(field) != null){
+                return new Date(rs.getTimestamp(field).getTime());
+            }else{
+                return null;
+            }
         }
         
     }
@@ -180,8 +216,6 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
 
     public Event[] getMatchingEvents(EventCriteria criteria) {
-        //FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE EVENTID=?
-        //SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME
         String sql = getSql("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getEvents(sql, paramSetter(criteria));
     }

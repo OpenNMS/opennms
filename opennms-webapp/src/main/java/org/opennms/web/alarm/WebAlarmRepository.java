@@ -46,5 +46,9 @@ public interface WebAlarmRepository {
     public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria);
 
     public abstract void unacknowledgeAll();
+    
+    public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
+    
+    public abstract void clearAlarms(int[] alamrIds, String user, Date timestamp);
 
 }
