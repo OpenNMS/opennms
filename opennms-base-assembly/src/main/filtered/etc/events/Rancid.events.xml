@@ -1,5 +1,5 @@
 <events>
-    <event>
+    <!--  event>
         <uei>uei.opennms.org/rancid/configuration/DownloadSuccess</uei>
         <event-label>OpenNMS-defined Rancid success event.</event-label>
         <descr>&lt;p&gt;Rancid download successfully completed.&lt;/p&gt; &lt;p&gt;</descr>
@@ -12,5 +12,108 @@
         <descr>&lt;p&gt;Rancid download failed.&lt;/p&gt; &lt;p&gt;</descr>
         <logmsg dest='logndisplay'>&lt;p&gt;Rancid download failed.&lt;/p&gt;</logmsg>
         <severity>Minor</severity>
-    </event>
+    </event-->
+<!-- Start of auto generated data from MIB: RANCID-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.31543.1234.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/rancid-Generic-Trap</uei>
+	<event-label>RANCID-MIB defined trap event: rancid-Generic-Trap</event-label>
+	<descr>
+&lt;p&gt;This is the definition of the generic rancid trap sent from the
+rancid-run process.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rancid-description&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rancid-Generic-Trap trap received 
+			rancid-description=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.31543.1234.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/rancid/configuration/DownloadSuccess</uei>
+	<event-label>RANCID-MIB defined trap event: rancid-downloadSuccessTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent after a success in configuration download .&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rancid-device-name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rancid-group&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rancid-downloadSuccessTrap trap received 
+			rancid-device-name=%parm[#1]% 
+			rancid-group=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.31543.1234.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/rancid/configuration/DownloadFailure</uei>
+	<event-label>RANCID-MIB defined trap event: rancid-downloadFailureTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent after a failure in configuration download.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rancid-device-name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rancid-group&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rancid-downloadFailureTrap trap received 
+			rancid-device-name=%parm[#1]% 
+			rancid-group=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<!-- End of auto generated data from MIB: RANCID-MIB -->
 </events>
