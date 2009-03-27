@@ -117,6 +117,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     return getSuitableIpForRancid(nodeId);
                 }
             });
+            updateRancidNodeState(nodeId, true);
+
             long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
             int retries = m_rancidAdapterConfig.getRetries(ipaddress);
             log().debug("Setting initialDelay: " + initialDelay);
@@ -233,10 +235,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
             RancidNode rNewNode = getSuitableRancidNode(node);
-            // if the node exists in rancid and is different 
-            // I must delete old data in Rancid
+            // The node should exists onmsNodeRancidNodeMap 
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));            
+                RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+                // set the state to the suitable state
+                rNewNode.setStateUp(rCurrentNode.isStateUp());
+                // delete the current node if it is different
                 if (!rCurrentNode.equals(rNewNode)) {
                     try {
                         RWSClientApi.deleteRWSRancidNode(cp, rCurrentNode);
@@ -245,6 +249,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                         log().error("RANCID PROVISIONING ADAPTER Failed to delete node: " + nodeId + " Exception: " + e.getMessage());
                     }
                 }
+            } else {
+                rNewNode.setStateUp(true);
             }
             
             
@@ -397,7 +403,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         } else {
             r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId()));
         }
-        r_node.setStateUp(false);
+        r_node.setStateUp(true);
         r_node.setComment(RANCID_COMMENT);
         r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
@@ -460,10 +466,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     public boolean isNodeReady(AdapterOperation op) {
         boolean ready = true;
         if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-            Integer nodeid = op.getNodeId();
-            updateRancidNodeState(nodeid, true);
             ready =
-            m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(nodeid));
+            m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(op.getNodeId()));
         }
         log().debug("is Node Ready: " + ready + " For Operation " + op.getType() + " for node: " + op.getNodeId());
         return ready;
