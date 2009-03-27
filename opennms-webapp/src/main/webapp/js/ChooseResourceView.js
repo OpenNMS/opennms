@@ -29,7 +29,8 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 		 		}],
 		pageSize:pagesize,
 		store:simpleStore,
-		width:"35%",
+		width:"40%",
+		minWidth:250,
 		height:500,
 		region:'west',
 		enableDragDrop: true,
@@ -81,6 +82,7 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 		pageSize:pagesize,
 		store: graphStore,
 		width:"40%",
+		minWidth:250,
 		height:500,
 		region:'east',
 		viewConfig : {
