@@ -261,6 +261,7 @@ public class DatabasePopulator {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
+        alarm.setAlarmType(1);
         alarm.setCounter(1);
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setLastEvent(event);
