@@ -5,7 +5,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 	width:'100%',
     displayInfo: true,
     border:true,
-    displayMsg: 'Displaying topics {0} - {1} of {2}',
+    displayMsg: '{0} - {1} of {2}',
     emptyMsg: "No topics to display",
     viewConfig : {
 	  autoFill: true,
@@ -45,7 +45,7 @@ OpenNMS.ux.PageableGrid = Ext.extend(Ext.grid.GridPanel, {
 			        pageSize: this.pageSize,
 			        store: this.store,
 			        displayInfo: this.displayInfo,
-			        displayMag: this.displayMsg,
+			        displayMsg: this.displayMsg,
 			        emptyMsg: this.emptyMsg,
 			        items:[ '-' ]
 			}),
