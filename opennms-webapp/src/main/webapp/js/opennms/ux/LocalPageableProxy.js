@@ -55,13 +55,19 @@ Ext.extend(OpenNMS.ux.LocalPageableProxy, Ext.data.DataProxy, {
     	var DataRecord = Ext.data.Record.create(this.recordMap);
     	
     	var records = new Array();
-
-    	for each(dataObj in this.data.records){
+		
+		for(var i = 0; i < this.data.records.length; i++){
+			if(!(this.data.records[i] instanceof Function)){
+				records.push(new DataRecord( this.data.records[i]));
+			}
+		}
+		
+    	/*for each(var dataObj in this.data.records){
     		
     		if(!(dataObj instanceof Function)){
     			records.push(new DataRecord(dataObj));
     		}
-    	}
+    	}*/
     	return records;
     }
     
