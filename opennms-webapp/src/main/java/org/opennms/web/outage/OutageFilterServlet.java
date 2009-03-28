@@ -81,7 +81,7 @@ public class OutageFilterServlet extends HttpServlet {
         String sortStyleString = WebSecurityUtils.sanitizeString(request.getParameter("sortby"));
         OutageFactory.SortStyle sortStyle = OutageFactory.DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
-            Object temp = OutageUtil.getSortStyle(sortStyleString);
+            Object temp = OutageFactory.SortStyle.getSortStyle(sortStyleString);
             if (temp != null) {
                 sortStyle = (OutageFactory.SortStyle) temp;
             }
@@ -91,7 +91,7 @@ public class OutageFilterServlet extends HttpServlet {
         String outTypeString = WebSecurityUtils.sanitizeString(request.getParameter("outtype"));
         OutageFactory.OutageType outType = OutageFactory.OutageType.BOTH;
         if (outTypeString != null) {
-            Object temp = OutageUtil.getOutageType(outTypeString);
+            Object temp = OutageFactory.OutageType.getOutageType(outTypeString);
             if (temp != null) {
                 outType = (OutageFactory.OutageType) temp;
             }
@@ -101,8 +101,8 @@ public class OutageFilterServlet extends HttpServlet {
         String[] filterStrings = request.getParameterValues("filter");
         List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
-            for (int i = 0; i < filterStrings.length; i++) {
-                Filter filter = OutageUtil.getFilter(WebSecurityUtils.sanitizeString(filterStrings[i]));
+            for (String filterString : filterStrings) {
+                Filter filter = OutageUtil.getFilter(WebSecurityUtils.sanitizeString(filterString));
                 if (filter != null) {
                     filterArray.add(filter);
                 }
