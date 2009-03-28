@@ -118,7 +118,7 @@
 		<ul>
 			<li><a href="outage/list" title="See all outages in the outage browser" >View All Outages</a></li>
 			<%--<li><a href="outage/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>--%>
-			<li><a href="outage/list?outtype=<%=OutageFactory.OutageType._CURRENT%>" title="A more powerful way of looking at outages">Query Current Outages</a></li>
+			<li><a href="outage/list?outtype=<%=OutageFactory.OutageType.CURRENT.getShortName()%>" title="A more powerful way of looking at outages">Query Current Outages</a></li>
 		</ul>
 	</div>
 	<h3>Current Outages</h3>
