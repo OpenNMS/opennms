@@ -66,6 +66,7 @@ import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -108,21 +109,21 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
 
     @Override
-    AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType type) {
-        log().debug("Scheduling: " + type + " for nodeid: " + nodeId);
-        if (type.equals(AdapterOperationType.CONFIG_CHANGE)) {
-            final String ipaddress =
-            (String)m_template.execute(new TransactionCallback() {
+    @Transactional
+    AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType adapterOperationType) {
+        log().debug("Scheduling: " + adapterOperationType + " for nodeid: " + nodeId);
+        if (adapterOperationType.equals(AdapterOperationType.CONFIG_CHANGE)) {
+            updateRancidNodeState(nodeId, true);
+
+            String ipaddress = (String) m_template.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     return getSuitableIpForRancid(nodeId);
                 }
             });
-            updateRancidNodeState(nodeId, true);
-
             long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
             int retries = m_rancidAdapterConfig.getRetries(ipaddress);
-            log().debug("Setting initialDelay: " + initialDelay);
-            log().debug("Setting retries: " + retries);
+            log().debug("Setting initialDelay(sec): " + initialDelay);
+            log().debug("Setting retries(sec): " + retries);
             
             return new AdapterOperationSchedule(initialDelay,60, retries, TimeUnit.SECONDS);
         }
@@ -374,8 +375,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return ADAPTER_NAME;
     }
 
-    public String getSuitableIpForRancid(int nodeid){
-        OnmsNode node = m_nodeDao.get(nodeid);
+    private String getSuitableIpForRancid(OnmsNode node){
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         if (primaryInterface == null) {
@@ -386,6 +386,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
         return primaryInterface.getIpAddress();
     }
+
+    private String getSuitableIpForRancid(Integer nodeId) {
+        return getSuitableIpForRancid(m_nodeDao.get(nodeId));
+    }
+
     
     private RancidNode getSuitableRancidNode(OnmsNode node) {
         
@@ -397,7 +402,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (group == null) return null;
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
-        String ipaddress = getSuitableIpForRancid(node.getId().intValue());
+        String ipaddress = getSuitableIpForRancid(node);
         if (m_rancidAdapterConfig.useCategories(ipaddress)) {
            r_node.setDeviceType(getTypeFromCategories(node)); 
         } else {
@@ -463,11 +468,17 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     @Override
-    public boolean isNodeReady(AdapterOperation op) {
+    public boolean isNodeReady(final AdapterOperation op) {
         boolean ready = true;
         if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
+            String ipaddress = (String)  m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    return getSuitableIpForRancid(op.getNodeId());
+                }
+            });
+     
             ready =
-            m_rancidAdapterConfig.isCurTimeInSchedule(getSuitableIpForRancid(op.getNodeId()));
+            m_rancidAdapterConfig.isCurTimeInSchedule(ipaddress);
         }
         log().debug("is Node Ready: " + ready + " For Operation " + op.getType() + " for node: " + op.getNodeId());
         return ready;
@@ -475,6 +486,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
+        log().debug("Procession Operation: " + op.getType() + " for node: " + op.getNodeId() );
         if (op.getType() == AdapterOperationType.ADD) {
             m_template.execute(new TransactionCallback() {
                 public Object doInTransaction(TransactionStatus arg0) {
