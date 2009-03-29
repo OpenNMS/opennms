@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -13,6 +13,7 @@
 // 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2003 Jan 29: Added response times to certain monitors.
+// 2009 Mar 29: Added reason code template feature for enhancement bug #3065. - jeffg@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -42,6 +43,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
@@ -50,6 +52,7 @@ import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -96,6 +99,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      * object.
      */
     static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
+
+    private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
 
     /**
      * <P>
@@ -213,12 +218,28 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         String matchstr = ParameterMap.getKeyedString(parameters, "match-all", "true");
         int countMin = ParameterMap.getKeyedInteger(parameters, "minimum", 0);
         int countMax = ParameterMap.getKeyedInteger(parameters, "maximum", 0);
+        String reasonTemplate = ParameterMap.getKeyedString(parameters, "reason-template", DEFAULT_REASON_TEMPLATE);
 
         // set timeout and retries on SNMP peer object
         //
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
+
+        // Squirrel the configuration parameters away in a Properties for later expansion if service is down
+        Properties svcParams = new Properties();
+        svcParams.setProperty("oid", oid);
+        svcParams.setProperty("operator", operator);
+        svcParams.setProperty("operand", operand);
+        svcParams.setProperty("walk", walkstr);
+        svcParams.setProperty("matchAll", matchstr);
+        svcParams.setProperty("minimum", String.valueOf(countMin));
+        svcParams.setProperty("maximum", String.valueOf(countMax));
+        svcParams.setProperty("timeout", String.valueOf(agentConfig.getTimeout()));
+        svcParams.setProperty("retry", String.valueOf(agentConfig.getRetries()));
+        svcParams.setProperty("retries", svcParams.getProperty("retry"));
+        svcParams.setProperty("ipaddr", ipaddr.getHostAddress());
+        svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
 
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
@@ -231,53 +252,66 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
             if ("true".equals(walkstr)) {
+                if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
+                    reasonTemplate = "SNMP poll failed, addr=${ipaddr} oid=${oid}";
+                }
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
-
+                    svcParams.setProperty("observedValue", result.toString());
                     if (result != null) {
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
                             if ("false".equals(matchstr)) {
-                               return status;
+                                return status;
                             }
                         } else if ("true".equals(matchstr)) {
-                            status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                            status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
                             return status;
                         }
                     }
                 }
 
-            // This if block will count the number of matches within a walk and mark the service
-            // as up if it is between the minimum and maximum number, down if otherwise. Setting
-            // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
+                // This if block will count the number of matches within a walk and mark the service
+                // as up if it is between the minimum and maximum number, down if otherwise. Setting
+                // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
             } else if ("count".equals(matchstr)) {
-		int matchCount = 0;
+                if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
+                    reasonTemplate = "Value: ${matchCount} outside of range Min: ${minimum} to Max: ${maximum}";
+                }
+                int matchCount = 0;
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
 
                     if (result != null) {
                         log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
-				matchCount++;
+                            matchCount++;
                         }
                     }
                 }
+                svcParams.setProperty("matchCount", String.valueOf(matchCount));
                 log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
                 if ((matchCount < countMax) && (matchCount > countMin)) {
                     status = PollStatus.available();
                 } else {
-                    status = logDown(Level.DEBUG, "Value: " + matchCount + " outside of range Min: " + countMin + " to Max: " + countMax);
+                    status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
                     return status;
-		}
+                }
 
             } else {
 
                 SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
                 if (result != null) {
+                    svcParams.setProperty("observedValue", result.toString());
                     log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                    status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
+                    
+                    if (meetsCriteria(result, operator, operand)) {
+                        status = PollStatus.available();
+                    } else {
+                        status = PollStatus.unavailable(PropertiesUtils.substitute(reasonTemplate, svcParams));
+                    }
                 } else {
                     status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
                 }
