@@ -101,9 +101,28 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
     public abstract String getName();
     
     /**
-     * Adapters extending this class must implement this method
+     * Adapters extending this class must implement this method.
+     * 
+     * This method is called in the run method of an operation to insure that the adapter is ready
+     * for the operation to run for the associated node.  The adapter is responsible for setting the schedule, however,
+     * something could have altered the state of readiness for the provisioning system in the meantime.  If this method
+     * returns false, the operation is rescheduled with the and the attempts remaining on the operation are not
+     * decremented.
+     * 
+     * @param op
+     * @return a boolean representing the state of readiness from the underlying system integrated by the 
+     *         implementing adapter.
      */
     public abstract boolean isNodeReady(AdapterOperation op);
+    
+    /**
+     * The class implements the API and therefore the concrete class implements this method to handle
+     * dequeued operations. The concrete implementation should check the operation type to derrive the
+     * its behavior.
+     *  
+     * @param op
+     * @throws ProvisioningAdapterException
+     */
     public abstract void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException;
     
 
