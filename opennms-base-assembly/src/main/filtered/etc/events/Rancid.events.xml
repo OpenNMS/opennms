@@ -18,8 +18,9 @@
 	<uei>uei.opennms.org/rancid/configuration/rancidTrapGenericFailure</uei>
 	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGenericFailure</event-label>
 	<descr>
-&lt;p&gt;This trap is sent each time rancid successfully downloads
-the configuration from a device.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent each time rancid needs to notify a
+failure condition for which is not defined a more
+specific trap.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	rancidFailureMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
@@ -121,8 +122,9 @@ configuration from a device.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/rancid/configuration/rancidTrapGroupLocked</uei>
 	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupLocked</event-label>
 	<descr>
-&lt;p&gt;This trap is sent each time rancid is not able to process a group
-of devices due to the existence of a group's lock file.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent each time rancid is not able to process
+a group of devices due to the existence of a group's lock
+file.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
