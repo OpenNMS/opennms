@@ -47,12 +47,15 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.notification.*,
+			org.opennms.web.notification.filter.*,
                 org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.element.*,
 		java.util.*,
 		java.sql.SQLException,
-		org.opennms.web.event.*,
-		org.opennms.web.event.filter.*,
+		org.opennms.web.event.EventFactory,
+		org.opennms.web.event.EventUtil,
+		org.opennms.web.event.Event,
+		org.opennms.web.notification.filter.Filter,
+		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.WebSecurityUtils
 	"
 %>
@@ -210,7 +213,7 @@
   <p>
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
-		<span class="filter"><% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
+		<span class="filter"><% Filter filter = (Filter)parms.filters.get(i); %>
 				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove all]</a>
@@ -259,7 +262,7 @@
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
           <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeSent())%></td>
-          <td class="divider"><% NoticeFactory.Filter responderFilter = new NoticeFactory.ResponderFilter(notices[i].getResponder()); %>      
+          <td class="divider"><% Filter responderFilter = new ResponderFilter(notices[i].getResponder()); %>      
             <% if(notices[i].getResponder()!=null) {%>
               <%=notices[i].getResponder()%>
               <% if( !parms.filters.contains( responderFilter )) { %>
@@ -274,7 +277,7 @@
 					</td>
           <td class="divider">
             <% if(notices[i].getNodeId() != 0 ) { %>
-              <% NoticeFactory.Filter nodeFilter = new NoticeFactory.NodeFilter(notices[i].getNodeId()); %>
+              <% Filter nodeFilter = new NodeFilter(notices[i].getNodeId()); %>
               <% String[] labels = this.getNodeLabels( notices[i].getNodeId(), nodeLabelMap ); %>
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
@@ -284,7 +287,7 @@
           </td>
           <td class="divider">
             <% if(notices[i].getIpAddress() != null ) { %>
-              <% NoticeFactory.Filter intfFilter = new NoticeFactory.InterfaceFilter(notices[i].getIpAddress()); %>
+              <% Filter intfFilter = new InterfaceFilter(notices[i].getIpAddress()); %>
               <% if( notices[i].getNodeId() != 0 ) { %>
                  <a href="element/interface.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
               <% } else { %>
@@ -297,7 +300,7 @@
           </td>
           <td class="divider">
             <% if(notices[i].getServiceName() != null) { %>
-              <% NoticeFactory.Filter serviceFilter = new NoticeFactory.ServiceFilter(notices[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(notices[i].getServiceId()); %>
               <% if( notices[i].getNodeId() != 0 && notices[i].getIpAddress() != null ) { %>
                 <a href="element/service.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>&service=<%=notices[i].getServiceId()%>" title="More info on this service"><%=notices[i].getServiceName()%></a>
               <% } else { %>
@@ -377,7 +380,7 @@
       if( filters != null ) {
         for( int i=0; i < filters.size(); i++ ) {
           buffer.append( "&filter=" );
-          String filterString = NoticeUtil.getFilterString((NoticeFactory.Filter)filters.get(i));
+          String filterString = NoticeUtil.getFilterString((Filter)filters.get(i));
           buffer.append( java.net.URLEncoder.encode(filterString) );
         }
       }      
@@ -406,7 +409,7 @@
     }
 
 
-    public String makeLink( NoticeQueryParms parms, NoticeFactory.Filter filter, boolean add ) {
+    public String makeLink( NoticeQueryParms parms, Filter filter, boolean add ) {
       ArrayList newList = new ArrayList( parms.filters );
       if( add ) {
         newList.add( filter );
