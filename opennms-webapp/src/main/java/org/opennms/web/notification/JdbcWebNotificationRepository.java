@@ -137,13 +137,6 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
             notice.m_eventId = new Integer(rs.getInt("eventid"));
             
             notice.m_serviceName = rs.getString("servicename");
-            
-            /*Integer element = new Integer(rs.getInt("serviceid"));
-            if (element != null) {
-                notice.m_serviceId = ((Integer) element).intValue();
-                String serviceName = NetworkElementFactory.getServiceNameFromId(notice.m_serviceId);
-                notice.m_serviceName = serviceName;
-            }*/
 
             return notice;
         }
@@ -206,5 +199,4 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     private JdbcOperations jdbc(){
         return m_simpleJdbcTemplate.getJdbcOperations();
     }
-
 }
