@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.notification.filter.Filter;
 
 /**
  * A servlet that handles querying the notifications table and and then forwards
@@ -97,10 +98,10 @@ public class NoticeQueryServlet extends HttpServlet {
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<NoticeFactory.Filter> filterArray = new ArrayList<NoticeFactory.Filter>();
+        List<Filter> filterArray = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
-                NoticeFactory.Filter filter = NoticeUtil.getFilter(WebSecurityUtils.sanitizeString(filterStrings[i]));
+                Filter filter = NoticeUtil.getFilter(WebSecurityUtils.sanitizeString(filterStrings[i]));
                 if (filter != null) {
                     filterArray.add(filter);
                 }

@@ -41,6 +41,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.notification.filter.Filter;
+import org.opennms.web.notification.filter.InterfaceFilter;
+import org.opennms.web.notification.filter.NodeFilter;
+import org.opennms.web.notification.filter.ResponderFilter;
+import org.opennms.web.notification.filter.ServiceFilter;
+import org.opennms.web.notification.filter.UserFilter;
 
 public abstract class NoticeUtil extends Object {
     protected static final Map<String, NoticeFactory.SortStyle> sortStylesString;
@@ -127,33 +133,33 @@ public abstract class NoticeUtil extends Object {
         return ackTypes.get(ackType);
     }
 
-    public static NoticeFactory.Filter getFilter(String filterString) {
+    public static Filter getFilter(String filterString) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        NoticeFactory.Filter filter = null;
+        Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
         String type = tokens.nextToken();
         String value = tokens.nextToken();
 
-        if (type.equals(NoticeFactory.UserFilter.TYPE)) {
-            filter = new NoticeFactory.UserFilter(value);
-        } else if (type.equals(NoticeFactory.ResponderFilter.TYPE)) {
-            filter = new NoticeFactory.ResponderFilter(value);
-        } else if (type.equals(NoticeFactory.NodeFilter.TYPE)) {
-            filter = new NoticeFactory.NodeFilter(WebSecurityUtils.safeParseInt(value));
-        } else if (type.equals(NoticeFactory.InterfaceFilter.TYPE)) {
-            filter = new NoticeFactory.InterfaceFilter(value);
-        } else if (type.equals(NoticeFactory.ServiceFilter.TYPE)) {
-            filter = new NoticeFactory.ServiceFilter(WebSecurityUtils.safeParseInt(value));
+        if (type.equals(UserFilter.TYPE)) {
+            filter = new UserFilter(value);
+        } else if (type.equals(ResponderFilter.TYPE)) {
+            filter = new ResponderFilter(value);
+        } else if (type.equals(NodeFilter.TYPE)) {
+            filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(InterfaceFilter.TYPE)) {
+            filter = new InterfaceFilter(value);
+        } else if (type.equals(ServiceFilter.TYPE)) {
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
         }
 
         return filter;
     }
 
-    public static String getFilterString(NoticeFactory.Filter filter) {
+    public static String getFilterString(Filter filter) {
         if (filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
