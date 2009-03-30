@@ -237,14 +237,26 @@ public class ChartUtils {
      */
     private static JFreeChart createBarChart(BarChart chartConfig, DefaultCategoryDataset baseDataSet) {
         PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);        
-        JFreeChart barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
-                chartConfig.getDomainAxisLabel(),
-                chartConfig.getRangeAxisLabel(),
-                baseDataSet,
-                po,
-                chartConfig.getShowLegend(),
-                chartConfig.getShowToolTips(),
-                chartConfig.getShowUrls());
+        JFreeChart barChart = null;
+        if ("3d".equalsIgnoreCase(chartConfig.getVariation())) {
+            barChart = ChartFactory.createBarChart3D(chartConfig.getTitle().getValue(),
+                    chartConfig.getDomainAxisLabel(),
+                    chartConfig.getRangeAxisLabel(),
+                    baseDataSet,
+                    po,
+                    chartConfig.getShowLegend(),
+                    chartConfig.getShowToolTips(),
+                    chartConfig.getShowUrls());
+        } else {
+            barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
+                    chartConfig.getDomainAxisLabel(),
+                    chartConfig.getRangeAxisLabel(),
+                    baseDataSet,
+                    po,
+                    chartConfig.getShowLegend(),
+                    chartConfig.getShowToolTips(),
+                    chartConfig.getShowUrls());
+        }
         
         // Create a bit more headroom for value labels than is allowed for by the default 0.05 upper margin
         ValueAxis rangeAxis = barChart.getCategoryPlot().getRangeAxis();
