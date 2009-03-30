@@ -98,21 +98,6 @@ public class MailTransportMonitorTest extends TestCase {
         super.tearDown();
     }
     
-    public void testLoadXmlProperties() throws InvalidPropertiesFormatException, IOException {
-        Properties props = new Properties();
-        
-        Reader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n" + 
-        		"<properties>\n" + 
-        		"<comment>Hi</comment>\n" + 
-        		"<entry key=\"foo\">1</entry>\n" + 
-        		"<entry key=\"fu\">baz</entry>\n" + 
-        		"</properties>");
-        InputStream stream = new ReaderInputStream(reader );
-        props.loadFromXML(stream);
-        assertEquals("1", props.get("foo"));
-    }
-
     public void dont_testSend() throws Exception {
         
         setupLocalhostSendGoogleRead2();
@@ -120,6 +105,43 @@ public class MailTransportMonitorTest extends TestCase {
         PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
         
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+    
+    /*
+     * requires a gmail account that has a message in the INBOX subject: READTEST
+     */
+    public void dont_readOnlyTest() throws Exception {
+        m_params.put("timeout", "3000");
+        m_params.put("retry", "1");
+        m_params.put("strict-timeouts", "true");
+        m_params.put("mail-transport-test", 
+        "    <mail-transport-test >\n" + 
+        "      <mail-test>\n" + 
+        "        <readmail-test attempt-interval=\"2000\" mail-folder=\"INBOX\" subject-match=\"READTEST\" >\n" + 
+        "          <readmail-host host=\"imap.gmail.com\" port=\"993\">\n" + 
+        "            <readmail-protocol ssl-enable=\"true\" transport=\"imaps\" />\n" + 
+        "          </readmail-host>\n" + 
+        "          <user-auth user-name=\"username\" password=\"password\"/>\n" + 
+        "        </readmail-test>\n" + 
+        "      </mail-test>\n"+
+        "    </mail-transport-test>\n");
+        PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+
+    public void testLoadXmlProperties() throws InvalidPropertiesFormatException, IOException {
+        Properties props = new Properties();
+        
+        Reader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+                "<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n" + 
+                "<properties>\n" + 
+                "<comment>Hi</comment>\n" + 
+                "<entry key=\"foo\">1</entry>\n" + 
+                "<entry key=\"fu\">baz</entry>\n" + 
+                "</properties>");
+        InputStream stream = new ReaderInputStream(reader );
+        props.loadFromXML(stream);
+        assertEquals("1", props.get("foo"));
     }
 
     private void setupLocalhostSendGoogleRead2() {
