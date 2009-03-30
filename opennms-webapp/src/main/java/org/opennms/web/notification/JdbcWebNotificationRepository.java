@@ -1,0 +1,210 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ */
+package org.opennms.web.notification;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
+import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
+import org.opennms.web.notification.NoticeFactory.SortStyle;
+import org.opennms.web.notification.filter.Filter;
+import org.opennms.web.notification.filter.NotificationCriteria;
+import org.opennms.web.notification.filter.NotificationIdFilter;
+import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
+import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.RowMapperResultSetExtractor;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
+public class JdbcWebNotificationRepository implements WebNotificationRepository {
+    
+    @Autowired
+    SimpleJdbcTemplate m_simpleJdbcTemplate;
+    
+    private String getSql(final String selectClause, final NotificationCriteria criteria){
+        final StringBuilder buf = new StringBuilder(selectClause);
+        
+        criteria.visit(new NotificationCriteriaVisitor<RuntimeException>() {
+            
+            boolean first = true;
+            
+            public void and(StringBuilder buf){
+                if(first){
+                    buf.append(" WHERE ");
+                    first = false;
+                } else {
+                    buf.append(" AND ");
+                }
+            }
+
+            public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
+                and(buf);
+                buf.append(NoticeFactory.getAcknowledgeTypeClause(ackType));
+            }
+
+            public void visitFilter(Filter filter) throws RuntimeException {
+                and(buf);
+                buf.append(filter.getParamSql());
+            }
+
+            public void visitLimit(int limit, int offset) throws RuntimeException {
+                buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
+                
+            }
+
+            public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
+                buf.append(" ");
+                buf.append(NoticeFactory.getOrderByClause(sortStyle));
+            }
+        });
+        
+        return buf.toString();
+    }
+    
+    private PreparedStatementSetter paramSetter(final NotificationCriteria criteria, final Object...args){
+        return new PreparedStatementSetter(){
+            int paramIndex = 1;
+            public void setValues(final PreparedStatement ps) throws SQLException {
+                for(Object arg : args){
+                    ps.setObject(paramIndex, arg);
+                    paramIndex++;
+                }
+                criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
+                    @Override
+                    public void visitFilter(Filter filter) throws SQLException{
+                        System.out.println("filter sql: " + filter.getSql());
+                        paramIndex += filter.bindParams(ps, paramIndex);
+                    }
+                });
+            }
+            
+        };
+    }
+    
+    private static class NotificationMapper implements ParameterizedRowMapper<Notification>{
+
+        public Notification mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Notification notice = new Notification();
+            
+            notice.m_notifyID = new Integer(rs.getInt("notifyid"));
+            notice.m_timeSent = getTimestamp("pagetime", rs);
+            notice.m_timeReply = getTimestamp("respondtime", rs);
+            notice.m_txtMsg = rs.getString("textmsg");
+            notice.m_numMsg = rs.getString("numericmsg");
+            notice.m_responder = rs.getString("answeredby");
+            notice.m_nodeID = new Integer(rs.getInt("nodeid"));
+            notice.m_interfaceID = rs.getString("interfaceid");
+            notice.m_eventId = new Integer(rs.getInt("eventid"));
+            
+            notice.m_serviceName = rs.getString("servicename");
+            
+            /*Integer element = new Integer(rs.getInt("serviceid"));
+            if (element != null) {
+                notice.m_serviceId = ((Integer) element).intValue();
+                String serviceName = NetworkElementFactory.getServiceNameFromId(notice.m_serviceId);
+                notice.m_serviceName = serviceName;
+            }*/
+
+            return notice;
+        }
+    
+        private long getTimestamp(String field, ResultSet rs) throws SQLException{
+            if(rs.getTimestamp(field) != null){
+                return rs.getTimestamp(field).getTime();
+            }else{
+                return 0;
+            }
+        }
+        
+    }
+    
+    public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
+        String sql = getSql("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?", criteria);
+        jdbc().update(sql, paramSetter(criteria, new Timestamp(timestamp.getTime()), user));
+    }
+
+    public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
+        String sql = getSql("SELECT * FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        return getNotifications(sql, paramSetter(criteria));
+    }
+
+    private Notification[] getNotifications(String sql, PreparedStatementSetter paramSetter) {
+        List<Notification> notifications = queryForList(sql, paramSetter, new NotificationMapper());
+        return notifications.toArray(new Notification[0]);
+    }
+
+    public Notification getNotification(int noticeId) {
+        Notification[] notifications = getMatchingNotifications(new NotificationCriteria(new NotificationIdFilter(noticeId)));
+        if (notifications.length < 1) {
+            return null;
+        } else {
+            return notifications[0];
+        }
+    }
+
+    public int countMatchingNotifications(NotificationCriteria criteria) {
+        String sql = getSql("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        return queryForInt(sql, paramSetter(criteria));
+    }
+    
+    private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
+        Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
+        return (number != null ? number.intValue() : 0);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Object queryForObject(String sql, PreparedStatementSetter setter, RowMapper rowMapper) throws DataAccessException {
+        return DataAccessUtils.requiredSingleResult((List) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rowMapper, 1)));
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
+        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
+    }
+    
+    private JdbcOperations jdbc(){
+        return m_simpleJdbcTemplate.getJdbcOperations();
+    }
+
+}
