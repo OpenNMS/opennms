@@ -62,12 +62,6 @@ Ext.extend(OpenNMS.ux.LocalPageableProxy, Ext.data.DataProxy, {
 			}
 		}
 		
-    	/*for each(var dataObj in this.data.records){
-    		
-    		if(!(dataObj instanceof Function)){
-    			records.push(new DataRecord(dataObj));
-    		}
-    	}*/
     	return records;
     }
     

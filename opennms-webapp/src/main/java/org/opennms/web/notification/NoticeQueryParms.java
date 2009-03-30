@@ -38,6 +38,8 @@ package org.opennms.web.notification;
 
 import java.util.List;
 
+import org.opennms.web.notification.filter.Filter;
+
 /**
  * Convenience data structure for holding the arguments to an notice query.
  * 
@@ -49,7 +51,7 @@ public class NoticeQueryParms extends Object {
 
     public NoticeFactory.AcknowledgeType ackType;
 
-    public List<NoticeFactory.Filter> filters;
+    public List<Filter> filters;
 
     public int limit;
 
@@ -59,7 +61,7 @@ public class NoticeQueryParms extends Object {
      * Convert the internal (and useful) ArrayList filters object into an array
      * of EventFactory.Filter instances.
      */
-    public NoticeFactory.Filter[] getFilters() {
-        return this.filters.toArray(new NoticeFactory.Filter[this.filters.size()]);
+    public Filter[] getFilters() {
+        return this.filters.toArray(new Filter[this.filters.size()]);
     }
 }
