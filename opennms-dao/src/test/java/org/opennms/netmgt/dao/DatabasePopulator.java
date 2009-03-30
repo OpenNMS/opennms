@@ -55,6 +55,7 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -243,6 +244,12 @@ public class DatabasePopulator {
         event.setEventDisplay("Y");
         getEventDao().save(event);
         getEventDao().flush();
+        
+        OnmsNotification notif = new OnmsNotification();
+        notif.setEvent(event);
+        notif.setTextMsg("This is a test notification");
+        getNotificationDao().save(notif);
+        getNotificationDao().flush();
        
         OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
         OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
