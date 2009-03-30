@@ -5,9 +5,9 @@ public class ServiceRegistrationFactory {
 	private static final String CLASS_PROPERTY = "org.opennms.serviceregistration.strategy";
     private static final String[] classes = {
             "org.opennms.serviceregistration.strategies.AppleStrategy",
+            // "org.opennms.serviceregistration.strategies.JMDNSStrategy",
             "org.opennms.serviceregistration.strategies.NullStrategy"
     };
-    /* JMDNSStrategy is disabled for now, you can ask for it if you really want it */
 	
 	private ServiceRegistrationFactory() {
 	}
