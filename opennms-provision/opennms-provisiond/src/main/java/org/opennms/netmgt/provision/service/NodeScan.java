@@ -46,6 +46,7 @@ import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 
 public class NodeScan implements Runnable {
+    private Integer m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
     private ProvisionService m_provisionService;
@@ -53,12 +54,12 @@ public class NodeScan implements Runnable {
     private List<Object> m_providers;
     
     //NOTE TO SELF: This is referenced from the AgentScan inner class
-    private Integer m_nodeId;
     private boolean m_aborted = false;
     
     private OnmsNode m_node;
 
-    public NodeScan(String foreignSource, String foreignId, ProvisionService provisionService, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+        m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
         m_provisionService = provisionService;
@@ -74,14 +75,14 @@ public class NodeScan implements Runnable {
         return m_foreignId;
     }
     
-    public OnmsNode getNode() {
-        return m_node;
-    }
-
     public Integer getNodeId() {
         return m_nodeId;
     }
     
+    public OnmsNode getNode() {
+        return m_node;
+    }
+
     public boolean isAborted() {
         return m_aborted;
     }
@@ -141,12 +142,12 @@ public class NodeScan implements Runnable {
 
 
     private BaseAgentScan createAgentScan(InetAddress agentAddress, String agentType) {
-        return new AgentScan(m_node, agentAddress, agentType);
+        return new AgentScan(m_nodeId, m_node, agentAddress, agentType);
     }
     
     
     private BaseAgentScan createNoAgentScan() {
-        return new NoAgentScan(m_node);
+        return new NoAgentScan(m_nodeId, m_node);
     }
     /**
      * AgentScan
@@ -157,8 +158,9 @@ public class NodeScan implements Runnable {
 
         private InetAddress m_agentAddress;
         private String m_agentType;
-        public AgentScan(OnmsNode node, InetAddress agentAddress, String agentType) {
-            super(node);
+        
+        public AgentScan(Integer nodeId, OnmsNode node, InetAddress agentAddress, String agentType) {
+            super(nodeId, node);
             m_agentAddress = agentAddress;
             m_agentType = agentType;
         }
@@ -175,9 +177,9 @@ public class NodeScan implements Runnable {
             if (isAborted()) {
                 return;
             }
-            m_nodeId = m_provisionService.updateNodeAttributes(getNode()).getId();
+            m_provisionService.updateNodeAttributes(getNode());
         }
-
+        
         public void setNode(OnmsNode node) {
             m_node = node;
         }
@@ -186,17 +188,22 @@ public class NodeScan implements Runnable {
     }
     
     public class NoAgentScan extends BaseAgentScan {
-        private NoAgentScan(OnmsNode node) {
-            super(node);
+        
+
+        private NoAgentScan(Integer nodeId, OnmsNode node) {
+            super(nodeId, node);
         }
+        
     }
     
     public class BaseAgentScan {
 
         private Date m_scanStamp;
         private OnmsNode m_node;
+        private Integer m_nodeId;
         
-        private BaseAgentScan(OnmsNode node) {
+        private BaseAgentScan(Integer nodeId, OnmsNode node) {
+            m_nodeId = nodeId;
             m_node = node;
         }
 
@@ -210,6 +217,10 @@ public class NodeScan implements Runnable {
 
         public OnmsNode getNode() {
             return m_node;
+        }
+        
+        public Integer getNodeId() {
+            return m_nodeId;
         }
 
         public boolean isAborted() {
@@ -228,10 +239,6 @@ public class NodeScan implements Runnable {
             return m_node.getForeignId();
         }
 
-        public Integer getNodeId() {
-            return m_nodeId;
-        }
-
         public void doUpdateIPInterface(Phase currentPhase, OnmsIpInterface iface) {
             System.out.println("Saving OnmsIpInterface "+iface);
             m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
@@ -239,7 +246,7 @@ public class NodeScan implements Runnable {
 
         public void triggerIPInterfaceScan(Phase currentPhase, InetAddress ipAddress) {
             currentPhase.createNestedLifeCycle("ipInterfaceScan")
-                .setAttribute("ipInterfaceScan", createIpInterfaceScan(m_nodeId, ipAddress))
+                .setAttribute("ipInterfaceScan", createIpInterfaceScan(getNodeId(), ipAddress))
                 .setAttribute("foreignSource", getForeignSource())
                 .setAttribute("nodeId", getNodeId())
                 .setAttribute("ipAddress", ipAddress)
