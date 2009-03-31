@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -9,6 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2009 Mar 24: Created file. - r.trommer@open-factory.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -71,7 +73,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */
-    private static final String m_serviceName = "BGP-Session-Monitor";
+    private static final String m_serviceName = "BGP_Session";
     
     /**
      * Interface attribute key used to store the interface's SnmpAgentConfig
@@ -145,13 +147,13 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+            log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+            log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+            log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
