@@ -32,6 +32,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>mock-snmp-agent</artifactId>
+      <version>[1.7.0,2.0.0)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -52,6 +53,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <version>[1.7.0,2.0.0)</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
