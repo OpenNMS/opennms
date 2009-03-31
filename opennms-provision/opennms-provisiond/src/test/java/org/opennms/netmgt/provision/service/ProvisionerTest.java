@@ -253,6 +253,21 @@ public class ProvisionerTest {
         });
     }
     
+    
+    @Test
+    @Transactional
+    public void testNonSnmpImportAndScan() throws Exception {
+        importFromResource("classpath:/import_localhost.xml");
+        
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        
+        scan.run();
+    }
+    
+    
     @Test
     @Transactional
     public void testFindQuery() throws Exception {
@@ -333,7 +348,7 @@ public class ProvisionerTest {
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getForeignSource(), node.getForeignId());
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
         scan.run();
         
