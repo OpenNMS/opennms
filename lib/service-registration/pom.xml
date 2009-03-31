@@ -7,13 +7,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.lib</groupId>
   <artifactId>org.opennms.lib.service-registration</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.4</version>
   <description>service registration and unregistration</description>
   <name>Service Registration for Applications</name>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/lib/service-registration</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/lib/service-registration</developerConnection>
-    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/service-registration/trunk</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/service-registration-0.4</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/service-registration-0.4</developerConnection>
+    <url>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags/service-registration-0.4</url>
   </scm>
   <developers>
     <developer>
