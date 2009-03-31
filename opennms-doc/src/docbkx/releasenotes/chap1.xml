@@ -4,6 +4,24 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.1">
+		<title>Release 1.7.1</title>
+		
+		<para>
+			Release 1.7.1 is the first in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.8.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			It contains a fully functional Provisiond, the only major missing feature is handling
+			newSuspect events like Capsd does.
+		</para>
+		
+		<para>
+			The codename for 1.7.1 is <emphasis>FAIL</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.0">
 		<title>Release 1.7.0</title>
 		
