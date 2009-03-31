@@ -105,6 +105,145 @@
 
 	</section>
 
+	<section id="opennms-1.6.3">
+		<title>Changes in OpenNMS 1.6.3</title>
+    
+		<section id="opennms-1.6.3-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+			
+				<listitem>
+					<para>A thresholding evaluator has been added that uses the absolute value
+					to compute deltas, and has the ability to rearm after a certain number of
+					collections below the hysteresis point.  (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2768">#2768</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graphing has been added or updated for BGP MIBs
+					from Cisco and IETF, other Cisco equipment, Jupiter M-Router, Liebert UPSes,
+					MPLS, MSDP, Net-SNMP, and Netenforcer Allot
+					(Bugs 
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2990">#2990</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2998">#2998</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3012">#3012</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3013">#3013</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3025">#3025</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3064">#3064</ulink>,
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3068">#3068</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Enhanced string extraction support in resourceLabels has been added
+					(Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2997">#2997</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The KSC report list is now viewable by read-only users (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3005">#3005</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>XML configuration file XSDs are now included in the distribution (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3006">#3006</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Event translator matches can be performed against the name rather than the
+					value (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3049">#3049</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Event parameter names are can now be expanded using the %parm% syntax
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3061">#3061</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The SNMP monitor can now include operator, operand, and observed value
+					in results string (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3065">#3065</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Syslogd now has an optional "discard-uei" option to discard matching
+					UEIs (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3066">#3066</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The model importer now supports scanning the node for non-IP interfaces
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3075">#3075</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para><ulink url="http://www.opennms.org/index.php/BgpSessionMonitor">A new monitor</ulink>
+					has been added which supports checking that a BGP peering partner is functional
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3080">#3080</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>JFreeChart 3D bar charts have been enabled
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3086">#3086</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+    
+		<section id="opennms-1.6.3-bugfixes">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Thresholding on JMX collection has been fixed (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2512">#2512</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Using multiple &lt;package&gt; statements in
+					<filename>linkd-configuration.xml</filename> now works (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2818">#2818</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in filter-based expressions was resolved (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2966">#2966</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug interacting with newer versions of NSClient++ has been fixed (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=2983">#2983</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Altiga authentication success traps are now ignored (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3004">#3004</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The JFreeChart charts layout was fixed (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3040">#3040</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The mail transport monitor now works in read-only mode (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=3071">#3071</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+    
+		<para>The full list of changes is available in <ulink
+		url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.6.3">bugzilla</ulink>.</para>
+
+	</section>
+
 	<section id="opennms-1.6.2">
 		<title>Changes in OpenNMS 1.6.2</title>
 		
