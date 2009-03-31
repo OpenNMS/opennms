@@ -1,8 +1,10 @@
 package org.opennms.serviceregistration.strategies;
 
 import java.util.Hashtable;
+
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
+
 import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 
 public class JMDNSStrategy implements ServiceRegistrationStrategy {
@@ -23,8 +25,8 @@ public class JMDNSStrategy implements ServiceRegistrationStrategy {
 		}
 		
 		serviceType   = "_" + serviceType.toLowerCase() + "._tcp.local.";
-		jmdns = new JmDNS();
-		si = new ServiceInfo(serviceType, serviceName, 0, 0, port, properties);
+		jmdns = JmDNS.create();
+		si = ServiceInfo.create(serviceType, serviceName, port, 0, 0, properties);
 	}
 
 	public void register() throws Exception {
