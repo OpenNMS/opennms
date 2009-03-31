@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.lib</groupId>
   <artifactId>org.opennms.lib.snmp</artifactId>
-  <version>1.7.1</version>
+  <version>1.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS SNMP</name>
   <modules>
