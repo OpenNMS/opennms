@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.lib</groupId>
   <artifactId>org.opennms.lib.service-registration</artifactId>
-  <version>0.5</version>
+  <version>0.6-SNAPSHOT</version>
   <description>service registration and unregistration</description>
   <name>Service Registration for Applications</name>
   <scm>
