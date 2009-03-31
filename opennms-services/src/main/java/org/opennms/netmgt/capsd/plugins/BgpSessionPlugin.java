@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified 
  * and included code are below.
@@ -9,6 +9,8 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ *
+ * 2009 Mar 24: Created file. - r.trommer@open-factory.org
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -31,7 +33,6 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  *
- * Tab Size = 8
  */
 
 package org.opennms.netmgt.capsd.plugins;
@@ -63,7 +64,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
     /**
      * Name of monitored service.
      */
-    private static final String PROTOCOL_NAME = "BGP-Session-Monitor";
+    private static final String PROTOCOL_NAME = "BGP_Session";
 
     /**
      * Default OID for the table that represents the BGP-peer states.
