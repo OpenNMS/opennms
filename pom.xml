@@ -806,7 +806,7 @@
       <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.service-registration</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.5</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
