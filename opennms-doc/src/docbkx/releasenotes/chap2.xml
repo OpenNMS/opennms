@@ -18,10 +18,6 @@
 
 			<glosslist>
 				<glossentry>
-					<glossterm>Spring 2.5</glossterm>
-					<glossdef><para>OpenNMS was updated to use Spring 2.5.</para></glossdef>
-				</glossentry>
-				<glossentry>
 					<glossterm>DAO Updates</glossterm>
 					<glossdef>
 						<para>Many more parts of the OpenNMS data access layer have been updated to
@@ -34,6 +30,10 @@
 						<para>Some daemon architectural changes have happened to support an
 						eventual integration with OSGi (post-1.8).</para>
 					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Spring 2.5</glossterm>
+					<glossdef><para>OpenNMS was updated to use Spring 2.5.</para></glossdef>
 				</glossentry>
 				<glossentry>
 					<glossterm>Test Framework Updates</glossterm>
@@ -49,15 +49,26 @@
 			<title>New Features</title>
 			
 			<glosslist>
+				<!-- 
 				<glossentry>
-					<glossterm>RESTful Interface</glossterm>
+					<glossterm>Acknowledgement Daemon</glossterm>
 					<glossdef>
-						<para>A number of interfaces to OpenNMS data have been made available
-						through a RESTful interface, using the
-						<ulink url="https://jersey.dev.java.net/">Jersey</ulink> API.</para>
-						<para>This includes simple web API access to alarms, events, nodes,
-						notifications, and outages, and it is expected that this will be
-						expanded in future releases.</para>
+						<para>A daemon for interacting with acknowledgements programmatically has
+						been added.  This will open up APIs for acknowledging alarms through cell
+						phone, IM, e-mail, and so on.</para>
+					</glossdef>
+				</glossentry>
+				-->
+				<glossentry>
+					<glossterm>Adobe AIR Client</glossterm>
+					<glossdef>
+						<para>An Adobe AIR based client was added.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Asterisk Notification Support</glossterm>
+					<glossdef>
+						<para>It is now possible to send notifications through Asterisk.</para>
 					</glossdef>
 				</glossentry>
 				<glossentry>
@@ -74,9 +85,10 @@
 					</glossdef>
 				</glossentry>
 				<glossentry>
-					<glossterm>RADIUS Authentication</glossterm>
+					<glossterm>Map Updates</glossterm>
 					<glossdef>
-						<para>A RADIUS authentication provider has been added.</para>
+						<para>The topological map support has been updated to work properly in all
+						major browsers with SVG support.</para>
 					</glossdef>
 				</glossentry>
 				<glossentry>
@@ -87,9 +99,35 @@
 					</glossdef>
 				</glossentry>
 				<glossentry>
-					<glossterm>Adobe AIR Client</glossterm>
+					<glossterm>RADIUS Authentication</glossterm>
 					<glossdef>
-						<para>An Adobe AIR based client was added.</para>
+						<para>A RADIUS authentication provider has been added.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>RANCID Integration</glossterm>
+					<glossdef>
+						<para>An integration with RANCID has been added.  If configured, extra data
+						about node configuration, etc. will be available in the node UI and maps.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>RESTful Interface</glossterm>
+					<glossdef>
+						<para>A number of interfaces to OpenNMS data have been made available
+						through a RESTful interface, using the
+						<ulink url="https://jersey.dev.java.net/">Jersey</ulink> API.</para>
+						<para>This includes simple web API access to alarms, events, nodes,
+						notifications, and outages, and it is expected that this will be
+						expanded in future releases.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Web UI Updates</glossterm>
+					<glossdef>
+						<para>A number of pages, most notably the node details page, have been
+						updated to provide more detailed information thanks to the new REST service.
+						These controls also support paging, sorting, etc.</para>
 					</glossdef>
 				</glossentry>
 				<glossentry>
