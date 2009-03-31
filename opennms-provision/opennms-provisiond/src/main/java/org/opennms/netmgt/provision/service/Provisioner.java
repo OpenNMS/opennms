@@ -128,8 +128,8 @@ public class Provisioner implements SpringServiceDaemon {
     public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
     }
     
-    public NodeScan createNodeScan(String foreignSource, String foreignId) {
-        return new NodeScan(foreignSource, foreignId, m_provisionService, m_lifeCycleRepository, m_providers);
+    public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
+        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_lifeCycleRepository, m_providers);
     }
 
     //Helper functions for the schedule
@@ -150,7 +150,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
-        NodeScan nodeScan = createNodeScan(schedule.getForeignSource(), schedule.getForeignId());
+        NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId());
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
 
