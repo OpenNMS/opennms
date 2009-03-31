@@ -159,4 +159,7 @@ public class Interface {
         return m_isSnmpPrimary;
     }
 
+    public String getName() {
+        return m_ipHostName == null? m_ipAddr : m_ipHostName;
+    }
 }
