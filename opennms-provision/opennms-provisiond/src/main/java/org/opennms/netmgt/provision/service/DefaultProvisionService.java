@@ -511,6 +511,10 @@ public class DefaultProvisionService implements ProvisionService {
     
     private NodeScanSchedule createScheduleForNode(OnmsNode node, boolean force) {
         Assert.notNull(node, "Node may not be null");
+        if (node.getForeignSource() == null) {
+            log().info("Not scheduling node "+node+" to be scanned since it has a null foreignSource");
+            return null;
+        }
 
         ForeignSource fs = null;
         try {
