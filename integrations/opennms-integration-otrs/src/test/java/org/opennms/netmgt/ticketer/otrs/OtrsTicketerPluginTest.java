@@ -9,7 +9,8 @@ import org.opennms.integration.otrs.ticketservice.TicketCore;
 import org.opennms.integration.otrs.ticketservice.TicketIDAndNumber;
 import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
-import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.api.integration.ticketing.Ticket;
 import java.io.File;
 import java.util.Date;
@@ -28,15 +29,20 @@ public class OtrsTicketerPluginTest extends TestCase {
 	private String defaultArticleBody = new String("default body text");
 	private String defaultArticleSubject = new String("default article subject");
 	
+	// login credentials
+	
+	Credentials m_creds  = new Credentials("opennms","opennms");
+	
 	DefaultOtrsConfigDao m_configDao;
 	
 	OtrsTicketerPlugin m_ticketer;
 	
 	Ticket m_ticket;
 	
+	private MockEventIpcManager m_eventIpcManager;
 
     /**
-     * Don't run this test unless the runOtrsTests property
+     * Don't run this test unless the runPingTests property
      * is set to "true".
      */
     @Override
@@ -59,7 +65,7 @@ public class OtrsTicketerPluginTest extends TestCase {
     }
 
     private String getRunTestProperty() {
-        return "runOtrsTests";
+        return "runPingTests";
     }
 
 	 @Override
@@ -69,9 +75,12 @@ public class OtrsTicketerPluginTest extends TestCase {
 
 	        System.out.println("src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
 	        
+	        m_eventIpcManager = new MockEventIpcManager();
+	        EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
+
 	        m_ticketer = new OtrsTicketerPlugin();
 	        
-	        m_configDao = new DefaultOtrsConfigDao();
+	        m_creds = new Credentials("opennms","opennms");
 	        
 	        m_ticket = new Ticket();
 	        m_ticket.setState(Ticket.State.OPEN);
@@ -85,15 +94,13 @@ public class OtrsTicketerPluginTest extends TestCase {
 		
 		TicketIDAndNumber idAndNumber = null;
 		
-		Ticket newTicket = null;
-
-		
 		String summary = new String("Ticket created by testGet()");
 		String details = new String("This ticketwas created by OtrsTicketerPluginTest");
 		
 		try {
 			idAndNumber = createTicketAndArticle(summary,details);
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -106,28 +113,17 @@ public class OtrsTicketerPluginTest extends TestCase {
 		ticket.setDetails(details);
 		ticket.setUser(defaultUser);
 
-        
-        try {
-            newTicket = m_ticketer.get(ticket.getId());
-        } catch (PluginException e) {
-            e.printStackTrace();
-        }
+        Ticket newTicket = m_ticketer.get(ticket.getId());
         
         assertTicketEquals(ticket, newTicket);
 		
 	}
 
 	public void testSave() {
-	    
-	    Ticket retrievedTicket = null;
 		
-		try {
-            m_ticketer.saveOrUpdate(m_ticket);
-            retrievedTicket = m_ticketer.get(m_ticket.getId());
-            
-        } catch (PluginException e) {
-            e.printStackTrace();
-        }
+		m_ticketer.saveOrUpdate(m_ticket);
+		
+		Ticket retrievedTicket = m_ticketer.get(m_ticket.getId());
 		
 		assertTicketEquals(m_ticket, retrievedTicket);
 		
@@ -177,38 +173,31 @@ public class OtrsTicketerPluginTest extends TestCase {
 	
 	public void testStateUpdate() throws InterruptedException {
 		
-		try {
-		    
-            m_ticketer.saveOrUpdate(m_ticket);
-            
-            // my new ticket should be open
-
-            assertEquals(m_ticket.getState(),Ticket.State.OPEN);
-            
-            // set it cancelled
-            
-            m_ticket.setState(Ticket.State.CANCELLED);
-            
-            // and save it
-            
-            m_ticketer.saveOrUpdate(m_ticket);
-            
-            // sleep for a bit
-            
-            Thread.sleep(100);
-            
-            // get a new copy
-            
-            Ticket retrievedTicket = m_ticketer.get(m_ticket.getId());
-            
-            // my new copy should be closed
-            
-            assertEquals(retrievedTicket.getState(),Ticket.State.CANCELLED);
-        } catch (PluginException e) {
-            e.printStackTrace();
-        }
+		m_ticketer.saveOrUpdate(m_ticket);
 		
+		// my new ticket should be open
 
+		assertEquals(m_ticket.getState(),Ticket.State.OPEN);
+		
+		// set it cancelled
+		
+		m_ticket.setState(Ticket.State.CANCELLED);
+		
+		// and save it
+		
+		m_ticketer.saveOrUpdate(m_ticket);
+		
+		// sleep for a bit
+		
+		Thread.sleep(100);
+		
+		// get a new copy
+		
+		Ticket retrievedTicket = m_ticketer.get(m_ticket.getId());
+		
+		// my new copy should be closed
+		
+        assertEquals(retrievedTicket.getState(),Ticket.State.CANCELLED);
 		
 	}
 	
@@ -233,8 +222,6 @@ public class OtrsTicketerPluginTest extends TestCase {
 			m_configDao = new DefaultOtrsConfigDao();
 			
 			TicketCore otrsTicket = new TicketCore();
-			
-			Credentials creds = new Credentials(m_configDao.getUserName(),m_configDao.getPassword());
 
 			otrsTicket.setLock(m_configDao.getLock());
 			otrsTicket.setQueue(m_configDao.getQueue());
@@ -251,17 +238,21 @@ public class OtrsTicketerPluginTest extends TestCase {
 
 			service.setTicketServicePortEndpointAddress(m_configDao.getEndpoint());
 			
+			m_creds  = new Credentials(m_configDao.getUserName(),m_configDao.getPassword());
+
 			TicketServicePort_PortType port = null;
 			
 			try {
 				port = service.getTicketServicePort();
 			} catch (ServiceException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
 			try {
-				idAndNumber = port.ticketCreate(otrsTicket, creds);
+				idAndNumber = port.ticketCreate(otrsTicket, m_creds);
 			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -283,9 +274,10 @@ public class OtrsTicketerPluginTest extends TestCase {
 
 			
 			try {
-				articleId = port.articleCreate(otrsArticle, creds);
+				articleId = port.articleCreate(otrsArticle, m_creds);
 				assertNotNull(articleId);
 			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

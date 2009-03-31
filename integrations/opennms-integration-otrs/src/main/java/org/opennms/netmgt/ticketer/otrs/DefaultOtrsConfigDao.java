@@ -54,7 +54,7 @@ public class DefaultOtrsConfigDao {
 
 	
 	String getPassword() {
-		return getProperties().getString("otrs.password");
+		return getProperties().getString("otrs.username");
 	}
 	
 	String getEndpoint() {
