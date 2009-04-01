@@ -1,7 +1,3 @@
-<!-- Start of auto generated data from MIB: AIRESPACE-SWITCHING-MIB -->
-<!-- End of auto generated data from MIB: AIRESPACE-SWITCHING-MIB -->
-<!-- Start of auto generated data from MIB: AIRESPACE-REF-MIB -->
-<!-- End of auto generated data from MIB: AIRESPACE-REF-MIB -->
 <!-- Start of auto generated data from MIB: AIRESPACE-WIRELESS-MIB -->
 <events>
 <event>
@@ -24,20 +20,21 @@
 	<descr>
 &lt;p&gt;The disassociate notification shall be sent when the Station
 sends a Disassociation frame. The value of the notification
-shall include the MAC address of the MAC to which the Disassociation
-frame was sent and the reason for the disassociation&lt;/p&gt;&lt;table&gt;
+shall include the MAC address of the MAC to which the 
+Disassociation frame was sent and the reason for the 
+disassociation&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unspecified(1)
 		previousAuthNotValid(2)
 		deauthenticationLeaving(3)
@@ -48,20 +45,21 @@ frame was sent and the reason for the disassociation&lt;/p&gt;&lt;table&gt;
 		disassociationStaHasLeft(8)
 		staReqAssociationWithoutAuth(9)
 		missingReasonCode(99)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationDisassociate trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationReasonCode=%parm[#5]% 
-			bsnStationMacAddress=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationReasonCode=%parm[#3]% 
+			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -89,15 +87,15 @@ deauthentication.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unspecified(1)
 		previousAuthNotValid(2)
 		deauthenticationLeaving(3)
@@ -108,20 +106,21 @@ deauthentication.&lt;/p&gt;&lt;table&gt;
 		disassociationStaHasLeft(8)
 		staReqAssociationWithoutAuth(9)
 		missingReasonCode(99)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationDeauthenticate trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationReasonCode=%parm[#5]% 
-			bsnStationMacAddress=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationReasonCode=%parm[#3]% 
+			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -141,23 +140,23 @@ deauthentication.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11StationAuthenticateFail</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11StationAuthenticateFail</event-label>
 	<descr>
-&lt;p&gt;The authenticate failure notification shall be sent when the Station
-sends an Authentication frame with a status code other than
-'successful'. The value of the notification
-shall include the MAC address of the MAC to which the Authentication
+&lt;p&gt;The authenticate failure notification shall be sent when the 
+Station sends an Authentication frame with a status code other
+than 'successful'. The value of the notification shall include
+the MAC address of the MAC to which the Authentication
 frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unspecified(1)
 		previousAuthNotValid(2)
 		deauthenticationLeaving(3)
@@ -168,20 +167,21 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 		disassociationStaHasLeft(8)
 		staReqAssociationWithoutAuth(9)
 		missingReasonCode(99)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationAuthenticateFail trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationReasonCode=%parm[#5]% 
-			bsnStationMacAddress=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationReasonCode=%parm[#3]% 
+			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -201,23 +201,24 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11StationAssociateFail</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11StationAssociateFail</event-label>
 	<descr>
-&lt;p&gt;The associate failure notification shall be sent when the Station
-sends an Association frame with a status code other than
-'successful'. The value of the notification
-shall include the MAC address of the MAC to which the Authentication
-frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;The associate failure notification shall be sent when the 
+Station sends an Association frame with a status code other 
+than 'successful'. The value of the notification
+shall include the MAC address of the MAC to which the 
+Authentication frame was sent and the reason for the 
+authentication failure.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unspecified(1)
 		previousAuthNotValid(2)
 		deauthenticationLeaving(3)
@@ -228,20 +229,21 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 		disassociationStaHasLeft(8)
 		staReqAssociationWithoutAuth(9)
 		missingReasonCode(99)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationAssociateFail trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationReasonCode=%parm[#5]% 
-			bsnStationMacAddress=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationReasonCode=%parm[#3]% 
+			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -261,17 +263,19 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 	<uei>uei.opennms.org/vendor/cisco/bsnAPUp</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPUp</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP operation status goes up this trap will be sent&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP operation status goes up this trap will be 
+sent&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPUp trap received 
-			bsnAPDot3MacAddress=%parm[#3]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -291,17 +295,19 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 	<uei>uei.opennms.org/vendor/cisco/bsnAPDown</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPDown</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP operation status goes down this trap will be sent&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP operation status goes down this trap will be
+sent&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPDown trap received 
-			bsnAPDot3MacAddress=%parm[#3]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -321,24 +327,26 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 	<uei>uei.opennms.org/vendor/cisco/bsnAPAssociated</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPAssociated</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP Associates to a Airespace Switch, AP associated notification
-will be sent with dot3 MAC address of Airespace AP.This will help
-management system to discover Airespace AP and add to system.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP Associates to a Airespace Switch, AP 
+associated notification will be sent with dot3 MAC address of 
+Airespace AP.This will help management system to discover 
+Airespace AP and add to system.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPPortNumberTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPAssociated trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPPortNumberTrapVariable=%parm[#4]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnAPPortNumberTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDisassociated:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -358,19 +366,21 @@ management system to discover Airespace AP and add to system.&lt;/p&gt;&lt;table
 	<uei>uei.opennms.org/vendor/cisco/bsnAPDisassociated</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPDisassociated</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP disassociates from Airespace Switch, AP disassociated notification
-will be sent with dot3 MAC address of Airespace AP
-management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP disassociates from Airespace Switch, AP 
+disassociated notification will be sent with dot3 MAC address
+of Airespace AP management system to remove Airespace AP from
+this Airespace Switch&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPDisassociated trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -390,23 +400,24 @@ management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnAPIfUp</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPIfUp</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP's interface's operation status goes up this trap will be sent&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP's interface's operation status goes up this
+trap will be sent&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfUpDownCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unknown(0)
 		radioFailure(1)
 		radioLowPower(2)
@@ -415,16 +426,17 @@ management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt
 		configAP(5)
 		configRadio(6)
 		configNetwork(7)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPIfUp trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPPortNumber=%parm[#5]% 
-			bsnAPIfUpDownCause=%parm[#6]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPPortNumber=%parm[#3]% 
+			bsnAPIfUpDownCause=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPIfDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -444,33 +456,34 @@ management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnAPIfDown</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPIfDown</event-label>
 	<descr>
-&lt;p&gt;When Airespace AP's interface's operation status goes down this trap will be sent.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Airespace AP's interface's operation status goes down 
+this trap will be sent.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		enable(1)
 		disable(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		enable(1)
 		disable(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfUpDownCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unknown(0)
 		radioFailure(1)
 		radioLowPower(2)
@@ -479,17 +492,18 @@ management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt
 		configAP(5)
 		configRadio(6)
 		configNetwork(7)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPIfDown trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPAdminStatus=%parm[#5]% 
-			bsnAPIfAdminStatus=%parm[#6]% 
-			bsnAPIfUpDownCause=%parm[#7]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPAdminStatus=%parm[#3]% 
+			bsnAPIfAdminStatus=%parm[#4]% 
+			bsnAPIfUpDownCause=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -509,25 +523,26 @@ management system to remove Airespace AP from this Airespace Switch&lt;/p&gt;&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPLoadProfileFailed</event-label>
 	<descr>
-&lt;p&gt;When LOAD Profile state changes from PASS to FAIL, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When LOAD Profile state changes from PASS to FAIL, 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPLoadProfileFailed trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -547,25 +562,26 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPNoiseProfileFailed</event-label>
 	<descr>
-&lt;p&gt;When Noise Profile state changes from PASS to FAIL, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Noise Profile state changes from PASS to FAIL, 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPNoiseProfileFailed trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -586,24 +602,25 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPInterferenceProfileFailed</event-label>
 	<descr>
 &lt;p&gt;When Interference Profile state changes from PASS to FAIL,
-notification will be sent with Dot3 MAC address of Airespace AP
-and slot ID of Airespace AP IF. This trap sending can be enable
-/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPInterferenceProfileFailed trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -619,222 +636,65 @@ and slot ID of Airespace AP IF. This trap sending can be enable
 			<mename>specific</mename>
 			<mevalue>14</mevalue>
 		</maskelement>
-                 <varbind>
-                         <vbnumber>4</vbnumber>
-                         <vbvalue>~.*wst$</vbvalue>
-                 </varbind>
 	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed/west</uei>
-	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCoverageProfileFailed-west</event-label>
-	<descr>
-&lt;p&gt;When Coverage Profile state changes from PASS to FAIL, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPNameTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPSlotIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageThresholdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageFailedClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageTotalClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientRssi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientSnr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			bsnAPCoverageProfileFailed trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPNameTrapVariable=%parm[#4]% 
-			bsnAPSlotIdTrapVariable=%parm[#5]% 
-			bsnAPCoverageThresholdTrapVariable=%parm[#6]% 
-			bsnAPCoverageFailedClients=%parm[#7]% 
-			bsnAPCoverageTotalClients=%parm[#8]% 
-			bsnClientMacAddr=%parm[#9]% 
-			bsnClientRssi=%parm[#10]% 
-			bsnClientSnr=%parm[#11]%&lt;/p&gt;
-		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-                 <varbind>
-                         <vbnumber>3</vbnumber>
-                         <vbvalue>1</vbvalue>
-                 </varbind>
-	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed/a-network</uei>
+	<uei>uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCoverageProfileFailed</event-label>
 	<descr>
-&lt;p&gt;When Coverage Profile state changes from PASS to FAIL, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Coverage Profile state changes from PASS to FAIL, 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPNameTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPSlotIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPCoverageThresholdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPCoverageFailedClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPCoverageTotalClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClientMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClientRssi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClientSnr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPCoverageProfileFailed trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPNameTrapVariable=%parm[#4]% 
-			bsnAPSlotIdTrapVariable=%parm[#5]% 
-			bsnAPCoverageThresholdTrapVariable=%parm[#6]% 
-			bsnAPCoverageFailedClients=%parm[#7]% 
-			bsnAPCoverageTotalClients=%parm[#8]% 
-			bsnClientMacAddr=%parm[#9]% 
-			bsnClientRssi=%parm[#10]% 
-			bsnClientSnr=%parm[#11]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnAPNameTrapVariable=%parm[#2]% 
+			bsnAPSlotIdTrapVariable=%parm[#3]% 
+			bsnAPCoverageThresholdTrapVariable=%parm[#4]% 
+			bsnAPCoverageFailedClients=%parm[#5]% 
+			bsnAPCoverageTotalClients=%parm[#6]% 
+			bsnClientMacAddr=%parm[#7]% 
+			bsnClientRssi=%parm[#8]% 
+			bsnClientSnr=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-                 <varbind>
-                         <vbnumber>3</vbnumber>
-                         <vbvalue>0</vbvalue>
-                 </varbind>
-	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed/b-network</uei>
-	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCoverageProfileFailed</event-label>
-	<descr>
-&lt;p&gt;When Coverage Profile state changes from PASS to FAIL, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPNameTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPSlotIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageThresholdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageFailedClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnAPCoverageTotalClients&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientRssi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	bsnClientSnr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			bsnAPCoverageProfileFailed trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPNameTrapVariable=%parm[#4]% 
-			bsnAPSlotIdTrapVariable=%parm[#5]% 
-			bsnAPCoverageThresholdTrapVariable=%parm[#6]% 
-			bsnAPCoverageFailedClients=%parm[#7]% 
-			bsnAPCoverageTotalClients=%parm[#8]% 
-			bsnClientMacAddr=%parm[#9]% 
-			bsnClientRssi=%parm[#10]% 
-			bsnClientSnr=%parm[#11]%&lt;/p&gt;
-		</logmsg>
-	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -854,32 +714,33 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPCurrentTxPowerChanged</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCurrentTxPowerChanged</event-label>
 	<descr>
-&lt;p&gt;Whenever dynamic algorithms are running and bsnAPIfPhyPowerAutomaticOn
-is true
-, Airespace AP Interface's CurrentTxPower might get updated by algorithm. When
- this occurs notification will be sent with Dot3 MAC address of Airespace AP
- and slot ID of Airespace AP IF along with the currentTxPower for
- this Airespace AP IF&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Whenever dynamic algorithms are running and 
+bsnAPIfPhyPowerAutomaticOn is true, Airespace AP Interface's 
+CurrentTxPower might get updated by algorithm. When
+this occurs notification will be sent with Dot3 MAC address of
+Airespace AP and slot ID of Airespace AP IF along with the 
+currentTxPower for this Airespace AP IF&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfPhyTxPowerLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPCurrentTxPowerChanged trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfPhyTxPowerLevel=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfPhyTxPowerLevel=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -899,42 +760,43 @@ is true
 	<uei>uei.opennms.org/vendor/cisco/bsnAPCurrentChannelChanged</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCurrentChannelChanged</event-label>
 	<descr>
-&lt;p&gt;Whenever dynamic algorithms are running and bsnAPIfPhyChannelAutomaticOn
-is true
-, Airespace AP Interface's CurrentChannel might get updated by algorithm. When
- this occurs notification will be sent with Dot3 MAC address of Airespace AP
- and slot ID of Airespace AP IF along with the currentChannel for
- this Airespace AP IF&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Whenever dynamic algorithms are running and 
+bsnAPIfPhyChannelAutomaticOn is true, Airespace AP 
+Interface's CurrentChannel might get updated by algorithm. 
+When this occurs notification will be sent with Dot3 MAC 
+address of Airespace AP and slot ID of Airespace AP IF along 
+with the currentChannel for this Airespace AP IF&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPSlotIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPChannelNumberTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnInterferenceEnergyBeforeChannelUpdate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnInterferenceEnergyAfterChannelUpdate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPCurrentChannelChanged trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPSlotIdTrapVariable=%parm[#4]% 
-			bsnAPChannelNumberTrapVariable=%parm[#5]% 
-			bsnInterferenceEnergyBeforeChannelUpdate=%parm[#6]% 
-			bsnInterferenceEnergyAfterChannelUpdate=%parm[#7]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnAPSlotIdTrapVariable=%parm[#2]% 
+			bsnAPChannelNumberTrapVariable=%parm[#3]% 
+			bsnInterferenceEnergyBeforeChannelUpdate=%parm[#4]% 
+			bsnInterferenceEnergyAfterChannelUpdate=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -955,18 +817,19 @@ is true
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRrmDot11aGroupingDone</event-label>
 	<descr>
 &lt;p&gt;When Grouping is done, this notification will be sent from the
-previous Group Leader where grouping algorithm was run. It will
-have MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
+previous Group Leader where grouping algorithm was run. It has
+MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRrmDot11aGroupLeaderMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRrmDot11aGroupingDone trap received 
-			bsnRrmDot11aGroupLeaderMacAddr=%parm[#3]%&lt;/p&gt;
+			bsnRrmDot11aGroupLeaderMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -987,18 +850,19 @@ have MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRrmDot11bGroupingDone</event-label>
 	<descr>
 &lt;p&gt;When Grouping is done, this notification will be sent from the
-previous Group Leader where grouping algorithm was run. It will
-have MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
+previous Group Leader where grouping algorithm was run. It has
+MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRrmDot11bGroupLeaderMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRrmDot11bGroupingDone trap received 
-			bsnRrmDot11bGroupLeaderMacAddr=%parm[#3]%&lt;/p&gt;
+			bsnRrmDot11bGroupLeaderMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1018,13 +882,13 @@ have MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnConfigSaved</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnConfigSaved</event-label>
 	<descr>
-&lt;p&gt; When configuration is save either from CLI or web interface
+&lt;p&gt;When configuration is save either from CLI or web interface
 This trap will be sent to inform NMS to do refresh&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnConfigSaved trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Indeterminate</severity>
 </event>
 <event>
 	<mask>
@@ -1044,18 +908,19 @@ This trap will be sent to inform NMS to do refresh&lt;/p&gt;&lt;table&gt;&lt;/ta
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11EssCreated</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11EssCreated</event-label>
 	<descr>
-&lt;p&gt;Whenever a new Ess (WLAN) is created, this notification will be sent
-along with EssIndex&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Whenever a new Ess (WLAN) is created, this notification will 
+be sent along with EssIndex&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnDot11EssIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11EssCreated trap received 
-			bsnDot11EssIndex=%parm[#3]%&lt;/p&gt;
+			bsnDot11EssIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1075,18 +940,19 @@ along with EssIndex&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11EssDeleted</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11EssDeleted</event-label>
 	<descr>
-&lt;p&gt;Whenever a Ess (WLAN)is deleted, this notification will be sent
-along with EssIndex&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Whenever a Ess (WLAN)is deleted, this notification will be 
+sent along with EssIndex&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnDot11EssIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11EssDeleted trap received 
-			bsnDot11EssIndex=%parm[#3]%&lt;/p&gt;
+			bsnDot11EssIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1113,7 +979,56 @@ MWAR device(Switch).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRADIUSServerNotResponding trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnAuthenticationFailureMgmt</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAuthenticationFailure</event-label>
+	<descr>
+&lt;p&gt;This trap is to inform that client authentication failure has
+occured at MWAR(Switch). This could be cli/web user, wlan user, 
+or Mac Authorized user. ServiceType will indicate which type of 
+user it is and userName will be cli/web/wlan userName or 
+MacAddress of Mac Authorized User&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAuthFailureUserType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		mgmtUser(1)
+		wlanUser(2)
+		macFilter(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAuthFailureUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnAuthenticationFailure trap received 
+			bsnAuthFailureUserType=%parm[#1]% 
+			bsnAuthFailureUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1134,29 +1049,30 @@ MWAR device(Switch).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAuthenticationFailure</event-label>
 	<descr>
 &lt;p&gt;This trap is to inform that client authentication failure has
-occured at MWAR(Switch). This could be cli/web user, wlan user, or Mac
-	Authorized user. ServiceType will indicate which type of user it is
-	and userName will be cli/web/wlan userName or MacAddress of Mac
-	Authorized User&lt;/p&gt;&lt;table&gt;
+occured at MWAR(Switch). This could be cli/web user, wlan user, 
+or Mac Authorized user. ServiceType will indicate which type of 
+user it is and userName will be cli/web/wlan userName or 
+MacAddress of Mac Authorized User&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAuthFailureUserType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		mgmtUser(1)
 		wlanUser(2)
 		macFilter(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAuthFailureUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAuthenticationFailure trap received 
-			bsnAuthFailureUserType=%parm[#3]% 
-			bsnAuthFailureUserName=%parm[#4]%&lt;/p&gt;
+			bsnAuthFailureUserType=%parm[#1]% 
+			bsnAuthFailureUserName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1188,18 +1104,19 @@ packet.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIpsecErrorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecEspAuthFailureTrap trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnIpsecErrorCount=%parm[#4]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnIpsecErrorCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1231,18 +1148,19 @@ packet.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIpsecErrorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecEspReplayFailureTrap trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnIpsecErrorCount=%parm[#4]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnIpsecErrorCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1279,18 +1197,19 @@ packet.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIpsecSPI&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecEspInvalidSpiTrap trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnIpsecSPI=%parm[#4]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnIpsecSPI=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1317,48 +1236,49 @@ counters for ISAKMP.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteUdpPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIkeAuthMethod&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIkeTotalInitFailures&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIkeTotalInitNoResponses&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIkeTotalRespFailures&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNotifiesSent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNotifiesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecIkeNegFailure trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnRemoteUdpPort=%parm[#4]% 
-			bsnIkeAuthMethod=%parm[#5]% 
-			bsnIkeTotalInitFailures=%parm[#6]% 
-			bsnIkeTotalInitNoResponses=%parm[#7]% 
-			bsnIkeTotalRespFailures=%parm[#8]% 
-			bsnNotifiesSent=%parm[#9]% 
-			bsnNotifiesReceived=%parm[#10]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnRemoteUdpPort=%parm[#2]% 
+			bsnIkeAuthMethod=%parm[#3]% 
+			bsnIkeTotalInitFailures=%parm[#4]% 
+			bsnIkeTotalInitNoResponses=%parm[#5]% 
+			bsnIkeTotalRespFailures=%parm[#6]% 
+			bsnNotifiesSent=%parm[#7]% 
+			bsnNotifiesReceived=%parm[#8]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1386,33 +1306,34 @@ failure.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSuiteInitFailures&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSuiteRespondFailures&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNotifiesSent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNotifiesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecSuiteNegFailure trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnSuiteInitFailures=%parm[#4]% 
-			bsnSuiteRespondFailures=%parm[#5]% 
-			bsnNotifiesSent=%parm[#6]% 
-			bsnNotifiesReceived=%parm[#7]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnSuiteInitFailures=%parm[#2]% 
+			bsnSuiteRespondFailures=%parm[#3]% 
+			bsnNotifiesSent=%parm[#4]% 
+			bsnNotifiesReceived=%parm[#5]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1447,33 +1368,34 @@ packet.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteIPv4Address&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRemoteUdpPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnInitiatorCookie&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnResponderCookie&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnIsakmpInvalidCookies&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnIpsecInvalidCookieTrap trap received 
-			bsnRemoteIPv4Address=%parm[#3]% 
-			bsnRemoteUdpPort=%parm[#4]% 
-			bsnInitiatorCookie=%parm[#5]% 
-			bsnResponderCookie=%parm[#6]% 
-			bsnIsakmpInvalidCookies=%parm[#7]%&lt;/p&gt;
+			bsnRemoteIPv4Address=%parm[#1]% 
+			bsnRemoteUdpPort=%parm[#2]% 
+			bsnInitiatorCookie=%parm[#3]% 
+			bsnResponderCookie=%parm[#4]% 
+			bsnIsakmpInvalidCookies=%parm[#5]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1498,73 +1420,74 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPSsid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPChannelNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPRSSI&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPSNR&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPOnWiredNetwork&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		no(0)
 		yes(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAdhocMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		no(0)
 		yes(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPRadioType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		unknown(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRogueAPDetected trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnRogueAPAirespaceAPMacAddress=%parm[#4]% 
-			bsnRogueAPAirespaceAPSlotId=%parm[#5]% 
-			bsnRogueAPSsid=%parm[#6]% 
-			bsnRogueAPChannelNumber=%parm[#7]% 
-			bsnRogueAPAirespaceAPRSSI=%parm[#8]% 
-			bsnRogueAPAirespaceAPSNR=%parm[#9]% 
-			bsnRogueAPOnWiredNetwork=%parm[#10]% 
-			bsnRogueAdhocMode=%parm[#11]% 
-			bsnRogueAPRadioType=%parm[#12]% 
-			bsnRogueAPAirespaceAPName=%parm[#13]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnRogueAPAirespaceAPMacAddress=%parm[#2]% 
+			bsnRogueAPAirespaceAPSlotId=%parm[#3]% 
+			bsnRogueAPSsid=%parm[#4]% 
+			bsnRogueAPChannelNumber=%parm[#5]% 
+			bsnRogueAPAirespaceAPRSSI=%parm[#6]% 
+			bsnRogueAPAirespaceAPSNR=%parm[#7]% 
+			bsnRogueAPOnWiredNetwork=%parm[#8]% 
+			bsnRogueAdhocMode=%parm[#9]% 
+			bsnRogueAPRadioType=%parm[#10]% 
+			bsnRogueAPAirespaceAPName=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[11]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1584,25 +1507,26 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPLoadProfileUpdatedToPass</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPLoadProfileUpdatedToPass</event-label>
 	<descr>
-&lt;p&gt;When LOAD Profile state changes from FAIL tp PASS, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When LOAD Profile state changes from FAIL to PASSt this 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPLoadProfileUpdatedToPass trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1622,25 +1546,26 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPNoiseProfileUpdatedToPass</event-label>
 	<descr>
-&lt;p&gt;When Noise Profile state changes from FAIL tp PASS, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Noise Profile state changes from FAIL tp PASS, 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPNoiseProfileUpdatedToPass trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1661,24 +1586,25 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPInterferenceProfileUpdatedToPass</event-label>
 	<descr>
 &lt;p&gt;When Interference Profile state changes from FAIL tp PASS,
-notification will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable
-/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable /disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPInterferenceProfileUpdatedToPass trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPInterferenceProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1698,25 +1624,26 @@ of Airespace AP IF. This trap sending can be enable
 	<uei>uei.opennms.org/vendor/cisco/bsnAPCoverageProfileUpdatedToPass</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPCoverageProfileUpdatedToPass</event-label>
 	<descr>
-&lt;p&gt;When Coverage Profile state changes from FAIL tp PASS, notification
-will be sent with Dot3 MAC address of Airespace AP and slot ID
-of Airespace AP IF. This trap sending can be enable/disable using
-bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When Coverage Profile state changes from FAIL tp PASS, 
+notification will be sent with Dot3 MAC address of Airespace 
+AP and slot ID of Airespace AP IF. This trap sending can be 
+enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPCoverageProfileUpdatedToPass trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1738,41 +1665,42 @@ bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;When a Rogue AP that was detected earlier no longer exists
 this Trap will be sent out along
- with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
+with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPRadioType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		unknown(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPAirespaceAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRogueAPRemoved trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnRogueAPAirespaceAPMacAddress=%parm[#4]% 
-			bsnRogueAPAirespaceAPSlotId=%parm[#5]% 
-			bsnRogueAPRadioType=%parm[#6]% 
-			bsnRogueAPAirespaceAPName=%parm[#7]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnRogueAPAirespaceAPMacAddress=%parm[#2]% 
+			bsnRogueAPAirespaceAPSlotId=%parm[#3]% 
+			bsnRogueAPRadioType=%parm[#4]% 
+			bsnRogueAPAirespaceAPName=%parm[#5]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1797,18 +1725,19 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnCurrentRadiosCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnLicenseRadioCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRadiosExceedLicenseCount trap received 
-			bsnCurrentRadiosCount=%parm[#3]% 
-			bsnLicenseRadioCount=%parm[#4]%&lt;/p&gt;
+			bsnCurrentRadiosCount=%parm[#1]% 
+			bsnLicenseRadioCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1825,20 +1754,22 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 			<mevalue>43</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnSensedTemperatureTooHigh</uei>
+	<uei>uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnSensedTemperatureTooHigh</event-label>
 	<descr>
-&lt;p&gt;temp sensor temp too High  -- temp is too high on the unit.  Immediate action should be taken&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Temperature sensor temp too High - temp is too high on the unit.  
+Immediate action should be taken&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnSensedTemperatureTooHigh trap received 
-			bsnSensorTemperature=%parm[#3]%&lt;/p&gt;
+			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Critical</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1855,20 +1786,22 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 			<mevalue>44</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnSensedTemperatureTooLow</uei>
+	<uei>uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnSensedTemperatureTooLow</event-label>
 	<descr>
-&lt;p&gt;temp sensor temp too Low  -- temp is too high on the unit.  Immediate action should be taken&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Temperature sensor temp too Low  - temp is too low on the unit. 
+Immediate action should be taken&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnSensedTemperatureTooLow trap received 
-			bsnSensorTemperature=%parm[#3]%&lt;/p&gt;
+			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Critical</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1888,12 +1821,14 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnTemperatureSensorFailure</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTemperatureSensorFailure</event-label>
 	<descr>
-&lt;p&gt;temp sensor hw failure -- temp sensor has failed.  Temperature is unknown&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+&lt;p&gt;Temperature sensor hw failure - temp sensor has failed.  
+Temperature is unknown&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTemperatureSensorFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1913,17 +1848,19 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnTemperatureSensorClear</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTemperatureSensorClear</event-label>
 	<descr>
-&lt;p&gt;temp sensor clear -- temp sensor alarm condition is over.  sensor is operating within proper temp range&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Temperature sensor clear -- temp sensor alarm condition is over.  
+sensor is operating within proper temp range&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTemperatureSensorClear trap received 
-			bsnSensorTemperature=%parm[#3]%&lt;/p&gt;
+			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange:%dpname%:%nodeid%:%interface%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1949,7 +1886,8 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnPOEControllerFailure trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Critical</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1973,13 +1911,14 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnMaxRogueCountExceeded trap received 
-			bsnMaxRogueCount=%parm[#3]%&lt;/p&gt;
+			bsnMaxRogueCount=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2003,13 +1942,14 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnMaxRogueCountClear trap received 
-			bsnMaxRogueCount=%parm[#3]%&lt;/p&gt;
+			bsnMaxRogueCount=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2029,22 +1969,24 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnApMaxRogueCountExceeded</event-label>
 	<descr>
-&lt;p&gt;The number of rogues has exceeded the maximum Rogues allowed on the AP&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;The number of rogues has exceeded the maximum Rogues allowed on 
+the AP&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnApMaxRogueCountExceeded trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnMaxRogueCount=%parm[#4]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnMaxRogueCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2064,22 +2006,24 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnApMaxRogueCountClear</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnApMaxRogueCountClear</event-label>
 	<descr>
-&lt;p&gt;The number of rogues is within the maximum Rogues allowed on the AP&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;The number of rogues is within the maximum Rogues allowed on the 
+AP&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnApMaxRogueCountClear trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnMaxRogueCount=%parm[#4]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnMaxRogueCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2099,42 +2043,45 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11StationBlacklisted</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11StationBlacklisted</event-label>
 	<descr>
-&lt;p&gt;The station blacklisted notification shall be sent when the client is blacklisted.
-The reason could be repeated auth or association failures or IP Address theft.
-The value of the notification shall include the MAC address of the MAC to which
-the Authentication frame was sent, the MAC and Slot Id of AP that client was
-associated to and the reason for black listing.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;The station blacklisted notification shall be sent when the 
+client is blacklisted.  The reason could be repeated auth or 
+association failures or IP Address theft.
+The value of the notification shall include the MAC address 
+of the MAC to which the Authentication frame was sent, the 
+MAC and Slot Id of AP that client was associated to and the 
+reason for black listing.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationBlacklistingReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		failed80211Auth(1)
 		failedAssociation(2)
 		ipTheft(3)
 		failed8021xAuth(4)
 		failedWebAuth(5)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationBlacklisted trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationBlacklistingReasonCode=%parm[#5]% 
-			bsnStationMacAddress=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationBlacklistingReasonCode=%parm[#3]% 
+			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2154,34 +2101,37 @@ associated to and the reason for black listing.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnDot11StationAssociate</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDot11StationAssociate</event-label>
 	<descr>
-&lt;p&gt;The associate notification shall be sent when any of the watchlisted clients(present on at least one watch list)
+&lt;p&gt;The associate notification shall be sent when any of the 
+watchlisted clients(present on at least one watch list)
 associates with an AP. The value of the notification
-shall include the MAC address and the Slot ID of the radio to which the station Associated.&lt;/p&gt;&lt;table&gt;
+shall include the MAC address and the Slot ID of the radio 
+to which the station Associated.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDot11StationAssociate trap received 
-			bsnStationAPMacAddr=%parm[#3]% 
-			bsnStationAPIfSlotId=%parm[#4]% 
-			bsnStationMacAddress=%parm[#5]% 
-			bsnStationUserName=%parm[#6]%&lt;/p&gt;
+			bsnStationAPMacAddr=%parm[#1]% 
+			bsnStationAPIfSlotId=%parm[#2]% 
+			bsnStationMacAddress=%parm[#3]% 
+			bsnStationUserName=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2201,27 +2151,29 @@ shall include the MAC address and the Slot ID of the radio to which the station 
 	<uei>uei.opennms.org/vendor/cisco/bsnApBigNavDosAttack</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnApBigNavDosAttack</event-label>
 	<descr>
-&lt;p&gt;The AP sent a string of messages with large NAV field and all 802.11 traffic on that channel was suspended.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;The AP sent a string of messages with large NAV field and all 
+802.11 traffic on that channel was suspended.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPSlotIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNavDosAttackSourceMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnApBigNavDosAttack trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]% 
-			bsnAPSlotIdTrapVariable=%parm[#4]% 
-			bsnNavDosAttackSourceMacAddr=%parm[#5]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]% 
+			bsnAPSlotIdTrapVariable=%parm[#2]% 
+			bsnNavDosAttackSourceMacAddr=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2245,18 +2197,19 @@ shall include the MAC address and the Slot ID of the radio to which the station 
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnUserIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTooManyUnsuccessLoginAttempts trap received 
-			bsnUserIpAddress=%parm[#3]% 
-			bsnStationUserName=%parm[#4]%&lt;/p&gt;
+			bsnUserIpAddress=%parm[#1]% 
+			bsnStationUserName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2276,27 +2229,29 @@ shall include the MAC address and the Slot ID of the radio to which the station 
 	<uei>uei.opennms.org/vendor/cisco/bsnWepKeyDecryptError</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnWepKeyDecryptError</event-label>
 	<descr>
-&lt;p&gt;Issued when a decrypt error occurrs. The WEP Key configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a decrypt error occurrs. The WEP Key configured at 
+the station may be wrong.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnWepKeyDecryptError trap received 
-			bsnStationMacAddress=%parm[#3]% 
-			bsnStationAPMacAddr=%parm[#4]% 
-			bsnStationAPIfSlotId=%parm[#5]%&lt;/p&gt;
+			bsnStationMacAddress=%parm[#1]% 
+			bsnStationAPMacAddr=%parm[#2]% 
+			bsnStationAPIfSlotId=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -2316,32 +2271,80 @@ shall include the MAC address and the Slot ID of the radio to which the station 
 	<uei>uei.opennms.org/vendor/cisco/bsnWpaMicErrorCounterActivated</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnWpaMicErrorCounterActivated</event-label>
 	<descr>
-&lt;p&gt;Issued when a WPA MIC error occurs and a counter measure is activated at the AP.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a WPA MIC error occurs and a counter measure is 
+activated at the AP.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnWlanIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnWpaMicErrorCounterActivated trap received 
-			bsnStationMacAddress=%parm[#3]% 
-			bsnStationAPMacAddr=%parm[#4]% 
-			bsnStationAPIfSlotId=%parm[#5]% 
-			bsnWlanIdTrapVariable=%parm[#6]%&lt;/p&gt;
+			bsnStationMacAddress=%parm[#1]% 
+			bsnStationAPMacAddr=%parm[#2]% 
+			bsnStationAPIfSlotId=%parm[#3]% 
+			bsnWlanIdTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>59</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>0</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetworkClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRogueAPDetectedOnWiredNetwork</event-label>
+	<descr>
+&lt;p&gt;When a Rogue is detected on the wired network this trap will 
+be sent out.
+The same trap with bsnRogueAPOnWiredNetwork set to no will 
+clear the previous trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPOnWiredNetwork&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no(0)
+		yes(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnRogueAPDetectedOnWiredNetwork trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnRogueAPOnWiredNetwork=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2361,26 +2364,29 @@ shall include the MAC address and the Slot ID of the radio to which the station 
 	<uei>uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRogueAPDetectedOnWiredNetwork</event-label>
 	<descr>
-&lt;p&gt;When a Rogue is detected on the wired network this trap will be sent out.
-The same trap with bsnRogueAPOnWiredNetwork set to no will clear the previous trap.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When a Rogue is detected on the wired network this trap will 
+be sent out.
+The same trap with bsnRogueAPOnWiredNetwork set to no will 
+clear the previous trap.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPOnWiredNetwork&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		no(0)
 		yes(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRogueAPDetectedOnWiredNetwork trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnRogueAPOnWiredNetwork=%parm[#4]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnRogueAPOnWiredNetwork=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2400,17 +2406,224 @@ The same trap with bsnRogueAPOnWiredNetwork set to no will clear the previous tr
 	<uei>uei.opennms.org/vendor/cisco/bsnApHasNoRadioCards</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnApHasNoRadioCards</event-label>
 	<descr>
-&lt;p&gt;When an AP has no radio cards present on it, the switch sends this trap.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When an AP has no radio cards present on it, the switch 
+sends this trap.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnApHasNoRadioCards trap received 
-			bsnAPMacAddrTrapVariable=%parm[#3]%&lt;/p&gt;
+			bsnAPMacAddrTrapVariable=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAPClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDuplicateIpAddressReported</event-label>
+	<descr>
+&lt;p&gt;This trap is issued when the switch or an AP detects another 
+machine using its IP Address. The first variable has value 
+yes if the duplicate IP is reported by an AP. In that case, 
+the second attribute will carry the AP MAC Address. The third
+variable is the duplicate IP address in question and the last 
+attribute is the MAC Address of the machine that is found to
+be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpReportedByAP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no(0)
+		yes(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapClear&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnDuplicateIpAddressReported trap received 
+			bsnDuplicateIpReportedByAP=%parm[#1]% 
+			bsnAPMacAddrTrapVariable=%parm[#2]% 
+			bsnDuplicateIpTrapVariable=%parm[#3]% 
+			bsnRogueAPDot11MacAddress=%parm[#4]% 
+			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDuplicateIpAddressReported</event-label>
+	<descr>
+&lt;p&gt;This trap is issued when the switch or an AP detects another 
+machine using its IP Address. The first variable has value 
+yes if the duplicate IP is reported by an AP. In that case, 
+the second attribute will carry the AP MAC Address. The third
+variable is the duplicate IP address in question and the last 
+attribute is the MAC Address of the machine that is found to
+be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpReportedByAP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no(0)
+		yes(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapClear&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnDuplicateIpAddressReported trap received 
+			bsnDuplicateIpReportedByAP=%parm[#1]% 
+			bsnAPMacAddrTrapVariable=%parm[#2]% 
+			bsnDuplicateIpTrapVariable=%parm[#3]% 
+			bsnRogueAPDot11MacAddress=%parm[#4]% 
+			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitchClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDuplicateIpAddressReported</event-label>
+	<descr>
+&lt;p&gt;This trap is issued when the switch or an AP detects another 
+machine using its IP Address. The first variable has value 
+yes if the duplicate IP is reported by an AP. In that case, 
+the second attribute will carry the AP MAC Address. The third
+variable is the duplicate IP address in question and the last 
+attribute is the MAC Address of the machine that is found to
+be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpReportedByAP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no(0)
+		yes(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnDuplicateIpTrapClear&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnDuplicateIpAddressReported trap received 
+			bsnDuplicateIpReportedByAP=%parm[#1]% 
+			bsnAPMacAddrTrapVariable=%parm[#2]% 
+			bsnDuplicateIpTrapVariable=%parm[#3]% 
+			bsnRogueAPDot11MacAddress=%parm[#4]% 
+			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2427,50 +2640,112 @@ The same trap with bsnRogueAPOnWiredNetwork set to no will clear the previous tr
 			<mevalue>61</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReported</uei>
+	<uei>uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnDuplicateIpAddressReported</event-label>
 	<descr>
-&lt;p&gt;This trap is issued when the switch or an AP detects another machine using its IP Address.
-The first variable has value yes if the duplicate IP is reported by an AP. In that case, the
-second attribute will carry the AP MAC Address. The third variable is the duplicate IP
-address in question and the last attribute is the MAC Address of the machine that is found to
+&lt;p&gt;This trap is issued when the switch or an AP detects another 
+machine using its IP Address. The first variable has value 
+yes if the duplicate IP is reported by an AP. In that case, 
+the second attribute will carry the AP MAC Address. The third
+variable is the duplicate IP address in question and the last 
+attribute is the MAC Address of the machine that is found to
 be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnDuplicateIpReportedByAP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		no(0)
 		yes(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnDuplicateIpTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnDuplicateIpTrapClear&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnDuplicateIpAddressReported trap received 
-			bsnDuplicateIpReportedByAP=%parm[#3]% 
-			bsnAPMacAddrTrapVariable=%parm[#4]% 
-			bsnDuplicateIpTrapVariable=%parm[#5]% 
-			bsnRogueAPDot11MacAddress=%parm[#6]% 
-			bsnDuplicateIpTrapClear=%parm[#7]%&lt;/p&gt;
+			bsnDuplicateIpReportedByAP=%parm[#1]% 
+			bsnAPMacAddrTrapVariable=%parm[#2]% 
+			bsnDuplicateIpTrapVariable=%parm[#3]% 
+			bsnRogueAPDot11MacAddress=%parm[#4]% 
+			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnAPContainedAsARogueClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPContainedAsARogue</event-label>
+	<descr>
+&lt;p&gt;When our AP detects that it is being contained by another AP,
+this trap is issued. The clear flag is true if the AP is no 
+longer being contained.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11b(1)
+		dot11a(2)
+		uwb(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnAPContainedAsARogue trap received 
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2490,40 +2765,88 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPContainedAsARogue</event-label>
 	<descr>
-&lt;p&gt;When our AP detects that it is being contained by another AP, this trap is issued.
-The clear flag is true if the AP is no longer being contained.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When our AP detects that it is being contained by another AP,
+this trap is issued. The clear flag is true if the AP is no 
+longer being contained.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPContainedAsARogue trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfType=%parm[#5]% 
-			bsnClearTrapVariable=%parm[#6]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsidClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidSsid</event-label>
+	<descr>
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for advertising 
+invalid SSID.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnTrustedApHasInvalidSsid trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2543,26 +2866,74 @@ The clear flag is true if the AP is no longer being contained.&lt;/p&gt;&lt;tabl
 	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidSsid</event-label>
 	<descr>
-&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for advertising invalid SSID.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for advertising 
+invalid SSID.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTrustedApHasInvalidSsid trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>64</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApIsMissingClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApIsMissing</event-label>
+	<descr>
+&lt;p&gt;Issued when a Trusted Rogue AP is missing or has failed.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnTrustedApIsMissing trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApIsMissing:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2583,25 +2954,72 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApIsMissing</event-label>
 	<descr>
 &lt;p&gt;Issued when a Trusted Rogue AP is missing or has failed.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTrustedApIsMissing trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>65</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContainedClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAdhocRogueAutoContained</event-label>
+	<descr>
+&lt;p&gt;Issued when an Adhoc Rogue is auto contained.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnAdhocRogueAutoContained trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2622,25 +3040,72 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAdhocRogueAutoContained</event-label>
 	<descr>
 &lt;p&gt;Issued when an Adhoc Rogue is auto contained.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAdhocRogueAutoContained trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>66</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnRogueApAutoContainedClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRogueApAutoContained</event-label>
+	<descr>
+&lt;p&gt;Issued when a Rogue AP is auto contained for advertising our SSID.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnRogueApAutoContained trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueApAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2661,25 +3126,94 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRogueApAutoContained</event-label>
 	<descr>
 &lt;p&gt;Issued when a Rogue AP is auto contained for advertising our SSID.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRogueApAutoContained trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>67</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryptionClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidEncryption</event-label>
+	<descr>
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using 
+invalid encryption. The second param is for the encryption used 
+and the third param is for encryption required.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApEncryptionUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		open(1)
+		wep(2)
+		wpa(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApEncryptionRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		open(1)
+		wep(2)
+		wpa(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnTrustedApHasInvalidEncryption trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApEncryptionUsed=%parm[#2]% 
+			bsnTrustedApEncryptionRequired=%parm[#3]% 
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2699,47 +3233,117 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidEncryption</event-label>
 	<descr>
-&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using invalid encryption.
-The second param is for the encryption used and the third param is for encryption required.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using 
+invalid encryption. The second param is for the encryption used 
+and the third param is for encryption required.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApEncryptionUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		open(1)
 		wep(2)
 		wpa(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApEncryptionRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		open(1)
 		wep(2)
 		wpa(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTrustedApHasInvalidEncryption trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnTrustedApEncryptionUsed=%parm[#4]% 
-			bsnTrustedApEncryptionRequired=%parm[#5]% 
-			bsnClearTrapVariable=%parm[#6]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApEncryptionUsed=%parm[#2]% 
+			bsnTrustedApEncryptionRequired=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>68</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicyClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidRadioPolicy</event-label>
+	<descr>
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using 
+invalid radio policy.  The second param is for the radio policy 
+used and the third param is for radio policy required.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApRadioPolicyUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		dot11b(1)
+		dot11a(2)
+		dot11bg(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApRadioPolicyRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		dot11b(1)
+		dot11a(2)
+		dot11bg(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnTrustedApHasInvalidRadioPolicy trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApRadioPolicyUsed=%parm[#2]% 
+			bsnTrustedApRadioPolicyRequired=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2759,47 +3363,97 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidRadioPolicy</event-label>
 	<descr>
-&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using invalid radio policy.
-The second param is for the radio policy used and the third param is for radio policy required.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using 
+invalid radio policy.  The second param is for the radio policy 
+used and the third param is for radio policy required.
+If the clear variable has value true, then the trap clears the 
+earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApRadioPolicyUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		dot11b(1)
 		dot11a(2)
 		dot11bg(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApRadioPolicyRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		dot11b(1)
 		dot11a(2)
 		dot11bg(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTrustedApHasInvalidRadioPolicy trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnTrustedApRadioPolicyUsed=%parm[#4]% 
-			bsnTrustedApRadioPolicyRequired=%parm[#5]% 
-			bsnClearTrapVariable=%parm[#6]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApRadioPolicyUsed=%parm[#2]% 
+			bsnTrustedApRadioPolicyRequired=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>69</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnNetworkStateChangedEnable</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnNetworkStateChanged</event-label>
+	<descr>
+&lt;p&gt;When the 802.11a or b/g network state is changed this trap 
+is issued.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnNetworkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11b(1)
+		dot11a(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnNetworkState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		disable(0)
+		enable(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnNetworkStateChanged trap received 
+			bsnNetworkType=%parm[#1]% 
+			bsnNetworkState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2816,31 +3470,156 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 			<mevalue>69</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/cisco/bsnNetworkStateChanged</uei>
+	<uei>uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnNetworkStateChanged</event-label>
 	<descr>
-&lt;p&gt;When the 802.11a or b/g network state is changed this trap is issued.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;When the 802.11a or b/g network state is changed this trap 
+is issued.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNetworkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnNetworkState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		disable(0)
 		enable(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnNetworkStateChanged trap received 
-			bsnNetworkType=%parm[#3]% 
-			bsnNetworkState=%parm[#4]%&lt;/p&gt;
+			bsnNetworkType=%parm[#1]% 
+			bsnNetworkState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>70</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>8</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnSignatureAttackDetectedClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnSignatureAttackDetected</event-label>
+	<descr>
+&lt;p&gt;This trap is sent out when a signature attack is detected by 
+the switch. The standard and custom signatures are predefined
+on the switch (see bsnSignatureConfig group). The signatures 
+also defines if its detection should be reported. The trap 
+variables bsnSignatureName and bsnSignatureDescription are 
+retrieved from the detected signature definition. Clear Trap 
+Variable is turned on when the signature attack stops. The 
+signature's quiet time configuration speicifes the time after
+which the clear trap would be sent. bsnSignatureMacInfo 
+indicates whether the signature is used to track 
+pattern matches for all source MAC addresses together or 
+seperately for individual source MAC addresses.  
+bsnSignatureAttackFrequency will carry the value for a 
+specific MAC address or for all MAC addresses depending on 
+bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11b(1)
+		dot11a(2)
+		uwb(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		standard(0)
+		custom(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureAttackPreced&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureAttackFrequency&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureAttackChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureAttackerMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureMacInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		bsnSignatureMacAll(0)
+		bsnSignatureMacIndividual(1)
+		bsnSignatureMacBoth(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnSignatureAttackDetected trap received 
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPName=%parm[#3]% 
+			bsnAPIfType=%parm[#4]% 
+			bsnSignatureType=%parm[#5]% 
+			bsnSignatureName=%parm[#6]% 
+			bsnSignatureDescription=%parm[#7]% 
+			bsnClearTrapVariable=%parm[#8]% 
+			bsnSignatureAttackPreced=%parm[#9]% 
+			bsnSignatureAttackFrequency=%parm[#10]% 
+			bsnSignatureAttackChannel=%parm[#11]% 
+			bsnSignatureAttackerMacAddress=%parm[#12]% 
+			bsnSignatureMacInfo=%parm[#13]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2860,87 +3639,106 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnSignatureAttackDetected</event-label>
 	<descr>
-&lt;p&gt;This trap is sent out when a signature attack is detected by the switch. The standard and custom
-signatures are predefined on the switch (see bsnSignatureConfig group). The signatures also defines
-if its detection should be reported. The trap variables bsnSignatureName and bsnSignatureDescription
-are retrieved from the detected signature definition. Clear Trap Variable is turned on when the
-signature attack stops. The signature's quiet time configuration speicifes the time after which the
-clear trap would be sent.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent out when a signature attack is detected by 
+the switch. The standard and custom signatures are predefined
+on the switch (see bsnSignatureConfig group). The signatures 
+also defines if its detection should be reported. The trap 
+variables bsnSignatureName and bsnSignatureDescription are 
+retrieved from the detected signature definition. Clear Trap 
+Variable is turned on when the signature attack stops. The 
+signature's quiet time configuration speicifes the time after
+which the clear trap would be sent. bsnSignatureMacInfo 
+indicates whether the signature is used to track 
+pattern matches for all source MAC addresses together or 
+seperately for individual source MAC addresses.  
+bsnSignatureAttackFrequency will carry the value for a 
+specific MAC address or for all MAC addresses depending on 
+bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		standard(0)
 		custom(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureAttackPreced&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureAttackFrequency&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureAttackChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnSignatureAttackerMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnSignatureMacInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		bsnSignatureMacAll(0)
+		bsnSignatureMacIndividual(1)
+		bsnSignatureMacBoth(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnSignatureAttackDetected trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPName=%parm[#5]% 
-			bsnAPIfType=%parm[#6]% 
-			bsnSignatureType=%parm[#7]% 
-			bsnSignatureName=%parm[#8]% 
-			bsnSignatureDescription=%parm[#9]% 
-			bsnClearTrapVariable=%parm[#10]% 
-			bsnSignatureAttackPreced=%parm[#11]% 
-			bsnSignatureAttackFrequency=%parm[#12]% 
-			bsnSignatureAttackChannel=%parm[#13]% 
-			bsnSignatureAttackerMacAddress=%parm[#14]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPName=%parm[#3]% 
+			bsnAPIfType=%parm[#4]% 
+			bsnSignatureType=%parm[#5]% 
+			bsnSignatureName=%parm[#6]% 
+			bsnSignatureDescription=%parm[#7]% 
+			bsnClearTrapVariable=%parm[#8]% 
+			bsnSignatureAttackPreced=%parm[#9]% 
+			bsnSignatureAttackFrequency=%parm[#10]% 
+			bsnSignatureAttackChannel=%parm[#11]% 
+			bsnSignatureAttackerMacAddress=%parm[#12]% 
+			bsnSignatureMacInfo=%parm[#13]%&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2960,31 +3758,33 @@ clear trap would be sent.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPRadioCardTxFailure</event-label>
 	<descr>
-&lt;p&gt;This trap is sent by the switch when a radio card on an AP stops transmitting.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent by the switch when a radio card on an AP 
+stops transmitting.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPRadioCardTxFailure trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfType=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3004,32 +3804,33 @@ clear trap would be sent.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailureClear</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPRadioCardTxFailureClear</event-label>
 	<descr>
-&lt;p&gt;This trap is sent by the switch when a radio card on an AP starts transmitting again after
-a prior failure.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent by the switch when a radio card on an AP 
+starts transmitting again after a prior failure.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPRadioCardTxFailureClear trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfType=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3049,31 +3850,33 @@ a prior failure.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPRadioCardRxFailure</event-label>
 	<descr>
-&lt;p&gt;This trap is sent by the switch when a radio card on an AP stops receiving.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent by the switch when a radio card on an AP 
+stops receiving.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPRadioCardRxFailure trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfType=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3093,32 +3896,33 @@ a prior failure.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailureClear</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPRadioCardRxFailureClear</event-label>
 	<descr>
-&lt;p&gt;This trap is sent by the switch when a radio card on an AP starts receiving again after
-a prior failure.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent by the switch when a radio card on an AP 
+starts receiving again after a prior failure.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPRadioCardRxFailureClear trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfType=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3138,37 +3942,104 @@ a prior failure.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPImpersonationDetected</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPImpersonationDetected</event-label>
 	<descr>
-&lt;p&gt;This trap is sent by the switch when a radio of an authenticated AP hears from another AP whose MAC Address
-neither matches that of a rogue's and nor is it an authenticated neighbor of the detecting AP.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent by the switch when a radio of an 
+authenticated AP hears from another AP whose MAC Address
+neither matches that of a rogue's and nor is it an 
+authenticated neighbor of the detecting AP.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnImpersonatedAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		dot11b(1)
 		dot11a(2)
 		uwb(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPImpersonationDetected trap received 
-			bsnImpersonatedAPMacAddr=%parm[#3]% 
-			bsnAPDot3MacAddress=%parm[#4]% 
-			bsnAPIfSlotId=%parm[#5]% 
-			bsnAPIfType=%parm[#6]%&lt;/p&gt;
+			bsnImpersonatedAPMacAddr=%parm[#1]% 
+			bsnAPDot3MacAddress=%parm[#2]% 
+			bsnAPIfSlotId=%parm[#3]% 
+			bsnAPIfType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.14179.2.6.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>76</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>4</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreambleClear</uei>
+	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidPreamble</event-label>
+	<descr>
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using invalid
+preamble. The second param is for the preamble used and the third
+param is for preamble required. If the clear variable has value 
+true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApPreambleUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		short(1)
+		long(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnTrustedApPreambleRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(0)
+		short(1)
+		long(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bsnTrustedApHasInvalidPreamble trap received 
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApPreambleUsed=%parm[#2]% 
+			bsnTrustedApPreambleRequired=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3188,45 +4059,47 @@ neither matches that of a rogue's and nor is it an authenticated neighbor of the
 	<uei>uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnTrustedApHasInvalidPreamble</event-label>
 	<descr>
-&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using invalid preamble.
-The second param is for the preamble used and the third param is for preamble required.
-If the clear variable has value true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Issued when a Trusted Rogue AP is auto contained for using invalid
+preamble. The second param is for the preamble used and the third
+param is for preamble required. If the clear variable has value 
+true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnRogueAPDot11MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApPreambleUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		short(1)
 		long(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnTrustedApPreambleRequired&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		none(0)
 		short(1)
 		long(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnClearTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		false(0)
 		true(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnTrustedApHasInvalidPreamble trap received 
-			bsnRogueAPDot11MacAddress=%parm[#3]% 
-			bsnTrustedApPreambleUsed=%parm[#4]% 
-			bsnTrustedApPreambleRequired=%parm[#5]% 
-			bsnClearTrapVariable=%parm[#6]%&lt;/p&gt;
+			bsnRogueAPDot11MacAddress=%parm[#1]% 
+			bsnTrustedApPreambleUsed=%parm[#2]% 
+			bsnTrustedApPreambleRequired=%parm[#3]% 
+			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3246,28 +4119,30 @@ If the clear variable has value true, then the trap clears the earlier alert.&lt
 	<uei>uei.opennms.org/vendor/cisco/bsnAPIPAddressFallback</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPIPAddressFallback</event-label>
 	<descr>
-&lt;p&gt;This trap is sent out when an AP, with the configured static ip-address, fails to establish connection
-with outside world and starts using DHCP as a fallback option.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is sent out when an AP, with the configured static 
+ip-address, fails to establish connection with outside world 
+and starts using DHCP as a fallback option.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnApIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPStaticIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPIPAddressFallback trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnApIpAddress=%parm[#4]% 
-			bsnAPStaticIPAddress=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnApIpAddress=%parm[#2]% 
+			bsnAPStaticIPAddress=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3287,36 +4162,38 @@ with outside world and starts using DHCP as a fallback option.&lt;/p&gt;&lt;tabl
 	<uei>uei.opennms.org/vendor/cisco/bsnAPFunctionalityDisabled</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPFunctionalityDisabled</event-label>
 	<descr>
-&lt;p&gt;This trap is sent out when AP functionality on the switch is disabled because the License key has expired
+&lt;p&gt;This trap is sent out when AP functionality on the switch is 
+disabled because the License key has expired
 or has been deleted or doesn't match the switch image.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnApFunctionalityDisableReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unknown(0)
 		licenseKeyExpired(1)
 		licenseKeyDeleted(2)
 		licenseKeyFeatureMismatch(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnLicenseKeyTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnLicenseKeyFeatureSetTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		wps(1)
 		all(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPFunctionalityDisabled trap received 
-			bsnApFunctionalityDisableReasonCode=%parm[#3]% 
-			bsnLicenseKeyTrapVariable=%parm[#4]% 
-			bsnLicenseKeyFeatureSetTrapVariable=%parm[#5]%&lt;/p&gt;
+			bsnApFunctionalityDisableReasonCode=%parm[#1]% 
+			bsnLicenseKeyTrapVariable=%parm[#2]% 
+			bsnLicenseKeyFeatureSetTrapVariable=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3336,20 +4213,21 @@ or has been deleted or doesn't match the switch image.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPRegulatoryDomainMismatch</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPRegulatoryDomainMismatch</event-label>
 	<descr>
-&lt;p&gt;This trap is generated if an AP's regulatory domain doesn't match the country the switch is configured for.
-Due to the mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap is generated if an AP's regulatory domain doesn't 
+match the country the switch is configured for.  Due to the 
+mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnApRegulatoryDomain&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		a(0)
 		e(1)
 		i(6)
@@ -3362,11 +4240,11 @@ Due to the mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt
 		t(35)
 		r(48)
 		notavailable(65535)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnGlobalDot11CountryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		usa(1)
 		canada(2)
 		france(3)
@@ -3398,7 +4276,6 @@ Due to the mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt
 		singapore(29)
 		thailand(30)
 		taiwan(31)
-		usanewunii(32)
 		cyprus(33)
 		czechrepublic(34)
 		estonia(35)
@@ -3422,16 +4299,29 @@ Due to the mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt
 		china(54)
 		koreaExtended(55)
 		japan2(56)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		gibraltar(57)
+		liechtenstein(58)
+		malta(59)
+		monaco(60)
+		romania(61)
+		russianfederation(62)
+		chile(63)
+		colombia(64)
+		panama(65)
+		peru(66)
+		venezuela(67)
+		philippines(68)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPRegulatoryDomainMismatch trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPName=%parm[#4]% 
-			bsnApRegulatoryDomain=%parm[#5]% 
-			bsnGlobalDot11CountryIndex=%parm[#6]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPName=%parm[#2]% 
+			bsnApRegulatoryDomain=%parm[#3]% 
+			bsnGlobalDot11CountryIndex=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3457,7 +4347,8 @@ Full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRxMulticastQueueFull trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3482,15 +4373,15 @@ current channel&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfPhyChannelNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		ch1(1)
 		ch2(2)
 		ch3(3)
@@ -3534,15 +4425,16 @@ current channel&lt;/p&gt;&lt;table&gt;
 		ch161(161)
 		ch165(165)
 		ch169(169)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRadarChannelDetected trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfPhyChannelNumber=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfPhyChannelNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3562,20 +4454,20 @@ current channel&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnRadarChannelCleared</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnRadarChannelCleared</event-label>
 	<descr>
-&lt;p&gt;This trap will be generated, if a radar trap has been generated
-earlier, after the expiry of Non-Occupancy Period.&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;This trap will be generated, if a radar trap has been 
+generated earlier, after the expiry of Non-Occupancy Period.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfPhyChannelNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		ch1(1)
 		ch2(2)
 		ch3(3)
@@ -3619,15 +4511,16 @@ earlier, after the expiry of Non-Occupancy Period.&lt;/p&gt;&lt;table&gt;
 		ch161(161)
 		ch165(165)
 		ch169(169)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnRadarChannelCleared trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPIfPhyChannelNumber=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPIfPhyChannelNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRadarChannelDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3647,44 +4540,46 @@ earlier, after the expiry of Non-Occupancy Period.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/cisco/bsnAPAuthorizationFailure</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: bsnAPAuthorizationFailure</event-label>
 	<descr>
-&lt;p&gt;This trap is sent out in case of authorization failure while attempting to associate the AP to the controller.
+&lt;p&gt;This trap is sent out in case of authorization failure while 
+attempting to associate the AP to the controller.
 bsnAPDot3MacAddress represents the mac-address of that AP.
 bsnAPName is name of AP&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPAuthCertificateType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unknown(0)
 		mic(1)
 		ssc(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPAuthorizationFailureCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unknown(0)
 		keymismatch(1)
 		entrydoesnotexist(2)
 		invalidCertifcate(3)
 		entryIsMIC(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			bsnAPAuthorizationFailure trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPName=%parm[#4]% 
-			bsnAPAuthCertificateType=%parm[#5]% 
-			bsnAPAuthorizationFailureCause=%parm[#6]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPName=%parm[#2]% 
+			bsnAPAuthCertificateType=%parm[#3]% 
+			bsnAPAuthorizationFailureCause=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3710,18 +4605,19 @@ on demand.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			radioCoreDumpTrap trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3742,29 +4638,31 @@ on demand.&lt;/p&gt;&lt;table&gt;
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: invalidRadioTrap</event-label>
 	<descr>
 &lt;p&gt;This trap will be generated when an AP has joined is using 
-unsupported radio or a radio slot not currently not being used.&lt;/p&gt;&lt;table&gt;
+unsupported radio or a radio slot not currently not being 
+used.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPInvalidRadioType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		unsupportedRadio(0)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			invalidRadioTrap trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPIfSlotId=%parm[#4]% 
-			bsnAPInvalidRadioType=%parm[#5]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPIfSlotId=%parm[#2]% 
+			bsnAPInvalidRadioType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3789,7 +4687,7 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnGlobalDot11CountryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		usa(1)
 		canada(2)
 		france(3)
@@ -3821,7 +4719,6 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 		singapore(29)
 		thailand(30)
 		taiwan(31)
-		usanewunii(32)
 		cyprus(33)
 		czechrepublic(34)
 		estonia(35)
@@ -3845,13 +4742,26 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 		china(54)
 		koreaExtended(55)
 		japan2(56)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		gibraltar(57)
+		liechtenstein(58)
+		malta(59)
+		monaco(60)
+		romania(61)
+		russianfederation(62)
+		chile(63)
+		colombia(64)
+		panama(65)
+		peru(66)
+		venezuela(67)
+		philippines(68)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			countryChangeTrap trap received 
-			bsnGlobalDot11CountryIndex=%parm[#3]%&lt;/p&gt;
+			bsnGlobalDot11CountryIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3876,18 +4786,19 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			unsupportedAPTrap trap received 
-			bsnAPDot3MacAddress=%parm[#3]% 
-			bsnAPName=%parm[#4]%&lt;/p&gt;
+			bsnAPDot3MacAddress=%parm[#1]% 
+			bsnAPName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Warning</severity>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3907,13 +4818,16 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 	<uei>uei.opennms.org/vendor/cisco/heartbeatLossTrap</uei>
 	<event-label>AIRESPACE-WIRELESS-MIB defined trap event: heartbeatLossTrap</event-label>
 	<descr>
-&lt;p&gt;This trap will be generated when controller loses hearbeat
-with catalyst 6k.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+&lt;p&gt;This trap will be generated when controller loses 
+connection with the Supervisor Switch in which it
+is physically embedded and doesn't hear the
+heartbeat keepalives from the Supervisor. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			heartbeatLossTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3938,13 +4852,14 @@ for notifications of location events.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	locationNotifyContent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			locationNotifyTrap trap received 
-			locationNotifyContent=%parm[#3]%&lt;/p&gt;
+			locationNotifyContent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: AIRESPACE-WIRELESS-MIB -->
 </events>
