@@ -42,11 +42,11 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
@@ -229,8 +229,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         // Squirrel the configuration parameters away in a Properties for later expansion if service is down
         Properties svcParams = new Properties();
         svcParams.setProperty("oid", oid);
-        svcParams.setProperty("operator", operator);
-        svcParams.setProperty("operand", operand);
+        svcParams.setProperty("operator", String.valueOf(operator));
+        svcParams.setProperty("operand", String.valueOf(operand));
         svcParams.setProperty("walk", walkstr);
         svcParams.setProperty("matchAll", matchstr);
         svcParams.setProperty("minimum", String.valueOf(countMin));
@@ -300,6 +300,13 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 }
 
             } else {
+                if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
+                    if (operator != null) {
+                        reasonTemplate = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
+                    } else {
+                        reasonTemplate = "Observed value '${observedValue}' was null";
+                    }
+                }
 
                 SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
