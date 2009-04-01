@@ -4862,4 +4862,218 @@ for notifications of location events.&lt;/p&gt;&lt;table&gt;
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: AIRESPACE-WIRELESS-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-LWAPP-DOT11-CLIENT-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.599</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWEP</uei>
+	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
+	<descr>
+&lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
+configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcAssociationMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		wep(2)
+		wpa(3)
+		wpa2(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcApMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11bg(1)
+		dot11a(2)
+		uwb(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoLwappDot11ClientKeyDecryptError trap received 
+			cldcAssociationMode=%parm[#1]% 
+			cldcApMacAddress=%parm[#2]% 
+			cldcIfType=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.599</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWPA</uei>
+	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
+	<descr>
+&lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
+configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcAssociationMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		wep(2)
+		wpa(3)
+		wpa2(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcApMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11bg(1)
+		dot11a(2)
+		uwb(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoLwappDot11ClientKeyDecryptError trap received 
+			cldcAssociationMode=%parm[#1]% 
+			cldcApMacAddress=%parm[#2]% 
+			cldcIfType=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.599</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWPA2</uei>
+	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
+	<descr>
+&lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
+configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcAssociationMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		wep(2)
+		wpa(3)
+		wpa2(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcApMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11bg(1)
+		dot11a(2)
+		uwb(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoLwappDot11ClientKeyDecryptError trap received 
+			cldcAssociationMode=%parm[#1]% 
+			cldcApMacAddress=%parm[#2]% 
+			cldcIfType=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.599</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorUnknown</uei>
+	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
+	<descr>
+&lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
+configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcAssociationMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(1)
+		wep(2)
+		wpa(3)
+		wpa2(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcApMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cldcIfType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		dot11bg(1)
+		dot11a(2)
+		uwb(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoLwappDot11ClientKeyDecryptError trap received 
+			cldcAssociationMode=%parm[#1]% 
+			cldcApMacAddress=%parm[#2]% 
+			cldcIfType=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+<!-- End of auto generated data from MIB: CISCO-LWAPP-DOT11-CLIENT-MIB -->
 </events>
