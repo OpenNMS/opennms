@@ -143,6 +143,18 @@
 
 	</section>
 
+	<section id="opennms-1.6.4">
+		<title>Changes in OpenNMS 1.6.4</title>
+
+		<para>
+			A <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3094">NullPointerException in the
+			SNMP poller</ulink> was found in OpenNMS 1.6.3, relating to the enhancements in <ulink
+			url="http://bugzilla.opennms.org/show_bug.cgi?id=3065">bug #3065</ulink>.  The only change
+			in OpenNMS 1.6.4 is a fix for that exception.
+		</para>
+
+	</section>
+
 	<section id="opennms-1.6.3">
 		<title>Changes in OpenNMS 1.6.3</title>
     
