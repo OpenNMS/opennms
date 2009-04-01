@@ -4917,6 +4917,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Warning</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+</event>
 <event>
 	<mask>
 		<maskelement>
@@ -4971,6 +4972,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Warning</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+</event>
 <event>
 	<mask>
 		<maskelement>
@@ -5025,6 +5027,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Warning</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+</event>
 <event>
 	<mask>
 		<maskelement>
@@ -5075,5 +5078,6 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+</event>
 <!-- End of auto generated data from MIB: CISCO-LWAPP-DOT11-CLIENT-MIB -->
 </events>
