@@ -66,6 +66,10 @@ public class AlarmCriteria {
         this(filters, null, null, -1, -1);
     }
     
+    public AlarmCriteria(AcknowledgeType ackType, Filter[] filters) {
+        this(filters, null, ackType, -1, -1);
+    }
+    
     public AlarmCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
         m_filters = filters;
         m_sortStyle = sortStyle;

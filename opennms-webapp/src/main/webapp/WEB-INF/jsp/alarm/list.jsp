@@ -53,8 +53,8 @@
 	session="true"
 	import="java.util.ArrayList,
                 java.util.List,
-                org.opennms.web.alarm.AcknowledgeAlarmServlet,
-                org.opennms.web.alarm.AlarmSeverityChangeServlet,
+                org.opennms.web.controller.alarm.AcknowledgeAlarmController,
+                org.opennms.web.controller.alarm.AlarmSeverityChangeController,
                 org.opennms.web.alarm.Alarm,
                 org.opennms.web.alarm.AlarmQueryParms,
                 org.opennms.web.alarm.AlarmFactory.SortStyle,
@@ -115,10 +115,10 @@
 
     if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) {     
         if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
-            action = AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION;
+            action = AcknowledgeAlarmController.ACKNOWLEDGE_ACTION;
         } 
         else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
-            action = AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION;
+            action = AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION;
         }
     } 
     
@@ -136,6 +136,7 @@
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
     pageContext.setAttribute("addAfterFilter", "[&lt;]");
 %>
+
 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -174,13 +175,13 @@
         
         // Decide what our action should be
         if (anAction == "escalate") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.ESCALATE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.ESCALATE_ACTION%>";
         } else if (anAction == "clear") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeServlet.CLEAR_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
         } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.ACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmController.ACKNOWLEDGE_ACTION%>";
         } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmServlet.UNACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION%>";
         }
  
         if (document.alarm_action_form.alarm.length)

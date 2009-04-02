@@ -391,24 +391,6 @@
     </init-param>
   </servlet>
   <servlet>
-    <servlet-name>acknowledgeAlarm</servlet-name>
-    <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>list.htm</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>acknowledgeAlarmByFilter</servlet-name>
-    <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmByFilterServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>list.htm</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
     <servlet-name>acknowledgeNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
     <init-param>
@@ -417,16 +399,6 @@
       <param-value>browse</param-value>
     </init-param>
   </servlet>
-  <servlet>
-    <servlet-name>changeAlarmSeverity</servlet-name>
-    <servlet-class>org.opennms.web.alarm.AlarmSeverityChangeServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>list.htm</param-value>
-    </init-param>
-  </servlet>
-
   
   <!-- Servlet for modify Discovery configuration service -->
   <servlet>
@@ -885,20 +857,8 @@
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>acknowledgeAlarm</servlet-name>
-    <url-pattern>/alarm/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>acknowledgeAlarmByFilter</servlet-name>
-    <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>changeAlarmSeverity</servlet-name>
-    <url-pattern>/alarm/changeSeverity</url-pattern>
   </servlet-mapping>
 
   <!--  servlet-mapping>
@@ -1199,6 +1159,18 @@
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/changeSeverity</url-pattern>
   </servlet-mapping>
   
   <!-- Although this will be matched by the above *.htm url-pattern,

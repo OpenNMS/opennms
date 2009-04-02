@@ -4,10 +4,15 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 
   <tx:annotation-driven />
+  
+  <context:annotation-config />
+  
+  <bean name="webAlarmRepository" class="org.opennms.web.alarm.JdbcWebAlarmRepository" />
 
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >

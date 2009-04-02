@@ -41,21 +41,20 @@
 
 package org.opennms.web.controller.alarm;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.Alarm;
-import org.opennms.web.alarm.AlarmFactory;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
+import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -81,6 +80,9 @@ public class AlarmFilterController extends AbstractController implements Initial
     private AcknowledgeType m_defaultAcknowledgeType = AcknowledgeType.UNACKNOWLEDGED;
 
     private SortStyle m_defaultSortStyle = SortStyle.ID;
+
+    private WebAlarmRepository m_webAlarmRepository;
+    
 
 
     /**
@@ -120,12 +122,12 @@ public class AlarmFilterController extends AbstractController implements Initial
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterArray = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
                 Filter filter = AlarmUtil.getFilter(filterStrings[i]);
                 if (filter != null) {
-                    filterArray.add(filter);
+                    filterList.add(filter);
                 }
             }
         }
@@ -152,31 +154,32 @@ public class AlarmFilterController extends AbstractController implements Initial
             }
         }
 
-        try {
-            // put the parameters in a convenient struct
-            AlarmQueryParms parms = new AlarmQueryParms();
-            parms.sortStyle = sortStyle;
-            parms.ackType = ackType;
-            parms.filters = filterArray;
-            parms.limit = limit;
-            parms.multiple = multiple;
-            parms.display = display;
+        // put the parameters in a convenient struct
+        
+        Filter[] filters = filterList.toArray(new Filter[0]);
+        
+        AlarmQueryParms parms = new AlarmQueryParms();
+        parms.ackType = ackType;
+        parms.display = display;
+        parms.filters = filterList;
+        parms.limit = limit;
+        parms.multiple =  multiple;
+        parms.sortStyle = sortStyle;
+        
+        AlarmCriteria queryCriteria = new AlarmCriteria(filters, sortStyle, ackType, limit, limit * multiple);
+        AlarmCriteria countCriteria = new AlarmCriteria(ackType, filters);
 
-            // query the alarms with the new filters array
-            Alarm[] alarms = AlarmFactory.getAlarms(sortStyle, ackType, parms.getFilters(), limit, multiple * limit);
-            
-            // get the total alarm count
-            int alarmCount = AlarmFactory.getAlarmCount(ackType, parms.getFilters());  
+        Alarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
+        
+        // get the total alarm count
+        int alarmCount = m_webAlarmRepository.countMatchingAlarms(countCriteria);
+        
+        ModelAndView modelAndView = new ModelAndView(getSuccessView());
+        modelAndView.addObject("alarms", alarms);
+        modelAndView.addObject("alarmCount", alarmCount);
+        modelAndView.addObject("parms", parms);
+        return modelAndView;
 
-            
-            ModelAndView modelAndView = new ModelAndView(getSuccessView());
-            modelAndView.addObject("alarms", alarms);
-            modelAndView.addObject("alarmCount", alarmCount);
-            modelAndView.addObject("parms", parms);
-            return modelAndView;
-        } catch (SQLException e) {
-            throw new ServletException("", e);
-        }
     }
 
     private Integer getDefaultShortLimit() {
@@ -202,6 +205,10 @@ public class AlarmFilterController extends AbstractController implements Initial
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
+    
+    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+        m_webAlarmRepository = webAlarmRepository;
+    }
 
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
@@ -209,6 +216,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         Assert.notNull(m_defaultLongLimit, "property defaultLongLimit must be set to a value greater than 0");
         Assert.isTrue(m_defaultLongLimit > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_successView, "property successView must be set");
+        Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
     }
 
     public AcknowledgeType getDefaultAcknowledgeType() {
