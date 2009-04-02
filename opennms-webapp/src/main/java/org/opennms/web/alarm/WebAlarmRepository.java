@@ -40,10 +40,14 @@ public interface WebAlarmRepository {
 
     public abstract void acknowledgeMatchingAlarms(String user,
             Date timestamp, AlarmCriteria criteria);
+    
+    public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp);
 
     public abstract void acknowledgeAll(String user, Date timestamp);
 
     public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria);
+
+    public void unacknowledgeAlarms(int[] alarmIds);
 
     public abstract void unacknowledgeAll();
     

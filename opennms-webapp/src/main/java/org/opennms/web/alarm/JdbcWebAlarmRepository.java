@@ -235,7 +235,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
 
     
-    void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
+    public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
@@ -248,7 +248,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL", user, new Timestamp(timestamp.getTime()));
     }
 
-    void unacknowledgeAlarms(int[] alarmIds) {
+    public void unacknowledgeAlarms(int[] alarmIds) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
@@ -276,10 +276,6 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         System.out.println(sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
         
-    }
-    
-    public void excalateAlarms(int[] alarmIds, String user){
-        escalateAlarms(alarmIds, user, new Date());
     }
     
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
