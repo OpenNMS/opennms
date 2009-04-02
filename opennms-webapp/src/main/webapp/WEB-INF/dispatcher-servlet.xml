@@ -218,12 +218,28 @@
     <property name="troubleTicketProxy" ref="troubleTicketProxy" />
   </bean>
   
+  <bean name="/alarm/acknowledge" class="org.opennms.web.controller.alarm.AcknowledgeAlarmController">
+    <property name="webAlarmRepository" ref="webAlarmRepository" />
+    <property name="redirectView" value="/alarm/list.htm" />
+  </bean>
+  
+  <bean name="/alarm/acknowledgeByFilter" class="org.opennms.web.controller.alarm.AcknowledgeAlarmByFilterController">
+    <property name="webAlarmRepository" ref="webAlarmRepository" />
+    <property name="redirectView" value="/alarm/list.htm" />
+  </bean>
+  
+  <bean name="/alarm/changeSeverity" class="org.opennms.web.controller.alarm.AlarmSeverityChangeController">
+    <property name="webAlarmRepository" ref="webAlarmRepository" />
+    <property name="redirectView" value="/alarm/list.htm" />
+  </bean>
+  
   <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
     <property name="successView" value="alarm/list" />
     <property name="defaultShortLimit" value="20" />
     <property name="defaultLongLimit" value="10" />
     <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
     <property name="defaultSortStyle" value="ID" />
+    <property name="webAlarmRepository" ref="webAlarmRepository" />
   </bean>
   
   <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
