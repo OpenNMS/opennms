@@ -47,6 +47,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
+			org.opennms.web.controller.alarm.*,
 			org.opennms.web.alarm.*,
 			org.opennms.netmgt.model.OnmsSeverity,
 	        org.opennms.web.acegisecurity.Authentication"
