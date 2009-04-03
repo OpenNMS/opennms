@@ -19,13 +19,6 @@
 
   <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
-  <!-- view resolver to deal with Availability reports -->
-  
-  <bean id="reportViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
-  	<property name="order" value="0"/>
-  	<property name="location" value="/WEB-INF/views.xml"/>
-  </bean>
-
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
 	          value="org.springframework.web.servlet.view.JstlView" />
@@ -406,11 +399,6 @@
   		class="org.opennms.web.controller.ReportListController">
   	<property name="reportListService" ref="reportListService"/>
   	<property name="pageSize" value="1"/>
-  </bean>
-  
-  <bean name="/report/availability/viewreport.htm"
-  		class="org.opennms.web.controller.SimpleXMLReportController">
-   		<property name="viewerService" ref="availabilityReportViewerService"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">

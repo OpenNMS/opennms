@@ -102,11 +102,11 @@
 					<td>${report.date}</td>
 					<td>${report.available}</td>
 					<td><a
-						href="report/availability/viewreport.htm?format=html&reportid=${report.id}">html</a>
+						href="report/availability/view/report.htm?reportid=${report.id}">html</a>
 					<a
-						href="report/availability/viewreport.htm?format=pdf&reportid=${report.id}">pdf</a>
+						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
 					<a
-						href="report/availability/viewreport.htm?format=svg&reportid=${report.id}">svg</a>
+						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
 				</tr>
 			</c:forEach>
 		</table>
