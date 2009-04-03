@@ -47,12 +47,14 @@ public class SimpleXMLReportController extends AbstractController {
 
     private int m_reportId;
 
+    private String m_format;
+    
     private AvailabilityReportViewerService m_viewerService;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse res) throws Exception {
-        String[] requiredParameters = new String[] { "format", "reportid" };
+        String[] requiredParameters = new String[] { "reportid" };
 
         for (String requiredParameter : requiredParameters) {
             if (request.getParameter(requiredParameter) == null) {
@@ -65,10 +67,9 @@ public class SimpleXMLReportController extends AbstractController {
         } catch (NumberFormatException e) {
         }
         ModelAndView mav = new ModelAndView();
-        String format = WebSecurityUtils.sanitizeString(request.getParameter("format"));
-        if (format.equalsIgnoreCase("pdf")) {
+        if (m_format.equalsIgnoreCase("pdf")) {
             mav.setViewName("/report/availability/pdfreportviewer");
-        } else if (format.equalsIgnoreCase("svg")) {
+        } else if (m_format.equalsIgnoreCase("svg")) {
             mav.setViewName("/report/availability/svgreportviewer");
         } else {
             mav.setViewName("/report/availability/htmlreportviewer");
@@ -85,6 +86,10 @@ public class SimpleXMLReportController extends AbstractController {
 
     public void setViewerService(AvailabilityReportViewerService service) {
         m_viewerService = service;
+    }
+    
+    public void setFormat(String format) {
+        m_format = format;
     }
 
 }
