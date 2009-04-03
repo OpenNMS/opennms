@@ -309,6 +309,13 @@
      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
      <load-on-startup>2</load-on-startup>
    </servlet>
+   
+   <!--  servlet that map requests get mapped to -->
+   <servlet>
+     <servlet-name>availabilityDispatcher</servlet-name>
+     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+     <load-on-startup>1</load-on-startup>
+   </servlet>
 
    <!-- WebStart servlet -->
    <servlet>
@@ -1155,6 +1162,10 @@
     <url-pattern>*.map</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>availabilityDispatcher</servlet-name>
+    <url-pattern>/report/availability/view/*</url-pattern>
+  </servlet-mapping>
   
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>

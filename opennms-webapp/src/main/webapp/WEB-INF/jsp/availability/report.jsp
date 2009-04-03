@@ -9,7 +9,7 @@
   <jsp:param name="headTitle" value="Availability" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" 
-		value="<a href='report/availability/index.jsp'>Availability" />
+		value="<a href='report/availability/index.jsp'>Availability</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
