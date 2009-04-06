@@ -32,57 +32,64 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.element.NetworkElementFactory;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.web.filter.NegativeFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class NegativeNodeFilter extends Object implements Filter {
+public class NegativeNodeFilter extends NegativeFilter<Integer> implements Filter {
     public static final String TYPE = "nodenot";
-
-    protected int nodeId;
-
+    
+    int m_nodeId;
+    
     public NegativeNodeFilter(int nodeId) {
-        this.nodeId = nodeId;
+        super(SQLType.INT, "ALARMS.NODEID", "id", new Integer(nodeId), "nodeNot");
+        m_nodeId = nodeId;
     }
 
-    public String getSql() {
-        return (" (ALARMS.NODEID<>" + this.nodeId + " OR ALARMS.NODEID IS NULL)");
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.createCriteria("node").add(Restrictions.ne("id", m_nodeId));
     }
     
-    public String getParamSql() {
-        return (" (ALARMS.NODEID<>? OR ALARMS.NODEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.nodeId);
-    	return 1;
-    }
+//    public String getSql() {
+//        return (" (ALARMS.NODEID<>" + this.nodeId + " OR ALARMS.NODEID IS NULL)");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" (ALARMS.NODEID<>? OR ALARMS.NODEID IS NULL)");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setInt(parameterIndex, this.nodeId);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.nodeId);
+//    }
+//
+//    public String getTextDescription() {
+//        String nodeName = Integer.toString(this.nodeId);
+//        try {
+//            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
+//        } catch (SQLException e) {
+//        }
+//
+//        return ("node is not " + nodeName);
+//    }
+//
+//    public String toString() {
+//        return ("<AlarmFactory.NegativeNodeFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public int getNodeId() {
+//        return (this.nodeId);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
+//
 
-    public String getDescription() {
-        return (TYPE + "=" + this.nodeId);
-    }
-
-    public String getTextDescription() {
-        String nodeName = Integer.toString(this.nodeId);
-        try {
-            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
-        } catch (SQLException e) {
-        }
-
-        return ("node is not " + nodeName);
-    }
-
-    public String toString() {
-        return ("<AlarmFactory.NegativeNodeFilter: " + this.getDescription() + ">");
-    }
-
-    public int getNodeId() {
-        return (this.nodeId);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
 }

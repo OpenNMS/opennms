@@ -35,6 +35,8 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.opennms.netmgt.model.OnmsCriteria;
+
 /** Encapsulates filtering on partial unique event identifiers. */
 public class PartialUEIFilter extends Object implements Filter {
     public static final String TYPE = "partialUei";
@@ -80,5 +82,10 @@ public class PartialUEIFilter extends Object implements Filter {
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        // TODO Auto-generated method stub
+        
     }
 }

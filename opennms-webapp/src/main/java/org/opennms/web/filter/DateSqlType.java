@@ -29,16 +29,22 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
-    public static final String TYPE = "alarmTypeFilter";    
- 
-    public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+import org.opennms.netmgt.EventConstants;
+
+public class DateSqlType implements SQLType<Date> {
+
+    public void bindParam(PreparedStatement ps, int parameterIndex, Date value) throws SQLException {
+        ps.setTimestamp(parameterIndex, new java.sql.Timestamp(value.getTime()));
+    }
+
+    public String formatValue(Date value) {
+        return "to_timestamp(\'" + value.toString() + "\', " + EventConstants.POSTGRES_DATE_FORMAT +")";
     }
 
 }

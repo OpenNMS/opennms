@@ -35,16 +35,17 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
+
 /** Encapsulates all node filtering functionality. */
-public class NodeNameLikeFilter extends Object implements Filter {
+public class NodeNameLikeFilter implements Filter {
     public static final String TYPE = "nodenamelike";
 
     protected String substring;
 
     public NodeNameLikeFilter(String substring) {
-        if (substring == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
 
         this.substring = substring;
     }
@@ -82,5 +83,10 @@ public class NodeNameLikeFilter extends Object implements Filter {
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.createCriteria("node").add(Restrictions.like("label", this.substring, MatchMode.ANYWHERE));
+        
     }
 }

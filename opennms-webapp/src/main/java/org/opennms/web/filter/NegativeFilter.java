@@ -29,16 +29,35 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
-    public static final String TYPE = "alarmTypeFilter";    
- 
-    public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+public class NegativeFilter<T> extends EqualsFilter<T> implements BaseFilter {
+    
+    
+    public NegativeFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
+        super(type, fieldName, daoPropertyName, value, filterName);
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(Expression.or(Restrictions.ne(m_daoPropertyName, m_value), Restrictions.isNull(m_daoPropertyName)));
+    }
+
+    public String getDescription() {
+        return m_filterName + " <> " + m_value;
+    }
+
+    public String getParamSql() {
+        System.out.println("(" + m_fieldName + "<>? OR " + m_fieldName + " IS NULL)");
+        return " (" + m_fieldName + "<>? OR " + m_fieldName + " IS NULL)";
+    }
+
+    public String getSql() {
+        System.out.println(" ("+ m_fieldName +"<>'" + m_value + "' OR " + m_fieldName + " IS NULL)");
+        return " ("+ m_fieldName +"<>'" + m_value + "' OR " + m_fieldName + " IS NULL)";
     }
 
 }

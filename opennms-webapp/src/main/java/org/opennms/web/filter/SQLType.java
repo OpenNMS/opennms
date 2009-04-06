@@ -29,16 +29,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
-    public static final String TYPE = "alarmTypeFilter";    
- 
-    public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
-    }
+public interface SQLType<T> {
+    
+    public static final SQLType<Integer> INT = new IntegerSqlType();
+    public static final SQLType<String> STRING = new StringSqlType();
+    public static final SQLType<Date> DATE = new DateSqlType();
+    
+    public String formatValue(T value);
 
+    public void bindParam(PreparedStatement ps, int parameterIndex, T value) throws SQLException;
 }
