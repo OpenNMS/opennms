@@ -29,16 +29,47 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
-    public static final String TYPE = "alarmTypeFilter";    
- 
-    public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
+
+public class BetweenFilter<T> extends EqualsFilter<T> implements BaseFilter {
+    
+    T m_value2;
+    
+    public BetweenFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, T value2, String filterName) {
+        super(type, fieldName, daoPropertyName, value, filterName);
+        m_value2 = value2;
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(Restrictions.between(m_daoPropertyName, m_value, m_value2));
+    }
+
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+        m_sqlType.bindParam(ps, parameterIndex, m_value);
+        m_sqlType.bindParam(ps, parameterIndex + 1, m_value2);
+        return 2;
+    }
+
+    public String getDescription() {
+        return " " + m_filterName + " = " + m_value  + " and " + m_value2;
+    }
+
+    public String getParamSql() {
+        return m_fieldName + " >=? AND " + m_fieldName + " <=?";
+    }
+
+    public String getSql() {
+        return " AND " + m_fieldName + " >" + m_sqlType.formatValue(m_value) + " AND " + m_fieldName + " <=" + m_sqlType.formatValue(m_value2);
+    }
+
+    public String getTextDescription() {
+        return getDescription();
     }
 
 }

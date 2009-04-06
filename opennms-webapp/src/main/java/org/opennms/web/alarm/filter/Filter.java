@@ -32,61 +32,9 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.BaseFilter;
 
 /** Convenience class to determine what sort of events to include in a query. */
-public interface Filter {
+public interface Filter extends BaseFilter {
 
-    /**
-     * Returns an expresions for a SQL where clause. Remember to include a
-     * trailing space, but no leading AND or OR.
-     */
-    public String getSql();
-    
-    /**
-     * Returns a parameterized SQL where clause.  Remember to include a
-     * trailing space, but no leading AND or OR.
-     */
-    public String getParamSql();
-    
-    /**
-     * Binds the parameter values corresponding to the ? tokens in the string
-     * returned from getParamSql() to a prepared statement.  Returns the number
-     * of parameters that were bound.
-     */
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
-
-    /**
-     * Returns a terse string (including a "=") that describes this filter in
-     * such a way to easily be included in an HTTP GET parameter.
-     * 
-     * <p>
-     * Some examples:
-     * <ul>
-     * <li>"node=1"</li>
-     * <li>"interface=192.168.0.1"</li>
-     * <li>"severity=3"</li>
-     * <li>"nodenamelike=opennms"</li>
-     * </ul>
-     * </p>
-     */
-    public String getDescription();
-
-    /**
-     * Returns a terse but human-readable string describing this filter in such
-     * a way to easily be included in a search results list.
-     * 
-     * <p>
-     * Some examples (corresponding to the examples in
-     * {@link #getDescription getDescription}):
-     * <ul>
-     * <li>"node=nodelabel_of_node_1"</li>
-     * <li>"interface=192.168.0.1"</li>
-     * <li>"severity=Normal"</li>
-     * <li>"node name containing \"opennms\""</li>
-     * </ul>
-     * </p>
-     */
-    public String getTextDescription();
 }

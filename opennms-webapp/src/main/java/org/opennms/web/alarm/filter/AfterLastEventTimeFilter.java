@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsCriteria;
 
 public class AfterLastEventTimeFilter extends Object implements Filter {
     public static final String TYPE = "afterlasteventtime";
@@ -88,5 +89,10 @@ public class AfterLastEventTimeFilter extends Object implements Filter {
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        // TODO Auto-generated method stub
+        
     }
 }
