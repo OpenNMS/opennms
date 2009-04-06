@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -115,7 +116,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         alarm.acknowledgeTime = onmsAlarm.getAckTime();
 
         alarm.nodeLabel = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getLabel() : ""; 
-        //alarm.serviceName = //rs.getString("serviceName");
+        alarm.serviceName = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getName() : "";
         return alarm;
     }
     
@@ -146,7 +147,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
         
-        
+        Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
+        while(alarmsIt.hasNext()){
+            OnmsAlarm alarm = alarmsIt.next();
+            alarm.setSeverity(OnmsSeverity.CLEARED);
+            alarm.setAlarmType(Alarm.RESOLUTION_TYPE);
+            m_alarmDao.update(alarm);
+        }
     }
     
     @Transactional
@@ -156,7 +163,18 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     @Transactional
     public int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria) {
-        return null;
+        OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(crit);
+        
+        int[] alarmCounts = new int[8];
+        alarmCounts[OnmsSeverity.CLEARED.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.CLEARED.getId())));
+        alarmCounts[OnmsSeverity.CRITICAL.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.CRITICAL.getId())));
+        alarmCounts[OnmsSeverity.INDETERMINATE.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.INDETERMINATE.getId())));
+        alarmCounts[OnmsSeverity.MAJOR.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.MAJOR.getId())));
+        alarmCounts[OnmsSeverity.MINOR.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.MINOR.getId())));
+        alarmCounts[OnmsSeverity.NORMAL.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.NORMAL.getId())));
+        alarmCounts[OnmsSeverity.WARNING.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severityId", OnmsSeverity.WARNING.getId())));
+        return alarmCounts;
     }
     
     @Transactional
