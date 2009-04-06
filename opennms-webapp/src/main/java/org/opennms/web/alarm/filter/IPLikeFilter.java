@@ -32,20 +32,17 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.LikeFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class IPLikeFilter extends Object implements Filter {
+public class IPLikeFilter extends LikeFilter<String> implements Filter {
     public static final String TYPE = "iplike";
 
     protected String ipLikePattern;
 
     public IPLikeFilter(String ipLikePattern) {
-        if (ipLikePattern == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
+        super(SQLType.STRING, "IPADDR", "ipAddr", ipLikePattern, "ipLike");
         this.ipLikePattern = ipLikePattern;
     }
 
@@ -55,30 +52,5 @@ public class IPLikeFilter extends Object implements Filter {
     
     public String getParamSql() {
         return (" IPLIKE(IPADDR,?)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipLikePattern);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipLikePattern);
-    }
-
-    public String getTextDescription() {
-        return ("IP Address like \"" + this.ipLikePattern + "\"");
-    }
-
-    public String toString() {
-        return ("<IPLikeFilter: " + this.getDescription() + ">");
-    }
-
-    public String getIpLikePattern() {
-        return (this.ipLikePattern);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
     }
 }

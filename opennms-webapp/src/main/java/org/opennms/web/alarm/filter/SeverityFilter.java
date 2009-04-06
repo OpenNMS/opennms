@@ -37,51 +37,15 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates severity filtering functionality. */
-public class SeverityFilter extends Object implements Filter {
+public class SeverityFilter extends EqualsFilter<Integer> implements Filter {
     public static final String TYPE = "severity";
 
-    private OnmsSeverity m_severity;
-
     public SeverityFilter(OnmsSeverity severity) {
-        m_severity = severity;
-    }
-
-    public String getSql() {
-        return (" SEVERITY=" + m_severity.getId());
-    }
-    
-    public String getParamSql() {
-        return (" SEVERITY=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, m_severity.getId());
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + m_severity.getId());
-    }
-
-    public String getTextDescription() {
-        return (TYPE + "=" + m_severity.getLabel());
-    }
-
-    public String toString() {
-        return ("<AlarmFactory.SeverityFilter: " + this.getDescription() + ">");
-    }
-
-    public int getSeverity() {
-        return m_severity.getId();
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
+        super(SQLType.INT, "SEVERITY", "severityId", severity.getId(), "severity");
     }
 }

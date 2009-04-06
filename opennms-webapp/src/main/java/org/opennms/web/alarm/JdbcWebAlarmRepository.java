@@ -108,7 +108,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
 
             public void visitLimit(int limit, int offset) {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
-            }
+            } 
 
         });
 
@@ -126,7 +126,6 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
                 criteria.visit(new BaseAlarmCriteriaVisitor<SQLException>() {
                     @Override
                     public void visitFilter(Filter filter) throws SQLException {
-                        System.out.println("filter sql: " + filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });

@@ -29,16 +29,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
-    public static final String TYPE = "alarmTypeFilter";    
- 
-    public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+public class NegativeExactFilter<T> extends NegativeFilter<T> {
+
+    public NegativeExactFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
+        super(type, fieldName, daoPropertyName, value, filterName);
     }
-
+    
+    public String getSql(){
+        return " " + m_fieldName + "<>" + m_sqlType.formatValue(m_value);
+    }
+    
+    public String getParamSql(){
+        return " " + m_fieldName + "<>?"; 
+    }
+    
+    public String getDescription(){
+        return " " + m_fieldName + "<>" + m_sqlType.formatValue(m_value);
+    }
+    
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(Restrictions.ne(m_daoPropertyName, m_value));
+        
+    }
 }

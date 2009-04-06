@@ -31,38 +31,14 @@
  */
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 
-public class AlarmIdFilter implements Filter {
+public class AlarmIdFilter extends EqualsFilter<Integer> implements Filter {
     public static final String TYPE = "alarmId";
     
-    int m_alarmId;
-    
     public AlarmIdFilter(int alarmId) {
-        m_alarmId = alarmId;
+        super(SQLType.INT, "ALARMS.ALARMID", "id", alarmId, "alarmId");
     }
-
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        ps.setInt(parameterIndex, m_alarmId);
-        return 1;
-    }
-
-    public String getDescription() {
-        return ( TYPE + "=" + m_alarmId);
-    }
-
-    public String getParamSql() {
-        return " ALARMS.ALARMID=?";
-    }
-
-    public String getSql() {
-        return " ALARMS.ALARMID="+m_alarmId;
-    }
-
-    public String getTextDescription() {
-        return getDescription();
-    }
-    
 }

@@ -269,8 +269,13 @@ public class DatabasePopulator {
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
+        alarm.setNode(m_node1);
+        alarm.setDescription("This is a test alarm");
+        alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
+        alarm.setIpAddr("192.168.1.1");
         alarm.setSeverity(OnmsSeverity.NORMAL);
+        alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();

@@ -34,6 +34,8 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.opennms.netmgt.model.OnmsCriteria;
+
 public class ConditionalFilter implements Filter {
     public static final String TYPE = "conditionalFilter";
     
@@ -126,6 +128,11 @@ public class ConditionalFilter implements Filter {
         }
         
         return retVal;
+    }
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        // TODO Auto-generated method stub
+        
     }
 
 }
