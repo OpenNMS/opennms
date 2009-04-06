@@ -34,6 +34,8 @@ package org.opennms.web.outage;
 
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * A JavaBean for holding information about a single outage.
  * 
@@ -94,71 +96,71 @@ public class Outage {
     }
 
     public int getId() {
-        return this.outageId;
+        return outageId;
     }
 
     public int getNodeId() {
-        return (this.nodeId);
+        return (nodeId);
     }
 
     public String getIpAddress() {
-        return (this.ipAddress);
+        return (ipAddress);
     }
 
     /** can be null */
     public String getHostname() {
-        return (this.hostname);
+        return (hostname);
     }
 
     /** can be null */
     public String getNodeLabel() {
-        return (this.nodeLabel);
+        return (nodeLabel);
     }
 
     public int getServiceId() {
-        return (this.serviceId);
+        return (serviceId);
     }
 
     /** can be null */
     public String getServiceName() {
-        return (this.serviceName);
+        return (serviceName);
     }
 
     public Date getLostServiceTime() {
-        return (this.lostServiceTime);
+        return (lostServiceTime);
     }
 
     /** can be null */
     public Date getRegainedServiceTime() {
-        return this.regainedServiceTime;
+        return regainedServiceTime;
     }
 
     /** can be null */
     public Integer getLostServiceEventId() {
-        return this.lostServiceEventId;
+        return lostServiceEventId;
     }
 
     /** can be null */
     public Integer getRegainedServiceEventId() {
-        return this.regainedServiceEventId;
+        return regainedServiceEventId;
     }
 
     /** can be null */
     public Integer getLostServiceNotificationId() {
-        return this.lostServiceNotificationId;
+        return lostServiceNotificationId;
     }
 
     /** can be null */
     public String getLostServiceNotificationAcknowledgedBy() {
-        return this.lostServiceNotificationAcknowledgedBy;
+        return lostServiceNotificationAcknowledgedBy;
     }
 
     public Date getSuppressTime() {
-        return this.suppressTime;
+        return suppressTime;
     }
     
     public String getSuppressedBy() {
-        return this.suppressedBy;
+        return suppressedBy;
     }
     
     /**
@@ -169,4 +171,19 @@ public class Outage {
         return (this.getLostServiceTime());
     }
 
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("ID", getId())
+            .append("node ID", getNodeId())
+            .append("IP Address", getIpAddress())
+            .append("Hostname", getHostname())
+            .append("Node Label", getNodeLabel())
+            .append("Service Name", getServiceName())
+            .append("Lost Service Time", getLostServiceTime())
+            .append("Regained Service Time", getRegainedServiceTime())
+            .append("Acknowledged By", getLostServiceNotificationAcknowledgedBy())
+            .append("Suppress Time", getSuppressTime())
+            .append("Suppressed By", getSuppressedBy())
+            .toString();
+    }
 }

@@ -1,13 +1,16 @@
 package org.opennms.web.outage;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.web.outage.OutageFactory.OutageType;
 import org.opennms.web.outage.OutageFactory.SortStyle;
 import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
+import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.OutageCriteria.BaseOutageCriteriaVisitor;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +35,30 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
     }
 
     public Outage[] getMatchingOutages(OutageCriteria criteria) {
-        // TODO Auto-generated method stub
-        return null;
+        String sql = getSql("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, "
+                            + "NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES "
+                            + "JOIN NODE USING(NODEID) "
+                            + "JOIN IPINTERFACE ON OUTAGES.NODEID=IPINTERFACE.NODEID AND OUTAGES.IPADDR=IPINTERFACE.IPADDR "
+                            + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND "
+                            + "OUTAGES.SERVICEID=IFSERVICES.SERVICEID "
+                            + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID "
+                            + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID", criteria);
+        return getOutages(sql, paramSetter(criteria));
     }
 
-    public Outage getOutage(int OutageId) {
-        // TODO Auto-generated method stub
-        return null;
+    public Outage getOutage(int outageId) {
+        OutageCriteria criteria = new OutageCriteria(new OutageIdFilter(outageId));
+        Outage[] outages = getMatchingOutages(criteria);
+        if (outages.length == 0) {
+            return null;
+        } else {
+            return outages[0];
+        }
+    }
+
+    private Outage[] getOutages(String sql, PreparedStatementSetter setter) {
+        List<Outage> outages = queryForList(sql, setter, new OutageMapper());
+        return outages.toArray(new Outage[0]);
     }
 
     private String getSql(final String selectClause, final OutageCriteria criteria) {
@@ -113,7 +133,6 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                 criteria.visit(new BaseOutageCriteriaVisitor<SQLException>() {
                     @Override
                     public void visitFilter(Filter filter) throws SQLException {
-                        System.out.println("filter sql: " + filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
@@ -121,5 +140,36 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         };
     }
     
+    private static class OutageMapper implements ParameterizedRowMapper<Outage> {
+        public Outage mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Outage outage = new Outage();
+            outage.outageId = rs.getInt("outageID");
+            outage.lostServiceEventId = ((Integer) rs.getObject("svcLostEventID"));
+            outage.regainedServiceEventId = ((Integer) rs.getObject("svcRegainedEventID"));
+            outage.nodeId = rs.getInt("nodeID");
+            outage.ipAddress = ((String) rs.getObject("ipAddr"));
+            outage.serviceId = rs.getInt("serviceID");
+            outage.lostServiceTime = getTimestamp("ifLostService", rs);
+            outage.regainedServiceTime = getTimestamp("ifRegainedService", rs);
+            outage.suppressTime = getTimestamp("suppressTime", rs);
+            outage.suppressedBy = ((String) rs.getObject("suppressedBy"));
+            
+            outage.hostname = ((String) rs.getObject("ipHostname"));
+            outage.lostServiceNotificationAcknowledgedBy = ((String) rs.getObject("answeredBy"));
+            outage.lostServiceNotificationId = ((Integer) rs.getObject("notifyId"));
+            outage.nodeLabel = ((String) rs.getObject("nodeLabel"));
+            outage.serviceName = ((String) rs.getObject("serviceName"));
+
+            return outage;
+        }
+        
+        private Date getTimestamp(String field, ResultSet rs) throws SQLException{
+            if(rs.getTimestamp(field) != null){
+                return new Date(rs.getTimestamp(field).getTime());
+            }else{
+                return null;
+            }
+        }
+    }
 
 }
