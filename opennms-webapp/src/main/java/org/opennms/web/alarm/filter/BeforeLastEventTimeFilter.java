@@ -45,4 +45,8 @@ public class BeforeLastEventTimeFilter extends LessThanFilter<Date> implements F
     public BeforeLastEventTimeFilter(Date date) {
         super(SQLType.DATE, "LASTEVENTTIME", "lastEventTime", date, "beforeLastEventTime");
     }
+    
+    public BeforeLastEventTimeFilter(long epochTime) {
+        this(new Date(epochTime));
+    }
 }

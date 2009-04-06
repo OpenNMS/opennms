@@ -42,12 +42,12 @@ import org.opennms.web.filter.SQLType;
 public class AfterFirstEventTimeFilter extends GreaterThanFilter<Date> implements Filter {
     public static final String TYPE = "afterfirsteventtime";
 
-    protected Date date;
-
     public AfterFirstEventTimeFilter(Date date) {
         super(SQLType.DATE, "FIRSTEVENTTIME", "firstEventTime", date, "afterfirstEventTime");
-
-        this.date = date;
+    }
+    
+    public AfterFirstEventTimeFilter(long epochTime){
+        this(new Date(epochTime));
     }
 
 }
