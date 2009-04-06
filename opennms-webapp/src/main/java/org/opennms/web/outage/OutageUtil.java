@@ -54,7 +54,7 @@ import org.opennms.web.outage.filter.NegativeInterfaceFilter;
 import org.opennms.web.outage.filter.NegativeNodeFilter;
 import org.opennms.web.outage.filter.NegativeServiceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
-import org.opennms.web.outage.filter.OutageFilter;
+import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
@@ -81,8 +81,8 @@ public abstract class OutageUtil extends Object {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
             filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
-        } else if (type.equals(OutageFilter.TYPE)) {
-            filter = new OutageFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(OutageIdFilter.TYPE)) {
+            filter = new OutageIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {

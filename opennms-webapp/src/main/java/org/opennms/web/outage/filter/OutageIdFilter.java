@@ -36,12 +36,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /** Encapsulates all node filtering functionality. */
-public class OutageFilter extends Object implements Filter {
+public class OutageIdFilter extends Object implements Filter {
     public static final String TYPE = "outage";
 
     protected int outageId;
 
-    public OutageFilter(int outageId) {
+    public OutageIdFilter(int outageId) {
         this.outageId = outageId;
     }
 
