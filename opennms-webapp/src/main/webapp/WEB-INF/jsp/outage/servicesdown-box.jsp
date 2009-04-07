@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Apr 07: Move to the dispatcher - ranger@opennms.org
 // 2007 Feb 19: Convert to MVC. - dj@opennms.org
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -53,23 +54,8 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%!
-    public static final int ROW_COUNT = 12;
-    private OutageModel m_model = new OutageModel();    
-%>
-
-<%
-    OutageSummary[] summaries = m_model.getCurrentOutageSummaries();
-    int last = (summaries.length <= ROW_COUNT) ? summaries.length : ROW_COUNT;
-    OutageSummary[] displaySummaries = new OutageSummary[last];
-    System.arraycopy(summaries, 0, displaySummaries, 0, last);
-    
-    pageContext.setAttribute("summaries", displaySummaries);
-    pageContext.setAttribute("moreCount", summaries.length - displaySummaries.length);
-%>
-
 <!-- includes/servicesdown-box.jsp -->
-<c:url var="headingLink" value="outage/current.jsp"/>
+<c:url var="headingLink" value="outage/list.htm"/>
 <h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
 <div class="boxWrapper">
   <c:choose>
@@ -91,8 +77,8 @@
     
       <c:if test="${moreCount > 0}">
         <p class="noBottomMargin" align="right">
-          <c:url var="moreLink" value="outage/current.jsp"/>
-          <a href="${moreLink}">${moreCount} more...</a>
+          <c:url var="moreLink" value="outage/list.htm"/>
+          <a href="${moreLink}">${moreCount} more nodes with outages...</a>
         </p>
       </c:if>
     </c:otherwise>

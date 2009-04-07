@@ -104,7 +104,8 @@
 	          value="org.opennms.web.controller.DaemonStatusBinder" />
 	<property name="successView" value="daemonstatus" />
   </bean>-->
-  
+
+  <!--  
   <bean name="outageFilterView"
   	class="org.opennms.web.svclayer.outage.OutagesFilteringView">
     <property name="categoryDao" ref="categoryDao"/>
@@ -113,15 +114,6 @@
   <bean name="outageListBuilder"
         class="org.opennms.web.svclayer.outage.OutageListBuilder"/>
   
-  <bean name="/outage/list.htm"
-		class="org.opennms.web.controller.OutageListController">
-    <property name="outageService" ref="outageService" />
-    <property name="successView" value="outage/list"/>
-    <property name="defaultRowsDisplayed" value="25"/>
-    <property name="filterView" ref="outageFilterView"/>
-    <property name="outageListBuilder" ref="outageListBuilder"/>
-  </bean>
-	
   <bean name="/outage/displayAllOutages.htm"
 		class="org.opennms.web.controller.OutageAllController">
 	<property name="outageService" ref="outageService" />
@@ -139,6 +131,7 @@
 	<property name="outageService" ref="outageService" />
 	<property name="successView" value="outage/displayResolvedOutages"/>
   </bean>
+  -->
 
   <bean name="/distributedStatusSummary.htm"
 		class="org.opennms.web.controller.DistributedStatusSummaryController">
@@ -220,12 +213,12 @@
     <property name="webAlarmRepository" ref="webAlarmRepository" />
     <property name="redirectView" value="/alarm/list.htm" />
   </bean>
-  
+
   <bean name="/alarm/changeSeverity" class="org.opennms.web.controller.alarm.AlarmSeverityChangeController">
     <property name="webAlarmRepository" ref="webAlarmRepository" />
     <property name="redirectView" value="/alarm/list.htm" />
   </bean>
-  
+
   <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
     <property name="successView" value="alarm/list" />
     <property name="defaultShortLimit" value="20" />
@@ -234,7 +227,23 @@
     <property name="defaultSortStyle" value="ID" />
     <property name="webAlarmRepository" ref="webAlarmRepository" />
   </bean>
+
+  <alias name="/outage/list.htm" alias="/outage/list" />
   
+  <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
+    <property name="successView" value="outage/list" />
+    <property name="defaultShortLimit" value="20" />
+    <property name="defaultLongLimit" value="10" />
+    <property name="defaultOutageType" value="CURRENT" />
+    <property name="defaultSortStyle" value="ID" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+  
+  <bean name="/outage/servicesdown-box.htm" class="org.opennms.web.controller.outage.OutageBoxController">
+    <property name="successView" value="outage/servicesdown-box" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+
   <bean name="/admin/distributed/locationMonitorResume.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
     <property name="commandName"><value>command</value></property>
     <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>

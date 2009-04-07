@@ -47,9 +47,9 @@ import org.opennms.web.outage.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class OutageQueryParms extends Object {
-    public OutageFactory.SortStyle sortStyle;
+    public SortStyle sortStyle;
 
-    public OutageFactory.OutageType outageType;
+    public OutageType outageType;
 
     public List<Filter> filters;
 
