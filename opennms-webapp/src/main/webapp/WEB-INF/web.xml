@@ -215,7 +215,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/outage/current.jsp</url-pattern>
+    <url-pattern>/outage/list.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
@@ -470,10 +470,6 @@
   <servlet>
     <servlet-name>queryNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.NoticeQueryServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>queryOutage</servlet-name>
-    <servlet-class>org.opennms.web.outage.OutageQueryServlet</servlet-class>
   </servlet>
   
   <!-- Servlet for updating the notification status -->
@@ -789,10 +785,12 @@
     <servlet-class>org.opennms.web.element.ManageSnmpIntfServlet</servlet-class>
   </servlet>
 
+  <!--
   <servlet>
     <servlet-name>filterOutage</servlet-name>
     <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
   </servlet>
+  -->
 
   <!-- servlet>
     <servlet-name>invClogin</servlet-name>
@@ -887,10 +885,6 @@
   <servlet-mapping>
     <servlet-name>queryNotice</servlet-name>
     <url-pattern>/notification/browse</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>queryOutage</servlet-name>
-    <url-pattern>/outage/browse</url-pattern>
   </servlet-mapping>
   
   <!--servlet mapping for update notification status servlet -->
@@ -1148,11 +1142,6 @@
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>filterOutage</servlet-name>
-    <url-pattern>/outage/list</url-pattern>
-  </servlet-mapping>
-   
-  <servlet-mapping>
     <servlet-name>gwtDispatcher</servlet-name>
     <url-pattern>*.gwt</url-pattern>
   </servlet-mapping>
@@ -1168,8 +1157,8 @@
   </servlet-mapping>
   
   <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>*.htm</url-pattern>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
@@ -1183,7 +1172,11 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/changeSeverity</url-pattern>
   </servlet-mapping>
-  
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/outage/list</url-pattern>
+  </servlet-mapping>
+
   <!-- Although this will be matched by the above *.htm url-pattern,
        this servlet-mapping needs to be here because wildcard url-pattern
        elements don't seem to work as a welcome-page entry. -->

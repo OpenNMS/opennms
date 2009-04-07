@@ -10,4 +10,8 @@ public interface WebOutageRepository {
 
     public abstract Outage[] getMatchingOutages(OutageCriteria criteria);
 
+    public abstract int countMatchingOutageSummaries(OutageCriteria criteria);
+
+    public abstract OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria);
+    
 }

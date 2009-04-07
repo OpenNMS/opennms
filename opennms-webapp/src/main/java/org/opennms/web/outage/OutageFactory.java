@@ -43,9 +43,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
@@ -54,7 +52,6 @@ import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
-import org.springframework.util.Assert;
 
 /**
  * Encapsulates all querying functionality for outages.
@@ -64,180 +61,6 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class OutageFactory extends Object {
-
-    /** Convenience class to determine sort style of a query. */
-    public static enum SortStyle {
-        NODE("node"),
-        INTERFACE("interface"),
-        SERVICE("service"),
-        IFLOSTSERVICE("iflostservice"),
-        IFREGAINEDSERVICE("ifregainedservice"),
-        ID("id"),
-        REVERSE_NODE("rev_node"),
-        REVERSE_INTERFACE("rev_interface"),
-        REVERSE_SERVICE("rev_service"),
-        REVERSE_IFLOSTSERVICE("rev_iflostservice"),
-        REVERSE_IFREGAINEDSERVICE("rev_ifregainedservice"),
-        REVERSE_ID("rev_id");
-        
-        private static final Map<String, SortStyle> m_sortStylesString;
-        
-        private String m_shortName;
-        
-        static {
-            m_sortStylesString = new HashMap<String, SortStyle>();
-            for (SortStyle sortStyle : SortStyle.values()) {
-                m_sortStylesString.put(sortStyle.getShortName(), sortStyle);
-                
-            }
-        }
-        
-        private SortStyle(String shortName) {
-            m_shortName = shortName;
-        }
-
-        public String toString() {
-            return ("SortStyle." + getName());
-        }
-
-        public String getName() {
-            return name();
-        }
-
-        public String getShortName() {
-            return m_shortName;
-        }
-
-        public static SortStyle getSortStyle(String sortStyleString) {
-            Assert.notNull(sortStyleString, "Cannot take null parameters.");
-
-            return m_sortStylesString.get(sortStyleString.toLowerCase());
-        }
-
-        /**
-         * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-         * to a given sort style.
-         */
-        protected String getOrderByClause() {
-            String clause = null;
-            
-            switch (this) {
-                case NODE:
-                    clause = " ORDER BY NODELABEL ASC";
-                    break;
-                case REVERSE_NODE:
-                    clause = " ORDER BY NODELABEL DESC";
-                    break;
-                case INTERFACE:
-                    clause = " ORDER BY IPADDR ASC";
-                    break;
-                case REVERSE_INTERFACE:
-                    clause = " ORDER BY IPADDR DESC";
-                    break;
-                case SERVICE:
-                    clause = " ORDER BY SERVICENAME ASC";
-                    break;
-                case REVERSE_SERVICE:
-                    clause = " ORDER BY SERVICENAME DESC";
-                    break;
-                case IFLOSTSERVICE:
-                    clause = " ORDER BY IFLOSTSERVICE DESC";
-                    break;
-                case REVERSE_IFLOSTSERVICE:
-                    clause = " ORDER BY IFLOSTSERVICE ASC";
-                    break;
-                case IFREGAINEDSERVICE:
-                    clause = " ORDER BY IFREGAINEDSERVICE DESC";
-                    break;
-                case REVERSE_IFREGAINEDSERVICE:
-                    clause = " ORDER BY IFREGAINEDSERVICE ASC";
-                    break;
-                case ID:
-                    clause = " ORDER BY OUTAGEID DESC";
-                    break;
-                case REVERSE_ID:
-                    clause = " ORDER BY OUTAGEID ASC";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown SortStyle: " + this);
-            }
-            return clause;
-        }
-    }
-
-    /**
-     * Convenience class to determine what sort of notices to include in a
-     * query.
-     */
-    public static enum OutageType {
-        CURRENT("current"), RESOLVED("resolved"), BOTH("both"), SUPPRESSED("suppressed");
-
-        private static final Map<String, OutageFactory.OutageType> s_outageTypesString;
-        
-        private String m_shortName;
-
-        static {
-            s_outageTypesString = new HashMap<String, OutageType>();
-
-            for (OutageType outageType : OutageType.values()) {
-                s_outageTypesString.put(outageType.getShortName(), outageType);
-            }
-        }
-
-        private OutageType(String shortName) {
-            m_shortName = shortName;
-        }
-
-        public String toString() {
-            return "Outage." + getName();
-        }
-
-        public String getName() {
-            return name();
-        }
-
-        public String getShortName() {
-            return m_shortName;
-        }
-        
-        /**
-         * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-         * to a given sort style.
-         * 
-         * @param outType
-         *            the outage type to map to a clause
-         */
-        protected String getClause() {
-            String clause = null;
-
-            switch (this) {
-                case CURRENT:
-                    clause = " IFREGAINEDSERVICE IS NULL AND SUPPRESSTIME IS NULL ";
-                    break;
-                case RESOLVED:
-                    clause = " IFREGAINEDSERVICE IS NOT NULL AND SUPPRESSTIME IS NULL ";
-                    break;
-                case SUPPRESSED:
-                    clause = " ((SUPPRESSEDTIME IS NOT NULL) AND (SUPPRESSTIME > NOW())) AND IFREGAINEDSERVICE IS NULL";
-                    break;
-                case BOTH:
-                    clause = " TRUE AND SUPPRESSTIME IS NULL "; // will return both!
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown OutageFactory.OutageType: " + this.getName());
-            }
-
-            return clause;
-        }
-
-        public static OutageType getOutageType(String outageTypeString) {
-            Assert.notNull(outageTypeString, "Cannot take null parameters.");
-
-            return s_outageTypesString.get(outageTypeString.toLowerCase());
-        }
-    }
-
-    public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
     protected static final Category log = ThreadCategory.getInstance("OutageFactory");
 
@@ -344,7 +167,7 @@ public class OutageFactory extends Object {
      * identifier.
      */
     public static Outage[] getOutages() throws SQLException {
-        return OutageFactory.getOutages(DEFAULT_SORT_STYLE, OutageType.CURRENT, new Filter[0], -1, -1);
+        return OutageFactory.getOutages(SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, new Filter[0], -1, -1);
     }
 
     /** Return all unresolved outages sorted by the given sort style. */
@@ -439,7 +262,7 @@ public class OutageFactory extends Object {
 
     /** Return all current outages sorted by time for the given node. */
     public static Outage[] getOutagesForNode(int nodeId) throws SQLException {
-        return (getOutagesForNode(nodeId, DEFAULT_SORT_STYLE, OutageType.CURRENT));
+        return (getOutagesForNode(nodeId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
     }
 
     /**
@@ -457,7 +280,7 @@ public class OutageFactory extends Object {
 
     /** Return all unresolved notices for the given interface. */
     public static Outage[] getOutagesForInterface(int nodeId, String ipAddress) throws SQLException {
-        return (getOutagesForInterface(nodeId, ipAddress, DEFAULT_SORT_STYLE, OutageType.CURRENT));
+        return (getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
     }
 
     /**
@@ -486,7 +309,7 @@ public class OutageFactory extends Object {
         }
 
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForInterface(nodeId, ipAddress, DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, outageType);
 
         return outages;
     }
@@ -496,7 +319,7 @@ public class OutageFactory extends Object {
      * IP address, regardless of what node they belong to.
      */
     public static Outage[] getOutagesForInterface(String ipAddress) throws SQLException {
-        return (getOutagesForInterface(ipAddress, DEFAULT_SORT_STYLE, OutageType.CURRENT));
+        return (getOutagesForInterface(ipAddress, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
     }
 
     /**
@@ -525,14 +348,14 @@ public class OutageFactory extends Object {
         }
 
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForInterface(ipAddress, DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForInterface(ipAddress, SortStyle.DEFAULT_SORT_STYLE, outageType);
 
         return outages;
     }
 
     /** Return all unresolved outages sorted by time for the given service. */
     public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
-        return (getOutagesForService(nodeId, ipAddress, serviceId, DEFAULT_SORT_STYLE, OutageType.CURRENT));
+        return (getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
     }
 
     /**
@@ -561,17 +384,17 @@ public class OutageFactory extends Object {
         }
 
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForService(nodeId, ipAddress, serviceId, DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType);
 
         return outages;
     }
 
     /**
-     * Return all unresloved outaged sorted by time for the given service type,
+     * Return all unresolved outages sorted by time for the given service type,
      * regardless of what node or interface they belong to.
      */
     public static Outage[] getOutagesForService(int serviceId) throws SQLException {
-        return (getOutagesForService(serviceId, DEFAULT_SORT_STYLE, OutageType.CURRENT));
+        return (getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
     }
 
     /**
@@ -597,7 +420,7 @@ public class OutageFactory extends Object {
      */
     public static Outage[] getOutagesForService(int serviceId, boolean includeResolved) throws SQLException {
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForService(serviceId, DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType);
 
         return outages;
     }

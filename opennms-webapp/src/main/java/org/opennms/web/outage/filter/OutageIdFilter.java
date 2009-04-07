@@ -35,6 +35,8 @@ package org.opennms.web.outage.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /** Encapsulates all node filtering functionality. */
 public class OutageIdFilter extends Object implements Filter {
     public static final String TYPE = "outage";
@@ -46,7 +48,7 @@ public class OutageIdFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" OUTAGEID= " + this.outageId);
+        return (" OUTAGEID= " + outageId);
     }
     
     public String getParamSql() {
@@ -54,24 +56,26 @@ public class OutageIdFilter extends Object implements Filter {
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.outageId);
+    	ps.setInt(parameterIndex, outageId);
     	return 1;
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.outageId);
+        return (TYPE + "=" + outageId);
     }
 
     public String getTextDescription() {
-        return (TYPE + " is " + this.outageId);
+        return (TYPE + " is " + outageId);
     }
 
     public String toString() {
-        return ("<OutageFactory.OutageFilter: " + this.getDescription() + ">");
+        return new ToStringBuilder(this)
+            .append("Outage ID", getOutage())
+            .toString();
     }
 
     public int getOutage() {
-        return (this.outageId);
+        return (outageId);
     }
 
     public boolean equals(Object obj) {

@@ -71,7 +71,7 @@
 <p>
   The outage ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
   <br/>
-  You can re-enter it here or <a href="outage/list">browse all of the
+  You can re-enter it here or <a href="outage/list.htm">browse all of the
   outages</a> to find the outage you are looking for.
 </p>
 
