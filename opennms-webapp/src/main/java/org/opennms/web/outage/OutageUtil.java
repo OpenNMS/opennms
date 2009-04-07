@@ -62,7 +62,7 @@ import org.opennms.web.outage.filter.ServiceFilter;
 public abstract class OutageUtil extends Object {
     protected static final String DOWN_COLOR = "red";
 
-    public static final String FILTER_SERVLET_URL_BASE = "outage/list";
+    public static final String FILTER_SERVLET_URL_BASE = "outage/list.htm";
 
     public static Filter getFilter(String filterString) {
         if (filterString == null) {
@@ -142,7 +142,7 @@ public abstract class OutageUtil extends Object {
 
     protected static final String[] LINK_IGNORES = new String[] { "sortby", "outtype", "limit", "multiple", "filter" };
 
-    public static String makeLink(HttpServletRequest request, OutageFactory.SortStyle sortStyle, OutageFactory.OutageType outageType, List<Filter> filters, int limit) {
+    public static String makeLink(HttpServletRequest request, SortStyle sortStyle, OutageType outageType, List<Filter> filters, int limit) {
         if (request == null || sortStyle == null || outageType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -177,7 +177,7 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
-    public static String makeLink(HttpServletRequest request, OutageQueryParms parms, OutageFactory.SortStyle sortStyle) {
+    public static String makeLink(HttpServletRequest request, OutageQueryParms parms, SortStyle sortStyle) {
         if (request == null || parms == null || sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -185,7 +185,7 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
-    public static String makeLink(HttpServletRequest request, OutageQueryParms parms, OutageFactory.OutageType outageType) {
+    public static String makeLink(HttpServletRequest request, OutageQueryParms parms, OutageType outageType) {
         if (request == null || parms == null || outageType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -217,7 +217,7 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, parms.outageType, newList, parms.limit);
     }
 
-    public static String makeHiddenTags(HttpServletRequest request, OutageFactory.SortStyle sortStyle, OutageFactory.OutageType outageType, List<Filter> filters, int limit) {
+    public static String makeHiddenTags(HttpServletRequest request, SortStyle sortStyle, OutageType outageType, List<Filter> filters, int limit) {
         if (request == null || sortStyle == null || outageType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -252,7 +252,7 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, parms.sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
-    public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, OutageFactory.SortStyle sortStyle) {
+    public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, SortStyle sortStyle) {
         if (request == null || parms == null || sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -260,7 +260,7 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
-    public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, OutageFactory.OutageType outageType) {
+    public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, OutageType outageType) {
         if (request == null || parms == null || outageType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

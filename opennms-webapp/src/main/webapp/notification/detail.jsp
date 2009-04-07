@@ -152,7 +152,7 @@
   <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
     <tr class="<%=eventSeverity%>">
       <td colspan="6">
-        <a href="outage/list?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
+        <a href="outage/list.htm?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
       </td>
     </tr>
   <% } %>

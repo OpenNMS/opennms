@@ -35,6 +35,7 @@ package org.opennms.web.outage.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
 
 /** Encapsulates all service filtering functionality. */
@@ -48,7 +49,7 @@ public class ServiceFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" OUTAGES.SERVICEID=" + this.serviceId);
+        return (" OUTAGES.SERVICEID=" + serviceId);
     }
     
     public String getParamSql() {
@@ -56,32 +57,34 @@ public class ServiceFilter extends Object implements Filter {
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.serviceId);
+    	ps.setInt(parameterIndex, serviceId);
     	return 1;
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.serviceId);
+        return (TYPE + "=" + serviceId);
     }
 
     public String getTextDescription() {
-        String serviceName = Integer.toString(this.serviceId);
+        String serviceName = Integer.toString(serviceId);
 
         try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+            serviceName = NetworkElementFactory.getServiceNameFromId(serviceId);
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not get the service name for id " + this.serviceId);
+            throw new IllegalStateException("Could not get the service name for id " + serviceId);
         }
 
         return (TYPE + " is " + serviceName);
     }
 
     public String toString() {
-        return ("<OutageFactory.ServiceFilter: " + this.getDescription() + ">");
+        return new ToStringBuilder(this)
+            .append("Service ID", getServiceId())
+            .toString();
     }
 
     public int getServiceId() {
-        return (this.serviceId);
+        return (serviceId);
     }
 
     public boolean equals(Object obj) {

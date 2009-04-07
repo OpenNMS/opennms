@@ -35,6 +35,7 @@ package org.opennms.web.outage.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
 
 /** Encapsulates all node filtering functionality. */
@@ -48,7 +49,7 @@ public class NodeFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" OUTAGES.NODEID=" + this.nodeId);
+        return (" OUTAGES.NODEID=" + nodeId);
     }
     
     public String getParamSql() {
@@ -56,18 +57,18 @@ public class NodeFilter extends Object implements Filter {
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.nodeId);
+    	ps.setInt(parameterIndex, nodeId);
     	return 1;
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.nodeId);
+        return (TYPE + "=" + nodeId);
     }
 
     public String getTextDescription() {
-        String nodeName = Integer.toString(this.nodeId);
+        String nodeName = Integer.toString(nodeId);
         try {
-            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
+            nodeName = NetworkElementFactory.getNodeLabel(nodeId);
         } catch (SQLException e) {
         }
 
@@ -75,11 +76,13 @@ public class NodeFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return ("<OutageFactory.NodeFilter: " + this.getDescription() + ">");
+        return new ToStringBuilder(this)
+            .append("Node ID", getNode())
+            .toString();
     }
 
     public int getNode() {
-        return (this.nodeId);
+        return (nodeId);
     }
 
     public boolean equals(Object obj) {

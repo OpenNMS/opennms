@@ -35,6 +35,8 @@ package org.opennms.web.outage.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /** Encapsulates all interface filtering functionality. */
 public class InterfaceFilter extends Object implements Filter {
     public static final String TYPE = "interface";
@@ -50,7 +52,7 @@ public class InterfaceFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" OUTAGES.IPADDR='" + this.ipAddress + "'");
+        return (" OUTAGES.IPADDR='" + ipAddress + "'");
     }
     
     public String getParamSql() {
@@ -58,24 +60,26 @@ public class InterfaceFilter extends Object implements Filter {
     }
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipAddress);
+    	ps.setString(parameterIndex, ipAddress);
     	return 1;
     }
 
     public String getDescription() {
-        return (TYPE + "=" + this.ipAddress);
+        return (TYPE + "=" + ipAddress);
     }
 
     public String getTextDescription() {
-        return (TYPE + " is " + this.ipAddress);
+        return (TYPE + " is " + ipAddress);
     }
 
     public String toString() {
-        return ("<OutageFactory.InterfaceFilter: " + this.getDescription() + ">");
+        return new ToStringBuilder(this)
+            .append("IP Address", getIpAddress())
+            .toString();
     }
 
     public String getIpAddress() {
-        return (this.ipAddress);
+        return (ipAddress);
     }
 
     public boolean equals(Object obj) {

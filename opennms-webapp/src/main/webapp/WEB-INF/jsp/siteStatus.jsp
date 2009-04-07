@@ -36,20 +36,10 @@
     </c:forEach>
   </table>
   
-<%--
-
-<c:import url="/displayCurrentOutages.htm">
-  <c:param name="building" value="${view.columnValue}"/>
-  <c:param name="quiet" value="true"/>
-  <c:param name="nonavbar" value="true"/>
-</c:import>
-
---%>
-
 <h3>Site outages</h3>
 <div class="boxWrapper">
   <c:url var="outagesLink" value="outage/list.htm">
-    <c:param name="building" value="${view.columnValue}"/>
+    <c:param name="filter" value="building=${view.columnValue}"/>
   </c:url>
   <p>
     <a href="${outagesLink}">View</a> current site outages.

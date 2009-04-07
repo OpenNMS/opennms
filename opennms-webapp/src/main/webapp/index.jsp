@@ -49,7 +49,7 @@
     <!-- Left Column -->
     <div id="index-contentleft">
       <!-- Services down box -->
-		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
 		<hr />
     </div>
 

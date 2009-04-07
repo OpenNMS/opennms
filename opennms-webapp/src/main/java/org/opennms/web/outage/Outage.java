@@ -68,16 +68,20 @@ public class Outage {
 
     protected String lostServiceNotificationAcknowledgedBy;
     
-    //JOED
-    
     protected Date suppressTime;
         
     protected String suppressedBy;
+
+    protected String building;
 
     protected Outage() {
     }
 
     protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy) {
+        this(outageId, nodeId, nodeLabel, ipAddress, hostname, serviceId, serviceName, lostServiceTime, regainedServiceTime, lostServiceEventId, regainedServiceEventId, lostServiceNotificationId, lostServiceNotificationAcknowledgedBy, suppressTime, suppressedBy, null);
+    }
+
+    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy, String building) {
         this.outageId = outageId;
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
@@ -92,7 +96,8 @@ public class Outage {
         this.lostServiceNotificationId = lostServiceNotificationId;
         this.lostServiceNotificationAcknowledgedBy = lostServiceNotificationAcknowledgedBy;
         this.suppressTime = suppressTime;
-        this.suppressedBy = suppressedBy;  
+        this.suppressedBy = suppressedBy;
+        this.building = building;
     }
 
     public int getId() {
@@ -162,10 +167,14 @@ public class Outage {
     public String getSuppressedBy() {
         return suppressedBy;
     }
-    
+
+    /** can be null */
+    public String getBuilding() {
+        return building;
+    }
+
     /**
-     * @deprecated Please use
-     *             {@link #getLostServiceTime getLostServiceTimeInstead}
+     * @deprecated Please use {@link #getLostServiceTime getLostServiceTime} instead.
      */
     public Date getTimeDown() {
         return (this.getLostServiceTime());
@@ -184,6 +193,7 @@ public class Outage {
             .append("Acknowledged By", getLostServiceNotificationAcknowledgedBy())
             .append("Suppress Time", getSuppressTime())
             .append("Suppressed By", getSuppressedBy())
+            .append("Building", getBuilding())
             .toString();
     }
 }
