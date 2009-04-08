@@ -32,51 +32,50 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.event.EventUtil;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates severity filtering functionality. */
-public class SeverityFilter extends Object implements Filter {
+public class SeverityFilter extends EqualsFilter<Integer> implements Filter {
     public static final String TYPE = "severity";
 
     protected int severity;
 
     public SeverityFilter(int severity) {
+        super(SQLType.INT, "EVENTSEVERITY", "eventSeverity", severity, "severity");
         this.severity = severity;
     }
 
-    public String getSql() {
-        return (" EVENTSEVERITY=" + this.severity);
-    }
-    
-    public String getParamSql() {
-        return (" EVENTSEVERITY=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.severity);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.severity);
-    }
-
-    public String getTextDescription() {
-        return (TYPE + "=" + EventUtil.getSeverityLabel(this.severity));
-    }
-
-    public String toString() {
-        return ("<EventFactory.SeverityFilter: " + this.getDescription() + ">");
-    }
-
-    public int getSeverity() {
-        return (this.severity);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" EVENTSEVERITY=" + this.severity);
+//    }
+//    
+//    public String getParamSql() {
+//        return (" EVENTSEVERITY=?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setInt(parameterIndex, this.severity);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.severity);
+//    }
+//
+//    public String getTextDescription() {
+//        return (TYPE + "=" + EventUtil.getSeverityLabel(this.severity));
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.SeverityFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public int getSeverity() {
+//        return (this.severity);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

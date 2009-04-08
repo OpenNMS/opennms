@@ -32,53 +32,51 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.NegativeExactFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class NegativeExactUEIFilter extends Object implements Filter {
+public class NegativeExactUEIFilter extends NegativeExactFilter<String> implements Filter {
     public static final String TYPE = "exactUeiNot";
 
     protected String uei;
 
     public NegativeExactUEIFilter(String uei) {
-        if (uei == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        super(SQLType.STRING, "EVENTUEI", "eventUei", uei, "exactUeiNot");
 
         this.uei = uei;
     }
 
-    public String getSql() {
-        return (" EVENTUEI<>'" + this.uei + "'");
-    }
-    
-    public String getParamSql() {
-        return (" EVENTUEI<>?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.uei);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.uei);
-    }
-
-    public String getTextDescription() {
-        return ("UEI is not " + this.uei);
-    }
-
-    public String toString() {
-        return ("<EventFactory.NegativeExactUEIFilter: " + this.getDescription() + ">");
-    }
-
-    public String getUEI() {
-        return (this.uei);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" EVENTUEI<>'" + this.uei + "'");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" EVENTUEI<>?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setString(parameterIndex, this.uei);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.uei);
+//    }
+//
+//    public String getTextDescription() {
+//        return ("UEI is not " + this.uei);
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.NegativeExactUEIFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public String getUEI() {
+//        return (this.uei);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

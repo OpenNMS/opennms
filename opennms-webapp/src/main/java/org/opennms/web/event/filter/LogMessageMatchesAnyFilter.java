@@ -43,6 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.model.OnmsCriteria;
+
 /**
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  */
@@ -136,6 +140,10 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         }
 
         return buffer.toString();
+    }
+    
+    public void applyCriteria(OnmsCriteria criteria){
+        criteria.add(Restrictions.like("eventLogMsg", getQueryString(), MatchMode.ANYWHERE));
     }
 
 }

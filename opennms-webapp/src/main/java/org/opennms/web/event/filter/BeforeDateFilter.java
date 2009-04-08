@@ -32,59 +32,60 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Date;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.web.filter.LessThanFilter;
+import org.opennms.web.filter.SQLType;
 
-public class BeforeDateFilter extends Object implements Filter {
+public class BeforeDateFilter extends LessThanFilter<Date> implements Filter {
     public static final String TYPE = "beforedate";
 
     protected Date date;
 
     public BeforeDateFilter(Date date) {
-        if (date == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        super(SQLType.DATE, "EVENTTIME", "eventTime", date, "beforedate");
 
         this.date = date;
     }
-
-    public BeforeDateFilter(long epochTime) {
+    
+    public BeforeDateFilter(long epochTime){
         this(new Date(epochTime));
     }
 
-    public String getSql() {
-        return (" EVENTTIME < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
-    }
-    
-    public String getParamSql() {
-        return (" EVENTTIME < ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.date.getTime());
-    }
-
-    public String getTextDescription() {
-        return ("date before \"" + this.date.toString() + "\"");
-    }
-
-    public String toString() {
-        return ("<BeforeTimeFilter: " + this.getDescription() + ">");
-    }
-
-    public Date getDate() {
-        return (this.date);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public BeforeDateFilter(long epochTime) {
+//        this(new Date(epochTime));
+//    }
+//
+//    public String getSql() {
+//        return (" EVENTTIME < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" EVENTTIME < ?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.date.getTime());
+//    }
+//
+//    public String getTextDescription() {
+//        return ("date before \"" + this.date.toString() + "\"");
+//    }
+//
+//    public String toString() {
+//        return ("<BeforeTimeFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public Date getDate() {
+//        return (this.date);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }
