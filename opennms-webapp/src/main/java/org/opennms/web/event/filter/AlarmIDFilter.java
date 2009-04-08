@@ -30,49 +30,50 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class AlarmIDFilter extends Object implements Filter {
+public class AlarmIDFilter extends EqualsFilter<Integer> implements Filter {
     public static final String TYPE = "alarm";
 
     protected int alarmId;
 
     public AlarmIDFilter(int alarmId) {
+        super(SQLType.INT, "ALARMID", "alarm", new Integer(alarmId), "alarm");
         this.alarmId = alarmId;
     }
 
-    public String getSql() {
-        return (" ALARMID=" + this.alarmId);
-    }
-    
-    public String getParamSql() {
-        return (" ALARMID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.alarmId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.alarmId);
-    }
-
-    public String getTextDescription() {
-        return ("event reduced by alarmID: " + this.alarmId);
-    }
-
-    public String toString() {
-        return ("<EventFactory.AlarmIDFilter: " + this.getDescription() + ">");
-    }
-
-    public int getAlarmId() {
-        return (this.alarmId);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" ALARMID=" + this.alarmId);
+//    }
+//    
+//    public String getParamSql() {
+//        return (" ALARMID=?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setInt(parameterIndex, this.alarmId);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.alarmId);
+//    }
+//
+//    public String getTextDescription() {
+//        return ("event reduced by alarmID: " + this.alarmId);
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.AlarmIDFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public int getAlarmId() {
+//        return (this.alarmId);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }
