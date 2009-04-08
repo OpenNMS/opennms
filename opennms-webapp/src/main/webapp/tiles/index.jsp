@@ -72,7 +72,7 @@
     <td width="25%" valign="top" >
 -->
       <!-- Services down box -->
-      <jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+      <jsp:include page="/outage/servicesdown-box.htm" flush="false" />
     </div>
 
 <!--

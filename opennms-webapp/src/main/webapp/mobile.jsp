@@ -45,7 +45,7 @@
 
 
 	<!-- Middle Column -->
-		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
 
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />

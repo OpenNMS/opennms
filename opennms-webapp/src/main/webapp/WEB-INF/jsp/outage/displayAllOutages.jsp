@@ -41,7 +41,7 @@
 	<ec:exportXls fileName="output.xls" tooltip="Export Excel" />
 	<ec:row highlightRow="false">
 		<ec:column property="outageid" alias="ID" >
-			<a href="outage/detail.jsp?id=${tabledata.outageid}">${tabledata.outageid}</a>
+			<a href="outage/detail.htm?id=${tabledata.outageid}">${tabledata.outageid}</a>
 		</ec:column>
 		<ec:column property="nodeid" alias="Node">
 

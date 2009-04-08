@@ -54,7 +54,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!-- includes/servicesdown-box.jsp -->
+<!-- outage/servicesdown-box.htm -->
 <c:url var="headingLink" value="outage/list.htm"/>
 <h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
 <div class="boxWrapper">

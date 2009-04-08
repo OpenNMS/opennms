@@ -243,8 +243,7 @@ public class ElementUtil extends Object {
     
     public static Interface getInterfaceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
-        return getInterfaceByParams(request, "ipinterfaceid", "node", "intf",
-                                    "ifindex");
+        return getInterfaceByParams(request, "ipinterfaceid", "node", "intf", "ifindex");
     }
     
     public static Interface getInterfaceByParams(HttpServletRequest request,
@@ -326,7 +325,6 @@ public class ElementUtil extends Object {
         return intf;
     }
 
-    
     public static Service getServiceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
         return getServiceByParams(request, "ifserviceid", "node", "intf",
@@ -438,6 +436,7 @@ public class ElementUtil extends Object {
     	return NetworkElementFactory.isRouteInfoNode(nodeId);
     }
     
+    @SuppressWarnings("unused")
     private static String encodeUrl(String in) {
     	String out = "";
 		try {

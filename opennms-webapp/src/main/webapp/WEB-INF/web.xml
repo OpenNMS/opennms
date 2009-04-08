@@ -1176,6 +1176,10 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/outage/list</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/outage/detail.jsp</url-pattern>
+  </servlet-mapping>
 
   <!-- Although this will be matched by the above *.htm url-pattern,
        this servlet-mapping needs to be here because wildcard url-pattern
