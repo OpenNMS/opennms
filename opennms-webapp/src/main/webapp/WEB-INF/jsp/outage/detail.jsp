@@ -54,36 +54,18 @@
 %>
 
 <%
-    String outageIdString = request.getParameter( "id" );
-
-    if( outageIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "id" );
-    }
-
-    int outageId = -1;
-
-    try {
-        outageId = WebSecurityUtils.safeParseInt( outageIdString );
-    }
-    catch( NumberFormatException e ) {
-        throw new org.opennms.web.outage.OutageIdNotFoundException( "The outage id must be an integer.", outageIdString );
-    }
-
-    Outage outage = OutageFactory.getOutage( outageId );
+	Outage outage = (Outage)request.getAttribute("outage");
 
     if( outage == null ) {
-        throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this id was not found.", String.valueOf(outageId) );
+        throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this id was not found.", (String)request.getAttribute("id") );
     }
-    
-    String action = null;
-    String buttonName=null;    
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage Details" />
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTitle" value="Outages" />
-  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
+  <jsp:param name="breadcrumb" value="<a href='outage/list'>Outages</a>" />
   <jsp:param name="breadcrumb" value="Detail " />
 </jsp:include>
 
