@@ -148,7 +148,7 @@ function doDelete() {
             </jsp:include>            
       
             <!-- Recent outages box -->
-            <jsp:include page="/includes/serviceOutages-box.jsp" flush="false" />
+            <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
       </div> <!-- class="TwoColRight" -->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

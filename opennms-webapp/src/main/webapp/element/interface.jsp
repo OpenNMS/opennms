@@ -397,7 +397,7 @@ function doDelete() {
             </jsp:include>
             <% } %>
             <!-- Recent outages box -->
-            <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
+            <jsp:include page="/outage/interfaceOutages-box.htm" flush="false" />
             
             <!-- STP Info box -->
             <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />

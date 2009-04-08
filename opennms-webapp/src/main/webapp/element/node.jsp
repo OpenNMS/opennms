@@ -447,7 +447,7 @@
   </jsp:include>
   
   <!-- Recent outages box -->
-  <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
+  <jsp:include page="/outage/nodeOutages-box.htm" flush="false" />
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -75,7 +75,7 @@
   outages</a> to find the outage you are looking for.
 </p>
 
-<form method="get" action="outage/detail.jsp">
+<form method="get" action="outage/detail.htm">
   <p>
     Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:
     <br/>

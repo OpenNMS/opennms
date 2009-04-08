@@ -105,34 +105,6 @@
 	<property name="successView" value="daemonstatus" />
   </bean>-->
 
-  <!--  
-  <bean name="outageFilterView"
-  	class="org.opennms.web.svclayer.outage.OutagesFilteringView">
-    <property name="categoryDao" ref="categoryDao"/>
-  </bean>
-  
-  <bean name="outageListBuilder"
-        class="org.opennms.web.svclayer.outage.OutageListBuilder"/>
-  
-  <bean name="/outage/displayAllOutages.htm"
-		class="org.opennms.web.controller.OutageAllController">
-	<property name="outageService" ref="outageService" />
-	<property name="successView" value="outage/displayAllOutages"/>
-  </bean>
- 
-  <bean name="/outage/displaySuppressedOutages.htm"
-		class="org.opennms.web.controller.OutageSuppressedController">
-	<property name="outageService" ref="outageService" />
-	<property name="successView" value="outage/displaySuppressedOutages"/>
-  </bean>
-	
-  <bean name="/outage/displayResolvedOutages.htm"
-	    class="org.opennms.web.controller.OutageResolvedController">
-	<property name="outageService" ref="outageService" />
-	<property name="successView" value="outage/displayResolvedOutages"/>
-  </bean>
-  -->
-
   <bean name="/distributedStatusSummary.htm"
 		class="org.opennms.web.controller.DistributedStatusSummaryController">
 	<property name="distributedStatusService"
@@ -229,7 +201,6 @@
   </bean>
 
   <alias name="/outage/list.htm" alias="/outage/list" />
-  
   <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
     <property name="successView" value="outage/list" />
     <property name="defaultShortLimit" value="20" />
@@ -239,8 +210,29 @@
     <property name="webOutageRepository" ref="webOutageRepository" />
   </bean>
   
+  <alias name="/outage/detail.htm" alias="/outage/detail.jsp" />  
+  <bean name="/outage/detail.htm" class="org.opennms.web.controller.outage.OutageDetailController">
+    <property name="successView" value="outage/detail" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+
   <bean name="/outage/servicesdown-box.htm" class="org.opennms.web.controller.outage.OutageBoxController">
     <property name="successView" value="outage/servicesdown-box" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+
+  <bean name="/outage/nodeOutages-box.htm" class="org.opennms.web.controller.outage.NodeOutagesController">
+    <property name="successView" value="outage/nodeOutages-box" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+
+  <bean name="/outage/interfaceOutages-box.htm" class="org.opennms.web.controller.outage.InterfaceOutagesController">
+    <property name="successView" value="outage/interfaceOutages-box" />
+    <property name="webOutageRepository" ref="webOutageRepository" />
+  </bean>
+
+  <bean name="/outage/serviceOutages-box.htm" class="org.opennms.web.controller.outage.ServiceOutagesController">
+    <property name="successView" value="outage/serviceOutages-box" />
     <property name="webOutageRepository" ref="webOutageRepository" />
   </bean>
 

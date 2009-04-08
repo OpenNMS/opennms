@@ -121,7 +121,7 @@
         
           <!-- outage id -->
           <td>
-            <a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a>
+            <a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a>
           </td>
           
           <!-- node -->

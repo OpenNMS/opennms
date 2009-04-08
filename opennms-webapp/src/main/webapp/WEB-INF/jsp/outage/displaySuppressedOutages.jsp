@@ -71,7 +71,7 @@
 			format="MM-dd-yyyy hh:mm:ss" parse="yyyy-MM-dd" />
 		
 		<ec:column property="outageid" alias="ID">
-			<a href="outage/detail.jsp?id=${tabledata.outageid}">${tabledata.outageid}</a>
+			<a href="outage/detail.htm?id=${tabledata.outageid}">${tabledata.outageid}</a>
 		</ec:column>
 
 		
