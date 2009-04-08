@@ -32,52 +32,50 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.PartialFilter;
+import org.opennms.web.filter.SQLType;
 
-public class LogMessageSubstringFilter extends Object implements Filter {
+public class LogMessageSubstringFilter extends PartialFilter<String> implements Filter {
     public static final String TYPE = "msgsub";
 
     protected String substring;
 
     public LogMessageSubstringFilter(String substring) {
-        if (substring == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        super(SQLType.STRING, "EVENTLOGMSG", "eventLogMsg", substring, "msgsub");
 
         this.substring = substring;
     }
 
-    public String getSql() {
-        return (" UPPER(EVENTLOGMSG) LIKE '%" + this.substring.toUpperCase() + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" UPPER(EVENTLOGMSG) LIKE ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.substring);
-    }
-
-    public String getTextDescription() {
-        return ("description containing \"" + this.substring + "\"");
-    }
-
-    public String toString() {
-        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
-    }
-
-    public String getSubstring() {
-        return (this.substring);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" UPPER(EVENTLOGMSG) LIKE '%" + this.substring.toUpperCase() + "%'");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" UPPER(EVENTLOGMSG) LIKE ?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.substring);
+//    }
+//
+//    public String getTextDescription() {
+//        return ("description containing \"" + this.substring + "\"");
+//    }
+//
+//    public String toString() {
+//        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public String getSubstring() {
+//        return (this.substring);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

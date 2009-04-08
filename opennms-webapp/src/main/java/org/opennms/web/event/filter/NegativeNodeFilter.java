@@ -32,57 +32,56 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.NegativeFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class NegativeNodeFilter extends Object implements Filter {
+public class NegativeNodeFilter extends NegativeFilter<Integer> implements Filter {
     public static final String TYPE = "nodenot";
 
     protected int nodeId;
 
     public NegativeNodeFilter(int nodeId) {
+        super(SQLType.INT, "EVENT.NODEID", "node", new Integer(nodeId), "nodenot");
         this.nodeId = nodeId;
     }
 
-    public String getSql() {
-        return (" (EVENTS.NODEID<>" + this.nodeId + " OR EVENTS.NODEID IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (EVENTS.NODEID<>? OR EVENTS.NODEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.nodeId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.nodeId);
-    }
-
-    public String getTextDescription() {
-        String nodeName = Integer.toString(this.nodeId);
-        try {
-            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
-        } catch (SQLException e) {
-        }
-
-        return ("node is not " + nodeName);
-    }
-
-    public String toString() {
-        return ("<EventFactory.NegativeNodeFilter: " + this.getDescription() + ">");
-    }
-
-    public int getNodeId() {
-        return (this.nodeId);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" (EVENTS.NODEID<>" + this.nodeId + " OR EVENTS.NODEID IS NULL)");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" (EVENTS.NODEID<>? OR EVENTS.NODEID IS NULL)");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setInt(parameterIndex, this.nodeId);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.nodeId);
+//    }
+//
+//    public String getTextDescription() {
+//        String nodeName = Integer.toString(this.nodeId);
+//        try {
+//            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
+//        } catch (SQLException e) {
+//        }
+//
+//        return ("node is not " + nodeName);
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.NegativeNodeFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public int getNodeId() {
+//        return (this.nodeId);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

@@ -32,53 +32,51 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.NegativeFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class NegativeInterfaceFilter extends Object implements Filter {
+public class NegativeInterfaceFilter extends NegativeFilter<String> implements Filter {
     public static final String TYPE = "interfacenot";
 
     protected String ipAddress;
 
     public NegativeInterfaceFilter(String ipAddress) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        super(SQLType.STRING, "IPADDR", "ipAddr", ipAddress, "interfacenot");
 
         this.ipAddress = ipAddress;
     }
 
-    public String getSql() {
-        return (" (IPADDR<>'" + this.ipAddress + "' OR IPADDR IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (IPADDR<>? OR IPADDR IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipAddress);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipAddress);
-    }
-
-    public String getTextDescription() {
-        return ("interface is not " + this.ipAddress);
-    }
-
-    public String toString() {
-        return ("<EventFactory.NegativeInterfaceFilter: " + this.getDescription() + ">");
-    }
-
-    public String getIpAddress() {
-        return (this.ipAddress);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" (IPADDR<>'" + this.ipAddress + "' OR IPADDR IS NULL)");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" (IPADDR<>? OR IPADDR IS NULL)");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setString(parameterIndex, this.ipAddress);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.ipAddress);
+//    }
+//
+//    public String getTextDescription() {
+//        return ("interface is not " + this.ipAddress);
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.NegativeInterfaceFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public String getIpAddress() {
+//        return (this.ipAddress);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

@@ -32,53 +32,51 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class InterfaceFilter extends Object implements Filter {
+public class InterfaceFilter extends EqualsFilter<String> implements Filter {
     public static final String TYPE = "interface";
 
     protected String ipAddress;
 
     public InterfaceFilter(String ipAddress) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
+        super(SQLType.STRING, "IPADDR", "ipAddr", ipAddress, "interface");
 
         this.ipAddress = ipAddress;
     }
 
-    public String getSql() {
-        return (" IPADDR='" + this.ipAddress + "'");
-    }
-    
-    public String getParamSql() {
-        return (" IPADDR=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipAddress);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipAddress);
-    }
-
-    public String getTextDescription() {
-        return this.getDescription();
-    }
-
-    public String toString() {
-        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
-    }
-
-    public String getIpAddress() {
-        return (this.ipAddress);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" IPADDR='" + this.ipAddress + "'");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" IPADDR=?");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setString(parameterIndex, this.ipAddress);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.ipAddress);
+//    }
+//
+//    public String getTextDescription() {
+//        return this.getDescription();
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public String getIpAddress() {
+//        return (this.ipAddress);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }

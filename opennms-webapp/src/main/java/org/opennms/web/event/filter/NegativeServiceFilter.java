@@ -32,57 +32,56 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.NegativeFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class NegativeServiceFilter extends Object implements Filter {
+public class NegativeServiceFilter extends NegativeFilter<Integer> implements Filter {
     public static final String TYPE = "servicenot";
 
     protected int serviceId;
 
     public NegativeServiceFilter(int serviceId) {
+        super(SQLType.INT, "EVENTS.SERVICEID", "serviceType", new Integer(serviceId), "servicenot");
         this.serviceId = serviceId;
     }
 
-    public String getSql() {
-        return (" (EVENTS.SERVICEID<>" + this.serviceId + " OR EVENTS.SERVICEID IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (EVENTS.SERVICEID<>? OR EVENTS.SERVICEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.serviceId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.serviceId);
-    }
-
-    public String getTextDescription() {
-        String serviceName = Integer.toString(this.serviceId);
-        try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
-        } catch (SQLException e) {
-        }
-
-        return ("service is not " + serviceName);
-    }
-
-    public String toString() {
-        return ("<EventFactory.NegativeServiceFilter: " + this.getDescription() + ">");
-    }
-
-    public int getServiceId() {
-        return (this.serviceId);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
+//    public String getSql() {
+//        return (" (EVENTS.SERVICEID<>" + this.serviceId + " OR EVENTS.SERVICEID IS NULL)");
+//    }
+//    
+//    public String getParamSql() {
+//        return (" (EVENTS.SERVICEID<>? OR EVENTS.SERVICEID IS NULL)");
+//    }
+//    
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//    	ps.setInt(parameterIndex, this.serviceId);
+//    	return 1;
+//    }
+//
+//    public String getDescription() {
+//        return (TYPE + "=" + this.serviceId);
+//    }
+//
+//    public String getTextDescription() {
+//        String serviceName = Integer.toString(this.serviceId);
+//        try {
+//            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+//        } catch (SQLException e) {
+//        }
+//
+//        return ("service is not " + serviceName);
+//    }
+//
+//    public String toString() {
+//        return ("<EventFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+//    }
+//
+//    public int getServiceId() {
+//        return (this.serviceId);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        return (this.toString().equals(obj.toString()));
+//    }
 }
