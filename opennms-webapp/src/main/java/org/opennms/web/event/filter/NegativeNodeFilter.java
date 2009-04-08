@@ -42,7 +42,7 @@ public class NegativeNodeFilter extends NegativeFilter<Integer> implements Filte
     protected int nodeId;
 
     public NegativeNodeFilter(int nodeId) {
-        super(SQLType.INT, "EVENT.NODEID", "node", new Integer(nodeId), "nodenot");
+        super(SQLType.INT, "EVENTS.NODEID", "node", new Integer(nodeId), "nodenot");
         this.nodeId = nodeId;
     }
 

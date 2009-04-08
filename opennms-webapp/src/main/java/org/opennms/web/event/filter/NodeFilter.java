@@ -44,12 +44,12 @@ public class NodeFilter extends EqualsFilter<Integer> implements Filter {
     protected int nodeId;
 
     public NodeFilter(int nodeId) {
-        super(SQLType.INT, "EVENT.NODEID", "node", new Integer(nodeId), "node");
+        super(SQLType.INT, "EVENTS.NODEID", "node", new Integer(nodeId), "node");
         this.nodeId = nodeId;
     }
     
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.createCriteria("node").add(Restrictions.eq("id", this.nodeId));
+        criteria.createCriteria("node").add(Restrictions.eq("id", nodeId));
     }
 
 //    public String getSql() {
