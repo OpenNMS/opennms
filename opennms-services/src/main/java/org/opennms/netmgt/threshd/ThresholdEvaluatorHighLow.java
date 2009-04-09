@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
  * 2007 Jan 29: Extracted high/low evaluation code and common parts of event building from ThresholdEntity and deduplicated code. - dj@opennms.org
  * 
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -184,7 +185,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getExceededCount() >= getThresholdConfig().getTrigger();
         }
         
-        public Event getEventForState(Status status, Date date, double dsValue) {
+        public Event getEventForState(Status status, Date date, double dsValue, String dsInstance) {
             String uei;
             switch (status) {
             case TRIGGERED:
@@ -193,12 +194,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue);
+                    return createBasicEvent(uei, date, dsValue, dsInstance);
                 } else if ("high".equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue);
+                    return createBasicEvent(uei, date, dsValue, dsInstance);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
@@ -209,12 +210,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue);
+                    return createBasicEvent(uei, date, dsValue, dsInstance);
                 } else if ("high".equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue);
+                    return createBasicEvent(uei, date, dsValue, dsInstance);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
@@ -227,7 +228,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, String dsInstance) {
             // create the event to be sent
             Event event = new Event();
             event.setUei(uei);
@@ -288,6 +289,14 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             eventParm.setParmName("rearm");
             parmValue = new Value();
             parmValue.setContent(Double.toString(getThresholdConfig().getRearm()));
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+            
+            // Add the instance name of the resource in question
+            eventParm = new Parm();
+            eventParm.setParmName("instance");
+            parmValue = new Value();
+            parmValue.setContent(dsInstance != null ? dsInstance : "null");
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
             
