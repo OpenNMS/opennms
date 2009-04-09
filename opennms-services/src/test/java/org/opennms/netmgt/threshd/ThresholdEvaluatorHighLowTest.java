@@ -1,12 +1,16 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group.  All rights reserved.
  *
@@ -45,9 +49,9 @@ import org.opennms.netmgt.threshd.ThresholdEvaluatorHighLow.ThresholdEvaluatorSt
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
+import junit.framework.TestCase;
 
-public class ThresholdEvaluatorHighLowTest {
-    
+public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTest {
     @Test
     public void testConstructorThresholdNull() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -640,20 +644,51 @@ public class ThresholdEvaluatorHighLowTest {
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
 
         ThresholdEvaluatorStateHighLow item = new ThresholdEvaluatorStateHighLow(wrapper);
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0);
+
+        // High exceed, with null instance
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
         assertEquals("UEI should be the highThresholdExceededUEI", EventConstants.HIGH_THRESHOLD_EVENT_UEI, event.getUei());
+        parmPresentAndValueNonNull(event, "instance");
         
-        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0);
+        // High rearm, with null instance
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0, null);
         assertEquals("UEI should be the highThresholdRearmedUEI", EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, event.getUei());
+        parmPresentAndValueNonNull(event, "instance");
         
+        // High exceed, with non-null instance
+        event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, "testInstance");
+        assertEquals("UEI should be the highThresholdExceededUEI", EventConstants.HIGH_THRESHOLD_EVENT_UEI, event.getUei());
+        parmPresentWithValue(event, "instance", "testInstance");
+        
+        // High rearm, with non-null instance
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0, "testInstance");
+        assertEquals("UEI should be the highThresholdRearmedUEI", EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, event.getUei());
+        parmPresentWithValue(event, "instance", "testInstance");
+        
+        // Set it up again for low tests
         threshold.setType("low");
         threshold.setValue(95.0);
         threshold.setRearm(99.0);
-        event=item.getEventForState(Status.TRIGGERED, new Date(), 94.0);
-        assertEquals("UEI should be the lowThresholdExceededUEI", EventConstants.LOW_THRESHOLD_EVENT_UEI, event.getUei());
         
-        event=item.getEventForState(Status.RE_ARMED, new Date(), 100.0);
+        // Low exceed, with null instance
+        event=item.getEventForState(Status.TRIGGERED, new Date(), 94.0, null);
+        assertEquals("UEI should be the lowThresholdExceededUEI", EventConstants.LOW_THRESHOLD_EVENT_UEI, event.getUei());
+        parmPresentAndValueNonNull(event, "instance");
+        
+        // Low rearm, with null instance
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 100.0, null);
         assertEquals("UEI should be the lowThresholdRearmedUEI", EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, event.getUei());
+        parmPresentAndValueNonNull(event, "instance");
+        
+        // Low exceed, with non-null instance
+        event=item.getEventForState(Status.TRIGGERED, new Date(), 94.0, "testInstance");
+        assertEquals("UEI should be the lowThresholdExceededUEI", EventConstants.LOW_THRESHOLD_EVENT_UEI, event.getUei());
+        parmPresentWithValue(event, "instance", "testInstance");
+        
+        // Low rearm, with non-null instance
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 100.0, "testInstance");
+        assertEquals("UEI should be the lowThresholdRearmedUEI", EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, event.getUei());
+        parmPresentWithValue(event, "instance", "testInstance");
     }
 
     @Test
@@ -673,12 +708,13 @@ public class ThresholdEvaluatorHighLowTest {
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
 
         ThresholdEvaluatorStateHighLow item = new ThresholdEvaluatorStateHighLow(wrapper);
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0);
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
         assertEquals("UEI should be the uei.opennms.org/custom/thresholdTriggered", triggeredUEI, event.getUei());
+        parmPresentAndValueNonNull(event, "instance");
         
-        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0);
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0, null);
         assertEquals("UEI should be the uei.opennms.org/custom/thresholdRearmed", rearmedUEI, event.getUei());
-        
+        parmPresentAndValueNonNull(event, "instance");        
     }
 }
   

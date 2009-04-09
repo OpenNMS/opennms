@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
  * 2009 Jan 19: Fix a comment. - dj@opennms.org
  * 2007 Jan 29: Extract evaluation and state related interface out of ThresholdEntity and other copies of the same code. - dj@opennms.org
  *
@@ -57,7 +58,8 @@ public interface ThresholdEvaluatorState {
 
     public Status evaluate(double dsValue);
 
-    public Event getEventForState(Status status, Date date, double dsValue);
+    //public Event getEventForState(Status status, Date date, double dsValue);
+    public Event getEventForState(Status status, Date date, double dsValue, String instance);
     
     public BaseThresholdDefConfigWrapper getThresholdConfig();
 

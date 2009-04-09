@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
  * 2008 Feb 10: Organize imports. - dj@opennms.org
  *
  * Copyright (C) 2007 The OpenNMS Group.  All rights reserved.
@@ -50,7 +51,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.ThrowableAnticipator;
 
-public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
+public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvaluatorTest {
 
     public void testConstructor() {
         Threshold threshold = new Threshold();
@@ -237,7 +238,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper);
 
-        assertNull("should not have created an event", evaluator.getEventForState(Status.NO_CHANGE, new Date(), 10.0));
+        assertNull("should not have created an event", evaluator.getEventForState(Status.NO_CHANGE, new Date(), 10.0, null));
     }
     
     public void testGetEventForStateTriggered() {
@@ -253,33 +254,26 @@ public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
 
         assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(8.0));
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(10.0));
-        Event event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0);
+        
+        // Do it once with a null instance
+        Event event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, null);
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
-        
         assertNotNull("event should have parms", event.getParms());
+        parmPresentAndValueNonNull(event, "instance");
+        parmPresentWithValue(event, "value", "10.0");
+        parmPresentWithValue(event, "previousValue", "8.0");
+        parmPresentWithValue(event, "multiplier", "1.1");
         
-        boolean hasValueParm = false;
-        boolean hasPreviousValueParm = false;
-        boolean hasMultiplierParm = false;
-        for (Parm parm : getParmCollection(event)) {
-            if ("value".equals(parm.getParmName())) {
-                assertEquals("value", "10.0", parm.getValue().getContent());
-                hasValueParm = true;
-            }
-            if ("previousValue".equals(parm.getParmName())) {
-                assertEquals("previousValue", "8.0", parm.getValue().getContent());
-                hasPreviousValueParm = true;
-            }
-            if ("multiplier".equals(parm.getParmName())) {
-                assertEquals("multiplier", "1.1", parm.getValue().getContent());
-                hasMultiplierParm = true;
-            }
-        }
-        
-        assertTrue("did not find 'value' parm in event", hasValueParm);
-        assertTrue("did not find 'previousValue' parm in event", hasPreviousValueParm);
-        assertTrue("did not find 'multiplier' parm in event", hasMultiplierParm);
+        // And again with a non-null instance
+        event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, "testInstance");
+        assertNotNull("should have created an event", event);
+        assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
+        assertNotNull("event should have parms", event.getParms());
+        parmPresentWithValue(event, "instance", "testInstance");
+        parmPresentWithValue(event, "value", "10.0");
+        parmPresentWithValue(event, "previousValue", "8.0");
+        parmPresentWithValue(event, "multiplier", "1.1");
     }
     
     public void testGetEventForStateDefaultUEIS() {
@@ -293,7 +287,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
 
         ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(wrapper);
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0);
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
         assertEquals("UEI should be the relativeChangeThresholdTriggerd", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
     }
 
@@ -311,7 +305,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends TestCase {
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
 
         ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(wrapper);
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0);
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
         assertEquals("UEI should be the uei.opennms.org/custom/relativeChangeThresholdTriggered", triggeredUEI, event.getUei());
        
     }

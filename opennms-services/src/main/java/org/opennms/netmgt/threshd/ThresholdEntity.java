@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
 // 2007 Jan 29: Indent; pull evaluation code out into ThresholdEvaluator(State) interface and implementations; improve exception messages; use Java 5 generics. - dj@opennms.org
 // 2005 Nov 29: Added a method to allow for labels in Threshold events
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -232,7 +233,7 @@ public final class ThresholdEntity implements Cloneable {
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
-            Event event = item.getEventForState(status, date, dsValue);
+            Event event = item.getEventForState(status, date, dsValue, instance);
             if (event != null) {
                 events.add(event);
             }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,7 +10,9 @@
  *
  * Modifications:
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
+ * 
+ *  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,19 +133,19 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
-        public Event getEventForState(Status status, Date date, double dsValue) {
+        public Event getEventForState(Status status, Date date, double dsValue, String dsInstance) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
                 if(uei==null || "".equals(uei)) {
                     uei=EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI;
                 }
-                return createBasicEvent(uei, date, dsValue);
+                return createBasicEvent(uei, date, dsValue, dsInstance);
             } else {
                 return null;
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, String dsInstance) {
             // create the event to be sent
             Event event = new Event();
             event.setUei(uei);
@@ -175,7 +177,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
-            // Add last known value of the datasource fetched from its RRD file
+            // Add last known value of the datasource
             eventParm = new Parm();
             eventParm.setParmName("value");
             parmValue = new Value();
@@ -183,6 +185,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
+            // Add the previous value of the datasource
             eventParm = new Parm();
             eventParm.setParmName("previousValue");
             parmValue = new Value();
@@ -190,10 +193,19 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
+            // Add the change threshold defined for this threshold
             eventParm = new Parm();
             eventParm.setParmName("changeThreshold");
             parmValue = new Value();
             parmValue.setContent(Double.toString(getThresholdConfig().getValue()));
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+            
+            // Add the instance name of the resource in question
+            eventParm = new Parm();
+            eventParm.setParmName("instance");
+            parmValue = new Value();
+            parmValue.setContent(dsInstance != null ? dsInstance : "null");
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
