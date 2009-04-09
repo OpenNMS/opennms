@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Apr 09: Expose data source indexes in threshold-derived events  - jeffg@opennms.org
  * 2007 Jan 29: Implementation for triggering on relative changes between two samples
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -146,19 +147,19 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
-        public Event getEventForState(Status status, Date date, double dsValue) {
+        public Event getEventForState(Status status, Date date, double dsValue, String dsInstance) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
                 if(uei==null || "".equals(uei)) {
                     uei=EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI;
                 }
-                return createBasicEvent(uei, date, dsValue);
+                return createBasicEvent(uei, date, dsValue, dsInstance);
             } else {
                 return null;
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue) {
+        private Event createBasicEvent(String uei, Date date, double dsValue, String dsInstance) {
             // create the event to be sent
             Event event = new Event();
             event.setUei(uei);
@@ -229,6 +230,14 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
             */
+            
+            // Add the instance name of the resource in question
+            eventParm = new Parm();
+            eventParm.setParmName("instance");
+            parmValue = new Value();
+            parmValue.setContent(dsInstance != null ? dsInstance : "null");
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
             
             // Add Parms to the event
             event.setParms(eventParms);
