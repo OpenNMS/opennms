@@ -421,8 +421,8 @@ public class SnmpThresholderTest {
         assertEquals(2, events.getEventCount()); // with Filters Enabled. See test-thresholds.xml
         // Validating ds-value for bug 2129
         for (Event e : events.getEvent()) {
-        	assertEquals("label", e.getParms().getParm(5).getParmName());
-        	assertEquals("caracas", e.getParms().getParm(5).getValue().getContent());
+        	assertEquals("label", e.getParms().getParm(6).getParmName());
+        	assertEquals("caracas", e.getParms().getParm(6).getValue().getContent());
         }
     }
 
@@ -471,8 +471,8 @@ public class SnmpThresholderTest {
         assertEquals(1, events.getEventCount());
         // Validating ds-value for bug 2129
         for (Event e : events.getEvent()) {
-        	assertEquals("label", e.getParms().getParm(5).getParmName());
-        	assertEquals("/opt", e.getParms().getParm(5).getValue().getContent());
+        	assertEquals("label", e.getParms().getParm(6).getParmName());
+        	assertEquals("/opt", e.getParms().getParm(6).getValue().getContent());
         }
     }
 
