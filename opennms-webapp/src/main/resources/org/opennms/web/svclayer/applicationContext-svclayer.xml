@@ -12,7 +12,7 @@
   
   <context:annotation-config />
   
-  <bean name="webAlarmRepository" class="org.opennms.web.alarm.JdbcWebAlarmRepository" />
+  <bean name="webAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository" />
   <bean name="webOutageRepository" class="org.opennms.web.outage.JdbcWebOutageRepository" />
 
   <!-- Surveillance View beans -->
