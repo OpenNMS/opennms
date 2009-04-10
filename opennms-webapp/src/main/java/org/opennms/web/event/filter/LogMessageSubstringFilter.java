@@ -32,50 +32,54 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.PartialFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class LogMessageSubstringFilter extends PartialFilter<String> implements Filter {
+import org.opennms.web.filter.LegacyFilter;
+
+public class LogMessageSubstringFilter extends LegacyFilter {
     public static final String TYPE = "msgsub";
 
     protected String substring;
 
     public LogMessageSubstringFilter(String substring) {
-        super(SQLType.STRING, "EVENTLOGMSG", "eventLogMsg", substring, "msgsub");
+        if (substring == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
 
         this.substring = substring;
     }
 
-//    public String getSql() {
-//        return (" UPPER(EVENTLOGMSG) LIKE '%" + this.substring.toUpperCase() + "%'");
-//    }
-//    
-//    public String getParamSql() {
-//        return (" UPPER(EVENTLOGMSG) LIKE ?");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.substring);
-//    }
-//
-//    public String getTextDescription() {
-//        return ("description containing \"" + this.substring + "\"");
-//    }
-//
-//    public String toString() {
-//        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public String getSubstring() {
-//        return (this.substring);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
+    public String getSql() {
+        return (" UPPER(EVENTLOGMSG) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" UPPER(EVENTLOGMSG) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.substring);
+    }
+
+    public String getTextDescription() {
+        return ("description containing \"" + this.substring + "\"");
+    }
+
+    public String toString() {
+        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
+    }
+
+    public String getSubstring() {
+        return (this.substring);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

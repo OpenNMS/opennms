@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.DaoWebAlarmRepository;
 import org.opennms.web.alarm.JdbcWebAlarmRepository;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;

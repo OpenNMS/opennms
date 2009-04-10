@@ -44,4 +44,8 @@ public class StringSqlType implements SQLType<String> {
         return "'" + value + "'";
     }
 
+    public String[] createArray(String value1, String value2) {
+        return new String[] { value1, value2 };
+    }
+
 }

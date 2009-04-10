@@ -45,12 +45,12 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.web.event.filter.Filter;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 
 /**
  * Encapsulates all querying functionality for events.

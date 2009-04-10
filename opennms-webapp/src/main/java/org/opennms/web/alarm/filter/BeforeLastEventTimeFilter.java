@@ -32,21 +32,60 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
-import org.opennms.web.filter.LessThanFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.web.filter.LegacyFilter;
 
-public class BeforeLastEventTimeFilter extends LessThanFilter<Date> implements Filter {
+public class BeforeLastEventTimeFilter extends LegacyFilter {
     public static final String TYPE = "beforelasteventtime";
 
     protected Date date;
 
     public BeforeLastEventTimeFilter(Date date) {
-        super(SQLType.DATE, "LASTEVENTTIME", "lastEventTime", date, "beforeLastEventTime");
+        if (date == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        this.date = date;
     }
-    
+
     public BeforeLastEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
+    }
+
+    public String getSql() {
+        return (" LASTEVENTTIME < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
+    }
+    
+    public String getParamSql() {
+        return (" LASTEVENTTIME < ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.date.getTime());
+    }
+
+    public String getTextDescription() {
+        return ("date before \"" + this.date.toString() + "\"");
+    }
+
+    public String toString() {
+        return ("<BeforeLastEventTimeFilter: " + this.getDescription() + ">");
+    }
+
+    public Date getDate() {
+        return (this.date);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

@@ -34,30 +34,20 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class LikeFilter<T> extends EqualsFilter<T> implements BaseFilter {
+public abstract class LikeFilter<T> extends OneArgFilter<T> {
 
-    public LikeFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
+    public LikeFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value) {
+        super(filterType, type, fieldName, propertyName, value);
     }
 
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.like(m_daoPropertyName, m_value));
+        criteria.add(Restrictions.like(getPropertyName(), getValue()));
     }
 
-    public String getDescription() {
-        return (m_filterName + "=" + m_value);
-    }
-
-    public String getParamSql() {
-        return " LIKE(" + m_fieldName + ",?)";
-    }
-
-    public String getSql() {
-        return " LIKE(" + m_fieldName + "'" + m_value + "')";
-    }
-
-    public String getTextDescription() {
-        return getDescription();
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + " LIKE %s ";
     }
 
 }

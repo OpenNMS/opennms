@@ -44,8 +44,8 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.web.event.EventFactory.AcknowledgeType;
 import org.opennms.web.event.EventFactory.SortStyle;
 import org.opennms.web.event.filter.EventCriteria;
-import org.opennms.web.event.filter.Filter;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DaoWebEventRepository implements WebEventRepository {

@@ -55,7 +55,7 @@ import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.alarm.filter.Filter;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

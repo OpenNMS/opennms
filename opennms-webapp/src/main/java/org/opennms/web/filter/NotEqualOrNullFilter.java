@@ -31,34 +31,25 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public abstract class InFilter<T> extends MultiArgFilter<T> {
+public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
     
-    public InFilter(SQLType<T> type, String fieldName, String propertyName, T[] values, String filterName){
-        super(filterName, type, fieldName, propertyName, values);
+    
+    public NotEqualOrNullFilter(String filterType, SQLType<T> type, String fieldName, String daoPropertyName, T value) {
+        super(filterType, type, fieldName, daoPropertyName, value);
     }
-    
+
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.in(getPropertyName(), getValuesAsList()));
+        criteria.add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
     }
     
     @Override
     public String getSQLTemplate() {
-        StringBuilder buf = new StringBuilder(getSQLFieldName());
-        buf.append(" IN (");
-        T[] values = getValues();
-        
-        for(int i = 0; i < values.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append("%s");
-        }
-        buf.append(") ");
-        return buf.toString();
+        return "(" + getSQLFieldName() + "<> %s OR " + getSQLFieldName() + " IS NULL) ";
     }
 
 }

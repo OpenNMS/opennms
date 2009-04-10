@@ -33,6 +33,7 @@ package org.opennms.web.event.filter;
 
 import org.opennms.web.event.EventFactory.AcknowledgeType;
 import org.opennms.web.event.EventFactory.SortStyle;
+import org.opennms.web.filter.Filter;
 
 public class EventCriteria {
     

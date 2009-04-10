@@ -43,14 +43,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.web.filter.LegacyFilter;
 
 /**
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  */
-public class LogMessageMatchesAnyFilter extends Object implements Filter {
+public class LogMessageMatchesAnyFilter extends LegacyFilter {
     public static final String TYPE = "msgmatchany";
 
     protected String[] substrings;
@@ -140,10 +138,6 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         }
 
         return buffer.toString();
-    }
-
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.like("logMsg", getQueryString(), MatchMode.ANYWHERE));
     }
 
 }

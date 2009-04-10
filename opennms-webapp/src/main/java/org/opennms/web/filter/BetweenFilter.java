@@ -31,45 +31,27 @@
  */
 package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class BetweenFilter<T> extends EqualsFilter<T> implements BaseFilter {
+public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     
-    T m_value2;
-    
-    public BetweenFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, T value2, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
-        m_value2 = value2;
+    public BetweenFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T first, T last) {
+        super(filterType, type, fieldName, propertyName, type.createArray(first, last));
     }
 
+    private T getFirst() { return getValues()[0]; }
+    private T getLast() { return getValues()[1]; }
+    
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.between(m_daoPropertyName, m_value, m_value2));
+        criteria.add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
+    }
+    
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + " BETWEEN %s AND %s ";
     }
 
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        m_sqlType.bindParam(ps, parameterIndex, m_value);
-        m_sqlType.bindParam(ps, parameterIndex + 1, m_value2);
-        return 2;
-    }
-
-    public String getDescription() {
-        return " " + m_filterName + " = " + m_value  + " and " + m_value2;
-    }
-
-    public String getParamSql() {
-        return m_fieldName + " >=? AND " + m_fieldName + " <=?";
-    }
-
-    public String getSql() {
-        return " AND " + m_fieldName + " >" + m_sqlType.formatValue(m_value) + " AND " + m_fieldName + " <=" + m_sqlType.formatValue(m_value2);
-    }
-
-    public String getTextDescription() {
-        return getDescription();
-    }
-
+    
 }

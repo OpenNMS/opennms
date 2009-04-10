@@ -48,9 +48,9 @@ import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmFactory;
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
-import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;

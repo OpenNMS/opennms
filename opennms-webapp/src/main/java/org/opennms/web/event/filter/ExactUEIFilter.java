@@ -32,51 +32,55 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class ExactUEIFilter extends EqualsFilter<String> implements Filter {
+public class ExactUEIFilter extends LegacyFilter {
     public static final String TYPE = "exactUei";
 
     protected String uei;
 
     public ExactUEIFilter(String uei) {
-        super(SQLType.STRING, "EVENTUEI", "eventUei", uei, "exactUei");
+        if (uei == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
 
         this.uei = uei;
     }
 
-//    public String getSql() {
-//        return (" EVENTUEI='" + this.uei + "'");
-//    }
-//    
-//    public String getParamSql() {
-//        return (" EVENTUEI=?");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setString(parameterIndex, this.uei);
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.uei);
-//    }
-//
-//    public String getTextDescription() {
-//        return this.getDescription();
-//    }
-//
-//    public String toString() {
-//        return ("<EventFactory.ExactUEIFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public String getUEI() {
-//        return (this.uei);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
+    public String getSql() {
+        return (" EVENTUEI='" + this.uei + "'");
+    }
+    
+    public String getParamSql() {
+        return (" EVENTUEI=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.uei);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.uei);
+    }
+
+    public String getTextDescription() {
+        return this.getDescription();
+    }
+
+    public String toString() {
+        return ("<EventFactory.ExactUEIFilter: " + this.getDescription() + ">");
+    }
+
+    public String getUEI() {
+        return (this.uei);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

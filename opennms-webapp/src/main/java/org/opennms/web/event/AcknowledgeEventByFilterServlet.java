@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.acegisecurity.Authentication;
-import org.opennms.web.event.filter.Filter;
+import org.opennms.web.filter.Filter;
 
 /**
  * This servlet receives an HTTP POST with a list of events to acknowledge or

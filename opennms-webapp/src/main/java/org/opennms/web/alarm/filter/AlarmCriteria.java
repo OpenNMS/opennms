@@ -33,6 +33,7 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
+import org.opennms.web.filter.Filter;
 
 
 /**

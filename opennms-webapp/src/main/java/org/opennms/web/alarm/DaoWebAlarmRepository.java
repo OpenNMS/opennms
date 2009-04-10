@@ -47,8 +47,8 @@ import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
-import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

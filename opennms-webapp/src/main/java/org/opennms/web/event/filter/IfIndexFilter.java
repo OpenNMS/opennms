@@ -32,50 +32,51 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates all interface filtering functionality. */
-public class IfIndexFilter extends EqualsFilter<Integer> implements Filter {
+public class IfIndexFilter extends LegacyFilter {
     public static final String TYPE = "ifindex";
 
     protected int ifIndex;
 
     public IfIndexFilter(int ifIndex) {
-        super(SQLType.INT, "ifindex", "ifIndex", ifIndex, "ifindex");
         this.ifIndex = ifIndex;
     }
 
-//    public String getSql() {
-//        return (" ifindex=" + this.ifIndex );
-//    }
-//    
-//    public String getParamSql() {
-//        return (" ifindex=?");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setInt(parameterIndex, this.ifIndex);
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.ifIndex);
-//    }
-//
-//    public String getTextDescription() {
-//        return this.getDescription();
-//    }
-//
-//    public String toString() {
-//        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public int getIfIndex() {
-//        return (this.ifIndex);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
+    public String getSql() {
+        return (" ifindex=" + this.ifIndex );
+    }
+    
+    public String getParamSql() {
+        return (" ifindex=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.ifIndex);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.ifIndex);
+    }
+
+    public String getTextDescription() {
+        return this.getDescription();
+    }
+
+    public String toString() {
+        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
+    }
+
+    public int getIfIndex() {
+        return (this.ifIndex);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

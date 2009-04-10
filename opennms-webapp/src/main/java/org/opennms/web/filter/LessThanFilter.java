@@ -31,37 +31,23 @@
  */
 package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class LessThanFilter<T> extends EqualsFilter<T> implements BaseFilter {
+public abstract class LessThanFilter<T> extends OneArgFilter<T> {
     
-    public LessThanFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName){
-        super(type, fieldName, daoPropertyName, value, filterName);
+    public LessThanFilter(String filterType, SQLType<T> type, String fieldName, String daoPropertyName, T value){
+        super(filterType, type, fieldName, daoPropertyName, value);
     }
     
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.le(m_daoPropertyName, m_value));
+        criteria.add(Restrictions.le(getPropertyName(), getValue()));
     }
 
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        m_sqlType.bindParam(ps, parameterIndex, m_value);
-        return 1;
-    }
-
-    public String getDescription() {
-        return m_filterName + " < " + m_value;
-    }
-
-    public String getParamSql() {
-        return " " + m_fieldName + " < ?";
-    }
-
-    public String getSql() {
-        return " " + m_fieldName + " < " + m_sqlType.formatValue(m_value);
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + " < %s ";
     }
 
 }
