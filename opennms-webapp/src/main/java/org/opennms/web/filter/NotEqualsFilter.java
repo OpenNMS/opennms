@@ -31,33 +31,23 @@
  */
 package org.opennms.web.filter;
 
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class NegativeFilter<T> extends EqualsFilter<T> implements BaseFilter {
-    
-    
-    public NegativeFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
+public abstract class NotEqualsFilter<T> extends OneArgFilter<T> {
+
+    public NotEqualsFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
+        super(filterName, type, fieldName, daoPropertyName, value);
     }
 
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.or(Restrictions.ne(m_daoPropertyName, m_value), Restrictions.isNull(m_daoPropertyName)));
+        criteria.add(Restrictions.ne(getPropertyName(), getValue()));
     }
 
-    public String getDescription() {
-        return m_filterName + " <> " + m_value;
-    }
-
-    public String getParamSql() {
-        System.out.println("(" + m_fieldName + "<>? OR " + m_fieldName + " IS NULL)");
-        return " (" + m_fieldName + "<>? OR " + m_fieldName + " IS NULL)";
-    }
-
-    public String getSql() {
-        System.out.println(" ("+ m_fieldName +"<>'" + m_value + "' OR " + m_fieldName + " IS NULL)");
-        return " ("+ m_fieldName +"<>'" + m_value + "' OR " + m_fieldName + " IS NULL)";
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + "<> %s ";
     }
 
 }

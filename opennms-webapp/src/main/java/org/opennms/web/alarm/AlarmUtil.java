@@ -51,7 +51,6 @@ import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
-import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.IPLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
@@ -68,6 +67,7 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 
 public abstract class AlarmUtil extends Object {
     public static final String ANY_SERVICES_OPTION = "Any";

@@ -42,7 +42,7 @@ import java.util.List;
 
 import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
-import org.opennms.web.alarm.filter.Filter;
+import org.opennms.web.filter.Filter;
 
 /**
  * Convenience data structure for holding the arguments to an event query.

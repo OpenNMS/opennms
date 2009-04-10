@@ -44,4 +44,7 @@ public interface SQLType<T> {
     public String formatValue(T value);
 
     public void bindParam(PreparedStatement ps, int parameterIndex, T value) throws SQLException;
+    
+    public T[] createArray(T value1, T value2);
+    
 }

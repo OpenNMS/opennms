@@ -31,34 +31,26 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public abstract class InFilter<T> extends MultiArgFilter<T> {
-    
-    public InFilter(SQLType<T> type, String fieldName, String propertyName, T[] values, String filterName){
-        super(filterName, type, fieldName, propertyName, values);
-    }
-    
-    @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.in(getPropertyName(), getValuesAsList()));
+public abstract class NoSubstringFilter extends OneArgFilter<String> {
+
+    public NoSubstringFilter(String fieldName, String daoPropertyName, String value, String filterName) {
+        super(filterName, SQLType.STRING, fieldName, daoPropertyName, value);
+
     }
     
     @Override
     public String getSQLTemplate() {
-        StringBuilder buf = new StringBuilder(getSQLFieldName());
-        buf.append(" IN (");
-        T[] values = getValues();
-        
-        for(int i = 0; i < values.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append("%s");
-        }
-        buf.append(") ");
-        return buf.toString();
+        return getSQLFieldName() + "NOT ILIKE '%%%s%%' ";
+    }
+    
+    @Override
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE)));
     }
 
 }

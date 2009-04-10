@@ -47,4 +47,8 @@ public class DateSqlType implements SQLType<Date> {
         return "to_timestamp(\'" + value.toString() + "\', " + EventConstants.POSTGRES_DATE_FORMAT +")";
     }
 
+    public Date[] createArray(Date value1, Date value2) {
+        return new Date[] { value1, value2 };
+    }
+
 }

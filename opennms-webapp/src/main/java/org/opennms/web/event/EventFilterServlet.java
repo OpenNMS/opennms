@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.event.filter.Filter;
+import org.opennms.web.filter.Filter;
 
 /**
  * A servlet that handles querying the event table by using filters to create an

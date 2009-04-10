@@ -31,14 +31,49 @@
  */
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
+import org.opennms.web.filter.LegacyFilter;
+
+public class AlarmTypeFilter extends LegacyFilter {
     public static final String TYPE = "alarmTypeFilter";    
- 
+    
+    private int m_alarmType;
+    
     public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+        m_alarmType = alarmType;
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+        ps.setInt(parameterIndex, m_alarmType);
+        return 1;
+    }
+
+    public String getDescription() {
+        return TYPE + " = " + m_alarmType;
+    }
+
+    public String getParamSql() {
+        return " ALARMTYPE =?";
+    }
+
+    public String getSql() {
+        return " ALARMTYPE =" + m_alarmType;
+    }
+
+    public String getTextDescription() {
+        return TYPE + " = " + getAlarmTypeLabel(m_alarmType);
+    }
+    
+    private String getAlarmTypeLabel(int alarmType){
+        if(alarmType == 1){
+            return "PROBLEM_TYPE";
+        }else if(alarmType == 2){
+            return "RESOLUTION_TYPE";
+        }else{
+            return null;
+        }
     }
 
 }

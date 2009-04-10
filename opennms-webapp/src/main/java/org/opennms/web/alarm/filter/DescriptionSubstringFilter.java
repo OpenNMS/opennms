@@ -32,17 +32,54 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.PartialFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class DescriptionSubstringFilter extends PartialFilter<String> implements Filter {
+import org.opennms.web.filter.LegacyFilter;
+
+public class DescriptionSubstringFilter extends LegacyFilter {
     public static final String TYPE = "descsub";
 
     protected String substring;
 
     public DescriptionSubstringFilter(String substring) {
-        super(SQLType.STRING, "DESCRIPTION", "description", substring, "descsub");
+        if (substring == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
 
         this.substring = substring;
+    }
+
+    public String getSql() {
+        return (" UPPER(DESCRIPTION) LIKE '%" + this.substring.toUpperCase() + "%'");
+    }
+    
+    public String getParamSql() {
+        return (" UPPER(DESCRIPTION) LIKE ?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.substring);
+    }
+
+    public String getTextDescription() {
+        return ("description containing \"" + this.substring + "\"");
+    }
+
+    public String toString() {
+        return ("<DescriptionSubstringFilter: " + this.getDescription() + ">");
+    }
+
+    public String getSubstring() {
+        return (this.substring);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

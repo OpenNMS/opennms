@@ -35,12 +35,10 @@ package org.opennms.web.event.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates all node filtering functionality. */
-public class NodeNameLikeFilter extends Object implements Filter {
+public class NodeNameLikeFilter extends LegacyFilter {
     public static final String TYPE = "nodenamelike";
 
     protected String substring;
@@ -85,10 +83,5 @@ public class NodeNameLikeFilter extends Object implements Filter {
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
-    }
-    
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.createCriteria("node").add(Restrictions.like("label", this.substring, MatchMode.ANYWHERE));
-        
     }
 }

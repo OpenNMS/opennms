@@ -32,52 +32,55 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.NegativeExactFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class NegativeExactUEIFilter extends NegativeExactFilter<String> implements Filter {
+public class NegativeExactUEIFilter extends LegacyFilter {
     public static final String TYPE = "exactUeiNot";
 
+    protected String uei;
+
     public NegativeExactUEIFilter(String uei) {
-        super(SQLType.STRING, "EVENTUEI", "uei", uei, "exactUeiNot");
+        if (uei == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        this.uei = uei;
     }
 
-//    public String getSql() {
-//        return (" EVENTUEI<>'" + this.uei + "'");
-//    }
-//    
-//    public String getParamSql() {
-//        return (" EVENTUEI<>?");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setString(parameterIndex, this.uei);
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.uei);
-//    }
-//
-//    public String getTextDescription() {
-//        return ("UEI is not " + this.uei);
-//    }
-//
-//    public String toString() {
-//        return ("<AlarmFactory.NegativeExactUEIFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public String getUEI() {
-//        return (this.uei);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
-//
-//    public void applyCriteria(OnmsCriteria criteria) {
-//        // TODO Auto-generated method stub
-//        
-//    }
+    public String getSql() {
+        return (" EVENTUEI<>'" + this.uei + "'");
+    }
+    
+    public String getParamSql() {
+        return (" EVENTUEI<>?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.uei);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.uei);
+    }
+
+    public String getTextDescription() {
+        return ("UEI is not " + this.uei);
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.NegativeExactUEIFilter: " + this.getDescription() + ">");
+    }
+
+    public String getUEI() {
+        return (this.uei);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

@@ -50,37 +50,40 @@
 
 <%@page language="java"
 	contentType="text/html"
-	session="true"
-	import="java.util.ArrayList,
-                java.util.List,
-                org.opennms.web.controller.alarm.AcknowledgeAlarmController,
-                org.opennms.web.controller.alarm.AlarmSeverityChangeController,
-                org.opennms.web.alarm.Alarm,
-                org.opennms.web.alarm.AlarmQueryParms,
-                org.opennms.web.alarm.AlarmFactory.SortStyle,
-                org.opennms.web.alarm.AlarmFactory.AcknowledgeType,
-                org.opennms.web.alarm.AlarmUtil,
-                org.opennms.web.alarm.filter.Filter,
-                org.opennms.web.alarm.filter.ExactUEIFilter,
-                org.opennms.web.alarm.filter.NegativeExactUEIFilter,
-                org.opennms.web.alarm.filter.SeverityFilter,
-                org.opennms.web.alarm.filter.NegativeSeverityFilter,
-                org.opennms.web.alarm.filter.NodeFilter,
-                org.opennms.web.alarm.filter.NegativeNodeFilter,
-                org.opennms.web.alarm.filter.InterfaceFilter,
-                org.opennms.web.alarm.filter.NegativeInterfaceFilter,
-                org.opennms.web.alarm.filter.ServiceFilter,
-                org.opennms.web.alarm.filter.NegativeServiceFilter,
-                org.opennms.web.alarm.filter.AfterLastEventTimeFilter,
-                org.opennms.web.alarm.filter.BeforeLastEventTimeFilter,
-                org.opennms.web.alarm.filter.AfterFirstEventTimeFilter,
-                org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter,
-		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.WebSecurityUtils,
-		org.opennms.web.XssRequestWrapper,
-                org.opennms.web.Util
-		"
-%>
+	session="true" %>
+	
+<%@page import="java.util.ArrayList" %>
+<%@page import="java.util.List" %>
+
+<%@page import="org.opennms.web.Util"%>
+<%@page import="org.opennms.web.WebSecurityUtils" %>
+<%@page import="org.opennms.web.XssRequestWrapper" %>
+<%@page import="org.opennms.web.acegisecurity.Authentication" %>
+
+<%@page import="org.opennms.web.controller.alarm.AcknowledgeAlarmController" %>
+<%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
+
+<%@page import="org.opennms.web.filter.Filter" %>
+<%@page import="org.opennms.web.alarm.Alarm" %>
+<%@page import="org.opennms.web.alarm.AlarmQueryParms" %>
+<%@page import="org.opennms.web.alarm.AlarmFactory.SortStyle" %>
+<%@page import="org.opennms.web.alarm.AlarmFactory.AcknowledgeType" %>
+<%@page import="org.opennms.web.alarm.AlarmUtil" %>
+<%@page import="org.opennms.web.alarm.filter.ExactUEIFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NegativeExactUEIFilter" %>
+<%@page import="org.opennms.web.alarm.filter.SeverityFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NegativeSeverityFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NodeFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NegativeNodeFilter" %>
+<%@page import="org.opennms.web.alarm.filter.InterfaceFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NegativeInterfaceFilter" %>
+<%@page import="org.opennms.web.alarm.filter.ServiceFilter" %>
+<%@page import="org.opennms.web.alarm.filter.NegativeServiceFilter" %>
+<%@page import="org.opennms.web.alarm.filter.AfterLastEventTimeFilter" %>
+<%@page import="org.opennms.web.alarm.filter.BeforeLastEventTimeFilter" %>
+<%@page import="org.opennms.web.alarm.filter.AfterFirstEventTimeFilter" %>
+<%@page import="org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 

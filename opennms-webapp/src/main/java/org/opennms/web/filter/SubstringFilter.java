@@ -31,41 +31,24 @@
  */
 package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class NegativePartialFilter<T> extends NegativeFilter<T> {
+public abstract class SubstringFilter extends OneArgFilter<String> {
 
-    public NegativePartialFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
+    public SubstringFilter(String filterType, String fieldName, String propertyName, String value) {
+        super(filterType, SQLType.STRING, fieldName, propertyName, value);
+    }
 
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        String prop = (String) m_value;
-        ps.setString(parameterIndex, "%"+ prop.toLowerCase()+"%");
-        return 1;
-    }
-    
-    public String getSql() {
-        return (" LOWER(" +m_fieldName + ") NOT LIKE '%" + m_sqlType.formatValue(m_value) + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" LOWER(" + m_fieldName + ") NOT LIKE ?");
-    }
-    
-    public String getDescription(){
-        return " " + m_fieldName + " NOT LIKE '%" + m_sqlType.formatValue(m_value) +"%'";
-    }
-    
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.not(Restrictions.like(m_daoPropertyName, (String) m_value, MatchMode.ANYWHERE)));
+        criteria.add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+    }
+
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + " ILIKE '%%%s%%' ";
     }
 
 }

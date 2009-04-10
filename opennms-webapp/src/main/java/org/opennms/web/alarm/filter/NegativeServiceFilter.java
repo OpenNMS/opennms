@@ -32,27 +32,58 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.web.filter.NegativeFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates all service filtering functionality. */
-public class NegativeServiceFilter extends NegativeFilter<Integer> implements Filter {
+public class NegativeServiceFilter extends LegacyFilter {
     public static final String TYPE = "servicenot";
-    
-    private OnmsServiceType m_serviceType;
-    
+
+    protected int serviceId;
+
     public NegativeServiceFilter(int serviceId) {
-        super(SQLType.INT, "SERVICEID", "serviceType", new Integer(serviceId), "serviceNot");
-        m_serviceType = new OnmsServiceType();
-        m_serviceType.setId(new Integer(serviceId));
+        this.serviceId = serviceId;
+    }
+
+    public String getSql() {
+        return (" (SERVICEID<>" + this.serviceId + " OR SERVICEID IS NULL)");
     }
     
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.or(Restrictions.ne("serviceType", m_serviceType), Restrictions.isNull("serviceType")));
+    public String getParamSql() {
+        return (" (SERVICEID<>? OR SERVICEID IS NULL)");
     }
     
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.serviceId);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.serviceId);
+    }
+
+    public String getTextDescription() {
+        String serviceName = Integer.toString(this.serviceId);
+        try {
+            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+        } catch (SQLException e) {
+        }
+
+        return ("service is not " + serviceName);
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+    }
+
+    public int getServiceId() {
+        return (this.serviceId);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

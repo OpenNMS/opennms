@@ -32,17 +32,58 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates all service filtering functionality. */
-public class ServiceFilter extends EqualsFilter<Integer> implements Filter {
+public class ServiceFilter extends LegacyFilter {
     public static final String TYPE = "service";
 
     protected int serviceId;
 
     public ServiceFilter(int serviceId) {
-        super(SQLType.INT, "SERVICEID", "severityId", new Integer(serviceId), "service");
         this.serviceId = serviceId;
+    }
+
+    public String getSql() {
+        return (" SERVICEID=" + this.serviceId);
+    }
+    
+    public String getParamSql() {
+        return (" SERVICEID=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setInt(parameterIndex, this.serviceId);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.serviceId);
+    }
+
+    public String getTextDescription() {
+        String serviceName = Integer.toString(this.serviceId);
+        try {
+            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+        } catch (SQLException e) {
+        }
+
+        return (TYPE + "=" + serviceName);
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.ServiceFilter: " + this.getDescription() + ">");
+    }
+
+    public int getServiceId() {
+        return (this.serviceId);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }
