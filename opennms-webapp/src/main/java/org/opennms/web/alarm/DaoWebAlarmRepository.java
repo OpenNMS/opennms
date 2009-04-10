@@ -39,7 +39,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -55,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
-    AlarmDaoHibernate m_alarmDao;
+    AlarmDao m_alarmDao;
     
     private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
