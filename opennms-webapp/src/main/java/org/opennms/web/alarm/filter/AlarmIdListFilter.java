@@ -31,25 +31,76 @@
  */
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.InFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 
-public class AlarmIdListFilter extends InFilter<Integer> implements Filter {
+public class AlarmIdListFilter extends LegacyFilter {
     
-    //private int[] m_alarmIds;
+    private int[] m_alarmIds;
 
     public AlarmIdListFilter(int[] alarmIds) {
-        super(SQLType.INT, "ALARMS.ALARMID", "id", convertToInteger(alarmIds), "alarmIdListFilter");
+        m_alarmIds = alarmIds;
     }
-    
-    public static Integer[] convertToInteger(int[] alarmIds){
-        Integer[] integers = new Integer[alarmIds.length];
-        for(int i = 0; i < alarmIds.length; i++){
-            integers[i] = new Integer(alarmIds[i]);
+
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+        for(int i = 0; i < m_alarmIds.length; i++) {
+            ps.setInt(parameterIndex+i, m_alarmIds[i]);
+        }
+        return m_alarmIds.length;
+    }
+
+    public String getDescription() {
+        StringBuilder buf = new StringBuilder("alarmId in ");
+        appendIdList(buf);
+        return buf.toString();
+    }
+
+    public String getParamSql() {
+        StringBuilder buf = new StringBuilder(m_alarmIds.length*3 + 20);
+        
+        buf.append(" ALARMS.ALARMID IN ");
+        
+        buf.append('(');
+        for(int i = 0; i < m_alarmIds.length; i++) {
+            if (i != 0) {
+                buf.append(", ");
+            }
+            buf.append('?');
         }
         
-        return integers;
+        buf.append(')');
+        
+        return buf.toString();
+    }
+
+    public String getSql() {
+        StringBuilder buf = new StringBuilder(m_alarmIds.length*5 + 20);
+        
+        buf.append(" ALARMS.ALARMID IN ");
+        
+        appendIdList(buf);
+        
+        return buf.toString();
+        
+    }
+
+    private void appendIdList(StringBuilder buf) {
+        buf.append("(");
+        for(int i = 0; i < m_alarmIds.length; i++) {
+            if (i != 0) {
+                buf.append(", ");
+            }
+            buf.append(m_alarmIds[i]);
+        }
+        
+        buf.append(")");
+    }
+
+    public String getTextDescription() {
+        return getDescription();
     }
     
 }

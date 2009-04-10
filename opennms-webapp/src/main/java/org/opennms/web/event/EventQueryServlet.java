@@ -56,13 +56,13 @@ import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
-import org.opennms.web.event.filter.Filter;
 import org.opennms.web.event.filter.IPLikeFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to

@@ -32,51 +32,55 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.NegativeFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class NegativeAcknowledgedByFilter extends NegativeFilter<String> implements Filter {
+public class NegativeAcknowledgedByFilter extends LegacyFilter {
     public static final String TYPE = "acknowledgedByNot";
 
     protected String user;
 
     public NegativeAcknowledgedByFilter(String user) {
-        super(SQLType.STRING, "EVENTACKUSER", "eventAckUser", user, "acknowledgeByNot");
+        if (user == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
 
         this.user = user;
     }
 
-//    public String getSql() {
-//        return (" (EVENTACKUSER<>'" + this.user + "' OR EVENTACKUSER IS NULL)");
-//    }
-//    
-//    public String getParamSql() {
-//        return (" (EVENTACKUSER<>? OR EVENTACKUSER IS NULL)");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setString(parameterIndex, this.user);
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.user);
-//    }
-//
-//    public String getTextDescription() {
-//        return ("not acknowledged by " + this.user);
-//    }
-//
-//    public String toString() {
-//        return ("<EventFactory.NegativeAcknowledgedByFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public String getAcknowledgedByFilter() {
-//        return (this.user);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
+    public String getSql() {
+        return (" (EVENTACKUSER<>'" + this.user + "' OR EVENTACKUSER IS NULL)");
+    }
+    
+    public String getParamSql() {
+        return (" (EVENTACKUSER<>? OR EVENTACKUSER IS NULL)");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.user);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.user);
+    }
+
+    public String getTextDescription() {
+        return ("not acknowledged by " + this.user);
+    }
+
+    public String toString() {
+        return ("<EventFactory.NegativeAcknowledgedByFilter: " + this.getDescription() + ">");
+    }
+
+    public String getAcknowledgedByFilter() {
+        return (this.user);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

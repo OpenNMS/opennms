@@ -31,51 +31,24 @@
  */
 package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class EqualsFilter<T> implements BaseFilter {
+public abstract class EqualsFilter<T> extends OneArgFilter<T> {
     
-    SQLType<T> m_sqlType;
-    T m_value;
-    String m_fieldName;
-    String m_filterName;
-    String m_daoPropertyName;
-    
-    public EqualsFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName){
-        m_sqlType = type;
-        m_fieldName = fieldName;
-        m_value = value;
-        m_filterName = filterName;
-        m_daoPropertyName = daoPropertyName;
+    public EqualsFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value){
+        super(filterType, type, fieldName, propertyName, value);
     }
     
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.eq(m_daoPropertyName, m_value));
+        criteria.add(Restrictions.eq(getPropertyName(), getValue()));
     }
 
-    public int bindParam(PreparedStatement ps, int parameterIndex)throws SQLException {
-        m_sqlType.bindParam(ps, parameterIndex, m_value);
-        return 1;
+    @Override
+    public String getSQLTemplate() {
+        return " " + getSQLFieldName() + " =  %s ";
     }
 
-    public String getDescription() {
-        return m_filterName + " = " + m_value;
-    }
-
-    public String getParamSql() {
-        return " " + m_fieldName + "=?";
-    }
-
-    public String getSql() {
-        return " " + m_fieldName + " = " + m_sqlType.formatValue(m_value);
-    }
-
-    public String getTextDescription() {
-        return getDescription();
-    }
 
 }

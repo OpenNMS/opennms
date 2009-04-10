@@ -36,64 +36,55 @@ import java.sql.SQLException;
 
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public interface BaseFilter {
+/**
+ * BaseFilter
+ *
+ * @author brozow
+ */
+public abstract class BaseFilter<T> implements Filter {
     
-    /**
-     * Returns an expresions for a SQL where clause. Remember to include a
-     * trailing space, but no leading AND or OR.
-     */
-    public String getSql();
+    protected String m_filterName;
+    protected SQLType<T> m_sqlType;
+    private String m_fieldName;
+    private String m_propertyName;
     
-    /**
-     * Returns a parameterized SQL where clause.  Remember to include a
-     * trailing space, but no leading AND or OR.
-     */
-    public String getParamSql();
-    
-    /**
-     * Binds the parameter values corresponding to the ? tokens in the string
-     * returned from getParamSql() to a prepared statement.  Returns the number
-     * of parameters that were bound.
-     */
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
+    public BaseFilter(String filterType, SQLType<T> sqlType, String fieldName, String propertyName) {
+        m_filterName = filterType;
+        m_sqlType = sqlType;
+        m_fieldName = fieldName;
+        m_propertyName = propertyName;
+    }
 
-    /**
-     * Returns a terse string (including a "=") that describes this filter in
-     * such a way to easily be included in an HTTP GET parameter.
-     * 
-     * <p>
-     * Some examples:
-     * <ul>
-     * <li>"node=1"</li>
-     * <li>"interface=192.168.0.1"</li>
-     * <li>"severity=3"</li>
-     * <li>"nodenamelike=opennms"</li>
-     * </ul>
-     * </p>
-     */
-    public String getDescription();
+    public String getSQLFieldName() {
+        return m_fieldName;
+    }
 
-    /**
-     * Returns a terse but human-readable string describing this filter in such
-     * a way to easily be included in a search results list.
-     * 
-     * <p>
-     * Some examples (corresponding to the examples in
-     * {@link #getDescription getDescription}):
-     * <ul>
-     * <li>"node=nodelabel_of_node_1"</li>
-     * <li>"interface=192.168.0.1"</li>
-     * <li>"severity=Normal"</li>
-     * <li>"node name containing \"opennms\""</li>
-     * </ul>
-     * </p>
-     */
-    public String getTextDescription();
+    public String getPropertyName() {
+        return m_propertyName;
+    }
+
+    public final String getDescription() {
+        return m_filterName+"="+getValueString();
+    }
     
-    /**
-     * Method for adding the filters criteria to the
-     * OnmsCriteria object.
-     * @param criteria
-     */
-    public void applyCriteria(OnmsCriteria criteria);
+    final public void bindValue(PreparedStatement ps, int parameterIndex, T value) throws SQLException {
+        m_sqlType.bindParam(ps, parameterIndex, value);
+    }
+    
+    final public String formatValue(T value) {
+        return m_sqlType.formatValue(value);
+    }
+    
+    public abstract String getValueString();
+    
+    public abstract void applyCriteria(OnmsCriteria criteria);
+
+    public abstract int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
+
+    public abstract String getParamSql();
+
+    public abstract String getSql();
+
+    public abstract String getTextDescription();
+
 }

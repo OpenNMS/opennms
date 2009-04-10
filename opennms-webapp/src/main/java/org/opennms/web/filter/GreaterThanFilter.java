@@ -34,27 +34,21 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class GreaterThanFilter<T> extends EqualsFilter<T> implements BaseFilter {
+public abstract class GreaterThanFilter<T> extends OneArgFilter<T> {
 
-    public GreaterThanFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
+    public GreaterThanFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value) {
+        super(filterType, type, fieldName, propertyName, value);
     }
 
+    @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.gt(m_daoPropertyName, m_value));
-
+        criteria.add(Restrictions.gt(getPropertyName(), getValue()));
+    }
+    
+    @Override
+    public String getSQLTemplate() {
+        return getSQLFieldName() + "> %s ";
     }
 
-    public String getDescription() {
-        return m_filterName + " = " + m_value;
-    }
-
-    public String getParamSql() {
-        return " " + m_fieldName + ">?";
-    }
-
-    public String getSql() {
-        return " " + m_fieldName + " >" + m_sqlType.formatValue(m_value);
-    }
 
 }

@@ -32,14 +32,55 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.opennms.web.filter.LegacyFilter;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class AcknowledgedByFilter extends EqualsFilter<String> implements Filter {
+public class AcknowledgedByFilter extends LegacyFilter {
     public static final String TYPE = "acknowledgedBy";
 
+    protected String user;
+
     public AcknowledgedByFilter(String user) {
-        super(SQLType.STRING, "ALARMACKUSER", "alarmAckUser", user, "acknowledgeBy");
+        if (user == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        this.user = user;
+    }
+
+    public String getSql() {
+        return (" ALARMACKUSER='" + this.user + "'");
+    }
+    
+    public String getParamSql() {
+        return (" ALARMACKUSER=?");
+    }
+    
+    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    	ps.setString(parameterIndex, this.user);
+    	return 1;
+    }
+
+    public String getDescription() {
+        return (TYPE + "=" + this.user);
+    }
+
+    public String getTextDescription() {
+        return this.getDescription();
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.AcknowledgedByFilter: " + this.getDescription() + ">");
+    }
+
+    public String getAcknowledgedByFilter() {
+        return (this.user);
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

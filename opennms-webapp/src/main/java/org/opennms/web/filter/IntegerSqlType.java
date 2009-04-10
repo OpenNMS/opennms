@@ -44,4 +44,8 @@ public class IntegerSqlType implements SQLType<Integer> {
         ps.setInt(parameterIndex, value);
     }
 
+    public Integer[] createArray(Integer value1, Integer value2) {
+        return new Integer[] { value1, value2 };
+    }
+
 }
