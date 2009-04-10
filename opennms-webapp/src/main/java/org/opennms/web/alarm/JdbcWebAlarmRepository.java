@@ -46,11 +46,11 @@ import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.alarm.filter.AlarmTypeFilter;
-import org.opennms.web.alarm.filter.ConditionalFilter;
 import org.opennms.web.alarm.filter.SeverityBetweenFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
+import org.opennms.web.filter.ConditionalFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -188,12 +188,12 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
 
     public int countMatchingAlarms(AlarmCriteria criteria) {
-        String sql = getSql("SELECT COUNT(ALARMID) as ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT COUNT(ALARMID) as ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
     
     public int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria) {
-        String selectClause = "SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)";
+        String selectClause = "SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
         sql = sql + " GROUP BY SEVERITY";
 
@@ -223,7 +223,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
     
     public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
-        String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getAlarms(sql, paramSetter(criteria));
     }
     
@@ -239,12 +239,12 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
 
     public void acknowledgeMatchingAlarms(String user, Date timestamp, AlarmCriteria criteria) {
-        String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=?", criteria);
+        String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
     
     public void acknowledgeAll(String user, Date timestamp) {
-        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL", user, new Timestamp(timestamp.getTime()));
+        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
     public void unacknowledgeAlarms(int[] alarmIds) {
@@ -252,12 +252,12 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
 
     public void unacknowledgeMatchingAlarms(AlarmCriteria criteria) {
-        String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL", criteria);
+        String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL ", criteria);
         jdbc().update(sql, paramSetter(criteria));
     }
     
     public void unacknowledgeAll() {
-        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL");
+        m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL ");
     }
     
     public void clearAlarms(int[] alarmIds, String user){
@@ -284,7 +284,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
         
-        String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =?", criteria);
+        String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
         System.out.println(sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
     }

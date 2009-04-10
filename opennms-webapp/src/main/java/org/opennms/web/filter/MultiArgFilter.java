@@ -75,7 +75,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
             if (i != 0) {
                 buf.append(',');
             }
-            buf.append(m_values[i]);
+            buf.append(getValueAsString(m_values[i]));
         }
         return buf.toString();
     }

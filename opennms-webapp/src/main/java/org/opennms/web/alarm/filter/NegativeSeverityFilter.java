@@ -37,44 +37,24 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NotEqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /**
  * Encapsulates negative severity filtering functionality, that is filtering OUT
  * this value instead of only filtering IN this value.
  */
-public class NegativeSeverityFilter extends LegacyFilter {
+public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
+    
     public static final String TYPE = "severitynot";
 
-    private OnmsSeverity m_severity;
-
     public NegativeSeverityFilter(OnmsSeverity severity) {
-        m_severity = severity;
-    }
-
-    public String getSql() {
-        return (" SEVERITY<>" + m_severity.getId());
-    }
-    
-    public String getParamSql() {
-        return (" SEVERITY<>?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, m_severity.getId());
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + m_severity.getId());
+        super(TYPE, SQLType.INT, "SEVERITY", "severityId", severity.getId());
     }
 
     public String getTextDescription() {
-        return ("severity is not " + m_severity.getLabel());
+        return ("severity is not " + OnmsSeverity.get(getValue()).getLabel());
     }
 
     public String toString() {
@@ -82,7 +62,7 @@ public class NegativeSeverityFilter extends LegacyFilter {
     }
 
     public int getSeverity() {
-        return m_severity.getId();
+        return getValue();
     }
 
     public boolean equals(Object obj) {

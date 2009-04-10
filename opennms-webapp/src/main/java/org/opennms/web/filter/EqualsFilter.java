@@ -34,7 +34,7 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public abstract class EqualsFilter<T> extends OneArgFilter<T> {
+public class EqualsFilter<T> extends OneArgFilter<T> {
     
     public EqualsFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value){
         super(filterType, type, fieldName, propertyName, value);
@@ -42,13 +42,20 @@ public abstract class EqualsFilter<T> extends OneArgFilter<T> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.eq(getPropertyName(), getValue()));
+        createAssociationCriteria(criteria).add(Restrictions.eq(getPropertyName(), getValue()));
     }
 
     @Override
     public String getSQLTemplate() {
         return " " + getSQLFieldName() + " =  %s ";
     }
+
+    @Override
+    public String getTextDescription() {
+        return getDescription();
+    }
+    
+    
 
 
 }

@@ -40,12 +40,12 @@ public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
         super(filterType, type, fieldName, propertyName, type.createArray(first, last));
     }
 
-    private T getFirst() { return getValues()[0]; }
-    private T getLast() { return getValues()[1]; }
+    public T getFirst() { return getValues()[0]; }
+    public T getLast() { return getValues()[1]; }
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
+        createAssociationCriteria(criteria).add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
     }
     
     @Override

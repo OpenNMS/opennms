@@ -37,80 +37,25 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.SubstringFilter;
 
 /**
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  */
-public class LogMessageMatchesAnyFilter extends LegacyFilter {
+public class LogMessageMatchesAnyFilter extends SubstringFilter {
     public static final String TYPE = "msgmatchany";
-
-    protected String[] substrings;
 
     /**
      * @param stringList
      *            a space-delimited list of search substrings
      */
-    public LogMessageMatchesAnyFilter(String stringList) {
-        if (stringList == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        StringTokenizer tokenizer = new StringTokenizer(stringList);
-        List<String> list = new ArrayList<String>();
-
-        while (tokenizer.hasMoreTokens()) {
-            list.add(tokenizer.nextToken());
-        }
-
-        if (list.size() == 0) {
-            throw new IllegalArgumentException("Cannot take a zero-length list of substrings");
-        }
-
-        this.substrings = list.toArray(new String[list.size()]);
-    }
-
-    public LogMessageMatchesAnyFilter(String[] substrings) {
-        if (substrings == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.substrings = substrings;
-    }
-
-    public String getSql() {
-        StringBuffer buffer = new StringBuffer(" (");
-
-        buffer.append("UPPER(logMsg) LIKE '%");
-        buffer.append(getQueryString().toUpperCase());
-        buffer.append("%'");
-        buffer.append(")");
-
-        return buffer.toString();
-    }
-    
-    public String getParamSql() {
-        return ("UPPER(logMsg) LIKE ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+getQueryString().toUpperCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return TYPE + "=" + this.getQueryString();
+    public LogMessageMatchesAnyFilter(String substring) {
+        super(TYPE, "logMsg", "logMsg", substring);
     }
 
     public String getTextDescription() {
         StringBuffer buffer = new StringBuffer("message containing \"");
-        buffer.append(getQueryString());
+        buffer.append(getValue());
         buffer.append("\"");
 
         return buffer.toString();
@@ -120,24 +65,8 @@ public class LogMessageMatchesAnyFilter extends LegacyFilter {
         return "<LogMessageMatchesAnyFilter: " + this.getDescription() + ">";
     }
 
-    public String[] getSubstrings() {
-        return this.substrings;
-    }
-
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
-    }
-
-    public String getQueryString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.substrings[0]);
-
-        for (int i = 1; i < this.substrings.length; i++) {
-            buffer.append(" ");
-            buffer.append(this.substrings[i]);
-        }
-
-        return buffer.toString();
     }
 
 }
