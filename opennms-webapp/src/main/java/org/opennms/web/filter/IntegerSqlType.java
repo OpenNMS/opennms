@@ -39,6 +39,10 @@ public class IntegerSqlType implements SQLType<Integer> {
     public String formatValue(Integer value) {
         return value.toString();
     }
+    
+    public String getValueAsString(Integer value) {
+        return String.valueOf(value);
+    }
 
     public void bindParam(PreparedStatement ps, int parameterIndex, Integer value) throws SQLException {
         ps.setInt(parameterIndex, value);

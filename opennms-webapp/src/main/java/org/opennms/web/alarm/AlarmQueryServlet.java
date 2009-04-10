@@ -61,7 +61,7 @@ import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
-import org.opennms.web.alarm.filter.IPLikeFilter;
+import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
@@ -137,7 +137,7 @@ public class AlarmQueryServlet extends HttpServlet {
         // convenient syntax for IPLikeFilter
         String ipLikePattern = request.getParameter("iplike");
         if (ipLikePattern != null && !ipLikePattern.equals("")) {
-            filterArray.add(new IPLikeFilter(ipLikePattern));
+            filterArray.add(new IPAddrLikeFilter(ipLikePattern));
         }
 
         // convenient syntax for SeverityFilter

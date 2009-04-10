@@ -38,19 +38,30 @@ import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class NoSubstringFilter extends OneArgFilter<String> {
 
-    public NoSubstringFilter(String fieldName, String daoPropertyName, String value, String filterName) {
-        super(filterName, SQLType.STRING, fieldName, daoPropertyName, value);
+    public NoSubstringFilter(String filterType, String fieldName, String daoPropertyName, String value) {
+        super(filterType, SQLType.STRING, fieldName, daoPropertyName, value);
 
     }
     
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + "NOT ILIKE '%%%s%%' ";
+        return getSQLFieldName() + " NOT ILIKE %s ";
     }
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE)));
+        createAssociationCriteria(criteria).add(Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE)));
     }
+    
+    @Override
+    public String getBoundValue(String value) {
+        return '%' + value + '%';
+    }
+    
+    @Override
+    public String formatValue(String value) {
+        return super.formatValue('%'+value+'%');
+    }
+
 
 }

@@ -173,7 +173,7 @@ public class WebAlarmRepositoryFilterTest {
     @Test
     @Transactional
     public void testIPLikeFilter(){
-        AlarmCriteria criteria = new AlarmCriteria(new IPLikeFilter("192.168.1.1"));
+        AlarmCriteria criteria = new AlarmCriteria(new IPAddrLikeFilter("192.168.1.1"));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
@@ -257,7 +257,7 @@ public class WebAlarmRepositoryFilterTest {
     
     @Test
     @Transactional
-    public void testNodeFiler(){
+    public void testNodeFilter(){
         AlarmCriteria criteria = getCriteria(new NodeFilter(1));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);

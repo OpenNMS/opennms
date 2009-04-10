@@ -37,41 +37,19 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
 
 /** Encapsulates severity filtering functionality. */
-public class SeverityFilter extends LegacyFilter {
+public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
     public static final String TYPE = "severity";
 
-    private OnmsSeverity m_severity;
-
     public SeverityFilter(OnmsSeverity severity) {
-        m_severity = severity;
-    }
-
-    public String getSql() {
-        return (" SEVERITY=" + m_severity.getId());
-    }
-    
-    public String getParamSql() {
-        return (" SEVERITY=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, m_severity.getId());
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + m_severity.getId());
+        super(TYPE, new OnmsSeverityType(), "SEVERITY", "severity", severity);
     }
 
     public String getTextDescription() {
-        return (TYPE + "=" + m_severity.getLabel());
+        return (TYPE + "=" + getValue().getLabel());
     }
 
     public String toString() {
@@ -79,7 +57,7 @@ public class SeverityFilter extends LegacyFilter {
     }
 
     public int getSeverity() {
-        return m_severity.getId();
+        return getValue().getId();
     }
 
     public boolean equals(Object obj) {

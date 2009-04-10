@@ -29,36 +29,35 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.filter;
+package org.opennms.web.alarm.filter;
 
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public abstract class InFilter<T> extends MultiArgFilter<T> {
-    
-    public InFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T[] values){
-        super(filterType, type, fieldName, propertyName, values);
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.filter.SQLType;
+
+/**
+ * OnmsSeverityType
+ *
+ * @author brozow
+ */
+public class OnmsSeverityType implements SQLType<OnmsSeverity> {
+
+    public void bindParam(PreparedStatement ps, int parameterIndex, OnmsSeverity value) throws SQLException {
+        ps.setInt(parameterIndex, value.getId());
     }
-    
-    @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.in(getPropertyName(), getValuesAsList()));
+
+    public OnmsSeverity[] createArray(OnmsSeverity value1, OnmsSeverity value2) {
+        return new OnmsSeverity[] { value1, value2 };
     }
-    
-    @Override
-    public String getSQLTemplate() {
-        StringBuilder buf = new StringBuilder(getSQLFieldName());
-        buf.append(" IN (");
-        T[] values = getValues();
-        
-        for(int i = 0; i < values.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append("%s");
-        }
-        buf.append(") ");
-        return buf.toString();
+
+    public String formatValue(OnmsSeverity value) {
+        return String.valueOf(value.getId());
+    }
+
+    public String getValueAsString(OnmsSeverity value) {
+        return String.valueOf(value.getId());
     }
 
 }

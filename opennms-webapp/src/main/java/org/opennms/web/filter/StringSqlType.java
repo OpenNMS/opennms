@@ -39,6 +39,10 @@ public class StringSqlType implements SQLType<String> {
     public void bindParam(PreparedStatement ps, int parameterIndex, String value) throws SQLException {
         ps.setString(parameterIndex, value);
     }
+    
+    public String getValueAsString(String value) {
+        return value;
+    }
 
     public String formatValue(String value) {
         return "'" + value + "'";

@@ -43,12 +43,24 @@ public abstract class SubstringFilter extends OneArgFilter<String> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+        createAssociationCriteria(criteria).add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
     }
 
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + " ILIKE '%%%s%%' ";
+        return getSQLFieldName() + " ILIKE %s ";
     }
+
+    @Override
+    public String getBoundValue(String value) {
+        return '%' + value + '%';
+    }
+
+    @Override
+    public String formatValue(String value) {
+        return super.formatValue('%'+value+'%');
+    }
+    
+    
 
 }

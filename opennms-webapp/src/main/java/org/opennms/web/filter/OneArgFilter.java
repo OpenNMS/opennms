@@ -51,16 +51,20 @@ public abstract class OneArgFilter<T> extends BaseFilter<T> {
     final public T getValue() { return m_value; };
 
     abstract public String getSQLTemplate();
-
-    @Override
-    final public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        bindValue(ps, parameterIndex, m_value);
-        return 1;
+    
+    public T getBoundValue(T value) {
+        return value;
     }
 
     @Override
+    final public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+        bindValue(ps, parameterIndex, getBoundValue(m_value));
+        return 1;
+    }
+    
+    @Override
     final public String getValueString() {
-        return String.valueOf(m_value);
+        return getValueAsString(m_value);
     }
     
 

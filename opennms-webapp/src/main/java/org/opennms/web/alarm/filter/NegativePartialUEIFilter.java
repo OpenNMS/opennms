@@ -32,44 +32,18 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NoSubstringFilter;
 
 /** Encapsulates filtering on partial unique event identifiers. */
-public class NegativePartialUEIFilter extends LegacyFilter {
+public class NegativePartialUEIFilter extends NoSubstringFilter {
     public static final String TYPE = "partialUeiNot";
 
-    protected String uei;
-
     public NegativePartialUEIFilter(String uei) {
-        if (uei == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.uei = uei;
-    }
-
-    public String getSql() {
-        return (" LOWER(EVENTUEI) NOT LIKE '%" + this.uei.toLowerCase() + "%'");
+        super(TYPE, "EVENTUEI", "uei", uei);
     }
     
-    public String getParamSql() {
-        return (" LOWER(EVENTUEI) NOT LIKE ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.uei.toLowerCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.uei);
-    }
-
     public String getTextDescription() {
-        return ("partial UEI not like " + this.uei);
+        return ("partial UEI not like " + getValue());
     }
 
     public String toString() {
@@ -77,7 +51,7 @@ public class NegativePartialUEIFilter extends LegacyFilter {
     }
 
     public String getUEI() {
-        return (this.uei);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
