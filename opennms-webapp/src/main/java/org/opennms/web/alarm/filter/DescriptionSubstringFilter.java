@@ -32,43 +32,17 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.SubstringFilter;
 
-import org.opennms.web.filter.LegacyFilter;
-
-public class DescriptionSubstringFilter extends LegacyFilter {
+public class DescriptionSubstringFilter extends SubstringFilter {
     public static final String TYPE = "descsub";
 
-    protected String substring;
-
     public DescriptionSubstringFilter(String substring) {
-        if (substring == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.substring = substring;
-    }
-
-    public String getSql() {
-        return (" UPPER(DESCRIPTION) LIKE '%" + this.substring.toUpperCase() + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" UPPER(DESCRIPTION) LIKE ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.substring);
+        super(TYPE, "DESCRIPTION", "description", substring);
     }
 
     public String getTextDescription() {
-        return ("description containing \"" + this.substring + "\"");
+        return ("description containing \"" + getValue() + "\"");
     }
 
     public String toString() {
@@ -76,7 +50,7 @@ public class DescriptionSubstringFilter extends LegacyFilter {
     }
 
     public String getSubstring() {
-        return (this.substring);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

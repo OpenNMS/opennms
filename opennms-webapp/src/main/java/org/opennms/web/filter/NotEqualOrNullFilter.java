@@ -38,13 +38,13 @@ import org.opennms.netmgt.model.OnmsCriteria;
 public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
     
     
-    public NotEqualOrNullFilter(String filterType, SQLType<T> type, String fieldName, String daoPropertyName, T value) {
-        super(filterType, type, fieldName, daoPropertyName, value);
+    public NotEqualOrNullFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T value) {
+        super(filterType, type, fieldName, propertyName, value);
     }
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
+        createAssociationCriteria(criteria, OnmsCriteria.LEFT_JOIN).add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
     }
     
     @Override

@@ -30,37 +30,33 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.alarm.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.SubstringFilter;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-/** Encapsulates all node filtering functionality. */
-public class NodeNameLikeFilter extends SubstringFilter {
-    public static final String TYPE = "nodenamelike";
 
-    public NodeNameLikeFilter(String substring) {
-        super(TYPE, "NODELABEL", "node.label", substring);
+/** Encapsulates all interface filtering functionality. */
+public abstract class IPLikeFilter extends OneArgFilter<String> {
+
+    private static final Type STRING_TYPE = new StringType();
+
+    public IPLikeFilter(String filterType, String fieldName, String propertyName, String ipLikePattern) {
+        super(filterType, SQLType.STRING, fieldName, propertyName, ipLikePattern);
     }
-    
+
     @Override
     public String getSQLTemplate() {
-        return ("ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ");
+        return "IPLIKE("+getSQLFieldName()+", %s) ";
     }
 
-    public String getTextDescription() {
-        return ("node name containing \"" + getValue() + "\"");
-    }
-
-    public String toString() {
-        return ("<AlarmFactory.NodeNameContainingFilter: " + this.getDescription() + ">");
-    }
-
-    public String getSubstring() {
-        return getValue();
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
+    @Override
+    public void applyCriteria(OnmsCriteria criteria) {
+        createAssociationCriteria(criteria).add(Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE));
     }
     
+    
+
 }

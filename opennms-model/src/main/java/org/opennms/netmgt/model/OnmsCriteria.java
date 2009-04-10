@@ -52,6 +52,9 @@ import org.hibernate.transform.ResultTransformer;
 
 public class OnmsCriteria {
     
+    public static final int INNER_JOIN = Criteria.INNER_JOIN;
+    public static final int LEFT_JOIN = Criteria.LEFT_JOIN;
+    
     private OnmsDetachedCriteria m_criteria;
     private String m_entityName;
     private Integer m_firstResult = null;
@@ -104,6 +107,10 @@ public class OnmsCriteria {
 
     public OnmsCriteria createCriteria(String associationPath) {
         return new OnmsCriteria(null,  m_criteria.createCriteria(associationPath) );
+    }
+
+    public OnmsCriteria createCriteria(String associationPath, int joinType) {
+        return new OnmsCriteria(null,  m_criteria.createCriteria(associationPath, joinType) );
     }
 
     public String getAlias() {

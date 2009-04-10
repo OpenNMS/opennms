@@ -32,44 +32,19 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NotEqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class NegativeExactUEIFilter extends LegacyFilter {
+public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
     public static final String TYPE = "exactUeiNot";
 
-    protected String uei;
-
     public NegativeExactUEIFilter(String uei) {
-        if (uei == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.uei = uei;
-    }
-
-    public String getSql() {
-        return (" EVENTUEI<>'" + this.uei + "'");
-    }
-    
-    public String getParamSql() {
-        return (" EVENTUEI<>?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.uei);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.uei);
+        super(TYPE, SQLType.STRING, "EVENTUEI", "uei", uei);
     }
 
     public String getTextDescription() {
-        return ("UEI is not " + this.uei);
+        return "UEI is not " + getValue();
     }
 
     public String toString() {
@@ -77,7 +52,7 @@ public class NegativeExactUEIFilter extends LegacyFilter {
     }
 
     public String getUEI() {
-        return (this.uei);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

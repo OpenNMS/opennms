@@ -41,6 +41,8 @@ public interface SQLType<T> {
     public static final SQLType<String> STRING = new StringSqlType();
     public static final SQLType<Date> DATE = new DateSqlType();
     
+    public String getValueAsString(T value);
+    
     public String formatValue(T value);
 
     public void bindParam(PreparedStatement ps, int parameterIndex, T value) throws SQLException;

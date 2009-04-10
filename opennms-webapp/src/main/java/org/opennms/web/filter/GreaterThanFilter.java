@@ -42,7 +42,7 @@ public abstract class GreaterThanFilter<T> extends OneArgFilter<T> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.gt(getPropertyName(), getValue()));
+        createAssociationCriteria(criteria).add(Restrictions.gt(getPropertyName(), getValue()));
     }
     
     @Override

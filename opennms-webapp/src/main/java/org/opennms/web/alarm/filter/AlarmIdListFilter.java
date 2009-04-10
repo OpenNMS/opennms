@@ -31,76 +31,30 @@
  */
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.InFilter;
+import org.opennms.web.filter.SQLType;
 
 
-public class AlarmIdListFilter extends LegacyFilter {
+public class AlarmIdListFilter extends InFilter<Integer> {
+    public static final String TYPE = "alarmIdList";
     
-    private int[] m_alarmIds;
-
+    private static Integer[] box(int[] values) {
+        if (values == null) return null;
+        
+        Integer[] boxed = new Integer[values.length];
+        for(int i = 0; i < values.length; i++) {
+            boxed[i] = values[i];
+        }
+        
+        return boxed;
+    }
+    
     public AlarmIdListFilter(int[] alarmIds) {
-        m_alarmIds = alarmIds;
-    }
-
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        for(int i = 0; i < m_alarmIds.length; i++) {
-            ps.setInt(parameterIndex+i, m_alarmIds[i]);
-        }
-        return m_alarmIds.length;
-    }
-
-    public String getDescription() {
-        StringBuilder buf = new StringBuilder("alarmId in ");
-        appendIdList(buf);
-        return buf.toString();
-    }
-
-    public String getParamSql() {
-        StringBuilder buf = new StringBuilder(m_alarmIds.length*3 + 20);
-        
-        buf.append(" ALARMS.ALARMID IN ");
-        
-        buf.append('(');
-        for(int i = 0; i < m_alarmIds.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append('?');
-        }
-        
-        buf.append(')');
-        
-        return buf.toString();
-    }
-
-    public String getSql() {
-        StringBuilder buf = new StringBuilder(m_alarmIds.length*5 + 20);
-        
-        buf.append(" ALARMS.ALARMID IN ");
-        
-        appendIdList(buf);
-        
-        return buf.toString();
-        
-    }
-
-    private void appendIdList(StringBuilder buf) {
-        buf.append("(");
-        for(int i = 0; i < m_alarmIds.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append(m_alarmIds[i]);
-        }
-        
-        buf.append(")");
+        super(TYPE, SQLType.INT, "ALARMID", "id", box(alarmIds));
     }
 
     public String getTextDescription() {
-        return getDescription();
+        return String.format("alarmId in (%s)", getValueString());
     }
     
 }

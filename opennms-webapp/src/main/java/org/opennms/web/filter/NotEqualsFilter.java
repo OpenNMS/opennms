@@ -36,13 +36,13 @@ import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class NotEqualsFilter<T> extends OneArgFilter<T> {
 
-    public NotEqualsFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(filterName, type, fieldName, daoPropertyName, value);
+    public NotEqualsFilter(String filterType, SQLType<T> type, String fieldName, String daoPropertyName, T value) {
+        super(filterType, type, fieldName, daoPropertyName, value);
     }
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.ne(getPropertyName(), getValue()));
+        createAssociationCriteria(criteria).add(Restrictions.ne(getPropertyName(), getValue()));
     }
 
     @Override
