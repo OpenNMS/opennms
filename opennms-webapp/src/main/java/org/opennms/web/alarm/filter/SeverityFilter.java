@@ -39,17 +39,18 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates severity filtering functionality. */
-public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
+public class SeverityFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "severity";
 
     public SeverityFilter(OnmsSeverity severity) {
-        super(TYPE, new OnmsSeverityType(), "SEVERITY", "severity", severity);
+        super(TYPE, SQLType.INT, "SEVERITY", "severityId", severity.getId());
     }
 
     public String getTextDescription() {
-        return (TYPE + "=" + getValue().getLabel());
+        return (TYPE + "=" + OnmsSeverity.get(getValue()).getLabel());
     }
 
     public String toString() {
@@ -57,7 +58,7 @@ public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
     }
 
     public int getSeverity() {
-        return getValue().getId();
+        return getValue();
     }
 
     public boolean equals(Object obj) {
