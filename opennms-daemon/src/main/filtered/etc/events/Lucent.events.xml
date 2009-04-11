@@ -468,7 +468,6 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	<severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: AGG-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: CDR-TRAP-MIB -->
 <event>
 	<mask>
@@ -887,7 +886,6 @@ VARIABLES DEFINITION:
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: CDR-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: EXCEL-SWITCH-MIB -->
 <event>
 	<mask>
@@ -5147,7 +5145,6 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: EXCEL-SWITCH-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: FC-TRAP-MIB -->
 <event>
 	<mask>
@@ -5577,7 +5574,6 @@ VARIBLE DEFINITIONS:
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: FC-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: H323-TRAP-MIB -->
 <event>
 	<mask>
@@ -5927,7 +5923,6 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: H323-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: MANTRA-TRAP-MIB -->
 <event>
 	<mask>
@@ -7095,7 +7090,6 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: MANTRA-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: PSAX-TRAP-MIB -->
 <event>
 	<mask>
@@ -7445,8 +7439,6 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: PSAX-TRAP-MIB -->
-</events>
-<events>
 <!-- Start of auto generated data from MIB: RM-TRAP-MIB -->
 <event>
 	<mask>
@@ -8149,7 +8141,6 @@ The variables are:
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: RM-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: SIP-TRAP-MIB -->
 <event>
 	<mask>
@@ -8353,7 +8344,6 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: SIP-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: SPINS-TRAP-MIB -->
 <event>
 	<mask>
@@ -8552,7 +8542,6 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: SPINS-TRAP-MIB -->
-</events><events>
 <!-- Start of auto generated data from MIB: ADSL-LINE-MIB -->
 <event>
 	<mask>
