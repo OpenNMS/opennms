@@ -57,6 +57,7 @@
 		java.util.Iterator,
 		java.util.List,
 		java.util.Map" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%!
 
@@ -76,14 +77,13 @@
 		m_category_list.isDisconnected(earliestUpdate);
 %>
 <%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box">OpenNMS Disconnect -- is the OpenNMS daemon running? - 
-		Last update:
+	    <h3 class="o-box"><spring:message code="categories.disconnect"/>
 <%=		(earliestUpdate > 0 ?
 			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
+			 "<spring:message code='categories.neverupdated'/>") %>
 	      </h3>
 <%	} else { %>
-	    <h3 class="o-box">Availability Over the Past 24 Hours</h3>
+	    <h3 class="o-box"><spring:message code="categories.availability24"/></h3>
 <%	} %>
 
 
@@ -95,8 +95,8 @@
 	<thead>
 		<tr>
 			<th><%= sectionName %></th>
-			<th align="right">Outages</th>
-			<th align="right">Availability</th>
+			<th align="right"><spring:message code="categories.outagecol"/></th>
+			<th align="right"><spring:message code="categories.availcol"/></th>
 		</tr>
 	</thead>
 <%

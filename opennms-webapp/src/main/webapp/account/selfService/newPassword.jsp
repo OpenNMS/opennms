@@ -42,12 +42,13 @@
 		org.opennms.netmgt.config.users.*
 	"
 %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Change Password" />
-  <jsp:param name="headTitle" value="Change Password" />
-  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
-  <jsp:param name="breadcrumb" value="Change Password" />
+  <jsp:param name="title" value='<spring:message code="selfservice.changepass"/>' />
+  <jsp:param name="headTitle" value='<spring:message code="selfservice.changepass"/>' />
+  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'><spring:message code='selfservice.breadcrumb'/></a>" />
+  <jsp:param name="breadcrumb" value='<spring:message code="selfservice.changepass"/>' />
 </jsp:include>
 
 <script language="JavaScript">
@@ -62,15 +63,15 @@
     } 
     else
     {
-      alert("The two new password fields do not match!");
+      alert("<spring:message code='selfservice.nomatch'/>");
     }
 }
 </script>
 
 <% if ("redo".equals(request.getParameter("action"))) { %>
-<h3>Incorrect value for current password. Please try again.</h3>
+<h3><spring:message code="selfservice.badpassword"/></h3>
 <% } else { %>
-<h3>Please enter the old and new passwords and confirm.</h3>
+<h3><spring:message code="selfservice.passwordretry"/></h3>
 <% } %>
 
 <br/>
@@ -81,7 +82,7 @@
 <table>
   <tr>
     <td width="10%">
-      Current Password:
+      <spring:message code="selfservice.currpassword"/>
     </td>
     <td width="100%">
       <input type="password" name="oldpass">
@@ -90,7 +91,7 @@
 
   <tr>
     <td width="10%">
-      Confirm New Password:
+      <spring:message code="selfservice.confirmnewpassword"/>
     </td>
     <td width="100%">
       <input type="password" name="pass1">
@@ -99,7 +100,7 @@
   
   <tr>
     <td width="10%">
-      Confirm Password:
+      <spring:message code="selfservice.confirmpassword"/>
     </td>
     <td width="100%">
       <input type="password" name="pass2">

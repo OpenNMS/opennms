@@ -24,6 +24,7 @@
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
   <!-- End of Content -->
   <div class="spacer"><!-- --></div>
@@ -44,9 +45,9 @@
 
     <div id="footer">
       <p>
-        OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2009
+        OpenNMS <a href="help/about.jsp"><spring:message code="footer.copyright"/></a> &copy; 2002-2009
 	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
-	    OpenNMS&reg; is a registered trademark of
+	    <spring:message code="footer.trademark"/>
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
 	  </p>
     </div>

@@ -67,7 +67,7 @@
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%!
     private int m_telnetServiceId;
@@ -206,7 +206,7 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Node" />
+  <jsp:param name="title" value='<spring:message code="node.node"/>' />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
@@ -227,28 +227,28 @@
 </script>
 
 <div class="onms">
-<h2>Node: ${model.label}</h2>
+<h2><spring:message code="node.node"/>: ${model.label}</h2>
 <div id="linkbar">
   <ul class="o-menu">
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${eventLink}">View Events</a>
+      <a href="${eventLink}"><spring:message code="node.view_events"/></a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${alarmLink}">View Alarms</a>
+      <a href="${alarmLink}"><spring:message code="node.view_alarms"/></a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${assetLink}">Asset Info</a>
+      <a href="${assetLink}"><spring:message code="node.asset_info"/></a>
     </li>
 
     <c:if test="${! empty model.statusSite}">
@@ -256,7 +256,7 @@
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${siteLink}">Site Status</a>
+        <a href="${siteLink}"><spring:message code="node.site_status"/></a>
       </li>
     </c:if>
 
@@ -273,7 +273,7 @@
         <c:param name="reports" value="all"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${resourceGraphsUrl}">Resource Graphs</a>
+        <a href="${resourceGraphsUrl}"><spring:message code="node.resource_graphs"/></a>
       </li>
     </c:if>
     
@@ -282,14 +282,14 @@
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${rescanLink}">Rescan</a>
+        <a href="${rescanLink}"><spring:message code="node.rescan"/></a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${adminLink}">Admin</a>
+        <a href="${adminLink}"><spring:message code="node.admin"/></a>
       </li>
 
       <c:if test="${! empty model.snmpPrimaryIntf}">
@@ -298,7 +298,7 @@
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
         <li class="o-menuitem">
-          <a href="${updateSnmpLink}">Update SNMP</a>
+          <a href="${updateSnmpLink}"><spring:message code="node.update_snmp"/></a>
         </li>
       </c:if>
     </c:if>
@@ -308,7 +308,7 @@
 <div class="TwoColLeft">
   
   <!-- general info box -->
-  <h3 class="o-box">General (Status: ${model.status})</h3>
+  <h3><spring:message code="node.general"/> (<spring:message code="node.status"/>: ${model.status})</h3>
   <div class="boxWrapper">
     <ul class="plain o-box">
       <c:if test="${model.showRancid}">
@@ -316,7 +316,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${rancidLink}">View Node Rancid Inventory Info </a>
+          <a href="${rancidLink}"><spring:message code="node.view_noderancid_inv_info"/></a>
         </li>
       </c:if>
 
@@ -325,7 +325,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${ipRouteLink}">View Node Ip Route Info</a>
+          <a href="${ipRouteLink}"><spring:message code="node.view_iproute"/></a>
         </li>
       </c:if>
      
@@ -334,7 +334,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${bridgeLink}">View Node Bridge/STP Info</a>
+          <a href="${bridgeLink}"><spring:message code="node.view_nodebridge"/></a>
         </li>
       </c:if>
 
@@ -342,7 +342,7 @@
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li>
-        <a href="${detailLink}">View Node Link Detailed Info</a>
+        <a href="${detailLink}"><spring:message code="node.view_nodelink"/></a>
       </li>
     </ul>	     
   </div>
@@ -352,15 +352,15 @@
 
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <h3 class="o-box">Asset Information</h3>
+    <h3><spring:message code="node.asset_info"/></h3>
     <table class="o-box">
       <tr>
-        <th>Description</th>
+        <th><spring:message code="node.description"/></th>
         <td>${model.asset.description}</td>
       </tr>
       
       <tr>
-        <th>Comments</th>
+        <th><spring:message code="node.comments"/></th>
         <td>${model.asset.comments}</td>
       </tr>
     </table>
@@ -368,46 +368,47 @@
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.nodeSysId}">
-    <h3 class="o-box">SNMP Attributes</h3>
+    <h3><spring:message code="node.snmp_attributes"/></h3>
     <table class="o-box">
       <tr>
-        <th>Name</th>
+        <th><spring:message code="node.snmp.name"/></th>
         <td>${model.node.nodeSysName}</td>
       </tr>
       <tr>
-        <th>Object&nbsp;ID</th>
+        <th><spring:message code="node.snmp.objectid"/></th>
         <td>${model.node.nodeSysId}</td>
       </tr>
       <tr>
-        <th>Location</th>
+        <th><spring:message code="node.snmp.location"/></th>
         <td>${model.node.nodeSysLocn}</td>
       </tr>
       <tr>
-        <th>Contact</th>
+        <th><spring:message code="node.snmp.contact"/></th>
         <td>${model.node.nodeSysContact}</td>
       </tr>
       <tr>
-        <th valign="top">Description</th>
+        <th valign="top"><spring:message code="node.snmp.description"/></th>
         <td valign="top">${model.node.nodeSysDescr}</td>
       </tr>
     </table>
   </c:if>
 
   <!-- Interface box - generated by ExtJs -->
+  <!-- TODO: externalize strings in the ExtJs-generated DIV content -->
   <div id="interfaces-panel"></div>
 
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <h3>VLAN Information</h3>
+    <h3>VLAN Information</h3> <!-- TODO: externalize strings in this header and table -->
     <table class="o-box">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Status</th>
-          <th>Last Poll Time</th>
+          <th><spring:message code="node.vlan_column_name_id"/></th>
+          <th><spring:message code="node.vlan_column_name_name"/></th>
+          <th><spring:message code="node.vlan_column_name_type"/></th>
+          <th><spring:message code="node.vlan_column_name_status"/></th>
+          <th><spring:message code="node.vlan_column_name_status"/></th>
+          <th><spring:message code="node.vlan_column_name_lastpolltime"/></th>
         </tr>
       </thead>
   
@@ -439,10 +440,15 @@
   <c:url var="eventListUrl" value="event/list">
     <c:param name="filter" value="node=${model.id}"/>
   </c:url>
+  
+  <% 
+  	//String headerValue = "<a href='${eventListUrl}'>" + Resource.get("node.recent_events") + "</a>";
+  %>
+  
   <jsp:include page="/includes/eventlist.jsp" flush="false" >
     <jsp:param name="node" value="${model.id}" />
     <jsp:param name="throttle" value="5" />
-    <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
+    <jsp:param name="header" value="<a href='${eventListUrl}'><spring:message code='node.recent_events'/></a>" />
     <jsp:param name="moreUrl" value="${eventListUrl}" />
   </jsp:include>
   

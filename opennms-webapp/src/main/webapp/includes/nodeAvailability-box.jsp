@@ -48,7 +48,7 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
+	contentType="text/html; charset=UTF-8"
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.category.*,
@@ -58,6 +58,7 @@
         org.opennms.web.MissingParameterException
 	"
 %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 
 <%!
@@ -124,7 +125,7 @@
 
 <div id="availability-box">
 
-<h3 class="o-box">Availability</h3>
+<h3 class="o-box"><spring:message code="node.availability"/></h3>
 <table class="o-box">
   <tr class="CellStatus">
 
@@ -138,7 +139,7 @@
   }
 %>
 
-    <td class="<%= availClass %> nobright">Availability (last 24 hours)</td>
+    <td class="<%= availClass %> nobright"><spring:message code="node.availability24"/></td>
     <td colspan="2" class="<%= availClass %> bright"><%= availValue %></td>
 
   </tr>

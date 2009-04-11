@@ -52,6 +52,7 @@
         import="org.opennms.web.outage.*" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%!
     public static final int ROW_COUNT = 12;
@@ -70,12 +71,12 @@
 
 <!-- includes/servicesdown-box.jsp -->
 <c:url var="headingLink" value="outage/current.jsp"/>
-<h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
+<h3 class="o-box"><a href="${headingLink}"><spring:message code="servicesdown.nodeoutages"/></a></h3>
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${empty summaries}">
       <p class="noBottomMargin">
-        There are no current outages
+        <spring:message code="outages.nocurrentoutages"/>
       </p>
     </c:when>
 
@@ -92,7 +93,7 @@
       <c:if test="${moreCount > 0}">
         <p class="noBottomMargin" align="right">
           <c:url var="moreLink" value="outage/current.jsp"/>
-          <a href="${moreLink}">${moreCount} more...</a>
+          <a href="${moreLink}">${moreCount}&nbsp;<spring:message code="outages.more"/></a>
         </p>
       </c:if>
     </c:otherwise>

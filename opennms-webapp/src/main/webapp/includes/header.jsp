@@ -24,6 +24,7 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 
 <%!
@@ -57,7 +58,7 @@
     <c:forEach var="headTitle" items="${paramValues.headTitle}">
       <c:out value="${headTitle}" escapeXml="false"/> |
     </c:forEach>
-    OpenNMS Web Console
+    OpenNMS <spring:message code="header.webconsole"/>
   </title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <c:forEach var="meta" items="${paramValues.meta}">
@@ -110,23 +111,23 @@
 
 	<!-- Header -->
 	<div id="header">
-		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
+		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt='<spring:message code="header.logoimage_alttext"/>'/></a></h1>  
 		<div id="headerinfo">
 			<h2>${param.title}</h2>
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <a href="account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-						- <a href="j_acegi_logout">Log out</a><br/>
+						<spring:message code="login.user"/>: <a href="account/selfService/index.jsp" title='<spring:message code="header.selfservlink_title"/>'><strong>${pageContext.request.remoteUser}</strong></a> (<spring:message code="header.notices"/> <c:out value="${noticeStatus}" escapeXml="false"/>)
+						- <a href="j_acegi_logout"><spring:message code="header.logout"/></a><br/>
 					</c:when>
 					<c:otherwise>
-						User: &hellip;<br/>
+						<spring:message code="login.user"/> &hellip;<br/>
 					</c:otherwise>
 				</c:choose>
                 <jsp:useBean id="currentDate" class="java.util.Date" />
                 <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
                 &nbsp;
-                <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
+                <fmt:formatDate value="${currentDate}" type="time" pattern='<spring:message code="header.timeformat"/>'/> 
 			</p>
 		</div>
 		<hr />
@@ -140,7 +141,7 @@
 				<div id="headernavbarright">
 					<div class="navbar">
 						<ul>
-							<li class="last"><a href="http://www.opennms.org/index.php/FAQ">FAQs</a></li>
+							<li class="last"><a href="http://www.opennms.org/index.php/FAQ"><spring:message code="header.faqs"/></a></li>
 						</ul>
 					</div>
 				</div>
@@ -163,7 +164,7 @@
 <div class="onms">
 <h2>
 <c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
-   <a href="index.jsp">Home</a>
+   <a href="index.jsp"><spring:message code="header.home"/></a>
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">
            / <c:out value="${breadcrumb}" escapeXml="false"/>

@@ -36,6 +36,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <div class="navbar">
   <ul>
@@ -44,10 +45,10 @@
         <li>
           <c:choose>
             <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
+              <a href="${entry.key.url}"><spring:message code="${entry.key.name}"/></a>           
             </c:when>
             <c:otherwise>
-              ${entry.key.name}
+              <spring:message code="${entry.key.name}"/>
             </c:otherwise>
           </c:choose>
         </li>
@@ -55,3 +56,4 @@
     </c:forEach>
   </ul>
 </div>
+ 

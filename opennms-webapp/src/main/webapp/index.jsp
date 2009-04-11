@@ -41,8 +41,9 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
+
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Web Console" />
+	<jsp:param name="title" value='<spring:message code="header.webconsole"/>' />
 	<jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 

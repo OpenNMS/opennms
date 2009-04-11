@@ -42,14 +42,16 @@
 		org.opennms.netmgt.config.users.*
 	"
 %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Password Changed" />
-  <jsp:param name="headTitle" value="Password Changed" />
-  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
-  <jsp:param name="breadcrumb" value="Password Changed" />
+  <jsp:param name="title" value='<spring:message code="selfservice.passchangedtitle"/>' />
+  <jsp:param name="headTitle" value='<spring:message code="selfservice.passchangedtitle"/>' />
+  <jsp:param name="breadcrumb" value='<a href="account/selfService/index.jsp"><spring:message code="selfservice.breadcrumb"/></a>' />
+  <jsp:param name="breadcrumb" value='<spring:message code="selfservice.passchangedtitle"/>' />
 </jsp:include>
 
-<h3>Password successfully changed.</h3>
+<h3><spring:message code=""/><spring:message code="selfservice.confirmchanged"/></h3>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

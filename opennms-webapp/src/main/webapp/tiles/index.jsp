@@ -40,10 +40,11 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"  %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
 <head>
-  <title>OpenNMS Web Console</title>
+  <title>OpenNMS <spring:message code="header.webconsole"/></title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
@@ -53,7 +54,7 @@
 -->
 <body>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Web Console" />
+  <jsp:param name="title" value='<spring:message code="header.webconsole"/>' />
 </jsp:include>
 
 <br> 

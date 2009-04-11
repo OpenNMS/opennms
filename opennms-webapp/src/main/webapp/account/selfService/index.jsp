@@ -10,7 +10,7 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,11 +60,12 @@
 	    }
 	}
 %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="User Account Self-Service" />
-  <jsp:param name="headTitle" value="User Account Self-Service" />
-  <jsp:param name="breadcrumb" value="User Account Self-Service" />
+  <jsp:param name="title" value='<spring:message code="selfservice.title"/>' />
+  <jsp:param name="headTitle" value='<spring:message code="selfservice.title"/>' />
+  <jsp:param name="breadcrumb" value='<spring:message code="selfservice.title"/>' />
 </jsp:include>
 
 <script type="text/javascript">
@@ -73,31 +74,28 @@
     document.selfServiceForm.action = "account/selfService/newPasswordEntry";
     document.selfServiceForm.submit();
 <% } else { %>
-	alert("The <%= userid %> user is read-only!  Please have an administrator change your password.");
+	alert("<spring:message code='selfservice.readonlyuser' arguments='<%= userid %>'/>");
 <% } %>
   }
 </script>
 
 <div class="TwoColLeft">
-    <h3>User Account Self-Service</h3>
+    <h3><spring:message code="selfservice.title"/></h3>
         <div class="boxWrapper">
         <ul class="plain">
-        <li><a href="javascript:changePassword()">Change Password</a></li>
+        <li><a href="javascript:changePassword()"><spring:message code="selfservice.changepass"/></a></li>
         </ul>
         </div>
 </div>
 
 <div class="TwoColRight">
-    <h3>Account Self-Service Options</h3>
+    <h3><spring:message code="selfservice.options"/></h3>
     <div class="boxWrapper">
     <p>
-    Currently, account self-service is limited to password changes. Note that in environments using a
-    reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
-    possible.
+    <spring:message code="selfservice.message1"/>
     </p>
     <p>
-    If you require further changes to your account, please contact the person within your organization responsible for
-    maintaining OpenNMS.
+    <spring:message code="selfservice.message2"/>.
     </p>
     </div>
 </div>

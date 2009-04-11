@@ -48,16 +48,16 @@
 <div id="category-box">
 
 <h3 class="o-box">
-  Surveillance Category Memberships
+  <spring:message code="node.surveillance_cat_memb"/>
   <c:if test="${isAdmin == 'true'}">
-    (<a href="<c:url value='admin/categories.htm?edit&node=${param.node}'/>">Edit</a>)
+    (<a href="<c:url value='admin/categories.htm?edit&node=${param.node}'/>"><spring:message code="node.edit"/></a>)
   </c:if>
 </h3>
 
 <table class="o-box">
   <c:if test="${empty categories}">
     <tr>
-      <td>This node is not a member of any categories</td>
+      <td><spring:message code="msg.no_member_cat"/></td>
     </tr>
   </c:if>
   

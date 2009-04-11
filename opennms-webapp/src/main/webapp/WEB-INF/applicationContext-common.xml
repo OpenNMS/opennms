@@ -11,4 +11,13 @@
       </list>
     </property>
   </bean>
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+      <list>
+        <value>/WEB-INF/messages</value>
+        <value>/WEB-INF/resources</value>
+      </list>
+    </property>
+    <property name="cacheSeconds"><value>2</value></property>
+  </bean>
 </beans>

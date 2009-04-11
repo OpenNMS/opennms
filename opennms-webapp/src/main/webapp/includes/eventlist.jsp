@@ -50,7 +50,7 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
+	contentType="text/html; charset=UTF-8"
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.event.*,
@@ -59,6 +59,7 @@
 	"
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%
     //required parameter: node
@@ -149,7 +150,7 @@
             }
             else
             {
-              alert("Please check the events that you would like to acknowledge.");
+              alert("<spring:message code='event.checkeventstoack'/>");
             }
         }
         else
@@ -160,7 +161,7 @@
             }
             else
             {
-                alert("Please check the events that you would like to acknowledge.");
+                alert("<spring:message code='event.checkeventstoack'/>");
             }
         }
     }
@@ -202,14 +203,14 @@
        <td class="standard" colspan="2">
          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
            <nobr>
-             <input type="button" value="Acknowledge" onclick="submitAck()">
-             <input TYPE="reset" />
+             <input type="button" value='<spring:message code="node.acknowledge"/>' onclick="submitAck()">
+             <input TYPE="reset" value='<spring:message code="node.reset"/>' />
            </nobr>
          <% } %>
        </td>
 
   <% if( moreUrl != null ) { %>     
-       <td class="standard" colspan="2"><a href="<%=moreUrl%>">More...</a></td>
+       <td class="standard" colspan="2"><a href="<%=moreUrl%>"><spring:message code="node.more"/></a></td>
   <% } %>
      </tr>
       
