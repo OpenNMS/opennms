@@ -127,7 +127,7 @@
                 <jsp:useBean id="currentDate" class="java.util.Date" />
                 <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
                 &nbsp;
-                <fmt:formatDate value="${currentDate}" type="time" pattern='<spring:message code="header.timeformat"/>'/> 
+                <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
 			</p>
 		</div>
 		<hr />
