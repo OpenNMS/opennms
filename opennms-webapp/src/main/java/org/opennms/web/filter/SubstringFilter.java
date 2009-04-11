@@ -43,7 +43,7 @@ public abstract class SubstringFilter extends OneArgFilter<String> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+        criteria.add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
     }
 
     @Override

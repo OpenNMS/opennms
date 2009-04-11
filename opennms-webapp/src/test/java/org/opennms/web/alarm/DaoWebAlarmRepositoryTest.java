@@ -50,6 +50,7 @@ import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
+import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,7 +202,18 @@ public class DaoWebAlarmRepositoryTest {
             assertTrue("Failed to sort with style "+style, alarms.length > 0);
         }
     }
-    
+
+    @Test
+    @Transactional
+    public void testSortAndSearchBySameProperty() {
+        
+        Filter[] filters = new Filter[] { new NodeNameLikeFilter("node") };
+        
+        AlarmCriteria sorted = new AlarmCriteria(filters, SortStyle.NODE, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
+        Alarm[] alarms = m_alarmRepo.getMatchingAlarms(sorted);
+        assertTrue("Failed to sort with style "+SortStyle.NODE, alarms.length > 0);
+    }
+
     @Test
     @Transactional
     public void testAcknowledgeUnacknowledgeAllAlarms(){

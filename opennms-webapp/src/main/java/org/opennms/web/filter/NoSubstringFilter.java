@@ -50,7 +50,7 @@ public abstract class NoSubstringFilter extends OneArgFilter<String> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE)));
+        criteria.add(Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE)));
     }
     
     @Override

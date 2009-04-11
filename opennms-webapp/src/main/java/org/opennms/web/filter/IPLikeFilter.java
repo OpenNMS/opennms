@@ -54,7 +54,7 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE));
+        criteria.add(Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE));
     }
     
     
