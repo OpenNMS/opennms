@@ -32,40 +32,15 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class IfIndexFilter extends LegacyFilter {
+public class IfIndexFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "ifindex";
 
-    protected int ifIndex;
-
     public IfIndexFilter(int ifIndex) {
-        this.ifIndex = ifIndex;
-    }
-
-    public String getSql() {
-        return (" ifindex=" + this.ifIndex );
-    }
-    
-    public String getParamSql() {
-        return (" ifindex=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.ifIndex);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ifIndex);
-    }
-
-    public String getTextDescription() {
-        return this.getDescription();
+        super(TYPE, SQLType.INT, "ifIndex", "ifIndex", ifIndex);
     }
 
     public String toString() {
@@ -73,7 +48,7 @@ public class IfIndexFilter extends LegacyFilter {
     }
 
     public int getIfIndex() {
-        return (this.ifIndex);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

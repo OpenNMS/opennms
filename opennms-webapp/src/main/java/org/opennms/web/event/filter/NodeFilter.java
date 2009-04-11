@@ -32,43 +32,24 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class NodeFilter extends LegacyFilter {
+public class NodeFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "node";
 
-    protected int nodeId;
-
     public NodeFilter(int nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getSql() {
-        return (" EVENTS.NODEID=" + this.nodeId);
-    }
-    
-    public String getParamSql() {
-        return (" EVENTS.NODEID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.nodeId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.nodeId);
+        super(TYPE, SQLType.INT, "EVENTS.NODEID", "node.id", nodeId);
     }
 
     public String getTextDescription() {
-        String nodeName = Integer.toString(this.nodeId);
+        String nodeName = Integer.toString(getNodeId());
         try {
-            nodeName = NetworkElementFactory.getNodeLabel(this.nodeId);
+            nodeName = NetworkElementFactory.getNodeLabel(getNodeId());
         } catch (SQLException e) {
         }
 
@@ -76,11 +57,11 @@ public class NodeFilter extends LegacyFilter {
     }
 
     public String toString() {
-        return ("<EventFactory.NodeFilter: " + this.getDescription() + ">");
+        return ("<EventFactory.NodeFilter: " + getDescription() + ">");
     }
 
     public int getNodeId() {
-        return (this.nodeId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

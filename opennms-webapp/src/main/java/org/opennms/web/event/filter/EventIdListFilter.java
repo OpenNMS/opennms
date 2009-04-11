@@ -1,73 +1,32 @@
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.InFilter;
+import org.opennms.web.filter.SQLType;
 
-import org.opennms.web.filter.LegacyFilter;
-
-public class EventIdListFilter extends LegacyFilter {
+public class EventIdListFilter extends InFilter<Integer> {
+    public static final String TYPE = "eventIdList";
     
-    private int[] m_eventIds;
-    
-    public EventIdListFilter(int[] eventIds){
-        m_eventIds = eventIds;
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        for(int i = 0; i < m_eventIds.length; i++) {
-            ps.setInt(parameterIndex+i, m_eventIds[i]);
-        }
-        return m_eventIds.length;
-    }
-
-    public String getDescription() {
-        StringBuilder buf = new StringBuilder("eventId in ");
-        appendIdList(buf);
-        return buf.toString();
-    }
-
-    public String getParamSql() {
-        StringBuilder buf = new StringBuilder(m_eventIds.length*3 + 20);
+    private static Integer[] box(int[] values) {
+        if (values == null) return null;
         
-        buf.append(" EVENTS.EVENTID IN ");
-        
-        buf.append('(');
-        for(int i = 0; i < m_eventIds.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append('?');
+        Integer[] boxed = new Integer[values.length];
+        for(int i = 0; i < values.length; i++) {
+            boxed[i] = values[i];
         }
         
-        buf.append(')');
-        
-        return buf.toString();
+        return boxed;
     }
-
-    public String getSql() {
-        StringBuilder buf = new StringBuilder(m_eventIds.length*5 + 20);
-        
-        buf.append(" EVENTS.EVENTID IN ");
-        
-        appendIdList(buf);
-        
-        return buf.toString();
+    
+    public EventIdListFilter(int[] eventIds) {
+        super(TYPE, SQLType.INT, "EVENTID", "id", box(eventIds));
     }
-
+    
     public String getTextDescription() {
-        return getDescription();
+        StringBuilder buf = new StringBuilder("eventId in ");
+        buf.append("(");
+        buf.append(getValueString());
+        buf.append(")");
+        return buf.toString();
     }
     
-    private void appendIdList(StringBuilder buf) {
-        buf.append("(");
-        for(int i = 0; i < m_eventIds.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append(m_eventIds[i]);
-        }
-        
-        buf.append(")");
-    }
-
 }

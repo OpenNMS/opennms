@@ -32,49 +32,28 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.opennms.web.event.EventUtil;
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates severity filtering functionality. */
-public class SeverityFilter extends LegacyFilter {
+public class SeverityFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "severity";
 
-    protected int severity;
-
     public SeverityFilter(int severity) {
-        this.severity = severity;
-    }
-
-    public String getSql() {
-        return (" EVENTSEVERITY=" + this.severity);
-    }
-    
-    public String getParamSql() {
-        return (" EVENTSEVERITY=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.severity);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.severity);
+        super(TYPE, SQLType.INT, "EVENTSEVERITY", "eventSeverity", severity);
     }
 
     public String getTextDescription() {
-        return (TYPE + "=" + EventUtil.getSeverityLabel(this.severity));
+        return (TYPE + "=" + EventUtil.getSeverityLabel(getSeverity()));
     }
 
     public String toString() {
-        return ("<EventFactory.SeverityFilter: " + this.getDescription() + ">");
+        return ("<EventFactory.SeverityFilter: " + getDescription() + ">");
     }
 
     public int getSeverity() {
-        return (this.severity);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

@@ -47,7 +47,7 @@ public abstract class NotEqualsFilter<T> extends OneArgFilter<T> {
 
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + "<> %s ";
+        return " "+getSQLFieldName() + " <> %s ";
     }
 
 }

@@ -49,7 +49,7 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
     
     @Override
     public String getSQLTemplate() {
-        return "(" + getSQLFieldName() + "<> %s OR " + getSQLFieldName() + " IS NULL) ";
+        return " (" + getSQLFieldName() + "<> %s OR " + getSQLFieldName() + " IS NULL) ";
     }
 
 }

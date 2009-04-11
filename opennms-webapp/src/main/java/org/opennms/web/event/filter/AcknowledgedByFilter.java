@@ -32,44 +32,15 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class AcknowledgedByFilter extends LegacyFilter {
+public class AcknowledgedByFilter extends EqualsFilter<String> {
     public static final String TYPE = "acknowledgedBy";
 
-    protected String user;
-
     public AcknowledgedByFilter(String user) {
-        if (user == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.user = user;
-    }
-
-    public String getSql() {
-        return (" EVENTACKUSER='" + this.user + "'");
-    }
-    
-    public String getParamSql() {
-        return (" EVENTACKUSER=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.user);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.user);
-    }
-
-    public String getTextDescription() {
-        return this.getDescription();
+        super(TYPE, SQLType.STRING, "EVENTACKUSER", "eventAckUser", user);
     }
 
     public String toString() {
@@ -77,7 +48,7 @@ public class AcknowledgedByFilter extends LegacyFilter {
     }
 
     public String getAcknowledgedByFilter() {
-        return (this.user);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

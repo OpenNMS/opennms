@@ -45,7 +45,7 @@ public abstract class NoSubstringFilter extends OneArgFilter<String> {
     
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + " NOT ILIKE %s ";
+        return " " + getSQLFieldName() + " NOT ILIKE %s ";
     }
     
     @Override

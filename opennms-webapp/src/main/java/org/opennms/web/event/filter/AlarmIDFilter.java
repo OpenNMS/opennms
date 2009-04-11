@@ -30,40 +30,19 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class AlarmIDFilter extends LegacyFilter {
+public class AlarmIDFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "alarm";
 
-    protected int alarmId;
-
     public AlarmIDFilter(int alarmId) {
-        this.alarmId = alarmId;
-    }
-
-    public String getSql() {
-        return (" ALARMID=" + this.alarmId);
-    }
-    
-    public String getParamSql() {
-        return (" ALARMID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.alarmId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.alarmId);
+        super(TYPE, SQLType.INT, "ALARMID", "alarm.id", alarmId);
     }
 
     public String getTextDescription() {
-        return ("event reduced by alarmID: " + this.alarmId);
+        return ("event reduced by alarmID: " + getValue());
     }
 
     public String toString() {
@@ -71,7 +50,7 @@ public class AlarmIDFilter extends LegacyFilter {
     }
 
     public int getAlarmId() {
-        return (this.alarmId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
