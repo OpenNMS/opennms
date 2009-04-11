@@ -42,7 +42,7 @@ public class EqualsFilter<T> extends OneArgFilter<T> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.eq(getPropertyName(), getValue()));
+        criteria.add(Restrictions.eq(getPropertyName(), getValue()));
     }
 
     @Override

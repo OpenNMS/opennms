@@ -45,7 +45,7 @@ public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
+        criteria.add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
     }
     
     @Override

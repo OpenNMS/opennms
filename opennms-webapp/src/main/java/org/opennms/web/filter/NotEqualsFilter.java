@@ -42,7 +42,7 @@ public abstract class NotEqualsFilter<T> extends OneArgFilter<T> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.ne(getPropertyName(), getValue()));
+        criteria.add(Restrictions.ne(getPropertyName(), getValue()));
     }
 
     @Override

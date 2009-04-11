@@ -59,6 +59,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.createAlias("node", "node",  OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
         
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>(){
 
@@ -97,13 +99,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                     criteria.addOrder(Order.desc("lastEventTime"));
                     break;
                 case NODE:
-                    criteria.createAlias("node", "sortNode", OnmsCriteria.LEFT_JOIN).addOrder(Order.desc("sortNode.label"));
+                    criteria.addOrder(Order.desc("node.label"));
                     break;
                 case POLLER:
                     criteria.addOrder(Order.desc("distPoller"));
                     break;
                 case SERVICE:
-                    criteria.createAlias("serviceType", "sortSvc", OnmsCriteria.LEFT_JOIN).addOrder(Order.desc("sortSvc.name"));
+                    criteria.addOrder(Order.desc("serviceType.name"));
                     break;
                 case REVERSE_COUNT:
                     criteria.addOrder(Order.asc("counter"));
@@ -121,13 +123,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                     criteria.addOrder(Order.asc("lastEventTime"));
                     break;
                 case REVERSE_NODE:
-                    criteria.createAlias("node", "sortNode", OnmsCriteria.LEFT_JOIN).addOrder(Order.asc("sortNode.label"));
+                    criteria.addOrder(Order.asc("node.label"));
                     break;
                 case REVERSE_POLLER:
                     criteria.addOrder(Order.asc("distPoller"));
                     break;
                 case REVERSE_SERVICE:
-                    criteria.createAlias("serviceType", "sortSvc", OnmsCriteria.LEFT_JOIN).addOrder(Order.asc("sortSvc.name"));
+                    criteria.addOrder(Order.asc("serviceType.name"));
                     break;
                 default:
                     break;

@@ -46,23 +46,13 @@ public abstract class BaseFilter<T> implements Filter {
     protected String m_filterName;
     protected SQLType<T> m_sqlType;
     private String m_fieldName;
-    private String[] m_propertyPath;
     private String m_propertyName;
     
     public BaseFilter(String filterType, SQLType<T> sqlType, String fieldName, String propertyName) {
         m_filterName = filterType;
         m_sqlType = sqlType;
         m_fieldName = fieldName;
-        
-        String[] propPath = propertyName.split("\\.");
-        
-        m_propertyPath = new String[propPath.length-1];
-        for(int i = 0; i < propPath.length-1; i++) {
-            m_propertyPath[i] = propPath[i];
-        }
-                
-        m_propertyName = propPath[propPath.length-1];
-
+        m_propertyName = propertyName;
     }
 
 
@@ -70,10 +60,6 @@ public abstract class BaseFilter<T> implements Filter {
         return m_fieldName;
     }
     
-    public String[] getPropertyPath() {
-        return m_propertyPath;
-    }
-
     public String getPropertyName() {
         return m_propertyName;
     }
@@ -106,23 +92,5 @@ public abstract class BaseFilter<T> implements Filter {
 
     public abstract String getTextDescription();
 
-
-    public OnmsCriteria createAssociationCriteria(OnmsCriteria criteria) {
-        String[] propertyPath = getPropertyPath();
-        OnmsCriteria resultCriteria = criteria;
-        for(String pathElement : propertyPath) {
-            resultCriteria = resultCriteria.createCriteria(pathElement);
-        }
-        return resultCriteria;
-    }
-
-    public OnmsCriteria createAssociationCriteria(OnmsCriteria criteria, int joinType) {
-        String[] propertyPath = getPropertyPath();
-        OnmsCriteria resultCriteria = criteria;
-        for(String pathElement : propertyPath) {
-            resultCriteria = resultCriteria.createCriteria(pathElement, joinType);
-        }
-        return resultCriteria;
-    }
 
 }

@@ -44,7 +44,7 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria, OnmsCriteria.LEFT_JOIN).add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
+        criteria.add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
     }
     
     @Override
