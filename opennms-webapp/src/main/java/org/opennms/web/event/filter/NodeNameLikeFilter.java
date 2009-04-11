@@ -32,53 +32,31 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.SubstringFilter;
 
 /** Encapsulates all node filtering functionality. */
-public class NodeNameLikeFilter extends LegacyFilter {
+public class NodeNameLikeFilter extends SubstringFilter {
     public static final String TYPE = "nodenamelike";
 
-    protected String substring;
-
     public NodeNameLikeFilter(String substring) {
-        if (substring == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.substring = substring;
+        super(TYPE, "NODE.NODELABEL", "node.label", substring);
     }
 
-    public String getSql() {
-        return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%')");
-        // return (" NODE.NODEID=EVENTS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE ?)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.substring);
+    @Override
+    public String getSQLTemplate() {
+        return (" EVENTID IN (SELECT EVENTID FROM EVENTS JOIN NODE ON EVENTS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ");
     }
 
     public String getTextDescription() {
-        return ("node name containing \"" + this.substring + "\"");
+        return ("node name containing \"" + getSubstring() + "\"");
     }
 
     public String toString() {
-        return ("<EventFactory.NodeNameContainingFilter: " + this.getDescription() + ">");
+        return ("<EventFactory.NodeNameContainingFilter: " + getDescription() + ">");
     }
 
     public String getSubstring() {
-        return (this.substring);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

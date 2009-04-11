@@ -32,44 +32,18 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.IPLikeFilter;
 
 /** Encapsulates all interface filtering functionality. */
-public class IPLikeFilter extends LegacyFilter {
+public class IPAddrLikeFilter extends IPLikeFilter {
     public static final String TYPE = "iplike";
 
-    protected String ipLikePattern;
-
-    public IPLikeFilter(String ipLikePattern) {
-        if (ipLikePattern == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.ipLikePattern = ipLikePattern;
-    }
-
-    public String getSql() {
-        return (" IPLIKE(IPADDR,'" + this.ipLikePattern + "')");
-    }
-    
-    public String getParamSql() {
-        return (" IPLIKE(IPADDR,?)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipLikePattern);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipLikePattern);
+    public IPAddrLikeFilter(String ipLikePattern) {
+        super(TYPE, "IPADDR", "ipAddr", ipLikePattern);
     }
 
     public String getTextDescription() {
-        return ("IP Address like \"" + this.ipLikePattern + "\"");
+        return ("IP Address like \"" + getValue() + "\"");
     }
 
     public String toString() {
@@ -77,7 +51,7 @@ public class IPLikeFilter extends LegacyFilter {
     }
 
     public String getIpLikePattern() {
-        return (this.ipLikePattern);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

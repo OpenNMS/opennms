@@ -32,43 +32,26 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NotEqualOrNullFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class NegativeServiceFilter extends LegacyFilter {
+public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     public static final String TYPE = "servicenot";
 
     protected int serviceId;
 
     public NegativeServiceFilter(int serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public String getSql() {
-        return (" (EVENTS.SERVICEID<>" + this.serviceId + " OR EVENTS.SERVICEID IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (EVENTS.SERVICEID<>? OR EVENTS.SERVICEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.serviceId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.serviceId);
+        super(TYPE, SQLType.INT, "EVENTS.SERVICEID", "serviceType.id", serviceId);
     }
 
     public String getTextDescription() {
-        String serviceName = Integer.toString(this.serviceId);
+        String serviceName = Integer.toString(getServiceId());
         try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+            serviceName = NetworkElementFactory.getServiceNameFromId(getServiceId());
         } catch (SQLException e) {
         }
 
@@ -80,7 +63,7 @@ public class NegativeServiceFilter extends LegacyFilter {
     }
 
     public int getServiceId() {
-        return (this.serviceId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

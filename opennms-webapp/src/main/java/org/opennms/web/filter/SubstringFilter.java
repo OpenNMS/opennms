@@ -48,7 +48,7 @@ public abstract class SubstringFilter extends OneArgFilter<String> {
 
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + " ILIKE %s ";
+        return " " + getSQLFieldName() + " ILIKE %s ";
     }
 
     @Override
