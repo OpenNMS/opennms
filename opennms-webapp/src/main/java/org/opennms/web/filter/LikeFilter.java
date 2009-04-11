@@ -42,7 +42,7 @@ public abstract class LikeFilter<T> extends OneArgFilter<T> {
 
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.like(getPropertyName(), getValue()));
+        criteria.add(Restrictions.like(getPropertyName(), getValue()));
     }
 
     @Override

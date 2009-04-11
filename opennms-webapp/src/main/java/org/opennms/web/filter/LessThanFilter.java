@@ -42,7 +42,7 @@ public abstract class LessThanFilter<T> extends OneArgFilter<T> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.le(getPropertyName(), getValue()));
+        criteria.add(Restrictions.le(getPropertyName(), getValue()));
     }
 
     @Override

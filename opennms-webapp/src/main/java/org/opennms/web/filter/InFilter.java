@@ -42,7 +42,7 @@ public abstract class InFilter<T> extends MultiArgFilter<T> {
     
     @Override
     public void applyCriteria(OnmsCriteria criteria) {
-        createAssociationCriteria(criteria).add(Restrictions.in(getPropertyName(), getValuesAsList()));
+        criteria.add(Restrictions.in(getPropertyName(), getValuesAsList()));
     }
     
     @Override
