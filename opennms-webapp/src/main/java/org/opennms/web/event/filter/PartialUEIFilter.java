@@ -32,44 +32,18 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.SubstringFilter;
 
 /** Encapsulates filtering on partial unique event identifiers. */
-public class PartialUEIFilter extends LegacyFilter {
+public class PartialUEIFilter extends SubstringFilter {
     public static final String TYPE = "partialUei";
 
-    protected String uei;
-
     public PartialUEIFilter(String uei) {
-        if (uei == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.uei = uei;
-    }
-
-    public String getSql() {
-        return (" LOWER(EVENTUEI) LIKE '%" + this.uei.toLowerCase() + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" LOWER(EVENTUEI) LIKE ?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.uei.toLowerCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.uei);
+        super(TYPE, "EVENTUEI", "eventUei", uei);
     }
 
     public String getTextDescription() {
-        return this.getDescription();
+        return "uei contains " + getUEI(); 
     }
 
     public String toString() {
@@ -77,7 +51,7 @@ public class PartialUEIFilter extends LegacyFilter {
     }
 
     public String getUEI() {
-        return (this.uei);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

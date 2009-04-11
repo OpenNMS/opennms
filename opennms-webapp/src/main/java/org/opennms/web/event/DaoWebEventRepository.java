@@ -55,6 +55,9 @@ public class DaoWebEventRepository implements WebEventRepository {
     
     private OnmsCriteria getOnmsCriteria(final EventCriteria eventCriteria){
         final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
+        criteria.createAlias("alarm", "alarm", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
         
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
 

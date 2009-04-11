@@ -181,12 +181,12 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
 
     public int countMatchingEvents(EventCriteria criteria) {
-        String sql = getSql("SELECT COUNT(EVENTID) as EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT COUNT(EVENTID) as EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
 
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
-        String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)";
+        String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
         //sql = sql + " AND EVENTDISPLAY='Y'";
         sql = sql + " GROUP BY EVENTSEVERITY";
@@ -230,20 +230,20 @@ public class JdbcWebEventRepository implements WebEventRepository {
     }
 
     public void acknowledgeAll(String user, Date timestamp) {
-        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL", user, new Timestamp(timestamp.getTime()));
+        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
-        String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?", criteria);
+        String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
     
     public void unacknowledgeAll() {
-        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");
+        m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL ");
     }
 
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
-        String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=null", criteria);
+        String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=null ", criteria);
         jdbc().update(sql, paramSetter(criteria));
     }
     
@@ -259,6 +259,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
     
     @SuppressWarnings("unchecked")
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
+        System.err.println("SQL IS "+sql);
          return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
      }
 

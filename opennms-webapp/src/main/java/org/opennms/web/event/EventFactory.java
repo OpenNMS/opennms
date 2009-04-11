@@ -1280,15 +1280,15 @@ public class EventFactory extends Object {
 
         switch (ackType.getId()) {
         case AcknowledgeType._ACKNOWLEDGED:
-            clause = " EVENTACKUSER IS NOT NULL";
+            clause = " EVENTACKUSER IS NOT NULL ";
             break;
 
         case AcknowledgeType._UNACKNOWLEDGED:
-            clause = " EVENTACKUSER IS NULL";
+            clause = " EVENTACKUSER IS NULL ";
             break;
 
         case AcknowledgeType._BOTH:
-            clause = " (EVENTACKUSER IS NULL OR EVENTACKUSER IS NOT NULL)";
+            clause = " (EVENTACKUSER IS NULL OR EVENTACKUSER IS NOT NULL) ";
             break;
 
         default:

@@ -47,7 +47,7 @@ public abstract class LikeFilter<T> extends OneArgFilter<T> {
 
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + " LIKE %s ";
+        return " " + getSQLFieldName() + " LIKE %s ";
     }
 
 }

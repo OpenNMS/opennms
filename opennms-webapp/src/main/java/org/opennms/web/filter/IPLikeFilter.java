@@ -49,7 +49,7 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
 
     @Override
     public String getSQLTemplate() {
-        return "IPLIKE("+getSQLFieldName()+", %s) ";
+        return " IPLIKE("+getSQLFieldName()+", %s) ";
     }
 
     @Override

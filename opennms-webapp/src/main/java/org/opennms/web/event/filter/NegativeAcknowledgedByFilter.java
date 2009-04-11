@@ -32,44 +32,19 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NotEqualOrNullFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class NegativeAcknowledgedByFilter extends LegacyFilter {
+public class NegativeAcknowledgedByFilter extends NotEqualOrNullFilter<String> {
     public static final String TYPE = "acknowledgedByNot";
 
-    protected String user;
-
     public NegativeAcknowledgedByFilter(String user) {
-        if (user == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.user = user;
-    }
-
-    public String getSql() {
-        return (" (EVENTACKUSER<>'" + this.user + "' OR EVENTACKUSER IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (EVENTACKUSER<>? OR EVENTACKUSER IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.user);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.user);
+        super(TYPE, SQLType.STRING, "EVENTACKUSER", "eventAckUser", user);
     }
 
     public String getTextDescription() {
-        return ("not acknowledged by " + this.user);
+        return ("not acknowledged by " + getValue());
     }
 
     public String toString() {
@@ -77,7 +52,7 @@ public class NegativeAcknowledgedByFilter extends LegacyFilter {
     }
 
     public String getAcknowledgedByFilter() {
-        return (this.user);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

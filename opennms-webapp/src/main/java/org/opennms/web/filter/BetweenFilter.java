@@ -50,7 +50,7 @@ public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     
     @Override
     public String getSQLTemplate() {
-        return getSQLFieldName() + " BETWEEN %s AND %s ";
+        return " "+getSQLFieldName() + " BETWEEN %s AND %s ";
     }
 
     

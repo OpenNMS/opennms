@@ -32,44 +32,19 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.NotEqualOrNullFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class NegativeInterfaceFilter extends LegacyFilter {
+public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
     public static final String TYPE = "interfacenot";
 
-    protected String ipAddress;
-
     public NegativeInterfaceFilter(String ipAddress) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.ipAddress = ipAddress;
-    }
-
-    public String getSql() {
-        return (" (IPADDR<>'" + this.ipAddress + "' OR IPADDR IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (IPADDR<>? OR IPADDR IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipAddress);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipAddress);
+        super(TYPE, SQLType.STRING, "IPADDR", "ipAddr", ipAddress);
     }
 
     public String getTextDescription() {
-        return ("interface is not " + this.ipAddress);
+        return ("interface is not " + getValue());
     }
 
     public String toString() {
@@ -77,7 +52,7 @@ public class NegativeInterfaceFilter extends LegacyFilter {
     }
 
     public String getIpAddress() {
-        return (this.ipAddress);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

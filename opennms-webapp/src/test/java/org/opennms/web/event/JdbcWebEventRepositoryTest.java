@@ -2,6 +2,7 @@ package org.opennms.web.event;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -13,10 +14,14 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.event.EventFactory.AcknowledgeType;
+import org.opennms.web.event.EventFactory.SortStyle;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.NegativeSeverityFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -111,6 +116,22 @@ public class JdbcWebEventRepositoryTest {
         
         int[] matchingEventCount = m_eventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
         assertEquals(8, matchingEventCount.length);
+    }
+    
+    @Test
+    public void testFilterBySeverity() {
+        NegativeSeverityFilter filter = new NegativeSeverityFilter(OnmsSeverity.NORMAL.getId());
+        
+        EventCriteria criteria = new EventCriteria(filter);
+        Event[] events = m_eventRepo.getMatchingEvents(criteria);
+        assertTrue(events.length > 0);
+        
+        EventCriteria sortedCriteria = new EventCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
+        Event[] sortedEvents = m_eventRepo.getMatchingEvents(sortedCriteria);
+        assertTrue(sortedEvents.length > 0);
+        
+        
+        
     }
 
 }

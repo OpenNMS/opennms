@@ -32,44 +32,15 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.opennms.web.filter.LegacyFilter;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
-public class InterfaceFilter extends LegacyFilter {
+public class InterfaceFilter extends EqualsFilter<String> {
     public static final String TYPE = "interface";
 
-    protected String ipAddress;
-
     public InterfaceFilter(String ipAddress) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.ipAddress = ipAddress;
-    }
-
-    public String getSql() {
-        return (" IPADDR='" + this.ipAddress + "'");
-    }
-    
-    public String getParamSql() {
-        return (" IPADDR=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipAddress);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.ipAddress);
-    }
-
-    public String getTextDescription() {
-        return this.getDescription();
+        super(TYPE, SQLType.STRING, "IPADDR", "ipAddr", ipAddress);
     }
 
     public String toString() {
@@ -77,7 +48,7 @@ public class InterfaceFilter extends LegacyFilter {
     }
 
     public String getIpAddress() {
-        return (this.ipAddress);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
