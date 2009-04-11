@@ -1,0 +1,1987 @@
+<events>
+<!-- Start of auto generated data from MIB: CYCLADES-ACS5000-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsRebootStartedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsRebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;ACS5000 is in process of rebooting.
+The name of the user who issued the command is contained
+in cyAcsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsRebootStartedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsUserLoginTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when user logged into the appliance.
+The name of the user who logged in is contained in 
+cyAcsTrapObjectUserName and the method used to log into appliance 
+is contained in cyAcsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		console(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsUserLoginTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsUserLogoutTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsUserLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out of the appliance.
+The name of the user who logged in is contained in 
+cyAcsTrapObjectUserName and the method used to log into appliance 
+is contained in cyAcsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		console(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsUserLogoutTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsAuthenticationFailureTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsAuthenticationFailureTrap</event-label>
+	<descr>
+&lt;p&gt;A user failed to authenticate with the appliance.
+The name of the user who failed to authenticate is contained in cyAcsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsAuthenticationFailureTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsSerialSessionStartedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsSerialSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a serial session has started on particular port.
+The name of the user who is connected to the session is contained in cyAcsTrapObjectUserName.
+The serial port number on the appliance is contained in cyAcsTrapObjectSerialPort.
+The serial port name on the appliance is contained in cyAcsTrapObjectSerialPortName
+The type of protocol running on this serial port is contained in 
+cyAcsTrapObjectSerialSessionType. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cas-ssh(1)
+		cas-telnet(2)
+		cas-rawdata(3)
+		ts(4)
+		dial-in(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsSerialSessionStartedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPortName=%parm[#2]% 
+			cyAcsTrapObjectSerialPort=%parm[#3]% 
+			cyAcsTrapObjectSerialSessionType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsSerialSessionStoppedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsSerialSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a serial session has stopped.
+The user who was connected to the session is contained in cyAcsTrapObjectUserName.
+The serial port number on the appliance is contained in cyAcsTrapObjectSerialPort.
+The serial port name on the appliance is contained in cyAcsTrapObjectSerialPortName
+The type of protocol running on this port is contained in 
+cyAcsTrapObjectSerialSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cas-ssh(1)
+		cas-telnet(2)
+		cas-rawdata(3)
+		ts(4)
+		dial-in(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsSerialSessionStoppedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPortName=%parm[#2]% 
+			cyAcsTrapObjectSerialPort=%parm[#3]% 
+			cyAcsTrapObjectSerialSessionType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPortAuthenticationFailureTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPortAuthenticationFailureTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a serial session authentication fails.
+The name of the user who failed to authenticate is contained in cyAcsTrapObjectUserName.
+The serial port number on the appliance is contained in cyAcsTrapObjectSerialPort.
+The serial port name on the appliance is contained in cyAcsTrapObjectSerialPortName
+The type of protocol configured on this port is contained in cyAcsTrapObjectSerialSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cas-ssh(1)
+		cas-telnet(2)
+		cas-rawdata(3)
+		ts(4)
+		dial-in(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPortAuthenticationFailureTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPortName=%parm[#2]% 
+			cyAcsTrapObjectSerialPort=%parm[#3]% 
+			cyAcsTrapObjectSerialSessionType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPortAlertTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPortAlertTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance detected a port alert on a serial port.
+The serial port number the port alert was detected on is 
+contained in cyAcsTrapObjectSerialPort.
+The serial port name the port alert was detected on is 
+contained in cyAcsTrapObjectSerialPortName.
+ The index of the port alert that was detected is contained
+ in cyAcsTrapObjectAlertIndex.
+The port alert that was detected is contained in 
+ cyAcsTrapObjectAlertString.
+The line text where the port alert was detected is 
+contained in cyAcsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPortAlertTrap trap received 
+			cyAcsTrapObjectSerialPortName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]% 
+			cyAcsTrapObjectAlertIndex=%parm[#3]% 
+			cyAcsTrapObjectAlertString=%parm[#4]% 
+			cyAcsTrapObjectAlertMessage=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPortPowerOnDetectTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPortPowerOnDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has detected that the power on/off control signal
+(RS232C - DCD signal) is high on a serial port indicating that the
+server attached to the port is powered on.
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of the DCD
+signal from low to high.
+The affected serial port number is contained in cyAcsTrapObjectSerialPort.
+The affected serial port name is contained in cyAcsTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPortPowerOnDetectTrap trap received 
+			cyAcsTrapObjectSerialPortName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPortPowerOffDetectTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPortPowerOffDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has detected that the power on/off control signal
+(RS232C - DCD signal) is low on a serial port indicating that the
+server attached to the port is powered off.
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of the DCD
+signal from high to low.
+The affected serial port number is contained in cyAcsTrapObjectSerialPort.
+The affected serial port name is contained in cyAcsTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPortPowerOffDetectTrap trap received 
+			cyAcsTrapObjectSerialPortName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsDaemonStarted</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsDaemonStarted</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when daemon in the appliance started.
+The daemon name is contained in cyAcsTrapObjectDaemonName.
+The name of the user who start the daemon is contained in cyAcsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsDaemonStarted trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsDaemonStoped</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsDaemonStoped</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when daemon in the appliance stopped.
+The daemon name is contained in cyAcsTrapObjectDaemonName.
+The name of the user who stop the daemon is contained in cyAcsTrapObjectUserName.
+    &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsDaemonStoped trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsAdminSessionTerminatedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsAdminSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when one previous admin session is 
+terminated by another admin user.
+     The name of the user who terminated the session is contained in cyAcsTrapObjectUserName.
+The name of the user who was terminated from the session is contained 
+in cyAcsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsAdminSessionTerminatedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsConfigurationSavedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsConfigurationSavedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when 'saveconf' command is successful.
+cyAcsTrapObjectUserName is name of the user who executed saveconf.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsConfigurationSavedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsConfigurationActivatedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsConfigurationActivatedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the configuration is activated.
+cyAcsTrapObjectUserName is name of the user who activated new configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsConfigurationActivatedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsLocalUserAddedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsLocalUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A new user has been added to the local user database.
+The name of the user who added the new user is contained in cyAcsTrapObjectUserName.
+The name of the new user is contained in cyAcsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsLocalUserAddedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsLocalUserDeletedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsLocalUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been deleted from the local user database.
+The name of the user who deleted the user is contained in cyAcsTrapObjectUserName.
+The name of the user who was deleted is contained in cyAcsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsLocalUserDeletedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsDataBufferFullThresholdLowTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsDataBufferFullThresholdLowTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has reached configured Low level Threshold.
+cyAcsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsDataBufferFullThresholdLowTrap trap received 
+			cyAcsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsDataBufferFullThresholdMedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsDataBufferFullThresholdMedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has reached configured Med level Threshold.
+cyAcsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsDataBufferFullThresholdMedTrap trap received 
+			cyAcsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsDataBufferFullLostDataTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsDataBufferFullLostDataTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has exceeded beyond the size of buffer and data lost has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsDataBufferFullLostDataTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsApplianceLostDataTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsApplianceLostDataTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+Appliance data lost occurred on ssh or telnet session.
+cyAcsTrapObjectProcessID is process id of the telnet or ssh session.
+cyAcsTrapObjectUserName is name of user who session is active and data lost occurred.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectProcessID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsApplianceLostDataTrap trap received 
+			cyAcsTrapObjectProcessID=%parm[#1]% 
+			cyAcsTrapObjectUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOnlineTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is online. 
+The port number on the appliance that the power device is 
+attached to is contained in cyAcsTrapObjectSerialPort.
+The power device number in the chain is contained in cyAcsTrapObjectPMNumber.
+The power device ID is contained in cyAcsTrapObjectPMId.
+The number of outlets of the power device is contained in cyAcsTrapObjectPMSocketCount.
+The vendor of the power device is contained in cyAcsTrapObjectPMType&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cyclades(1)
+		spc(2)
+		serverTech(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOnlineTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketCount=%parm[#4]% 
+			cyAcsTrapObjectPMType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOfflineTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is offline.
+The port number on the appliance that the power device is 
+attached to is contained in cyAcsTrapObjectSerialPort.
+The power device number in the chain is contained in cyAcsTrapObjectPMNumber.
+The power device ID is contained in cyAcsTrapObjectPMId.
+The number of outlets of the power device is contained in cyAcsTrapObjectPMSocketCount.
+The vendor of the power device is contained in cyAcsTrapObjectPMType&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cyclades(1)
+		spc(2)
+		serverTech(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOfflineTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketCount=%parm[#4]% 
+			cyAcsTrapObjectPMType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletOnTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletOnTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has been issued the on command.
+The name of the user who issued the on command is contained 
+in cyAcsTrapObjectUserName.      
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The power device number in the chain is contained in cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that was issued the on command is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that was issued the on command is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletOnTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#3]% 
+			cyAcsTrapObjectPMNumber=%parm[#4]% 
+			cyAcsTrapObjectPMId=%parm[#5]% 
+			cyAcsTrapObjectPMSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletOffTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletOffTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has been issued the off command.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The power device number in the chain is contained in cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that was issued the off command is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that was issued the off command is contained 
+in cyAcsTrapObjectPMSocketName.
+The name of the user who issued the off command is contained 
+in cyAcsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletOffTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#3]% 
+			cyAcsTrapObjectPMNumber=%parm[#4]% 
+			cyAcsTrapObjectPMId=%parm[#5]% 
+			cyAcsTrapObjectPMSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletCycleFinishedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletCycleFinishedTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has completed the cycle command.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The power device number in the chain is contained in cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that was issued the cycle command is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that was issued the cycle command is contained 
+in cyAcsTrapObjectPMSocketName.
+The name of the user who issued the cycle command is contained 
+in cyAcsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletCycleFinishedTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#3]% 
+			cyAcsTrapObjectPMNumber=%parm[#4]% 
+			cyAcsTrapObjectPMId=%parm[#5]% 
+			cyAcsTrapObjectPMSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMMaxLoadThresholdReachedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMMaxLoadThresholdReachedTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance exceeded the total load
+maximum threshold.
+The port number on the appliance that the power device is attached
+to is contained in the cyAcsTrapObjectSerialPort.
+The IPDU# that exceeded the total load maximum threshold is 
+contained in the cyAcsTrapObjectPMNumber.
+The ID of the IPDU that exceeded the total load maximum threshold is 
+contained in the cyAcsTrapObjectPMId.
+The Phase of the IPDU that detected the problem is contained in 
+the cyAcsTrapObjectPMPhase.
+The current value detected when this trap was originated is contained in
+cyAcsTrapObjectPMCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMPhase&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMMaxLoadThresholdReachedTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMPhase=%parm[#4]% 
+			cyAcsTrapObjectPMCurrentValue=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMMinLoadThresholdReachedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMMinLoadThresholdReachedTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance exceeded the total 
+load minimum threshold.
+The port number on the appliance that the power device is attached 
+to is contained in the cyAcsTrapObjectSerialPort.
+The IPDU# that exceeded the total load minimum threshold is contained 
+in the cyAcsTrapObjectPMNumber.
+The ID of the IPDU that exceeded the total load maximum threshold is 
+contained in the cyAcsTrapObjectPMId.
+ The Phase of the IPDU that detected the problem is contained in 
+the cyAcsTrapObjectPMPhase.
+The current value detected when this trap was originated is contained in
+cyAcsTrapObjectPMCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMPhase&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMMinLoadThresholdReachedTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMPhase=%parm[#4]% 
+			cyAcsTrapObjectPMCurrentValue=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsApplianceAlertTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsApplianceAlertTrap</event-label>
+	<descr>
+&lt;p&gt;An appliance alert was detected on a ssh or telnet session.
+The name of user who was logged into the appliance when 
+trap occurred is contained in cyAcsTrapObjectUserName.
+The index of the appliance alert that was detected in the message is 
+contained in cyAcsTrapObjectAlertIndex.
+The appliance alert that was detected is contained in cyAcsTrapObjectAlertString.
+The line text where the appliance alert was detected is contained 
+in cyAcsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsApplianceAlertTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectAlertIndex=%parm[#2]% 
+			cyAcsTrapObjectAlertString=%parm[#3]% 
+			cyAcsTrapObjectAlertMessage=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsFirmwareUpgradeStarted</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsFirmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of a software image by DSView.
+The name of the user who initiate the process is contained 
+in cyAcsTrapObjectUserName.
+The current firmware version is contained in cyAcsTrapFirmwareVersion.
+The new firmware version is contained in cyAcsTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsFirmwareUpgradeStarted trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapFirmwareVersion=%parm[#2]% 
+			cyAcsTrapNewFirmwareVersion=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsFirmwareUpgradeResultsTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsFirmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+The new FW version is contained in cyAcsTrapNewFirmwareVersion.
+The result of the process is contained in cyAcsTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsFirmwareUpgradeResultsTrap trap received 
+			cyAcsTrapFirmwareUpgradeResult=%parm[#1]% 
+			cyAcsTrapNewFirmwareVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPMFirmwareUpgradeStarted</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPMFirmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of the PM software.
+The name of the user who initiate the process is contained in cyAcsTrapObjectUserName.
+The port number on the appliance that the power device is attached to is
+contained in the cyAcsTrapObjectSerialPort.
+The IPDU# that gone beneath the minimum threshold is contained in the cyAcsTrapObjectPMNumber.
+The current firmware version is contained in cyAcsTrapFirmwareVersion.
+The new firmware version is contained in cyAcsTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPMFirmwareUpgradeStarted trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPort=%parm[#2]% 
+			cyAcsTrapObjectPMNumber=%parm[#3]% 
+			cyAcsTrapFirmwareVersion=%parm[#4]% 
+			cyAcsTrapNewFirmwareVersion=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsPMFirmwareUpgradeResultsTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsPMFirmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+The port number on the appliance that the power device is attached to is
+contained in the cyAcsTrapObjectSerialPort.
+The IPDU# that gone beneath the minimum threshold is contained in the cyAcsTrapObjectPMNumber.
+The new FW version is contained in cyAcsTrapNewFirmwareVersion.
+The result of the process is contained in cyAcsTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsPMFirmwareUpgradeResultsTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapFirmwareUpgradeResult=%parm[#3]% 
+			cyAcsTrapNewFirmwareVersion=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyAcsSerialSessionStoppedPortInUseTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyAcsSerialSessionStoppedPortInUseTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a serial session has stopped.
+But, there is still active sessions on this port.
+The user who was connected to the session is contained in cyAcsTrapObjectUserName.
+The serial port number on the appliance is contained in cyAcsTrapObjectSerialPort.
+The serial port name on the appliance is contained in cyAcsTrapObjectSerialPortName
+The type of protocol running on this port is contained in cyAcsTrapObjectSerialSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cas-ssh(1)
+		cas-telnet(2)
+		cas-rawdata(3)
+		ts(4)
+		dial-in(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyAcsSerialSessionStoppedPortInUseTrap trap received 
+			cyAcsTrapObjectUserName=%parm[#1]% 
+			cyAcsTrapObjectSerialPortName=%parm[#2]% 
+			cyAcsTrapObjectSerialPort=%parm[#3]% 
+			cyAcsTrapObjectSerialSessionType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletStatusOnTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletStatusOnTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has changed to the on state.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that has changed to the on state is contained 
+The number of the power device is contained in the cyAcsTrapObjectPMNumber.
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that has changed to the on state is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletStatusOnTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#4]% 
+			cyAcsTrapObjectPMSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletStatusOffTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletStatusOffTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has changed to the off state.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The number of the power device is contained in the cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that has changed to the off state is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that has changed to the off state is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletStatusOffTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#4]% 
+			cyAcsTrapObjectPMSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletOnSenseFailTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletOnSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an on sense
+failure for a socket.
+An on sense failure occurs when a socket should be in the on state
+but is actually in the off state.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The number of the power device is contained in the cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that has changed to the on state is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that has changed to the on state is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletOnSenseFailTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#4]% 
+			cyAcsTrapObjectPMSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletOffSenseFailTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletOffSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an off sense
+failure for a socket.
+An off sense failure occurs when a socket should be in the off state
+but is actually in the on state.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The number of the power device is contained in the cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that has changed to the on state is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that has changed to the on state is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletOffSenseFailTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#4]% 
+			cyAcsTrapObjectPMSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMOutletNameChangedTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMOutletNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of socket was changed.
+The port number on the appliance that the chain of power device is
+attached to is contained in cyAcsTrapObjectSerialPort.
+The number of the power device is contained in the cyAcsTrapObjectPMNumber.
+The ID of the power device is contained in cyAcsTrapObjectPMId.
+The socket number that has changed to the on state is contained 
+in cyAcsTrapObjectPMSocketNumber.
+The socket name that has changed to the on state is contained in 
+cyAcsTrapObjectPMSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMOutletNameChangedTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMSocketNumber=%parm[#4]% 
+			cyAcsTrapObjectPMSocketOldName=%parm[#5]% 
+			cyAcsTrapObjectPMSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMInletTotalLoadHighTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMInletTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has exceeded the maximum
+threshold for total load of an inlet.
+The port number on the appliance that the power device is attached
+to is contained in the cyAcsTrapObjectSerialPort.
+The number of the IPDU that has exceeded the maximum threshold for total load
+of an inlet is contained in the cyAcsTrapObjectPMNumber.
+The IPDU ID that has exceeded the maximum threshold for total load
+of an inlet is contained in the cyAcsTrapObjectPMId.
+The inlet of the power device is contained in the cyAcsTrapObjectPMPhase.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMPhase&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMInletTotalLoadHighTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMPhase=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/cyPMInletTotalLoadLowTrap</uei>
+	<event-label>CYCLADES-ACS5000-TRAP-MIB defined trap event: cyPMInletTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has gone beneath the minimum
+threshold for total load of an inlet.
+The port number on the appliance that the power device is attached
+to is contained in the cyAcsTrapObjectSerialPort.
+The number of the IPDU that has exceeded the maximum threshold for total load
+of an inlet is contained in the cyAcsTrapObjectPMNumber.
+The IPDU ID that has gone beneath the minimum threshold for total load
+of an inlet is contained in the cyAcsTrapObjectPMId.
+The inlet of the power device is contained in the cyAcsTrapObjectPMPhase.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectSerialPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cyAcsTrapObjectPMPhase&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cyPMInletTotalLoadLowTrap trap received 
+			cyAcsTrapObjectSerialPort=%parm[#1]% 
+			cyAcsTrapObjectPMNumber=%parm[#2]% 
+			cyAcsTrapObjectPMId=%parm[#3]% 
+			cyAcsTrapObjectPMPhase=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: CYCLADES-ACS5000-TRAP-MIB -->
+</events>
