@@ -32,17 +32,29 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.NegativePartialFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.NoSubstringFilter;
 
 /** Encapsulates filtering on partial unique event identifiers. */
-public class NegativePartialUEIFilter extends NegativePartialFilter<String> implements Filter {
+public class NegativePartialUEIFilter extends NoSubstringFilter {
     public static final String TYPE = "partialUeiNot";
 
-    protected String uei;
-
     public NegativePartialUEIFilter(String uei) {
-        super(SQLType.STRING, "EVENTUEI", "uei", uei, "partialUeiNot");
-        this.uei = uei;
+        super(TYPE, "EVENTUEI", "uei", uei);
+    }
+    
+    public String getTextDescription() {
+        return ("partial UEI not like " + getValue());
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.NegativePartialUEIFilter: " + this.getDescription() + ">");
+    }
+
+    public String getUEI() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

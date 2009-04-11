@@ -32,27 +32,39 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.web.filter.NegativeFilter;
+import java.sql.SQLException;
+
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class NegativeServiceFilter extends NegativeFilter<Integer> implements Filter {
+public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     public static final String TYPE = "servicenot";
-    
-    private OnmsServiceType m_serviceType;
-    
+
     public NegativeServiceFilter(int serviceId) {
-        super(SQLType.INT, "SERVICEID", "serviceType", new Integer(serviceId), "serviceNot");
-        m_serviceType = new OnmsServiceType();
-        m_serviceType.setId(new Integer(serviceId));
+        super(TYPE, SQLType.INT, "SERVICEID", "serviceType.id", serviceId);
     }
-    
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.or(Restrictions.ne("serviceType", m_serviceType), Restrictions.isNull("serviceType")));
+
+    public String getTextDescription() {
+        String serviceName = Integer.toString(getValue());
+        try {
+            serviceName = NetworkElementFactory.getServiceNameFromId(getValue());
+        } catch (SQLException e) {
+        }
+
+        return ("service is not " + serviceName);
     }
-    
+
+    public String toString() {
+        return ("<AlarmFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+    }
+
+    public int getServiceId() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

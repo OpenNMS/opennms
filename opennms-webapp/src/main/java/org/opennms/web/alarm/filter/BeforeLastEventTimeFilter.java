@@ -37,16 +37,30 @@ import java.util.Date;
 import org.opennms.web.filter.LessThanFilter;
 import org.opennms.web.filter.SQLType;
 
-public class BeforeLastEventTimeFilter extends LessThanFilter<Date> implements Filter {
+public class BeforeLastEventTimeFilter extends LessThanFilter<Date> {
     public static final String TYPE = "beforelasteventtime";
 
-    protected Date date;
-
     public BeforeLastEventTimeFilter(Date date) {
-        super(SQLType.DATE, "LASTEVENTTIME", "lastEventTime", date, "beforeLastEventTime");
+        super(TYPE, SQLType.DATE, "LASTEVENTTIME", "lastEventTime", date);
     }
-    
+
     public BeforeLastEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
+    }
+
+    public String getTextDescription() {
+        return ("time of last event before \"" + getValue() + "\"");
+    }
+
+    public String toString() {
+        return ("<BeforeLastEventTimeFilter: " + this.getDescription() + ">");
+    }
+
+    public Date getDate() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

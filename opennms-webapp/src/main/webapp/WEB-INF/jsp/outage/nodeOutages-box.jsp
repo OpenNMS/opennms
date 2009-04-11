@@ -47,47 +47,27 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html; charset=UTF-8" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.outage.*,java.util.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.outage.*,java.util.*" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
-<%! 
-    OutageModel model = new OutageModel();
-%>
 
 <%
-    //required parameter node
-    String nodeIdString = request.getParameter("node");
-    
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node");
-    }
-        
-    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-    
-    //determine yesterday's respresentation
-    Calendar cal = new GregorianCalendar();
-    cal.add( Calendar.DATE, -1 );
-    Date yesterday = cal.getTime();
-
-    //gets all current outages and outages that have been resolved within the
-    //the last 24 hours
-    Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
+	int nodeId = (Integer)request.getAttribute("nodeId");
+	Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
 
-<h3 class="o-box"><spring:message code="node.recent_outages"/></h3>
+<h3 class="o-box">Recent Outages</h3>
 <table class="o-box">
 <% if(outages.length == 0) { %>
   <tr>
-    <td><spring:message code="msg.no_outages_24"/></td>
+    <td>There have been no outages on this node in the last 24 hours.</td>
   </tr>
 <% } else { %>
   <tr>
-    <th><spring:message code="nodeoutages.columnname_interface"/></th>
-    <th><spring:message code="nodeoutages.columnname_service"/></th>
-    <th><spring:message code="nodeoutages.columnname_lost"/></th>
-    <th><spring:message code="nodeoutages.columnname_regained"/></th>
-    <th><spring:message code="nodeoutages.columnname_outageid"/></th>
+    <th>Interface</th>
+    <th>Service</th>
+    <th>Lost</th>
+    <th>Regained</th>
+    <th>Outage ID</th>
   </tr>
 
   <%
@@ -102,14 +82,14 @@
     <% } %>
       <td class="divider"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>"><%=outages[i].getIpAddress()%></a></td>
       <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="<spring:message code='nodeoutages.timeformat'/>"/></td>
+      <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider bright"><b>DOWN</b></td>
       <% } else { %>
-        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="<spring:message code='nodeoutages.timeformat'/>"/></td>      
+        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>      
       <% } %>
-      <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
+      <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
     </tr>
   <% } %>
 <% } %>

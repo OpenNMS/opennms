@@ -45,61 +45,55 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.outage.*,
-	    org.opennms.web.element.ElementUtil,
-	    org.opennms.web.element.Service,
-	    org.opennms.netmgt.EventConstants,
+	import="
+		org.opennms.netmgt.EventConstants,
+		org.opennms.web.element.ElementUtil,
+		org.opennms.web.element.Interface,
+		org.opennms.web.outage.*,
 		java.util.*
 	"
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%! 
-    OutageModel m_model = new OutageModel();
-%>
-
 <%
-    Service service = ElementUtil.getServiceByParams(request);
-        
-    //determine yesterday's respresentationr
-    Calendar cal = new GregorianCalendar();
-    cal.add( Calendar.DATE, -1 );
-    Date yesterday = cal.getTime();
-
-    //gets all current outages and outages that have been resolved within the
-    //the last 24 hours
-    Outage[] outages = m_model.getOutagesForService(service.getNodeId(),
-                                                    service.getIpAddress(),
-                                                    service.getServiceId(),
-                                                    yesterday);
+    int nodeId = (Integer)request.getAttribute("nodeId");
+    Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
 
 <h3>Recent Outages</h3>
 
 <table>
 
-<% if (outages.length == 0) { %>
-  <td colspan="3">There have been no outages on this service in the last 24 hours.</td>
+<% if(outages.length == 0) { %>
+  <tr>
+    <td>There have been no outages on this interface in the last 24 hours.</td>
+  </tr>
 <% } else { %>
   <tr>
+    <th>Service</th>
     <th>Lost</th>
     <th>Regained</th>
     <th>Outage ID</th>
   </tr>
   <%
-      for(int i=0; i < outages.length; i++) {
-      Outage outage = outages[i];
-      pageContext.setAttribute("outage", outage);
+     for( int i=0; i < outages.length; i++ ) {
+     Outage outage = outages[i];
+     pageContext.setAttribute("outage", outage);
   %>
-     <tr class="<%=(outages[i].getRegainedServiceTime() == null) ? "Critical" : "Normal"%>">
+     <% if( outages[i].getRegainedServiceTime() == null ) { %>
+       <tr class="Critical">
+     <% } else { %>
+       <tr class="Cleared">
+     <% } %>
+      <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
       <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="divider bright"><b>DOWN</b></td>
-      <% } else { %>
-        <td class="divider bright"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>      
+        <td class="divider"><b>DOWN</b></td>
+      <% } else { %>        
+        <td class="divider"><fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       <% } %>
-      <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
-    </tr>
+      <td class="divider"><a href="outage/detail.htm?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
+     </tr>
   <% } %>
 <% } %>
 

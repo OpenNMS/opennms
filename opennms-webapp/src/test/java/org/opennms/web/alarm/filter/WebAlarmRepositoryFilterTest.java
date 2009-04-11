@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.DaoWebAlarmRepository;
 import org.opennms.web.alarm.JdbcWebAlarmRepository;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -172,7 +173,7 @@ public class WebAlarmRepositoryFilterTest {
     @Test
     @Transactional
     public void testIPLikeFilter(){
-        AlarmCriteria criteria = new AlarmCriteria(new IPLikeFilter("192.168.1.1"));
+        AlarmCriteria criteria = new AlarmCriteria(new IPAddrLikeFilter("192.168.1.1"));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
@@ -256,7 +257,7 @@ public class WebAlarmRepositoryFilterTest {
     
     @Test
     @Transactional
-    public void testNodeFiler(){
+    public void testNodeFilter(){
         AlarmCriteria criteria = getCriteria(new NodeFilter(1));
         
         Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);

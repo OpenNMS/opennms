@@ -32,25 +32,29 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.LikeFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.IPLikeFilter;
 
 /** Encapsulates all interface filtering functionality. */
-public class IPLikeFilter extends LikeFilter<String> implements Filter {
+public class IPAddrLikeFilter extends IPLikeFilter {
     public static final String TYPE = "iplike";
 
-    protected String ipLikePattern;
-
-    public IPLikeFilter(String ipLikePattern) {
-        super(SQLType.STRING, "IPADDR", "ipAddr", ipLikePattern, "ipLike");
-        this.ipLikePattern = ipLikePattern;
+    public IPAddrLikeFilter(String ipLikePattern) {
+        super(TYPE, "IPADDR", "ipAddr", ipLikePattern);
     }
 
-    public String getSql() {
-        return (" IPLIKE(IPADDR,'" + this.ipLikePattern + "')");
+    public String getTextDescription() {
+        return ("IP Address like \"" + getValue() + "\"");
     }
-    
-    public String getParamSql() {
-        return (" IPLIKE(IPADDR,?)");
+
+    public String toString() {
+        return ("<IPLikeFilter: " + this.getDescription() + ">");
+    }
+
+    public String getIpLikePattern() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

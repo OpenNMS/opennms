@@ -38,17 +38,34 @@
 package org.opennms.web.alarm.filter;
 
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.filter.NegativeFilter;
+import org.opennms.web.filter.NotEqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 /**
  * Encapsulates negative severity filtering functionality, that is filtering OUT
  * this value instead of only filtering IN this value.
  */
-public class NegativeSeverityFilter extends NegativeFilter<Integer> implements Filter {
+public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
+    
     public static final String TYPE = "severitynot";
 
     public NegativeSeverityFilter(OnmsSeverity severity) {
-        super(SQLType.INT, "SEVERITY", "severityId", severity.getId(), "severityNot");
+        super(TYPE, SQLType.INT, "SEVERITY", "severityId", severity.getId());
+    }
+
+    public String getTextDescription() {
+        return ("severity is not " + OnmsSeverity.get(getValue()).getLabel());
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.NegativeSeverityFilter: " + this.getDescription() + ">");
+    }
+
+    public int getSeverity() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

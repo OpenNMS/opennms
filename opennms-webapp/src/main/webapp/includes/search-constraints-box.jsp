@@ -65,21 +65,21 @@
 %>
 
 <!-- acknowledged/outstanding row -->
-<form action="outage/list" method="GET" name="outage_search_constraints_box_outtype_form">
+<form action="outage/list.htm" method="GET" name="outage_search_constraints_box_outtype_form">
   <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
     
   <p>
     Outage type:
     <select name="outtype" size="1" onChange="javascript: document.outage_search_constraints_box_outtype_form.submit()">
-      <option value="<%=OutageFactory.OutageType.CURRENT.getShortName() %>" <%=(parms.outageType == OutageFactory.OutageType.CURRENT) ? "selected=\"1\"" : ""%>>
+      <option value="<%=OutageType.CURRENT.getShortName() %>" <%=(parms.outageType == OutageType.CURRENT) ? "selected=\"1\"" : ""%>>
         Current
       </option>
       
-      <option value="<%=OutageFactory.OutageType.RESOLVED.getShortName()%>" <%=(parms.outageType == OutageFactory.OutageType.RESOLVED) ? "selected=\"1\"" : ""%>>
+      <option value="<%=OutageType.RESOLVED.getShortName()%>" <%=(parms.outageType == OutageType.RESOLVED) ? "selected=\"1\"" : ""%>>
         Resolved
       </option>
       
-      <option value="<%=OutageFactory.OutageType.BOTH.getShortName()%>" <%=(parms.outageType == OutageFactory.OutageType.BOTH) ? "selected=\"1\"" : ""%>>
+      <option value="<%=OutageType.BOTH.getShortName()%>" <%=(parms.outageType == OutageType.BOTH) ? "selected=\"1\"" : ""%>>
         Both Current &amp; Resolved
       </option>
     </select>        

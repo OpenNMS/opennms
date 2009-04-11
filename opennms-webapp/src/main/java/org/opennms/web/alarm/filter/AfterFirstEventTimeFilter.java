@@ -39,15 +39,30 @@ import java.util.Date;
 import org.opennms.web.filter.GreaterThanFilter;
 import org.opennms.web.filter.SQLType;
 
-public class AfterFirstEventTimeFilter extends GreaterThanFilter<Date> implements Filter {
+public class AfterFirstEventTimeFilter extends GreaterThanFilter<Date> {
     public static final String TYPE = "afterfirsteventtime";
 
     public AfterFirstEventTimeFilter(Date date) {
-        super(SQLType.DATE, "FIRSTEVENTTIME", "firstEventTime", date, "afterfirstEventTime");
+        super(TYPE, SQLType.DATE, "FIRSTEVENTTIME", "firstEventTime", date);
     }
-    
-    public AfterFirstEventTimeFilter(long epochTime){
+
+    public AfterFirstEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
+    public String getTextDescription() {
+        return ("time of first event after \"" + getValue() + "\"");
+    }
+
+    public String toString() {
+        return ("<AfterFirstEventTimeFilter: " + this.getDescription() + ">");
+    }
+
+    public Date getDate() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

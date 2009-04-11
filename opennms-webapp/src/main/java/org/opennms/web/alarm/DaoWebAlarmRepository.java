@@ -39,7 +39,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -47,23 +47,29 @@ import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
 import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
-import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
-    AlarmDaoHibernate m_alarmDao;
+    AlarmDao m_alarmDao;
     
     private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.createAlias("node", "node",  OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
         
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>(){
 
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
-                criteria.add(Restrictions.isNotNull(ackType.getName()));
+                if (ackType == AcknowledgeType.ACKNOWLEDGED) {
+                    criteria.add(Restrictions.isNotNull("alarmAckUser"));
+                } else if (ackType == AcknowledgeType.UNACKNOWLEDGED) {
+                    criteria.add(Restrictions.isNull("alarmAckUser"));
+                }
             }
 
             public void visitFilter(Filter filter) throws RuntimeException {
@@ -76,7 +82,58 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
             }
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                criteria.addOrder(Order.asc(sortStyle.getName()));
+                switch (sortStyle) {
+                case COUNT:
+                    criteria.addOrder(Order.desc("counter"));
+                    break;
+                case FIRSTEVENTTIME:
+                    criteria.addOrder(Order.desc("firstEventTime"));
+                    break;
+                case ID:
+                    criteria.addOrder(Order.desc("id"));
+                    break;
+                case INTERFACE:
+                    criteria.addOrder(Order.desc("ipAddr"));
+                    break;
+                case LASTEVENTTIME:
+                    criteria.addOrder(Order.desc("lastEventTime"));
+                    break;
+                case NODE:
+                    criteria.addOrder(Order.desc("node.label"));
+                    break;
+                case POLLER:
+                    criteria.addOrder(Order.desc("distPoller"));
+                    break;
+                case SERVICE:
+                    criteria.addOrder(Order.desc("serviceType.name"));
+                    break;
+                case REVERSE_COUNT:
+                    criteria.addOrder(Order.asc("counter"));
+                    break;
+                case REVERSE_FIRSTEVENTTIME:
+                    criteria.addOrder(Order.asc("firstEventTime"));
+                    break;
+                case REVERSE_ID:
+                    criteria.addOrder(Order.asc("id"));
+                    break;
+                case REVERSE_INTERFACE:
+                    criteria.addOrder(Order.asc("ipAddr"));
+                    break;
+                case REVERSE_LASTEVENTTIME:
+                    criteria.addOrder(Order.asc("lastEventTime"));
+                    break;
+                case REVERSE_NODE:
+                    criteria.addOrder(Order.asc("node.label"));
+                    break;
+                case REVERSE_POLLER:
+                    criteria.addOrder(Order.asc("distPoller"));
+                    break;
+                case REVERSE_SERVICE:
+                    criteria.addOrder(Order.asc("serviceType.name"));
+                    break;
+                default:
+                    break;
+                }
             }
             
         });

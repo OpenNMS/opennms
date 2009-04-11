@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.web.outage.OutageFactory.OutageType;
-import org.opennms.web.outage.OutageFactory.SortStyle;
 import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
@@ -30,7 +28,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
     public int countMatchingOutages(OutageCriteria criteria) {
-        String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT FROM OUTAGES LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT FROM OUTAGES LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", null, criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
 
@@ -42,8 +40,20 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                             + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND "
                             + "OUTAGES.SERVICEID=IFSERVICES.SERVICEID "
                             + "LEFT OUTER JOIN SERVICE ON OUTAGES.SERVICEID=SERVICE.SERVICEID "
-                            + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID", criteria);
+                            + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID "
+                            + "LEFT OUTER JOIN ASSETS ON NODE.NODEID=ASSETS.NODEID "
+                            , null,criteria);
         return getOutages(sql, paramSetter(criteria));
+    }
+
+    public int countMatchingOutageSummaries(OutageCriteria criteria) {
+        String sql = getSql("SELECT COUNT(DISTINCT NODEID) AS OUTAGECOUNT FROM OUTAGES LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", null, criteria);
+        return queryForInt(sql, paramSetter(criteria));
+    }
+
+    public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
+        String sql = getSql("SELECT DISTINCT OUTAGES.NODEID, NODE.NODELABEL, max(OUTAGES.IFLOSTSERVICE) AS IFLOSTSERVICE, max(OUTAGES.IFREGAINEDSERVICE) AS IFREGAINEDSERVICE, NOW() AS CURRENTTIME FROM OUTAGES LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID)", "NODEID, NODELABEL", criteria);
+        return getOutageSummaries(sql, paramSetter(criteria));
     }
 
     public Outage getOutage(int outageId) {
@@ -56,12 +66,17 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         }
     }
 
+    private OutageSummary[] getOutageSummaries(String sql, PreparedStatementSetter setter) {
+        List<OutageSummary> summaries = queryForList(sql, setter, new OutageSummaryMapper());
+        return summaries.toArray(new OutageSummary[0]);
+    }
+
     private Outage[] getOutages(String sql, PreparedStatementSetter setter) {
         List<Outage> outages = queryForList(sql, setter, new OutageMapper());
         return outages.toArray(new Outage[0]);
     }
 
-    private String getSql(final String selectClause, final OutageCriteria criteria) {
+    private String getSql(final String selectClause, final String groupByClause, final OutageCriteria criteria) {
         final StringBuilder buf = new StringBuilder(selectClause);
 
         criteria.visit(new OutageCriteriaVisitor<RuntimeException>() {
@@ -86,6 +101,13 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
             public void visitFilter(Filter filter) {
                 and(buf);
                 buf.append(filter.getParamSql());
+            }
+
+            public void visitGroupBy() {
+                if (groupByClause != null && groupByClause.trim().length() != 0) {
+                    buf.append(" GROUP BY ");
+                    buf.append(groupByClause);
+                }
             }
 
             public void visitSortStyle(SortStyle sortStyle) {
@@ -139,16 +161,22 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
             }
         };
     }
-    
+
+    private static class OutageSummaryMapper implements ParameterizedRowMapper<OutageSummary> {
+        public OutageSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new OutageSummary(rs.getInt("nodeID"), rs.getString("nodeLabel"), getTimestamp("ifLostService", rs), getTimestamp("ifRegainedService", rs), getTimestamp("currentTime", rs));
+        }
+    }
+
     private static class OutageMapper implements ParameterizedRowMapper<Outage> {
         public Outage mapRow(ResultSet rs, int rowNum) throws SQLException {
             Outage outage = new Outage();
-            outage.outageId = rs.getInt("outageID");
+            outage.outageId = ((Integer) rs.getObject("outageID"));
             outage.lostServiceEventId = ((Integer) rs.getObject("svcLostEventID"));
             outage.regainedServiceEventId = ((Integer) rs.getObject("svcRegainedEventID"));
-            outage.nodeId = rs.getInt("nodeID");
+            outage.nodeId = ((Integer) rs.getObject("nodeID"));
             outage.ipAddress = ((String) rs.getObject("ipAddr"));
-            outage.serviceId = rs.getInt("serviceID");
+            outage.serviceId = ((Integer) rs.getObject("serviceID"));
             outage.lostServiceTime = getTimestamp("ifLostService", rs);
             outage.regainedServiceTime = getTimestamp("ifRegainedService", rs);
             outage.suppressTime = getTimestamp("suppressTime", rs);
@@ -163,13 +191,13 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
             return outage;
         }
         
-        private Date getTimestamp(String field, ResultSet rs) throws SQLException{
-            if(rs.getTimestamp(field) != null){
-                return new Date(rs.getTimestamp(field).getTime());
-            }else{
-                return null;
-            }
-        }
     }
 
+    private static Date getTimestamp(String field, ResultSet rs) throws SQLException{
+        if(rs.getTimestamp(field) != null){
+            return new Date(rs.getTimestamp(field).getTime());
+        }else{
+            return null;
+        }
+    }
 }

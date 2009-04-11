@@ -34,11 +34,25 @@ package org.opennms.web.alarm.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-public class AlarmTypeFilter extends EqualsFilter<Integer> implements Filter {
+public class AlarmTypeFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "alarmTypeFilter";    
- 
+    
     public AlarmTypeFilter(int alarmType){
-        super(SQLType.INT, "ALARMTYPE", "alarmType", new Integer(alarmType), "alarmTypeFilter");
+        super(TYPE, SQLType.INT, "ALARMTYPE", "alarmType", alarmType);
+    }
+    
+    public String getTextDescription() {
+        return TYPE + " = " + getAlarmTypeLabel(getValue());
+    }
+    
+    private String getAlarmTypeLabel(int alarmType){
+        if(alarmType == 1){
+            return "PROBLEM_TYPE";
+        }else if(alarmType == 2){
+            return "RESOLUTION_TYPE";
+        }else{
+            return null;
+        }
     }
 
 }

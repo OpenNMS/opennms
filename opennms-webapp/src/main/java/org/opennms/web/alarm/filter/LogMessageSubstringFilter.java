@@ -32,55 +32,28 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.PartialFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.SubstringFilter;
 
-public class LogMessageSubstringFilter extends PartialFilter<String> implements Filter {
+public class LogMessageSubstringFilter extends SubstringFilter {
     public static final String TYPE = "msgsub";
 
-    protected String substring;
-
     public LogMessageSubstringFilter(String substring) {
-        super(SQLType.STRING, "LOGMSG", "logMsg", substring, "msgsub");
-
-        this.substring = substring;
+        super(TYPE, "logMsg", "logMsg", substring);
     }
 
-//    public String getSql() {
-//        return (" UPPER(logMsg) LIKE '%" + this.substring.toUpperCase() + "%'");
-//    }
-//    
-//    public String getParamSql() {
-//        return (" UPPER(logMsg) LIKE ?");
-//    }
-//    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-//    	return 1;
-//    }
-//
-//    public String getDescription() {
-//        return (TYPE + "=" + this.substring);
-//    }
-//
-//    public String getTextDescription() {
-//        return ("description containing \"" + this.substring + "\"");
-//    }
-//
-//    public String toString() {
-//        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
-//    }
-//
-//    public String getSubstring() {
-//        return (this.substring);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        return (this.toString().equals(obj.toString()));
-//    }
-//
-//    public void applyCriteria(OnmsCriteria criteria) {
-//        criteria.add(Restrictions.like("logMsg", "%" + this.substring + "%", MatchMode.ANYWHERE));
-//        
-//    }
+    public String getTextDescription() {
+        return ("description containing \"" + getValue() + "\"");
+    }
+
+    public String toString() {
+        return ("<LogMessageSubstringFilter: " + this.getDescription() + ">");
+    }
+
+    public String getSubstring() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

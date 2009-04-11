@@ -29,31 +29,35 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.filter;
+package org.opennms.web.alarm.filter;
 
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class NegativeExactFilter<T> extends NegativeFilter<T> {
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.filter.SQLType;
 
-    public NegativeExactFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
+/**
+ * OnmsSeverityType
+ *
+ * @author brozow
+ */
+public class OnmsSeverityType implements SQLType<OnmsSeverity> {
+
+    public void bindParam(PreparedStatement ps, int parameterIndex, OnmsSeverity value) throws SQLException {
+        ps.setInt(parameterIndex, value.getId());
     }
-    
-    public String getSql(){
-        return " " + m_fieldName + "<>" + m_sqlType.formatValue(m_value);
+
+    public OnmsSeverity[] createArray(OnmsSeverity value1, OnmsSeverity value2) {
+        return new OnmsSeverity[] { value1, value2 };
     }
-    
-    public String getParamSql(){
-        return " " + m_fieldName + "<>?"; 
+
+    public String formatValue(OnmsSeverity value) {
+        return String.valueOf(value.getId());
     }
-    
-    public String getDescription(){
-        return " " + m_fieldName + "<>" + m_sqlType.formatValue(m_value);
+
+    public String getValueAsString(OnmsSeverity value) {
+        return String.valueOf(value.getId());
     }
-    
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.ne(m_daoPropertyName, m_value));
-        
-    }
+
 }

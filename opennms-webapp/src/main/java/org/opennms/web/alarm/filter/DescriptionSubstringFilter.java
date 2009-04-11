@@ -32,17 +32,28 @@
 
 package org.opennms.web.alarm.filter;
 
-import org.opennms.web.filter.PartialFilter;
-import org.opennms.web.filter.SQLType;
+import org.opennms.web.filter.SubstringFilter;
 
-public class DescriptionSubstringFilter extends PartialFilter<String> implements Filter {
+public class DescriptionSubstringFilter extends SubstringFilter {
     public static final String TYPE = "descsub";
 
-    protected String substring;
-
     public DescriptionSubstringFilter(String substring) {
-        super(SQLType.STRING, "DESCRIPTION", "description", substring, "descsub");
+        super(TYPE, "DESCRIPTION", "description", substring);
+    }
 
-        this.substring = substring;
+    public String getTextDescription() {
+        return ("description containing \"" + getValue() + "\"");
+    }
+
+    public String toString() {
+        return ("<DescriptionSubstringFilter: " + this.getDescription() + ">");
+    }
+
+    public String getSubstring() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

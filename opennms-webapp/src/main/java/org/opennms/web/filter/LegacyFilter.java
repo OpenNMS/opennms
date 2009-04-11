@@ -31,39 +31,18 @@
  */
 package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 
-public class PartialFilter<T> extends EqualsFilter<T> implements BaseFilter {
+/**
+ * BaseFilter
+ *
+ * @author brozow
+ */
+public abstract class LegacyFilter implements Filter {
 
-    public PartialFilter(SQLType<T> type, String fieldName, String daoPropertyName, T value, String filterName) {
-        super(type, fieldName, daoPropertyName, value, filterName);
-    }
-
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-        String prop = (String) m_value;
-        ps.setString(parameterIndex, "'%"+ prop.toLowerCase()+"%'");
-        return 1;
-    }
-    
-    public String getSql() {
-        return (" UPPER(" +m_fieldName + ") LIKE '%" + m_sqlType.formatValue(m_value) + "%'");
-    }
-    
-    public String getParamSql() {
-        return (" UPPER(" + m_fieldName + ") LIKE ?");
-    }
-    
-    public String getDescription(){
-        return " " + m_fieldName + " LIKE '%" + m_sqlType.formatValue(m_value) +"%'";
-    }
-    
     public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.like(m_daoPropertyName, (String) m_value, MatchMode.ANYWHERE));
+        throw new UnsupportedOperationException("BaseFilter.applyCriteria is not yet implemented");
     }
+
 
 }

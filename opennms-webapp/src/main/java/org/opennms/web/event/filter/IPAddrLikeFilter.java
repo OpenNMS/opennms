@@ -30,11 +30,31 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.alarm.filter;
+package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.BaseFilter;
+import org.opennms.web.filter.IPLikeFilter;
 
-/** Convenience class to determine what sort of events to include in a query. */
-public interface Filter extends BaseFilter {
+/** Encapsulates all interface filtering functionality. */
+public class IPAddrLikeFilter extends IPLikeFilter {
+    public static final String TYPE = "iplike";
 
+    public IPAddrLikeFilter(String ipLikePattern) {
+        super(TYPE, "IPADDR", "ipAddr", ipLikePattern);
+    }
+
+    public String getTextDescription() {
+        return ("IP Address like \"" + getValue() + "\"");
+    }
+
+    public String toString() {
+        return ("<IPLikeFilter: " + this.getDescription() + ">");
+    }
+
+    public String getIpLikePattern() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
+    }
 }

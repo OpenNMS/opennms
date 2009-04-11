@@ -30,55 +30,33 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.event.filter;
+package org.opennms.web.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
+import org.opennms.netmgt.model.OnmsCriteria;
+
 
 /** Encapsulates all interface filtering functionality. */
-public class IPLikeFilter extends Object implements Filter {
-    public static final String TYPE = "iplike";
+public abstract class IPLikeFilter extends OneArgFilter<String> {
 
-    protected String ipLikePattern;
+    private static final Type STRING_TYPE = new StringType();
 
-    public IPLikeFilter(String ipLikePattern) {
-        if (ipLikePattern == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.ipLikePattern = ipLikePattern;
+    public IPLikeFilter(String filterType, String fieldName, String propertyName, String ipLikePattern) {
+        super(filterType, SQLType.STRING, fieldName, propertyName, ipLikePattern);
     }
 
-    public String getSql() {
-        return (" IPLIKE(IPADDR,'" + this.ipLikePattern + "')");
+    @Override
+    public String getSQLTemplate() {
+        return " IPLIKE("+getSQLFieldName()+", %s) ";
     }
-    
-    public String getParamSql() {
-        return (" IPLIKE(IPADDR,?)");
+
+    @Override
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE));
     }
     
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.ipLikePattern);
-    	return 1;
-    }
+    
 
-    public String getDescription() {
-        return (TYPE + "=" + this.ipLikePattern);
-    }
-
-    public String getTextDescription() {
-        return ("IP Address like \"" + this.ipLikePattern + "\"");
-    }
-
-    public String toString() {
-        return ("<IPLikeFilter: " + this.getDescription() + ">");
-    }
-
-    public String getIpLikePattern() {
-        return (this.ipLikePattern);
-    }
-
-    public boolean equals(Object obj) {
-        return (this.toString().equals(obj.toString()));
-    }
 }

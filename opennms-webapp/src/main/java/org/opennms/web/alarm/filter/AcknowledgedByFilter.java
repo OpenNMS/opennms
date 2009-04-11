@@ -36,10 +36,22 @@ import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class AcknowledgedByFilter extends EqualsFilter<String> implements Filter {
+public class AcknowledgedByFilter extends EqualsFilter<String> {
     public static final String TYPE = "acknowledgedBy";
 
     public AcknowledgedByFilter(String user) {
-        super(SQLType.STRING, "ALARMACKUSER", "alarmAckUser", user, "acknowledgeBy");
+        super(TYPE, SQLType.STRING, "ALARMACKUSER", "alarmAckUser", user);
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.AcknowledgedByFilter: " + this.getDescription() + ">");
+    }
+
+    public String getAcknowledgedByFilter() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

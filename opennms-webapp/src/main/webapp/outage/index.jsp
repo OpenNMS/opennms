@@ -56,14 +56,14 @@
   <div class="TwoColLeft">
       <h3>Outage Menu</h3>    
 		<div class="boxWrapper">
-        <form method="GET" action="outage/detail.jsp" >
+        <form method="GET" action="outage/detail.htm" >
           <p align="right">Outage ID:
 				<input type="text" name="id" />
 				<input type="submit" value="Get details" /></p>
         </form>
 			<ul class="plain">
-				<li><a href="outage/current.jsp">Current outages</a></li>
-				<li><a href="outage/list">All outages</a></li>
+				<li><a href="outage/list.htm?outtype=current">Current outages</a></li>
+				<li><a href="outage/list.htm">All outages</a></li>
 			</ul>
       </div>
   </div>

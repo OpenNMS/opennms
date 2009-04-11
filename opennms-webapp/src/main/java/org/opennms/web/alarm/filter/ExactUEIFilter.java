@@ -36,12 +36,22 @@ import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 /** Encapsulates filtering on exact unique event identifiers. */
-public class ExactUEIFilter extends EqualsFilter<String> implements Filter {
+public class ExactUEIFilter extends EqualsFilter<String> {
     public static final String TYPE = "exactUei";
 
-    protected String uei;
-
     public ExactUEIFilter(String uei) {
-        super(SQLType.STRING, "EVENTUEI", "uei", uei, "exactUei");
+        super(TYPE, SQLType.STRING, "EVENTUEI", "uei", uei);
+    }
+
+    public String toString() {
+        return ("<AlarmFactory.ExactUEIFilter: " + this.getDescription() + ">");
+    }
+
+    public String getUEI() {
+        return getValue();
+    }
+
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
 }

@@ -32,45 +32,23 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.web.filter.SubstringFilter;
 
 /** Encapsulates all node filtering functionality. */
-public class NodeNameLikeFilter implements Filter {
+public class NodeNameLikeFilter extends SubstringFilter {
     public static final String TYPE = "nodenamelike";
 
-    protected String substring;
-
     public NodeNameLikeFilter(String substring) {
-
-        this.substring = substring;
-    }
-
-    public String getSql() {
-        return (" ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%')");
-        // return (" NODE.NODEID=ALARMS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
+        super(TYPE, "NODELABEL", "node.label", substring);
     }
     
-    public String getParamSql() {
-        return (" ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE UPPER(NODE.NODELABEL) LIKE ?)");
-        // return (" NODE.NODEID=ALARMS.NODEID AND UPPER(NODE.NODELABEL) LIKE '%" + this.substring.toUpperCase() + "%'");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.substring);
+    @Override
+    public String getSQLTemplate() {
+        return " ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ";
     }
 
     public String getTextDescription() {
-        return ("node name containing \"" + this.substring + "\"");
+        return ("node name containing \"" + getValue() + "\"");
     }
 
     public String toString() {
@@ -78,15 +56,11 @@ public class NodeNameLikeFilter implements Filter {
     }
 
     public String getSubstring() {
-        return (this.substring);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
-
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.createCriteria("node").add(Restrictions.like("label", this.substring, MatchMode.ANYWHERE));
-        
-    }
+    
 }

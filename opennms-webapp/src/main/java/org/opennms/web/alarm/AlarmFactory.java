@@ -55,11 +55,11 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.web.alarm.filter.Filter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.filter.Filter;
 import org.springframework.util.Assert;
 
 /**
