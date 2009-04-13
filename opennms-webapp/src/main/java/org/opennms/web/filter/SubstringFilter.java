@@ -31,9 +31,9 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class SubstringFilter extends OneArgFilter<String> {
 
@@ -42,8 +42,8 @@ public abstract class SubstringFilter extends OneArgFilter<String> {
     }
 
     @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+    public Criterion getCriterion() {
+        return Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE);
     }
 
     @Override

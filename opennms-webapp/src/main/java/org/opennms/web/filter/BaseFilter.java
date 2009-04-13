@@ -34,7 +34,7 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.hibernate.criterion.Criterion;
 
 /**
  * BaseFilter
@@ -82,7 +82,7 @@ public abstract class BaseFilter<T> implements Filter {
     
     public abstract String getValueString();
     
-    public abstract void applyCriteria(OnmsCriteria criteria);
+    public abstract Criterion getCriterion();
 
     public abstract int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
 

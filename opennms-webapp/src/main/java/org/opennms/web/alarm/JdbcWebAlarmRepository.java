@@ -50,8 +50,10 @@ import org.opennms.web.alarm.filter.SeverityBetweenFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
+import org.opennms.web.filter.AndFilter;
 import org.opennms.web.filter.ConditionalFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.filter.OrFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
@@ -278,9 +280,9 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
     
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
-        ConditionalFilter condFilter = new ConditionalFilter("AND", new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
-        ConditionalFilter condFilter2 = new ConditionalFilter("AND", new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
-        ConditionalFilter orCondFilter = new ConditionalFilter("OR", condFilter, condFilter2);
+        ConditionalFilter condFilter = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
+        ConditionalFilter condFilter2 = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
+        ConditionalFilter orCondFilter = new OrFilter(condFilter, condFilter2);
         
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
         

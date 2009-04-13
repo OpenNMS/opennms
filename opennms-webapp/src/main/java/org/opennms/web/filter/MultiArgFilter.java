@@ -98,6 +98,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
         }
         return String.format(getSQLTemplate(), formattedVals);
     }
+
     
 
 

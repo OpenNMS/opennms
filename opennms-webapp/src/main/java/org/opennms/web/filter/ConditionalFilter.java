@@ -34,8 +34,11 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.hibernate.criterion.Criterion;
+import org.opennms.netmgt.model.OnmsCriteria;
 
-public class ConditionalFilter extends LegacyFilter implements Filter {
+
+public abstract class ConditionalFilter implements Filter {
     public static final String TYPE = "conditionalFilter";
     
     private String m_conditionType;
@@ -117,5 +120,14 @@ public class ConditionalFilter extends LegacyFilter implements Filter {
         buf.append(")");
         return buf.toString();
     }
+
+
+    public void applyCriteria(OnmsCriteria criteria) {
+        criteria.add(getCriterion());
+    }
+    
+    abstract public Criterion getCriterion();
+
+    
 
 }
