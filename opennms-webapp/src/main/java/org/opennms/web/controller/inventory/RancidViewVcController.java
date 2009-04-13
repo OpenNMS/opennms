@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -28,9 +27,11 @@ public class RancidViewVcController implements Controller {
        
         String node = request.getParameter("node");
         String iframelink = request.getParameter("viewvc");
+        String group = request.getParameter("group");
         int nodeid = WebSecurityUtils.safeParseInt(node);
-        Map<String, Object> model = m_inventoryService.getRancidNode(nodeid,request.isUserInRole(Authentication.ADMIN_ROLE));
+        Map<String, Object> model = m_inventoryService.getRancidNodeBase(nodeid);
         model.put("iframelink", iframelink);
+        model.put("group", group);
         ModelAndView modelAndView = new ModelAndView("inventory/rancidViewVc","model",model);
         return modelAndView;
     }

@@ -492,6 +492,14 @@
     <property name="inventoryService" ref="inventoryService"/>
   </bean>  
 
+  <bean name="/inventory/rancidList.htm" class="org.opennms.web.controller.inventory.RancidListController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>  
+  
+  <bean name="/inventory/invnode.htm" class="org.opennms.web.controller.inventory.InvNodeController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>  
+  
   <bean name="/inventory/rancidViewVc.htm" class="org.opennms.web.controller.inventory.RancidViewVcController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean>  
