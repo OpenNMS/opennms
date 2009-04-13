@@ -296,10 +296,12 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         return m_alarmDao.countMatching(onmsCriteria);
     }
 
+    @Transactional
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
+    @Transactional
     public void unacknowledgeAlarms(int[] alarmIds) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
