@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
-public class AdminRancidStatusController extends SimpleFormController {
+public class AdminRancidCreateController extends SimpleFormController {
 
     InventoryService m_inventoryService;
         
@@ -30,15 +30,15 @@ public class AdminRancidStatusController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidStatusController ModelAndView onSubmit");
+        log().debug("AdminRancidCreateController ModelAndView onSubmit");
 
         AdminRancidRouterDbCommClass bean = (AdminRancidRouterDbCommClass) command;
                        
-        log().debug("AdminRancidStatusController ModelAndView onSubmit setting state to device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
+        log().debug("AdminRancidCreateController ModelAndView onSubmit updating device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
 
-        boolean done = m_inventoryService.switchStatus(bean.getGroupName(), bean.getDeviceName());
+        boolean done = m_inventoryService.createNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName(), bean.getDeviceTypeName(), bean.getStatusName(),bean.getComment());
         if (!done){
-            log().debug("AdminRancidStatusController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
+            log().debug("AdminRancidCreateController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
         }
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);
@@ -47,7 +47,7 @@ public class AdminRancidStatusController extends SimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
-        log().debug("AdminRancidStatusController initBinder");
+        log().debug("AdminRancidCreateController initBinder");
     }
     
     private static Category log() {
