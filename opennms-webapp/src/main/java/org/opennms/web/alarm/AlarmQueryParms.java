@@ -40,8 +40,6 @@ package org.opennms.web.alarm;
 
 import java.util.List;
 
-import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
-import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.filter.Filter;
 
 /**

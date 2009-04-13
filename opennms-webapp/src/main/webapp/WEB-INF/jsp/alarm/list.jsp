@@ -66,8 +66,8 @@
 <%@page import="org.opennms.web.filter.Filter" %>
 <%@page import="org.opennms.web.alarm.Alarm" %>
 <%@page import="org.opennms.web.alarm.AlarmQueryParms" %>
-<%@page import="org.opennms.web.alarm.AlarmFactory.SortStyle" %>
-<%@page import="org.opennms.web.alarm.AlarmFactory.AcknowledgeType" %>
+<%@page import="org.opennms.web.alarm.SortStyle" %>
+<%@page import="org.opennms.web.alarm.AcknowledgeType" %>
 <%@page import="org.opennms.web.alarm.AlarmUtil" %>
 <%@page import="org.opennms.web.alarm.filter.ExactUEIFilter" %>
 <%@page import="org.opennms.web.alarm.filter.NegativeExactUEIFilter" %>

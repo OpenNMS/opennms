@@ -40,8 +40,6 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
-import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
