@@ -39,17 +39,39 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="ViewVC" />
+  <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="ViewVC" />
+  <jsp:param name="headTitle" value="Inventory List" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
   <jsp:param name="breadcrumb" value="<a href='inventory/rancid.htm?node=${model.db_id}'>Rancid</a>" />
-  <jsp:param name="breadcrumb" value="ViewVC Group ${model.group}" />
+  <jsp:param name="breadcrumb" value="Inventory List" />
+  
 </jsp:include>
 
-<iframe src="${model.iframelink}" width="100%" height="300">
-  <p>Your browser does not support iframes.</p>
-</iframe>
+<h2> Node: ${model.id} </h2>
+
+<!-- Elements box -->
+<h3>Associated Elements</h3>
+
+<table class="o-box">
+<tr>
+	<th>Group</th>
+	<th>Version</th>
+	<th>Revision Date</th>
+</tr>
+<c:forEach items="${model.grouptable}" var="groupelm">
+	<tr>
+		<td>${groupelm.group}
+		</td>
+		<td>${groupelm.version}
+		<a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.version}">(inventory)</a>
+		<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&viewvc=${groupelm.urlViewVC}">(configuration)</a>
+		</td>
+		<td>${groupelm.date}</td>
+
+	</tr>
+</c:forEach>
+</table>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
