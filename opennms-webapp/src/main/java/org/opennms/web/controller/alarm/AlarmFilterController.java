@@ -48,12 +48,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
+import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.alarm.WebAlarmRepository;
-import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
-import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;

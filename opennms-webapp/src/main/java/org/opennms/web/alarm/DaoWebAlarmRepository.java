@@ -43,8 +43,6 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
-import org.opennms.web.alarm.AlarmFactory.SortStyle;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
