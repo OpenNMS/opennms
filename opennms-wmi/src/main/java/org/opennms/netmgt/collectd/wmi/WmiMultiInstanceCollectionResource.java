@@ -35,8 +35,10 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, String.valueOf(m_agent.getNodeId()));
         File typeDir = new File(nodeDir, m_name);
-        File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_"));
-        log().debug("getResourceDir: " + instDir.toString());
+        File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
+        if (log().isDebugEnabled()) {
+            log().debug("getResourceDir: " + instDir.toString());
+        }
         return instDir;
     }
 
