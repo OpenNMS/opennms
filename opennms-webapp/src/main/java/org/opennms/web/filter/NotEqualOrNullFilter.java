@@ -31,9 +31,9 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
     
@@ -42,9 +42,8 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
         super(filterType, type, fieldName, propertyName, value);
     }
 
-    @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName())));
+    public Criterion getCriterion() {
+        return Expression.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName()));
     }
     
     @Override

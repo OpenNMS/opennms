@@ -31,37 +31,30 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
-public abstract class NoSubstringFilter extends OneArgFilter<String> {
-
-    public NoSubstringFilter(String filterType, String fieldName, String daoPropertyName, String value) {
-        super(filterType, SQLType.STRING, fieldName, daoPropertyName, value);
-
-    }
+/**
+ * AndFilter
+ *
+ * @author brozow
+ */
+public class AndFilter extends ConditionalFilter {
     
-    @Override
-    public String getSQLTemplate() {
-        return " " + getSQLFieldName() + " NOT ILIKE %s ";
+    public AndFilter(Filter...filters) {
+        super("AND", filters);
     }
-    
+
     @Override
     public Criterion getCriterion() {
-        return Expression.not(Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE));
+        Conjunction conjunction = Restrictions.conjunction();
+        
+        for(Filter filter : getFilters()) {
+            conjunction.add(filter.getCriterion());
+        }
+        
+        return conjunction;
     }
-    
-    @Override
-    public String getBoundValue(String value) {
-        return '%' + value + '%';
-    }
-    
-    @Override
-    public String formatValue(String value) {
-        return super.formatValue('%'+value+'%');
-    }
-
 
 }

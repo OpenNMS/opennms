@@ -31,8 +31,8 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class InFilter<T> extends MultiArgFilter<T> {
     
@@ -41,8 +41,8 @@ public abstract class InFilter<T> extends MultiArgFilter<T> {
     }
     
     @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.in(getPropertyName(), getValuesAsList()));
+    public Criterion getCriterion() {
+        return Restrictions.in(getPropertyName(), getValuesAsList());
     }
     
     @Override

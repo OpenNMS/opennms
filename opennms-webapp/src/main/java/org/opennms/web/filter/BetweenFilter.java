@@ -31,8 +31,8 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     
@@ -44,8 +44,8 @@ public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     public T getLast() { return getValues()[1]; }
     
     @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.between(getPropertyName(), getFirst(), getLast()));
+    public Criterion getCriterion() {
+        return Restrictions.between(getPropertyName(), getFirst(), getLast());
     }
     
     @Override

@@ -34,7 +34,7 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.hibernate.criterion.Criterion;
 
 public interface Filter {
     
@@ -91,9 +91,10 @@ public interface Filter {
     public String getTextDescription();
     
     /**
-     * Method for adding the filters criteria to the
-     * OnmsCriteria object.
-     * @param criteria
+     * Criterion used to construction an OnmsCritieria
+     * @return A Criterion that represents a criteria restriction
+     * imposed by this filter
      */
-    public void applyCriteria(OnmsCriteria criteria);
+    public Criterion getCriterion();
+        
 }

@@ -73,7 +73,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
             }
 
             public void visitFilter(Filter filter) throws RuntimeException {
-                filter.applyCriteria(criteria);
+                criteria.add(filter.getCriterion());
             }
 
             public void visitLimit(int limit, int offset) throws RuntimeException {
