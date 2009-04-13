@@ -44,10 +44,10 @@ import java.util.ArrayList;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmFactory;
-import org.opennms.web.alarm.AlarmFactory.AcknowledgeType;
-import org.opennms.web.alarm.AlarmFactory.SortStyle;
+import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
