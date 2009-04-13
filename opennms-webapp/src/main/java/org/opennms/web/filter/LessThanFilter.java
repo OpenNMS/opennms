@@ -31,8 +31,8 @@
  */
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 public abstract class LessThanFilter<T> extends OneArgFilter<T> {
     
@@ -41,8 +41,8 @@ public abstract class LessThanFilter<T> extends OneArgFilter<T> {
     }
     
     @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.le(getPropertyName(), getValue()));
+    public Criterion getCriterion() {
+        return Restrictions.le(getPropertyName(), getValue());
     }
 
     @Override

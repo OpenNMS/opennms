@@ -31,18 +31,30 @@
  */
 package org.opennms.web.filter;
 
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
 
 /**
- * BaseFilter
+ * OrFilter
  *
  * @author brozow
  */
-public abstract class LegacyFilter implements Filter {
-
-    public void applyCriteria(OnmsCriteria criteria) {
-        throw new UnsupportedOperationException("BaseFilter.applyCriteria is not yet implemented");
+public class OrFilter extends ConditionalFilter {
+    
+    public OrFilter(Filter... filters) {
+        super("OR", filters);
     }
 
+    @Override
+    public Criterion getCriterion() {
+        Disjunction disjunction = Restrictions.disjunction();
+        
+        for(Filter filter : getFilters()) {
+            disjunction.add(filter.getCriterion());
+        }
+        
+        return disjunction;
+    }
 
 }

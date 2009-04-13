@@ -32,10 +32,10 @@
 
 package org.opennms.web.filter;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
-import org.opennms.netmgt.model.OnmsCriteria;
 
 
 /** Encapsulates all interface filtering functionality. */
@@ -53,8 +53,8 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
     }
 
     @Override
-    public void applyCriteria(OnmsCriteria criteria) {
-        criteria.add(Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE));
+    public Criterion getCriterion() {
+        return Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE);
     }
     
     

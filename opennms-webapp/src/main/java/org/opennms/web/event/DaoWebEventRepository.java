@@ -66,7 +66,7 @@ public class DaoWebEventRepository implements WebEventRepository {
             }
 
             public void visitFilter(Filter filter) throws RuntimeException {
-                filter.applyCriteria(criteria);
+                criteria.add(filter.getCriterion());
             }
 
             public void visitLimit(int limit, int offset) throws RuntimeException {
