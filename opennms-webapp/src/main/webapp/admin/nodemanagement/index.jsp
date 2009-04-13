@@ -94,7 +94,7 @@
 
 <form method="post" name="getInterfaces"
       action="admin/nodemanagement/getInterfaces">
-  <input name="node" value=<%=nodeId%> type="hidden"/>
+  <input name="node" value="<%=nodeId%>" type="hidden"/>
 </form>
 
 <h2>Node: <%=node_db.getLabel()%></h2>

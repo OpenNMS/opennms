@@ -39,7 +39,7 @@ public class InventoryWrapper {
     private String urlViewVC;
     
     
-    InventoryWrapper(String version, Date date, String group, String urlViewVC){
+    public InventoryWrapper(String version, Date date, String group, String urlViewVC){
         this.version = version;
         this.date = date;
         this.group = group;

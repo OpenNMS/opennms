@@ -1,6 +1,7 @@
 package org.opennms.web.controller.inventory;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 
-public class RancidController implements Controller {
+public class InvNodeController implements Controller {
 
     InventoryService m_inventoryService;
     
@@ -28,8 +29,12 @@ public class RancidController implements Controller {
        
         String node = request.getParameter("node");
         int nodeid = WebSecurityUtils.safeParseInt(node);
-        Map<String, Object> model = m_inventoryService.getRancidNode(nodeid);
-        ModelAndView modelAndView = new ModelAndView("inventory/rancid","model",model);
+        String group = request.getParameter("groupname");
+        String version = request.getParameter("version");
+        Map<String, Object> model = m_inventoryService.getInventory(nodeid, 
+                                                                         WebSecurityUtils.sanitizeString(group),
+                                                                         WebSecurityUtils.sanitizeString(version));
+        ModelAndView modelAndView = new ModelAndView("inventory/invnode","model",model);
         return modelAndView;
     }
 

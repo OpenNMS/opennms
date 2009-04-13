@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 
-public class RancidController implements Controller {
+public class RancidListController implements Controller {
 
     InventoryService m_inventoryService;
     
@@ -28,8 +28,16 @@ public class RancidController implements Controller {
        
         String node = request.getParameter("node");
         int nodeid = WebSecurityUtils.safeParseInt(node);
-        Map<String, Object> model = m_inventoryService.getRancidNode(nodeid);
-        ModelAndView modelAndView = new ModelAndView("inventory/rancid","model",model);
+        String group = request.getParameter("groupname");
+        Map<String, Object> model;
+        if (WebSecurityUtils.sanitizeString(group).compareTo("*") == 0){
+            model = m_inventoryService.getRancidNodeList(nodeid);
+        }
+        else {
+            model = m_inventoryService.getRancidNodeList(nodeid,WebSecurityUtils.sanitizeString(group));
+        }
+
+        ModelAndView modelAndView = new ModelAndView("inventory/rancidList","model",model);
         return modelAndView;
     }
 

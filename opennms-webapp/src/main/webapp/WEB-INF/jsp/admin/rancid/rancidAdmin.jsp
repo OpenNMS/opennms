@@ -41,13 +41,10 @@
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="Rancid" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="Rancid" />
+  <jsp:param name="headTitle" value="Admin Rancid" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Admin Rancid" />
 </jsp:include>
-
-<h2>Node: ${model.id} </h2>
 
 <div class="TwoColLeft">
     <!-- general info box -->
@@ -57,10 +54,13 @@
 			<th width="50%">Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
+		<tr>
+	  		<th>Foreign Source</th>
+	  		<td>${model.foreignSource}</td>
+	  	</tr>
 	</table>
   
 	<h3>Rancid Info</h3>
-	<form id="newUserForm2" method="post" name="newUserForm2">	
 	<table class="o-box">
 		<tr>
 			<th width="50%">Device Name</th>
@@ -82,14 +82,26 @@
 		<tr>
 			<th>Status</th>
 			<td><em>${model.status}</em>
-				<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
-			</td>
-		</tr>
-	</table> 
+	<form id="newUserForm2" method="post" name="newUserForm2">	
+	<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
 	<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
 	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 	</form>
+			</td>
+		</tr>
+	</table> 
+
+	<h3>Select Group</h3>
+	<table class="o-box">
+	<tr>
+	<th>Group</th>
+	</tr>
+	<c:forEach items="${model.grouplist}" var="groupelem">	
+	<tr><td><a href="admin/rancid/rancidAdmin.htm?node=${model.db_id}?group=${groupelem}">${groupelem}</a></td></tr>
+	</c:forEach>
+	</table>
+
 
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
@@ -144,12 +156,13 @@
 	 <c:otherwise>
 		<h3>Clogin Info for Provisioned Node</h3>
 		<table class="o-box">
-			 <tr>
+			<tr>
 			 	<th width="50%">Provisioning group: </th>
 			 	<td>${model.foreignSource}
 					<a href="admin/provisioningGroups.htm">(provisioning)</a>
 					<a href="asset/modify.jsp?node=${model.db_id}">(asset)</a>
 				</td>
+			</tr>
 			<tr>
 			    <th><label id="userIDLabel" for="userID">Username:</label></th>
 			    <td>${model.cloginuser}</td>

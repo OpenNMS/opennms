@@ -38,14 +38,18 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
+
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Rancid" />
-  <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="Rancid" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+<jsp:param name="title" value="Inventory" />
+<jsp:param name="headTitle" value="${model.id}" />
+<jsp:param name="headTitle" value="Inventory" />
+<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="Rancid" />
+  <jsp:param name="breadcrumb" value="<a href='inventory/rancid.htm?node=${model.db_id}'>Rancid</a>" />
+<jsp:param name="breadcrumb" value="Inventory" />
 </jsp:include>
+
 
 <div class="TwoColLeft">
 	<!-- general info box -->
@@ -61,75 +65,72 @@
 	  	</tr>
 	</table>
 
-	<h3>Rancid Info</h3>
-	<table class="o-box">
+	<h3>Rancid info</h3>
+  <table class="o-box">
+	<tr>
+		<th>Group Name</th>
+		<td>${model.groupname}</td>
+	</tr>
+	<tr>
+		<th>Version</th>
+		<td>${model.version}</td>
+	</tr>
+	<tr>
+		<th>Rancid Name</th>
+		<td>${model.devicename}</td>
+	</tr>
+	<tr>
+	    <th>Status</th>
+	    <td>${model.status}</td>
+	</tr>
+	<tr>
+	    <th>Creation Date</th>
+	    <td>${model.creationdate}</td>
+	</tr>
+   </table>
+	
+	 <h3>Configuration info</h3>
+
+	 <table class="o-box">
 		<tr>
-			<th>Device Name</th>
-			<td>${model.id}</td>
-		</tr>	
-		<tr>
-			<th>Device Type</th>
-			<td>${model.devicetype}</td>
+	    <th>Host(version)</th>
 		</tr>
-		<tr>
-			<th>Comment</th>
-			<td>${model.comment}</td>
-		</tr>
-		<tr>
-			<th>Status</th>
-			<td>${model.status}</td>
+	    <tr>
+		<td>${model.id}(${model.version})
+		<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${model.groupname}&viewvc=${model.configurationurl}">(configuration)</a>
+		</td>
 		</tr>
 	</table>
-
 </div>
-
 <div class="TwoColRight">
-<!-- Inventory info box -->
-	<h3>Inventory Elements</h3>
-	
-	<table class="o-box">
-	<tr>
-		<th>Group</th>
-		<th>Total Revisions</th>
-		<th>Last Version</th>
-		<th>Last Update</th>
-	</tr>
-	<c:forEach items="${model.grouptable}" var="groupelm" begin ="0" end="9">
-		<tr>
-			<td>${groupelm.group}
-			<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&viewvc=${groupelm.rootConfigurationUrl}">(configurations)</a>
-			</td>
-			<td>${groupelm.totalRevisions} <a href="inventory/rancidList.htm?node=${model.db_id}&groupname=${groupelm.group}">(list)</a></td>
-			<td>${groupelm.headRevision}
-			<a href="inventory/invnode.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.headRevision}">(inventory)</a>
-			</td>
-			<td>${groupelm.creationDate}</td>
-		</tr>
-	</c:forEach>
-	<tr>
-		<th colspan="4" ><a href="inventory/rancidList.htm?node=${model.db_id}&groupname=*">entire group list...</a></th>
-	</tr>
-	</table>
+<!-- general info box -->
+<h3>Inventory Items</h3>
 
-<!-- Software image box -->
-	<h3>Software Images Stored</h3>
-	
+	<c:forEach items="${model.inventory}" var="invel" varStatus="status">
+	<h3>Item ${status.count}</h3>
 	<table class="o-box">
-	<tr>
-		<th>Name</th>
-		<th>Size</th>
-		<th>Last Modified</th>
-	</tr>
-	<c:forEach items="${model.bucketitems}" var="swimgelem">
+		<c:forEach items="${invel.tupleList}" var="tup">
 		<tr>
-			<td>${swimgelem.name}
-<a href="${model.url}/storage/buckets/${model.id}?filename=${swimgelem.name}">(download)</a>
-			</td>
-			<td>${swimgelem.size}</td>
-			<td>${swimgelem.lastModified}</td>
+			<th width="50%">${tup.name}</th>
+			<td>${tup.description}</td>
 		</tr>
-	</c:forEach>
-	</table>
+		</c:forEach>
 
+		<c:forEach items="${invel.softwareList}" var="sof">
+		<tr>
+			<th width="50%">Software: ${sof.type}</th>
+			<td>Version: ${sof.version}</td>
+		</tr>
+		</c:forEach>
+
+		<c:forEach items="${invel.memoryList}" var="mem">
+		<tr>
+			<th width="50%">Memory: ${mem.type}</th>
+			<td>Size: ${mem.size}</td>
+		</tr>
+		</c:forEach>
+		</table>
+	</c:forEach>
 </div>
+
 <jsp:include page="/includes/footer.jsp" flush="false" />
