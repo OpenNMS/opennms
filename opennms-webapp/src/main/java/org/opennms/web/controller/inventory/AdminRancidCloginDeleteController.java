@@ -14,19 +14,18 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class AdminRancidCloginController extends SimpleFormController {
+public class AdminRancidCloginDeleteController extends SimpleFormController {
     
     InventoryService m_inventoryService;
     
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidCloginController ModelAndView onSubmit");
+        log().debug("AdminRancidCloginDeleteController ModelAndView onSubmit");
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
         
-        boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
-                                        bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
+        boolean done = m_inventoryService.deleteClogin(bean.getDeviceName());
         if (!done){
             log().debug("AdminRancidCloginController error on submitting cLogin changes");
         }

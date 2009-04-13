@@ -1,14 +1,33 @@
 package org.opennms.web.controller.inventory;
 
-public class AdminRancidStatusCommClass {
+public class AdminRancidRouterDbCommClass {
         
     private String groupName;
     
     private String deviceName;
     
     private String statusName;
-
     
+    private String deviceTypeName;
+
+    private String comment;
+    
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getDeviceTypeName() {
+        return deviceTypeName;
+    }
+
+    public void setDeviceTypeName(String deviceTypeName) {
+        this.deviceTypeName = deviceTypeName;
+    }
+
     public String getStatusName() {
         return statusName;
     }

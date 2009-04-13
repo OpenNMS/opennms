@@ -108,22 +108,30 @@ public class InventoryService implements InitializingBean {
      */
     public Map<String, Object> getRancidNodeBase(int nodeid) {
         
-        log().debug("getRancidNodeBase start");
+        log().debug("getRancidNodeBase start for nodeid: " + nodeid);
         Map<String, Object> nodeModel = new TreeMap<String, Object>();
 
         
         OnmsNode node = m_nodeDao.get(nodeid);
         String rancidName = node.getLabel();
         
-        log().debug("getRancidNodeBase: " + rancidName);
+        log().debug("getRancidNodeBase rancid node name: " + rancidName);
 
 
         nodeModel.put("id", rancidName);
         nodeModel.put("db_id", nodeid);
         nodeModel.put("status_general", ElementUtil.getNodeStatusString(node.getType().charAt(0)));
 
-        nodeModel.put("permitModifyClogin",!"true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationUseOnlyRancidAdaper")));
-
+        String rancidIntegrationUseOnlyRancidAdaperProperty = Vault.getProperty("opennms.rancidIntegrationUseOnlyRancidAdaper"); 
+        log().debug("getRancidNodeBase opennms.rancidIntegrationUseOnlyRancidAdaper: " + rancidIntegrationUseOnlyRancidAdaperProperty);
+        if (rancidIntegrationUseOnlyRancidAdaperProperty != null &&  "true".equalsIgnoreCase(rancidIntegrationUseOnlyRancidAdaperProperty.trim())) {
+            log().debug("getRancidNodeBase permitModifyClogin: false");
+            nodeModel.put("permitModifyClogin",false);
+        } else {
+            log().debug("getRancidNodeBase permitModifyClogin: true");
+            nodeModel.put("permitModifyClogin",true);
+        }
+        
         String foreignSource = node.getForeignSource();
         if (foreignSource != null ) {
             nodeModel.put("foreignSource", foreignSource);
@@ -364,9 +372,23 @@ public class InventoryService implements InitializingBean {
             log().error(e1.getLocalizedMessage());
             return nodeModel;
         }
-            
+
         List<String> grouplist = groups.getResource();
         nodeModel.put("grouplist",grouplist);
+
+        // DeviceType list 
+        RWSResourceList devicetypes;
+        try {
+            devicetypes = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp);
+        } catch (RancidApiException e1) {
+            log().error(e1.getLocalizedMessage());
+            return nodeModel;
+        }
+
+        List<String> devicetypelist = devicetypes.getResource();
+        nodeModel.put("devicetypelist",devicetypelist);
+        
+        
         try {
             RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, group, rancidName);
             nodeModel.put("devicename", rn.getDeviceName());
@@ -374,8 +396,10 @@ public class InventoryService implements InitializingBean {
             nodeModel.put("devicetype", rn.getDeviceType());
             nodeModel.put("comment", rn.getComment());
             nodeModel.put("groupname", group);
+            nodeModel.put("deviceexist", true);
         }
         catch (RancidApiException e){
+            nodeModel.put("deviceexist", false);
             log().debug("No device found in router.db for:" + rancidName + "on Group: " + group);
         }
 
@@ -436,12 +460,26 @@ public class InventoryService implements InitializingBean {
                 nodeModel.put("devicetype", rn.getDeviceType());
                 nodeModel.put("comment", rn.getComment());
                 nodeModel.put("groupname", groupname);
+                nodeModel.put("deviceexist", true);
             }
             catch (RancidApiException e){
+                nodeModel.put("deviceexist", false);
                 log().debug("No device found in router.db for:" + rancidName + "on Group: " + groupname);
             }
         }
-                    
+                   
+        // DeviceType list 
+        RWSResourceList devicetypes;
+        try {
+            devicetypes = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp);
+        } catch (RancidApiException e1) {
+            log().error(e1.getLocalizedMessage());
+            return nodeModel;
+        }
+
+        List<String> devicetypelist = devicetypes.getResource();
+        nodeModel.put("devicetypelist",devicetypelist);
+
         //CLOGIN
         if (adminRole) {
             log().debug("getRancidNode: getting clogin info for: " + rancidName);        
@@ -465,28 +503,87 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     }
 
-    public boolean updateStatus(String groupName, String deviceName){
+    public boolean switchStatus(String groupName, String deviceName){
         
-      log().debug("InventoryService updateStatus " + groupName+"/"+deviceName);
+      log().debug("InventoryService switchStatus " + groupName+"/"+deviceName);
 
       try {  
           RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupName, deviceName);
           if (rn.isStateUp()){
-              log().debug("InventoryService updateStatus :down");
+              log().debug("InventoryService switchStatus :down");
               rn.setStateUp(false);
           }else {
-              log().debug("InventoryService updateStatus :up");
+              log().debug("InventoryService switchStatus :up");
               rn.setStateUp(true);
           }
           RWSClientApi.updateRWSRancidNode(m_cp, rn);
       }
       catch (Exception e){
-          log().debug("updateStatus has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
+          log().debug("switchStatus has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
           return false;
       }
       return true;
     }
-    
+
+    public boolean deleteNodeOnRouterDb(String groupName, String deviceName){
+        
+        log().debug("InventoryService deleteNodeOnRouterDb: " + groupName+"/"+deviceName);
+
+        try {  
+            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupName, deviceName);
+            RWSClientApi.deleteRWSRancidNode(m_cp, rn);
+        }
+        catch (Exception e){
+            log().debug("deleteNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+      }
+
+    public boolean updateNodeOnRouterDb(String groupName, String deviceName, String deviceType, String status, String comment ){
+        
+        log().debug("InventoryService updateNodeOnRouterDb: " + groupName+"->"+deviceName+":"+ deviceType+":"+ status + ":" + comment);
+
+        try {  
+            RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupName, deviceName);
+            rn.setDeviceType(deviceType);
+            if (comment != null) rn.setComment(comment);
+            if ("up".equalsIgnoreCase(status)) {
+                rn.setStateUp(true);
+            } else if ("down".equalsIgnoreCase(status)) {
+                rn.setStateUp(false);
+            }
+            RWSClientApi.updateRWSRancidNode(m_cp, rn);
+        }
+        catch (Exception e){
+            log().debug("updateNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+    }
+
+    public boolean createNodeOnRouterDb(String groupName, String deviceName, String deviceType, String status,String comment ){
+        
+        log().debug("InventoryService createNodeOnRouterDb: " + groupName+"->"+deviceName+":"+ deviceType+":"+ status + ":" + comment);
+
+        try {  
+            RancidNode rn = new RancidNode(groupName,deviceName);
+            rn.setDeviceType(deviceType);
+            if (comment != null) rn.setComment(comment);
+            if ("up".equalsIgnoreCase(status)) {
+                rn.setStateUp(true);
+            } else if ("down".equalsIgnoreCase(status)) {
+                rn.setStateUp(false);
+            }
+            RWSClientApi.createRWSRancidNode(m_cp, rn);
+        }
+        catch (Exception e){
+            log().debug("createNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+   }
+
     public boolean updateClogin(String deviceName, String groupName, String userID, String pass, String enPass, String loginM, String autoE){
         log().debug("InventoryService updateClogin for following changes"+
                     "userID ["+ userID +"] "+
@@ -519,6 +616,21 @@ public class InventoryService implements InitializingBean {
 
     }
 
+    public boolean deleteClogin(String deviceName){
+        log().debug("InventoryService deleteClogin deviceName [" + deviceName + "] "); 
+        try {
+          RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(m_cp, deviceName);
+          RWSClientApi.deleteRWSAuthNode(m_cp,rna);
+          log().debug("InventoryService ModelAndView updateClogin changes submitted");
+        }
+        catch (Exception e){
+            log().debug("updateClogin has given exception on node "  + deviceName + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+
+
+    }
     
     
     private static Category log() {

@@ -507,15 +507,43 @@
   <bean name="/admin/rancid/rancidAdmin.htm" class="org.opennms.web.controller.inventory.AdminRancidController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean>        
- 
-  <bean name="/admin/rancid/rancidStatus.htm" class="org.opennms.web.controller.inventory.AdminRancidStatusController">
+
+  <bean name="/admin/rancid/rancidCreate.htm" class="org.opennms.web.controller.inventory.AdminRancidCreateController">
     <property name="inventoryService" ref="inventoryService"/>
-    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidStatusCommClass"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
     <property name="formView" value="admin/rancid/rancidAdmin"/>
     <property name="successView" value="admin/rancid/rancidAdmin"/> 
   </bean>   
 
-  <bean name="/admin/rancid/rancidClogin.htm" class="org.opennms.web.controller.inventory.AdminRancidCloginController">
+  <bean name="/admin/rancid/rancidUpdate.htm" class="org.opennms.web.controller.inventory.AdminRancidUpdateController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
+    <property name="formView" value="admin/rancid/rancidAdmin"/>
+    <property name="successView" value="admin/rancid/rancidAdmin"/> 
+  </bean>   
+
+  <bean name="/admin/rancid/rancidDelete.htm" class="org.opennms.web.controller.inventory.AdminRancidDeleteController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
+    <property name="formView" value="admin/rancid/rancidAdmin"/>
+    <property name="successView" value="admin/rancid/rancidAdmin"/> 
+  </bean>   
+ 
+  <bean name="/admin/rancid/rancidStatus.htm" class="org.opennms.web.controller.inventory.AdminRancidStatusController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
+    <property name="formView" value="admin/rancid/rancidAdmin"/>
+    <property name="successView" value="admin/rancid/rancidAdmin"/> 
+  </bean>   
+
+  <bean name="/admin/rancid/rancidClogin.htm" class="org.opennms.web.controller.inventory.AdminRancidCloginUpdateController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidCloginCommClass"/>
+    <property name="formView" value="admin/rancid/rancidAdmin"/>
+    <property name="successView" value="admin/rancid/rancidAdmin"/> 
+  </bean>  
+
+  <bean name="/admin/rancid/rancidDeleteClogin.htm" class="org.opennms.web.controller.inventory.AdminRancidCloginDeleteController">
     <property name="inventoryService" ref="inventoryService"/>
     <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidCloginCommClass"/>
     <property name="formView" value="admin/rancid/rancidAdmin"/>
