@@ -37,13 +37,19 @@ package org.opennms.web.svclayer;
 import java.util.List;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
  */
+
+@Transactional(readOnly = true)
 public interface ReportListService {
 
     List<AvailabilityReportLocator> getAllReports();
+    
+    @Transactional(readOnly = false)
+    public void deleteReports(Integer[] ids);
 
 }

@@ -12,20 +12,6 @@
  *
  * Modifications:
  *
- <%--
-
-/*
- * This file is part of the OpenNMS(R) Application.
- *
- * OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified 
- * and included code are below.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
- *
  * 2009 Jan 26: Tidy up, add license info jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
