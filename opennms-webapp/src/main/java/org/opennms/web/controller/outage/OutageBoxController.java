@@ -36,7 +36,7 @@ public class OutageBoxController extends AbstractController implements Initializ
         OutageSummary[] summaries = m_webOutageRepository.getMatchingOutageSummaries(queryCriteria);
 
         OutageCriteria countCriteria = new OutageCriteria(OUTAGE_TYPE, new Filter[]{});
-        int outagesRemaining = Math.max(ROWS - m_webOutageRepository.countMatchingOutageSummaries(countCriteria), 0);
+        int outagesRemaining = (m_webOutageRepository.countMatchingOutageSummaries(countCriteria) - summaries.length);
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("summaries", summaries);
