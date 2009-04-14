@@ -3,11 +3,11 @@ package org.opennms.web.controller.outage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.OutageSummary;
 import org.opennms.web.outage.OutageType;
 import org.opennms.web.outage.SortStyle;
 import org.opennms.web.outage.WebOutageRepository;
-import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

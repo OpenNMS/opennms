@@ -48,7 +48,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.outage.filter.Filter;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;

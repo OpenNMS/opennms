@@ -39,17 +39,15 @@
 
 --%>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.util.*,
-		org.opennms.web.Util,
-		org.opennms.web.outage.*,
-		org.opennms.web.outage.filter.Filter,
-		org.opennms.web.XssRequestWrapper,
-		org.opennms.web.WebSecurityUtils
-	"
-%>
+<%@page language="java"	contentType="text/html"	session="true" %>
+
+<%@page import="org.opennms.web.Util"%>
+<%@page import="org.opennms.web.WebSecurityUtils"%>
+<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.web.filter.Filter"%>
+<%@page import="org.opennms.web.outage.OutageQueryParms"%>
+<%@page import="org.opennms.web.outage.OutageType"%>
+<%@page import="org.opennms.web.outage.OutageUtil"%>
 
 <%
 	XssRequestWrapper req = new XssRequestWrapper(request);
@@ -65,6 +63,7 @@
 %>
 
 <!-- acknowledged/outstanding row -->
+
 <form action="outage/list.htm" method="GET" name="outage_search_constraints_box_outtype_form">
   <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
     

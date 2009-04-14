@@ -32,40 +32,22 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class ServiceFilter extends Object implements Filter {
+public class ServiceFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "service";
 
-    protected int serviceId;
-
     public ServiceFilter(int serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public String getSql() {
-        return (" OUTAGES.SERVICEID=" + serviceId);
-    }
-    
-    public String getParamSql() {
-        return (" OUTAGES.SERVICEID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, serviceId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + serviceId);
+        super(TYPE, SQLType.INT, "OUTAGES.SERVICEID", "serviceType.id", serviceId);
     }
 
     public String getTextDescription() {
+        int serviceId = getServiceId();
         String serviceName = Integer.toString(serviceId);
 
         try {
@@ -78,13 +60,11 @@ public class ServiceFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("Service ID", getServiceId())
-            .toString();
+        return ("<ServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {
-        return (serviceId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

@@ -32,40 +32,22 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.NotEqualOrNullFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class NegativeServiceFilter extends Object implements Filter {
+public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     public static final String TYPE = "servicenot";
 
-    protected int serviceId;
-
     public NegativeServiceFilter(int serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public String getSql() {
-        return (" (OUTAGES.SERVICEID<>" + serviceId + " OR OUTAGES.SERVICEID IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (OUTAGES.SERVICEID<>? OR OUTAGES.SERVICEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, serviceId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + serviceId);
+        super(TYPE, SQLType.INT, "OUTAGES.SERVICEID", "serviceType.id", serviceId);
     }
 
     public String getTextDescription() {
+        int serviceId = getServiceId();
         String serviceName = Integer.toString(serviceId);
 
         try {
@@ -78,13 +60,11 @@ public class NegativeServiceFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("Service ID", getServiceId())
-            .toString();
+        return ("<NegativeServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {
-        return (serviceId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

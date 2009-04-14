@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.web.outage.filter.Filter;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.OutageCriteria.BaseOutageCriteriaVisitor;
