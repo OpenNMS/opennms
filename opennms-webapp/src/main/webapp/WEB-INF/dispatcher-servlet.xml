@@ -402,6 +402,15 @@
   	<property name="pageSize" value="1"/>
   </bean>
   
+  <bean name="/report/availability/manage.htm" 
+  		class="org.opennms.web.controller.ManageAvailabilityReportController">
+    <property name="bindOnNewForm" value="true" />
+  	<property name="reportListService" ref="reportListService"/>
+    <property name="commandName" value="ManageAvailabilityReportCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
+    <property name="successView" value="redirect:/report/availability/manage.htm" />
+  </bean>
+  
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>

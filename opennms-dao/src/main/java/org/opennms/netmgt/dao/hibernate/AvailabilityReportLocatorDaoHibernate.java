@@ -43,7 +43,7 @@ public class AvailabilityReportLocatorDaoHibernate extends AbstractDaoHibernate<
 		super(AvailabilityReportLocator.class);
 	}
 
-	public void delete(int id) {
+	public void deleteById(int id) {
 		AvailabilityReportLocator locator = (AvailabilityReportLocator)getHibernateTemplate().get(AvailabilityReportLocator.class, id);
 		super.delete(locator);
 	}
