@@ -38,20 +38,28 @@
 
 --%>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.opennms.web.outage.*,
-		java.util.*,
-		java.sql.SQLException,
-		org.opennms.web.WebSecurityUtils,
-		org.opennms.web.acegisecurity.Authentication,
-		org.opennms.web.outage.filter.*,
-		org.opennms.web.element.ElementUtil,
-		java.text.DateFormat
-	"
-%>
+<%@page language="java"	contentType="text/html"	session="true" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%@page import="java.text.DateFormat"%>
+<%@page import="java.util.Date"%>
+
+<%@page import="org.opennms.web.element.ElementUtil"%>
+<%@page import="org.opennms.web.filter.Filter"%>
+<%@page import="org.opennms.web.outage.Outage"%>
+<%@page import="org.opennms.web.outage.OutageQueryParms"%>
+<%@page import="org.opennms.web.outage.OutageUtil"%>
+<%@page import="org.opennms.web.outage.SortStyle"%>
+<%@page import="org.opennms.web.outage.filter.NodeFilter"%>
+<%@page import="org.opennms.web.outage.filter.NegativeNodeFilter"%>
+<%@page import="org.opennms.web.outage.filter.InterfaceFilter"%>
+<%@page import="org.opennms.web.outage.filter.NegativeInterfaceFilter"%>
+<%@page import="org.opennms.web.outage.filter.ServiceFilter"%>
+<%@page import="org.opennms.web.outage.filter.NegativeServiceFilter"%>
+<%@page import="org.opennms.web.outage.filter.LostServiceDateAfterFilter"%>
+<%@page import="org.opennms.web.outage.filter.LostServiceDateBeforeFilter"%>
+<%@page import="org.opennms.web.outage.filter.RegainedServiceDateAfterFilter"%>
+<%@page import="org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter"%>
 
 <%--
   This page is written to be the display (view) portion of the OutageFilterServlet
@@ -83,6 +91,7 @@
         throw new ServletException( "Missing either the outages or parms request attribute." );
     }
 %>
+
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage List" />
@@ -130,7 +139,7 @@
               <% String longLabel  = outages[i].getNodeLabel(); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
               <a href="element/node.jsp?node=<%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
-              <% org.opennms.web.outage.filter.Filter nodeFilter = new NodeFilter(outages[i].getNodeId()); %>
+              <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId()); %>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, nodeFilter, true)%>" title="Show only outages on this node"><%=ZOOM_IN_ICON%></a>
                   <a href="<%=OutageUtil.makeLink( request, parms, new NegativeNodeFilter(outages[i].getNodeId()), true)%>" title="Do not show outages for this node"><%=DISCARD_ICON%></a>              
@@ -147,7 +156,7 @@
                  <%=outages[i].getIpAddress()%>
               <% } %>
               
-              <% org.opennms.web.outage.filter.Filter intfFilter = new InterfaceFilter(outages[i].getIpAddress()); %>
+              <% Filter intfFilter = new InterfaceFilter(outages[i].getIpAddress()); %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, intfFilter, true)%>" title="Show only outages on this IP address"><%=ZOOM_IN_ICON%></a>
                   <a href="<%=OutageUtil.makeLink( request, parms, new NegativeInterfaceFilter(outages[i].getIpAddress()), true)%>" title="Do not show outages for this interface"><%=DISCARD_ICON%></a>                                            
@@ -164,7 +173,7 @@
                 <%=outages[i].getServiceName()%>
               <% } %>                
               
-              <% org.opennms.web.outage.filter.Filter serviceFilter = new ServiceFilter(outages[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId()); %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, serviceFilter, true)%>" title="Show only outages with this service type"><%=ZOOM_IN_ICON%></a>
                   <a href="<%=OutageUtil.makeLink( request, parms, new NegativeServiceFilter(outages[i].getServiceId()), true)%>" title="Do not show outages for this service"><%=DISCARD_ICON%></a>

@@ -1,5 +1,6 @@
 package org.opennms.web.outage.filter;
 
+import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.OutageType;
 import org.opennms.web.outage.SortStyle;
 

@@ -32,50 +32,23 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class OutageIdFilter extends Object implements Filter {
+public class OutageIdFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "outage";
 
-    protected int outageId;
-
     public OutageIdFilter(int outageId) {
-        this.outageId = outageId;
-    }
-
-    public String getSql() {
-        return (" OUTAGEID= " + outageId);
-    }
-    
-    public String getParamSql() {
-        return (" OUTAGEID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, outageId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + outageId);
-    }
-
-    public String getTextDescription() {
-        return (TYPE + " is " + outageId);
+        super(TYPE, SQLType.INT, "OUTAGES.OUTAGEID", "id", outageId);
     }
 
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("Outage ID", getOutage())
-            .toString();
+        return ("<OutageIdFilter: " + this.getDescription() + ">");
     }
 
     public int getOutage() {
-        return (outageId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

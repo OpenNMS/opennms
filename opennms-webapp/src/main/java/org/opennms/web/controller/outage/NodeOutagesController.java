@@ -1,9 +1,6 @@
 package org.opennms.web.controller.outage;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,14 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.element.ElementUtil;
 import org.opennms.web.element.Node;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.WebOutageRepository;
-import org.opennms.web.outage.filter.ConditionalFilter;
-import org.opennms.web.outage.filter.CurrentOutageFilter;
-import org.opennms.web.outage.filter.Filter;
 import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.OutageCriteria;
-import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
+import org.opennms.web.outage.filter.RecentOutagesFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,12 +34,7 @@ public class NodeOutagesController extends AbstractController implements Initial
             List<Filter> filters = new ArrayList<Filter>();
 
             filters.add(new NodeFilter(node.getNodeId()));
-
-            Calendar cal = new GregorianCalendar();
-            cal.add( Calendar.DATE, -1 );
-            Date yesterday = cal.getTime();
-            ConditionalFilter cf = new ConditionalFilter("OR", new RegainedServiceDateAfterFilter(yesterday), new CurrentOutageFilter());
-            filters.add(cf);
+            filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]));
             outages = m_webOutageRepository.getMatchingOutages(criteria);
