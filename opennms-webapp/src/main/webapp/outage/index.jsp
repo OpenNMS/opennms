@@ -63,7 +63,7 @@
         </form>
 			<ul class="plain">
 				<li><a href="outage/list.htm?outtype=current">Current outages</a></li>
-				<li><a href="outage/list.htm">All outages</a></li>
+				<li><a href="outage/list.htm?outtype=both">All outages</a></li>
 			</ul>
       </div>
   </div>
