@@ -140,6 +140,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     }
     
     private Alarm mapOnmsAlarmToAlarm(OnmsAlarm onmsAlarm) {
+        if (onmsAlarm == null) { return null; }
         Alarm alarm = new Alarm();
         alarm.id = onmsAlarm.getId();
         alarm.uei = onmsAlarm.getUei();
@@ -258,14 +259,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         List<Alarm> alarms = new ArrayList<Alarm>();
         List<OnmsAlarm> onmsAlarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
         
-        if(onmsAlarms.size() > 0){
-            Iterator<OnmsAlarm> alarmIt = onmsAlarms.iterator();
-            
-            while(alarmIt.hasNext()){
-                alarms.add(mapOnmsAlarmToAlarm(alarmIt.next()));
-            }
-            
-            return alarms.toArray(new Alarm[0]);
+        for(OnmsAlarm onmsAlarm : onmsAlarms) {
+            alarms.add(mapOnmsAlarmToAlarm(onmsAlarm));
         }
         
         return alarms.toArray(new Alarm[0]);
@@ -280,9 +275,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     public void unacknowledgeMatchingAlarms(AlarmCriteria criteria) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
         
-        Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
-        while(alarmsIt.hasNext()){
-            OnmsAlarm alarm = alarmsIt.next();
+        for(OnmsAlarm alarm : alarms) {
             alarm.setAlarmAckUser(null);
             alarm.setAlarmAckTime(null);
             m_alarmDao.update(alarm);
