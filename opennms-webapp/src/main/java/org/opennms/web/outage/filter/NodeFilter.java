@@ -32,43 +32,24 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class NodeFilter extends Object implements Filter {
+public class NodeFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "node";
 
-    protected int nodeId;
-
     public NodeFilter(int nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getSql() {
-        return (" OUTAGES.NODEID=" + nodeId);
-    }
-    
-    public String getParamSql() {
-        return (" OUTAGES.NODEID=?");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, nodeId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + nodeId);
+        super(TYPE, SQLType.INT, "OUTAGES.NODEID", "node.id", nodeId);
     }
 
     public String getTextDescription() {
-        String nodeName = Integer.toString(nodeId);
+        String nodeName = Integer.toString(getNode());
         try {
-            nodeName = NetworkElementFactory.getNodeLabel(nodeId);
+            nodeName = NetworkElementFactory.getNodeLabel(getNode());
         } catch (SQLException e) {
         }
 
@@ -76,13 +57,11 @@ public class NodeFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("Node ID", getNode())
-            .toString();
+        return ("<NodeFilter: " + this.getDescription() + ">");
     }
 
     public int getNode() {
-        return (nodeId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

@@ -32,43 +32,26 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.filter.NotEqualOrNullFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all node filtering functionality. */
-public class NegativeNodeFilter extends Object implements Filter {
+public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
     public static final String TYPE = "nodenot";
 
     protected int nodeId;
 
     public NegativeNodeFilter(int nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getSql() {
-        return (" (OUTAGES.NODEID<>" + nodeId + " OR OUTAGES.NODEID IS NULL)");
-    }
-    
-    public String getParamSql() {
-        return (" (OUTAGES.NODEID<>? OR OUTAGES.NODEID IS NULL)");
-    }
-    
-    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, nodeId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + nodeId);
+        super(TYPE, SQLType.INT, "OUTAGES.NODEID", "node.id", nodeId);
     }
 
     public String getTextDescription() {
-        String nodeName = Integer.toString(nodeId);
+        String nodeName = Integer.toString(getNode());
         try {
-            nodeName = NetworkElementFactory.getNodeLabel(nodeId);
+            nodeName = NetworkElementFactory.getNodeLabel(getNode());
         } catch (SQLException e) {
         }
 
@@ -76,13 +59,11 @@ public class NegativeNodeFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("Node ID", this.getNode())
-            .toString();
+        return ("<NegativeNodeFilter: " + this.getDescription() + ">");
     }
 
     public int getNode() {
-        return (nodeId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
