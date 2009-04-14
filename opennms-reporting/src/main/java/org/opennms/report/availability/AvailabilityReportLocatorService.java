@@ -36,6 +36,8 @@
 package org.opennms.report.availability;
 
 import java.util.Collection;
+import java.util.List;
+
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
@@ -62,7 +64,7 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
      * @return Collection of AvailabilityReportLocator
      */
 
-    public Collection<AvailabilityReportLocator> locateReports() {
+    public List<AvailabilityReportLocator> locateReports() {
         return availabilityReportLocatorDao.findAll();
     }
 
@@ -76,7 +78,7 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
      *         categoryName
      */
 
-    public Collection<AvailabilityReportLocator> locateReports(
+    public List<AvailabilityReportLocator> locateReports(
             String categoryName) {
         return availabilityReportLocatorDao.findByCategory(categoryName);
     }
@@ -102,7 +104,15 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
     public void deleteReport(int id) {
         // TODO Need to add the capability to remove reports from the
         // filsystem, as well as remove them from the locator
-        availabilityReportLocatorDao.delete(id);
+        availabilityReportLocatorDao.deleteById(id);
+    }
+    
+    public void deleteReports(Integer[] ids) {
+        // TODO Need to add the capability to remove reports from the
+        // filsystem, as well as remove them from the locator
+        for (Integer id : ids) {
+            availabilityReportLocatorDao.deleteById(id); 
+        }
     }
 
     /**

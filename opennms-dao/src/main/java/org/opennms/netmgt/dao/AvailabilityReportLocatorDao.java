@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.AvailabilityReportLocator;
 
 public interface AvailabilityReportLocatorDao extends OnmsDao<AvailabilityReportLocator, Integer>  {
 	
-	public abstract void delete(int id);
+	public abstract void deleteById(int id);
 	
 	public List<AvailabilityReportLocator> findByCategory(String category);
 	

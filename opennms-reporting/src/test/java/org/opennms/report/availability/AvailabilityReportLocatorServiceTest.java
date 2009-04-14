@@ -61,7 +61,7 @@ public class AvailabilityReportLocatorServiceTest extends TestCase {
 	public void testDelete() {
 		
 		// record expected calls
-		availabilityReportLocatorDao.delete(1);
+		availabilityReportLocatorDao.deleteById(1);
 		
 		// tell mock to match up actual call to expected calls
 		replay(availabilityReportLocatorDao);

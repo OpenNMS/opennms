@@ -51,6 +51,14 @@ public class DefaultReportListService implements ReportListService {
     public List<AvailabilityReportLocator> getAllReports() {
         return m_reportLocatorDao.findAll();
     }
+    
+    public void deleteReports(Integer[] ids) {
+        // TODO Need to add the capability to remove reports from the
+        // filsystem, as well as remove them from the locator
+        for (Integer id : ids) {
+            m_reportLocatorDao.deleteById(id); 
+        }
+    }
 
     public AvailabilityReportLocatorDao getReportLocatorDao() {
         return m_reportLocatorDao;
