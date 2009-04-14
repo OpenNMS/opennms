@@ -64,9 +64,9 @@ public class EventFilterServlet extends HttpServlet {
 
     public static final int DEFAULT_MULTIPLE = 0;
 
-    public static final EventFactory.SortStyle DEFAULT_SORT_STYLE = EventFactory.SortStyle.ID;
+    public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
-    public static final EventFactory.AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = EventFactory.AcknowledgeType.UNACKNOWLEDGED;
+    public static final AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = AcknowledgeType.UNACKNOWLEDGED;
 
     /**
      * Parses the query string to determine what types of event filters to use
@@ -82,21 +82,21 @@ public class EventFilterServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // handle the style sort parameter
         String sortStyleString = request.getParameter("sortby");
-        EventFactory.SortStyle sortStyle = DEFAULT_SORT_STYLE;
+        SortStyle sortStyle = DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
             Object temp = EventUtil.getSortStyle(sortStyleString);
             if (temp != null) {
-                sortStyle = (EventFactory.SortStyle) temp;
+                sortStyle = (SortStyle) temp;
             }
         }
 
         // handle the acknowledgement type parameter
         String ackTypeString = request.getParameter("acktype");
-        EventFactory.AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
+        AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
         if (ackTypeString != null) {
             Object temp = EventUtil.getAcknowledgeType(ackTypeString);
             if (temp != null) {
-                ackType = (EventFactory.AcknowledgeType) temp;
+                ackType = (AcknowledgeType) temp;
             }
         }
 
