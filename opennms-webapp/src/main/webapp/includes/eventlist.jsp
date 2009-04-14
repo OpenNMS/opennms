@@ -102,10 +102,10 @@
     Event[] events = new Event[0];
 
     //sort by event id    
-    EventFactory.SortStyle sortStyle = EventFactory.SortStyle.ID;
+    SortStyle sortStyle = SortStyle.ID;
     
     //include only unacknowledged (outstanding) events
-    EventFactory.AcknowledgeType ackType = EventFactory.AcknowledgeType.UNACKNOWLEDGED;    
+    AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;    
     
     //throttle from the beginning of the result set
     int offset = 0;

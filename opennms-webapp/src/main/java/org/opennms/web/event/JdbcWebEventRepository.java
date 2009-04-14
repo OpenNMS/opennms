@@ -38,8 +38,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.web.event.EventFactory.AcknowledgeType;
-import org.opennms.web.event.EventFactory.SortStyle;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.EventIdListFilter;

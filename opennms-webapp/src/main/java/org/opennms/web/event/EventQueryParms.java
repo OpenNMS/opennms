@@ -47,9 +47,9 @@ import org.opennms.web.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class EventQueryParms extends Object {
-    public EventFactory.SortStyle sortStyle;
+    public SortStyle sortStyle;
 
-    public EventFactory.AcknowledgeType ackType;
+    public AcknowledgeType ackType;
 
     public List<Filter> filters;
 

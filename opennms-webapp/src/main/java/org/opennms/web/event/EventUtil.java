@@ -77,13 +77,13 @@ public abstract class EventUtil extends Object {
 
     protected static final Map<Integer, String> labels;
 
-    protected static final Map<EventFactory.SortStyle, String> sortStyles;
+    protected static final Map<SortStyle, String> sortStyles;
     
-    protected static final Map<String, EventFactory.SortStyle> sortStylesString;
+    protected static final Map<String, SortStyle> sortStylesString;
 
-    protected static final Map<EventFactory.AcknowledgeType, String> ackTypes;
+    protected static final Map<AcknowledgeType, String> ackTypes;
     
-    protected static final Map<String, EventFactory.AcknowledgeType> ackTypesString;
+    protected static final Map<String, AcknowledgeType> ackTypesString;
 
     protected static final List<Integer> severities;
 
@@ -130,47 +130,47 @@ public abstract class EventUtil extends Object {
         labels.put(new Integer(Event.MAJOR_SEVERITY), "Major");
         labels.put(new Integer(Event.CRITICAL_SEVERITY), "Critical");
 
-        sortStylesString = new HashMap<String, EventFactory.SortStyle>();
-        sortStylesString.put("severity", EventFactory.SortStyle.SEVERITY);
-        sortStylesString.put("time", EventFactory.SortStyle.TIME);
-        sortStylesString.put("node", EventFactory.SortStyle.NODE);
-        sortStylesString.put("interface", EventFactory.SortStyle.INTERFACE);
-        sortStylesString.put("service", EventFactory.SortStyle.SERVICE);
-        sortStylesString.put("poller", EventFactory.SortStyle.POLLER);
-        sortStylesString.put("id", EventFactory.SortStyle.ID);
-        sortStylesString.put("rev_severity", EventFactory.SortStyle.REVERSE_SEVERITY);
-        sortStylesString.put("rev_time", EventFactory.SortStyle.REVERSE_TIME);
-        sortStylesString.put("rev_node", EventFactory.SortStyle.REVERSE_NODE);
-        sortStylesString.put("rev_interface", EventFactory.SortStyle.REVERSE_INTERFACE);
-        sortStylesString.put("rev_service", EventFactory.SortStyle.REVERSE_SERVICE);
-        sortStylesString.put("rev_poller", EventFactory.SortStyle.REVERSE_POLLER);
-        sortStylesString.put("rev_id", EventFactory.SortStyle.REVERSE_ID);
+        sortStylesString = new HashMap<String, SortStyle>();
+        sortStylesString.put("severity", SortStyle.SEVERITY);
+        sortStylesString.put("time", SortStyle.TIME);
+        sortStylesString.put("node", SortStyle.NODE);
+        sortStylesString.put("interface", SortStyle.INTERFACE);
+        sortStylesString.put("service", SortStyle.SERVICE);
+        sortStylesString.put("poller", SortStyle.POLLER);
+        sortStylesString.put("id", SortStyle.ID);
+        sortStylesString.put("rev_severity", SortStyle.REVERSE_SEVERITY);
+        sortStylesString.put("rev_time", SortStyle.REVERSE_TIME);
+        sortStylesString.put("rev_node", SortStyle.REVERSE_NODE);
+        sortStylesString.put("rev_interface", SortStyle.REVERSE_INTERFACE);
+        sortStylesString.put("rev_service", SortStyle.REVERSE_SERVICE);
+        sortStylesString.put("rev_poller", SortStyle.REVERSE_POLLER);
+        sortStylesString.put("rev_id", SortStyle.REVERSE_ID);
 
-        sortStyles = new HashMap<EventFactory.SortStyle, String>();
-        sortStyles.put(EventFactory.SortStyle.SEVERITY, "severity");
-        sortStyles.put(EventFactory.SortStyle.TIME, "time");
-        sortStyles.put(EventFactory.SortStyle.NODE, "node");
-        sortStyles.put(EventFactory.SortStyle.INTERFACE, "interface");
-        sortStyles.put(EventFactory.SortStyle.SERVICE, "service");
-        sortStyles.put(EventFactory.SortStyle.POLLER, "poller");
-        sortStyles.put(EventFactory.SortStyle.ID, "id");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_SEVERITY, "rev_severity");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_TIME, "rev_time");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_NODE, "rev_node");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_INTERFACE, "rev_interface");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_SERVICE, "rev_service");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_POLLER, "rev_poller");
-        sortStyles.put(EventFactory.SortStyle.REVERSE_ID, "rev_id");
+        sortStyles = new HashMap<SortStyle, String>();
+        sortStyles.put(SortStyle.SEVERITY, "severity");
+        sortStyles.put(SortStyle.TIME, "time");
+        sortStyles.put(SortStyle.NODE, "node");
+        sortStyles.put(SortStyle.INTERFACE, "interface");
+        sortStyles.put(SortStyle.SERVICE, "service");
+        sortStyles.put(SortStyle.POLLER, "poller");
+        sortStyles.put(SortStyle.ID, "id");
+        sortStyles.put(SortStyle.REVERSE_SEVERITY, "rev_severity");
+        sortStyles.put(SortStyle.REVERSE_TIME, "rev_time");
+        sortStyles.put(SortStyle.REVERSE_NODE, "rev_node");
+        sortStyles.put(SortStyle.REVERSE_INTERFACE, "rev_interface");
+        sortStyles.put(SortStyle.REVERSE_SERVICE, "rev_service");
+        sortStyles.put(SortStyle.REVERSE_POLLER, "rev_poller");
+        sortStyles.put(SortStyle.REVERSE_ID, "rev_id");
 
-        ackTypesString = new HashMap<String, EventFactory.AcknowledgeType>();
-        ackTypesString.put("ack", EventFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypesString.put("unack", EventFactory.AcknowledgeType.UNACKNOWLEDGED);
-        ackTypesString.put("both", EventFactory.AcknowledgeType.BOTH);
+        ackTypesString = new HashMap<String, AcknowledgeType>();
+        ackTypesString.put("ack", AcknowledgeType.ACKNOWLEDGED);
+        ackTypesString.put("unack", AcknowledgeType.UNACKNOWLEDGED);
+        ackTypesString.put("both", AcknowledgeType.BOTH);
 
-        ackTypes = new HashMap<EventFactory.AcknowledgeType, String>();
-        ackTypes.put(EventFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
-        ackTypes.put(EventFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
-        ackTypes.put(EventFactory.AcknowledgeType.BOTH, "both");
+        ackTypes = new HashMap<AcknowledgeType, String>();
+        ackTypes.put(AcknowledgeType.ACKNOWLEDGED, "ack");
+        ackTypes.put(AcknowledgeType.UNACKNOWLEDGED, "unack");
+        ackTypes.put(AcknowledgeType.BOTH, "both");
     }
 
     public static List getSeverityList() {
@@ -193,7 +193,7 @@ public abstract class EventUtil extends Object {
         return labels.get(new Integer(severity));
     }
 
-    public static EventFactory.SortStyle getSortStyle(String sortStyleString) {
+    public static SortStyle getSortStyle(String sortStyleString) {
         if (sortStyleString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -201,7 +201,7 @@ public abstract class EventUtil extends Object {
         return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
-    public static String getSortStyleString(EventFactory.SortStyle sortStyle) {
+    public static String getSortStyleString(SortStyle sortStyle) {
         if (sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -209,7 +209,7 @@ public abstract class EventUtil extends Object {
         return sortStyles.get(sortStyle);
     }
 
-    public static EventFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
+    public static AcknowledgeType getAcknowledgeType(String ackTypeString) {
         if (ackTypeString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -217,7 +217,7 @@ public abstract class EventUtil extends Object {
         return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
-    public static String getAcknowledgeTypeString(EventFactory.AcknowledgeType ackType) {
+    public static String getAcknowledgeTypeString(AcknowledgeType ackType) {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

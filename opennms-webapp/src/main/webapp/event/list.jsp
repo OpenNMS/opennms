@@ -60,7 +60,6 @@
 
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.EventQueryParms"%>
-<%@page import="org.opennms.web.event.EventFactory"%>
 <%@page import="org.opennms.web.event.AcknowledgeEventServlet"%>
 <%@page import="org.opennms.web.event.EventUtil"%>
 
@@ -94,23 +93,22 @@
 
     //required attributes
     Event[] events = (Event[])req.getAttribute( "events" );
+    Integer eventCount = (Integer)req.getAttribute( "eventCount" );
     EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
 
-    if( events == null || parms == null ) {
-	throw new ServletException( "Missing either the events or parms request attribute." );
+    if( events == null || parms == null || eventCount == null ) {
+        throw new ServletException( "Missing either the events, eventCount, or parms request attribute." );
     }
 
     String action = null;
 
-    if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) {
+    if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
         action = AcknowledgeEventServlet.ACKNOWLEDGE_ACTION;
     } 
-    else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) {
+    else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
         action = AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION;
     }
 
-    int eventCount = EventFactory.getEventCount( parms.ackType, parms.getFilters() );    
-    
     //useful constant strings
     String addPositiveFilterString = "[+]";
     String addNegativeFilterString = "[-]";
@@ -120,7 +118,9 @@
 
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.SortStyle"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
@@ -212,7 +212,7 @@
         <li><a href="<%=org.opennms.web.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
       
       <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-        <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
+        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
         <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
         <% } else { %>
         <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
@@ -248,16 +248,17 @@
               </jsp:include>
             <% } %>          
 
-            <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>               <% int length = parms.filters.size(); %>
+            <% if( parms.filters.size() > 0 || parms.ackType == AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+                 <% int length = parms.filters.size(); %>
 
               <p>Search constraints:
-                  <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+                  <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
                     <span class="filter">Event(s) outstanding
-					  <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged event(s)">[-]</a>
+					  <a href="<%=this.makeLink(parms, AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged event(s)">[-]</a>
                     </span>
-                  <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+                  <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
                     <span class="filter">Event(s) acknowledged
-                      <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding event(s)">[-]</a>
+                      <a href="<%=this.makeLink(parms, AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding event(s)">[-]</a>
                     </span>
                   <% } %>
                   <% for( int i=0; i < length; i++ ) { %>
@@ -284,7 +285,7 @@
         <thead>
         <tr>
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-            <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+            <% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
             <th width="1%">Ack</th>
             <% } else { %>
             <th width="1%">UnAck</th>
@@ -292,12 +293,12 @@
           <% } else { %>
             <th width="1%">&nbsp;</th>
           <% } %>
-          <th width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
-          <th width="10%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SEVERITY,  EventFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
-          <th width="19%"><%=this.makeSortLink( parms, EventFactory.SortStyle.TIME,      EventFactory.SortStyle.REVERSE_TIME,      "time",      "Time"      )%></th>
-          <th width="25%"><%=this.makeSortLink( parms, EventFactory.SortStyle.NODE,      EventFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
-          <th width="16%"><%=this.makeSortLink( parms, EventFactory.SortStyle.INTERFACE, EventFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
-          <th width="15%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SERVICE,   EventFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+          <th width="1%"> <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+          <th width="10%"><%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+          <th width="19%"><%=this.makeSortLink( parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      )%></th>
+          <th width="25%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+          <th width="16%"><%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+          <th width="15%"><%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
           <th width="10%">Ackd</th>
         </tr>
         </thead>     
@@ -437,11 +438,11 @@
         
         <p><%=events.length%> events
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-            <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+            <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('acknowledge')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
               <input TYPE="reset" />
-            <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+            <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
               <input type="button" value="Unacknowledge Events" onClick="submitForm('unacknowledge')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
               <input TYPE="reset" />
@@ -464,7 +465,7 @@
 <%!
     String urlBase = "event/list";
 
-    protected String makeSortLink( EventQueryParms parms, EventFactory.SortStyle style, EventFactory.SortStyle revStyle, String sortString, String title ) {
+    protected String makeSortLink( EventQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {
       StringBuffer buffer = new StringBuffer();
 
       buffer.append( "<nobr>" );
@@ -512,7 +513,7 @@
         return( buffer.toString() );
     }
 
-    public String makeLink( EventFactory.SortStyle sortStyle, EventFactory.AcknowledgeType ackType, List<Filter> filters, int limit ) {
+    public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, List<Filter> filters, int limit ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( EventUtil.getSortStyleString(sortStyle) );
@@ -532,12 +533,12 @@
     }
 
 
-    public String makeLink( EventQueryParms parms, EventFactory.SortStyle sortStyle ) {
+    public String makeLink( EventQueryParms parms, SortStyle sortStyle ) {
       return( this.makeLink( sortStyle, parms.ackType, parms.filters, parms.limit) );
     }
 
 
-    public String makeLink( EventQueryParms parms, EventFactory.AcknowledgeType ackType ) {
+    public String makeLink( EventQueryParms parms, AcknowledgeType ackType ) {
       return( this.makeLink( parms.sortStyle, ackType, parms.filters, parms.limit) );
     }
 

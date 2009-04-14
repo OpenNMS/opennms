@@ -14,8 +14,6 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.event.EventFactory.AcknowledgeType;
-import org.opennms.web.event.EventFactory.SortStyle;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
