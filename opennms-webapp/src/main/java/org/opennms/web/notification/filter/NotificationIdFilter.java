@@ -31,37 +31,14 @@
  */
 package org.opennms.web.notification.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
-public class NotificationIdFilter implements Filter {
+public class NotificationIdFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "notificationIdFilter";
     
-    int m_notificationId;
-    
     public NotificationIdFilter(int notificationId){
-        m_notificationId = notificationId;
-    }
-    
-    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-        ps.setInt(parameterIndex, m_notificationId);
-        return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + " = " + m_notificationId);
-    }
-
-    public String getParamSql() {
-        return " NOTIFICATIONS.NOTIFYID =?";
-    }
-
-    public String getSql() {
-        return " NOTIFICATIONS.NOTIFYID=" + m_notificationId;
-    }
-
-    public String getTextDescription() {
-        return getDescription();
+        super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", new Integer(notificationId));
     }
 
 }

@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.notification.filter.Filter;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.InterfaceFilter;
 import org.opennms.web.notification.filter.NodeFilter;
 import org.opennms.web.notification.filter.ResponderFilter;
@@ -133,7 +133,7 @@ public abstract class NoticeUtil extends Object {
         return ackTypes.get(ackType);
     }
 
-    public static Filter getFilter(String filterString) {
+    public static org.opennms.web.filter.Filter getFilter(String filterString) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

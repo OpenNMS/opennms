@@ -31,72 +31,89 @@
  */
 package org.opennms.web.notification.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.InFilter;
+import org.opennms.web.filter.SQLType;
 
-public class NotificationIdListFilter implements Filter {
+public class NotificationIdListFilter extends InFilter<Integer> {
+    public static final String TYPE = "notificationIdList";
+    //private int[] m_notificationIds;
     
-    private int[] m_notificationIds;
+    private static Integer[] box(int[] values) {
+        if (values == null) return null;
+        
+        Integer[] boxed = new Integer[values.length];
+        for(int i = 0; i < values.length; i++) {
+            boxed[i] = values[i];
+        }
+        
+        return boxed;
+    }
     
     public NotificationIdListFilter(int[] notificationIds){
-        m_notificationIds = notificationIds;
-    }
-    
-    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-        for(int i = 0; i < m_notificationIds.length; i++){
-            ps.setInt(parameterIndex + i, m_notificationIds[i]);
-        }
-        return m_notificationIds.length;
+        super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", box(notificationIds));
+        //m_notificationIds = notificationIds;
     }
 
-    public String getDescription() {
-        StringBuilder buf = new StringBuilder("notificationId in ");
-        appendIdList(buf);
-        return buf.toString();
-    }
-
-    public String getParamSql() {
-        StringBuilder buf = new StringBuilder(m_notificationIds.length*3 + 20);
-        
-        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
-        
-        buf.append('(');
-        for(int i = 0; i < m_notificationIds.length; i++){
-            if(i != 0){
-                buf.append(", ");
-            }
-            buf.append('?');
-        }
-        
-        buf.append(')');
-        
-        return buf.toString();
-    }
-
-    public String getSql() {
-        StringBuilder buf = new StringBuilder(m_notificationIds.length*5 + 20);
-        
-        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
-        
-        appendIdList(buf);
-        
-        return buf.toString();
-    }
-
+    @Override
     public String getTextDescription() {
-        return getDescription();
+        return String.format("notifyId in (%s)", getValueString());
     }
     
-    private void appendIdList(StringBuilder buf) {
-        buf.append("(");
-        for(int i = 0; i < m_notificationIds.length; i++) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            buf.append(m_notificationIds[i]);
-        }
-        
-        buf.append(")");
-    }
+//    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
+//        for(int i = 0; i < m_notificationIds.length; i++){
+//            ps.setInt(parameterIndex + i, m_notificationIds[i]);
+//        }
+//        return m_notificationIds.length;
+//    }
+//
+//    public String getDescription() {
+//        StringBuilder buf = new StringBuilder("notificationId in ");
+//        appendIdList(buf);
+//        return buf.toString();
+//    }
+//
+//    public String getParamSql() {
+//        StringBuilder buf = new StringBuilder(m_notificationIds.length*3 + 20);
+//        
+//        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
+//        
+//        buf.append('(');
+//        for(int i = 0; i < m_notificationIds.length; i++){
+//            if(i != 0){
+//                buf.append(", ");
+//            }
+//            buf.append('?');
+//        }
+//        
+//        buf.append(')');
+//        
+//        return buf.toString();
+//    }
+//
+//    public String getSql() {
+//        StringBuilder buf = new StringBuilder(m_notificationIds.length*5 + 20);
+//        
+//        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
+//        
+//        appendIdList(buf);
+//        
+//        return buf.toString();
+//    }
+//
+//    public String getTextDescription() {
+//        return getDescription();
+//    }
+//    
+//    private void appendIdList(StringBuilder buf) {
+//        buf.append("(");
+//        for(int i = 0; i < m_notificationIds.length; i++) {
+//            if (i != 0) {
+//                buf.append(", ");
+//            }
+//            buf.append(m_notificationIds[i]);
+//        }
+//        
+//        buf.append(")");
+//    }
 
 }
