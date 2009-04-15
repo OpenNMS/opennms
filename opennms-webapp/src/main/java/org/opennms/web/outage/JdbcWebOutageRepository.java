@@ -36,6 +36,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                                 + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND "
                                 + "OUTAGES.SERVICEID=IFSERVICES.SERVICEID "
                                 , null, criteria);
+        // System.err.println("countMatchingOutages() = " + sql);
         return queryForInt(sql, paramSetter(criteria));
     }
 
@@ -50,6 +51,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                             + "LEFT OUTER JOIN NOTIFICATIONS ON SVCLOSTEVENTID=NOTIFICATIONS.EVENTID "
                             + "LEFT OUTER JOIN ASSETS ON NODE.NODEID=ASSETS.NODEID "
                             , null,criteria);
+        // System.err.println("getMatchingOutages() = " + sql);
         return getOutages(sql, paramSetter(criteria));
     }
 
@@ -62,6 +64,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                             + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND "
                             + "OUTAGES.SERVICEID=IFSERVICES.SERVICEID "
                             , null, criteria);
+        // System.err.println("countMatchingOutageSummaries() = " + sql);
         return queryForInt(sql, paramSetter(criteria));
     }
 
@@ -75,6 +78,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
                             + "JOIN IFSERVICES ON OUTAGES.NODEID=IFSERVICES.NODEID AND OUTAGES.IPADDR=IFSERVICES.IPADDR AND "
                             + "OUTAGES.SERVICEID=IFSERVICES.SERVICEID "
                             , "NODE.NODEID, NODE.NODELABEL", criteria);
+        // System.err.println("getMatchingOutageSummaries() = " + sql);
         return getOutageSummaries(sql, paramSetter(criteria));
     }
 
@@ -107,7 +111,9 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
 
             public void and(StringBuilder buf) {
                 if (first) {
-                    buf.append(" WHERE NODE.NODETYPE != 'D' AND IPINTERFACE.ISMANAGED != 'D' and IFSERVICES.STATUS != 'D' AND ");
+                    buf.append(" WHERE (NODE.NODETYPE IS NULL OR NODE.NODETYPE != 'D') AND (IPINTERFACE.ISMANAGED IS NULL OR IPINTERFACE.ISMANAGED != 'D') AND (IFSERVICES.STATUS IS NULL OR IFSERVICES.STATUS != 'D') AND ");
+//                    buf.append(" WHERE NODE.NODETYPE != 'D' AND ");
+//                    buf.append(" WHERE ");
                     first = false;
                 } else {
                     buf.append(" AND ");
