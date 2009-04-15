@@ -1,0 +1,1930 @@
+<events>
+<!-- Start of auto generated data from MIB: PCUBE-SE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/operationalStatusOperationalTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: operationalStatusOperationalTrap</event-label>
+	<descr>
+&lt;p&gt;OperationalStatusOperational notification signifies that the
+agent entity has detected the sysOperationalStatus
+object in this MIB has changed to 'operational(3)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysOperationalStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			operationalStatusOperationalTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/operationalStatusWarningTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: operationalStatusWarningTrap</event-label>
+	<descr>
+&lt;p&gt;OperationalStatusWarning notification signifies that the agent
+entity has detected the sysOperationalStatus object
+in this MIB has changed to 'warning(4)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysOperationalStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			operationalStatusWarningTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/operationalStatusFailureTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: operationalStatusFailureTrap</event-label>
+	<descr>
+&lt;p&gt;OperationalStatusFailure notification signifies that the agent
+entity has detected the sysOperationalStatus object in 
+this MIB has changed to 'failure(5)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysOperationalStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			operationalStatusFailureTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/systemResetTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: systemResetTrap</event-label>
+	<descr>
+&lt;p&gt;A systemReset notification signifies that the agent entity
+is about to reset itself either per user's request or 
+due to a fatal event.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			systemResetTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisTempAlarmOnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisTempAlarmOnTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisTempAlarmOn notification signifies that the agent
+entity has detected the chassisTempAlarm object in this
+MIB has changed to the 'on(3)' state 
+(temperature is too high).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisTempAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisTempAlarmOnTrap trap received 
+			pchassisTempAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisTempAlarmOffTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisTempAlarmOffTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisTempAlarmOff notification signifies that the agent
+entity has detected the chassisTempAlarm object in this
+MIB has changed to the 'off(2)' state 
+(temperature level is back to normal).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisTempAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisTempAlarmOffTrap trap received 
+			pchassisTempAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisVoltageAlarmOnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisVoltageAlarmOnTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisVoltageAlarmOn notification signifies that the agent
+entity has detected the chassisVoltageAlarm object in this
+MIB has changed to the 'on(3)' state
+(voltage level is too high).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisVoltageAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisVoltageAlarmOnTrap trap received 
+			pchassisVoltageAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisFansAlarmOnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisFansAlarmOnTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisFanStatusFailure notification signifies that the
+agent entity has detected the chassisFansAlarm object in this
+MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisFansAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisFansAlarmOnTrap trap received 
+			pchassisFansAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisPowerSupplyAlarmOnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisPowerSupplyAlarmOnTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisPsuStatusFailure notification signifies that the
+agent entity has detected the chassisPowerSupplyAlarm object
+in this MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisPowerSupplyAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisPowerSupplyAlarmOnTrap trap received 
+			pchassisPowerSupplyAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrActiveConnectionTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrActiveConnectionTrap</event-label>
+	<descr>
+&lt;p&gt;RdrConnectionDestTypeActive notification signifies that 
+the agent entity has detected the rdrFormatterDestStatus 
+object in this MIB has changed to the 'active(2)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestIPAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrActiveConnectionTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrNoActiveConnectionTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrNoActiveConnectionTrap</event-label>
+	<descr>
+&lt;p&gt;A rdrNoActiveConnection notification signifies that the 
+agent entity has detected  there is no active 
+connection between the RDR-formatter and any 
+Data Collector.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrNoActiveConnectionTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrConnectionUpTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrConnectionUpTrap</event-label>
+	<descr>
+&lt;p&gt;RdrConnectionStatusUp notification signifies that the agent 
+entity has detected the rdrFormatterDestConnectionStatus 
+object in this MIB has changed to 'up(2)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestIPAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestConnectionStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrConnectionUpTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrConnectionDownTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrConnectionDownTrap</event-label>
+	<descr>
+&lt;p&gt;RdrConnectionStatusDown notification signifies that the agent
+entity has detected the rdrFormatterDestConnectionStatus
+object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestIPAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterDestConnectionStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrConnectionDownTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/telnetSessionStartedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: telnetSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;Replaced by the more generic sessionStartedTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			telnetSessionStartedTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/telnetSessionEndedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: telnetSessionEndedTrap</event-label>
+	<descr>
+&lt;p&gt;Replaced by the more generic sessionEndedTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			telnetSessionEndedTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/telnetSessionDeniedAccessTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: telnetSessionDeniedAccessTrap</event-label>
+	<descr>
+&lt;p&gt;Replaced by the more generic sessionDeniedAccessTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			telnetSessionDeniedAccessTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/telnetSessionBadLoginTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: telnetSessionBadLoginTrap</event-label>
+	<descr>
+&lt;p&gt;Replaced by the more generic sessionBadLoginTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			telnetSessionBadLoginTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/loggerUserLogIsFullTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: loggerUserLogIsFullTrap</event-label>
+	<descr>
+&lt;p&gt;A loggerUserLogIsFull notification signifies that the agent 
+entity has detected the User log file is full.
+In such case the agent entity rolls to the next file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loggerUserLogIsFullTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/sntpClockDriftWarnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: sntpClockDriftWarnTrap</event-label>
+	<descr>
+&lt;p&gt;An sntpClockDriftWarn notification signifies that the entity's
+SNTP agent did not receive time update for 
+a long period, this may cause a time drift.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sntpClockDriftWarnTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/linkModeBypassTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: linkModeBypassTrap</event-label>
+	<descr>
+&lt;p&gt;A linkModeBypass notification signifies that the agent entity
+has detected that the linkOperMode object in this MIB 
+has changed to 'bypass(2)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	linkOperMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			linkModeBypassTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/linkModeForwardingTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: linkModeForwardingTrap</event-label>
+	<descr>
+&lt;p&gt;A linkModeForwarding notification signifies that the agent
+entity has detected that the linkOperMode object
+in this MIB has changed to 'forwarding(3)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	linkOperMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			linkModeForwardingTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/linkModeCutoffTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: linkModeCutoffTrap</event-label>
+	<descr>
+&lt;p&gt;A linkModeCutoff notification signifies that the agent 
+entity has detected that the linkOperMode object
+in this MIB has changed to 'cutoff(4)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	linkOperMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			linkModeCutoffTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleAttackFilterActivatedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleAttackFilterActivatedTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleAttackFilterActivated notification signifies 
+that the agent entity's attack filter module has
+activated a filter. The pcubeSeEventGenericString1 
+is the type of attack-filter, which was activated.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleAttackFilterActivatedTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleAttackFilterDeactivatedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleAttackFilterDeactivatedTrap</event-label>
+	<descr>
+&lt;p&gt;A portAttackFilterDeactivated notification signifies that the
+agent entity's attack filter module has removed a 
+filter that was previously activated.
+The pcubeSeEventGenericString1 is the attack-filter 
+type, which was sent in the corresponding 
+moduleAttackFilterActivatedTrap.
+the pcubeSeEventGenericString2 is the reason
+for deactivating the filter.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleAttackFilterDeactivatedTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]% 
+			pcubeSeEventGenericString2=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleEmAgentGenericTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleEmAgentGenericTrap</event-label>
+	<descr>
+&lt;p&gt;A generic notification used by the P-Cube EM agent. 
+pcubeSeEventGenericString1 specifies what 
+notification is it, and pcubeSeEventGenericString2 
+is the relevant parameter.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleEmAgentGenericTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]% 
+			pcubeSeEventGenericString2=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/linkModeSniffingTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: linkModeSniffingTrap</event-label>
+	<descr>
+&lt;p&gt;A linkModeSniffing notification signifies that the 
+agent entity has detected  that the linkOperMode 
+object in this MIB has changed to 'sniffing(5)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	linkOperMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			linkModeSniffingTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleRedundancyReadyTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleRedundancyReadyTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleRedundancyReady notification signifies that the module
+was able to connect and synchronize with a redundant entity, 
+and is now ready to handle fail-over if needed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleRedundancyReadyTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleRedundantConfigurationMismatchTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleRedundantConfigurationMismatchTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleRedundantConfigurationMismatch notification signifies 
+that the module was not able to synchronize with a redundant 
+entity, due to a essential configuration parameters that are do
+not match between the
+module and the redundant entity.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleRedundantConfigurationMismatchTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleLostRedundancyTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleLostRedundancyTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleLostRedundancy notification signifies that the module
+has lost the ability to perform the fail-over procedure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleLostRedundancyTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleSmConnectionDownTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleSmConnectionDownTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleSmConnectionDown notification signifies that the 
+module's virtual connection to the subscriber 
+manager is broken.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleSmConnectionDownTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleSmConnectionUpTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleSmConnectionUpTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleSmConnectionUp notification signifies that 
+the module's virtual connection to the subscriber manager 
+is up and working.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleSmConnectionUpTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/moduleOperStatusChangeTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: moduleOperStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt;A moduleOperStatusChangeTrap notification signifies
+that the moduleOperStatus has changed its value.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			moduleOperStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/portOperStatusChangeTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: portOperStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt;A portOperStatusChangeTrap notification signifies 
+that the portOperStatus object of the portIndex has changed
+its value, i.e., the link was forced down or the force 
+down was released.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pportIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pportOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		up(2)
+		reflectionForcingDown(3)
+		redundancyForcingDown(4)
+		otherDown(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portOperStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pportIndex=%parm[#2]% 
+			pportOperStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/chassisLineFeedAlarmOnTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: chassisLineFeedAlarmOnTrap</event-label>
+	<descr>
+&lt;p&gt;A chassisLineFeedAlarmOn notification signifies that the agent
+entity has detected the chassisLineFeed object in this
+MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pchassisLineFeedAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			chassisLineFeedAlarmOnTrap trap received 
+			pchassisLineFeedAlarm=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrFormatterCategoryDiscardingReportsTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrFormatterCategoryDiscardingReportsTrap</event-label>
+	<descr>
+&lt;p&gt;rdrCategoryDiscardingReportsTrap notification signifies that
+the agent entity has detected that reports send to this
+category are being discarded. 
+The rdrFormatterCategoryNumReportsDiscarded object in 
+this MIB is counting the amount of discarded reports.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterCategoryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrFormatterCategoryDiscardingReportsTrap trap received 
+			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/rdrFormatterCategoryStoppedDiscardingReportsTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: rdrFormatterCategoryStoppedDiscardingReportsTrap</event-label>
+	<descr>
+&lt;p&gt;rdrCategoryStoppedDiscardingReportsTrap notification signifies 
+that the agent entity has detected that reports send to this 
+category are not being discarded any more. 
+The rdrFormatterCategoryNumReportsDiscarded object in this
+MIB is counting the amount of discarded reports.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	rdrFormatterCategoryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rdrFormatterCategoryStoppedDiscardingReportsTrap trap received 
+			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/sessionStartedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: sessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A sessionStarted notification signifies that the agent
+entity has accepted a new session. 
+The pcubeSeEventGenericString1 is the session 
+type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sessionStartedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/sessionEndedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: sessionEndedTrap</event-label>
+	<descr>
+&lt;p&gt;A sessionEnded notification signifies that the agent
+entity has detected end of a session. 
+The pcubeSeEventGenericString1 is the session 
+type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sessionEndedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/sessionDeniedAccessTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: sessionDeniedAccessTrap</event-label>
+	<descr>
+&lt;p&gt;A sessionDeniedAccess notification signifies that the agent
+entity has refused a session from unauthorized source.
+The pcubeSeEventGenericString1 is the session type 
+(telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sessionDeniedAccessTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/sessionBadLoginTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: sessionBadLoginTrap</event-label>
+	<descr>
+&lt;p&gt;A sessionBadLogin notification signifies that the agent
+entity has detected attempt to login with a wrong
+password. The pcubeSeEventGenericString1 
+is the session type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sessionBadLoginTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/illegalSubscriberMappingTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: illegalSubscriberMappingTrap</event-label>
+	<descr>
+&lt;p&gt;A illegalSubscriberMappingTrap notification signifies that 
+some external entity has attempted to create illegal or 
+inconsistent subscriber mappings. 
+The pcubeSeEventGenericString1 contains a message 
+describing the problem.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			illegalSubscriberMappingTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>44</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/loggerLineAttackLogFullTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: loggerLineAttackLogFullTrap</event-label>
+	<descr>
+&lt;p&gt;Signifies that the agent entity has detected 
+the line-attack log file is full. In such case the 
+agent entity rolls to the next file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loggerLineAttackLogFullTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/vasServerOpertionalStatusChangeTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: vasServerOpertionalStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt;Signifies that the agent entity has detected 
+that the vas server operational status has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vasServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vasServerId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vasServerOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			vasServerOpertionalStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			vasServerIndex=%parm[#2]% 
+			vasServerId=%parm[#3]% 
+			vasServerOperStatus=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>47</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/pullRequestRetryFailedTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: pullRequestRetryFailedTrap</event-label>
+	<descr>
+&lt;p&gt;Signifies that an unknown subscriber
+wasn't identified after a certain number of pull 
+requests. The value of pcubeSeEventGenericString1 is the
+subscriber id and the pullRequestNumber is the number of
+pull requests made on this sub.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pullRequestNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pullRequestRetryFailedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]% 
+			pullRequestNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>48</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/mplsVpnTotalHWMappingsThresholdExceededTrap</uei>
+	<event-label>PCUBE-SE-MIB defined trap event: mplsVpnTotalHWMappingsThresholdExceededTrap</event-label>
+	<descr>
+&lt;p&gt;Sent when the value of mplsVpnCurrentHWMappings 
+exceeds the allowed threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsVpnCurrentHWMappings&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsVpnTotalHWMappingsThresholdExceededTrap trap received 
+			mplsVpnCurrentHWMappings=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: PCUBE-SE-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SERVICE-CONTROL-RDR-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrCategoryStoppedDiscardingReportsTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrCategoryStoppedDiscardingReportsTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that the
+system has recovered from congestion or unavailibility of the
+RDR collector identified by the value of cscRdrCategoryID and
+has stopped discarding reports being sent to this RDR
+collector.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrCategoryID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrCategoryStoppedDiscardingReportsTrap trap received 
+			entPhysicalName=%parm[#1]% 
+			cscRdrCategoryID=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrCategoryDiscardingReportsTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrCategoryDiscardingReportsTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that the
+system has either encountered congestion or unavailibility of
+the RDR collector with the category identified by the value of
+cscRdrCategoryID and has started discarding reports destined to
+this collector.  The value of cscRdrCategoryNumReportsDiscarded
+indicates the number of discarded reports.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrCategoryID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrCategoryDiscardingReportsTrap trap received 
+			entPhysicalName=%parm[#1]% 
+			cscRdrCategoryID=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrNoActiveConnectionTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrNoActiveConnectionTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that there
+is no active connection between the RDR formatter and any
+collector.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrNoActiveConnectionTrap trap received 
+			entPhysicalName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrConnectionStatusDownTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrConnectionStatusDownTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that a
+connection to destination has transitioned to the 'down' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrConnectionStatusDownTrap trap received 
+			entPhysicalName=%parm[#1]% 
+			cscRdrDestStatus=%parm[#2]% 
+			cscRdrDestInetAddress=%parm[#3]% 
+			cscRdrDestPort=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrActiveConnectionTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrActiveConnectionTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that a
+connection to the destination address cscRdrDestInetAddress has
+become active on TCP port cscRdrDestPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrActiveConnectionTrap trap received 
+			entPhysicalName=%parm[#1]% 
+			cscRdrDestInetAddress=%parm[#2]% 
+			cscRdrDestPort=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.637</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cscRdrConnectionStatusUpTrap</uei>
+	<event-label>CISCO-SERVICE-CONTROL-RDR-MIB defined trap event: cscRdrConnectionStatusUpTrap</event-label>
+	<descr>
+&lt;p&gt;The system generates this notification to indicate that a
+connection to the destination address cscRdrDestInetAddress has
+become transitioned to 'up' state on TCP port cscRdrDestPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscRdrDestPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cscRdrConnectionStatusUpTrap trap received 
+			entPhysicalName=%parm[#1]% 
+			cscRdrDestStatus=%parm[#2]% 
+			cscRdrDestInetAddress=%parm[#3]% 
+			cscRdrDestPort=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: CISCO-SERVICE-CONTROL-RDR-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SERVICE-CONTROL-LINK-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.631</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoServiceControlLinkModeChange</uei>
+	<event-label>CISCO-SERVICE-CONTROL-LINK-MIB defined trap event: ciscoServiceControlLinkModeChange</event-label>
+	<descr>
+&lt;p&gt;This notification signifies that the agent entity has detected
+that the cscLinkOperMode object in this MIB has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cscLinkOperMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ciscoServiceControlLinkModeChange trap received 
+			cscLinkOperMode=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: CISCO-SERVICE-CONTROL-LINK-MIB -->
+<!-- Start of auto generated data from MIB: CISCO-SERVICE-CONTROL-SUBSCRIBERS-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9.9.628</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/cisco/traps/cServiceControlSubscriberMapping</uei>
+	<event-label>CISCO-SERVICE-CONTROL-SUBSCRIBERS-MIB defined trap event: cServiceControlSubscriberMapping</event-label>
+	<descr>
+&lt;p&gt;This notification is sent by the service control entity when
+some external entity attempts to create illegal or inconsistent
+subscriber mappings. The
+cServiceControlSubscriberMappingFailedReason contains a message
+describing the problem and entPhysicalName contains the name of
+the service control entity generating the notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	entPhysicalName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	cServiceControlSubscriberMappingFailedReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cServiceControlSubscriberMapping trap received 
+			entPhysicalName=%parm[#1]% 
+			cServiceControlSubscriberMappingFailedReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: CISCO-SERVICE-CONTROL-SUBSCRIBERS-MIB -->
+</events>

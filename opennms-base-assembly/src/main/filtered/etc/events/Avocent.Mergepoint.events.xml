@@ -1,0 +1,2036 @@
+<events>
+<!-- Start of auto generated data from MIB: AVOCENT-MERGEPOINT-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/rebootStartedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: rebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance is in process of rebooting.
+The name of the user who issued the command is contained
+in trapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			rebootStartedTrap trap received 
+			trapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/userLoginTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: userLoginTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when user logged into appliance.
+The name of the user who logged in is contained in  trapObjectUserName
+and the method used to log into appliance is contained in trapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		spshell(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			userLoginTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/userLogoutTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: userLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out from OnBoard
+The name of the user who logged out is contained in trapObjectUserName. 
+and the method used to log into appliance is contained in trapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		spshell(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			userLogoutTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/loginFailed</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: loginFailed</event-label>
+	<descr>
+&lt;p&gt;User login fail to the OnBoard.
+trapObjectUserName: The name of the user who failed to log into appliance.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			loginFailed trap received 
+			trapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/portAlertTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: portAlertTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance detected a device alert.
+trapObjectDeviceName: contains the device name                        
+trapObjectDeviceNumber: contains the dive unique id number
+trapObjectAlertIndex: contains the index of the alert
+trapObjectAlertString: contains the name of the alert
+trapObjectAlertMessage: contains the alert message.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portAlertTrap trap received 
+			trapObjectDeviceName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectAlertIndex=%parm[#3]% 
+			trapObjectAlertString=%parm[#4]% 
+			trapObjectAlertMessage=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/daemonStarted</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: daemonStarted</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when daemons on the OnBoard is started.
+trapObjectUserName is name of the User who started the daemon.
+trapObjectDaemonName is name of the daemon.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			daemonStarted trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/daemonStopped</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: daemonStopped</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Network daemons in OnBoard stopped.
+trapObjectUserName is name of the User who stopped the daemon.
+trapObjectDaemonName is name of the daemon.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			daemonStopped trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/adminSessionTerminatedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: adminSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when previous session terminated by new Admin user.
+trapObjectUserName contains the NEW admin user name.
+trapObjectTargetUserName contains name of the user whose session was terminated.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			adminSessionTerminatedTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/configurationSavedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: configurationSavedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when 'saveconf' is successful.
+trapObjectUserName is name of the user who executed saveconf.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			configurationSavedTrap trap received 
+			trapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/configurationActivatedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: configurationActivatedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when new configuration is activated.
+trapObjectUserName is name of the user who activated new configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			configurationActivatedTrap trap received 
+			trapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/localUserAddedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: localUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when user is added to OnBoard.
+trapObjectUserName is name of user who added new user.
+trapObjectTargetUserName is name of the new user.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			localUserAddedTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/localUserDeletedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: localUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when user is deleted from OnBoard.
+trapObjectUserName is name of user who deleted other user.
+trapObjectTargetUserName is name of the user who was deleted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			localUserDeletedTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/dataBufferFullThresholdLowTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: dataBufferFullThresholdLowTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when OnBoard is managed by DSView and global data buffer has reached 
+configured Low level Threshold.
+trapObjectDataBufferSize is current size of the buffer.       &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dataBufferFullThresholdLowTrap trap received 
+			trapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/dataBufferFullThresholdMedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: dataBufferFullThresholdMedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when OnBoard is managed by DSView and global data buffer has reached 
+configured Med level Threshold.
+trapObjectDataBufferSize is current size of the buffer.       &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dataBufferFullThresholdMedTrap trap received 
+			trapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/dataBufferFullLostDataTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: dataBufferFullLostDataTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when OnBoard is managed by DSView and global data buffer has exceeded 
+beyond the size of buffer and data lost has occurred.     &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			dataBufferFullLostDataTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/applianceDataBufferLostTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: applianceDataBufferLostTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when OnBoard is managed by DSView and data lost occurred while
+collecting data from ssh, or telnet session to Appliance.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			applianceDataBufferLostTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmOnlineTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when PM is attached to aux port on OnBoard or 
+PM is added to chain of IPDUs.
+trapObjectAuxPortName indicates the serial port name of PM.
+trapObjectAuxPortNumber indicates the serial port number.
+trapObjectCyPMCount indicates number of PM on the serial port.
+trapObjectCyPMSocketCount indicates total number of Sockets on serial port.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmOnlineTrap trap received 
+			trapObjectAuxPortName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMCount=%parm[#3]% 
+			trapObjectPMSocketCount=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmOfflineTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when PM is removed from serial port or communication error.
+trapObjectAuxPortName is serial port name of PM.
+trapObjectAuxPortNumber indicates the serial port number.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmOfflineTrap trap received 
+			trapObjectAuxPortName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmSocketTurnedOnTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmSocketTurnedOnTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when outlet is turned on.
+trapObjectUserName is name of the user who turned this outlet on.         
+trapObjectAuxPortNumber is the number of Aux port or IPDU.
+trapObjectPMSocketNumber is outlet number that was turned on.
+trapObjectPMSocketName is either outlet name in PM or associated Target Device Name.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmSocketTurnedOnTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMSocketNumber=%parm[#3]% 
+			trapObjectPMSocketName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmSocketTurnedOffTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmSocketTurnedOffTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when outlet is turned off.
+trapObjectUserName is name of the user who turned this outlet off.          
+trapObjectAuxPortNumber is the number of Aux port or IPDU.
+trapObjectPMSocketNumber is outlet number that was turned off.
+trapObjectPMSocketName is either outlet name in PM or associated Target Device Name.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmSocketTurnedOffTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMSocketNumber=%parm[#3]% 
+			trapObjectPMSocketName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmSocketCycledTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmSocketCycledTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when outlet is cycled.
+trapObjectUserName is name of the user who cycled this outlet.            
+trapObjectAuxPortNumber is the number of Aux port or IPDU.
+trapObjectPMSocketNumber is outlet number that was turned cycled.
+trapObjectPMSocketName is either outlet name in PM or associated Target Device Name.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmSocketCycledTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMSocketNumber=%parm[#3]% 
+			trapObjectPMSocketName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmMaxLoadThresholdReachedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmMaxLoadThresholdReachedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when PM current reaches beyond or up to set threshold.
+trapObjectAuxPortName is name of the IPDU port.
+trapObjectAuxPortNumber is aux port number of IPDU port.
+trapObjectPMNumber is the IPDU # that exceeded the treshold.
+trapObjectCyPMCurrentValue is current value detected when this trap was originated. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectCyPMCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmMaxLoadThresholdReachedTrap trap received 
+			trapObjectAuxPortName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMNumber=%parm[#3]% 
+			trapObjectCyPMCurrentValue=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmMinLoadThresholdReachedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmMinLoadThresholdReachedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when PM current reaches back to below set threshold.
+trapObjectAuxPortName is name of the IPDU port.
+trapObjectAuxPortNumber is aux port number of IPDU port.
+trapObjectPMNumber is the IPDU # that exceeded the threshold.
+trapObjectCyPMCurrentValue is current value detected when this trap was originated.         &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectCyPMCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmMinLoadThresholdReachedTrap trap received 
+			trapObjectAuxPortName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMNumber=%parm[#3]% 
+			trapObjectCyPMCurrentValue=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/applianceAlertTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: applianceAlertTrap</event-label>
+	<descr>
+&lt;p&gt;An alert string was detected on a ssh or telnet session into the appliance.
+The name of user who was logged into the appliance when the alert string was
+detected is contained in trapObjectUserName.
+The index of the alert string that was detected in the message is 
+contained in trapObjectAlertIndex.
+The alert string that was detected is contained in trapObjectAlertString.
+The line text where the alert string was detected is contained 
+in trapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			applianceAlertTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectAlertIndex=%parm[#2]% 
+			trapObjectAlertString=%parm[#3]% 
+			trapObjectAlertMessage=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/firmwareUpgradeStarted</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: firmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when user started the process to upgrade OnBoard.
+trapObjectUserName is name of the user who started firmware (FW) upgrade.
+trapFirmwareVersion is current FW version of OnBoard.
+trapNewFirmwareVersion is NEW FW version of OnBoard.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			firmwareUpgradeStarted trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapFirmwareVersion=%parm[#2]% 
+			trapNewFirmwareVersion=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/firmwareUpgradeResultsTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: firmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+trapFirmwareUpdateResult is result of FW upgrade 1 indicate successful other indicates error message.
+trapNewFirmwareVersion is NEW FW version of OnBoard.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapFirmwareUpdateResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			firmwareUpgradeResultsTrap trap received 
+			trapFirmwareUpdateResult=%parm[#1]% 
+			trapNewFirmwareVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmFirmwareUpgradeStarted</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmFirmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when user started the process to upgrade power manager firmware.
+trapObjectUserName is name of the user who started FW upgrade.
+trapObjectAuxPortName is name of the IPDU port.
+trapObjectAuxPortNumber is aux port number of IPDU port.
+trapObjectPMNumber is PM socket number
+trapFirmwareVersion is current FW version of OnBoard.
+trapNewFirmwareVersion is NEW FW version of OnBoard.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmFirmwareUpgradeStarted trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectAuxPortName=%parm[#2]% 
+			trapObjectAuxPortNumber=%parm[#3]% 
+			trapObjectPMNumber=%parm[#4]% 
+			trapFirmwareVersion=%parm[#5]% 
+			trapNewFirmwareVersion=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/pmFirmwareUpgradeResultsTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: pmFirmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Power manager Firmware upgraded is done to indicate the result.
+trapObjectAuxPortName is name of the IPDU port.
+trapObjectAuxPortNumber is aux port number of IPDU port.
+trapObjectPMNumber is PM socket number
+trapFirmwareUpdateResult is result of FW upgrade 1 indicate successful other indicates error message.
+trapNewFirmwareVersion is NEW FW version of OnBoard.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAuxPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectPMNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapFirmwareUpdateResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			pmFirmwareUpgradeResultsTrap trap received 
+			trapObjectAuxPortName=%parm[#1]% 
+			trapObjectAuxPortNumber=%parm[#2]% 
+			trapObjectPMNumber=%parm[#3]% 
+			trapFirmwareUpdateResult=%parm[#4]% 
+			trapNewFirmwareVersion=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>50</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceAuth</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceAuth</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when a user's attempt to log into an device connected to the onboard fails.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the identifier of the device
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceAuth trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>51</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceCommandFailureTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceCommandFailureTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the user issues a command to the onboard and this command fails.
+trapObjectUserName: is the name of the user
+trapObjectCommand: is the name of the command the user is attempting
+trapObjectDeviceNumber: is the unique identifier of the device
+trapObjectDeviceName: is the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectCommand&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceCommandFailureTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectCommand=%parm[#2]% 
+			trapObjectDeviceNumber=%parm[#3]% 
+			trapObjectDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceSPConsoleLoginTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceSPConsoleLoginTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when user connects to a device
+trapObjectUserName : The name of the user who started the session
+trapObjectDeviceNumber: is the unique identifier of the device
+trapObjectDeviceName:   The name of the device
+   &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceSPConsoleLoginTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceSPConsoleLogoutTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceSPConsoleLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a session is stopped on specific device (User logs out).
+The name of the user who stopped the session is contain in trapObjectUserName.
+The Number of device is contained in trapObjectDeviceNumber.
+The name of the device is contained in trapObjectDeviceName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceSPConsoleLogoutTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>57</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceConsoleLoginTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceConsoleLoginTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when user connects directly to a device
+trapObjectUserName : The name of the user who started the session
+trapObjectDeviceNumber: is the unique identifier of the device
+trapObjectDeviceName:   The name of the device
+   &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceConsoleLoginTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>58</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceDirectLogoutTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceDirectLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user logs out of a direct login to the device.
+The name of the user who stopped the session is contain in trapObjectUserName.
+The Number of device is contained in trapObjectDeviceNumber.
+The name of the device is contained in trapObjectDeviceName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceDirectLogoutTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>60</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/nativeIPEnabledTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: nativeIPEnabledTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user enables NativeIP.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: is the unique identifier of the device
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			nativeIPEnabledTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/nativeIPDisabledTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: nativeIPDisabledTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user disables NativeIP.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the device's Number
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			nativeIPDisabledTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/sshTunnelInUseTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: sshTunnelInUseTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user opens a connection through an SSH Tunnel.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the device's Number
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sshTunnelInUseTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/sshTunnelNotInUseTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: sshTunnelNotInUseTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user closes a connection through an SSH Tunnel.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the device's Number
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			sshTunnelNotInUseTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>64</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceDirectCommandEnableTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceDirectCommandEnableTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user enables a Direct Command connection.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the device's Number
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceDirectCommandEnableTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>65</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceDirectCommandDisableTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceDirectCommandDisableTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user disables a Direct Command connection.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the device's Number
+trapObjectDeviceName: contains the name of the device accessed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceDirectCommandDisableTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>70</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceResetTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceResetTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user sends a reset command to a device.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the Number address of the device.
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceResetTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>71</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/devicePowerUpTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: devicePowerUpTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user sends a power up command to a device.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the Number address of the device.
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			devicePowerUpTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>72</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/devicePowerDownTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: devicePowerDownTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user sends a power down command to a device.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the Number address of the device.
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			devicePowerDownTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>73</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/devicePowerCycleTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: devicePowerCycleTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user sends a power cycle command to a device.
+trapObjectUserName: contains the name of the user
+trapObjectDeviceNumber: contains the Number address of the device.
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			devicePowerCycleTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>90</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceEventLogClearedTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceEventLogClearedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a device managed by Onboard has had its data buffer cleared.
+trapObjectUserName: contains the user name
+trapObjectDeviceNumber: contains the Number address of the device
+trapObjectDeviceName: contains the name of the device&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceEventLogClearedTrap trap received 
+			trapObjectUserName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>91</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceEventLogFullLostTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceEventLogFullLostTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when the datalog on a device managed by Onboard is full.
+trapObjectDeviceName: contains the name of the device
+trapObjectDeviceNumber: contains the Number address of the device
+trapObjectDataBufferSize: contains the size of the devices data log.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceEventLogFullLostTrap trap received 
+			trapObjectDeviceName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDataBufferSize=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>95</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceAlertTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceAlertTrap</event-label>
+	<descr>
+&lt;p&gt;TBD
+This trap is sent when a user configured alarm string matches the data buffering line.
+trapObjectDeviceName is device name this matched occurred on.
+trapObjectDeviceNumber   is device Number this matched occurred on
+trapObjectAlertMessage is entire LINE that contains the alert string.
+trapObjectAlertString is string that matched and contain in trapObjectPortAlertMessage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceAlertTrap trap received 
+			trapObjectDeviceName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectAlertMessage=%parm[#3]% 
+			trapObjectAlertString=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2925.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>96</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/deviceSensorAlarmTrap</uei>
+	<event-label>AVOCENT-MERGEPOINT-TRAP-MIB defined trap event: deviceSensorAlarmTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a user configured alarm string matches the data buffering line.
+trapObjectDeviceName: is device name this matched occurred on.
+trapObjectDeviceNumber:   is device Number this matched occurred on
+trapObjectDeviceSensorName:   is the name of the sensor
+trapObjectDeviceSensorAlarmId: is the id of the sensor alarm&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceSensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapObjectDeviceSensorAlarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceSensorAlarmTrap trap received 
+			trapObjectDeviceName=%parm[#1]% 
+			trapObjectDeviceNumber=%parm[#2]% 
+			trapObjectDeviceSensorName=%parm[#3]% 
+			trapObjectDeviceSensorAlarmId=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: AVOCENT-MERGEPOINT-TRAP-MIB -->
+</events>
