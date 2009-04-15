@@ -65,7 +65,7 @@
 		<td>${groupelm.group}
 		</td>
 		<td>${groupelm.version}
-		<a href="inventory/invnode.jsp?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.version}">(inventory)</a>
+		<a href="inventory/invnode.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.version}">(inventory)</a>
 		<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&viewvc=${groupelm.urlViewVC}">(configuration)</a>
 		</td>
 		<td>${groupelm.date}</td>
