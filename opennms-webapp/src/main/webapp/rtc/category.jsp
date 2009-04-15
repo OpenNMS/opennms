@@ -98,8 +98,10 @@
 		NetworkElementFactory.getNodeLabel((int)node.getNodeid());
         // nodeMap.put( nodeLabel, node );
 
-        if (nodeLabel != null) {
+        if (nodeLabel != null && !nodeMap.containsKey(nodeLabel)) {
             nodeMap.put(nodeLabel, node);
+        } else if (nodeLabel != null) {
+            nodeMap.put(nodeLabel+" (nodeid="+node.getNodeid()+")", node);
         } else {
            nodeMap.put("nodeId=" + node.getNodeid(), node);
         }
