@@ -48,7 +48,7 @@ import java.util.Vector;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.notification.filter.Filter;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NodeFilter;
 
 /**
@@ -216,7 +216,7 @@ public class NoticeFactory extends Object {
             
             int parameterIndex = 1;
             for (int i = 0; i < filters.length; i++) {
-            	parameterIndex += filters[i].bindParams(stmt, parameterIndex);
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
             }
             
             ResultSet rs = stmt.executeQuery();
