@@ -1911,26 +1911,48 @@
   <event-file>events/Aedilis.events.xml</event-file>
   <event-file>events/AirDefense.events.xml</event-file>
   <event-file>events/AIX.events.xml</event-file>
+  <event-file>events/AlcatelLucent.OmniSwitch.events.xml</event-file>
+  <event-file>events/AlcatelLucent.SMSBrick.events.xml</event-file>
+  <event-file>events/Allot.NetXplorer.events.xml</event-file>
+  <event-file>events/Allot.SM.events.xml</event-file>
   <event-file>events/Alteon.events.xml</event-file>
   <event-file>events/Altiga.events.xml</event-file>
   <event-file>events/APC.events.xml</event-file>
   <event-file>events/APC.Best.events.xml</event-file>
   <event-file>events/APC.Exide.events.xml</event-file>
+  <event-file>events/Aruba.AP.events.xml</event-file>
+  <event-file>events/Aruba.Switch.events.xml</event-file>
+  <event-file>events/Aruba.events.xml</event-file>
   <event-file>events/Ascend.events.xml</event-file>
+  <event-file>events/Avocent.ACS.events.xml</event-file>
+  <event-file>events/Avocent.ACS5000.events.xml</event-file>
+  <event-file>events/Avocent.AMX5000.events.xml</event-file>
+  <event-file>events/Avocent.AMX5010.events.xml</event-file>
+  <event-file>events/Avocent.AMX5020.events.xml</event-file>
+  <event-file>events/Avocent.AMX5030.events.xml</event-file>
+  <event-file>events/Avocent.CCM.events.xml</event-file>
+  <event-file>events/Avocent.DSR.events.xml</event-file>
+  <event-file>events/Avocent.DSR1021.events.xml</event-file>
+  <event-file>events/Avocent.DSR2010.events.xml</event-file>
+  <event-file>events/Avocent.Mergepoint.events.xml</event-file>
+  <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
   <event-file>events/ATMForum.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
   <event-file>events/BGP4.events.xml</event-file>
   <event-file>events/BlackBerryServer.events.xml</event-file>
+  <event-file>events/Bluecat.events.xml</event-file>
+  <event-file>events/BlueCoat.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
   <event-file>events/CA.ArcServe.events.xml</event-file>
+  <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Cisco.CIDS.events.xml</event-file>
-  <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
   <event-file>events/Cisco.mcast.events.xml</event-file>
+  <event-file>events/Cisco.SCE.events.xml</event-file>
+  <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
-  <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
   <event-file>events/Covergence.events.xml</event-file>
   <event-file>events/CPQHPIM.events.xml</event-file>
@@ -1980,6 +2002,7 @@
   <event-file>events/Liebert.events.xml</event-file>
   <event-file>events/Liebert.600SM.events.xml</event-file>
   <event-file>events/Linksys.events.xml</event-file>
+  <event-file>events/Lucent.events.xml</event-file>
   <event-file>events/MadgeNetworks.events.xml</event-file>
   <event-file>events/McAfee.events.xml</event-file>
   <event-file>events/MGE-UPS.events.xml</event-file>
@@ -2001,10 +2024,13 @@
   <event-file>events/Oracle.events.xml</event-file>
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>
+  <event-file>events/Overture.events.xml</event-file>
+  <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
   <event-file>events/Pixelmetrix.events.xml</event-file>
   <event-file>events/Polycom.events.xml</event-file>
+  <event-file>events/Powerware.events.xml</event-file>
   <event-file>events/Primecluster.events.xml</event-file>
   <event-file>events/Quintum.events.xml</event-file>
   <event-file>events/RADLAN-MIB.events.xml</event-file>

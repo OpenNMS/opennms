@@ -1,0 +1,1752 @@
+<events>
+<!-- Start of auto generated data from MIB: BLUECOAT-DIRECTOR-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgAdded</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgAdded</event-label>
+	<descr>
+&lt;p&gt;An SG has been newly added to Director.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgAdded trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgDeleted</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgDeleted</event-label>
+	<descr>
+&lt;p&gt;An SG has been deleted from Director.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgDeleted trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgConnected</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgConnected</event-label>
+	<descr>
+&lt;p&gt;An SG has transitioned to the CONNECTED state.
+
+SG's that do not implement the Health Monitoring CLI 
+commands will typically enter this state and remain here
+as long as Director can maintain an SSH connection to that
+SG.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgConnected trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgDisconnected</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgDisconnected</event-label>
+	<descr>
+&lt;p&gt;An SG has transitioned to the DISCONNECTED state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgDisconnected trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgOk</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgOk</event-label>
+	<descr>
+&lt;p&gt;An SG has transitioned to the OK state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgOk trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgWarning</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgWarning</event-label>
+	<descr>
+&lt;p&gt;An SG has transitioned to the WARNING state.
+
+Note that even if the SG encounters additional
+trouble, (also of 'warning' severity), a second
+trap will NOT be sent.  If, however, an SG that
+currently is in warning state encounters trouble
+of severity 'critical', a _Critical trap WILL be
+sent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgWarning trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgCritical</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgCritical</event-label>
+	<descr>
+&lt;p&gt;An SG has transitioned to the CRITICAL state.
+
+Note that even if the SG encounters additional
+trouble, (also of 'critical' severity), a second
+trap will NOT be sent.  Likewise, if the SG 
+encounters additional trouble of severity 'warning'
+a _Warning trap will NOT be sent, as the SG is 
+still in state critical.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgCritical trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgAutoregistered</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgAutoregistered</event-label>
+	<descr>
+&lt;p&gt;An SG has been added via the auto-registration process.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgAutoregistered trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorSgChgSgAutoregistrationFailed</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorSgChgSgAutoregistrationFailed</event-label>
+	<descr>
+&lt;p&gt;An SG's attempt to register via auto-registration process failed .&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sgDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorSgChgSgAutoregistrationFailed trap received 
+			sgHostname=%parm[#1]% 
+			sgSerialNumber=%parm[#2]% 
+			sgDeviceId=%parm[#3]% 
+			sgDeviceName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgPartnerReachabilityLost</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgPartnerReachabilityLost</event-label>
+	<descr>
+&lt;p&gt;If reported by the Primary Director, that Primary Director 
+could not reach the Secondary in order to log-in and check 
+its Standby status, (called 'heartbeat').
+
+If reported by the Secondary Director, that Secondary has
+not 'heard' the Primary log-in for a long time.
+
+Either way, the network link between the two Directors is
+not working properly.  Any changes made on the Primary will
+not by synced to the Secondary, (assuming the Primary is
+the Active Director).
+
+Remediation: fix the network between the two Directors.  In
+the mean-time, be careful that no Operator makes the
+Secondary Director Active, or you might reach a condition
+where you have two Active Directors with changes on each.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgPartnerReachabilityLost trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgPartnerReachabilityRegained</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgPartnerReachabilityRegained</event-label>
+	<descr>
+&lt;p&gt;After a _PartnerReachabilityLost condition was reported,
+this Director could once again reach (or be reached by) its
+Partner Director.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgPartnerReachabilityRegained trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgForcedToPrimary</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgForcedToPrimary</event-label>
+	<descr>
+&lt;p&gt;The reporting Director has been forced to be the Primary
+Director in a Standby pair by Operator command.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgForcedToPrimary trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgForcedToSecondary</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgForcedToSecondary</event-label>
+	<descr>
+&lt;p&gt;The reporting Director has been forced to be the Secondary
+Director in a Standby pair by Operator command.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgForcedToSecondary trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgForcedToStandalone</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgForcedToStandalone</event-label>
+	<descr>
+&lt;p&gt;The reporting Director has been forced to run StandAlone
+(outside a Standby pair), by Operator command.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgForcedToStandalone trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgForcedToActiveState</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgForcedToActiveState</event-label>
+	<descr>
+&lt;p&gt;The reporting Director has been forced to the Active state 
+by Operator command.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgForcedToActiveState trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgSyncFailed</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgSyncFailed</event-label>
+	<descr>
+&lt;p&gt;Description.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgSyncFailed trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgSyncReestablished</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgSyncReestablished</event-label>
+	<descr>
+&lt;p&gt;After a _SyncFailed condition was reported, a successive
+sync operation succeeded and sync was reestablished.
+
+(This notification is NOT reported after every successful
+sync completes).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgSyncReestablished trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgPrimaryBackingOffToInactive</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgPrimaryBackingOffToInactive</event-label>
+	<descr>
+&lt;p&gt;While running in the Active state, the Primary Director 
+found the Secondary in the Active state.  In such a case,
+the Primary automatically 'backs-off' to the Inactive state.
+
+Remediation: There are two common ways of getting into this
+condition:
+
+1. With the Primary Director in the Active state and the
+   Secondary Director in the Reserve state, the network
+   between the two goes down.  An Operator promotes the
+   Secondary to the Active state.  On the first 'heartbeat'
+   after the network comes back up, this double-Active 
+   condition is detected.
+
+2. With the Primary Director in the Active state and the
+   Secondary Director in the Reserve state, the Primary
+   Director powers-off.  An Operator promotes the
+   Secondary to the Active state.  When the Primary 
+   powers-up, this double-Active condition is detected.
+
+In both cases, an Operator will have to determine which
+Director(s) have changes (if any), and decide which set of
+changes to keep when they make the Primary Active again.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgPrimaryBackingOffToInactive trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgPartnerConfigInvalid</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgPartnerConfigInvalid</event-label>
+	<descr>
+&lt;p&gt;There are two possibilities: the Director setup to be this 
+Director's partner can be configured to be part of a pair,
+or not.
+
+If that partner Director is configured to be part of a pair:
+This [Primary] Director logged-into the Secondary, (as part 
+of the 'heartbeat' process), and asked that Secondary 
+Director who it thought it's Primary was.  Unfortunately, 
+that Secondary 'pointed-to' a THIRD Director, when it was 
+expected that it would point back to this Director.  The
+IPaddr of that THIRD Director is reported by the
+'standbyPartnersPrimary' varbind in this notification.
+
+If that partner Director is StandAlone:
+The Primary will find no Primary configured on that other
+Director, and will report '0.0.0.0' for the varbind
+'standbyPartnersPrimary' in this notification.
+
+Remediation: an Operator must check and resolve the 
+configuration on either/both Directors in the pair.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnersPrimary&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgPartnerConfigInvalid trap received 
+			standbyPartnerIpaddr=%parm[#1]% 
+			standbyPartnersPrimary=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgPartnerConfigValidated</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgPartnerConfigValidated</event-label>
+	<descr>
+&lt;p&gt;After reporting a _PartnerConfigInvalid condition, this
+Director once again found its Secondary to correctly
+'point-back' to this Director as partner.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgPartnerConfigValidated trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.3.2.2.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/blueCoatDirectorStandbyChgIndirectlyForcedToReserve</uei>
+	<event-label>BLUECOAT-DIRECTOR-TRAP-MIB defined trap event: blueCoatDirectorStandbyChgIndirectlyForcedToReserve</event-label>
+	<descr>
+&lt;p&gt;The Secondary Director has transitioned to the Reserve state
+in response to seeing the Primary transition to the Active
+state.
+
+This transition is not automatic since it is only the
+second-order effect of operator intervention on the Primary
+Director.
+
+Receipt of this notification confirms that the Secondary
+has 'heard' the Primary step-up to Active and as a result
+the Secondary transitions to the Reserve state.
+
+If the Secondary does not report this notification
+immediately after the Primary is promoted via Make-Active,
+the network between the two Directors may be down, (which
+would shortly be reported by a _PartnerReachabilityLost 
+notification).  In such a case, operators must be especially
+cautious, as they would then be running with both Directors
+in the Active state, and may inadvertently make changes on
+both Directors, thus creating a problem when the standby
+pair is rejoined (one set of changes or the other will be
+lost).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	standbyPartnerIpaddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			blueCoatDirectorStandbyChgIndirectlyForcedToReserve trap received 
+			standbyPartnerIpaddr=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-DIRECTOR-TRAP-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-ATTACK-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceAttackTrap</uei>
+	<event-label>BLUECOAT-SG-ATTACK-MIB defined trap event: deviceAttackTrap</event-label>
+	<descr>
+&lt;p&gt;At the start of an attack a notification is
+generated with 'deviceAttackStatus = underAttack(2)'.
+At the end of an attack a notification is generated with
+'deviceAttackStatus = noAttack(1)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceAttackName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceAttackStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		noAttack(1)
+		underAttack(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceAttackTrap trap received 
+			deviceAttackName=%parm[#1]% 
+			deviceAttackStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-ATTACK-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-DISK-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.2.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceDiskTrap</uei>
+	<event-label>BLUECOAT-SG-DISK-MIB defined trap event: deviceDiskTrap</event-label>
+	<descr>
+&lt;p&gt;The disk status warrants a notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceDiskStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		present(1)
+		initializing(2)
+		inserted(3)
+		offline(4)
+		removed(5)
+		notpresent(6)
+		empty(7)
+		bad(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceDiskTrap trap received 
+			deviceDiskStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-DISK-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-HEALTHCHECK-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.7.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceHealthCheckTrap</uei>
+	<event-label>BLUECOAT-SG-HEALTHCHECK-MIB defined trap event: deviceHealthCheckTrap</event-label>
+	<descr>
+&lt;p&gt;A notification is generated when the health
+of a monitored system changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceHealthCheckMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceHealthCheckTrap trap received 
+			deviceHealthCheckMessage=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-HEALTHCHECK-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-HEALTHMONITOR-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.12.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/bluecoatSgHealthMonitorTrap</uei>
+	<event-label>BLUECOAT-SG-HEALTHMONITOR-MIB defined trap event: bluecoatSgHealthMonitorTrap</event-label>
+	<descr>
+&lt;p&gt;A notification is generated when the health
+of the SG system changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bluecoatSgHealthMonitorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bluecoatSgHealthMonitorTrap trap received 
+			bluecoatSgHealthMonitorMessage=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-HEALTHMONITOR-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-POLICY-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.6.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/devicePolicyTrap</uei>
+	<event-label>BLUECOAT-SG-POLICY-MIB defined trap event: devicePolicyTrap</event-label>
+	<descr>
+&lt;p&gt;A notification is generated when triggered by policy&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	devicePolicyMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			devicePolicyTrap trap received 
+			devicePolicyMessage=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-POLICY-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-PROXY-MIB -->
+<!-- End of auto generated data from MIB: BLUECOAT-SG-PROXY-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-SENSOR-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.1.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceSensorTrap</uei>
+	<event-label>BLUECOAT-SG-SENSOR-MIB defined trap event: deviceSensorTrap</event-label>
+	<descr>
+&lt;p&gt;The sensor value warrants a notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ok(1)
+		unknown(2)
+		notInstalled(3)
+		voltageLowWarning(4)
+		voltageLowCritical(5)
+		noPower(6)
+		voltageHighWarning(7)
+		voltageHighCritical(8)
+		voltageHighSevere(9)
+		temperatureHighWarning(10)
+		temperatureHighCritical(11)
+		temperatureHighSevere(12)
+		fanSlowWarning(13)
+		fanSlowCritical(14)
+		fanStopped(15)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceSensorTrap trap received 
+			deviceSensorName=%parm[#1]% 
+			deviceSensorValue=%parm[#2]% 
+			deviceSensorCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-SENSOR-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-USAGE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.4.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceUsageTrap</uei>
+	<event-label>BLUECOAT-SG-USAGE-MIB defined trap event: deviceUsageTrap</event-label>
+	<descr>
+&lt;p&gt;A notification is sent when the deviceUsagePercent
+exceeds a threshold. This is no longer functional.
+Use health monitoring instead.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsageName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsagePercent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsageStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ok(1)
+		high(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceUsageTrap trap received 
+			deviceUsageName=%parm[#1]% 
+			deviceUsagePercent=%parm[#2]% 
+			deviceUsageStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-SG-USAGE-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-SG-WCCP-MIB -->
+<!-- End of auto generated data from MIB: BLUECOAT-SG-WCCP-MIB -->
+<!-- Start of auto generated data from MIB: BLUECOAT-AV-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avAntivirusUpdateSuccess</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avAntivirusUpdateSuccess</event-label>
+	<descr>
+&lt;p&gt;Successful av engine/pattern update.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avVendorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avEngineVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPatternVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPatternDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avAntivirusUpdateSuccess trap received 
+			avVendorName=%parm[#1]% 
+			avEngineVersion=%parm[#2]% 
+			avPatternVersion=%parm[#3]% 
+			avPatternDateTime=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avAntivirusUpdateFailed</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avAntivirusUpdateFailed</event-label>
+	<descr>
+&lt;p&gt;Av engine/pattern update failed, avUpdateFailureReason provides more details.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avUpdateFailureReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avVendorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avEngineVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPatternVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPatternDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avAntivirusUpdateFailed trap received 
+			avUpdateFailureReason=%parm[#1]% 
+			avVendorName=%parm[#2]% 
+			avEngineVersion=%parm[#3]% 
+			avPatternVersion=%parm[#4]% 
+			avPatternDateTime=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avVirusDetected</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avVirusDetected</event-label>
+	<descr>
+&lt;p&gt;Infected file detected at avUrl.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avUrl&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avVirusName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avVirusDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avVirusDetected trap received 
+			avUrl=%parm[#1]% 
+			avVirusName=%parm[#2]% 
+			avVirusDetails=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avFileServed</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avFileServed</event-label>
+	<descr>
+&lt;p&gt;File served without scanning. It could not be scanned completely due to a scan exception.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avUrl&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avErrorDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avFileServed trap received 
+			avUrl=%parm[#1]% 
+			avErrorCode=%parm[#2]% 
+			avErrorDetails=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avFileBlocked</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avFileBlocked</event-label>
+	<descr>
+&lt;p&gt;File blocked. It could not be scanned completely due to a scan exception.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avUrl&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avErrorDetails&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avFileBlocked trap received 
+			avUrl=%parm[#1]% 
+			avErrorCode=%parm[#2]% 
+			avErrorDetails=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avNewFirmwareAvailable</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avNewFirmwareAvailable</event-label>
+	<descr>
+&lt;p&gt;New firmware version published at the Blue Coat download location.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avInstalledFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPublishedFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avNewFirmwareAvailable trap received 
+			avInstalledFirmwareVersion=%parm[#1]% 
+			avPublishedFirmwareVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avFirmwareUpdateSuccess</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avFirmwareUpdateSuccess</event-label>
+	<descr>
+&lt;p&gt;Firmware update completed successfully.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPreviousFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avInstalledFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avFirmwareUpdateSuccess trap received 
+			avPreviousFirmwareVersion=%parm[#1]% 
+			avInstalledFirmwareVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avFirmwareUpdateFailed</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avFirmwareUpdateFailed</event-label>
+	<descr>
+&lt;p&gt;Firmware update failed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avInstalledFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avPublishedFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avUpdateFailureReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avFirmwareUpdateFailed trap received 
+			avInstalledFirmwareVersion=%parm[#1]% 
+			avPublishedFirmwareVersion=%parm[#2]% 
+			avUpdateFailureReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avAntivirusLicenseWarning</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avAntivirusLicenseWarning</event-label>
+	<descr>
+&lt;p&gt;The antivirus license is about to expire.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avVendorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avLicenseDaysRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avAntivirusLicenseWarning trap received 
+			avVendorName=%parm[#1]% 
+			avLicenseDaysRemaining=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/avICTMWarning</uei>
+	<event-label>BLUECOAT-AV-MIB defined trap event: avICTMWarning</event-label>
+	<descr>
+&lt;p&gt;The warning from the Intelligent Connection Traffic Monitoring
+feature that the number of 'slow' connections has crossed the
+threshold value.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avICTMWarningReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avSlowICAPConnections&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avICTMWarning trap received 
+			avICTMWarningReason=%parm[#1]% 
+			avSlowICAPConnections=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-AV-MIB -->
+<!-- Start of auto generated data from MIB: ATTACK-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceAttackTrap</uei>
+	<event-label>ATTACK-MIB defined trap event: deviceAttackTrap</event-label>
+	<descr>
+&lt;p&gt;At the start of an attack a notification is
+generated with 'deviceAttackStatus = under-attack(2)'.
+At the end of an attack a notification is generated with
+'deviceAttackStatus = no-attack(1)'.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceAttackName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceAttackStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		no-attack(1)
+		under-attack(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceAttackTrap trap received 
+			deviceAttackName=%parm[#1]% 
+			deviceAttackStatus=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<!-- End of auto generated data from MIB: ATTACK-MIB -->
+<!-- Start of auto generated data from MIB: POLICY-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/devicePolicyTrap</uei>
+	<event-label>POLICY-MIB defined trap event: devicePolicyTrap</event-label>
+	<descr>
+&lt;p&gt;A notification is generated when the policy triggers it&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	devicePolicyMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			devicePolicyTrap trap received 
+			devicePolicyMessage=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: POLICY-MIB -->
+<!-- Start of auto generated data from MIB: SENSOR-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.1.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceSensorTrap</uei>
+	<event-label>SENSOR-MIB defined trap event: deviceSensorTrap</event-label>
+	<descr>
+&lt;p&gt;The sensor value warrants a notification.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceSensorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ok(1)
+		unknown(2)
+		not-installed(3)
+		voltage-low-warning(4)
+		voltage-low-critical(5)
+		no-power(6)
+		voltage-high-warning(7)
+		voltage-high-critical(8)
+		voltage-high-severe(9)
+		temperature-high-warning(10)
+		temperature-high-critical(11)
+		temperature-high-severe(12)
+		fan-slow-warning(13)
+		fan-slow-critical(14)
+		fan-stopped(15)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceSensorTrap trap received 
+			deviceSensorName=%parm[#1]% 
+			deviceSensorValue=%parm[#2]% 
+			deviceSensorCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: SENSOR-MIB -->
+<!-- Start of auto generated data from MIB: USAGE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3417.2.4.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bluecoat/traps/deviceUsageTrap</uei>
+	<event-label>USAGE-MIB defined trap event: deviceUsageTrap</event-label>
+	<descr>
+&lt;p&gt;At notification is sent when the deviceUsagePercent
+exceeds a threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsageName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsagePercent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	deviceUsageStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ok(1)
+		high(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			deviceUsageTrap trap received 
+			deviceUsageName=%parm[#1]% 
+			deviceUsagePercent=%parm[#2]% 
+			deviceUsageStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: USAGE-MIB -->
+</events>

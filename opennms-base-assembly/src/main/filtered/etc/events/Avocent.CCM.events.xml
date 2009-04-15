@@ -1,0 +1,6321 @@
+<events>
+<!-- Start of auto generated data from MIB: AVCT-CCM-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmRebootStartedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmRebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance is in the process of rebooting.
+
+The name of the user who initiated the reboot
+is contained in ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmRebootStartedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserLoginTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged into the appliance.
+
+This trap is sent when a user logs into the CLI port or when a user
+exits a serial session.
+
+The name of the user who logged in is contained
+in ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserLoginTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserLogoutTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out of the appliance. This trap is sent when a user
+logs out of the CLI port or when a user exits a serial session.
+
+The name of the user who logged out is contained
+in ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserLogoutTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSerialSessionStartedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSerialSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A serial session has started.
+
+The name of the user who is connected to the session
+is contained in ccmTrapObjectUserName.
+
+The port number on the appliance that the session is using is
+contained in ccmTrapObjectSessionIdentifier.
+
+The port name on the appliance that the session is using is 
+contained in ccmTrapObjectServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSerialSessionStartedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectSessionIdentifier=%parm[#2]% 
+			ccmTrapObjectServerName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSerialSessionStoppedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSerialSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A serial session has stoppped.
+
+The name of the user who was connected to the session
+is contained in ccmTrapObjectUserName.
+
+The port number on the appliance that the session was using is
+contained in ccmTrapObjectSessionIdentifier.
+
+The port name on the appliance that the session was using is
+contained in ccmTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSerialSessionStoppedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectSessionIdentifier=%parm[#2]% 
+			ccmTrapObjectServerName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSerialSessionTerminatedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSerialSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A serial session has been terminated or preempted by another
+user.
+
+The name of the user who terminated or preempted the session is
+contained in ccmTrapObjectUserName.
+
+The name of the user who was terminated or preempted from the session
+is contained in ccmTrapObjectTargetUserName.
+
+The port number on the appliance that the session was using is
+contained in ccmTrapObjectSessionIdentifier.
+
+The port name on the appliance that the session was using is
+contained in ccmTrapObjectServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSerialSessionTerminatedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]% 
+			ccmTrapObjectSessionIdentifier=%parm[#3]% 
+			ccmTrapObjectServerName=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmImageUpgradeStartedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmImageUpgradeStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of a software image.
+
+The name of the user who initiated the image upgrade is
+contained in ccmTrapObjectUserName.
+
+The type of image that is being upgraded is contained
+in ccmTrapObjectImageType.
+
+The version of the image that the appliance is upgrading to is
+contained in ccmTrapObjectImageNewVersion.
+
+The version of the image that the appliance is currently running
+is contained in ccmTrapObjectImageCurrentVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectImageType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		boot(1)
+		app(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmImageUpgradeStartedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectImageType=%parm[#2]% 
+			ccmTrapObjectImageNewVersion=%parm[#3]% 
+			ccmTrapObjectImageCurrentVersion=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmImageUpgradeResultsTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmImageUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This object contains the results of the upgrade of a software image.
+
+The result is contained in ccmTrapObjectImageUpgradeResults.
+
+The type of software image the upgrade result is for is contained in
+ccmTrapObjectImageType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectImageUpgradeResults&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeTftpNoSocket(2)
+		imageUpgradeTftpConnectFailure(3)
+		imageUpgradeTftpRequestDenied(4)
+		imageUpgradeTftpBadPacket(5)
+		imageUpgradeTftpOOS(6)
+		imageUpgradeTftpTooBig(7)
+		imageUpgradeTftpTimeout(8)
+		imageUpgradeAlreadyInProgress(9)
+		imageUpgradeCannotStart(10)
+		imageUpgradeMemoryError(11)
+		imageUpgradeTftpProtocolError(12)
+		imageUpgradeBadType(13)
+		imageUpgradeInvalidAppDowngrade(14)
+		imageUpgradeChecksumError(15)
+		imageUpgradeFlashError(16)
+		imageUpgradeInternalError(17)
+		imageUpgradeFileNotFound(18)
+		imageUpgradeBadHeader(19)
+		imageUpgradeIncompatibleHeader(20)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectImageType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		boot(1)
+		app(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmImageUpgradeResultsTrap trap received 
+			ccmTrapObjectImageUpgradeResults=%parm[#1]% 
+			ccmTrapObjectImageType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserAddedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A new user has been added to the local user database.
+
+The name of the user who added the new user is contained
+in ccmTrapObjectUserName.
+
+The name of the new user is contained in
+ccmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserAddedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserDeletedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been deleted from the local user database.
+
+The name of the user who deleted the user is contained
+in ccmTrapObjectUserName.
+
+The name of the user who was deleted is contained
+in ccmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserDeletedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserModifiedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserModifiedTrap</event-label>
+	<descr>
+&lt;p&gt;A user was modified.
+
+The the name of the user who modified the user is contain
+in ccmTrapObjectUserName.
+
+The name of the user who was modified is contained
+in ccmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserModifiedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserAuthenticationFailureTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserAuthenticationFailureTrap</event-label>
+	<descr>
+&lt;p&gt;A user failed to authenticate with the appliance.
+
+The name of the user who failed to authenticate
+is contained in ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserAuthenticationFailureTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmFactoryDefaultsSetTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmFactoryDefaultsSetTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has been commanded to set itself to factory defaults.
+
+The appliance sends this trap after being commanded to set itself
+to factory defaults but prior to actually reverting to factory
+defaults.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmFactoryDefaultsSetTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmPortAlertTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmPortAlertTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance detected a cry for help string on a serial port.
+
+The serial port number the cry for help string was detected
+on is contained in ccmTrapObjectPortNumber.
+
+The serial port name the cry for help string was detected
+on is contained in ccmTrapObjectServerName.
+
+The cry for help string that was detected is contained
+in ccmTrapObjectPortAlertString.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmPortAlertTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectPortAlertString=%parm[#2]% 
+			ccmTrapObjectServerName=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmConfigurationFileLoadedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmConfigurationFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a configuration file.
+
+The name of the user who commanded the appliance to
+load the configuration file is contained in
+ccmTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+ccmTrapObjectFileName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmConfigurationFileLoadedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserDatabaseFileLoadedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserDatabaseFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a user database file.
+
+The name of the user who commanded the appliance to
+load the user database file is contained in
+ccmTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+ccmTrapObjectFileName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserDatabaseFileLoadedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmPortPowerOnDetectTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmPortPowerOnDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance monitor has detected that the power on/off control
+signal is high on a serial port indicating that the server attached
+to the port is powered on.
+
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of this signal
+from low to high.
+
+The affected serial port number is contained in
+ccmTrapObjectPortNumber.
+
+The affected serial port name is contained in
+ccmTrapObjectServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmPortPowerOnDetectTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmPortPowerOffDetectTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmPortPowerOffDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance monitor has detected that the power on/off control
+signal is low on a serial port indicating that server attached to
+the port is powered off.
+
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of this signal
+from high to low.
+
+The affected serial port number is contained in
+ccmTrapObjectPortNumber.
+
+The affected serial port name is contained in
+ccmTrapObjectServerName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmPortPowerOffDetectTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcDeviceOnlineTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcDeviceOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is detected to be online.
+
+This trap is sent upon initialization of the power device if it is 
+online and responding. Subsequent traps are sent if the power device 
+transitions from offline to online.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcDeviceOnlineTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcDeviceOfflineTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcDeviceOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is detected to be offline.
+
+This trap is sent upon initialization of the power device if it is not
+responding. Subsequent traps are sent if the power device transitions
+from online to offline.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcDeviceOfflineTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcLoginErrTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcLoginErrTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has a login error.
+
+A login error occurs when the appliance is unable to login to the
+power device using the user name configured in the appliance.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The user name attempting to login to the power device is contained in
+ccmTrapObjectSpcDeviceLogin.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLogin&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcLoginErrTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceLogin=%parm[#3]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#4]% 
+			ccmTrapObjectEntityNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketOnCommandTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketOnCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the on command.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that was issued the on command is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that was issued the on command is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketOnCommandTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#2]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#3]% 
+			ccmTrapObjectSpcSocket=%parm[#4]% 
+			ccmTrapObjectServerName=%parm[#5]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#6]% 
+			ccmTrapObjectEntityNumber=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketOffCommandTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketOffCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the off command.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that was issued the off command is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that was issued the off command is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketOffCommandTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#2]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#3]% 
+			ccmTrapObjectSpcSocket=%parm[#4]% 
+			ccmTrapObjectServerName=%parm[#5]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#6]% 
+			ccmTrapObjectEntityNumber=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketRebootCommandTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketRebootCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the reboot command.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that was issued the reboot command is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that was issued the reboot command is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketRebootCommandTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#2]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#3]% 
+			ccmTrapObjectSpcSocket=%parm[#4]% 
+			ccmTrapObjectServerName=%parm[#5]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#6]% 
+			ccmTrapObjectEntityNumber=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketOnSenseFailTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketOnSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an on sense 
+failure for a socket.
+
+An on sense failure occurs when a socket should be in the on state
+but is actually in the off state.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that has the failure is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that has the failure is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketOnSenseFailTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcSocket=%parm[#3]% 
+			ccmTrapObjectServerName=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketOffSenseFailTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketOffSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an off sense 
+failure for a socket.
+
+An off sense failure occurs when a socket should be in the off state
+but is actually in the on state.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that has the failure is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that has the failure is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketOffSenseFailTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcSocket=%parm[#3]% 
+			ccmTrapObjectServerName=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcTotalLoadHighTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has exceeded the maximum 
+threshold for total load.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcTotalLoadHighTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcTotalLoadLowTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has gone beneath the minimum
+threshold for total load.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcTotalLoadLowTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcStatusSocketOnTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcStatusSocketOnTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the on state.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that has changed to the on state is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that has changed to the on state is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcStatusSocketOnTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcSocket=%parm[#3]% 
+			ccmTrapObjectServerName=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcStatusSocketOffTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcStatusSocketOffTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the off state.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The socket number that has changed to the off state is contained
+in ccmTrapObjectSpcSocket.
+
+The socket name that has changed to the off state is contained
+in ccmTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device that is connected to a port of 
+the appliance is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcStatusSocketOffTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcSocket=%parm[#3]% 
+			ccmTrapObjectServerName=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserLockedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserLockedTrap</event-label>
+	<descr>
+&lt;p&gt;A user account has been locked.
+
+The IP address of the client from which the last connection was
+attempted is contained in ccmTrapObjectIPAddress.
+If 0.0.0.0, then the user was locked attempting to authentication
+from the local Serial CLI.
+
+The name of the user who was locked is contained
+in ccmTrapObjectTargetUserName.
+
+The reason for which the user account has been locked is contained
+in ccmTrapObjectLockReason.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectLockReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		consecutiveAuthenticationFailures(1)
+		administrative(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserLockedTrap trap received 
+			ccmTrapObjectIPAddress=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]% 
+			ccmTrapObjectLockReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmUserUnlockedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmUserUnlockedTrap</event-label>
+	<descr>
+&lt;p&gt;A user account has been unlocked.
+
+The IP address of the client that originated the unlock request
+is contained in ccmTrapObjectIPAddress. When the user
+account is unlocked by an appliance reboot or by the expiration
+of the lockout period (as specified in the
+ccmTrapObjectUnlockReason object), the IP address
+will be 0.0.0.0.
+
+The name of the user who unlocked the user is contained
+in ccmTrapObjectUserName. When the user account is unlocked
+by an appliance reboot or by the expiration of the lockout period
+(as specified in the ccmTrapObjectUnlockReason object), the
+name of the user will be blank.
+
+The name of the user who was unlocked is contained
+in ccmTrapObjectTargetUserName.
+
+The reason for which the user account has been unlocked is contained
+in ccmTrapObjectUnlockReason.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUnlockReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		lockoutExpired(1)
+		administrative(2)
+		reboot(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmUserUnlockedTrap trap received 
+			ccmTrapObjectIPAddress=%parm[#1]% 
+			ccmTrapObjectUserName=%parm[#2]% 
+			ccmTrapObjectTargetUserName=%parm[#3]% 
+			ccmTrapObjectUnlockReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmAggregatedServerStatusChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmAggregatedServerStatusChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The session status or power status of one or more connection paths has
+changed.
+
+A list of all connection paths known to the appliance is contained
+in ccmTrapObjectAggregateServerStatusChanged.
+
+This trap is always sent by the appliance on bootup to report the
+current status of all connection paths.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectAggregateServerStatusChanged&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmAggregatedServerStatusChangedTrap trap received 
+			ccmTrapObjectAggregateServerStatusChanged=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsDisableRqstdTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsDisableRqstdTrap</event-label>
+	<descr>
+&lt;p&gt;The request to disable NFS was sent.
+
+The user that requested NFS disable is contained in
+ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsDisableRqstdTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsUnmountedOKTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsUnmountedOKTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has completed the disable/unmount NFS.
+
+This trap is sent after an NFS Disable request is made and confirms
+that the unmount operation was successfully completed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsUnmountedOKTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsEnableRqstdTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsEnableRqstdTrap</event-label>
+	<descr>
+&lt;p&gt;The request to enable NFS was sent.
+
+The user that requested NFS enable is contained in
+ccmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsEnableRqstdTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountedOkTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountedOkTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has completed the enable/mount NFS.
+
+This trap is sent after an NFS Enable request is made and confirms
+that the mount operation was successfully completed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountedOkTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountVerifiedOKTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountVerifiedOKTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has verified that the NFS mount operation succeeded.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountVerifiedOKTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountFailedRetryingTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountFailedRetryingTrap</event-label>
+	<descr>
+&lt;p&gt;The first NFS mount attempt failed.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountFailedRetryingTrap trap received 
+			ccmTrapObjectNfsPriErrorReason=%parm[#1]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountFailedGaveUpTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountFailedGaveUpTrap</event-label>
+	<descr>
+&lt;p&gt;The final NFS mount attempt failed. No more attempts to mount a NFS
+will be made.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountFailedGaveUpTrap trap received 
+			ccmTrapObjectNfsPriErrorReason=%parm[#1]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountLostRetryingTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountLostRetryingTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when the NFS mount is lost.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountLostRetryingTrap trap received 
+			ccmTrapObjectNfsPriErrorReason=%parm[#1]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountLost1stRetryFailedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountLost1stRetryFailedTrap</event-label>
+	<descr>
+&lt;p&gt;The first NFS remount attempt failed.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountLost1stRetryFailedTrap trap received 
+			ccmTrapObjectNfsPriErrorReason=%parm[#1]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsMountLostGaveUpTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsMountLostGaveUpTrap</event-label>
+	<descr>
+&lt;p&gt;The final NFS remount attempt failed.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsMountLostGaveUpTrap trap received 
+			ccmTrapObjectNfsPriErrorReason=%parm[#1]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>44</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortEnableRqstdTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortEnableRqstdTrap</event-label>
+	<descr>
+&lt;p&gt;A request to enable a NFS port was sent.
+
+The ccmTrapObjectUserName contains the name of the user that
+requested this operation.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port to be enabled.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortEnableRqstdTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectPortNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortDisableRqstdTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortDisableRqstdTrap</event-label>
+	<descr>
+&lt;p&gt;A request to disable a NFS port was sent.
+
+The ccmTrapObjectUserName contains the name of the user that
+requested this operation.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port to be disabled.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortDisableRqstdTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectPortNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>46</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortNeedsMountTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortNeedsMountTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a port needs mount.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port that needs to be mounted.
+
+The ccmTrapObjectNfsPortErrStatus returns the status of the
+port at the time that this trap was generated.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPortErrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsMountNeeded(1)
+		nfsErrOpeningHistoryFileRetry(2)
+		nfsErrOpeningHistoryFileFinal(3)
+		nfsErrWriteCurrent(4)
+		nfsErrWriteRecent(5)
+		nfsOverrunCurrent(6)
+		nfsOverrunRecent(7)
+		nfsNoRecentErrors(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortNeedsMountTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectNfsPortErrStatus=%parm[#2]% 
+			ccmTrapObjectNfsPriErrorReason=%parm[#3]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>47</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortOpenFailRetryingTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortOpenFailRetryingTrap</event-label>
+	<descr>
+&lt;p&gt;The first attempt to open the NFS file failed.
+Several attempts will be made until the operation will get
+canceled.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port that failed.
+
+The ccmTrapObjectNfsPortErrStatus returns the status of the
+port at the time that this trap was generated.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPortErrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsMountNeeded(1)
+		nfsErrOpeningHistoryFileRetry(2)
+		nfsErrOpeningHistoryFileFinal(3)
+		nfsErrWriteCurrent(4)
+		nfsErrWriteRecent(5)
+		nfsOverrunCurrent(6)
+		nfsOverrunRecent(7)
+		nfsNoRecentErrors(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortOpenFailRetryingTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectNfsPortErrStatus=%parm[#2]% 
+			ccmTrapObjectNfsPriErrorReason=%parm[#3]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>48</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortOpenFailGaveUpTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortOpenFailGaveUpTrap</event-label>
+	<descr>
+&lt;p&gt;The final attempt to open the NFS file failed. No more attempts
+will be made and the operation will be canceled.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port that failed.
+
+The ccmTrapObjectNfsPortErrStatus returns the status of the
+port at the time that this trap was generated.
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPortErrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsMountNeeded(1)
+		nfsErrOpeningHistoryFileRetry(2)
+		nfsErrOpeningHistoryFileFinal(3)
+		nfsErrWriteCurrent(4)
+		nfsErrWriteRecent(5)
+		nfsOverrunCurrent(6)
+		nfsOverrunRecent(7)
+		nfsNoRecentErrors(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortOpenFailGaveUpTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectNfsPortErrStatus=%parm[#2]% 
+			ccmTrapObjectNfsPriErrorReason=%parm[#3]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>49</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortFileOpenOKTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortFileOpenOKTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when an attempt to open a file through NFS is
+successful.
+
+The ccmTrapObjectPortNumber returns the port number of
+the serial port that was successfully open.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortFileOpenOKTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>50</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortWriteErrorTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortWriteErrorTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when a write file operation fails.
+If multiple consecutive write operations fail, this trap is
+only sent once, upon the occurrence of the first failure.
+Once sent, this trap will not be sent again until a write operation has
+been successfully performed, and a period of 15 minutes has elapsed
+without any additional write operation failures and without any overrun
+errors. (I.e. This trap is sent only when the status of the port is 'No
+recent errors.)
+
+The port number of the serial port on which the failure occurred is
+contained in ccmTrapObjectPortNumber.
+
+The status of the serial port on which the failure occurred is
+contained in ccmTrapObjectNfsPortErrStatus.
+(This is the status of the port at the time that the Trap was
+generated.)
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPortErrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsMountNeeded(1)
+		nfsErrOpeningHistoryFileRetry(2)
+		nfsErrOpeningHistoryFileFinal(3)
+		nfsErrWriteCurrent(4)
+		nfsErrWriteRecent(5)
+		nfsOverrunCurrent(6)
+		nfsOverrunRecent(7)
+		nfsNoRecentErrors(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortWriteErrorTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectNfsPortErrStatus=%parm[#2]% 
+			ccmTrapObjectNfsPriErrorReason=%parm[#3]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>51</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortOverrunErrorTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortOverrunErrorTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when an overrun occurs when writing to the file.
+If multiple consecutive overruns occur, this trap is only sent once,
+upon the occurrence of the first overrun.
+Once sent, this trap will not be sent again until a write operation has
+been successfully performed, and a period of 15 minutes has elapsed
+without any additional overruns or write operation failures.
+This trap is not sent if the most recent write operation failed or if
+a write operation failed within the preceding 15 minute period.
+(I.e. This trap is sent only when the status of the port is 'No recent
+errors.)
+
+The port number of the serial port on which the failure occurred is
+contained in ccmTrapObjectPortNumber.
+
+The status of the serial port on which the error occurred is
+contained in ccmTrapObjectNfsPortErrStatus. (This is the
+status of the port at the time that the Trap was generated.)
+
+The ccmTrapObjectNfsPriErrorReason specifies the main reason
+of failure and can have any value defined in NfsErrorReasonEnum.
+
+The ccmTrapObjectNfsSecErrorReason specifies the secondary
+reason of failure and can have any value defined in
+NfsErrorReasonEnum or if there is no detailed reason then the
+value will be 9999 (no error).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPortErrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsMountNeeded(1)
+		nfsErrOpeningHistoryFileRetry(2)
+		nfsErrOpeningHistoryFileFinal(3)
+		nfsErrWriteCurrent(4)
+		nfsErrWriteRecent(5)
+		nfsOverrunCurrent(6)
+		nfsOverrunRecent(7)
+		nfsNoRecentErrors(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsPriErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectNfsSecErrorReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nfsNhGeneralErr(1)
+		nfsNhIntMountErr(2)
+		nfsNhFTypeCompatErr(3)
+		nfsNhFileNameErr(4)
+		nfsNhFileWriteErr(5)
+		nfsNhFileOvRnErr(6)
+		nfsRpcCantEncodeArgs(7)
+		nfsRpcCantDecodeRes(8)
+		nfsRpcCantSend(9)
+		nfsRpcCantRecv(10)
+		nfsRpcTimedOut(11)
+		nfsRpcVersMismatch(12)
+		nfsRpcAuthErr(13)
+		nfsRpcProgUnavail(14)
+		nfsRpcProgVersMismatch(15)
+		nfsRpcProcUnavail(16)
+		nfsRpcCantDecodeArgs(17)
+		nfsRpcSystemErr(18)
+		nfsRpcUnknownHost(19)
+		nfsRpcPortmapFailure(20)
+		nfsRpcProgNotRegistered(21)
+		nfsRpcFailed(22)
+		nfsRpcUnknownProto(23)
+		nfsRpcIntr(24)
+		nfsRpcUnknownAddr(25)
+		nfsRpcTliErr(26)
+		nfsRpcNoBroadcast(27)
+		nfsRpcN2AXLateFailure(28)
+		nfsRpcUDErr(29)
+		nfsRpcInProgress(30)
+		nfsRpcStaleRACHandle(31)
+		nfsSysEOpNotPerm(32)
+		nfsSysENoEntry(33)
+		nfsSysEIOErr(34)
+		nfsSysENXIO(35)
+		nfsSysEBadFile(36)
+		nfsSysENoMem(37)
+		nfsSysENoAccess(38)
+		nfsSysEFileExist(39)
+		nfsSysEXDev(40)
+		nfsSysENoDev(41)
+		nfsSysENoDir(42)
+		nfsSysEIsDit(43)
+		nfsSysEInval(44)
+		nfsSysEFileBig(45)
+		nfsSysENoSpace(46)
+		nfsSysEROFileSystem(47)
+		nfsSysEToManyLinks(48)
+		nfsSysENetDown(49)
+		nfsSysENetUnreach(50)
+		nfsSysENetReset(51)
+		nfsSysEConnAborted(52)
+		nfsSysEConnReset(53)
+		nfsSysENoBufs(54)
+		nfsSysEIsConnected(55)
+		nfsSysENotCon(56)
+		nfsSysEShutDown(57)
+		nfsSysETimedOut(58)
+		nfsSysEConnRefused(59)
+		nfsSysEHostDown(60)
+		nfsSysEHostUnreach(61)
+		nfsSysEStale(62)
+		nfsNfsErrPerm(63)
+		nfsNfsErrNoEnt(64)
+		nfsNfsErrIO(65)
+		nfsNfsErrNXIO(66)
+		nfsNfsErrAccess(67)
+		nfsNfsErrFileExist(68)
+		nfsNfsErrXDev(69)
+		nfsNfsErrNoDev(70)
+		nfsNfsErrNoDir(71)
+		nfsNfsErrIsDir(72)
+		nfsNfsErrInval(73)
+		nfsNfsErrFileBig(74)
+		nfsNfsErrNoSpace(75)
+		nfsNfsErrROFileSystem(76)
+		nfsNfsErrTooManyLinks(77)
+		nfsNfsErrNameTooLong(78)
+		nfsNfsErrDirNotEmpty(79)
+		nfsNfsErrDiskQuot(80)
+		nfsNfsErrStale(81)
+		nfsNfsErrRemote(82)
+		nfsNfsErrWFlush(83)
+		nfsNfsErrBadHandle(84)
+		nfsNfsErrNotSync(85)
+		nfsNfsErrBadCookie(86)
+		nfsNfsErrNotSupp(87)
+		nfsNfsErrTooSmall(88)
+		nfsNfsErrServerFault(89)
+		nfsNfsErrBadType(90)
+		nfsNfsErrReqNotInTime(91)
+		nfsNfsErrSameAsReq(92)
+		nfsNfsErrDenied(93)
+		nfsNfsErrExpired(94)
+		nfsNfsErrLocked(95)
+		nfsNfsErrGrace(96)
+		nfsNfsErrFHandleExpired(97)
+		nfsNfsErrShareDenied(98)
+		nfsNfsErrWrongSec(99)
+		nfsNfsErrClientIDInUSe(100)
+		nfsNfsErrResource(101)
+		nfsNfsErrMoved(102)
+		nfsNfsErrNoFileHandle(103)
+		nfsNfsErrMinVersMMatch(104)
+		nfsNfsErrStaleClientID(105)
+		nfsNfsErrStaleStateID(106)
+		nfsNfsErrOldStateID(107)
+		nfsNfsErrBadStateID(108)
+		nfsNfsErrBadSeqID(109)
+		nfsNfsErrNotSame(110)
+		nfsNfsErrLockRange(111)
+		nfsNfsErrSymLink(112)
+		nfsNfsErrRestoreFH(113)
+		nfsNfsErrLeaseMoved(114)
+		nfsNfsErrAttrNotSupp(115)
+		nfsNfsErrNoGrace(116)
+		nfsNfsErrBAdReclaim(117)
+		nfsNfsErrReclaimConfl(118)
+		nfsNfsErrBadXDR(119)
+		nfsNfsErrLocksHeld(120)
+		nfsNfsErrOpenMode(121)
+		nfsNfsErrBadOwner(122)
+		nfsNfsErrBadChar(123)
+		nfsNfsErrBadName(124)
+		nfsNfsErrBadRange(125)
+		nfsNfsErrLockNotSupp(126)
+		nfsNfsErrOpIllegal(127)
+		nfsNfsErrDeadLock(128)
+		nfsNfsErrFileOpen(129)
+		nfsNfsErrAdminRevoked(130)
+		nfsNfsErrCbPathDown(131)
+		nfsNhtcpNfsNotAvailErr(132)
+		nfsNoError(9999)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortOverrunErrorTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]% 
+			ccmTrapObjectNfsPortErrStatus=%parm[#2]% 
+			ccmTrapObjectNfsPriErrorReason=%parm[#3]% 
+			ccmTrapObjectNfsSecErrorReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>52</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortNoRecentErrorsTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortNoRecentErrorsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent if the status of a port changes to a status of
+'No recent errors' from one of the current or recent write and/or
+overrun error status conditions.
+
+The ccmTrapObjectPortNumber contains the number of the port
+that has no errors.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortNoRecentErrorsTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>53</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmNfsPortFileClosedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmNfsPortFileClosedTrap</event-label>
+	<descr>
+&lt;p&gt;The file open through a NFS port was successfully closed.
+
+The ccmTrapObjectPortNumber returns the serial port number
+where the file was open.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmNfsPortFileClosedTrap trap received 
+			ccmTrapObjectPortNumber=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>54</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortSessionStartedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A session to a SoL port has started.
+
+The name of the user who is connected to the session
+is contained in ccmTrapObjectUserName.
+
+The name of the SoL port that the session is using is
+contained in ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port connects to 
+is contained in ccmTrapObjectIPAddress.
+
+The entity number of the SoL port that the session is using is
+contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortSessionStartedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectIPAddress=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortSessionStoppedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A session to a SoL port has stopped.
+
+The name of the user who was connected to the session
+is contained in ccmTrapObjectUserName.
+
+The name of the SoL port that the session was using is
+contained in ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port connects to 
+is contained in ccmTrapObjectIPAddress.
+
+The entity number of the SoL port that the session was using is 
+contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortSessionStoppedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectIPAddress=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortSessionTerminatedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A session to a SoL port has been terminated or preempted 
+by another user.
+
+The name of the user who terminated or preempted the session is
+contained in ccmTrapObjectUserName.
+
+The name of the user who was terminated or preempted from the session
+is contained in ccmTrapObjectTargetUserName.
+
+The name of the SoL port that the session was using is
+contained in ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port connects to 
+is contained in ccmTrapObjectIPAddress.
+
+The entity number of the SoL port that the session was using is
+contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortSessionTerminatedTrap trap received 
+			ccmTrapObjectUserName=%parm[#1]% 
+			ccmTrapObjectTargetUserName=%parm[#2]% 
+			ccmTrapObjectServerName=%parm[#3]% 
+			ccmTrapObjectIPAddress=%parm[#4]% 
+			ccmTrapObjectEntityNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>57</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortLcmTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortLcmTrap</event-label>
+	<descr>
+&lt;p&gt;Loss of communication between a SoL port and its BMC.
+
+The name of the SoL port that has lost communication to its
+BMC is contained in ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port has lost communication 
+with is contained in ccmTrapObjectIPAddress.
+
+The reason for the loss of communication is contained in
+ccmTrapObjectLcmReason.
+
+The entity number of the SoL port that has lost communication to its
+BMC is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectLcmReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		commFailure(1)
+		loginFailure(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortLcmTrap trap received 
+			ccmTrapObjectServerName=%parm[#1]% 
+			ccmTrapObjectIPAddress=%parm[#2]% 
+			ccmTrapObjectLcmReason=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>58</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortRcmTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortRcmTrap</event-label>
+	<descr>
+&lt;p&gt;A SoL port has regained communication with its BMC.
+
+The name of the SoL port that has regained communication to its
+BMC is contained in ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port has regained communication 
+with is contained in ccmTrapObjectIPAddress.
+
+The entity number of the SoL port that has regained communication to
+its BMC is contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortRcmTrap trap received 
+			ccmTrapObjectServerName=%parm[#1]% 
+			ccmTrapObjectIPAddress=%parm[#2]% 
+			ccmTrapObjectEntityNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>59</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSerialPortNameChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSerialPortNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a serial port has changed.
+
+The previous name of the serial port is contained in
+ccmTrapObjectOldName.
+
+The new name of the serial port is contained in
+ccmTrapObjectServerName.
+
+The serial port number for which the name changed is 
+contained in ccmTrapObjectPortNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSerialPortNameChangedTrap trap received 
+			ccmTrapObjectOldName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectPortNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>60</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortNameChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a SoL port has changed.
+
+The previous name of the SoL port is contained in
+ccmTrapObjectOldName.
+
+The new name of the SoL port is contained in
+ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port connects to 
+is contained in ccmTrapObjectIPAddress.
+
+The entity number of the SoL port for which the name changed is 
+contained in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortNameChangedTrap trap received 
+			ccmTrapObjectOldName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectIPAddress=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcSocketNameChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcSocketNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device socket has changed.
+
+The previous name of the power device socket is contained in
+ccmTrapObjectOldName.
+
+The new name of the power device socket is contained in
+ccmTrapObjectServerName.
+
+The location of the power device is contained in
+ccmTrapObjectSPCDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device is contained in
+ccmTrapObjectEntityNumber.
+
+The socket number of the power device is contained in 
+ccmTrapObjectSpcSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcSocketNameChangedTrap trap received 
+			ccmTrapObjectOldName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#3]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]% 
+			ccmTrapObjectSpcSocket=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmTdTypeChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmTdTypeChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The target device type changed for a serial port.
+
+The previous target device type for the serial port is contained in
+ccmTrapObjectOldTdType.
+
+The new target device type for the serial port is contained in
+ccmTrapObjectTdType.
+
+The entity number whose target device type changed is contained
+in ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldTdType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		standard(1)
+		spc(2)
+		dedicatedCli(3)
+		pmd(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTdType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		standard(1)
+		spc(2)
+		dedicatedCli(3)
+		pmd(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmTdTypeChangedTrap trap received 
+			ccmTrapObjectOldTdType=%parm[#1]% 
+			ccmTrapObjectTdType=%parm[#2]% 
+			ccmTrapObjectEntityNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortAddedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A SoL port has been added.
+
+The name of the SoL port that has been added is contained in 
+ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port connects to is contained in
+ccmTrapObjectIPAddress.
+
+The TCP port used to connect to the new SoL port is contained in
+ccmTrapObjectTelnetPortNumber.
+
+The entity number of the SoL port that has been added is contained in
+ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTelnetPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortAddedTrap trap received 
+			ccmTrapObjectServerName=%parm[#1]% 
+			ccmTrapObjectIPAddress=%parm[#2]% 
+			ccmTrapObjectTelnetPortNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>64</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSolPortDeletedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSolPortDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A SoL port has been deleted.
+
+The name of the SoL port that was deleted is contained in 
+ccmTrapObjectServerName.
+
+The IP address of the BMC the SoL port was connected to is 
+contained in ccmTrapObjectIPAddress.
+
+The TCP port that was assigned to the SoL port that was deleted is 
+contained in ccmTrapObjectTelnetPortNumber.
+
+The entity number of the SoL port that was deleted is contained in
+ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectTelnetPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSolPortDeletedTrap trap received 
+			ccmTrapObjectServerName=%parm[#1]% 
+			ccmTrapObjectIPAddress=%parm[#2]% 
+			ccmTrapObjectTelnetPortNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>65</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcInletTotalLoadHighTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcInletTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has exceeded the maximum 
+threshold for total load of an inlet.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device is contained in
+ccmTrapObjectEntityNumber.
+
+The inlet of the power device is contained in ccmTrapObjectSpcDeviceInlet.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcInletTotalLoadHighTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]% 
+			ccmTrapObjectSpcDeviceInlet=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>66</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcInletTotalLoadLowTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcInletTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has gone beneath the minimum
+threshold for total load.
+
+The location of the power device is contained in
+ccmTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device is contained in
+ccmTrapObjectEntityNumber.
+
+The inlet of the power device is contained in 
+ccmTrapObjectSpcDeviceInlet.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcInletTotalLoadLowTrap trap received 
+			ccmTrapObjectSpcDeviceLocation=%parm[#1]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#2]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#3]% 
+			ccmTrapObjectEntityNumber=%parm[#4]% 
+			ccmTrapObjectSpcDeviceInlet=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>67</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcDeviceNameChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcDeviceNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device has changed.
+
+The previous name of the power device is contained in
+ccmTrapObjectOldName.
+
+The new name of the power device is contained in
+ccmTrapObjectServerName.
+
+The location of the power device is contained in
+ccmTrapObjectSPCDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device is contained in
+ccmTrapObjectEntityNumber.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcDeviceNameChangedTrap trap received 
+			ccmTrapObjectOldName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#3]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.13.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>68</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctCcmSpcInletNameChangedTrap</uei>
+	<event-label>AVCT-CCM-TRAP-MIB defined trap event: avctCcmSpcInletNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device inlet has changed.
+
+The previous name of the power device inlet is contained in
+ccmTrapObjectOldName.
+
+The new name of the power device inlet is contained in
+ccmTrapObjectServerName.
+
+The location of the power device is contained in
+ccmTrapObjectSPCDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in ccmTrapObjectSpcDeviceCCMPort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in ccmTrapObjectSpcDeviceNumber.
+
+The entity number of the power device is contained in
+ccmTrapObjectEntityNumber.
+
+The inlet of the power device is contained in 
+ccmTrapObjectSpcDeviceInlet.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceCCMPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectEntityNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ccmTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctCcmSpcInletNameChangedTrap trap received 
+			ccmTrapObjectOldName=%parm[#1]% 
+			ccmTrapObjectServerName=%parm[#2]% 
+			ccmTrapObjectSpcDeviceLocation=%parm[#3]% 
+			ccmTrapObjectSpcDeviceCCMPort=%parm[#4]% 
+			ccmTrapObjectSpcDeviceNumber=%parm[#5]% 
+			ccmTrapObjectEntityNumber=%parm[#6]% 
+			ccmTrapObjectSpcDeviceInlet=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: AVCT-CCM-TRAP-MIB -->
+</events>

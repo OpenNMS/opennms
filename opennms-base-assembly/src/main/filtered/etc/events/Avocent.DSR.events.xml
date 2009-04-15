@@ -1,0 +1,4668 @@
+<events>
+<!-- vendor/avocent/traps version 0.2.2 -->
+<!-- Start of auto generated data from MIB: IF-MIB -->
+<!-- End of auto generated data from MIB: IF-MIB -->
+<!-- Start of auto generated data from MIB: DSR-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrRebootStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrRebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance is in the process of rebooting.
+
+The name of the user who initiated the reboot is contained in
+avctDsrTrapObjectUserName if available. An empty string is
+reported if a user name is not available. If reboot was issued
+from the CLI port a user name will not be available.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrRebootStartedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVideoSessionStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVideoSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote video session has started.
+
+The name of the user who connected to the video session
+is contained in avctDsrTrapObjectUserName.
+
+The name of the server the user connected to is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the video session
+is using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session is using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session is using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel is not being used for the video session.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVideoSessionStartedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVideoSessionStoppedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVideoSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote video session has stopped.
+
+The name of the user who was connected to the video session
+is contained in avctDsrTrapObjectUserName.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the video session
+was using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session was using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session was using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel was not being used for the video session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVideoSessionStoppedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]% 
+			avctDsrTrapObjectActiveSessions=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVideoSessionTerminatedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVideoSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote video session has been terminated or preempted by another
+user.
+
+The name of the user who terminated or preempted the video session is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. A user
+name will not be available if the remote video session was terminated
+or preempted from the OSCAR interface and OSCAR authentication is
+disabled.
+
+The name of the user who was terminated or preempted from the video
+session is contained in avctDsrTrapObjectTargetUserName.
+
+The name of the server the user was connected to contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the video session was
+using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session was using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session was using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel was not being used for the video session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVideoSessionTerminatedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTargetUserName=%parm[#2]% 
+			avctDsrTrapObjectServerName=%parm[#3]% 
+			avctDsrTrapObjectInputPort=%parm[#4]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#5]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#6]% 
+			avctDsrTrapObjectActiveSessions=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortViewingStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortViewingStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port video session has started.
+
+The name of the server the user connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who connected to the video session is contained
+in avctDsrTrapObjectUserName if available. An empty string
+is reported if a user name is not available. A user name will
+not be available if OSCAR authentication is disabled.
+
+The input port number on the appliance that the video session
+is using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session is using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session is using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel is not being used for the video session.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortViewingStartedTrap trap received 
+			avctDsrTrapObjectServerName=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortViewingStoppedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortViewingStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port video session has stopped.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who was connected to the video session is
+contained in avctDsrTrapObjectUserName if available. An empty string is
+reported if a user name is not available. A user name will not
+be available if OSCAR authentication is disabled.
+
+The input port number on the appliance that the video session
+was using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session was using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session was using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel was not being used for the video session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortViewingStoppedTrap trap received 
+			avctDsrTrapObjectServerName=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]% 
+			avctDsrTrapObjectActiveSessions=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortViewingTerminatedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortViewingTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port video session has been terminated or preempted by
+another user.
+
+The name of the user who terminated or preempted the video session is
+contained in avctDsrTrapObjectUserName.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who was terminated from the video session
+is contained in avctDsrTrapObjectTargetUserName if available.
+An empty string is reported if a user name is not available. A
+user name will not be available if OSCAR authentication
+is disabled.
+
+The input port number on the appliance that the video session was
+using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session was using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session was using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel was not being used for the video session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortViewingTerminatedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectTargetUserName=%parm[#3]% 
+			avctDsrTrapObjectInputPort=%parm[#4]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#5]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#6]% 
+			avctDsrTrapObjectActiveSessions=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorAddedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorAddedTrap</event-label>
+	<descr>
+&lt;p&gt;An IQ Adaptor was added.
+
+The ID of the IQ Adaptor which was added is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The name of the server attached to the IQ Adaptor is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor is
+connected to is contained in avctDsrTrapObjectInputPort.
+
+The cascade switch channel number the IQ Adaptor is connected to is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0
+if the IQ Adaptor is not connected to a switch channel.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorAddedTrap trap received 
+			avctDsrTrapObjectIqAdaptorId=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorRemovedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorRemovedTrap</event-label>
+	<descr>
+&lt;p&gt;An IQ Adaptor was removed.
+
+The ID of the IQ Adaptor which was removed is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The name of the server that was attached to the IQ Adaptor is
+contained in avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor was
+connected to is contained in avctDsrTrapObjectInputPort.
+
+The cascade switch channel number the IQ Adaptor was connected to is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0
+if the IQ Adaptor was not connected to a switch channel.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorRemovedTrap trap received 
+			avctDsrTrapObjectIqAdaptorId=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrScreenResolutionChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrScreenResolutionChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The screen resolution of a server was changed.
+
+The name of the user who changed the screen resolution is contained
+in avctDsrTrapObjectUserName if available. An empty string is
+reported if a user name is not available. A user name will not be
+available if the video session controlling the server was started
+from the OSCAR interface and OSCAR authentication is disabled.
+
+The name of the server the screen resolution was changed on is
+contained in avctDsrTrapObjectServerName.
+
+The previous screen resolution is contained in
+avctDsrTrapObjectPreviousScreenResolution.
+
+The new screen resolution is contained in
+avctDsrTrapObjectCurrentScreenResolution.
+
+The input port number on the appliance that the video session
+is using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the video session is using is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the video session is using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel was not being used for the video session.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectPreviousScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectCurrentScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrScreenResolutionChangedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectPreviousScreenResolution=%parm[#3]% 
+			avctDsrTrapObjectCurrentScreenResolution=%parm[#4]% 
+			avctDsrTrapObjectInputPort=%parm[#5]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#6]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrAggregatedServerStatusChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrAggregatedServerStatusChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The status of one or more servers (connection paths) has
+changed.
+
+A list of connection paths whose status has changed is contained
+in avctDsrTrapObjectAggregatedServerStatusChanged.
+
+This trap is always sent by the appliance on bootup to report the
+current status of all connection paths. Thereafter the trap is sent
+when there is a change in connection path status and will include only
+those paths whose status has changed.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectAggregatedServerStatusChanged&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrAggregatedServerStatusChangedTrap trap received 
+			avctDsrTrapObjectAggregatedServerStatusChanged=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrImageFileUpgradeStarted</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrImageFileUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of its software image file.
+This image file contains all of the software components for the
+entire appliance.
+
+The name of the user who initiated the image upgrade is contained
+in avctDsrTrapObjectUserName if available. An empty string is
+reported if a user name is not available. A user name will not be
+available if the image upgrade was started from the CLI port.
+
+The type of software image being upgraded is contained in
+avctDsrTrapObjectTypeOfImage.
+
+The software image version the appliance is upgrading to is
+contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the appliance is currently running
+is contained in avctDsrTrapObjectImageCurrentVersion.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrImageFileUpgradeStarted trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#2]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#3]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrImageFileUpgradeResultTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrImageFileUpgradeResultTrap</event-label>
+	<descr>
+&lt;p&gt;The result of a software image file upgrade. The result is for the
+main image file that contains all of the software components for the
+entire appliance.
+
+The result is contained in avctDsrTrapObjectImageFileUpgradeResult.
+
+The name of the user who originally started the image upgrade is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. A user name will
+not be available if the image upgrade was started from the CLI port.
+
+The type of software image the upgrade result is for is contained in
+avctDsrTrapObjectTypeOfImage.
+
+The software image version the appliance attempted to upgrade to
+is contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the appliance is running is contained
+in avctDsrTrapObjectImageCurrentVersion. If the software image
+upgrade was successful then this version will match the version
+reported in avctDsrTrapObjectImageNewVersion.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageFileUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrImageFileUpgradeResultTrap trap received 
+			avctDsrTrapObjectImageFileUpgradeResult=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#3]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#4]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorImageUpgradeStarted</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorImageUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;A software image upgrade has started on an IQ Adaptor.
+
+The name of the user who initiated the IQ Adaptor image upgrade is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. A user name
+will not be available if the IQ Adaptor image upgrade was started
+from the CLI port or the OSCAR interface and OSCAR authentication
+is disabled.
+
+The type of software image being upgraded is contained in
+avctDsrTrapObjectIQAdaptorTypeOfImage.
+
+The software image version the IQ Adaptor is upgrading to is
+contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the IQ Adaptor is currently running
+is contained in avctDsrTrapObjectImageCurrentVersion.
+
+The name of the server connected to the IQ Adaptor being upgraded is
+contained in avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor is connected
+to is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor being upgraded is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the IQ Adaptor is connected to is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0
+if the IQ Adaptor is not connected to a switch.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorImageUpgradeStarted trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#2]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#3]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectInputPort=%parm[#6]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#7]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorImageUpgradeResultTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorImageUpgradeResultTrap</event-label>
+	<descr>
+&lt;p&gt;The result of an IQ Adaptor software image upgrade.
+
+The image upgrade result is contained in
+avctDsrTrapObjectIqAdaptorImageUpgradeResult.
+
+The name of the user who originally started the IQ Adaptor image
+upgrade is contained in avctDsrTrapObjectUserName if available.
+An empty string is reported if a user name is not available. A user
+name will not be available if the IQ Adaptor image upgrade was started
+from the CLI port or the OSCAR interface and OSCAR authentication
+is disabled.
+
+The type of software image the upgrade result is for is contained in
+avctDsrTrapObjectTypeOfImage.
+
+The software image version the IQ Adaptor attempted to upgrade to
+is contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the IQ Adaptor is running is contained
+in avctDsrTrapObjectImageCurrentVersion. If the software image
+upgrade was successful then this version will match the version
+reported in avctDsrTrapObjectImageNewVersion.
+
+The name of the server connected to the IQ Adaptor is
+contained in avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor is connected
+to is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the result is for is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the IQ Adaptor is connected to is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0
+if the IQ Adaptor is not connected to a switch.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorImageUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorImageUpgradeResultTrap trap received 
+			avctDsrTrapObjectIqAdaptorImageUpgradeResult=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#3]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#4]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#5]% 
+			avctDsrTrapObjectServerName=%parm[#6]% 
+			avctDsrTrapObjectInputPort=%parm[#7]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#8]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorRestartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorRestartedTrap</event-label>
+	<descr>
+&lt;p&gt;An IQ Adaptor has restarted. An IQ Adaptor will restart after
+an IQ Adaptor image upgrade completes.
+
+The name of the server connected to the IQ Adaptor is
+contained in avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor is connected
+to is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor that restarted is for is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the IQ Adaptor is connected to is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0
+if the IQ Adaptor is not connected to a switch.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorRestartedTrap trap received 
+			avctDsrTrapObjectServerName=%parm[#1]% 
+			avctDsrTrapObjectInputPort=%parm[#2]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#3]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserAuthFailureTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserAuthFailureTrap</event-label>
+	<descr>
+&lt;p&gt;A user failed to authenticate with the appliance local user
+database.
+
+The name of the user who failed to authenticate
+is contained in avctDsrTrapObjectUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserAuthFailureTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserAddedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A new user has been added to the local user database.
+
+The name of the user who added the new user is contained
+in avctDsrTrapObjectUserName.
+
+The name of the new user is contained in
+avctDsrTrapObjectTargetUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserAddedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserDeletedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been deleted from the local user database.
+
+The name of the user who deleted the user is contained
+in avctDsrTrapObjectUserName.
+
+The name of the user who was deleted is contained in
+avctDsrTrapObjectTargetUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserDeletedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserModifiedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserModifiedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been modified in the local user database.
+
+The name of the user who modified the user is contained
+in avctDsrTrapObjectUserName.
+
+The name of the user who was modified is contained in
+avctDsrTrapObjectTargetUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserModifiedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserLoginTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged into the appliance.
+
+The name of the user who logged in
+is contained in avctDsrTrapObjectUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserLoginTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserLogoutTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out of the appliance.
+
+The name of the user who logged out is contained
+in avctDsrTrapObjectUserName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserLogoutTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrConfigurationFileLoadedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrConfigurationFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a configuration file.
+
+The name of the user who commanded the appliance to
+load the configuration file is contained in
+avctDsrTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+avctDsrTrapObjectFileName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrConfigurationFileLoadedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrUserDatabaseFileLoadedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrUserDatabaseFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a user database file.
+
+The name of the user who commanded the appliance to
+load the user database file is contained in
+avctDsrTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+avctDsrTrapObjectFileName.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrUserDatabaseFileLoadedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrFactoryDefaultsSetTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrFactoryDefaultsSetTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has been commanded to set itself to factory defaults
+from the CLI port.
+
+The appliance sends this trap after being commanded to set itself
+to factory defaults but prior to actually reverting to factory
+defaults.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrFactoryDefaultsSetTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrServerNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrServerNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a server has changed.
+
+The previous name of the server is contained in
+avctDsrTrapObjectOldServerName.
+
+The new name of the server is contained in
+avctDsrTrapObjectServerName.
+
+The ID of the IQ Adaptor the server is attached to is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrServerNameChangedTrap trap received 
+			avctDsrTrapObjectOldServerName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrCascadeSwitchNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrCascadeSwitchNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a cascade switch has changed.
+
+The previous name of the cascade switch is contained in
+avctDsrTrapObjectOldCascadeSwitchName.
+
+The new name of the cascade switch is contained in
+avctDsrTrapObjectCascadeSwitchName.
+
+The ID of the IQ Adaptor the switch is attached to is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldCascadeSwitchName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectCascadeSwitchName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrCascadeSwitchNameChangedTrap trap received 
+			avctDsrTrapObjectOldCascadeSwitchName=%parm[#1]% 
+			avctDsrTrapObjectCascadeSwitchName=%parm[#2]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrCascadeSwitchAddedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrCascadeSwitchAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A cascade switch was added.
+
+The name of the switch which was added is contained in
+avctDsrTrapObjectCascadeSwitchName.
+
+The ID of the IQ Adaptor the switch was added to is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectCascadeSwitchName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrCascadeSwitchAddedTrap trap received 
+			avctDsrTrapObjectCascadeSwitchName=%parm[#1]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrCascadeSwitchRemovedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrCascadeSwitchRemovedTrap</event-label>
+	<descr>
+&lt;p&gt;A cascade switch was removed.
+
+The name of the switch which was removed is contained in
+avctDsrTrapObjectCascadeSwitchName.
+
+The ID of the IQ Adaptor the switch was attached to is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectCascadeSwitchName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrCascadeSwitchRemovedTrap trap received 
+			avctDsrTrapObjectCascadeSwitchName=%parm[#1]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcDeviceOnlineTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcDeviceOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is detected to be online.
+
+This trap is sent upon initialization of the power device if it is 
+online and responding. Subsequent traps are sent if the power device
+transitions from offline to online.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcDeviceOnlineTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcDeviceOfflineTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcDeviceOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is detected to be offline.
+
+This trap is sent upon initialization of the power device if it is not
+responding. Subsequent traps are sent if the power device transitions
+from online to offline.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcDeviceOfflineTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcLoginErrTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcLoginErrTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has a login error.
+
+A login error occurs when the appliance is unable to login to the
+power device using the user name configured in the appliance.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The user name attempting to login to the power device is contained in
+avctDsrTrapObjectSpcDeviceLogin.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLogin&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcLoginErrTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceLogin=%parm[#3]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketOnCommandTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketOnCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the on command.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that was issued the on command is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketOnCommandTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#2]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#3]% 
+			avctDsrTrapObjectSpcSocket=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketOffCommandTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketOffCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the off command.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that was issued the off command is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketOffCommandTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#2]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#3]% 
+			avctDsrTrapObjectSpcSocket=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketRebootCommandTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketRebootCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the reboot command.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that was issued the reboot command is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketRebootCommandTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#2]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#3]% 
+			avctDsrTrapObjectSpcSocket=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketOnSenseFailTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketOnSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an on sense 
+failure for a socket.
+
+An on sense failure occurs when a socket should be in the on state
+but is actually in the off state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has the failure is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketOnSenseFailTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketOffSenseFailTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketOffSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an off sense 
+failure for a socket.
+
+An off sense failure occurs when a socket should be in the off state
+but is actually in the on state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has the failure is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketOffSenseFailTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcTotalLoadHighTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has exceeded the maximum 
+threshold for total load.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcTotalLoadHighTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcTotalLoadLowTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has gone beneath the minimum
+threshold for total load.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcTotalLoadLowTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcStatusSocketOnTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcStatusSocketOnTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the on state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has changed to the on state is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcStatusSocketOnTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>44</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcStatusSocketOffTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcStatusSocketOffTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the off state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has changed to the off state is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcStatusSocketOffTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVirtualMediaSessionStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVirtualMediaSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote virtual media session to a server has started. A viewer
+session to the server must have been established by the same user
+prior to starting the virtual media session.
+
+The name of the user who connected to the virtual media session
+is contained in avctDsrTrapObjectUserName.
+
+The name of the server the user connected to is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the virtual media session
+is using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session is using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session is using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel is not being used for the virtual media session.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVirtualMediaSessionStartedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>46</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVirtualMediaSessionStoppedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVirtualMediaSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote virtual media session to a server has stopped.
+
+The name of the user who was connected to the virtual media session
+is contained in avctDsrTrapObjectUserName.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the virtual media session
+was using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session was using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session was using
+is contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if
+a switch channel was not being used for the virtual media session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVirtualMediaSessionStoppedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]% 
+			avctDsrTrapObjectActiveSessions=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>47</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrVirtualMediaSessionTerminatedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrVirtualMediaSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A remote virtual media session has been terminated or preempted
+by another user.
+
+The name of the user who terminated or preempted the virtual media
+session is contained in avctDsrTrapObjectUserName if available. An
+empty string is reported if a user name is not available. A user name
+will not be available if the remote virtual media session was
+terminated or preempted from the OSCAR interface and OSCAR
+authentication is disabled.
+
+The name of the user who was terminated or preempted from the virtual
+media session is contained in avctDsrTrapObjectTargetUserName.
+
+The name of the server the user was connected to contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the virtual session was
+using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session was using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session was using
+is contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if
+a switch channel was not being used for the virtual media session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrVirtualMediaSessionTerminatedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTargetUserName=%parm[#2]% 
+			avctDsrTrapObjectServerName=%parm[#3]% 
+			avctDsrTrapObjectInputPort=%parm[#4]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#5]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#6]% 
+			avctDsrTrapObjectActiveSessions=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>48</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortVirtualMediaSessionStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortVirtualMediaSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port virtual media session has started.
+
+The name of the server the user connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who connected to the virtual media session is
+contained in avctDsrTrapObjectUserName if available. An empty string
+is reported if a user name is not available. A user name will
+not be available if OSCAR authentication is disabled.
+
+The input port number on the appliance that the virtual media session
+is using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session is using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session is using is
+contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if a
+switch channel is not being used for the virtual media session.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortVirtualMediaSessionStartedTrap trap received 
+			avctDsrTrapObjectServerName=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>49</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortVirtualMediaSessionStoppedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortVirtualMediaSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port virtual media session has stopped.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who was connected to the virtual media session is
+contained in avctDsrTrapObjectUserName if available. An empty string is
+reported if a user name is not available. A user name will not
+be available if OSCAR authentication is disabled.
+
+The input port number on the appliance that the virtual media session
+was using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session was using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session was using
+is contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if
+a switch channel was not being used for the virtual media session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortVirtualMediaSessionStoppedTrap trap received 
+			avctDsrTrapObjectServerName=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#4]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#5]% 
+			avctDsrTrapObjectActiveSessions=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>50</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrLocalPortVirtualMediaSessionTerminatedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrLocalPortVirtualMediaSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port virtual media session has been terminated or preempted by
+another user.
+
+The name of the user who terminated or preempted the virtual media
+session is contained in avctDsrTrapObjectUserName.
+
+The name of the server the user was connected to is contained in
+avctDsrTrapObjectServerName.
+
+The name of the user who was terminated from the virtual media session
+is contained in avctDsrTrapObjectTargetUserName if available.
+An empty string is reported if a user name is not available. A
+user name will not be available if OSCAR authentication
+is disabled.
+
+The input port number on the appliance that the virtual media session
+was using is contained in avctDsrTrapObjectInputPort.
+
+The ID of the IQ Adaptor the virtual media session was using is
+contained in avctDsrTrapObjectIqAdaptorId.
+
+The cascade switch channel number the virtual media session was using
+is contained in avctDsrTrapObjectSwitchChannel. This value will be 0 if
+a switch channel was not being used for the virtual media session.
+
+The number of active sessions associated with this connection is
+contained in avctDsrTrapObjectActiveSessions.
+
+Supported by the following appliance types:
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSwitchChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectActiveSessions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrLocalPortVirtualMediaSessionTerminatedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectTargetUserName=%parm[#3]% 
+			avctDsrTrapObjectInputPort=%parm[#4]% 
+			avctDsrTrapObjectIqAdaptorId=%parm[#5]% 
+			avctDsrTrapObjectSwitchChannel=%parm[#6]% 
+			avctDsrTrapObjectActiveSessions=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>51</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcPortNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcPortNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device port has changed.
+
+The previous name of the power device port is contained in
+avctDsrTrapObjectOldName.
+
+The new name of the power device port is contained in
+avctDsrTrapObjectItemName.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectItemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcPortNameChangedTrap trap received 
+			avctDsrTrapObjectOldName=%parm[#1]% 
+			avctDsrTrapObjectItemName=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#3]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>52</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device socket has changed.
+
+The previous name of the power device socket is contained in
+avctDsrTrapObjectOldName.
+
+The new name of the power device socket is contained in
+avctDsrTrapObjectItemName.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+The socket number of the power device is contained in
+avctDsrTrapObjectSpcSocket.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectItemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketNameChangedTrap trap received 
+			avctDsrTrapObjectOldName=%parm[#1]% 
+			avctDsrTrapObjectItemName=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#3]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]% 
+			avctDsrTrapObjectSpcSocket=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>53</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcInletTotalLoadHighTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcInletTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has exceeded the maximum 
+threshold for total load of an inlet.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+The inlet of the power device is contained in 
+avctDsrTrapObjectSpcDeviceInlet.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcInletTotalLoadHighTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]% 
+			avctDsrTrapObjectSpcDeviceInlet=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>54</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcInletTotalLoadLowTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcInletTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has gone beneath the minimum
+threshold for total load.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+The inlet of the power device is contained in 
+avctDsrTrapObjectSpcDeviceInlet.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcInletTotalLoadLowTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#3]% 
+			avctDsrTrapObjectSpcDeviceInlet=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcDeviceNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcDeviceNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device has changed.
+
+The previous name of the power device is contained in
+avctDsrTrapObjectOldName.
+
+The new name of the power device is contained in
+avctDsrTrapObjectItemName.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectItemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcDeviceNameChangedTrap trap received 
+			avctDsrTrapObjectOldName=%parm[#1]% 
+			avctDsrTrapObjectItemName=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#3]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcInletNameChangedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcInletNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a power device inlet has changed.
+
+The previous name of the power device inlet is contained in
+avctDsrTrapObjectOldName.
+
+The new name of the power device inlet is contained in
+avctDsrTrapObjectItemName.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+The inlet of the power device is contained in 
+avctDsrTrapObjectSpcDeviceInlet.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectItemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceInlet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcInletNameChangedTrap trap received 
+			avctDsrTrapObjectOldName=%parm[#1]% 
+			avctDsrTrapObjectItemName=%parm[#2]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#3]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceInlet=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>57</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrIqAdaptorMovedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrIqAdaptorMovedTrap</event-label>
+	<descr>
+&lt;p&gt;An IQ Adaptor was moved.
+
+The ID of the IQ Adaptor which was moved is contained in
+avctDsrTrapObjectIqAdaptorId.
+
+The name of the server attached to the IQ Adaptor is contained in
+avctDsrTrapObjectServerName.
+
+The input port number on the appliance that the IQ Adaptor is now
+connected to is contained in avctDsrTrapObjectInputPort.
+
+The input port number on the appliance that the IQ Adaptor 
+was previously connected to is contained in 
+avctDsrTrapObjectOldInputPort.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectIqAdaptorId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectOldInputPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrIqAdaptorMovedTrap trap received 
+			avctDsrTrapObjectIqAdaptorId=%parm[#1]% 
+			avctDsrTrapObjectServerName=%parm[#2]% 
+			avctDsrTrapObjectInputPort=%parm[#3]% 
+			avctDsrTrapObjectOldInputPort=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>58</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketLockCommandTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketLockCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the lock command.
+
+The name of the user who originally started the image upgrade is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. 
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that was issued the lock command is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketLockCommandTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#2]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#3]% 
+			avctDsrTrapObjectSpcSocket=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>59</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcSocketUnlockCommandTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcSocketUnlockCommandTrap</event-label>
+	<descr>
+&lt;p&gt;A socket on a power device has been issued the unlock command.
+
+The name of the user who originally started the image upgrade is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. 
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that was issued the unlock command is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcSocketUnlockCommandTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#2]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#3]% 
+			avctDsrTrapObjectSpcSocket=%parm[#4]% 
+			avctDsrTrapObjectServerName=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>60</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcStatusSocketLockTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcStatusSocketLockTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the lock state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has changed to the lock state is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcStatusSocketLockTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctDsrSpcStatusSocketUnlockTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctDsrSpcStatusSocketUnlockTrap</event-label>
+	<descr>
+&lt;p&gt;A power device socket has changed to the unlock state.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The socket number that has changed to the unlock state is contained
+in avctDsrTrapObjectSpcSocket.
+
+The name of the server connected to the power device socket is 
+contained in avctDsrTrapObjectServerName.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctDsrSpcStatusSocketUnlockTrap trap received 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#1]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#2]% 
+			avctDsrTrapObjectSpcSocket=%parm[#3]% 
+			avctDsrTrapObjectServerName=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctSpcImageFileUpgradeStartedTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctSpcImageFileUpgradeStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of the power device software image file.
+
+
+The name of the user who initiated the image upgrade is contained
+in avctDsrTrapObjectUserName if available. 
+
+The type of software image being upgraded is contained in
+avctDsrTrapObjectTypeOfImage.
+
+The software image version the appliance is upgrading the power device to is
+contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the power device is currently running
+is contained in avctDsrTrapObjectImageCurrentVersion.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctSpcImageFileUpgradeStartedTrap trap received 
+			avctDsrTrapObjectUserName=%parm[#1]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#2]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#3]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#4]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#5]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#6]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.7.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctSpcImageFileUpgradeResultTrap</uei>
+	<event-label>DSR-TRAP-MIB defined trap event: avctSpcImageFileUpgradeResultTrap</event-label>
+	<descr>
+&lt;p&gt;The result of a software image file upgrade for a power device. 
+
+The result is contained in avctDsrTrapObjectImageFileUpgradeResult.
+
+The name of the user who originally started the image upgrade is
+contained in avctDsrTrapObjectUserName if available. An empty
+string is reported if a user name is not available. 
+
+The type of software image the upgrade result is for is contained in
+avctDsrTrapObjectTypeOfImage.
+
+The software image version the appliance attempted to upgrade to
+is contained in avctDsrTrapObjectImageNewVersion.
+
+The software image version the appliance is running is contained
+in avctDsrTrapObjectImageCurrentVersion. If the software image
+upgrade was successful then this version will match the version
+reported in avctDsrTrapObjectImageNewVersion.
+
+The location of the power device is contained in
+avctDsrTrapObjectSpcDeviceLocation.
+
+The port number on the appliance that the power device is attached to 
+is contained in avctDsrTrapObjectSpcDevicePort.
+
+The number of the power device that is connected to a port of the 
+appliance is contained in avctDsrTrapObjectSpcDeviceNumber.
+
+
+Supported by the following appliance types:
+   DSR1021
+   DSR1022
+   DSR1024
+   DSR1020
+   DSR2020
+   DSR4020
+   DSR8020
+   DSR1030
+   DSR2030
+   DSR4030
+   DSR8030
+   DSR2035
+   DSR8035
+   DSR1031&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageFileUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectTypeOfImage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDevicePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	avctDsrTrapObjectSpcDeviceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctSpcImageFileUpgradeResultTrap trap received 
+			avctDsrTrapObjectImageFileUpgradeResult=%parm[#1]% 
+			avctDsrTrapObjectUserName=%parm[#2]% 
+			avctDsrTrapObjectTypeOfImage=%parm[#3]% 
+			avctDsrTrapObjectImageNewVersion=%parm[#4]% 
+			avctDsrTrapObjectImageCurrentVersion=%parm[#5]% 
+			avctDsrTrapObjectSpcDeviceLocation=%parm[#6]% 
+			avctDsrTrapObjectSpcDevicePort=%parm[#7]% 
+			avctDsrTrapObjectSpcDeviceNumber=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: DSR-TRAP-MIB -->
+</events>

@@ -4882,7 +4882,7 @@ for notifications of location events.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>2</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWEP</uei>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoLwappDot11ClientKeyDecryptErrorWEP</uei>
 	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
 	<descr>
 &lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
@@ -4937,7 +4937,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>3</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWPA</uei>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoLwappDot11ClientKeyDecryptErrorWPA</uei>
 	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
 	<descr>
 &lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
@@ -4992,7 +4992,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 			<vbvalue>4</vbvalue>
 		</varbind>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorWPA2</uei>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoLwappDot11ClientKeyDecryptErrorWPA2</uei>
 	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
 	<descr>
 &lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key
@@ -5043,7 +5043,7 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ciscoLwappDot11ClientKeyDecryptErrorUnknown</uei>
+	<uei>uei.opennms.org/vendor/cisco/traps/ciscoLwappDot11ClientKeyDecryptErrorUnknown</uei>
 	<event-label>CISCO-LWAPP-DOT11-CLIENT-MIB defined trap event: ciscoLwappDot11ClientKeyDecryptError</event-label>
 	<descr>
 &lt;p&gt;Issued when a decrypt error occurs. The WEP WPA or WPA2 Key

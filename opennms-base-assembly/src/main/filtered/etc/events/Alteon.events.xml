@@ -1192,7 +1192,7 @@ switch temperature has exceeded maximum safety limits.&lt;/p&gt;&lt;table&gt;
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwPrimaryPowerSupplyFailure</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwPrimaryPowerSupplyFailure</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwPrimaryPowerSupplyFailure</event-label>
 	<descr>
 &lt;p&gt;A altSwPrimaryPowerSupplyFailure trap signifies that the 
@@ -1218,7 +1218,7 @@ primary power supply failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwDefGwUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwDefGwUp</event-label>
 	<descr>
 &lt;p&gt;A altSwDefGwUp trap signifies that the default gateway is alive. 
@@ -1271,7 +1271,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p&gt;&lt;table&gt;
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwDefGwDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwDefGwDown</event-label>
 	<descr>
 &lt;p&gt;A altSwDefGwDown trap signifies that the default gateway is down.
@@ -1324,7 +1324,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p&gt;&lt;table&gt;
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwDefGwInService</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwInService</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwDefGwInService</event-label>
 	<descr>
 &lt;p&gt;A altSwDefGwInService trap signifies that the default gateway is
@@ -1378,7 +1378,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p&gt;&lt;table&gt;
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwDefGwNotInService</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwNotInService</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwDefGwNotInService</event-label>
 	<descr>
 &lt;p&gt;A altSwDefGwNotInService trap signifies that the default gateway 
@@ -1432,7 +1432,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.&lt;/p&gt;&lt;table&gt;
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerUp</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerUp trap signifies that the real server 
@@ -1494,7 +1494,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>7</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerDown</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerDown trap signifies that the real server has gone
@@ -1556,7 +1556,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>8</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerMaxConnReached</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerMaxConnReached</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerMaxConnReached</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerMaxConnReached trap signifies that the real 
@@ -1622,7 +1622,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>9</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupRealServerAct</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerAct</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupRealServerAct</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupRealServerAct trap signifies that this backup real 
@@ -1686,7 +1686,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupRealServerDeact</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerDeact</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupRealServerDeact</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupRealServerDeact trap signifies that the backup real 
@@ -1750,7 +1750,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>11</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupRealServerActOverflow</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerActOverflow</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupRealServerActOverflow</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupRealServerActOverflow trap signifies that the backup 
@@ -1816,7 +1816,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>12</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupRealServerDeactOverflow</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerDeactOverflow</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupRealServerDeactOverflow</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupRealServerDeactOverflow trap signifies that the backup 
@@ -1881,7 +1881,7 @@ affected Real Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>13</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwfltFilterFired</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwfltFilterFired</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwfltFilterFired</event-label>
 	<descr>
 &lt;p&gt;A altSwfltFilterFired trap signifies that the packet received on a 
@@ -1936,7 +1936,7 @@ fltCurCfgPortTable. The range is from 1 to agPortTableMaxEnt.&lt;/p&gt;&lt;table
 			<mevalue>14</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerServiceUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerServiceUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerServiceUp</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerServiceUp trap signifies that the service port of
@@ -2006,7 +2006,7 @@ the service.&lt;/p&gt;&lt;table&gt;
 			<mevalue>15</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerServiceDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerServiceDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerServiceDown</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerServiceDown trap signifies that the service port 
@@ -2076,7 +2076,7 @@ This is the layer 4 real port number of the service.&lt;/p&gt;&lt;table&gt;
 			<mevalue>16</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwVrrpNewMaster</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpNewMaster</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwVrrpNewMaster</event-label>
 	<descr>
 &lt;p&gt;The altSwVrrpNewMaster trap indicates that the sending agent has 
@@ -2131,7 +2131,7 @@ vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.&lt;/p&gt;&lt;table&
 			<mevalue>17</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwVrrpNewBackup</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpNewBackup</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwVrrpNewBackup</event-label>
 	<descr>
 &lt;p&gt;The altSwVrrpNewBackup trap indicates that the sending agent has 
@@ -2186,7 +2186,7 @@ vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.&lt;/p&gt;&lt;table&
 			<mevalue>18</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwVrrpAuthFailure</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpAuthFailure</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwVrrpAuthFailure</event-label>
 	<descr>
 &lt;p&gt;A altSwVrrpAuthFailure trap signifies that a packet has been received
@@ -2243,7 +2243,7 @@ DisplayString of 0 to 7 characters.&lt;/p&gt;&lt;table&gt;
 			<mevalue>19</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwLoginFailure</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwLoginFailure</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwLoginFailure</event-label>
 	<descr>
 &lt;p&gt;A altSwLoginFailure trap signifies that someone failed to enter a 
@@ -2292,7 +2292,7 @@ address of the host from which the attempt was made.&lt;/p&gt;&lt;table&gt;
 			<mevalue>20</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbSynAttack</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbSynAttack</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbSynAttack</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbSynAttack trap signifies that a SYN attack has been 
@@ -2340,7 +2340,7 @@ second.&lt;/p&gt;&lt;table&gt;
 			<mevalue>21</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwTcpHoldDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwTcpHoldDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwTcpHoldDown</event-label>
 	<descr>
 &lt;p&gt;A altSwTcpHoldDown trap signifies that new TCP connection requests
@@ -2397,7 +2397,7 @@ particular client will be blocked.&lt;/p&gt;&lt;table&gt;
 			<mevalue>22</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwTempExceedThreshold</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwTempExceedThreshold</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwTempExceedThreshold</event-label>
 	<descr>
 &lt;p&gt;A altSwTempExceedThreshold trap signifies that the
@@ -2445,7 +2445,7 @@ temperature and the threshold for the particular sensor.&lt;/p&gt;&lt;table&gt;
 			<mevalue>23</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbSessAttack</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbSessAttack</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbSessAttack</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbSessAttack trap signifies that a SLB attack has been 
@@ -2492,7 +2492,7 @@ altSwTrapRate specifies the number of new sessions per second.&lt;/p&gt;&lt;tabl
 			<mevalue>24</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwFanFailure</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwFanFailure</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwFanFailure</event-label>
 	<descr>
 &lt;p&gt;A altSwFanFailure trap signifies that a fan failure has occured.&lt;/p&gt;&lt;table&gt;
@@ -2537,7 +2537,7 @@ altSwTrapRate specifies the number of new sessions per second.&lt;/p&gt;&lt;tabl
 			<mevalue>25</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbVirtServerServicesUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbVirtServerServicesUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbVirtServerServicesUp</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbVirtServerServicesUp trap signifies that the service ports
@@ -2599,7 +2599,7 @@ Virtal Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>26</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbVirtServerServicesDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbVirtServerServicesDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbVirtServerServicesDown</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbVirtServerServicesDown trap signifies that the service ports
@@ -2661,7 +2661,7 @@ Virtual Server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>27</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealGroupAdvhlUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealGroupAdvhlUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealGroupAdvhlUp</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealGroupAdvhlUp trap signifies that the real group is
@@ -2722,7 +2722,7 @@ actual health of a virtual service.&lt;/p&gt;&lt;table&gt;
 			<mevalue>28</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealGroupAdvhlDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealGroupAdvhlDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealGroupAdvhlDown</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealGroupAdvhlDown trap signifies that the real group is
@@ -2783,7 +2783,7 @@ actual health of a virtual service.&lt;/p&gt;&lt;table&gt;
 			<mevalue>29</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupGroupAct</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupGroupAct</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupGroupAct</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupGroupAct trap signifies that the backup group is enabled
@@ -2839,7 +2839,7 @@ trap message.&lt;/p&gt;&lt;table&gt;
 			<mevalue>30</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbBkupGroupDeact</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupGroupDeact</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbBkupGroupDeact</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbBkupGroupDeact trap signifies that the backup group is disabled
@@ -2895,7 +2895,7 @@ trap message.&lt;/p&gt;&lt;table&gt;
 			<mevalue>31</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRemoteRealServerUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRemoteRealServerUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRemoteRealServerUp</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRemoteRealServerUp trap signifies that the remote
@@ -2957,7 +2957,7 @@ affected real server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>32</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRemoteRealServerDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRemoteRealServerDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRemoteRealServerDown</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRemoteRealServerDown trap signifies that them remote
@@ -3019,7 +3019,7 @@ affected real server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>33</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerOperDis</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerOperDis</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerOperDis</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerOperDis trap signifies that the real server is
@@ -3082,7 +3082,7 @@ affected real server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>34</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwSlbRealServerOperEna</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerOperEna</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwSlbRealServerOperEna</event-label>
 	<descr>
 &lt;p&gt;A altSwSlbRealServerOperEna trap signifies that the real server is
@@ -3144,7 +3144,7 @@ affected real server.&lt;/p&gt;&lt;table&gt;
 			<mevalue>35</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwIfcVlanDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwIfcVlanDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwIfcVlanDown</event-label>
 	<descr>
 &lt;p&gt;A altSwIfcVlanDown trap signifies that all the interfaces in that 
@@ -3197,7 +3197,7 @@ vlanCurCfgVlanName is the optional name given to the affected vlan.&lt;/p&gt;&lt
 			<mevalue>36</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwPortVlanDown</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwPortVlanDown</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwPortVlanDown</event-label>
 	<descr>
 &lt;p&gt;A altSwPortVlanDown trap signifies that all the ports either down 
@@ -3250,7 +3250,7 @@ vlanCurCfgVlanName is the optional name given to the affected vlan.&lt;/p&gt;&lt
 			<mevalue>37</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwIfcVlanUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwIfcVlanUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwIfcVlanUp</event-label>
 	<descr>
 &lt;p&gt;A altSwIfcVlanUp trap signifies that interfaces are available for
@@ -3303,7 +3303,7 @@ vlanCurCfgVlanName is the optional name given to the affected vlan.&lt;/p&gt;&lt
 			<mevalue>38</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwPortVlanUp</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwPortVlanUp</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwPortVlanUp</event-label>
 	<descr>
 &lt;p&gt;A altSwPortVlanUp trap signifies that physical ports and interfaces
@@ -3356,7 +3356,7 @@ vlanCurCfgVlanName is the optional name given to the affected vlan.&lt;/p&gt;&lt
 			<mevalue>39</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/altSwBulkApply</uei>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwBulkApply</uei>
 	<event-label>CHEETAH-TRAP-MIB defined trap event: altSwBulkApply</event-label>
 	<descr>
 &lt;p&gt;A altSwBulkApply trap signifies that new configuration

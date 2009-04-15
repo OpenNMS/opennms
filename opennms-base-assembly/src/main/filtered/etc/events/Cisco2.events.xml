@@ -1729,7 +1729,7 @@ quality problem using the Quality Report Tool.&lt;/p&gt;&lt;table&gt;
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/ccmTLSConnectionFailure</uei>
+	<uei>uei.opennms.org/vendor/cisco/traps/ccmTLSConnectionFailure</uei>
 	<event-label>CISCO-CCM-MIB defined trap event: ccmTLSConnectionFailure</event-label>
 	<descr>
 &lt;p&gt;This Notification is sent when CallManager fails to 
