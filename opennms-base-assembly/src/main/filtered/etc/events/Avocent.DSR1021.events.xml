@@ -1,0 +1,1675 @@
+<events>
+<!-- Start of auto generated data from MIB: DSR1021-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvRebootStartedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvRebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance is in the process of rebooting.
+
+The name of the user who initiated the reboot
+is contained in bvTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvRebootStartedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserLoginTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged into the appliance.
+
+The name of the user who logged in
+is contained in bvTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserLoginTrap trap received 
+			bvTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserLogoutTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out of the appliance.
+
+The name of the user who logged out is contained
+in bvTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserLogoutTrap trap received 
+			bvTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvVideoSessionStartedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvVideoSessionStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A video session has started.
+
+The name of the user who is connected to the session
+is contained in bvTrapObjectUserName.
+
+The session identifier is contained in bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvVideoSessionStartedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvVideoSessionStoppedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvVideoSessionStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A video session has stopped.
+
+The name of the user who was connected to the session
+is contained in bvTrapObjectUserName.
+
+The session identifier is contained in bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvVideoSessionStoppedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvVideoSessionTerminatedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvVideoSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A video session has been terminated by another
+user.
+
+The name of the user who terminated the session is
+contained in bvTrapObjectUserName.
+
+The name of the user who was terminated from the session
+is contained in bvTrapObjectTargetUserName.
+
+The session identifier is contained in bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvVideoSessionTerminatedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectTargetUserName=%parm[#2]% 
+			bvTrapObjectSessionIdentifier=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvLocalPortViewingStartedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvLocalPortViewingStartedTrap</event-label>
+	<descr>
+&lt;p&gt;A user on the local port has started viewing a server.
+
+The session identifier is contained in bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvLocalPortViewingStartedTrap trap received 
+			bvTrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvLocalPortViewingStoppedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvLocalPortViewingStoppedTrap</event-label>
+	<descr>
+&lt;p&gt;A user on the local port has stopped viewing a server.
+
+The session identifier is contained in bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvLocalPortViewingStoppedTrap trap received 
+			bvTrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvLocalPortViewingTerminatedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvLocalPortViewingTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;A local port session has been terminated by another user.
+
+The name of the user who terminated the session is
+contained in bvTrapObjectUserName.
+
+The session identifier is contained in 
+bvTrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvLocalPortViewingTerminatedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvImageUpgradeStarted</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvImageUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started a TFTP upgrade of an image.
+
+The name of the user who initiated the TFTP image upgrade is
+contained in bvTrapObjectUserName.
+
+The type of image that is being upgraded is contained
+in bvTrapObjectImageType.
+
+The version of the image that the appliance is upgrading to is
+contained in bvTrapObjectImageNewVersion.
+
+The version of the image that the appliance is currently running
+is contained in bvTrapObjectImageCurrentVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectImageType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectImageNewVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvImageUpgradeStarted trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectImageType=%parm[#2]% 
+			bvTrapObjectImageNewVersion=%parm[#3]% 
+			bvTrapObjectImageCurrentVersion=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvImageUpgradeResultsTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvImageUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;The results of a TFTP image upgrade.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectImageUpgradeResults&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvImageUpgradeResultsTrap trap received 
+			bvTrapObjectImageUpgradeResults=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserAddedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A new user has been added to the local user database.
+
+The name of the user who added the new user is contained
+in bvTrapObjectUserName.
+
+The name of the new user is contained in bvTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserAddedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserDeletedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been deleted from the local user database.
+
+The name of the user who deleted the user is contained
+in bvTrapObjectUserName.
+
+The name of the user who was deleted is contained
+in bvTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserDeletedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserModifiedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserModifiedTrap</event-label>
+	<descr>
+&lt;p&gt;A user was modified.
+
+The name of the user who modified the user is contain
+in bvTrapObjectUserName.
+
+The name of the user who was modified is contained
+in bvTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserModifiedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserAuthenticationFailureTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserAuthenticationFailureTrap</event-label>
+	<descr>
+&lt;p&gt;A user failed to authenticate with the appliance.
+
+The name of the user who failed to authenticate
+is contained in bvTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserAuthenticationFailureTrap trap received 
+			bvTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvDSRIQAddedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvDSRIQAddedTrap</event-label>
+	<descr>
+&lt;p&gt;An DSRIQ was added. The ID of the DSRIQ which was added is
+contained in bvTrapObjectDSRIQId.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvDSRIQAddedTrap trap received 
+			bvTrapObjectDSRIQId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvDSRIQRemovedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvDSRIQRemovedTrap</event-label>
+	<descr>
+&lt;p&gt;An DSRIQ was removed. The ID of the DSRIQ which was removed is
+contained in bvTrapObjectDSRIQId.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvDSRIQRemovedTrap trap received 
+			bvTrapObjectDSRIQId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvServerNameChangedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvServerNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of a server has changed.
+
+The previous name of the server is contained in
+bvTrapObjectOldServerName.
+
+The new name of the server is contained in
+bvTrapObjectServerName.
+
+The ID of the DSRIQ the server is attached to is
+contained in bvTrapObjectDSRIQId.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectOldServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDSRIQId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvServerNameChangedTrap trap received 
+			bvTrapObjectOldServerName=%parm[#1]% 
+			bvTrapObjectServerName=%parm[#2]% 
+			bvTrapObjectDSRIQId=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvConfigurationFileLoadedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvConfigurationFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a configuration file.
+
+The name of the user who commanded the appliance to
+load the configuration file is contained in
+bvTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+bvTrapObjectFileName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvConfigurationFileLoadedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserDatabaseFileLoadedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserDatabaseFileLoadedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has loaded a user database file.
+
+The name of the user who commanded the appliance to
+load the user database file is contained in
+bvTrapObjectUserName.
+
+The name of the file that was loaded is contained in
+bvTrapObjectFileName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserDatabaseFileLoadedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvInvalidHookupDetectedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvInvalidHookupDetectedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has detected an invalid connection.
+
+This can include two DSRIQ devices on a port where one or more
+have a legacy KVM Switch, or some other illegal setup condition.
+
+Information about the nature of the failure is stored in the
+bvTrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvInvalidHookupDetectedTrap trap received 
+			bvTrapObjectDeviceId=%parm[#1]% 
+			bvTrapObjectFirmwareCondition=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSubsystemUpgradeStartedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSubsystemUpgradeStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has started a Subsystem Upgrade.
+
+This can be a download from the DModule to the Main Board, or
+a DSRIQ or other subsystem download from the Main Board...
+
+Information about the subsystem being updated is stored in the
+bvTrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSubsystemUpgradeStartedTrap trap received 
+			bvTrapObjectDeviceId=%parm[#1]% 
+			bvTrapObjectFirmwareCondition=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSubsystemRestartTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSubsystemRestartTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has completed a download and is restarting the
+subsystem specified in the bvTrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSubsystemRestartTrap trap received 
+			bvTrapObjectDeviceId=%parm[#1]% 
+			bvTrapObjectFirmwareCondition=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSubsystemUpgradeFailureTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSubsystemUpgradeFailureTrap</event-label>
+	<descr>
+&lt;p&gt;The Appliance has detected a special condition resulting in a
+failed subsystem update.  The condition has been recorded is stored
+in the bvTrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectDeviceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSubsystemUpgradeFailureTrap trap received 
+			bvTrapObjectDeviceId=%parm[#1]% 
+			bvTrapObjectFirmwareCondition=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserLockedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserLockedTrap</event-label>
+	<descr>
+&lt;p&gt;A user account has been locked.
+
+The IP address of the client is contained in bvTrapObjectIPAddress.
+
+The name of the user who was locked is contained
+in bvTrapObjectTargetUserName.
+
+The reason for which the user account has been locked is contained
+in bvTrapObjectLockReason.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectLockReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserLockedTrap trap received 
+			bvTrapObjectIPAddress=%parm[#1]% 
+			bvTrapObjectTargetUserName=%parm[#2]% 
+			bvTrapObjectLockReason=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvUserUnlockedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvUserUnlockedTrap</event-label>
+	<descr>
+&lt;p&gt;A user account has been unlocked.
+
+The IP address of the client that originated the unlock request
+is contained in bvTrapObjectIPAddress. When the user
+account is unlocked by an appliance reboot or by the expiration
+of the lockout period (as specified in the
+bvTrapObjectUnlockReason object), the IP address
+will be blank.
+
+The name of the user who unlocked the user is contained
+in bvTrapObjectUserName. When the user account is unlocked
+by an appliance reboot or by the expiration of the lockout period
+(as specified in the bvTrapObjectUnlockReason object), the
+name of the user will be blank.
+
+The name of the user who was unlocked is contained
+in bvTrapObjectTargetUserName.
+
+The reason for which the user account has been unlocked is contained
+in bvTrapObjectUnlockReason.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUnlockReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvUserUnlockedTrap trap received 
+			bvTrapObjectIPAddress=%parm[#1]% 
+			bvTrapObjectUserName=%parm[#2]% 
+			bvTrapObjectTargetUserName=%parm[#3]% 
+			bvTrapObjectUnlockReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcDeviceOnlineTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcDeviceOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance is detected to be online.  This trap is
+sent upon initialization of the SPC device if it is online and responding.
+Subsequent traps are sent if the SPC Device transitions from offline to
+online.
+
+The Location Name of the SPC attached to the DSR1021 port is
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in bvTrapObjectSPCDeviceCPSPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcDeviceOnlineTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcDeviceOfflineTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcDeviceOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance is detected to be offline.  This 
+trap is sent upon initialization of the SPC device if it is not 
+responding.  Subsequent traps are sent if the SPC Device transitions 
+from online to offline.
+
+The Location Name of the SPC attached to the DSR1021 port is
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in bvTrapObjectSPCDeviceBvPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcDeviceOfflineTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcLoginErrTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcLoginErrTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has a login error.
+
+The Location Name of the SPC attached to the DSR1021 port
+is contained in bvTrapObjectSPCDeviceLocation.
+
+The CPS Port Number is contained in bvTrapObjectSPCDeviceBvPort.
+
+The Login User name attempting to login to the SPC is contained in
+bvTrapObjectSPCDeviceLogin.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLogin&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcLoginErrTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]% 
+			bvTrapObjectSPCDeviceLogin=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcSocketOnCommandTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcSocketOnCommandTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has been issued an On Command to a
+socket.
+
+The UserName of the person logged into the ASMP.
+
+The Location Name of the SPC attached to the CPS port is contained in
+cpsTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number is contained in bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcSocketOnCommandTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSPCDeviceLocation=%parm[#2]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#3]% 
+			bvTrapObjectSPCSocket=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcSocketOffCommandTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcSocketOffCommandTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has been issued an Off Command to 
+a socket.
+
+The UserName of the person logged into the ASMP.
+
+The Location Name of the SPC attached to the DSR1021 port is 
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number is contained in bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcSocketOffCommandTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSPCDeviceLocation=%parm[#2]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#3]% 
+			bvTrapObjectSPCSocket=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcSocketRebootCommandTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcSocketRebootCommandTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has been issed an Reboot Command to
+a socket.
+
+The UserName of the person logged into the ASMP.
+
+The Location Name of the SPC attached to the CPS port is contained in
+cpsTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+cpsTrapObjectSPCDeviceCPSPort.
+
+The SPC Socket Number is contained in cpsTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcSocketRebootCommandTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSPCDeviceLocation=%parm[#2]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#3]% 
+			bvTrapObjectSPCSocket=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcSocketOnSenseFailTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcSocketOnSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has an On Sense Failure.
+
+The Location Name of the SPC attached to the DSR1021 port is 
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number is contained in bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcSocketOnSenseFailTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]% 
+			bvTrapObjectSPCSocket=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcSocketOffSenseFailTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcSocketOffSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has an Off Sense Detect Failure
+(On Sense detected, but should be off).
+
+The Location Name of the SPC attached to the DSR1021 port is contained 
+in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number is contained in bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcSocketOffSenseFailTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]% 
+			bvTrapObjectSPCSocket=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcTotalLoadHighTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcTotalLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has a Total load high alarm.
+
+The Location Name of the SPC attached to the DSR1021 port
+is contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcTotalLoadHighTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcTotalLoadLowTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcTotalLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC attached to the appliance has a Total load low alarm.
+
+The Location Name of the SPC attached to the DSR1021 port is
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcTotalLoadLowTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcStatusSocketOnTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcStatusSocketOnTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC Socket Polled Status changed state to On.
+
+The Location Name of the SPC attached to the DSR1021 port
+is contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number, or Port Name of the socket is contained in
+bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcStatusSocketOnTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]% 
+			bvTrapObjectSPCSocket=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvSpcStatusSocketOffTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvSpcStatusSocketOffTrap</event-label>
+	<descr>
+&lt;p&gt;The SPC Socket Polled Status changed state to Off.
+
+The Location Name of the SPC attached to the BrancView port is
+contained in bvTrapObjectSPCDeviceLocation.
+
+The DSR1021 Port Number is contained in 
+bvTrapObjectSPCDeviceBvPort.
+
+The SPC Socket Number, or Port Name of the socket is contained in
+bvTrapObjectSPCSocket.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCDeviceBvPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSPCSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvSpcStatusSocketOffTrap trap received 
+			bvTrapObjectSPCDeviceLocation=%parm[#1]% 
+			bvTrapObjectSPCDeviceBvPort=%parm[#2]% 
+			bvTrapObjectSPCSocket=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.9.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/bvScreenResolutionChangedTrap</uei>
+	<event-label>DSR1021-TRAP-MIB defined trap event: bvScreenResolutionChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The screen resolution of a target server has changed.
+
+The name of the user who is connected to the session
+is contained in bvTrapObjectUserName.
+
+The session identifier is contained in 
+bvTrapObjectSessionIdentifier.
+
+The previous screen resolution is contained in 
+bvTrapObjectPreviousScreenResolution 
+
+The current screen resolution is contained in 
+bvTrapObjectCurrentScreenResolution &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectPreviousScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bvTrapObjectCurrentScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bvScreenResolutionChangedTrap trap received 
+			bvTrapObjectUserName=%parm[#1]% 
+			bvTrapObjectSessionIdentifier=%parm[#2]% 
+			bvTrapObjectPreviousScreenResolution=%parm[#3]% 
+			bvTrapObjectCurrentScreenResolution=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: DSR1021-TRAP-MIB -->
+</events>

@@ -1,0 +1,655 @@
+<events>
+<!-- Start of auto generated data from MIB: BLUECOAT-PACKETSHAPER-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmSiteRouter</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmSiteRouter</event-label>
+	<descr>
+&lt;p&gt;A psAlarmSiteRouter trap signifies that the site router
+attached to the device has changed to a state of less
+readiness.  The psAlarmSiteRouterStatus variable included with
+this trap provides more information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psAlarmSiteRouterStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ready(1)
+		gone(2)
+		errorInside(3)
+		none(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmSiteRouter trap received 
+			psAlarmSiteRouterStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmPowerSystemOne</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmPowerSystemOne</event-label>
+	<descr>
+&lt;p&gt;A psAlarmPowerSystemOne trap signifies that the first power
+supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmPowerSystemOne trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmPowerSystemTwo</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmPowerSystemTwo</event-label>
+	<descr>
+&lt;p&gt;A psAlarmPowerSystemTwo trap signifies that
+the second power supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmPowerSystemTwo trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmFanOne</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmFanOne</event-label>
+	<descr>
+&lt;p&gt;A psAlarmFanOne trap signifies that the first fan
+of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmFanOne trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmFanTwo</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmFanTwo</event-label>
+	<descr>
+&lt;p&gt;A psAlarmFanTwo trap signifies that second fan
+of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmFanTwo trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmCfgFile</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmCfgFile</event-label>
+	<descr>
+&lt;p&gt;A psAlarmCfgFile trap signifies that the configuration
+file of the device has been corrupted, or otherwise changed
+to a state of less readiness. This trap is obsolete and
+should not be used.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmCfgFile trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmUserEvent</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmUserEvent</event-label>
+	<descr>
+&lt;p&gt;A psAlarmUserEvent trap signifies that a user event, which has
+been registered by the user, has occurred.  The associated variables
+give more information on the event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapExpression&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		link(1)
+		class(2)
+		partition(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapRegid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapTarget&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapRearm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDayCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDayLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmUserEvent trap received 
+			userEventTrapName=%parm[#1]% 
+			userEventTrapExpression=%parm[#2]% 
+			userEventTrapVariable=%parm[#3]% 
+			userEventTrapElementType=%parm[#4]% 
+			userEventTrapRegid=%parm[#5]% 
+			userEventTrapDate=%parm[#6]% 
+			userEventTrapValue=%parm[#7]% 
+			userEventTrapTarget=%parm[#8]% 
+			userEventTrapThreshold=%parm[#9]% 
+			userEventTrapRearm=%parm[#10]% 
+			userEventTrapDayCount=%parm[#11]% 
+			userEventTrapDayLimit=%parm[#12]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmMeasurementEngine</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmMeasurementEngine</event-label>
+	<descr>
+&lt;p&gt;A psAlarmMeasurementEngine trap signifies that the Measurement
+Engine has changed to a state of less readiness, or failed on
+startup. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psAlarmMeasurementEngineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initiallyStarting(1)
+		starting(2)
+		running(3)
+		errorOnVolume(4)
+		disabled(5)
+		waitToStart(6)
+		suspended(7)
+		backup(8)
+		restore(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmMeasurementEngine trap received 
+			psAlarmMeasurementEngineStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmStandby</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmStandby</event-label>
+	<descr>
+&lt;p&gt;A psAlarmStandby trap signifies that the standby
+status of the device has changed to a state of less
+readiness.  The psAlarmStandbyStatus variable included with
+this trap provides more information.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psAlarmStandbyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notConfigured(1)
+		active(2)
+		passive(3)
+		down(4)
+		direct(5)
+		disconnected(6)
+		leak(7)
+		disable(8)
+		unsupported(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmStandby trap received 
+			psAlarmStandbyStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psFeatureHighAvDeviceDown</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psFeatureHighAvDeviceDown</event-label>
+	<descr>
+&lt;p&gt;A psFeatureHighAvDeviceDown trap signifies that an interface
+or router we are tracking has gone down. If it is an interface that
+went down, the bindings will show the corresponding router and the
+name of the interface which went down. The name will be specified
+as 'unknown' if we could not resolve the interface name. But if it
+is the router that went down, the interface name will not be specified.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psFeatureHighAvDeviceDownStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		up(1)
+		down(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psFeatureHighAvDeviceDownRouter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	psFeatureHighAvDeviceDownInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psFeatureHighAvDeviceDown trap received 
+			psFeatureHighAvDeviceDownStatus=%parm[#1]% 
+			psFeatureHighAvDeviceDownRouter=%parm[#2]% 
+			psFeatureHighAvDeviceDownInterface=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmAgentEvent</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmAgentEvent</event-label>
+	<descr>
+&lt;p&gt;A psAlarmAgentEvent trap signifies that an agent event, which has
+been triggered by the user, has occurred.  The associated variables
+give more information on the event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentEventTrapName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentEventTrapDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentEventTrapType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		red(1)
+		yellow(2)
+		blue(3)
+		grey(4)
+		green(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentEventTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmAgentEvent trap received 
+			agentEventTrapName=%parm[#1]% 
+			agentEventTrapDate=%parm[#2]% 
+			agentEventTrapType=%parm[#3]% 
+			agentEventTrapDescription=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmFanThree</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmFanThree</event-label>
+	<descr>
+&lt;p&gt;A psAlarmFanThree trap signifies that 3rd fan
+of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmFanThree trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmFanFour</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmFanFour</event-label>
+	<descr>
+&lt;p&gt;A psAlarmFanFour trap signifies that 4th fan
+of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmFanFour trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmVoltage</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmVoltage</event-label>
+	<descr>
+&lt;p&gt;A psAlarmVoltage trap signifies one or more
+voltage inputs are outside the proper range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmVoltage trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmExtendedUserEvent</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmExtendedUserEvent</event-label>
+	<descr>
+&lt;p&gt;A psAlarmExtendedUserEvent trap signifies that a user event, which has
+been registered by the user, has occurred.  The associated variables
+give more information on the event.  This trap is an extension to 
+the current psAlarmUserEvent trap as it now adds the status of the event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapExpression&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		link(1)
+		class(2)
+		partition(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapRegid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapTarget&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapRearm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDayCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapDayLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	userEventTrapStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		violated(1)
+		rearmed(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmExtendedUserEvent trap received 
+			userEventTrapName=%parm[#1]% 
+			userEventTrapExpression=%parm[#2]% 
+			userEventTrapVariable=%parm[#3]% 
+			userEventTrapElementType=%parm[#4]% 
+			userEventTrapRegid=%parm[#5]% 
+			userEventTrapDate=%parm[#6]% 
+			userEventTrapValue=%parm[#7]% 
+			userEventTrapTarget=%parm[#8]% 
+			userEventTrapThreshold=%parm[#9]% 
+			userEventTrapRearm=%parm[#10]% 
+			userEventTrapDayCount=%parm[#11]% 
+			userEventTrapDayLimit=%parm[#12]% 
+			userEventTrapStatus=%parm[#13]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2334.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/packeteer/traps/psAlarmHardDriveDown</uei>
+	<event-label>BLUECOAT-PACKETSHAPER-MIB defined trap event: psAlarmHardDriveDown</event-label>
+	<descr>
+&lt;p&gt;A psAlarmHardDriveDown trap signifies the hard drive
+is down or not responding.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			psAlarmHardDriveDown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<!-- End of auto generated data from MIB: BLUECOAT-PACKETSHAPER-MIB -->
+</events>

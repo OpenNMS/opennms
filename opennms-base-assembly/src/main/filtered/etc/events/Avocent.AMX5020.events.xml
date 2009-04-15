@@ -1,0 +1,532 @@
+<events>
+<!-- Start of auto generated data from MIB: AMX5020-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020RebootStartedTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020RebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance is in the process of rebooting.
+
+The name of the user who initiated the reboot is contained in 
+amx5020TrapObjectUserName.  If the reboot is initated from
+via snmp , then the value of this object will be the 
+following string
+
+  snmpUser&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020RebootStartedTrap trap received 
+			amx5020TrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020RouteConnectTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020RouteConnectTrap</event-label>
+	<descr>
+&lt;p&gt;A connection between a UserStation and an Amiq device has been 
+established.
+
+The Uid of the UserStation involved in the connection is contained 
+in amx5020TrapObjectUserStationUid.
+
+The Uid of the Amiq device involved in the connection is contained 
+in amx5020TrapObjectAmiqUid.
+
+The connection mode of the connection is contained in 
+amx5020TrapObjectAmiqConnectMode&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqConnectMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nspmNONE(1)
+		nspmSHARED(2)
+		nspmPRIVATE(3)
+		nspmMAINTAIN(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020RouteConnectTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]% 
+			amx5020TrapObjectAmiqUid=%parm[#2]% 
+			amx5020TrapObjectAmiqConnectMode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020RouteDisconnectTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020RouteDisconnectTrap</event-label>
+	<descr>
+&lt;p&gt;A connection between a UserStation and an Amiq device has been 
+disconnected.
+
+The Uid of the UserStation involved in the connection is contained 
+in amx5020TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020RouteDisconnectTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020AmiqConnectedTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020AmiqConnectedTrap</event-label>
+	<descr>
+&lt;p&gt;An AMIQ device has been connected to the AMX.
+
+The Uid of the Amiq device connected to the AMX is contained 
+in amx5020TrapObjectAmiqUid.
+
+The name of the Amiq device connected to the AMX is contained 
+in amx5020TrapObjectAmiqName.
+
+The PortNum of the Amiq device connected to the AMX is contained 
+in amx5020TrapObjectAmiqPortNum.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		portNumUserSide1(1)
+		portNumUserSide2(2)
+		portNumUserSide3(3)
+		portNumUserSide4(4)
+		portNumUserSide5(5)
+		portNumUserSide6(6)
+		portNumUserSide7(7)
+		portNumUserSide8(8)
+		portNumUserSide9(9)
+		portNumUserSide10(10)
+		portNumUserSide11(11)
+		portNumUserSide12(12)
+		portNumUserSide13(13)
+		portNumUserSide14(14)
+		portNumUserSide15(15)
+		portNumUserSide16(16)
+		portNumAmiqSide1(129)
+		portNumAmiqSide2(130)
+		portNumAmiqSide3(131)
+		portNumAmiqSide4(132)
+		portNumAmiqSide5(133)
+		portNumAmiqSide6(134)
+		portNumAmiqSide7(135)
+		portNumAmiqSide8(136)
+		portNumAmiqSide9(137)
+		portNumAmiqSide10(138)
+		portNumAmiqSide11(139)
+		portNumAmiqSide12(140)
+		portNumAmiqSide13(141)
+		portNumAmiqSide14(142)
+		portNumAmiqSide15(143)
+		portNumAmiqSide16(144)
+		portNumAmiqSide17(145)
+		portNumAmiqSide18(146)
+		portNumAmiqSide19(147)
+		portNumAmiqSide20(148)
+		portNumAmiqSide21(149)
+		portNumAmiqSide22(150)
+		portNumAmiqSide23(151)
+		portNumAmiqSide24(152)
+		portNumAmiqSide25(153)
+		portNumAmiqSide26(154)
+		portNumAmiqSide27(155)
+		portNumAmiqSide28(156)
+		portNumAmiqSide29(157)
+		portNumAmiqSide30(158)
+		portNumAmiqSide31(159)
+		portNumAmiqSide32(160)
+		portNumAmiqSide33(161)
+		portNumAmiqSide34(162)
+		portNumAmiqSide35(163)
+		portNumAmiqSide36(164)
+		portNumAmiqSide37(165)
+		portNumAmiqSide38(166)
+		portNumAmiqSide39(167)
+		portNumAmiqSide40(168)
+		portNumAmiqSide41(169)
+		portNumAmiqSide42(170)
+		portNumAmiqSide43(171)
+		portNumAmiqSide44(172)
+		portNumAmiqSide45(173)
+		portNumAmiqSide46(174)
+		portNumAmiqSide47(175)
+		portNumAmiqSide48(176)
+		portNumAmiqSide49(177)
+		portNumAmiqSide50(178)
+		portNumAmiqSide51(179)
+		portNumAmiqSide52(180)
+		portNumAmiqSide53(181)
+		portNumAmiqSide54(182)
+		portNumAmiqSide55(183)
+		portNumAmiqSide56(184)
+		portNumAmiqSide57(185)
+		portNumAmiqSide58(186)
+		portNumAmiqSide59(187)
+		portNumAmiqSide60(188)
+		portNumAmiqSidet61(189)
+		portNumAmiqSide62(190)
+		portNumAmiqSide63(191)
+		portNumAmiqSide64(192)
+		portNumNULL(255)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020AmiqConnectedTrap trap received 
+			amx5020TrapObjectAmiqUid=%parm[#1]% 
+			amx5020TrapObjectAmiqName=%parm[#2]% 
+			amx5020TrapObjectAmiqPortNum=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020AmiqDisconnectedTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020AmiqDisconnectedTrap</event-label>
+	<descr>
+&lt;p&gt;An AMIQ device has been disconnected from the AMX.
+
+The Uid of the Amiq device disconnected from the AMX is contained 
+in amx5020TrapObjectAmiqUid.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020AmiqDisconnectedTrap trap received 
+			amx5020TrapObjectAmiqUid=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020UserStationConnectedTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020UserStationConnectedTrap</event-label>
+	<descr>
+&lt;p&gt;A UserStation has been connected to the AMX.
+
+The Uid of the UserStation connected to the AMX is contained 
+in amx5020TrapObjectUserStationUid.
+
+The name of the UserStation connected to the AMX is contained 
+in amx5020TrapObjectUserStationName.
+
+The PortNum of the UserStation connected to the AMX is contained 
+in amx5020TrapObjectUserStnPortNum.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStnPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		portNumUserSide1(1)
+		portNumUserSide2(2)
+		portNumUserSide3(3)
+		portNumUserSide4(4)
+		portNumUserSide5(5)
+		portNumUserSide6(6)
+		portNumUserSide7(7)
+		portNumUserSide8(8)
+		portNumUserSide9(9)
+		portNumUserSide10(10)
+		portNumUserSide11(11)
+		portNumUserSide12(12)
+		portNumUserSide13(13)
+		portNumUserSide14(14)
+		portNumUserSide15(15)
+		portNumUserSide16(16)
+		portNumAmiqSide1(129)
+		portNumAmiqSide2(130)
+		portNumAmiqSide3(131)
+		portNumAmiqSide4(132)
+		portNumAmiqSide5(133)
+		portNumAmiqSide6(134)
+		portNumAmiqSide7(135)
+		portNumAmiqSide8(136)
+		portNumAmiqSide9(137)
+		portNumAmiqSide10(138)
+		portNumAmiqSide11(139)
+		portNumAmiqSide12(140)
+		portNumAmiqSide13(141)
+		portNumAmiqSide14(142)
+		portNumAmiqSide15(143)
+		portNumAmiqSide16(144)
+		portNumAmiqSide17(145)
+		portNumAmiqSide18(146)
+		portNumAmiqSide19(147)
+		portNumAmiqSide20(148)
+		portNumAmiqSide21(149)
+		portNumAmiqSide22(150)
+		portNumAmiqSide23(151)
+		portNumAmiqSide24(152)
+		portNumAmiqSide25(153)
+		portNumAmiqSide26(154)
+		portNumAmiqSide27(155)
+		portNumAmiqSide28(156)
+		portNumAmiqSide29(157)
+		portNumAmiqSide30(158)
+		portNumAmiqSide31(159)
+		portNumAmiqSide32(160)
+		portNumAmiqSide33(161)
+		portNumAmiqSide34(162)
+		portNumAmiqSide35(163)
+		portNumAmiqSide36(164)
+		portNumAmiqSide37(165)
+		portNumAmiqSide38(166)
+		portNumAmiqSide39(167)
+		portNumAmiqSide40(168)
+		portNumAmiqSide41(169)
+		portNumAmiqSide42(170)
+		portNumAmiqSide43(171)
+		portNumAmiqSide44(172)
+		portNumAmiqSide45(173)
+		portNumAmiqSide46(174)
+		portNumAmiqSide47(175)
+		portNumAmiqSide48(176)
+		portNumAmiqSide49(177)
+		portNumAmiqSide50(178)
+		portNumAmiqSide51(179)
+		portNumAmiqSide52(180)
+		portNumAmiqSide53(181)
+		portNumAmiqSide54(182)
+		portNumAmiqSide55(183)
+		portNumAmiqSide56(184)
+		portNumAmiqSide57(185)
+		portNumAmiqSide58(186)
+		portNumAmiqSide59(187)
+		portNumAmiqSide60(188)
+		portNumAmiqSidet61(189)
+		portNumAmiqSide62(190)
+		portNumAmiqSide63(191)
+		portNumAmiqSide64(192)
+		portNumNULL(255)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020UserStationConnectedTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]% 
+			amx5020TrapObjectUserStationName=%parm[#2]% 
+			amx5020TrapObjectUserStnPortNum=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020UserStnDisconnectedTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020UserStnDisconnectedTrap</event-label>
+	<descr>
+&lt;p&gt;A UserStation has been disconnected from the AMX.
+
+The Uid of the UserStation disconnected from the AMX is contained 
+in amx5020TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020UserStnDisconnectedTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020UserStationLoginTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020UserStationLoginTrap</event-label>
+	<descr>
+&lt;p&gt;A User has logged in from a UserStation.
+
+The Uid of the UserStation being logged in from is contained 
+in amx5020TrapObjectUserStationUid.
+
+The name of the User logged in to the UserStation is contained 
+in amx5020TrapObjectUserStationName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020UserStationLoginTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]% 
+			amx5020TrapObjectUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.10.1.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/amx5020UserStationLogoutTrap</uei>
+	<event-label>AMX5020-TRAP-MIB defined trap event: amx5020UserStationLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A User has logged out from a UserStation.
+
+The Uid of the UserStation being logged out from is contained 
+in amx5020TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	amx5020TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			amx5020UserStationLogoutTrap trap received 
+			amx5020TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<!-- End of auto generated data from MIB: AMX5020-TRAP-MIB -->
+</events>

@@ -1,0 +1,523 @@
+<events>
+<!-- Start of auto generated data from MIB: OVERTURE-FAULTS-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.7950.2.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overture/traps/ovnFaultActive</uei>
+	<event-label>OVERTURE-FAULTS-MIB defined trap event: ovnFaultActive</event-label>
+	<descr>
+&lt;p&gt;A fault occured with the following attributes:
+ovnFaultTrapSeverity: The severity of the fault.
+  See FaultSeverity ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapSlot: the slot number where the fault occured.
+  See FaultSlotType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapDevice: the device the fault occured on.
+  See FaultDeviceType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapId: the id of the fault.
+  See FaultIdType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapTimeStamp: the time the fault occured.
+ovnFaultTrapSequenceTag: a unigue tag for each fault.
+ifIndex: the interface the fault occured on. Only applicaple for
+  interface specific faults. Will be 0 for non interface specific 
+  faults.
+ovnFaultTrapCPType = CircuitPackType.
+  For main board faults the setting will be ovnISGMainBoard.
+ovnFaultChannel: the channel of the fault. Only applicaple for
+  channelized cards. For non channelized cards the value will
+  be noChan.
+  See FaultChannelType ::= TEXTUAL-CONVENTION
+  for all possible values.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		minor(10)
+		major(11)
+		critical(12)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		mainBoard(1)
+		slot1(2)
+		slot2(3)
+		slot3(4)
+		slot4(5)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapDevice&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		slot(1)
+		port1(2)
+		port2(3)
+		port3(4)
+		port4(5)
+		port5(6)
+		port6(7)
+		port7(8)
+		port8(9)
+		fan0(10)
+		fan1(11)
+		fan2(12)
+		fan3(13)
+		facet(14)
+		power0(15)
+		power1(16)
+		volts48V0(17)
+		volts48V1(18)
+		rdram(19)
+		aux(20)
+		bits1(21)
+		bits2(22)
+		pom(23)
+		compactFlash(24)
+		primaryPartition(25)
+		secondaryPartition(26)
+		fpga(27)
+		volts12V0(28)
+		volts12V1(29)
+		syslog(30)
+		login(31)
+		nvram(32)
+		fan4(33)
+		power2(34)
+		volts48V2(35)
+		volts12V2(36)
+		system(37)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fan0(1)
+		fan1(2)
+		fan2(3)
+		fan3(4)
+		iqauditFacet(5)
+		pomFacet(6)
+		powerOvertemp(7)
+		powerFailure(8)
+		parity(9)
+		rw(10)
+		pomDisabled(11)
+		warmSwap(12)
+		rootPartition(13)
+		kernelFailure(14)
+		applicationFailure(15)
+		remoteFailures(16)
+		los(17)
+		yellow(18)
+		red(19)
+		ais(20)
+		lof(21)
+		netRed(22)
+		netYel(23)
+		netLops(24)
+		clkLos(25)
+		netLos(26)
+		netAis(27)
+		clocking(28)
+		secLos(29)
+		secLof(30)
+		lineAis(31)
+		lineRdi(32)
+		pathAis(33)
+		pathLop(34)
+		pathRdi(35)
+		j0Mis(36)
+		slotMismatch(37)
+		rbrFailure(38)
+		loopDetect(39)
+		linkFail(40)
+		fpgadownloadFail(41)
+		linkHung(42)
+		logPushFailed(43)
+		invalidCardRemoval(44)
+		failedLogInAttempt(45)
+		psrMultipleArbiters(46)
+		apsFailure(47)
+		apsBackupFailure(48)
+		lom(49)
+		configCorrupt(50)
+		defaultPasswords(51)
+		fan4(52)
+		psrFailure(53)
+		bundleDegrade(54)
+		duplicateHostBuffer(55)
+		bufferPoolAuditFailed(56)
+		outOfBuffers(57)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSequenceTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapCPType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(-1)
+		ovnISGGigEther(1)
+		ovnISGOc12(2)
+		ovnISGOc3(3)
+		ovnISGT1Cem(4)
+		ovnISGE1Cem(5)
+		ovnISGDs3(6)
+		ovnISGT1Packet(7)
+		ovnISG100FX(8)
+		ovnISGDs3TDM(9)
+		ovnISGNxT1(10)
+		ovnISGFXTXCombo(11)
+		ovnISGOctalEther(12)
+		ovnISGOctalFib(13)
+		ovnISGGigSfp(14)
+		ovnISGOctalEther4Port(15)
+		ovnISGNxE1(16)
+		ovnISGT1TwoPort(17)
+		ovnISGT1FourPort(18)
+		ovnISGE1TwoPort(19)
+		ovnISGE1FourPort(20)
+		ovnISGNxDS3(21)
+		ovnISGE1Packet(22)
+		ovnISGChanDs3(23)
+		ovnISGOc12GFP(24)
+		ovnISGOc3GFP(25)
+		ovnISGDualGig(26)
+		ovnISGMainBoard(99)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		noChan(0)
+		chan1(1)
+		chan2(2)
+		chan3(3)
+		chan4(4)
+		chan5(5)
+		chan6(6)
+		chan7(7)
+		chan8(8)
+		chan9(9)
+		chan10(10)
+		chan11(11)
+		chan12(12)
+		chan13(13)
+		chan14(14)
+		chan15(15)
+		chan16(16)
+		chan17(17)
+		chan18(18)
+		chan19(19)
+		chan20(20)
+		chan21(21)
+		chan22(22)
+		chan23(23)
+		chan24(24)
+		chan25(25)
+		chan26(26)
+		chan27(27)
+		chan28(28)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ovnFaultActive trap received 
+			ovnFaultTrapSeverity=%parm[#1]% 
+			ovnFaultTrapSlot=%parm[#2]% 
+			ovnFaultTrapDevice=%parm[#3]% 
+			ovnFaultTrapId=%parm[#4]% 
+			ovnFaultTrapTimeStamp=%parm[#5]% 
+			ovnFaultTrapSequenceTag=%parm[#6]% 
+			ifIndex=%parm[#7]% 
+			ovnFaultTrapCPType=%parm[#8]% 
+			ovnFaultTrapChannel=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.7950.2.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/overture/traps/ovnFaultCleared</uei>
+	<event-label>OVERTURE-FAULTS-MIB defined trap event: ovnFaultCleared</event-label>
+	<descr>
+&lt;p&gt;The Active Fault Cleared. All the attributes will contain the same
+information as what they were when the ovnFaultActive trap was sent. 
+ovnFaultTrapSeverity: The severity of the fault.
+  See FaultSeverity ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapSlot: the slot number where the fault occured.
+  See FaultSlotType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapDevice: the device the fault occured on.
+  See FaultDeviceType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapId: the id of the fault.
+  See FaultIdType ::= TEXTUAL-CONVENTION for all possible values.
+ovnFaultTrapTimeStamp: the time the fault occured.
+ovnFaultTrapSequenceTag: a unigue tag for each fault. Will match
+                         the tag generagted when the fault
+                         became active.
+ifIndex: the interface the fault occured on. Only applicaple for
+  interface specific faults. Will be 0 for non interface specific 
+  faults.
+ovnFaultTrapCPType = CircuitPackType.
+  For main board faults the setting will be ovnISGMainBoard.
+ovnFaultChannel: the channel of the fault. Only applicaple for
+  channelized cards. For non channelized cards the value will
+  be noChan.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		minor(10)
+		major(11)
+		critical(12)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		mainBoard(1)
+		slot1(2)
+		slot2(3)
+		slot3(4)
+		slot4(5)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapDevice&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		slot(1)
+		port1(2)
+		port2(3)
+		port3(4)
+		port4(5)
+		port5(6)
+		port6(7)
+		port7(8)
+		port8(9)
+		fan0(10)
+		fan1(11)
+		fan2(12)
+		fan3(13)
+		facet(14)
+		power0(15)
+		power1(16)
+		volts48V0(17)
+		volts48V1(18)
+		rdram(19)
+		aux(20)
+		bits1(21)
+		bits2(22)
+		pom(23)
+		compactFlash(24)
+		primaryPartition(25)
+		secondaryPartition(26)
+		fpga(27)
+		volts12V0(28)
+		volts12V1(29)
+		syslog(30)
+		login(31)
+		nvram(32)
+		fan4(33)
+		power2(34)
+		volts48V2(35)
+		volts12V2(36)
+		system(37)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fan0(1)
+		fan1(2)
+		fan2(3)
+		fan3(4)
+		iqauditFacet(5)
+		pomFacet(6)
+		powerOvertemp(7)
+		powerFailure(8)
+		parity(9)
+		rw(10)
+		pomDisabled(11)
+		warmSwap(12)
+		rootPartition(13)
+		kernelFailure(14)
+		applicationFailure(15)
+		remoteFailures(16)
+		los(17)
+		yellow(18)
+		red(19)
+		ais(20)
+		lof(21)
+		netRed(22)
+		netYel(23)
+		netLops(24)
+		clkLos(25)
+		netLos(26)
+		netAis(27)
+		clocking(28)
+		secLos(29)
+		secLof(30)
+		lineAis(31)
+		lineRdi(32)
+		pathAis(33)
+		pathLop(34)
+		pathRdi(35)
+		j0Mis(36)
+		slotMismatch(37)
+		rbrFailure(38)
+		loopDetect(39)
+		linkFail(40)
+		fpgadownloadFail(41)
+		linkHung(42)
+		logPushFailed(43)
+		invalidCardRemoval(44)
+		failedLogInAttempt(45)
+		psrMultipleArbiters(46)
+		apsFailure(47)
+		apsBackupFailure(48)
+		lom(49)
+		configCorrupt(50)
+		defaultPasswords(51)
+		fan4(52)
+		psrFailure(53)
+		bundleDegrade(54)
+		duplicateHostBuffer(55)
+		bufferPoolAuditFailed(56)
+		outOfBuffers(57)
+		unknown(85)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapSequenceTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapCPType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(-1)
+		ovnISGGigEther(1)
+		ovnISGOc12(2)
+		ovnISGOc3(3)
+		ovnISGT1Cem(4)
+		ovnISGE1Cem(5)
+		ovnISGDs3(6)
+		ovnISGT1Packet(7)
+		ovnISG100FX(8)
+		ovnISGDs3TDM(9)
+		ovnISGNxT1(10)
+		ovnISGFXTXCombo(11)
+		ovnISGOctalEther(12)
+		ovnISGOctalFib(13)
+		ovnISGGigSfp(14)
+		ovnISGOctalEther4Port(15)
+		ovnISGNxE1(16)
+		ovnISGT1TwoPort(17)
+		ovnISGT1FourPort(18)
+		ovnISGE1TwoPort(19)
+		ovnISGE1FourPort(20)
+		ovnISGNxDS3(21)
+		ovnISGE1Packet(22)
+		ovnISGChanDs3(23)
+		ovnISGOc12GFP(24)
+		ovnISGOc3GFP(25)
+		ovnISGDualGig(26)
+		ovnISGMainBoard(99)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ovnFaultTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		noChan(0)
+		chan1(1)
+		chan2(2)
+		chan3(3)
+		chan4(4)
+		chan5(5)
+		chan6(6)
+		chan7(7)
+		chan8(8)
+		chan9(9)
+		chan10(10)
+		chan11(11)
+		chan12(12)
+		chan13(13)
+		chan14(14)
+		chan15(15)
+		chan16(16)
+		chan17(17)
+		chan18(18)
+		chan19(19)
+		chan20(20)
+		chan21(21)
+		chan22(22)
+		chan23(23)
+		chan24(24)
+		chan25(25)
+		chan26(26)
+		chan27(27)
+		chan28(28)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ovnFaultCleared trap received 
+			ovnFaultTrapSeverity=%parm[#1]% 
+			ovnFaultTrapSlot=%parm[#2]% 
+			ovnFaultTrapDevice=%parm[#3]% 
+			ovnFaultTrapId=%parm[#4]% 
+			ovnFaultTrapTimeStamp=%parm[#5]% 
+			ovnFaultTrapSequenceTag=%parm[#6]% 
+			ifIndex=%parm[#7]% 
+			ovnFaultTrapCPType=%parm[#8]% 
+			ovnFaultTrapChannel=%parm[#9]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: OVERTURE-FAULTS-MIB -->
+</events>
