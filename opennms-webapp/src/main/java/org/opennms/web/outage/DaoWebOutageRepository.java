@@ -35,6 +35,10 @@
 
 package org.opennms.web.outage;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.OutageDao;
@@ -44,6 +48,7 @@ import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author brozow
@@ -142,27 +147,53 @@ public class DaoWebOutageRepository implements WebOutageRepository {
         return criteria;
     }
     
-
+    private Outage mapOnmsOutageToOutage(OnmsOutage onmsOutage) {
+        if(onmsOutage != null){
+            Outage outage = new Outage();    
+            outage.outageId = onmsOutage.getId();
+            outage.ipAddress = onmsOutage.getIpAddress();
+            //outage.building
+            outage.hostname = onmsOutage.getIpAddress();
+            outage.lostServiceEventId = onmsOutage.getServiceLostEvent() != null ? onmsOutage.getServiceLostEvent().getId() : 0;
+            //outage.lostServiceNotificationAcknowledgedBy = 
+            //outage.lostServiceNotificationId = 
+            outage.lostServiceTime = onmsOutage.getIfLostService();
+            outage.nodeId = onmsOutage.getNodeId();
+            //outage.nodeLabel
+            outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent() != null ? onmsOutage.getServiceRegainedEvent().getId() : 0;
+            outage.regainedServiceTime = onmsOutage.getIfRegainedService();
+            outage.serviceId = onmsOutage.getServiceId();
+            //outage.serviceName
+            outage.suppressedBy = onmsOutage.getSuppressedBy();
+            outage.suppressTime = onmsOutage.getSuppressTime();
+            
+            return outage;
+        }else{
+            return null;
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#countMatchingOutageSummaries(org.opennms.web.outage.filter.OutageCriteria)
      */
+    @Transactional
     public int countMatchingOutageSummaries(OutageCriteria criteria) {
         throw new UnsupportedOperationException("DaoWebOutageRepository.countMatchingOutageSummaries is not yet implemented");
-
+        //return m_outageDao.countMatching(getOnmsCriteria(criteria));
     }
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#countMatchingOutages(org.opennms.web.outage.filter.OutageCriteria)
      */
+    @Transactional
     public int countMatchingOutages(OutageCriteria criteria) {
-        throw new UnsupportedOperationException("DaoWebOutageRepository.countMatchingOutages is not yet implemented");
-
+        return m_outageDao.countMatching(getOnmsCriteria(criteria));
     }
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getMatchingOutageSummaries(org.opennms.web.outage.filter.OutageCriteria)
      */
+    @Transactional
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
         throw new UnsupportedOperationException("DaoWebOutageRepository.getMatchingOutageSummaries is not yet implemented");
 
@@ -171,16 +202,29 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getMatchingOutages(org.opennms.web.outage.filter.OutageCriteria)
      */
+    @Transactional
     public Outage[] getMatchingOutages(OutageCriteria criteria) {
-        throw new UnsupportedOperationException("DaoWebOutageRepository.getMatchingOutages is not yet implemented");
+        List<Outage> outages = new ArrayList<Outage>();
+        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
+        
+        if(onmsOutages.size() > 0){
+            Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
+            while(outageIt.hasNext()){
+                outages.add(mapOnmsOutageToOutage(outageIt.next()));
+            }
+        }
+        
+        return outages.toArray(new Outage[0]);
 
     }
+
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getOutage(int)
      */
+    @Transactional
     public Outage getOutage(int OutageId) {
-        throw new UnsupportedOperationException("DaoWebOutageRepository.getOutage is not yet implemented");
+        return mapOnmsOutageToOutage(m_outageDao.get(OutageId));
 
     }
 

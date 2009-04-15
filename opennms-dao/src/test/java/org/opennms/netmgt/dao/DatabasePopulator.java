@@ -268,12 +268,17 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+        OnmsMonitoredService svc2 = getMonitoredServiceDao().get(2, "192.168.2.1", "ICMP");
         OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
         OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
         getOutageDao().save(unresolved);
+        getOutageDao().flush();
+        
+        OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
+        getOutageDao().save(unresolved2);
         getOutageDao().flush();
         
         OnmsCategory category = new OnmsCategory();
