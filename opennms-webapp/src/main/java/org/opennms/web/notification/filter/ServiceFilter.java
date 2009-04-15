@@ -1,42 +1,23 @@
 package org.opennms.web.notification.filter;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.notification.NoticeFactory;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all service filtering functionality. */
-public class ServiceFilter extends Object implements Filter {
+public class ServiceFilter extends EqualsFilter<Integer> {
     public static final String TYPE = "service";
 
-    protected int serviceId;
-
     public ServiceFilter(int serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public String getSql() {
-        return (" SERVICEID=" + this.serviceId);
+        super(TYPE, SQLType.INT, "SERVICEID", "serviceType.id", serviceId);
     }
     
-    public String getParamSql() {
-        return (" SERVICEID=?");
-    }
-    
-    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setInt(parameterIndex, this.serviceId);
-    	return 1;
-    }
-
-    public String getDescription() {
-        return (TYPE + "=" + this.serviceId);
-    }
-
     public String getTextDescription() {
-        String serviceName = Integer.toString(this.serviceId);
+        String serviceName = Integer.toString(getServiceId());
         try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(this.serviceId);
+            serviceName = NetworkElementFactory.getServiceNameFromId(getServiceId());
         } catch (SQLException e) {
         }
 
@@ -44,11 +25,11 @@ public class ServiceFilter extends Object implements Filter {
     }
 
     public String toString() {
-        return ("<NoticeFactory.ServiceFilter: " + this.getDescription() + ">");
+        return ("<NotificationFactory.ServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {
-        return (this.serviceId);
+        return getValue();
     }
 
     public boolean equals(Object obj) {

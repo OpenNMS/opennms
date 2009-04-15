@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.notification.filter.Filter;
+import org.opennms.web.filter.Filter;
 
 /**
  * A servlet that handles querying the notifications table and and then forwards

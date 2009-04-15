@@ -31,6 +31,7 @@
  */
 package org.opennms.web.notification.filter;
 
+import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
 import org.opennms.web.notification.NoticeFactory.SortStyle;
 

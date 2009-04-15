@@ -31,40 +31,41 @@
  */
 package org.opennms.web.notification.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.SQLType;
 
-public class AcknowledgedByFilter implements Filter {
+public class AcknowledgedByFilter extends EqualsFilter<String> {
     public static final String TYPE = "acknowledgeBy";
     
     protected String m_user;
     
     public AcknowledgedByFilter(String user){
+        super(TYPE, SQLType.STRING, "ANSWEREDBY", "answeredBy", user);
         if(user == null){
             throw new IllegalArgumentException("Cannot take null parameters");
         }
         m_user = user;
     }
     
-    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-        ps.setString(parameterIndex, m_user);
-        return 1;
-    }
-
-    public String getDescription() {
-        return TYPE + "=" + m_user;
-    }
-
-    public String getParamSql() {
-        return " ANSWEREDBY=?";
-    }
-
-    public String getSql() {
-        return " ANSWEREDBY='" + m_user + "'";
-    }
-
-    public String getTextDescription() {
-        return getDescription();
-    }
+//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+//        ps.setString(parameterIndex, m_user);
+//        return 1;
+//    }
+//
+//    public String getDescription() {
+//        return TYPE + "=" + m_user;
+//    }
+//
+//    public String getParamSql() {
+//        return " ANSWEREDBY=?";
+//    }
+//
+//    public String getSql() {
+//        return " ANSWEREDBY='" + m_user + "'";
+//    }
+//
+//    public String getTextDescription() {
+//        return getDescription();
+//    }
 
 }

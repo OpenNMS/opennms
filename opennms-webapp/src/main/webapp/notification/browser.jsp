@@ -54,7 +54,7 @@
 		org.opennms.web.event.EventFactory,
 		org.opennms.web.event.EventUtil,
 		org.opennms.web.event.Event,
-		org.opennms.web.notification.filter.Filter,
+		org.opennms.web.filter.Filter,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.WebSecurityUtils
 	"

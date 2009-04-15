@@ -335,14 +335,14 @@ public class NoticeFactory extends Object {
      * given sort style.
      */
     public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return (NoticeFactory.getNotices(sortStyle, ackType, new Filter[0]));
+        return (NoticeFactory.getNotices(sortStyle, ackType, new org.opennms.web.filter.Filter[0]));
     }
 
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by the
      * given sort style.
      */
-    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, Filter[] filters) throws SQLException {
+    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters) throws SQLException {
         return (NoticeFactory.getNotices(sortStyle, ackType, filters, -1, -1));
     }
 
@@ -362,7 +362,7 @@ public class NoticeFactory extends Object {
      * @param offset
      *            if -1, no limit or offset if used
      */
-    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, Filter[] filters, int limit, int offset) throws SQLException {
+    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters, int limit, int offset) throws SQLException {
         if (sortStyle == null || ackType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -397,7 +397,7 @@ public class NoticeFactory extends Object {
             
             int parameterIndex = 1;
             for (int i = 0; i < filters.length; i++) {
-            	parameterIndex += filters[i].bindParams(stmt, parameterIndex);
+            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
             }
             
             if (useLimits) {
@@ -444,7 +444,7 @@ public class NoticeFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
+        org.opennms.web.filter.Filter[] filters = new org.opennms.web.filter.Filter[] { new NodeFilter(nodeId) };
         return (NoticeFactory.getNotices(sortStyle, ackType, filters));
     }
 
