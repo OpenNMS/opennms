@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
 import org.opennms.web.notification.NoticeFactory.SortStyle;
-import org.opennms.web.notification.filter.Filter;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
@@ -82,7 +81,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 buf.append(NoticeFactory.getAcknowledgeTypeClause(ackType));
             }
 
-            public void visitFilter(Filter filter) throws RuntimeException {
+            public void visitFilter(org.opennms.web.filter.Filter filter) throws RuntimeException {
                 and(buf);
                 buf.append(filter.getParamSql());
             }
@@ -96,6 +95,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 buf.append(" ");
                 buf.append(NoticeFactory.getOrderByClause(sortStyle));
             }
+
         });
         
         return buf.toString();
@@ -111,9 +111,9 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 }
                 criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
                     @Override
-                    public void visitFilter(Filter filter) throws SQLException{
+                    public void visitFilter(org.opennms.web.filter.Filter filter) throws SQLException{
                         System.out.println("filter sql: " + filter.getSql());
-                        paramIndex += filter.bindParams(ps, paramIndex);
+                        paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
             }

@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsUserNotification;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -248,9 +249,24 @@ public class DatabasePopulator {
         OnmsNotification notif = new OnmsNotification();
         notif.setEvent(event);
         notif.setTextMsg("This is a test notification");
+        notif.setIpAddress("192.168.1.1");
+        notif.setNode(m_node1);
+        notif.setServiceType(getServiceType("ICMP"));
         getNotificationDao().save(notif);
         getNotificationDao().flush();
        
+        OnmsUserNotification userNotif = new OnmsUserNotification();
+        userNotif.setUserId("TestUser");
+        userNotif.setNotification(notif);
+        getUserNotificationDao().save(userNotif);
+        getUserNotificationDao().flush();
+        
+        OnmsUserNotification userNotif2 = new OnmsUserNotification();
+        userNotif2.setUserId("TestUser2");
+        userNotif2.setNotification(notif);
+        getUserNotificationDao().save(userNotif2);
+        getUserNotificationDao().flush();
+        
         OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
         OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
         getOutageDao().save(resolved);

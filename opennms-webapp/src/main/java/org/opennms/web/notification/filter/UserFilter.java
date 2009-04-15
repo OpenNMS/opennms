@@ -1,39 +1,39 @@
 package org.opennms.web.notification.filter;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.hibernate.Hibernate;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.web.filter.OneArgFilter;
+import org.opennms.web.filter.SQLType;
 
 
 
 /** Encapsulates all user filtering functionality. */
-public class UserFilter extends Object implements Filter {
+public class UserFilter extends OneArgFilter<String> {
     public static final String TYPE = "user";
 
-    protected String user;
-
     public UserFilter(String user) {
-        this.user = user;
-    }
-
-    public String getSql() {
-        return (" notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid='" + this.user + "')");
+        super(TYPE, SQLType.STRING, "NOTIFICATIONS.NOTIFYID", "notifyId", user);
     }
     
-    public String getParamSql() {
-        return (" notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)");
-    }
     
-    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-    	ps.setString(parameterIndex, this.user);
-    	return 1;
+    @Override
+    public String getSQLTemplate() {
+        return " " + getSQLFieldName() + " in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=%s)";
     }
 
-    public String getDescription() {
-        return (TYPE + "=" + this.user);
+
+    @Override
+    public Criterion getCriterion() {
+        
+            
+        return Restrictions.sqlRestriction(" {alias}.notifyId in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)", getValue(), Hibernate.STRING);
     }
 
+
+    @Override
     public String getTextDescription() {
-        return this.getDescription();
+        return getValue() + " was notified";
     }
 
     public String toString() {
@@ -41,10 +41,11 @@ public class UserFilter extends Object implements Filter {
     }
 
     public String getUser() {
-        return (this.user);
+        return getValue();
     }
 
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
+
 }
