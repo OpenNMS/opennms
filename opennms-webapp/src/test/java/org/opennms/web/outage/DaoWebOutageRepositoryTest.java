@@ -31,15 +31,22 @@
  */
 package org.opennms.web.outage;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Date;
+
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.web.outage.filter.OutageCriteria;
+import org.opennms.web.outage.filter.OutageIdFilter;
+import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -47,6 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
@@ -67,6 +75,11 @@ public class DaoWebOutageRepositoryTest {
     @Autowired
     WebOutageRepository m_daoOutageRepo;
     
+    @BeforeClass
+    public static void setupLogging(){
+        
+    }
+    
     @Before
     public void setUp(){
         m_dbPopulator.populateDatabase();
@@ -76,4 +89,49 @@ public class DaoWebOutageRepositoryTest {
     public void testAutowire(){
         assertNotNull(m_daoOutageRepo);
     }
+    
+    @Test
+    public void testCountMatchingOutages(){
+        int count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
+        assertEquals(3, count);
+        
+        count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria(new RegainedServiceDateBeforeFilter(new Date())));
+        assertEquals(1, count);
+    }
+    
+    @Test
+    public void testGetMatchingOutages(){
+        Outage[] outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria());
+        assertEquals(3, outage.length);
+        
+        outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new RegainedServiceDateBeforeFilter(new Date())));
+        assertEquals(1, outage.length);
+        
+        outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new OutageIdFilter(1)));
+        assertEquals(1, outage.length);
+        assertEquals(1, outage[0].getId());
+        
+        outage = m_daoOutageRepo.getMatchingOutages(new OutageCriteria(new OutageIdFilter(2)));
+        assertEquals(1, outage.length);
+        assertEquals(2, outage[0].getId());
+    }
+    
+    @Test
+    @Transactional
+    public void testGetOutage(){
+        Outage outage = m_daoOutageRepo.getOutage(1);
+        assertNotNull(outage);
+    }
+    
+//    @Test
+//    public void testGetMatchingOutageSummaries(){
+//        
+//    }
+//    
+//    @Test
+//    public void testCountMatchingSummaries(){
+//        
+//        int count = m_daoOutageRepo.countMatchingOutageSummaries(new OutageCriteria());
+//        assertEquals(1, count);
+//    }
 }
