@@ -112,7 +112,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
                 criteria.visit(new BaseEventCriteriaVisitor<SQLException>() {
                     @Override
                     public void visitFilter(Filter filter) throws SQLException {
-                        paramIndex =+ filter.bindParam(ps, paramIndex);
+                        paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
             }
