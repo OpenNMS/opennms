@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -39,6 +39,7 @@
 	buffer="1024kb"
 	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.netmgt.model.OnmsSeverity,
 		org.opennms.web.event.*
 		"
 %>
@@ -49,12 +50,7 @@
     //get the service names, in alpha order
     Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
-
-    //get the severity names, in severity order
-    List severities = EventUtil.getSeverityList();
-    Iterator severityIterator = severities.iterator();
-
+    Iterator<String> serviceNameIterator = serviceNameSet.iterator();
 
 %>
 
@@ -104,10 +100,9 @@
               <select name="severity" size="1">
                 <option selected="selected"><%=EventUtil.ANY_SEVERITIES_OPTION%></option>
 
-                <% while( severityIterator.hasNext() ) { %>
-                  <% int severity = ((Integer)severityIterator.next()).intValue(); %>
-                  <option value="<%=severity%>">
-                    <%=EventUtil.getSeverityLabel(severity)%>
+                <% for (OnmsSeverity severity : OnmsSeverity.values() ) { %>
+                  <option value="<%= severity.getId() %>">
+                    <%= severity.getLabel() %>
                   </option>
                 <% } %>
               </select>

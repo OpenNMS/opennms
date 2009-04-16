@@ -59,7 +59,7 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativeServiceFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativeServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {

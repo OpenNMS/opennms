@@ -46,7 +46,7 @@ public class AlarmIDFilter extends EqualsFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.AlarmIDFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.AlarmIDFilter: " + this.getDescription() + ">");
     }
 
     public int getAlarmId() {

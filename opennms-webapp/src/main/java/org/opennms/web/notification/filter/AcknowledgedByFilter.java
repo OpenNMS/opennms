@@ -46,26 +46,4 @@ public class AcknowledgedByFilter extends EqualsFilter<String> {
         }
         m_user = user;
     }
-    
-//    public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
-//        ps.setString(parameterIndex, m_user);
-//        return 1;
-//    }
-//
-//    public String getDescription() {
-//        return TYPE + "=" + m_user;
-//    }
-//
-//    public String getParamSql() {
-//        return " ANSWEREDBY=?";
-//    }
-//
-//    public String getSql() {
-//        return " ANSWEREDBY='" + m_user + "'";
-//    }
-//
-//    public String getTextDescription() {
-//        return getDescription();
-//    }
-
 }

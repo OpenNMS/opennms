@@ -48,7 +48,7 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativeInterfaceFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativeInterfaceFilter: " + this.getDescription() + ">");
     }
 
     public String getIpAddress() {

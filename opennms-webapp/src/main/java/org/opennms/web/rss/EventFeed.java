@@ -36,13 +36,12 @@ package org.opennms.web.rss;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.EventFactory;
-import org.opennms.web.event.EventUtil;
 import org.opennms.web.event.SortStyle;
 import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.SeverityFilter;
@@ -78,14 +77,18 @@ public class EventFeed extends AbstractFeed {
                 filters.add(new NodeFilter(nodeId));
             }
             if (this.getRequest().getParameter("severity") != null) {
-                String sev = this.getRequest().getParameter("severity");
-                List<Integer> severities = EventUtil.getSeverityList();
-                for (Integer severity : severities) {
-                    if (EventUtil.getSeverityLabel(severity).toLowerCase().equals(sev)) {
-                        filters.add(new SeverityFilter(severity));
+                String parameter = this.getRequest().getParameter("severity");
+                try {
+                    Integer severityId = WebSecurityUtils.safeParseInt(parameter);
+                    filters.add(new SeverityFilter(severityId));
+                } catch (NumberFormatException e) {
+                    for (OnmsSeverity sev : OnmsSeverity.values()) {
+                        if (sev.getLabel().toLowerCase().equals(parameter.toLowerCase())) {
+                            filters.add(new SeverityFilter(sev));
+                            break;
+                        }
                     }
                 }
-
             }
             
             events = EventFactory.getEvents(SortStyle.TIME, AcknowledgeType.BOTH, filters.toArray(new Filter[] {}), this.getMaxEntries(), -1);

@@ -200,6 +200,42 @@
     <property name="webAlarmRepository" ref="webAlarmRepository" />
   </bean>
 
+  <bean name="/event/acknowledge" class="org.opennms.web.controller.event.AcknowledgeEventController">
+    <property name="webEventRepository" ref="webEventRepository" />
+    <property name="redirectView" value="/event/list.htm" />
+  </bean>
+
+  <bean name="/event/acknowledgeByFilter" class="org.opennms.web.controller.event.AcknowledgeEventByFilterController">
+    <property name="webEventRepository" ref="webEventRepository" />
+    <property name="redirectView" value="/event/list.htm" />
+  </bean>
+
+  <alias name="/event/list.htm" alias="/event/list" />
+  <bean name="/event/list.htm" class="org.opennms.web.controller.event.EventFilterController">
+    <property name="successView" value="event/list" />
+    <property name="defaultShortLimit" value="20" />
+    <property name="defaultLongLimit" value="10" />
+    <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
+    <property name="defaultSortStyle" value="ID" />
+    <property name="webEventRepository" ref="webEventRepository" />
+  </bean>
+
+  <bean name="/notification/acknowledge" class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
+    <property name="webNotificationRepository" ref="webNotificationRepository" />
+    <property name="redirectView" value="/notification/list.htm" />
+  </bean>
+
+  <alias name="/notification/list.htm" alias="/notification/browse" />
+  <bean name="/notification/list.htm" class="org.opennms.web.controller.notification.NotificationFilterController">
+    <property name="successView" value="notification/list" />
+    <property name="defaultShortLimit" value="20" />
+    <property name="defaultLongLimit" value="10" />
+    <property name="defaultSortStyle" value="ID" />
+    <property name="webNotificationRepository" ref="webNotificationRepository" />
+    <property name="webEventRepository" ref="webEventRepository" />
+    <property name="nodeDao" ref="nodeDao" />
+  </bean>
+
   <alias name="/outage/list.htm" alias="/outage/list" />
   <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
     <property name="successView" value="outage/list" />

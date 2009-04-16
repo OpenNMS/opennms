@@ -32,9 +32,12 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.event.EventUtil;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
+
+
+
 
 /** Encapsulates severity filtering functionality. */
 public class SeverityFilter extends EqualsFilter<Integer> {
@@ -44,12 +47,16 @@ public class SeverityFilter extends EqualsFilter<Integer> {
         super(TYPE, SQLType.INT, "EVENTSEVERITY", "eventSeverity", severity);
     }
 
+    public SeverityFilter(OnmsSeverity severity) {
+        this(severity.getId());
+    }
+
     public String getTextDescription() {
-        return (TYPE + "=" + EventUtil.getSeverityLabel(getSeverity()));
+        return (TYPE + "=" + OnmsSeverity.get(getSeverity()).getLabel());
     }
 
     public String toString() {
-        return ("<EventFactory.SeverityFilter: " + getDescription() + ">");
+        return ("<WebEventRepository.SeverityFilter: " + getDescription() + ">");
     }
 
     public int getSeverity() {

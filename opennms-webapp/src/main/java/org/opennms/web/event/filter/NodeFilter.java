@@ -57,7 +57,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.NodeFilter: " + getDescription() + ">");
+        return ("<WebEventRepository.NodeFilter: " + getDescription() + ">");
     }
 
     public int getNodeId() {

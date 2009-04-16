@@ -49,95 +49,59 @@ import org.opennms.web.notification.filter.ServiceFilter;
 import org.opennms.web.notification.filter.UserFilter;
 
 public abstract class NoticeUtil extends Object {
-    protected static final Map<String, NoticeFactory.SortStyle> sortStylesString;
-    protected static final Map<NoticeFactory.SortStyle, String> sortStyles;
+    protected static final Map<String, SortStyle> sortStylesString;
+    protected static final Map<SortStyle, String> sortStyles;
 
-    protected static final Map<String, NoticeFactory.AcknowledgeType> ackTypesString;
-    protected static final Map<NoticeFactory.AcknowledgeType, String> ackTypes;
+    protected static final Map<String, AcknowledgeType> ackTypesString;
+    protected static final Map<AcknowledgeType, String> ackTypes;
 
     static {
-        sortStylesString = new HashMap<String, NoticeFactory.SortStyle>();
-        sortStylesString.put("user", NoticeFactory.SortStyle.USER);
-        sortStylesString.put("responder", NoticeFactory.SortStyle.RESPONDER);
-        sortStylesString.put("pagetime", NoticeFactory.SortStyle.PAGETIME);
-        sortStylesString.put("respondtime", NoticeFactory.SortStyle.RESPONDTIME);
-        sortStylesString.put("node", NoticeFactory.SortStyle.NODE);
-        sortStylesString.put("interface", NoticeFactory.SortStyle.INTERFACE);
-        sortStylesString.put("service", NoticeFactory.SortStyle.SERVICE);
-        sortStylesString.put("id", NoticeFactory.SortStyle.ID);
-        sortStylesString.put("rev_user", NoticeFactory.SortStyle.REVERSE_USER);
-        sortStylesString.put("rev_responder", NoticeFactory.SortStyle.REVERSE_RESPONDER);
-        sortStylesString.put("rev_pagetime", NoticeFactory.SortStyle.REVERSE_PAGETIME);
-        sortStylesString.put("rev_respondtime", NoticeFactory.SortStyle.REVERSE_RESPONDTIME);
-        sortStylesString.put("rev_node", NoticeFactory.SortStyle.REVERSE_NODE);
-        sortStylesString.put("rev_interface", NoticeFactory.SortStyle.REVERSE_INTERFACE);
-        sortStylesString.put("rev_service", NoticeFactory.SortStyle.REVERSE_SERVICE);
-        sortStylesString.put("rev_id", NoticeFactory.SortStyle.REVERSE_ID);
+        sortStylesString = new HashMap<String, SortStyle>();
+        sortStylesString.put("user", SortStyle.USER);
+        sortStylesString.put("responder", SortStyle.RESPONDER);
+        sortStylesString.put("pagetime", SortStyle.PAGETIME);
+        sortStylesString.put("respondtime", SortStyle.RESPONDTIME);
+        sortStylesString.put("node", SortStyle.NODE);
+        sortStylesString.put("interface", SortStyle.INTERFACE);
+        sortStylesString.put("service", SortStyle.SERVICE);
+        sortStylesString.put("id", SortStyle.ID);
+        sortStylesString.put("rev_user", SortStyle.REVERSE_USER);
+        sortStylesString.put("rev_responder", SortStyle.REVERSE_RESPONDER);
+        sortStylesString.put("rev_pagetime", SortStyle.REVERSE_PAGETIME);
+        sortStylesString.put("rev_respondtime", SortStyle.REVERSE_RESPONDTIME);
+        sortStylesString.put("rev_node", SortStyle.REVERSE_NODE);
+        sortStylesString.put("rev_interface", SortStyle.REVERSE_INTERFACE);
+        sortStylesString.put("rev_service", SortStyle.REVERSE_SERVICE);
+        sortStylesString.put("rev_id", SortStyle.REVERSE_ID);
         
-        sortStyles = new HashMap<NoticeFactory.SortStyle, String>();
-        sortStyles.put(NoticeFactory.SortStyle.USER, "user");
-        sortStyles.put(NoticeFactory.SortStyle.RESPONDER, "responder");
-        sortStyles.put(NoticeFactory.SortStyle.PAGETIME, "pagetime");
-        sortStyles.put(NoticeFactory.SortStyle.RESPONDTIME, "respondtime");
-        sortStyles.put(NoticeFactory.SortStyle.NODE, "node");
-        sortStyles.put(NoticeFactory.SortStyle.INTERFACE, "interface");
-        sortStyles.put(NoticeFactory.SortStyle.SERVICE, "service");
-        sortStyles.put(NoticeFactory.SortStyle.ID, "id");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_USER, "rev_user");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_RESPONDER, "rev_responder");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_PAGETIME, "rev_pagetime");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_RESPONDTIME, "rev_respondtime");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_NODE, "rev_node");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_INTERFACE, "rev_interface");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_SERVICE, "rev_service");
-        sortStyles.put(NoticeFactory.SortStyle.REVERSE_ID, "rev_id");
+        sortStyles = new HashMap<SortStyle, String>();
+        sortStyles.put(SortStyle.USER, "user");
+        sortStyles.put(SortStyle.RESPONDER, "responder");
+        sortStyles.put(SortStyle.PAGETIME, "pagetime");
+        sortStyles.put(SortStyle.RESPONDTIME, "respondtime");
+        sortStyles.put(SortStyle.NODE, "node");
+        sortStyles.put(SortStyle.INTERFACE, "interface");
+        sortStyles.put(SortStyle.SERVICE, "service");
+        sortStyles.put(SortStyle.ID, "id");
+        sortStyles.put(SortStyle.REVERSE_USER, "rev_user");
+        sortStyles.put(SortStyle.REVERSE_RESPONDER, "rev_responder");
+        sortStyles.put(SortStyle.REVERSE_PAGETIME, "rev_pagetime");
+        sortStyles.put(SortStyle.REVERSE_RESPONDTIME, "rev_respondtime");
+        sortStyles.put(SortStyle.REVERSE_NODE, "rev_node");
+        sortStyles.put(SortStyle.REVERSE_INTERFACE, "rev_interface");
+        sortStyles.put(SortStyle.REVERSE_SERVICE, "rev_service");
+        sortStyles.put(SortStyle.REVERSE_ID, "rev_id");
 
-        ackTypesString = new HashMap<String, NoticeFactory.AcknowledgeType>();
-        ackTypesString.put("ack", NoticeFactory.AcknowledgeType.ACKNOWLEDGED);
-        ackTypesString.put("unack", NoticeFactory.AcknowledgeType.UNACKNOWLEDGED);
+        ackTypesString = new HashMap<String, AcknowledgeType>();
+        ackTypesString.put("ack", AcknowledgeType.ACKNOWLEDGED);
+        ackTypesString.put("unack", AcknowledgeType.UNACKNOWLEDGED);
 
-        ackTypes = new HashMap<NoticeFactory.AcknowledgeType, String>();
-        ackTypes.put(NoticeFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
-        ackTypes.put(NoticeFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
-    }
-
-    public static NoticeFactory.SortStyle getSortStyle(String sortStyleString) {
-        if (sortStyleString == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return sortStylesString.get(sortStyleString.toLowerCase());
-    }
-
-    public static String getSortStyleString(NoticeFactory.SortStyle sortStyle) {
-        if (sortStyle == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return sortStyles.get(sortStyle);
-    }
-
-    public static NoticeFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
-        if (ackTypeString == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return ackTypesString.get(ackTypeString.toLowerCase());
-    }
-
-    public static String getAcknowledgeTypeString(NoticeFactory.AcknowledgeType ackType) {
-        if (ackType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return ackTypes.get(ackType);
+        ackTypes = new HashMap<AcknowledgeType, String>();
+        ackTypes.put(AcknowledgeType.ACKNOWLEDGED, "ack");
+        ackTypes.put(AcknowledgeType.UNACKNOWLEDGED, "unack");
     }
 
     public static org.opennms.web.filter.Filter getFilter(String filterString) {
-        if (filterString == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
         Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
@@ -157,14 +121,6 @@ public abstract class NoticeUtil extends Object {
         }
 
         return filter;
-    }
-
-    public static String getFilterString(Filter filter) {
-        if (filter == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return filter.getDescription();
     }
 
 }

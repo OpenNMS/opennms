@@ -47,9 +47,9 @@ import org.opennms.web.filter.Filter;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NoticeQueryParms extends Object {
-    public NoticeFactory.SortStyle sortStyle;
+    public SortStyle sortStyle;
 
-    public NoticeFactory.AcknowledgeType ackType;
+    public AcknowledgeType ackType;
 
     public List<Filter> filters;
 
@@ -57,11 +57,13 @@ public class NoticeQueryParms extends Object {
 
     public int multiple;
 
+    public String display;
+    
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
      * of EventFactory.Filter instances.
      */
     public Filter[] getFilters() {
-        return this.filters.toArray(new Filter[this.filters.size()]);
+        return filters.toArray(new Filter[filters.size()]);
     }
 }

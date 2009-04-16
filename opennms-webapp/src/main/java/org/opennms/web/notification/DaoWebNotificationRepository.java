@@ -42,8 +42,6 @@ import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.web.filter.Filter;
-import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
-import org.opennms.web.notification.NoticeFactory.SortStyle;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +68,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
                 
             }
 
+            public void visitGroupBy() throws RuntimeException {
+            }
+
             public void visitFilter(Filter filter) throws RuntimeException {
                 criteria.add(filter.getCriterion());
                 
@@ -81,53 +82,53 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
             }
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                switch(sortStyle.id){
-                    case SortStyle._USER:
+                switch(sortStyle){
+                    case USER:
                         criteria.addOrder(Order.desc("user"));
                         break;
-                    case SortStyle._RESPONDER:
+                    case RESPONDER:
                         criteria.addOrder(Order.desc("responder"));        
                         break;
-                    case SortStyle._PAGETIME:
+                    case PAGETIME:
                         criteria.addOrder(Order.desc("pagetime"));
                         break;
-                    case SortStyle._RESPONDTIME:
+                    case RESPONDTIME:
                         criteria.addOrder(Order.desc("respondTime"));
                         break;
-                    case SortStyle._NODE:
+                    case NODE:
                         criteria.addOrder(Order.desc("nodeId"));
                         break;
-                    case SortStyle._INTERFACE:
+                    case INTERFACE:
                         criteria.addOrder(Order.desc("interfaceId"));
                         break;
-                    case SortStyle._SERVICE:
+                    case SERVICE:
                         criteria.addOrder(Order.desc("serviceId"));
                         break;
-                    case SortStyle._ID:
+                    case ID:
                         criteria.addOrder(Order.desc("notifyId"));
                         break;
-                    case SortStyle._REVERSE_USER:
+                    case REVERSE_USER:
                         criteria.addOrder(Order.asc("user"));
                         break;
-                    case SortStyle._REVERSE_RESPONDER:
+                    case REVERSE_RESPONDER:
                         criteria.addOrder(Order.asc("responder"));            
                         break;
-                    case SortStyle._REVERSE_PAGETIME:
+                    case REVERSE_PAGETIME:
                         criteria.addOrder(Order.asc("pagetime"));
                         break;
-                    case SortStyle._REVERSE_RESPONDTIME:
+                    case REVERSE_RESPONDTIME:
                         criteria.addOrder(Order.asc("respondTimer"));
                         break;
-                    case SortStyle._REVERSE_NODE:
+                    case REVERSE_NODE:
                         criteria.addOrder(Order.asc("nodeId"));
                         break;
-                    case SortStyle._REVERSE_INTERFACE:
+                    case REVERSE_INTERFACE:
                         criteria.addOrder(Order.asc("interfaceId"));
                         break;
-                    case SortStyle._REVERSE_SERVICE:
+                    case REVERSE_SERVICE:
                         criteria.addOrder(Order.asc("serviceId"));
                         break;
-                    case SortStyle._REVERSE_ID:
+                    case REVERSE_ID:
                         criteria.addOrder(Order.asc("notifyId"));
                         break;
                     

@@ -46,20 +46,6 @@
 		"
 %>
 
-<%
-    //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getServiceNameToIdMap());
-    Set serviceNameSet = serviceNameMap.keySet();
-    Iterator serviceNameIterator = serviceNameSet.iterator();
-    
-    //get the severity names, in severity order
-    List severities = EventUtil.getSeverityList();
-    Iterator severityIterator = severities.iterator();
-
-    //get the current time
-    Calendar now = Calendar.getInstance();
-%>
-
 <script type="text/javascript">
 <!--
 function Blank_TextField_Validator()

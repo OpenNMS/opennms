@@ -64,11 +64,6 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-/**
- * WebAlarmDao
- *
- * @author brozow
- */
 public class JdbcWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
@@ -94,7 +89,6 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
                 and(buf);
                 buf.append(ackType.getAcknowledgeTypeClause());
             }
-
 
             public void visitFilter(Filter filter) {
                 and(buf);

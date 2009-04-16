@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -60,8 +60,9 @@
 
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.EventQueryParms"%>
-<%@page import="org.opennms.web.event.AcknowledgeEventServlet"%>
 <%@page import="org.opennms.web.event.EventUtil"%>
+
+<%@page import="org.opennms.web.controller.event.AcknowledgeEventController"%>
 
 <%@page import="org.opennms.web.event.filter.SeverityFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeSeverityFilter"%>
@@ -100,20 +101,12 @@
         throw new ServletException( "Missing either the events, eventCount, or parms request attribute." );
     }
 
-    String action = null;
+    String action = parms.ackType.getShortName();
 
-    if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
-        action = AcknowledgeEventServlet.ACKNOWLEDGE_ACTION;
-    } 
-    else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
-        action = AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION;
-    }
-
-    //useful constant strings
-    String addPositiveFilterString = "[+]";
-    String addNegativeFilterString = "[-]";
-    String addBeforeDateFilterString = "[&gt;]";
-    String addAfterDateFilterString  = "[&lt;]";    
+    pageContext.setAttribute("addPositiveFilter", "[+]");
+    pageContext.setAttribute("addNegativeFilter", "[-]");
+    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
+    pageContext.setAttribute("addAfterFilter", "[&lt;]");
 %>
 
 
@@ -248,30 +241,22 @@
               </jsp:include>
             <% } %>          
 
-            <% if( parms.filters.size() > 0 || parms.ackType == AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-                 <% int length = parms.filters.size(); %>
 
+            <% if( parms.filters.size() > 0 || parms.ackType == AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+              <% int length = parms.filters.size(); %>
               <p>Search constraints:
                   <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-                    <span class="filter">Event(s) outstanding
-					  <a href="<%=this.makeLink(parms, AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged event(s)">[-]</a>
-                    </span>
+                    <span class="filter">Event(s) outstanding <a href="<%=this.makeLink(parms, AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged event(s)">[-]</a></span>
                   <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-                    <span class="filter">Event(s) acknowledged
-                      <a href="<%=this.makeLink(parms, AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding event(s)">[-]</a>
-                    </span>
+                    <span class="filter">Event(s) acknowledged <a href="<%=this.makeLink(parms, AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding event(s)">[-]</a></span>
                   <% } %>
+                  
                   <% for( int i=0; i < length; i++ ) { %>
                     <% Filter filter = (Filter)parms.filters.get(i); %>
-                    &nbsp;
-                    <span class="filter">
-                      <%= WebSecurityUtils.sanitizeString(filter.getTextDescription()) %>
-                      <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a>
-                    </span>
+                    &nbsp; <span class="filter"><%= WebSecurityUtils.sanitizeString(filter.getTextDescription()) %><a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
               </p>
             <% } %>
-
 
     <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       <form action="event/acknowledge" method="POST" name="acknowledge_form">
@@ -280,7 +265,6 @@
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
     <% } %>
                 <jsp:include page="/includes/key.jsp" flush="false" />
-
       <table>
         <thead>
         <tr>
@@ -293,7 +277,7 @@
           <% } else { %>
             <th width="1%">&nbsp;</th>
           <% } %>
-          <th width="1%"> <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+          <th width="1%"> <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID"        )%></th>
           <th width="10%"><%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
           <th width="19%"><%=this.makeSortLink( parms, SortStyle.TIME,      SortStyle.REVERSE_TIME,      "time",      "Time"      )%></th>
           <th width="25%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
@@ -306,7 +290,8 @@
         Event event = events[i];
       	pageContext.setAttribute("event", event);
       %>
-        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
+      
+        <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <td valign="top" rowspan="3" class="divider">
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
@@ -318,20 +303,20 @@
           <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
           <td valign="top" rowspan="3" class="divider bright"> 
-            <strong><%=EventUtil.getSeverityLabel(events[i].getSeverity())%></strong>
+            <strong><%= events[i].getSeverity().getLabel() %></strong>
             <% Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
               <nobr>
-                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only events with this severity"><%=addPositiveFilterString%></a>
-                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(events[i].getSeverity()), true)%>" class="filterLink" title="Do not show events with this severity"><%=addNegativeFilterString%></a>
+                <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only events with this severity">${addPositiveFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeSeverityFilter(events[i].getSeverity()), true)%>" class="filterLink" title="Do not show events with this severity">${addNegativeFilter}</a>
               </nobr>
             <% } %>
           </td>
           <td class="divider">
             <nobr><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one"><%=addAfterDateFilterString%></a>            
-              <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one"><%=addBeforeDateFilterString%></a>
+              <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterDateFilter}</a>            
+              <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeDateFilter}</a>
             </nobr>
           </td>
           <td class="divider">
@@ -342,8 +327,8 @@
                     
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -360,8 +345,8 @@
               <% } %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only events on this IP address"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(events[i].getIpAddress()), true)%>" class="filterLink" title="Do not show events for this interface"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only events on this IP address">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(events[i].getIpAddress()), true)%>" class="filterLink" title="Do not show events for this interface">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
@@ -378,8 +363,8 @@
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only events with this service type"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(events[i].getServiceId()), true)%>" class="filterLink" title="Do not show events for this service"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only events with this service type">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(events[i].getServiceId()), true)%>" class="filterLink" title="Do not show events for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } else { %>
@@ -392,8 +377,8 @@
               <%=events[i].getAcknowledgeUser()%>
               <% if( !parms.filters.contains( acknByFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only events with this acknowledged by user"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(events[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show events acknowledgd by this user"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only events with this acknowledged by user">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(events[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show events acknowledgd by this user">${addNegativeFilter}</a>
                 </nobr>
               <% } %>              
             <% } else { %>
@@ -402,15 +387,15 @@
           </td>
         </tr>
         
-        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
+        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
           <td colspan="4">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
                 <%=events[i].getUei()%>
               <% if( !parms.filters.contains( exactUEIFilter )) { %>
                 <nobr>
-                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(events[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(events[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
               <% if (req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
@@ -429,7 +414,7 @@
           </td>
         </tr>
        
-        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
+        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
           <td colspan="5"><%=events[i].getLogMessage()%></td>
         </tr>
        
@@ -439,23 +424,17 @@
         <p><%=events.length%> events
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-              <input type="button" value="Acknowledge Events" onClick="submitForm('acknowledge')"/>
+              <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
               <input TYPE="reset" />
             <% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-              <input type="button" value="Unacknowledge Events" onClick="submitForm('unacknowledge')"/>
+              <input type="button" value="Unacknowledge Events" onClick="submitForm('<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
               <input TYPE="reset" />
             <% } %>
           <% } %>
         </p>
       </form>
-
-      <%--<br>
-      <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
-        <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
-      <% } %>--%>
-
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 
