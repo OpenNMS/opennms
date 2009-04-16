@@ -74,15 +74,16 @@ public class JdbcWebOutageRepositoryTest{
     public void testGetOutages() {
         Outage[] outages = m_outageRepo.getMatchingOutages(new OutageCriteria());
         assertNotNull(outages);
-        assertEquals(2, outages.length);
+        assertEquals(3, outages.length);
         
         assertNotNull(outages[0].getRegainedServiceTime());
         assertNull(outages[1].getRegainedServiceTime());
+        assertNull(outages[2].getRegainedServiceTime());
     }
     
     @Test
     public void testGetOutageSummaries() {
         OutageSummary[] summaries = m_outageRepo.getMatchingOutageSummaries(new OutageCriteria());
-        assertEquals("there should be 1 outage summary in the default (current) outage criteria match", 1, summaries.length);
+        assertEquals("there should be 2 outage summary in the default (current) outage criteria match", 2, summaries.length);
     }
 }
