@@ -76,10 +76,10 @@
     }
 
     if (NoticeFactory.canDisplayEvent(notice.getEventId())) {
-	Event event = EventFactory.getEvent(notice.getEventId());
-	eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());
+		Event event = EventFactory.getEvent(notice.getEventId());
+		eventSeverity = event.getSeverity().getLabel();
     } else {
-	eventSeverity = new String("Cleared");
+		eventSeverity = new String("Cleared");
     }
 
 %>
@@ -108,9 +108,9 @@
 <table>
   <tr class="<%=eventSeverity%>">
     <td width="15%">Notification Time</td>
-    <td width="17%"><%=org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeSent())%></td>
+    <td width="17%"><%=org.opennms.web.Util.formatDateToUIString(notice.getTimeSent())%></td>
     <td width="15%">Time&nbsp;Replied</td>
-    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
+    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
     <td width="15%">Responder</td>
     <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
   </tr>
@@ -192,14 +192,12 @@
     </tr>
   </thead>
   
-  <% List sentToList = notice.getSentTo(); %>
-  <%  for (int i=0; i < sentToList.size(); i++) { %>
-    <%  NoticeSentTo sentTo = (NoticeSentTo)sentToList.get(i); %>
+  <%  for (NoticeSentTo sentTo : notice.getSentTo()) { %>
 
     <tr class="<%=eventSeverity%>">
       <td><%=sentTo.getUserId()%></td>
 
-      <td><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
+      <td><%=org.opennms.web.Util.formatDateToUIString(sentTo.getTime())%></td>
 
       <td>
         <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>

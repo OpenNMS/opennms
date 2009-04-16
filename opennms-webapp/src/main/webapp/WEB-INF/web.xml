@@ -379,33 +379,6 @@
       <param-value>false</param-value>
     </init-param>
   </servlet>
-  <servlet>
-    <servlet-name>acknowledgeEvent</servlet-name>
-    <servlet-class>org.opennms.web.event.AcknowledgeEventServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>list</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>acknowledgeEventByFilter</servlet-name>
-    <servlet-class>org.opennms.web.event.AcknowledgeEventByFilterServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>list</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>acknowledgeNotice</servlet-name>
-    <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>browse</param-value>
-    </init-param>
-  </servlet>
   
   <!-- Servlet for modify Discovery configuration service -->
   <servlet>
@@ -440,10 +413,6 @@
     </init-param>
   </servlet>
   <servlet>
-    <servlet-name>filterEvent</servlet-name>
-    <servlet-class>org.opennms.web.event.EventFilterServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>queryEvent</servlet-name>
     <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
     <init-param>
@@ -466,11 +435,6 @@
     <servlet-class>org.opennms.web.vulnerability.VulnerabilityFilterServlet</servlet-class>
   </servlet>  
   
-  
-  <servlet>
-    <servlet-name>queryNotice</servlet-name>
-    <servlet-class>org.opennms.web.notification.NoticeQueryServlet</servlet-class>
-  </servlet>
   
   <!-- Servlet for updating the notification status -->
   <servlet>
@@ -846,18 +810,6 @@
     <url-pattern>/availability/availability</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>acknowledgeEvent</servlet-name>
-    <url-pattern>/event/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>acknowledgeEventByFilter</servlet-name>
-    <url-pattern>/event/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>  
-  <servlet-mapping>
-    <servlet-name>filterEvent</servlet-name>
-    <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>    
-  <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
@@ -866,26 +818,10 @@
     <url-pattern>/alarm/query</url-pattern>
   </servlet-mapping>
 
-  <!--  servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/ticket/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/*</url-pattern>
-  </servlet-mapping -->
   <servlet-mapping>
     <servlet-name>filterVulnerability</servlet-name>
     <url-pattern>/vulnerability/list</url-pattern>
   </servlet-mapping>    
-  <servlet-mapping>
-    <servlet-name>acknowledgeNotice</servlet-name>
-    <url-pattern>/notification/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>queryNotice</servlet-name>
-    <url-pattern>/notification/browse</url-pattern>
-  </servlet-mapping>
   
   <!--servlet mapping for update notification status servlet -->
   <servlet-mapping>
@@ -1171,6 +1107,26 @@
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/changeSeverity</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/acknowledgeByFilter</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/list</url-pattern>
+  </servlet-mapping>    
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/notification/browse</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/notification/acknowledge</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

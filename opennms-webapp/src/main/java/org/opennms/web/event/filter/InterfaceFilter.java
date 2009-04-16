@@ -44,7 +44,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
     }
 
     public String toString() {
-        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.InterfaceFilter: " + this.getDescription() + ">");
     }
 
     public String getIpAddress() {

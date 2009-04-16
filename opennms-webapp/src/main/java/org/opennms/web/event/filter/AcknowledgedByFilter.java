@@ -44,7 +44,7 @@ public class AcknowledgedByFilter extends EqualsFilter<String> {
     }
 
     public String toString() {
-        return ("<EventFactory.AcknowledgedByFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.AcknowledgedByFilter: " + this.getDescription() + ">");
     }
 
     public String getAcknowledgedByFilter() {

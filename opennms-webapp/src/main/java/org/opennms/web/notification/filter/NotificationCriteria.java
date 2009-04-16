@@ -32,8 +32,8 @@
 package org.opennms.web.notification.filter;
 
 import org.opennms.web.filter.Filter;
-import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
-import org.opennms.web.notification.NoticeFactory.SortStyle;
+import org.opennms.web.notification.AcknowledgeType;
+import org.opennms.web.notification.SortStyle;
 
 public class NotificationCriteria {
     
@@ -69,6 +69,10 @@ public class NotificationCriteria {
         m_offset = limit;
     }
     
+    public NotificationCriteria(AcknowledgeType ackType, Filter[] filters) {
+        this(filters, null, ackType, -1, -1);
+    }
+
     public <E extends Exception> void visit(NotificationCriteriaVisitor<E> visitor) throws E{
         if(m_ackType != null){
             visitor.visitAckType(m_ackType);

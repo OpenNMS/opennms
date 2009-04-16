@@ -57,8 +57,8 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * A servlet that handles updating the ifservices table with the notice status
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public class ServiceNoticeUpdateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -72,22 +72,22 @@ public class ServiceNoticeUpdateServlet extends HttpServlet {
         String checkedServices[] = request.getParameterValues("serviceCheck");
 
         if (checkedServices != null) {
-            for (int i = 0; i < checkedServices.length; i++) {
-                servicesCheckedMap.put(checkedServices[i], "Y");
+            for (String checkedService : checkedServices) {
+                servicesCheckedMap.put(checkedService, "Y");
             }
         }
 
-        Iterator iterator = servicesCheckedMap.keySet().iterator();
+        Iterator<String> iterator = servicesCheckedMap.keySet().iterator();
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+            String key = iterator.next();
 
-            // decompose the key into nodeid, ipaddres and service id
+            // decompose the key into node ID, IP address and service ID
             StringTokenizer tokenizer = new StringTokenizer(key, ",");
             int nodeID = WebSecurityUtils.safeParseInt(tokenizer.nextToken());
             String ipAddress = tokenizer.nextToken();
             int serviceID = WebSecurityUtils.safeParseInt(tokenizer.nextToken());
 
-            updateService(nodeID, ipAddress, serviceID, (String) servicesCheckedMap.get(key));
+            updateService(nodeID, ipAddress, serviceID, servicesCheckedMap.get(key));
         }
 
         response.sendRedirect("index.jsp");

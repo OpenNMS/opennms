@@ -39,7 +39,9 @@ public class NotificationIdListFilter extends InFilter<Integer> {
     //private int[] m_notificationIds;
     
     private static Integer[] box(int[] values) {
-        if (values == null) return null;
+        if (values == null) {
+            return null;
+        }
         
         Integer[] boxed = new Integer[values.length];
         for(int i = 0; i < values.length; i++) {
@@ -49,71 +51,17 @@ public class NotificationIdListFilter extends InFilter<Integer> {
         return boxed;
     }
     
+    public NotificationIdListFilter(Integer[] notificationIds) {
+        super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", notificationIds);
+    }
+
     public NotificationIdListFilter(int[] notificationIds){
         super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", box(notificationIds));
-        //m_notificationIds = notificationIds;
     }
 
     @Override
     public String getTextDescription() {
         return String.format("notifyId in (%s)", getValueString());
     }
-    
-//    public int bindParams(PreparedStatement ps, int parameterIndex) throws SQLException {
-//        for(int i = 0; i < m_notificationIds.length; i++){
-//            ps.setInt(parameterIndex + i, m_notificationIds[i]);
-//        }
-//        return m_notificationIds.length;
-//    }
-//
-//    public String getDescription() {
-//        StringBuilder buf = new StringBuilder("notificationId in ");
-//        appendIdList(buf);
-//        return buf.toString();
-//    }
-//
-//    public String getParamSql() {
-//        StringBuilder buf = new StringBuilder(m_notificationIds.length*3 + 20);
-//        
-//        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
-//        
-//        buf.append('(');
-//        for(int i = 0; i < m_notificationIds.length; i++){
-//            if(i != 0){
-//                buf.append(", ");
-//            }
-//            buf.append('?');
-//        }
-//        
-//        buf.append(')');
-//        
-//        return buf.toString();
-//    }
-//
-//    public String getSql() {
-//        StringBuilder buf = new StringBuilder(m_notificationIds.length*5 + 20);
-//        
-//        buf.append(" NOTIFICATIONS.NOTIFYID IN ");
-//        
-//        appendIdList(buf);
-//        
-//        return buf.toString();
-//    }
-//
-//    public String getTextDescription() {
-//        return getDescription();
-//    }
-//    
-//    private void appendIdList(StringBuilder buf) {
-//        buf.append("(");
-//        for(int i = 0; i < m_notificationIds.length; i++) {
-//            if (i != 0) {
-//                buf.append(", ");
-//            }
-//            buf.append(m_notificationIds[i]);
-//        }
-//        
-//        buf.append(")");
-//    }
 
 }

@@ -47,7 +47,7 @@ public class NegativePartialUEIFilter extends SubstringFilter {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativePartialUEIFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativePartialUEIFilter: " + this.getDescription() + ">");
     }
 
     public String getUEI() {

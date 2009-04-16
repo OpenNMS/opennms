@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.EventIdListFilter;
@@ -55,21 +56,20 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-
 public class JdbcWebEventRepository implements WebEventRepository {
     
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
-    private String getSql(final String selectCause, final EventCriteria criteria) {
-        final StringBuilder buf = new StringBuilder(selectCause);
+    private String getSql(final String selectClause, final EventCriteria criteria) {
+        final StringBuilder buf = new StringBuilder(selectClause);
         
         criteria.visit(new EventCriteriaVisitor<RuntimeException>(){
             
             boolean first = true;
             
-            public void and(StringBuilder buf){
-                if(first){
+            public void and(StringBuilder buf) {
+                if (first) {
                     buf.append(" WHERE ");
                     first = false;
                 } else {
@@ -77,32 +77,32 @@ public class JdbcWebEventRepository implements WebEventRepository {
                 }
             }
             
-            public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
+            public void visitAckType(AcknowledgeType ackType) {
                 and(buf);
-                buf.append(EventFactory.getAcknowledgeTypeClause(ackType));
+                buf.append(ackType.getAcknowledgeTypeClause());
             }
 
-            public void visitFilter(Filter filter) throws RuntimeException {
+            public void visitFilter(Filter filter) {
                 and(buf);
                 buf.append(filter.getParamSql());
             }
 
-            public void visitLimit(int limit, int offset) throws RuntimeException {
+            public void visitSortStyle(SortStyle sortStyle) {
+                buf.append(" ");
+                buf.append(sortStyle.getOrderByClause());
+            }
+            
+            public void visitLimit(int limit, int offset) {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
             }
 
-            public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                buf.append(" ");
-                buf.append(EventFactory.getOrderByClause(sortStyle));
-            }
-            
         });
         
         return buf.toString();
     }
     
     private PreparedStatementSetter paramSetter(final EventCriteria criteria, final Object... args) {
-        return new PreparedStatementSetter(){
+        return new PreparedStatementSetter() {
             int paramIndex = 1;
             public void setValues(final PreparedStatement ps) throws SQLException {
                 for(Object arg : args) {
@@ -127,7 +127,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
             event.id = new Integer(rs.getInt("eventID"));
             event.uei = rs.getString("eventUei");
             event.snmp = rs.getString("eventSnmp");
-            event.time = new Date(((Timestamp) rs.getTimestamp("eventTime")).getTime());
+            event.time = new Date((rs.getTimestamp("eventTime")).getTime());
             event.host = rs.getString("eventHost");
             event.snmphost = rs.getString("eventSnmpHost");
             event.dpName = rs.getString("eventDpName");
@@ -145,11 +145,11 @@ public class JdbcWebEventRepository implements WebEventRepository {
             event.serviceID = (Integer) rs.getObject("serviceID"); 
             event.nodeLabel = rs.getString("nodeLabel");;
             event.serviceName = rs.getString("serviceName"); 
-            event.createTime = new Date(((Timestamp) rs.getTimestamp("eventCreateTime")).getTime());
+            event.createTime = new Date((rs.getTimestamp("eventCreateTime")).getTime());
             event.description = rs.getString("eventDescr");
             event.logGroup = rs.getString("eventLoggroup");
             event.logMessage = rs.getString("eventLogmsg");
-            event.severity = new Integer(rs.getInt("eventSeverity"));
+            event.severity = OnmsSeverity.get(rs.getInt("eventSeverity"));
             event.operatorInstruction = rs.getString("eventOperInstruct");
             event.autoAction = rs.getString("eventAutoAction");
             event.operatorAction = rs.getString("eventOperAction");

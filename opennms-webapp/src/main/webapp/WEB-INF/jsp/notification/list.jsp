@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Apr 16: Convert to a controller
 // 2008 Aug 14: Sanitize input
 // 2004 Nov 18: Added "Acknowledge Notices" and "Select All" buttons at the top of the table
 //              So it isn't necessary to scroll all the way to the bottom. Bill Ayres.
@@ -56,7 +57,8 @@
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.WebSecurityUtils
+		org.opennms.web.WebSecurityUtils,
+		org.opennms.netmgt.model.OnmsSeverity
 	"
 %>
 
@@ -73,7 +75,7 @@
    public String getBgColor(Notification n) {
 	   String bgcolor="#cccccc";
 	   try {
-		return EventUtil.getSeverityColor(EventFactory.getEvent(n.getEventId()).getSeverity());
+		return EventFactory.getEvent(n.getEventId()).getSeverity().getColor();
 	   } catch (Exception e) {
 	   	return bgcolor;
 	   }
@@ -83,24 +85,16 @@
 <%
     //required attributes
     Notification[] notices = (Notification[])request.getAttribute( "notices" );
+	Integer noticeCount = (Integer)request.getAttribute( "noticeCount" );
     NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
+    Map<Integer,String[]> nodeLabels = (Map<Integer,String[]>)request.getAttribute( "nodeLabels" );
 
     if( notices == null || parms == null ) {
         throw new ServletException( "Missing either the notices or parms request attribute." );
     }
 
-    String action = null;
+    String action = parms.ackType.getShortName();
 
-    if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) {
-        action = "1";
-    } 
-    else if( parms.ackType == NoticeFactory.AcknowledgeType.ACKNOWLEDGED ) {
-        action = "2";
-    }
-
-    int noticeCount = NoticeFactory.getNoticeCount( parms.ackType, parms.getFilters() );
-    HashMap nodeLabelMap = new HashMap();
-    
     //useful constant strings
     String addPositiveFilterString = "[+]";    
 %>
@@ -184,15 +178,15 @@
     
 </script>
 <!-- notification/browser.jsp -->
-<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+<% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
   <p>
     Currently showing only <strong>outstanding</strong> notices.
-    <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged notices">[Show acknowledged]</a>
+    <a href="<%=this.makeLink(parms, AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged notices">[Show acknowledged]</a>
   </p>
-<% } else if( parms.ackType == NoticeFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+<% } else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
   <p>
     Currently showing only <strong>acknowledged</strong> notices.  
-    <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding notices">[Show outstanding]</a>
+    <a href="<%=this.makeLink(parms, AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding notices">[Show outstanding]</a>
   </p>
 <% } %>
       
@@ -216,14 +210,14 @@
 		<span class="filter"><% Filter filter = (Filter)parms.filters.get(i); %>
 				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
-    &mdash; <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove all]</a>
+    &mdash; <a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all filters">[Remove all]</a>
   </p>
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>        
-	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+	<!--			<% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <p><input TYPE="reset" />
 						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
@@ -232,25 +226,24 @@
       <table>
 			<thead>
 			  <tr>
-          <th class="noWrap"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.ID,NoticeFactory.SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
+          <th class="noWrap"><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
           <th class="noWrap">Event ID</th>
           <th>Severity</th>
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.PAGETIME,    NoticeFactory.SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDER,   NoticeFactory.SortStyle.REVERSE_RESPONDER,   "asweredby",   "Responder"    )%></th>
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDTIME, NoticeFactory.SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></th>  
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.NODE,        NoticeFactory.SortStyle.REVERSE_NODE,        "node",        "Node"         )%></th>
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.INTERFACE,   NoticeFactory.SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"    )%></th>
-          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.SERVICE,     NoticeFactory.SortStyle.REVERSE_SERVICE,     "service",     "Service"      )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "asweredby",   "Responder"    )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.RESPONDTIME, SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></th>  
+          <th><%=this.makeSortLink( parms, SortStyle.NODE,        SortStyle.REVERSE_NODE,        "node",        "Node"         )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.INTERFACE,   SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"    )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.SERVICE,     SortStyle.REVERSE_SERVICE,     "service",     "Service"      )%></th>
         </tr>
       </thead>
 
       <% for( int i=0; i < notices.length; i++ ) { 
         Event event = EventFactory.getEvent( notices[i].getEventId() );
-        int severity = (event == null? 0 : event.getSeverity());
-        String eventSeverity = EventUtil.getSeverityLabel(severity);
+        String eventSeverity = event.getSeverity().getLabel();
         %>
         <tr class="<%=eventSeverity%>">
-          <td class="divider noWrap" rowspan="2"><% if((parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) && 
+          <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
 		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
           <% } %> 
@@ -261,7 +254,7 @@
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeSent())%></td>
+          <td class="divider"><%=org.opennms.web.Util.formatDateToUIString(notices[i].getTimeSent())%></td>
           <td class="divider"><% Filter responderFilter = new ResponderFilter(notices[i].getResponder()); %>      
             <% if(notices[i].getResponder()!=null) {%>
               <%=notices[i].getResponder()%>
@@ -272,13 +265,13 @@
           </td>
           <td class="divider">
             <%if (notices[i].getTimeReplied()!=null) { %>
-              <%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeReplied())%>
+              <%=org.opennms.web.Util.formatDateToUIString(notices[i].getTimeReplied())%>
             <% } %>
 					</td>
           <td class="divider">
             <% if(notices[i].getNodeId() != 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notices[i].getNodeId()); %>
-              <% String[] labels = this.getNodeLabels( notices[i].getNodeId(), nodeLabelMap ); %>
+              <% String[] labels = nodeLabels.get(notices[i].getNodeId()); %>
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node"><%=addPositiveFilterString%></a>
@@ -319,7 +312,7 @@
       </table>
       <p><%=notices.length%> notices &nbsp;
 
-        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input TYPE="reset" />
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
@@ -336,7 +329,7 @@
 <%!
     String urlBase = "notification/browse";
 
-    protected String makeSortLink( NoticeQueryParms parms, NoticeFactory.SortStyle style, NoticeFactory.SortStyle revStyle, String sortString, String title ) {
+    protected String makeSortLink( NoticeQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {
       StringBuffer buffer = new StringBuffer();
 
       if( parms.sortStyle == style ) {
@@ -367,12 +360,12 @@
       return( buffer.toString() );
     }
 
-    public String makeLink( NoticeFactory.SortStyle sortStyle, NoticeFactory.AcknowledgeType ackType, int limit, List filters ) {
+    public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, int limit, List<Filter> filters ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
-      buffer.append( NoticeUtil.getSortStyleString(sortStyle) );
+      buffer.append( sortStyle.getShortName() );
       buffer.append( "&acktype=" );
-      buffer.append( NoticeUtil.getAcknowledgeTypeString(ackType) );
+      buffer.append( ackType.getShortName() );
       if (limit > 0) {
           buffer.append( "&limit=" ).append(limit);
       }
@@ -380,7 +373,7 @@
       if( filters != null ) {
         for( int i=0; i < filters.size(); i++ ) {
           buffer.append( "&filter=" );
-          String filterString = NoticeUtil.getFilterString((Filter)filters.get(i));
+          String filterString = filters.get(i).getDescription();
           buffer.append( java.net.URLEncoder.encode(filterString) );
         }
       }      
@@ -393,24 +386,21 @@
       return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, parms.filters) );
     }
 
-
-    public String makeLink( NoticeQueryParms parms, NoticeFactory.SortStyle sortStyle ) {
+    public String makeLink( NoticeQueryParms parms, SortStyle sortStyle ) {
       return( this.makeLink( sortStyle, parms.ackType, parms.limit, parms.filters) );
     }
 
-
-    public String makeLink( NoticeQueryParms parms, NoticeFactory.AcknowledgeType ackType ) {
+    public String makeLink( NoticeQueryParms parms, AcknowledgeType ackType ) {
       return( this.makeLink( parms.sortStyle, ackType, parms.limit, parms.filters) );
     }
 
-
-    public String makeLink( NoticeQueryParms parms, List filters ) {
+    public String makeLink( NoticeQueryParms parms, List<Filter> filters ) {
       return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, filters) );
     }
 
 
     public String makeLink( NoticeQueryParms parms, Filter filter, boolean add ) {
-      ArrayList newList = new ArrayList( parms.filters );
+      ArrayList<Filter> newList = new ArrayList<Filter>( parms.filters );
       if( add ) {
         newList.add( filter );
       }
@@ -421,32 +411,5 @@
       return( this.makeLink( parms.sortStyle, parms.ackType, parms.limit, newList ));
     }
 
-
-    public String[] getNodeLabels( int nodeId, Map labelMap ) throws SQLException {
-        Integer nodeInt = new Integer( nodeId ); 
-        String[] labels = (String[])labelMap.get( nodeInt );
-
-        if( labels == null ) {
-            String longLabel = NetworkElementFactory.getNodeLabel( nodeId );
-
-            if( longLabel == null ) {
-                //when they finally get the "not null" added to the nodelabel column,
-                //this should never happen, but until then...
-                labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
-            }
-            else {
-                if( longLabel.length() > 32 ) {
-                    String shortLabel = longLabel.substring( 0, 31 ) + "...";                        
-                    labels = new String[] { shortLabel, longLabel };
-                }
-                else {
-                    labels = new String[] { longLabel, longLabel };
-                }
-
-                labelMap.put( nodeInt, labels );
-            }
-        }
-
-        return( labels );
-    }
 %>
+

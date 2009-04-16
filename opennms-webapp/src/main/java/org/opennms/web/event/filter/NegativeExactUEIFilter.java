@@ -48,7 +48,7 @@ public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativeExactUEIFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativeExactUEIFilter: " + this.getDescription() + ">");
     }
 
     public String getUEI() {

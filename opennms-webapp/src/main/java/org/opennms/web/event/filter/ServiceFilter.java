@@ -57,7 +57,7 @@ public class ServiceFilter extends EqualsFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.ServiceFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.ServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {

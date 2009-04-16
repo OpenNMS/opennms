@@ -40,11 +40,11 @@ public class ExactUEIFilter extends EqualsFilter<String> {
     public static final String TYPE = "exactUei";
 
     public ExactUEIFilter(String uei) {
-        super(TYPE, SQLType.STRING, "EVENTUEI", "eventUei", uei);
+        super(TYPE, SQLType.STRING, "EVENTUEI", "uei", uei);
     }
 
     public String toString() {
-        return ("<EventFactory.ExactUEIFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.ExactUEIFilter: " + this.getDescription() + ">");
     }
 
     public String getUEI() {
