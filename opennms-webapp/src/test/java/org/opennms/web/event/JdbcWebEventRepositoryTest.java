@@ -127,8 +127,19 @@ public class JdbcWebEventRepositoryTest {
         EventCriteria sortedCriteria = new EventCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, 100, 0);
         Event[] sortedEvents = m_eventRepo.getMatchingEvents(sortedCriteria);
         assertTrue(sortedEvents.length > 0);
+         
+    }
+    
+    @Test
+    public void testDoubleFilterTest(){
+        m_eventRepo.acknowledgeAll("TestUser", new Date());
         
+        EventIdFilter filter1 = new EventIdFilter(1);
+        AcknowledgedByFilter filter2 = new AcknowledgedByFilter("TestUser");
+        EventCriteria criteria = new EventCriteria(filter1, filter2);
         
+        Event[] events = m_eventRepo.getMatchingEvents(criteria);
+        assertEquals(1, events.length);
         
     }
 

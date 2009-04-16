@@ -41,6 +41,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
@@ -60,7 +61,11 @@ public class DaoWebEventRepository implements WebEventRepository {
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
 
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
-                criteria.add(Restrictions.isNotNull(ackType.getName()));
+                if(ackType == AcknowledgeType.ACKNOWLEDGED){
+                    criteria.add(Restrictions.isNotNull("eventAckUser"));
+                }else if(ackType == AcknowledgeType.UNACKNOWLEDGED){
+                    criteria.add(Restrictions.isNull("eventAckUser"));
+                }
             }
 
             public void visitFilter(Filter filter) throws RuntimeException {
@@ -74,7 +79,51 @@ public class DaoWebEventRepository implements WebEventRepository {
             }
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                criteria.addOrder(Order.asc(sortStyle.getName()));
+                switch(sortStyle.id){
+                case SortStyle._ID:
+                    criteria.addOrder(Order.desc("id"));
+                     break;
+                case SortStyle._INTERFACE:
+                    criteria.addOrder(Order.desc("ipAddr"));
+                    break;
+                case SortStyle._NODE:
+                    criteria.addOrder(Order.desc("node.label"));
+                    break;
+                case SortStyle._POLLER:
+                    criteria.addOrder(Order.desc("dispPoller"));
+                    break;
+                case SortStyle._SERVICE:
+                    criteria.addOrder(Order.desc("serviceType.name"));
+                    break;
+                case SortStyle._SEVERITY:
+                    criteria.addOrder(Order.desc("eventSeverity"));
+                    break;
+                case SortStyle._TIME:
+                    criteria.addOrder(Order.desc("eventTime"));
+                    break;
+                case SortStyle._REVERSE_ID:
+                    criteria.addOrder(Order.asc("id"));
+                    break;
+                case SortStyle._REVERSE_INTERFACE:
+                    criteria.addOrder(Order.asc("ipAddr"));
+                    break;
+                case SortStyle._REVERSE_NODE:
+                    criteria.addOrder(Order.asc("node.label"));
+                    break;
+                case SortStyle._REVERSE_POLLER:
+                    criteria.addOrder(Order.asc("dispPoller"));
+                    break;
+                case SortStyle._REVERSE_SERVICE:
+                    criteria.addOrder(Order.desc("serviceType.name"));
+                    break;
+                case SortStyle._REVERSE_SEVERITY:
+                    criteria.addOrder(Order.asc("severity"));
+                    break;
+                case SortStyle._REVERSE_TIME:
+                    criteria.addOrder(Order.asc("eventTime"));
+                    break;
+                
+                }
             }
             
         });
@@ -84,24 +133,71 @@ public class DaoWebEventRepository implements WebEventRepository {
     
     private Event mapOnmsEventToEvent(OnmsEvent onmsEvent){
         Event event = new Event();
-        
+        event.acknowledgeTime = onmsEvent.getEventAckTime();
+        event.acknowledgeUser = onmsEvent.getEventAckUser();
+        event.alarmId = onmsEvent.getAlarm() != null ? onmsEvent.getAlarm().getId() : 0;
+        event.autoAction = onmsEvent.getEventAutoAction();
+        event.createTime = onmsEvent.getEventCreateTime();
+        event.description = onmsEvent.getEventDescr();
+        event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getName() : "";
+        event.forward = onmsEvent.getEventForward();
+        event.host = onmsEvent.getEventHost();
+        event.id = onmsEvent.getId();
+        event.ipAddr = onmsEvent.getIpAddr();
+        event.logGroup = onmsEvent.getEventLogGroup();
+        event.logMessage = onmsEvent.getEventLogMsg();
+        event.mouseOverText = onmsEvent.getEventMouseOverText();
+        event.nodeID = onmsEvent.getNode() != null ? onmsEvent.getNode().getId() : 0;
+        event.nodeLabel = onmsEvent.getNode() != null ? onmsEvent.getNode().getLabel() : "";
+        event.notification = onmsEvent.getEventNotification();
+        event.operatorAction = onmsEvent.getEventOperAction();
+        event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
+        event.operatorInstruction = onmsEvent.getEventOperInstruct();
+        event.parms = onmsEvent.getEventParms();
+        event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
+        event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
+        event.severity = onmsEvent.getEventSeverity();
+        event.snmp = onmsEvent.getEventSnmp();
+        event.snmphost = onmsEvent.getEventSnmpHost();
+        event.time = onmsEvent.getEventTime();
+        event.troubleTicket = onmsEvent.getEventTTicket();
+        event.troubleTicketState = onmsEvent.getEventTTicketState();
+        event.uei = onmsEvent.getEventUei();
         return event;
     }
     
     public void acknowledgeAll(String user, Date timestamp) {
-
+        acknowledgeMatchingEvents(user, timestamp, new EventCriteria());
     }
 
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
-
+        List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
+        
+        Iterator<OnmsEvent> eventsIt = events.iterator();
+        while(eventsIt.hasNext()){
+            OnmsEvent event = eventsIt.next();
+            event.setEventAckUser(user);
+            event.setEventAckTime(timestamp);
+            m_eventDao.update(event);
+        }
     }
-
+    
     public int countMatchingEvents(EventCriteria criteria) {
-        return 0;
+        return m_eventDao.countMatching(getOnmsCriteria(criteria));
     }
 
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
-        return null;
+        //OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
+        
+        int[] eventCounts = new int[8];
+        eventCounts[OnmsSeverity.CLEARED.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.CLEARED.getId())));
+        eventCounts[OnmsSeverity.CRITICAL.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.CRITICAL.getId())));
+        eventCounts[OnmsSeverity.INDETERMINATE.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.INDETERMINATE.getId())));
+        eventCounts[OnmsSeverity.MAJOR.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.MAJOR.getId())));
+        eventCounts[OnmsSeverity.MINOR.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.MINOR.getId())));
+        eventCounts[OnmsSeverity.NORMAL.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.NORMAL.getId())));
+        eventCounts[OnmsSeverity.WARNING.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.WARNING.getId())));
+        return eventCounts;
     }
 
     public Event getEvent(int eventId) {
@@ -124,11 +220,17 @@ public class DaoWebEventRepository implements WebEventRepository {
     }
 
     public void unacknowledgeAll() {
-
+        unacknowledgeMatchingEvents(new EventCriteria());
     }
 
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
-
+        List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
+        
+        for(OnmsEvent event : events) {
+            event.setEventAckUser(null);
+            event.setEventAckTime(null);
+            m_eventDao.update(event);
+        }
     }
 
 }
