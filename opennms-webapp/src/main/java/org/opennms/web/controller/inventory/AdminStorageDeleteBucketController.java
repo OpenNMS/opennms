@@ -15,32 +15,11 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class AdminRancidCloginUpdateController extends SimpleFormController {
-    
+
+public class AdminStorageDeleteBucketController extends SimpleFormController {
+
     InventoryService m_inventoryService;
-    
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            Object command, BindException errors) throws ServletException, IOException, Exception {
-
-        log().debug("AdminRancidCloginUpdateController ModelAndView onSubmit");
         
-        AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
-        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
-
-            boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
-                                            bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
-            if (!done){
-                log().debug("AdminRancidCloginUpdateController error on submitting cLogin changes");
-            }
-        }
-        String redirectURL = request.getHeader("Referer");
-        response.sendRedirect(redirectURL);
-        return super.onSubmit(request, response, command, errors);
-    }
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        log().debug("AdminRancidCloginIpdateController initBinder");
-    }
-    
     public InventoryService getInventoryService() {
         return m_inventoryService;
     }
@@ -49,6 +28,30 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
         m_inventoryService = inventoryService;
     }
 
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
+            Object command, BindException errors) throws ServletException, IOException, Exception {
+
+        log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit");
+
+        AdminStorageCommClass bean = (AdminStorageCommClass) command;
+                       
+        log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit delete bucket["+ bean.getBucket() + "]");
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+
+        boolean done = m_inventoryService.deleteBucket(bean.getBucket());
+        if (!done){
+            log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit error while deleting status for: "+ bean.getBucket());
+        }
+        }
+        String redirectURL = request.getHeader("Referer");
+        response.sendRedirect(redirectURL);
+        return super.onSubmit(request, response, command, errors);
+    }
+
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+        throws ServletException {
+        log().debug("AdminStorageDeleteBucketController initBinder");
+    }
     
     private static Category log() {
         return Logger.getLogger("Rancid");
