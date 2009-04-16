@@ -46,6 +46,8 @@ import org.opennms.report.availability.AvailabilityReportLocatorService;
 import org.opennms.report.availability.svclayer.AvailabilityReportCriteria;
 import org.opennms.web.command.ManageAvailabilityReportCommand;
 import org.opennms.web.svclayer.ReportListService;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -66,10 +68,13 @@ public class ManageAvailabilityReportController extends SimpleFormController {
     }
     
     @Override
-    protected Map referenceData(HttpServletRequest req) throws Exception {
-        Map<String, List<AvailabilityReportLocator>> data = new HashMap<String, List<AvailabilityReportLocator>>();
-        List<AvailabilityReportLocator> reportLocator = m_reporListService.getAllReports(); 
-        data.put("reportLocator", reportLocator);
+    protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
+        Map<String, Object> data = new HashMap<String, Object>();
+        PagedListHolder pagedListHolder = new PagedListHolder(m_reporListService.getAllReports());
+        pagedListHolder.setPageSize(m_pageSize);
+        int page = ServletRequestUtils.getIntParameter(req, "p", 0);
+        pagedListHolder.setPage(page); 
+        data.put("pagedListHolder", pagedListHolder);
         return data;
 
     }
