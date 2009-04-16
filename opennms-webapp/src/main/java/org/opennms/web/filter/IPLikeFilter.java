@@ -32,6 +32,7 @@
 
 package org.opennms.web.filter;
 
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
@@ -54,7 +55,7 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
 
     @Override
     public Criterion getCriterion() {
-        return Restrictions.sqlRestriction("iplike("+getPropertyName()+", ?)", getValue(), STRING_TYPE);
+        return Restrictions.sqlRestriction("iplike( {alias}."+getPropertyName()+", ?)", getValue(), Hibernate.STRING);
     }
     
     
