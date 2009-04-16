@@ -44,6 +44,9 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
@@ -83,11 +86,14 @@ public class DaoWebOutageRepositoryTest {
     @Before
     public void setUp(){
         m_dbPopulator.populateDatabase();
-    }
-    
-    @Test
-    public void testAutowire(){
-        assertNotNull(m_daoOutageRepo);
+        
+        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, "192.168.2.1", "ICMP");
+        OnmsEvent event = m_dbPopulator.getEventDao().get(1);
+        
+        OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
+        m_dbPopulator.getOutageDao().save(unresolved2);
+        m_dbPopulator.getOutageDao().flush();
+        
     }
     
     @Test
