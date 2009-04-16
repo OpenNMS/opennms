@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -24,10 +25,11 @@ public class AdminRancidCloginDeleteController extends SimpleFormController {
         log().debug("AdminRancidCloginDeleteController ModelAndView onSubmit");
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
-        
-        boolean done = m_inventoryService.deleteClogin(bean.getDeviceName());
-        if (!done){
-            log().debug("AdminRancidCloginController error on submitting cLogin changes");
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+            boolean done = m_inventoryService.deleteClogin(bean.getDeviceName());
+            if (!done){
+                log().debug("AdminRancidCloginController error on submitting cLogin changes");
+            }            
         }
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -36,9 +37,11 @@ public class AdminRancidUpdateController extends SimpleFormController {
                        
         log().debug("AdminRancidUpdateController ModelAndView onSubmit updating device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
 
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
         boolean done = m_inventoryService.updateNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName(), bean.getDeviceTypeName(), bean.getStatusName(),bean.getComment());
         if (!done){
             log().debug("AdminRancidUpdateController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
+        }
         }
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);
