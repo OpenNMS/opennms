@@ -47,7 +47,7 @@ public class PartialUEIFilter extends SubstringFilter {
     }
 
     public String toString() {
-        return ("<EventFactory.PartialUEIFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.PartialUEIFilter: " + this.getDescription() + ">");
     }
 
     public String getUEI() {

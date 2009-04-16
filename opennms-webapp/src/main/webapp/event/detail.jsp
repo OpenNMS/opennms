@@ -48,12 +48,12 @@
 		java.util.regex.Pattern,
 		org.opennms.netmgt.EventConstants,
 		org.opennms.web.WebSecurityUtils,
-		org.opennms.web.event.AcknowledgeEventServlet,
 		org.opennms.web.event.Event,
 		org.opennms.web.event.EventFactory,
 		org.opennms.web.event.EventUtil,
 		org.opennms.web.Util,
-        org.opennms.web.acegisecurity.Authentication
+        org.opennms.web.acegisecurity.Authentication,
+        org.opennms.web.event.AcknowledgeType
         "
 
 %>
@@ -86,12 +86,12 @@
     if (event.getAcknowledgeTime()==null)
     {
         buttonName = "Acknowledge";
-        action = AcknowledgeEventServlet.ACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     }
     else
     {
         buttonName = "Unacknowledge";
-        action = AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
     
     Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
@@ -123,9 +123,9 @@
       <h3>Event <%=event.getId()%></h3>
 
       <table>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <th class="divider" width="10%">Severity</th>
-          <td class="divider"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
+          <td class="divider"><%= event.getSeverity().getLabel() %></td>
           <th class="divider" width="10%">Node</th>
           <td class="divider">
             <% if( event.getNodeId() > 0 ) { %>
@@ -138,9 +138,9 @@
           <td class="divider"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
         
-        <tr  class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr  class="<%= event.getSeverity().getLabel() %>">
           <th>Time</th>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
+          <td><%=org.opennms.web.Util.formatDateToUIString(event.getTime())%></td>
           <th>Interface</th>
           <td>
             <% if( event.getIpAddress() != null ) { %>
@@ -154,10 +154,10 @@
             <% } %>
           </td>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <th>Service</th>
           <td>
             <% if( event.getServiceName() != null ) { %>
@@ -179,7 +179,7 @@
           <% } %>
         </tr> 
           
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           	<th>UEI</th>
                 <td>
           	<% if( event.getUei() != null ) { %>
@@ -193,28 +193,28 @@
       </table>
 
       <table>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <th>Log Message</th>
         </tr>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <td><%=event.getLogMessage()%></td>
         </tr>
       </table>
 
       <table>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <th>Description</th>
         </tr>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <td><%=event.getDescription()%></td>
         </tr>
       </table>
       
       <table>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <th>Operator Instructions</th>
         </tr>
-        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+        <tr class="<%= event.getSeverity().getLabel() %>">
           <td>
 	    <%if (event.getOperatorInstruction()==null) { %>
               No instructions available

@@ -1,14 +1,17 @@
-package org.opennms.web.event;
+package org.opennms.web.notification;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.util.Assert;
 
-/** Convenience class to determine what sort of alarms to include in a query. */
+/**
+ * Convenience class to determine what sort of notices to include in a
+ * query.
+ */
 public enum AcknowledgeType {
     ACKNOWLEDGED("ack"), UNACKNOWLEDGED("unack"), BOTH("both");
-
+    
     private static final Map<String, AcknowledgeType> s_ackTypesString;
     
     private String m_shortName;
@@ -44,13 +47,13 @@ public enum AcknowledgeType {
     protected String getAcknowledgeTypeClause() {
         switch (this) {
         case ACKNOWLEDGED:
-            return " EVENTACKUSER IS NOT NULL";
+            return " RESPONDTIME IS NOT NULL";
     
         case UNACKNOWLEDGED:
-            return " EVENTACKUSER IS NULL";
+            return " RESPONDTIME IS NULL";
     
         case BOTH:
-            return " (EVENTACKUSER IS NULL OR EVENTACKUSER IS NOT NULL)";
+            return " (RESPONDTIME IS NULL OR RESPONDTIME IS NOT NULL)";
             
         default:
             throw new IllegalArgumentException("Cannot get clause for AcknowledgeType " + this);

@@ -57,11 +57,13 @@ public class EventQueryParms extends Object {
 
     public int multiple;
 
+    public String display;
+
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
      * of Filter instances.
      */
     public Filter[] getFilters() {
-        return this.filters.toArray(new Filter[this.filters.size()]);
+        return filters.toArray(new Filter[filters.size()]);
     }
 }

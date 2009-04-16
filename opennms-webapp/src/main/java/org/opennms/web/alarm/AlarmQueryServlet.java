@@ -67,13 +67,13 @@ import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
-import org.opennms.web.event.EventFilterServlet;
+import org.opennms.web.controller.event.EventFilterController;
 import org.opennms.web.filter.Filter;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
  * the more robust "filter" parameter set of the
- * {@link EventFilterServlet EventFilterServlet}via a redirect.
+ * {@link EventFilterController EventFilterController}via a redirect.
  * 
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
@@ -83,12 +83,12 @@ public class AlarmQueryServlet extends HttpServlet {
 
     /**
      * The list of parameters that are extracted by this servlet and not passed
-     * on to the {@link EventFilterServlet EventFilterServlet}.
+     * on to the {@link EventFilterController EventFilterController}.
      */
     protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
-     * The URL for the {@link EventFilterServlet EventFilterServlet}. The
+     * The URL for the {@link EventFilterController EventFilterController}. The
      * default is "list." This URL is a sibling URL, so it is relative to the
      * URL directory that was used to call this servlet (usually "event/").
      */
@@ -98,14 +98,14 @@ public class AlarmQueryServlet extends HttpServlet {
         ServletConfig config = this.getServletConfig();
 
         if (config.getInitParameter("redirect.url") != null) {
-            this.redirectUrl = config.getInitParameter("redirect.url");
+            redirectUrl = config.getInitParameter("redirect.url");
         }
     }
 
     /**
      * Extracts the key parameters from the parameter set, translates them into
      * filter-based parameters, and then passes the modified parameter set to
-     * the {@link EventFilterServlet EventFilterServlet}.
+     * the {@link EventFilterController EventFilterController}.
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<Filter>();
@@ -223,7 +223,7 @@ public class AlarmQueryServlet extends HttpServlet {
             queryString = Util.makeQueryString(request, IGNORE_LIST);
         }
 
-        response.sendRedirect(this.redirectUrl + "?" + queryString);
+        response.sendRedirect(redirectUrl + "?" + queryString);
     }
 
     protected BeforeFirstEventTimeFilter getBeforeFirstEventTimeFilter(HttpServletRequest request) {

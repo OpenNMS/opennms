@@ -79,47 +79,47 @@ public class DaoWebEventRepository implements WebEventRepository {
             }
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                switch(sortStyle.id){
-                case SortStyle._ID:
+                switch(sortStyle){
+                case ID:
                     criteria.addOrder(Order.desc("id"));
                      break;
-                case SortStyle._INTERFACE:
+                case INTERFACE:
                     criteria.addOrder(Order.desc("ipAddr"));
                     break;
-                case SortStyle._NODE:
+                case NODE:
                     criteria.addOrder(Order.desc("node.label"));
                     break;
-                case SortStyle._POLLER:
+                case POLLER:
                     criteria.addOrder(Order.desc("dispPoller"));
                     break;
-                case SortStyle._SERVICE:
+                case SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
-                case SortStyle._SEVERITY:
+                case SEVERITY:
                     criteria.addOrder(Order.desc("eventSeverity"));
                     break;
-                case SortStyle._TIME:
+                case TIME:
                     criteria.addOrder(Order.desc("eventTime"));
                     break;
-                case SortStyle._REVERSE_ID:
+                case REVERSE_ID:
                     criteria.addOrder(Order.asc("id"));
                     break;
-                case SortStyle._REVERSE_INTERFACE:
+                case REVERSE_INTERFACE:
                     criteria.addOrder(Order.asc("ipAddr"));
                     break;
-                case SortStyle._REVERSE_NODE:
+                case REVERSE_NODE:
                     criteria.addOrder(Order.asc("node.label"));
                     break;
-                case SortStyle._REVERSE_POLLER:
+                case REVERSE_POLLER:
                     criteria.addOrder(Order.asc("dispPoller"));
                     break;
-                case SortStyle._REVERSE_SERVICE:
+                case REVERSE_SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
-                case SortStyle._REVERSE_SEVERITY:
+                case REVERSE_SEVERITY:
                     criteria.addOrder(Order.asc("severity"));
                     break;
-                case SortStyle._REVERSE_TIME:
+                case REVERSE_TIME:
                     criteria.addOrder(Order.asc("eventTime"));
                     break;
                 
@@ -156,7 +156,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         event.parms = onmsEvent.getEventParms();
         event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
         event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
-        event.severity = onmsEvent.getEventSeverity();
+        event.severity = OnmsSeverity.get(onmsEvent.getEventSeverity());
         event.snmp = onmsEvent.getEventSnmp();
         event.snmphost = onmsEvent.getEventSnmpHost();
         event.time = onmsEvent.getEventTime();

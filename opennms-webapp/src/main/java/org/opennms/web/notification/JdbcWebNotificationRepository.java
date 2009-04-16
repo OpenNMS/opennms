@@ -38,8 +38,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.web.notification.NoticeFactory.AcknowledgeType;
-import org.opennms.web.notification.NoticeFactory.SortStyle;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
@@ -60,7 +58,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
-    private String getSql(final String selectClause, final NotificationCriteria criteria){
+    private String getSql(final String selectClause, final NotificationCriteria criteria) {
         final StringBuilder buf = new StringBuilder(selectClause);
         
         criteria.visit(new NotificationCriteriaVisitor<RuntimeException>() {
@@ -78,7 +76,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
 
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
                 and(buf);
-                buf.append(NoticeFactory.getAcknowledgeTypeClause(ackType));
+                buf.append(ackType.getAcknowledgeTypeClause());
             }
 
             public void visitFilter(org.opennms.web.filter.Filter filter) throws RuntimeException {
@@ -86,21 +84,21 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 buf.append(filter.getParamSql());
             }
 
-            public void visitLimit(int limit, int offset) throws RuntimeException {
+             public void visitLimit(int limit, int offset) throws RuntimeException {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
                 
             }
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 buf.append(" ");
-                buf.append(NoticeFactory.getOrderByClause(sortStyle));
+                buf.append(sortStyle.getOrderByClause());
             }
 
         });
         
         return buf.toString();
     }
-    
+
     private PreparedStatementSetter paramSetter(final NotificationCriteria criteria, final Object...args){
         return new PreparedStatementSetter(){
             int paramIndex = 1;
@@ -157,7 +155,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     }
 
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
-        String sql = getSql("SELECT * FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT NOTIFICATIONS.*, SERVICE.SERVICENAME FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
         return getNotifications(sql, paramSetter(criteria));
     }
 
@@ -176,7 +174,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     }
 
     public int countMatchingNotifications(NotificationCriteria criteria) {
-        String sql = getSql("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
+        String sql = getSql("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
     

@@ -38,13 +38,12 @@
 
 package org.opennms.web.event;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
@@ -71,11 +70,7 @@ import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 
 public abstract class EventUtil extends Object {
-    protected static final Map<Integer, String> colors;
-
-    protected static final Map<Integer, String> classes;
-
-    protected static final Map<Integer, String> labels;
+    protected static final Map<OnmsSeverity, String> classes;
 
     protected static final Map<SortStyle, String> sortStyles;
     
@@ -85,8 +80,6 @@ public abstract class EventUtil extends Object {
     
     protected static final Map<String, AcknowledgeType> ackTypesString;
 
-    protected static final List<Integer> severities;
-
     public static final String ANY_SERVICES_OPTION = "Any";
 
     public static final String ANY_SEVERITIES_OPTION = "Any";
@@ -94,41 +87,14 @@ public abstract class EventUtil extends Object {
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
 
     static {
-        severities = new ArrayList<Integer>();
-        severities.add(new Integer(Event.INDETERMINATE_SEVERITY));
-        severities.add(new Integer(Event.CLEARED_SEVERITY));
-        severities.add(new Integer(Event.NORMAL_SEVERITY));
-        severities.add(new Integer(Event.WARNING_SEVERITY));
-        severities.add(new Integer(Event.MINOR_SEVERITY));
-        severities.add(new Integer(Event.MAJOR_SEVERITY));
-        severities.add(new Integer(Event.CRITICAL_SEVERITY));
-
-        classes = new HashMap<Integer, String>();
-        classes.put(new Integer(Event.INDETERMINATE_SEVERITY), "sev_indeterminate");
-        classes.put(new Integer(Event.CLEARED_SEVERITY), "sev_cleared");
-        classes.put(new Integer(Event.NORMAL_SEVERITY), "sev_normal");
-        classes.put(new Integer(Event.WARNING_SEVERITY), "sev_warning");
-        classes.put(new Integer(Event.MINOR_SEVERITY), "sev_minor");
-        classes.put(new Integer(Event.MAJOR_SEVERITY), "sev_major");
-        classes.put(new Integer(Event.CRITICAL_SEVERITY), "sev_critical");
-
-        colors = new HashMap<Integer, String>();
-        colors.put(new Integer(Event.INDETERMINATE_SEVERITY), "lightblue");
-        colors.put(new Integer(Event.CLEARED_SEVERITY), "white");
-        colors.put(new Integer(Event.NORMAL_SEVERITY), "green");
-        colors.put(new Integer(Event.WARNING_SEVERITY), "cyan");
-        colors.put(new Integer(Event.MINOR_SEVERITY), "yellow");
-        colors.put(new Integer(Event.MAJOR_SEVERITY), "orange");
-        colors.put(new Integer(Event.CRITICAL_SEVERITY), "red");
-
-        labels = new HashMap<Integer, String>();
-        labels.put(new Integer(Event.INDETERMINATE_SEVERITY), "Indeterminate");
-        labels.put(new Integer(Event.CLEARED_SEVERITY), "Cleared");
-        labels.put(new Integer(Event.NORMAL_SEVERITY), "Normal");
-        labels.put(new Integer(Event.WARNING_SEVERITY), "Warning");
-        labels.put(new Integer(Event.MINOR_SEVERITY), "Minor");
-        labels.put(new Integer(Event.MAJOR_SEVERITY), "Major");
-        labels.put(new Integer(Event.CRITICAL_SEVERITY), "Critical");
+        classes = new HashMap<OnmsSeverity, String>();
+        classes.put(OnmsSeverity.INDETERMINATE, "sev_indeterminate");
+        classes.put(OnmsSeverity.CLEARED, "sev_cleared");
+        classes.put(OnmsSeverity.NORMAL, "sev_normal");
+        classes.put(OnmsSeverity.WARNING, "sev_warning");
+        classes.put(OnmsSeverity.MINOR, "sev_minor");
+        classes.put(OnmsSeverity.MAJOR, "sev_major");
+        classes.put(OnmsSeverity.CRITICAL, "sev_critical");
 
         sortStylesString = new HashMap<String, SortStyle>();
         sortStylesString.put("severity", SortStyle.SEVERITY);
@@ -173,24 +139,12 @@ public abstract class EventUtil extends Object {
         ackTypes.put(AcknowledgeType.BOTH, "both");
     }
 
-    public static List getSeverityList() {
-        return severities;
-    }
-
-    public static int getSeverityId(int index) {
-        return severities.get(index).intValue();
-    }
-
     public static String getSeverityColor(int severity) {
-        return colors.get(new Integer(severity));
+        return OnmsSeverity.get(severity).getColor();
     }
 
     public static String getSeverityClass(int severity) {
         return classes.get(new Integer(severity));
-    }
-
-    public static String getSeverityLabel(int severity) {
-        return labels.get(new Integer(severity));
     }
 
     public static SortStyle getSortStyle(String sortStyleString) {

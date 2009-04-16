@@ -55,10 +55,10 @@
 
 <%@page import="org.opennms.web.filter.Filter"%>
 
+<%@page import="org.opennms.web.event.AcknowledgeType" %>
 <%@page import="org.opennms.web.event.EventUtil"%>
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.EventQueryParms"%>
-<%@page import="org.opennms.web.event.AcknowledgeEventServlet"%>
 
 <%@page import="org.opennms.web.event.filter.ExactUEIFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeExactUEIFilter"%>
@@ -104,10 +104,10 @@
     String action = null;
 
     if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
-        action = AcknowledgeEventServlet.ACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     } 
     else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
-        action = AcknowledgeEventServlet.UNACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
     //useful constant strings
@@ -281,7 +281,7 @@
         Event event = events[i];
         pageContext.setAttribute("event", event);
       %>
-        <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
+        <tr class="<%= events[i].getSeverity().getLabel() %>">
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <td><input type="checkbox" name="event" value="<%=events[i].getId()%>" /></td>
             <% } %>
@@ -297,7 +297,7 @@
 						</td>
 
           <td class="bright noWrap"> 
-            <%=EventUtil.getSeverityLabel(events[i].getSeverity())%>
+            <%= events[i].getSeverity().getLabel() %>
             <% Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
                 <a href="<%=this.makeLink( parms, severityFilter, true)%>" class="filterLink" title="Show only events with this severity"><%=addPositiveFilterString%></a>

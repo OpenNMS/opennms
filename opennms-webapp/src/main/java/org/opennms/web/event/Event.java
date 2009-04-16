@@ -34,6 +34,8 @@ package org.opennms.web.event;
 
 import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
 /**
  * A JavaBean implementation to hold information about a network event as
  * defined by OpenNMS.
@@ -41,21 +43,7 @@ import java.util.Date;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class Event extends Object {
-    public static final int INDETERMINATE_SEVERITY = 1;
-
-    public static final int CLEARED_SEVERITY = 2;
-
-    public static final int NORMAL_SEVERITY = 3;
-
-    public static final int WARNING_SEVERITY = 4;
-
-    public static final int MINOR_SEVERITY = 5;
-
-    public static final int MAJOR_SEVERITY = 6;
-
-    public static final int CRITICAL_SEVERITY = 7;
-
+public class Event {
     /** Unique identifier for the event, cannot be null */
     protected int id;
 
@@ -132,7 +120,7 @@ public class Event extends Object {
      *  
      * </pre>
      */
-    protected int severity;
+    protected OnmsSeverity severity;
 
     /** Operator instruction for event. */
     protected String operatorInstruction;
@@ -223,7 +211,7 @@ public class Event extends Object {
      * Create an event that represents a real network event with only the
      * required parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severity) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId) {
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -233,7 +221,7 @@ public class Event extends Object {
         this.time = time;
         this.dpName = dpName;
         this.createTime = createTime;
-        this.severity = severity;
+        severity = OnmsSeverity.get(severityId);
     }
 
     /**
@@ -248,7 +236,7 @@ public class Event extends Object {
      * Create an event that represents a real network event with all the
      * parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
 
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, time, dpName, createTime.");
@@ -260,7 +248,7 @@ public class Event extends Object {
         this.time = time;
         this.dpName = dpName;
         this.createTime = createTime;
-        this.severity = severity;
+        severity = OnmsSeverity.get(severityId);
 
         // optional fields
         this.snmp = snmp;
@@ -290,11 +278,11 @@ public class Event extends Object {
     }
 
     public int getId() {
-        return (this.id);
+        return (id);
     }
 
     public String getUei() {
-        return (this.uei);
+        return (uei);
     }
 
     public Date getTime() {
@@ -302,115 +290,115 @@ public class Event extends Object {
     }
 
     public String getDpName() {
-        return (this.dpName);
+        return (dpName);
     }
 
     public Date getCreateTime() {
-        return (this.createTime);
+        return (createTime);
     }
 
-    public int getSeverity() {
-        return (this.severity);
+    public OnmsSeverity getSeverity() {
+        return (severity);
     }
 
     public String getSnmp() {
-        return (this.snmp);
+        return (snmp);
     }
 
     public String getHost() {
-        return (this.host);
+        return (host);
     }
 
     public String getSnmpHost() {
-        return (this.snmphost);
+        return (snmphost);
     }
 
     public String getParms() {
-        return (this.parms);
+        return (parms);
     }
 
     public int getNodeId() {
-        return (this.nodeID.intValue());
+        return (nodeID.intValue());
     }
 
     public String getNodeLabel() {
-        return (this.nodeLabel);
+        return (nodeLabel);
     }
 
     public int getServiceId() {
-        return (this.serviceID.intValue());
+        return (serviceID.intValue());
     }
 
     public String getServiceName() {
-        return (this.serviceName);
+        return (serviceName);
     }
 
     public String getIpAddress() {
-        return (this.ipAddr);
+        return (ipAddr);
     }
 
     public String getDescription() {
-        return (this.description);
+        return (description);
     }
 
     public String getLogMessage() {
-        return (this.logMessage);
+        return (logMessage);
     }
 
     public String getLogGroup() {
-        return (this.logGroup);
+        return (logGroup);
     }
 
     public String getOperatorInstruction() {
-        return (this.operatorInstruction);
+        return (operatorInstruction);
     }
 
     public String getAutoAction() {
-        return (this.autoAction);
+        return (autoAction);
     }
 
     public String getOperatorAction() {
-        return (this.operatorAction);
+        return (operatorAction);
     }
 
     public String getOperatorActionMenuText() {
-        return (this.operatorActionMenuText);
+        return (operatorActionMenuText);
     }
 
     public String getNotification() {
-        return (this.notification);
+        return (notification);
     }
 
     public String getTroubleTicket() {
-        return (this.troubleTicket);
+        return (troubleTicket);
     }
 
     public Integer getTroubleTicketState() {
-        return (this.troubleTicketState);
+        return (troubleTicketState);
     }
 
     public String getForward() {
-        return (this.forward);
+        return (forward);
     }
 
     public String getMouseOverText() {
-        return (this.mouseOverText);
+        return (mouseOverText);
     }
 
     public String getAcknowledgeUser() {
-        return (this.acknowledgeUser);
+        return (acknowledgeUser);
     }
 
     public Date getAcknowledgeTime() {
-        return (this.acknowledgeTime);
+        return (acknowledgeTime);
     }
 
     public boolean isAcknowledged() {
-        return (this.acknowledgeUser != null);
+        return (acknowledgeUser != null);
     }
 
     public Integer getAlarmId() {
-        return (this.alarmId);
+        return (alarmId);
     }
 
 }

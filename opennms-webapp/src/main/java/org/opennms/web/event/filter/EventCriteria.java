@@ -62,6 +62,10 @@ public class EventCriteria {
         this(filters, null, null, -1, -1);
     }
     
+    public EventCriteria(AcknowledgeType ackType, Filter[] filters) {
+        this(filters, null, ackType, -1, -1);
+    }
+
     public EventCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset){
         m_filters = filters;
         m_sortStyle = sortStyle;

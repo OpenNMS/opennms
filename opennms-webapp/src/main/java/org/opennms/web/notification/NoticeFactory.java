@@ -59,135 +59,6 @@ import org.opennms.web.notification.filter.NodeFilter;
  */
 public class NoticeFactory extends Object {
 
-    /** Convenience class to determine sort style of a query. */
-    public static class SortStyle extends Object {
-        /* CORBA-style enumeration */
-        public static final int _USER = 1;
-
-        public static final int _RESPONDER = 2;
-
-        public static final int _PAGETIME = 3;
-
-        public static final int _RESPONDTIME = 4;
-
-        public static final int _NODE = 5;
-
-        public static final int _INTERFACE = 6;
-
-        public static final int _SERVICE = 7;
-
-        public static final int _ID = 8;
-
-        public static final SortStyle USER = new SortStyle("USER", _USER);
-
-        public static final SortStyle RESPONDER = new SortStyle("RESPONDER", _RESPONDER);
-
-        public static final SortStyle PAGETIME = new SortStyle("PAGETIME", _PAGETIME);
-
-        public static final SortStyle RESPONDTIME = new SortStyle("RESPONDTIME", _RESPONDTIME);
-
-        public static final SortStyle NODE = new SortStyle("NODE", _NODE);
-
-        public static final SortStyle INTERFACE = new SortStyle("INTERFACE", _INTERFACE);
-
-        public static final SortStyle SERVICE = new SortStyle("SERVICE", _SERVICE);
-
-        public static final SortStyle ID = new SortStyle("ID", _ID);
-
-        public static final int _REVERSE_USER = 101;
-
-        public static final int _REVERSE_RESPONDER = 102;
-
-        public static final int _REVERSE_PAGETIME = 103;
-
-        public static final int _REVERSE_RESPONDTIME = 104;
-
-        public static final int _REVERSE_NODE = 105;
-
-        public static final int _REVERSE_INTERFACE = 106;
-
-        public static final int _REVERSE_SERVICE = 107;
-
-        public static final int _REVERSE_ID = 108;
-
-        public static final SortStyle REVERSE_USER = new SortStyle("REVERSE_USER", _REVERSE_USER);
-
-        public static final SortStyle REVERSE_RESPONDER = new SortStyle("REVERSE_RESPONDER", _REVERSE_RESPONDER);
-
-        public static final SortStyle REVERSE_PAGETIME = new SortStyle("REVERSE_PAGETIME", _REVERSE_PAGETIME);
-
-        public static final SortStyle REVERSE_RESPONDTIME = new SortStyle("REVERSE_RESPONDTIME", _REVERSE_RESPONDTIME);
-
-        public static final SortStyle REVERSE_NODE = new SortStyle("REVERSE_NODE", _REVERSE_NODE);
-
-        public static final SortStyle REVERSE_INTERFACE = new SortStyle("REVERSE_INTERFACE", _REVERSE_INTERFACE);
-
-        public static final SortStyle REVERSE_SERVICE = new SortStyle("REVERSE_SERVICE", _REVERSE_SERVICE);
-
-        public static final SortStyle REVERSE_ID = new SortStyle("REVERSE_ID", _REVERSE_ID);
-
-        protected String name;
-
-        protected int id;
-
-        private SortStyle(String name, int id) {
-            this.name = name;
-            this.id = id;
-        }
-
-        public String toString() {
-            return ("Notice.SortStyle." + this.name);
-        }
-
-        public String getName() {
-            return (this.name);
-        }
-
-        public int getId() {
-            return (this.id);
-        }
-    }
-
-    /**
-     * Convenience class to determine what sort of notices to include in a
-     * query.
-     */
-    public static class AcknowledgeType extends Object {
-        /* CORBA-style enumeration */
-        public static final int _ACKNOWLEDGED = 1;
-
-        public static final int _UNACKNOWLEDGED = 2;
-
-        public static final int _BOTH = 3;
-
-        public static final AcknowledgeType ACKNOWLEDGED = new AcknowledgeType("ACKNOWLEDGED", _ACKNOWLEDGED);
-
-        public static final AcknowledgeType UNACKNOWLEDGED = new AcknowledgeType("UNACKNOWLEDGED", _UNACKNOWLEDGED);
-
-        public static final AcknowledgeType BOTH = new AcknowledgeType("BOTH", _BOTH);
-
-        protected String name;
-
-        protected int id;
-
-        private AcknowledgeType(String name, int id) {
-            this.name = name;
-            this.id = id;
-        }
-
-        public String toString() {
-            return ("Notice.AcknowledgeType." + this.name);
-        }
-
-        public String getName() {
-            return (this.name);
-        }
-
-        public int getId() {
-            return (this.id);
-        }
-    }
-
     /** Private constructor so this class cannot be instantiated. */
     private NoticeFactory() {
     }
@@ -205,18 +76,18 @@ public class NoticeFactory extends Object {
 
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(NOTIFYID) AS NOTICECOUNT FROM NOTIFICATIONS WHERE");
-            select.append(getAcknowledgeTypeClause(ackType));
+            select.append(ackType.getAcknowledgeTypeClause());
 
-            for (int i = 0; i < filters.length; i++) {
+            for (Filter filter : filters) {
                 select.append(" AND");
-                select.append(filters[i].getParamSql());
+                select.append(filter.getParamSql());
             }
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
             
             int parameterIndex = 1;
-            for (int i = 0; i < filters.length; i++) {
-            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            for (Filter filter : filters) {
+            	parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
             
             ResultSet rs = stmt.executeQuery();
@@ -377,14 +248,14 @@ public class NoticeFactory extends Object {
 
         try {
             StringBuffer select = new StringBuffer("SELECT * FROM NOTIFICATIONS WHERE");
-            select.append(getAcknowledgeTypeClause(ackType));
+            select.append(ackType.getAcknowledgeTypeClause());
 
-            for (int i = 0; i < filters.length; i++) {
+            for (Filter filter : filters) {
                 select.append(" AND");
-                select.append(filters[i].getParamSql());
+                select.append(filter.getParamSql());
             }
 
-            select.append(getOrderByClause(sortStyle));
+            select.append(sortStyle.getOrderByClause());
 
             if (useLimits) {
                 select.append(" LIMIT ?");
@@ -396,8 +267,8 @@ public class NoticeFactory extends Object {
             PreparedStatement stmt = conn.prepareStatement(select.toString());
             
             int parameterIndex = 1;
-            for (int i = 0; i < filters.length; i++) {
-            	parameterIndex += filters[i].bindParam(stmt, parameterIndex);
+            for (Filter filter : filters) {
+            	parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
             
             if (useLimits) {
@@ -747,122 +618,5 @@ public class NoticeFactory extends Object {
         }
 
         return notices;
-    }
-
-    /**
-     * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-     * to a given sort style.
-     */
-    protected static String getOrderByClause(SortStyle sortStyle) {
-        if (sortStyle == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String clause = null;
-
-        switch (sortStyle.getId()) {
-        case SortStyle._USER:
-            clause = " ORDER BY USERID DESC";
-            break;
-
-        case SortStyle._REVERSE_USER:
-            clause = " ORDER BY USERID ASC";
-            break;
-
-        case SortStyle._RESPONDER:
-            clause = " ORDER BY ANSWEREDBY DESC";
-            break;
-
-        case SortStyle._REVERSE_RESPONDER:
-            clause = " ORDER BY ANSWEREDBY ASC";
-            break;
-
-        case SortStyle._PAGETIME:
-            clause = " ORDER BY PAGETIME DESC";
-            break;
-
-        case SortStyle._REVERSE_PAGETIME:
-            clause = " ORDER BY PAGETIME ASC";
-            break;
-
-        case SortStyle._RESPONDTIME:
-            clause = " ORDER BY RESPONDTIME DESC";
-            break;
-
-        case SortStyle._REVERSE_RESPONDTIME:
-            clause = " ORDER BY RESPONDTIME ASC";
-            break;
-
-        case SortStyle._NODE:
-            clause = " ORDER BY NODEID ASC";
-            break;
-
-        case SortStyle._REVERSE_NODE:
-            clause = " ORDER BY NODEID DESC";
-            break;
-
-        case SortStyle._INTERFACE:
-            clause = " ORDER BY INTERFACEID ASC";
-            break;
-
-        case SortStyle._REVERSE_INTERFACE:
-            clause = " ORDER BY INTERFACEID DESC";
-            break;
-
-        case SortStyle._SERVICE:
-            clause = " ORDER BY SERVICEID ASC";
-            break;
-
-        case SortStyle._REVERSE_SERVICE:
-            clause = " ORDER BY SERVICEID DESC";
-            break;
-
-        case SortStyle._ID:
-            clause = " ORDER BY NOTIFYID DESC";
-            break;
-
-        case SortStyle._REVERSE_ID:
-            clause = " ORDER BY NOTIFYID ASC";
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unknown NoticeFactory.SortStyle: " + sortStyle.getName());
-        }
-
-        return clause;
-    }
-
-    /**
-     * Convenience method for getting the SQL <em>ORDER BY</em> clause related
-     * to a given sort style.
-     * 
-     * @param ackType
-     *            the acknowledge type to map to a clause
-     */
-    protected static String getAcknowledgeTypeClause(AcknowledgeType ackType) {
-        if (ackType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String clause = null;
-
-        switch (ackType.getId()) {
-        case AcknowledgeType._ACKNOWLEDGED:
-            clause = " RESPONDTIME IS NOT NULL";
-            break;
-
-        case AcknowledgeType._UNACKNOWLEDGED:
-            clause = " RESPONDTIME IS NULL";
-            break;
-
-        case AcknowledgeType._BOTH:
-            clause = "";
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unknown NoticeFactory.AcknowledgeType: " + ackType.getName());
-        }
-
-        return clause;
     }
 }

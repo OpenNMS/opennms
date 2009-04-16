@@ -52,7 +52,7 @@ public class NodeNameLikeFilter extends SubstringFilter {
     }
 
     public String toString() {
-        return ("<EventFactory.NodeNameContainingFilter: " + getDescription() + ">");
+        return ("<WebEventRepository.NodeNameContainingFilter: " + getDescription() + ">");
     }
 
     public String getSubstring() {

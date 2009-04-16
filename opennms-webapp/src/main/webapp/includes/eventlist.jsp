@@ -171,7 +171,7 @@
 <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
     <form action="event/acknowledge" method="POST" name="acknowledge_form">
     <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-    <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
+    <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
 <h3 class="o-box"><%=header%></h3>
@@ -179,22 +179,21 @@
 
 <%
    for( int i=0; i < events.length; i++ ) {
-       int severity = events[i].getSeverity();
        Event event = events[i];
        pageContext.setAttribute("event", event);
 %>
-     <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
+     <tr class="<%= event.getSeverity().getLabel() %>">
        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
            <td class="divider">
              <nobr>
-               <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
-               <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
+               <input type="checkbox" name="event" value="<%=event.getId()%>" />
+               <a href="event/detail.jsp?id=<%=event.getId()%>"><%=event.getId()%></a>
              </nobr>
            </td>
        <% } %>
        <td class="divider"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
-       <td class="divider bright"><%=EventUtil.getSeverityLabel(severity)%></td>
-       <td class="divider"><%=events[i].getLogMessage()%></td>
+       <td class="divider bright"><%= event.getSeverity().getLabel() %></td>
+       <td class="divider"><%=event.getLogMessage()%></td>
      </tr>
 <% } %>
 

@@ -44,7 +44,7 @@ public class IfIndexFilter extends EqualsFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.InterfaceFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.InterfaceFilter: " + this.getDescription() + ">");
     }
 
     public int getIfIndex() {

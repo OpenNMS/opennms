@@ -57,7 +57,7 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativeNodeFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativeNodeFilter: " + this.getDescription() + ">");
     }
 
     public int getNodeId() {

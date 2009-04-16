@@ -48,7 +48,7 @@ public class NegativeAcknowledgedByFilter extends NotEqualOrNullFilter<String> {
     }
 
     public String toString() {
-        return ("<EventFactory.NegativeAcknowledgedByFilter: " + this.getDescription() + ">");
+        return ("<WebEventRepository.NegativeAcknowledgedByFilter: " + this.getDescription() + ">");
     }
 
     public String getAcknowledgedByFilter() {
