@@ -435,7 +435,7 @@
   <bean name="/report/availability/list.htm"
   		class="org.opennms.web.controller.ReportListController">
   	<property name="reportListService" ref="reportListService"/>
-  	<property name="pageSize" value="1"/>
+  	<property name="pageSize" value="10"/>
   </bean>
   
   <bean name="/report/availability/manage.htm" 
@@ -444,6 +444,7 @@
   	<property name="reportListService" ref="reportListService"/>
     <property name="commandName" value="ManageAvailabilityReportCommand" />
     <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
+    <property name="pageSize" value="10"/>
     <property name="successView" value="redirect:/report/availability/manage.htm" />
   </bean>
   

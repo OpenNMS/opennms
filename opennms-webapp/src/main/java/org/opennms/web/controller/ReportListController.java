@@ -54,9 +54,8 @@ public class ReportListController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        ModelAndView modelAndView = new ModelAndView("availability/list");
-        List results = m_reportListService.getAllReports(); 
-        PagedListHolder pagedListHolder = new PagedListHolder(results);
+        ModelAndView modelAndView = new ModelAndView("availability/list"); 
+        PagedListHolder pagedListHolder = new PagedListHolder(m_reportListService.getAllReports());
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(request, "p", 0);
         pagedListHolder.setPage(page); 
