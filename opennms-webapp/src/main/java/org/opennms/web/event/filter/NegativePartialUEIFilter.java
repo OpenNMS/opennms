@@ -32,10 +32,10 @@
 
 package org.opennms.web.event.filter;
 
-import org.opennms.web.filter.SubstringFilter;
+import org.opennms.web.filter.NoSubstringFilter;
 
 /** Encapsulates filtering on partial unique event identifiers. */
-public class NegativePartialUEIFilter extends SubstringFilter {
+public class NegativePartialUEIFilter extends NoSubstringFilter {
     public static final String TYPE = "partialUeiNot";
 
     public NegativePartialUEIFilter(String uei) {
