@@ -40,6 +40,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 
@@ -52,17 +53,57 @@
   <jsp:param name="breadcrumb" value="Manage"/>
 </jsp:include>
 
-<h3>Delete Availability Report</h3>
+<jsp:useBean id="pagedListHolder" scope="request"
+	type="org.springframework.beans.support.PagedListHolder" />
+<c:url value="/report/availability/manage.htm" var="pagedLink">
+	<c:param name="p" value="~" />
+</c:url>
 
 
-<form:form commandName="ManageAvailabilityReportCommand">
-	<c:forEach items="${reportLocator}" var="report">
-		<form:checkbox path="ids" value="${report.id}" />
-		<c:out value="${report.category}" /> - <c:out value="${report.type}" /> - <c:out
-			value="${report.date}" />
-		<br/>
-	</c:forEach>
-	<input type="submit" value="delete checked reports"/>
-</form:form>
+<c:choose>
+	<c:when test="${empty pagedListHolder.pageList}">
+		<p>None found.</p>
+	</c:when>
+
+	<c:otherwise>
+		<form:form commandName="ManageAvailabilityReportCommand">
+		<element:pagedList pagedListHolder="${pagedListHolder}"
+			pagedLink="${pagedLink}" />
+
+		<div class="spacer"><!--  --></div>
+		<table>
+			<thead>
+				<tr>
+					<th>category</th>
+					<th>type</th>
+					<th>period ending</th>
+					<th>available</th>
+					<th>view report</th>
+					<th>select</th>
+				</tr>
+			</thead>
+			<%-- // show only current page worth of data --%>
+			<c:forEach items="${pagedListHolder.pageList}" var="report">
+				<tr>
+					<td>${report.category}</td>
+					<td>${report.type}</td>
+					<td>${report.date}</td>
+					<td>${report.available}</td>
+					<td><a
+						href="report/availability/view/report.htm?reportid=${report.id}">html</a>
+					<a
+						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
+					<a
+						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
+					</td>
+					<td><form:checkbox path="ids" value="${report.id}"/></td>
+				</tr>
+			</c:forEach>
+		</table>
+		<input type="submit" value="delete checked reports"/>
+	</form:form>
+	</c:otherwise>
+</c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
