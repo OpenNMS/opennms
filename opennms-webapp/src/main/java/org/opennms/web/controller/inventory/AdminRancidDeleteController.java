@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -36,9 +37,12 @@ public class AdminRancidDeleteController extends SimpleFormController {
                        
         log().debug("AdminRancidDeleteController ModelAndView onSubmit delete device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
 
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+
         boolean done = m_inventoryService.deleteNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName());
         if (!done){
             log().debug("AdminRancidDeleteController ModelAndView onSubmit error while deleting status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
+        }
         }
         String redirectURL = request.getHeader("Referer");
         response.sendRedirect(redirectURL);

@@ -558,6 +558,21 @@
     <property name="formView" value="admin/rancid/rancidAdmin"/>
     <property name="successView" value="admin/rancid/rancidAdmin"/> 
   </bean>  
+  
+  <bean name="/admin/storage/storageAdmin.htm" class="org.opennms.web.controller.inventory.AdminStorageController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>        
+  
+  <bean name="/admin/storage/storageDeleteBucket.htm" class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminStorageCommClass"/>
+    <property name="formView" value="admin/storage/storageAdmin"/>
+    <property name="successView" value="admin/storage/storageAdmin"/> 
+  </bean>  
+
+  <bean name="/admin/storage/storageDeleteBucketItem.htm" class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketItemController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>  
  
 	<!-- Examples
 		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">

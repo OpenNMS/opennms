@@ -122,6 +122,9 @@ public class InventoryService implements InitializingBean {
         nodeModel.put("db_id", nodeid);
         nodeModel.put("status_general", ElementUtil.getNodeStatusString(node.getType().charAt(0)));
 
+        // TODO find a method to get root service for URL
+        nodeModel.put("url", m_cp.getUrl()+m_cp.getDirectory());
+
         String rancidIntegrationUseOnlyRancidAdaperProperty = Vault.getProperty("opennms.rancidIntegrationUseOnlyRancidAdaper"); 
         log().debug("getRancidNodeBase opennms.rancidIntegrationUseOnlyRancidAdaper: " + rancidIntegrationUseOnlyRancidAdaperProperty);
         if (rancidIntegrationUseOnlyRancidAdaperProperty != null &&  "true".equalsIgnoreCase(rancidIntegrationUseOnlyRancidAdaperProperty.trim())) {
@@ -152,8 +155,6 @@ public class InventoryService implements InitializingBean {
         
         log().debug("getRancidNode start");
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
-        // TODO find a method to get root service for URL
-        nodeModel.put("url", m_cp.getUrl()+m_cp.getDirectory());
         String rancidName = (String)nodeModel.get("id"); 
         List<RancidNodeWrapper> ranlist = new ArrayList<RancidNodeWrapper>();
         List<BucketItem> bucketlist = new ArrayList<BucketItem>();
@@ -216,6 +217,25 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     }
 
+    public Map<String, Object> getBuckets(int nodeid,boolean isAdmin) {
+        log().debug("getBuckets start: nodeid: " + nodeid);
+        Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
+        String rancidName = (String)nodeModel.get("id"); 
+
+        List<BucketItem> bucketlist = new ArrayList<BucketItem>();
+        if (isAdmin) {
+            try {
+                RWSBucket bucket = RWSClientApi.getBucket(m_cp, rancidName);
+                bucketlist.addAll(bucket.getBucketItem());
+            } catch (RancidApiException e) {
+                log().debug("No bucket found for nodeid:" + nodeid  + " nodeLabel: " + rancidName + " .Cause: " + e.getLocalizedMessage());
+            }
+            
+            nodeModel.put("bucketitems", bucketlist);        
+        }
+        return nodeModel;        
+    }
+    
     public Map<String, Object> getRancidNodeList(int nodeid) {
         log().debug("getRancidlist start: nodeid: " + nodeid);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
@@ -631,7 +651,33 @@ public class InventoryService implements InitializingBean {
 
 
     }
-    
+
+    public boolean deleteBucketItem(String bucket, String filename ){
+        log().debug("InventoryService deleteBucketItem for bucket/filename [" + bucket + "]/ " + "[" + filename + "]"); 
+        try {
+          RWSClientApi.deleteBucketItem(m_cp, bucket, filename);
+          log().debug("InventoryService ModelAndView deleteBucketItem changes submitted");
+        }
+        catch (Exception e){
+            log().debug("deleteBucketItem has given exception on node "  + bucket + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteBucket(String bucket){
+        log().debug("InventoryService deleteBucket for bucket [" + bucket + "]/ "); 
+        try {
+          RWSClientApi.deleteBucket(m_cp, bucket);
+          log().debug("InventoryService ModelAndView deleteBucket changes submitted");
+        }
+        catch (Exception e){
+            log().debug("deleteBucket has given exception on node "  + bucket + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+    }
+
     
     private static Category log() {
         return Logger.getLogger("Rancid");

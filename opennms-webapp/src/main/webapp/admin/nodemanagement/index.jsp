@@ -134,6 +134,12 @@
     Configure Rancid Integration</a>
   
   </p>
+
+  <p>
+    <a href="admin/storage/storageAdmin.htm?node=<%=nodeId%>">
+    Configure Software Images</a>
+  </p>
+
   <% } %>
 </div>
       
@@ -181,6 +187,11 @@
     <b>Configure Rancid</b> Configure rancid group router.db files and rancid cloginrc
      authentication data.
   </p>
+
+  <p>
+    <b>Configure Software Images</b> Add and Delete software images.
+  </p>
+
   <% } %>
   
 </div>
