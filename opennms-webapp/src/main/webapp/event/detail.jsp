@@ -52,7 +52,7 @@
 		org.opennms.web.event.EventFactory,
 		org.opennms.web.event.EventUtil,
 		org.opennms.web.Util,
-        org.opennms.web.springframework.security.Authentication
+        org.opennms.web.springframework.security.Authentication,
         org.opennms.web.event.AcknowledgeType
         "
 
