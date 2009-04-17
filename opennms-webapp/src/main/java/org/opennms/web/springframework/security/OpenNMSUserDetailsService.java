@@ -29,13 +29,38 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
-import org.acegisecurity.providers.encoding.Md5PasswordEncoder;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.userdetails.UserDetailsService;
+import org.springframework.security.userdetails.UsernameNotFoundException;
 
-public class UpperCaseMd5PasswordEncoder extends Md5PasswordEncoder {
-    public String encodePassword(String rawPass, Object salt) {
-    	// This is almost too easy -- I'm not complaining!!
-        return super.encodePassword(rawPass, salt).toUpperCase();
-    }
+public class OpenNMSUserDetailsService implements UserDetailsService {
+	private UserDao m_userDao;
+	
+	public UserDetails loadUserByUsername(String username)
+		throws UsernameNotFoundException, DataAccessException {
+		if (m_userDao == null) {
+			// XXX there must be a better way to do this
+			throw new IllegalStateException("usersDao parameter must be set to a UsersDao bean");
+		}
+		
+		UserDetails userDetails = m_userDao.getByUsername(username);
+		
+		if (userDetails == null) {
+			throw new UsernameNotFoundException("User test_user is not a valid user");
+		}
+		
+		return userDetails;
+	}
+
+	public void setUserDao(UserDao userDao) {
+		m_userDao = userDao;
+		
+	}
+
+	public UserDao getUserDao() {
+		return m_userDao;
+	}
 }

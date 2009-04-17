@@ -30,7 +30,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ public final class Authentication extends Object {
     private Authentication() {
     }
     
-    public static String getAcegiRoleFromOldRoleName(String oldRole) {
+    public static String getSpringSecuirtyRoleFromOldRoleName(String oldRole) {
     	return s_oldToNewMap.get(oldRole);
     }
 

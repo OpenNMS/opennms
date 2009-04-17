@@ -37,7 +37,7 @@ package org.opennms.web.navigate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.springframework.security.Authentication;
 
 public class AdminUserNavBarEntry extends LocationBasedNavBarEntry {
     @Override

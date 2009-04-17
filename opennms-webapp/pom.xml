@@ -308,7 +308,12 @@
     <!-- Sort dependencies by groupId then artifactId, but put dependencies with a groupId of org.opennms first. -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-acegi</artifactId>
+      <artifactId>opennms-spring-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring-security-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <!-- Rancid -->
     <dependency>

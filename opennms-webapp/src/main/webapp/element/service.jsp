@@ -42,7 +42,7 @@
 	contentType="text/html"
 	session="true"
 	import="
-		org.opennms.web.acegisecurity.Authentication,
+		org.opennms.web.springframework.security.Authentication,
 		org.opennms.web.element.ElementUtil,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.element.Service

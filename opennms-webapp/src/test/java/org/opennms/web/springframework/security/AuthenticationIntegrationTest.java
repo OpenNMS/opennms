@@ -29,14 +29,14 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.BadCredentialsException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.providers.dao.DaoAuthenticationProvider;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.security.Authentication;
+import org.springframework.security.BadCredentialsException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.providers.dao.DaoAuthenticationProvider;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 
@@ -46,7 +46,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {
-                "org/opennms/web/acegisecurity/applicationContext-authenticationIntegrationTest.xml"
+                "org/opennms/web/springframework.security/applicationContext-authenticationIntegrationTest.xml"
         		};
 	}
 	
@@ -58,7 +58,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 	}
 	
 	public void testAuthenticateAdmin() {
-		Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "admin");
+	    Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "admin");
 		Authentication authenticated = m_provider.authenticate(authentication);
 		assertNotNull("authenticated Authentication object not null", authenticated);
 		GrantedAuthority[] authorities = authenticated.getAuthorities();

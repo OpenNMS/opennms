@@ -94,7 +94,7 @@ public class OpenMapController implements Controller {
 		
 		String role = MapsConstants.ROLE_USER;
 
-		if ((request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE))) {
+		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))) {
 			role=MapsConstants.ROLE_ADMIN;
 			log.info(user + " has Admin mode");
 		}					

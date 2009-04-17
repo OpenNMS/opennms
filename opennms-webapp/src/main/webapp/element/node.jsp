@@ -59,7 +59,7 @@
 		java.net.*,
         java.sql.SQLException,
         org.opennms.core.utils.IPSorter,
-        org.opennms.web.acegisecurity.Authentication,
+        org.opennms.web.springframework.security.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,

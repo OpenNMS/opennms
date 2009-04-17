@@ -50,7 +50,7 @@
 			org.opennms.web.controller.alarm.*,
 			org.opennms.web.alarm.*,
 			org.opennms.netmgt.model.OnmsSeverity,
-	        org.opennms.web.acegisecurity.Authentication"
+	        org.opennms.web.springframework.security.Authentication"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>

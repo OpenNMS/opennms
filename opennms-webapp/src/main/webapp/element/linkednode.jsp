@@ -48,7 +48,7 @@
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		java.util.*,
-		org.opennms.web.acegisecurity.Authentication,
+		org.opennms.web.springframework.security.Authentication,
 		org.opennms.web.event.*,
 		java.net.*,org.opennms.core.utils.IPSorter,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
