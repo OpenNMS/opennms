@@ -40,7 +40,7 @@ public class ExactUEIFilter extends EqualsFilter<String> {
     public static final String TYPE = "exactUei";
 
     public ExactUEIFilter(String uei) {
-        super(TYPE, SQLType.STRING, "EVENTUEI", "uei", uei);
+        super(TYPE, SQLType.STRING, "EVENTUEI", "eventUei", uei);
     }
 
     public String toString() {
