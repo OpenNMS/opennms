@@ -176,6 +176,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     public int countMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS", criteria);
         return queryForInt(sql, paramSetter(criteria));
+
     }
     
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
