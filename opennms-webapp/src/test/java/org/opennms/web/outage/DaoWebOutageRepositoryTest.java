@@ -142,11 +142,11 @@ public class DaoWebOutageRepositoryTest {
         OutageSummary[] summaries = m_daoOutageRepo.getMatchingOutageSummaries(new OutageCriteria());
         assertEquals("there should be 2 outage summary in the default (current) outage criteria match", 2, summaries.length);
     }
-//    
-//    @Test
-//    public void testCountMatchingSummaries(){
-//        
-//        int count = m_daoOutageRepo.countMatchingOutageSummaries(new OutageCriteria());
-//        assertEquals(1, count);
-//    }
+    
+    @Test
+    public void testCountMatchingSummaries(){
+        
+        int count = m_daoOutageRepo.countMatchingOutageSummaries(new OutageCriteria());
+        assertEquals(2, count);
+    }
 }
