@@ -32,11 +32,11 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
-
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -51,8 +51,6 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
-
-import junit.framework.TestCase;
 
 /**
  * @author mikeh@aiinet.com
@@ -84,8 +82,6 @@ public class XmlRpcNotifierTest extends TestCase {
     private static final boolean USE_DIFFERENT_PORT_PER_TEST = false;
 
     public void setUp() throws Exception, InterruptedException, IOException  {
-        System.setProperty("mock.logLevel", "DEBUG");
-        System.setProperty("mock.debug", "true");
         
         super.setUp();
         
