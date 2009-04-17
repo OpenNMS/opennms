@@ -41,8 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -60,6 +60,9 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     
     @Autowired
     private OutageDao m_outageDao;
+    
+    @Autowired
+    private NodeDao m_nodeDao;
     
     /*
      * NOTE: Criteria building for Outages must included the following aliases"
@@ -154,18 +157,16 @@ public class DaoWebOutageRepository implements WebOutageRepository {
             Outage outage = new Outage();    
             outage.outageId = onmsOutage.getId();
             outage.ipAddress = onmsOutage.getIpAddress();
-            //outage.building
             outage.hostname = onmsOutage.getIpAddress();
             outage.lostServiceEventId = onmsOutage.getServiceLostEvent() != null ? onmsOutage.getServiceLostEvent().getId() : 0;
             //outage.lostServiceNotificationAcknowledgedBy = 
-            //outage.lostServiceNotificationId = 
             outage.lostServiceTime = onmsOutage.getIfLostService();
             outage.nodeId = onmsOutage.getNodeId();
-            //outage.nodeLabel
+            outage.nodeLabel = m_nodeDao.get(onmsOutage.getNodeId()).getLabel();
             outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent() != null ? onmsOutage.getServiceRegainedEvent().getId() : 0;
             outage.regainedServiceTime = onmsOutage.getIfRegainedService();
             outage.serviceId = onmsOutage.getServiceId();
-            //outage.serviceName
+            outage.serviceName = onmsOutage.getMonitoredService() != null ? onmsOutage.getMonitoredService().getServiceName() : "";
             outage.suppressedBy = onmsOutage.getSuppressedBy();
             outage.suppressTime = onmsOutage.getSuppressTime();
             
@@ -177,7 +178,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     
     private OutageSummary mapOnmsOutageToOutageSummary(OnmsOutage onmsOutage) {
         int nodeId = onmsOutage.getNodeId();
-        String nodeLabel = "TestingPurposes please change";
+        String nodeLabel = m_nodeDao.get(onmsOutage.getNodeId()).getLabel();
         Date timeDown = onmsOutage.getIfLostService();
         Date timeUp = onmsOutage.getIfRegainedService();
         Date timeNow = new Date();
@@ -189,8 +190,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     @Transactional
     public int countMatchingOutageSummaries(OutageCriteria criteria) {
-        throw new UnsupportedOperationException("DaoWebOutageRepository.countMatchingOutageSummaries is not yet implemented");
-        //return m_outageDao.countMatching(getOnmsCriteria(criteria));
+        return getMatchingOutageSummaries(criteria).length;
     }
 
     /* (non-Javadoc)
@@ -208,22 +208,60 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
         
         
-        List<OutageSummary> outagesSummaries = new ArrayList<OutageSummary>();
+        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
         
-        OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsOutage.class);//getOnmsCriteria(new OutageCriteria());
-        onmsCriteria.setProjection(Projections.distinct(Projections.countDistinct("id")));
-        onmsCriteria.add(Restrictions.eq("id", 1));
-        
-        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(onmsCriteria);
+        return getOutageSummary(onmsOutages).toArray(new OutageSummary[0]);
+    }
+
+    private List<OutageSummary> getOutageSummary(List<OnmsOutage> onmsOutages) {
+        List<OutageSummary> outages = new ArrayList<OutageSummary>();
         
         if(onmsOutages.size() > 0){
             Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
             while(outageIt.hasNext()){
-                outagesSummaries.add(mapOnmsOutageToOutageSummary(outageIt.next()));
+                OnmsOutage outage = outageIt.next();
+                System.err.println("outage id: " + outage.getId());
+                if(outage.getIfRegainedService() == null){
+                    outages.add(mapOnmsOutageToOutageSummary(outage));
+                }
+            }
+            
+            return elimenateDuplicates(outages);
+        }else {
+            return outages;
+        }
+    }
+
+    private List<OutageSummary> elimenateDuplicates(List<OutageSummary> outagesSummaries) {
+        List<OutageSummary> uniqueList = new ArrayList<OutageSummary>();
+        
+
+        for(int i = 0; i < outagesSummaries.size(); i++){
+            OutageSummary outageSum = outagesSummaries.get(i);
+            
+            if(uniqueList.size() > 0){
+                int currentUniqueListSize = uniqueList.size();
+                boolean isDirty = false;
+                
+                for(int k = 0; k < currentUniqueListSize; k++){
+                    OutageSummary uniqueSum = uniqueList.get(k);
+                    if(outageSum.nodeId == uniqueSum.nodeId && uniqueSum.nodeLabel.equals(outageSum.nodeLabel)){
+                        isDirty = true; 
+                    }
+                }
+                
+                if(!isDirty){
+                    uniqueList.add(outageSum);
+                }
+                
+            }else{
+                uniqueList.add(outageSum);
             }
         }
         
-        return outagesSummaries.toArray(new OutageSummary[0]);
+        
+        return uniqueList;
+        
     }
 
     /* (non-Javadoc)
