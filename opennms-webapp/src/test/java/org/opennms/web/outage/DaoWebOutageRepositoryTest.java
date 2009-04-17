@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
@@ -80,7 +82,13 @@ public class DaoWebOutageRepositoryTest {
     
     @BeforeClass
     public static void setupLogging(){
-        
+       
+        Properties props = new Properties();
+        props.setProperty("log4j.logger.org.hibernate", "INFO");
+        props.setProperty("log4j.logger.org.springframework", "INFO");
+        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+
+        MockLogAppender.setupLogging(props);
     }
     
     @Before
@@ -129,10 +137,11 @@ public class DaoWebOutageRepositoryTest {
         assertNotNull(outage);
     }
     
-//    @Test
-//    public void testGetMatchingOutageSummaries(){
-//        
-//    }
+    @Test
+    public void testGetOutageSummaries() {
+        OutageSummary[] summaries = m_daoOutageRepo.getMatchingOutageSummaries(new OutageCriteria());
+        assertEquals("there should be 2 outage summary in the default (current) outage criteria match", 2, summaries.length);
+    }
 //    
 //    @Test
 //    public void testCountMatchingSummaries(){
