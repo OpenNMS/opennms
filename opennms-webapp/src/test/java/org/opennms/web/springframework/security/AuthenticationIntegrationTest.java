@@ -46,7 +46,7 @@ public class AuthenticationIntegrationTest extends AbstractDependencyInjectionSp
 	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {
-                "org/opennms/web/springframework.security/applicationContext-authenticationIntegrationTest.xml"
+                "org/opennms/web/springframework/security/applicationContext-authenticationIntegrationTest.xml"
         		};
 	}
 	

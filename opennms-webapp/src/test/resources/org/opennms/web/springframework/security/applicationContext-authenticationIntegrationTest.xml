@@ -8,7 +8,7 @@
   <property name="magicUsersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/magic-users.properties"/>
  </bean>
 
- <bean id="openNMSUserDaoImpl" class="org.opennms.web.springframework.security.OpenNMSUserDaoImpl">
+ <bean id="openNMSUserDaoImpl" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">
   <property name="userDao"><ref bean="userDao"/></property>
  </bean>
 
