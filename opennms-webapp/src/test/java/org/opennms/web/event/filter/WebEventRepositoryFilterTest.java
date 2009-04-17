@@ -36,10 +36,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Properties;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -49,7 +47,6 @@ import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.event.DaoWebEventRepository;
 import org.opennms.web.event.Event;
@@ -87,15 +84,6 @@ public class WebEventRepositoryFilterTest {
     @Autowired
     JdbcWebEventRepository m_jdbcEventRepo;
     
-    @BeforeClass
-    public static void setupLogging(){
-        Properties props = new Properties();
-        props.setProperty("log4j.logger.org.hibernate", "INFO");
-        props.setProperty("log4j.logger.org.springframework", "INFO");
-        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-
-        MockLogAppender.setupLogging(props);
-    }
     
     @Before
     public void setUp(){
