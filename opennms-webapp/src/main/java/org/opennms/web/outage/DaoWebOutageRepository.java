@@ -36,10 +36,12 @@
 package org.opennms.web.outage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -172,6 +174,15 @@ public class DaoWebOutageRepository implements WebOutageRepository {
             return null;
         }
     }
+    
+    private OutageSummary mapOnmsOutageToOutageSummary(OnmsOutage onmsOutage) {
+        int nodeId = onmsOutage.getNodeId();
+        String nodeLabel = "TestingPurposes please change";
+        Date timeDown = onmsOutage.getIfLostService();
+        Date timeUp = onmsOutage.getIfRegainedService();
+        Date timeNow = new Date();
+        return new OutageSummary(nodeId, nodeLabel, timeDown, timeUp, timeNow);
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#countMatchingOutageSummaries(org.opennms.web.outage.filter.OutageCriteria)
@@ -195,8 +206,24 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     @Transactional
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
-        throw new UnsupportedOperationException("DaoWebOutageRepository.getMatchingOutageSummaries is not yet implemented");
-
+        
+        
+        List<OutageSummary> outagesSummaries = new ArrayList<OutageSummary>();
+        
+        OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsOutage.class);//getOnmsCriteria(new OutageCriteria());
+        onmsCriteria.setProjection(Projections.distinct(Projections.countDistinct("id")));
+        onmsCriteria.add(Restrictions.eq("id", 1));
+        
+        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(onmsCriteria);
+        
+        if(onmsOutages.size() > 0){
+            Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
+            while(outageIt.hasNext()){
+                outagesSummaries.add(mapOnmsOutageToOutageSummary(outageIt.next()));
+            }
+        }
+        
+        return outagesSummaries.toArray(new OutageSummary[0]);
     }
 
     /* (non-Javadoc)
