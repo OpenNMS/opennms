@@ -63,6 +63,10 @@
 	  		<th>Foreign Source</th>
 	  		<td>${model.foreignSource}</td>
 	  	</tr>
+	  	<tr>
+	  		<th>RWS status</th>
+	  		<td>${model.RWSStatus}</td>
+	  	</tr>
 	</table>
 
 	<h3>Rancid info</h3>
