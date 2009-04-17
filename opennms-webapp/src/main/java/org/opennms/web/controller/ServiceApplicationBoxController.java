@@ -41,9 +41,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.element.ElementUtil;
 import org.opennms.web.element.Service;
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.AdminApplicationService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

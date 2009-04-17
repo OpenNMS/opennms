@@ -40,7 +40,7 @@
 	import="org.opennms.netmgt.config.UserFactory,
 	org.opennms.netmgt.config.UserManager,
 	org.opennms.netmgt.config.users.User,
-	org.opennms.web.acegisecurity.Authentication"
+	org.opennms.web.springframework.security.Authentication"
 %>
 
 <%

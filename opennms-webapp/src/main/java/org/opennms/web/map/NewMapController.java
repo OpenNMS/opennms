@@ -94,7 +94,7 @@ public class NewMapController implements Controller {
 				.getOutputStream()));
 
 		try {
-			if (request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)) {
+			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 				
 				if (log.isInfoEnabled())
 					log.info("New Map in admin mode: creating new map");

@@ -33,15 +33,10 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
 import java.util.Date;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.event.authentication.AbstractAuthenticationEvent;
-import org.acegisecurity.event.authentication.AbstractAuthenticationFailureEvent;
-import org.acegisecurity.event.authentication.AuthenticationSuccessEvent;
-import org.acegisecurity.ui.WebAuthenticationDetails;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -51,9 +46,14 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.Authentication;
+import org.springframework.security.event.authentication.AbstractAuthenticationEvent;
+import org.springframework.security.event.authentication.AbstractAuthenticationFailureEvent;
+import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
+import org.springframework.security.ui.WebAuthenticationDetails;
 import org.springframework.util.Assert;
 
-public class AcegiAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
+public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     public static final String FAILURE_UEI = "uei.opennms.org/internal/authentication/failure";
 

@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -45,13 +45,6 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.BadCredentialsException;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.event.authentication.AuthenticationFailureBadCredentialsEvent;
-import org.acegisecurity.event.authentication.AuthenticationSuccessEvent;
-import org.acegisecurity.providers.TestingAuthenticationToken;
-import org.acegisecurity.ui.WebAuthenticationDetails;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.opennms.netmgt.mock.EventWrapper;
@@ -61,8 +54,15 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.Authentication;
+import org.springframework.security.BadCredentialsException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.event.authentication.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
+import org.springframework.security.providers.TestingAuthenticationToken;
+import org.springframework.security.ui.WebAuthenticationDetails;
 
-public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
+public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private EventProxy m_eventProxy = m_mocks.createMock(EventProxy.class);
     
@@ -82,20 +82,20 @@ public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
         verify(request, session);
         
         Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
-        AuthenticationSuccessEvent acegiEvent = new AuthenticationSuccessEvent(authentication);
+        AuthenticationSuccessEvent authEvent = new AuthenticationSuccessEvent(authentication);
         
-        AcegiAuthenticationEventOnmsEventBuilder builder = new AcegiAuthenticationEventOnmsEventBuilder();
+        SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
         builder.setEventProxy(m_eventProxy);
         builder.afterPropertiesSet();
         
-        EventBuilder eventBuilder = new EventBuilder(AcegiAuthenticationEventOnmsEventBuilder.SUCCESS_UEI, "OpenNMS.WebUI");
+        EventBuilder eventBuilder = new EventBuilder(SecurityAuthenticationEventOnmsEventBuilder.SUCCESS_UEI, "OpenNMS.WebUI");
         eventBuilder.addParam("user", userName);
         eventBuilder.addParam("ip", ip);
         
         m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
         
         m_mocks.replayAll();
-        builder.onApplicationEvent(acegiEvent);
+        builder.onApplicationEvent(authEvent);
         m_mocks.verifyAll();
     }
     
@@ -115,22 +115,22 @@ public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
         verify(request, session);
         
         Authentication authentication = new TestingDetailsAuthenticationToken(userName, "cheesiness", new GrantedAuthority[0], details);
-        AuthenticationFailureBadCredentialsEvent acegiEvent = new AuthenticationFailureBadCredentialsEvent(authentication, new BadCredentialsException("you are bad!"));
+        AuthenticationFailureBadCredentialsEvent authEvent = new AuthenticationFailureBadCredentialsEvent(authentication, new BadCredentialsException("you are bad!"));
         
-        AcegiAuthenticationEventOnmsEventBuilder builder = new AcegiAuthenticationEventOnmsEventBuilder();
+        SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
         builder.setEventProxy(m_eventProxy);
         builder.afterPropertiesSet();
         
-        EventBuilder eventBuilder = new EventBuilder(AcegiAuthenticationEventOnmsEventBuilder.FAILURE_UEI, "OpenNMS.WebUI");
+        EventBuilder eventBuilder = new EventBuilder(SecurityAuthenticationEventOnmsEventBuilder.FAILURE_UEI, "OpenNMS.WebUI");
         eventBuilder.addParam("user", userName);
         eventBuilder.addParam("ip", ip);
-        eventBuilder.addParam("exceptionName", acegiEvent.getException().getClass().getSimpleName());
-        eventBuilder.addParam("exceptionMessage", acegiEvent.getException().getMessage());
+        eventBuilder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
+        eventBuilder.addParam("exceptionMessage", authEvent.getException().getMessage());
         
         m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
         
         m_mocks.replayAll();
-        builder.onApplicationEvent(acegiEvent);
+        builder.onApplicationEvent(authEvent);
         m_mocks.verifyAll();
     }
 
@@ -138,7 +138,7 @@ public class AcegiAuthenticationEventOnmsEventBuilderTest extends TestCase {
      * This shouldn't trigger an OpenNMS event.
      */
     public void testRandomEvent() throws Exception {
-        AcegiAuthenticationEventOnmsEventBuilder builder = new AcegiAuthenticationEventOnmsEventBuilder();
+        SecurityAuthenticationEventOnmsEventBuilder builder = new SecurityAuthenticationEventOnmsEventBuilder();
         builder.setEventProxy(m_eventProxy);
         builder.afterPropertiesSet();
         

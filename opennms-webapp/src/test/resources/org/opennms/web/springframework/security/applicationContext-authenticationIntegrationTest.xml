@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+ <bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+  <property name="usersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/users.xml"/>
+  <property name="useGroups" value="false"/>
+  <property name="magicUsersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/magic-users.properties"/>
+ </bean>
+
+ <bean id="openNMSUserDaoImpl" class="org.opennms.web.springframework.security.OpenNMSUserDaoImpl">
+  <property name="userDao"><ref bean="userDao"/></property>
+ </bean>
+
+ <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
+
+ <bean id="daoAuthenticationProvider" class="org.springframework.security.providers.dao.DaoAuthenticationProvider">
+  <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
+  <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
+ </bean>        
+</beans>

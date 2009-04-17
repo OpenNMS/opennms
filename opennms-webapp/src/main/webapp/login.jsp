@@ -13,19 +13,19 @@
     <strong>Your log-in attempt failed, please try again</strong>
   </p>
 
-  <%-- This is: AbstractProcessingFilter.ACEGI_SECURITY_LAST_EXCEPTION_KEY --%>
-  <p>Reason: ${ACEGI_SECURITY_LAST_EXCEPTION.message}</p>
+  <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
+  <p>Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
 </c:if>
 
 <div class="formOnly">
-  <form action="<c:url value='j_acegi_security_check'/>" method="POST">
+  <form action="<c:url value='j_spring_security_check'/>" method="POST">
     <p>
-      User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${ACEGI_SECURITY_LAST_USERNAME}"/>'</c:if> /><br />
+      User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if> /><br />
       Password: <input type='password' name='j_password'>
     </p>
       
     <!--
-    <p><input type="checkbox" name="_acegi_security_remember_me"> Don't ask for my password for two weeks</p>
+    <p><input type="checkbox" name="_spring_security_remember_me"> Don't ask for my password for two weeks</p>
     -->
     
     <input name="reset" type="reset" value="Reset" />

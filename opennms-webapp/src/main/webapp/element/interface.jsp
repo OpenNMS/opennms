@@ -52,7 +52,7 @@
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
                 org.opennms.web.Util,
-                org.opennms.web.acegisecurity.Authentication,
+                org.opennms.web.springframework.security.Authentication,
                 org.opennms.web.element.*,
                 org.opennms.web.event.*,
                 org.opennms.web.svclayer.ResourceService,

@@ -36,18 +36,11 @@ package org.opennms.dashboard.server;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.userdetails.User;
-import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.dashboard.client.NodeRtc;
@@ -67,6 +60,12 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.web.svclayer.support.DefaultRtcService;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.userdetails.User;
+import org.springframework.security.userdetails.UserDetails;
 
 /**
  * 

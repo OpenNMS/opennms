@@ -29,7 +29,7 @@
 //http://www.opennms.org/
 //http://www.opennms.com/
 
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,14 +40,14 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.acegisecurity.GrantedAuthority;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.security.GrantedAuthority;
 
 public class UserDaoImplTest extends TestCase {
 
-    private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/acegisecurity/magic-users.properties";
-    private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/acegisecurity/users.xml";
+    private static final String MAGIC_USERS_FILE = "src/test/resources/org/opennms/web/springframework/security/magic-users.properties";
+    private static final String USERS_XML_FILE = "src/test/resources/org/opennms/web/springframework/security/users.xml";
 
     public void testConfigSetter() {
         String usersConfigurationFile = "users.xml";

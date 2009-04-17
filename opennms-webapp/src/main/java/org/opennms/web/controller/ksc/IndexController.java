@@ -40,7 +40,7 @@ package org.opennms.web.controller.ksc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;

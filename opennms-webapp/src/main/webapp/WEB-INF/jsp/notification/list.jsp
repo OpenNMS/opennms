@@ -49,7 +49,7 @@
 	session="true"
 	import="org.opennms.web.notification.*,
 			org.opennms.web.notification.filter.*,
-                org.opennms.web.acegisecurity.Authentication,
+                org.opennms.web.springframework.security.Authentication,
 		java.util.*,
 		java.sql.SQLException,
 		org.opennms.web.event.EventFactory,
