@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Apr: refactor much of this out
 // 2008 Mar 20: Remove a System.out.println that printed the select query. - dj@opennms.org
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 //
@@ -57,7 +58,7 @@ import org.opennms.web.notification.filter.NodeFilter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class NoticeFactory extends Object {
+public class NoticeFactory {
 
     /** Private constructor so this class cannot be instantiated. */
     private NoticeFactory() {

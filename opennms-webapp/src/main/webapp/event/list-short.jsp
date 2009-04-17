@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Apr: refactoring to support ACL DAO work
 // 2008 Aug 14: Sanitize input
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
@@ -447,9 +448,9 @@
     public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, List<Filter> filters, int limit ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
-      buffer.append( EventUtil.getSortStyleString(sortStyle) );
+      buffer.append( sortStyle.getShortName() );
       buffer.append( "&acktype=" );
-      buffer.append( EventUtil.getAcknowledgeTypeString(ackType) );
+      buffer.append( ackType.getShortName() );
       if (limit > 0) {
           buffer.append( "&limit=" ).append(limit);
       }

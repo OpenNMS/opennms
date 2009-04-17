@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Apr: refactoring to support ACL DAO work
 // 2007 Jul 24: Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -33,12 +34,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-/*
- * Created on 11-gen-2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+
 package org.opennms.web.map.db;
 
 

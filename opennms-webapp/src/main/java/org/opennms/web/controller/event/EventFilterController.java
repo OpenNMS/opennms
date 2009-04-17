@@ -50,6 +50,7 @@ import org.opennms.web.event.EventUtil;
 import org.opennms.web.event.SortStyle;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
+import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -83,8 +84,7 @@ public class EventFilterController extends AbstractController implements Initial
     /**
      * Parses the query string to determine what types of event filters to use
      * (for example, what to filter on or sort by), then does the database query
-     * (through the EventFactory) and then forwards the results to a JSP for
-     * display.
+     * and then forwards the results to a JSP for display.
      * 
      * <p>
      * Sets the <em>events</em> and <em>parms</em> request attributes for
@@ -149,6 +149,10 @@ public class EventFilterController extends AbstractController implements Initial
             }
         }
 
+        String idString = request.getParameter("id");
+        if (idString != null) {
+            filterList.add(new EventIdFilter(WebSecurityUtils.safeParseInt(idString)));
+        }
         // put the parameters in a convenient struct
         
         Filter[] filters = filterList.toArray(new Filter[0]);

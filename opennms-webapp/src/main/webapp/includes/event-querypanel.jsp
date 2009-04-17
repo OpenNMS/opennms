@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Apr: refactoring to support ACL DAO work
 // 2003 Feb 01: Disallowed null event search text. Bug #536.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -64,7 +65,7 @@ function Blank_TextField_Validator()
 <form name="event_search" action="event/query" method="GET" onsubmit="return Blank_TextField_Validator()">
       <p>Event Text:<input type="text" name="msgmatchany" /> &nbsp; Time:
         <select name="relativetime" size="1">
-          <option value="0" selected><%=EventUtil.ANY_RELATIVE_TIMES_OPTION%></option>
+          <option value="0" selected>Any</option>
           <option value="1">Last hour</option>
           <option value="2">Last 4 hours</option>
           <option value="3">Last 8 hours</option>

@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -39,47 +39,28 @@
 
 --%>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="
-		java.util.HashMap,
-		java.util.regex.Matcher,
-		java.util.regex.Pattern,
-		org.opennms.netmgt.EventConstants,
-		org.opennms.web.WebSecurityUtils,
-		org.opennms.web.event.Event,
-		org.opennms.web.event.EventFactory,
-		org.opennms.web.event.EventUtil,
-		org.opennms.web.Util,
-        org.opennms.web.springframework.security.Authentication,
-        org.opennms.web.event.AcknowledgeType
-        "
+<%@page language="java"	contentType="text/html"	session="true" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.regex.Matcher"%>
+<%@page import="java.util.regex.Pattern"%>
+<%@page import="org.springframework.util.Assert"%>
+
+<%@page import="org.opennms.netmgt.EventConstants"%>
+<%@page import="org.opennms.web.WebSecurityUtils"%>
+<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
 
 <%
-    String eventIdString = request.getParameter( "id" );
 
-    if( eventIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "id" );
-    }
+	XssRequestWrapper req = new XssRequestWrapper(request);
+	Event[] events = (Event[])req.getAttribute("events");
+	Assert.isTrue(events.length == 1, "event detail filter should match only one event");
 
-    int eventId = -1;
+    Event event = events[0];
 
-    try {
-        eventId = WebSecurityUtils.safeParseInt( eventIdString );
-    }
-    catch( NumberFormatException e ) {
-        throw new org.opennms.web.event.EventIdNotFoundException( "The event id must be an integer.", eventIdString );
-    }
-
-    Event event = EventFactory.getEvent( eventId );
-
-    if( event == null ) {
-        throw new org.opennms.web.event.EventIdNotFoundException( "An event with this id was not found.", String.valueOf(eventId) );
-    }
-    
     String action = null;
     String buttonName=null;
     
@@ -225,7 +206,7 @@
         </tr>
       </table>
 
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE ))) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="action" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>
