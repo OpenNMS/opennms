@@ -85,7 +85,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class NetworkElementFactory extends Object {
+public class NetworkElementFactory {
 
     /**
      * A mapping of service names (strings) to service identifiers (integers).
@@ -420,7 +420,7 @@ public class NetworkElementFactory extends Object {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                hostname = (String) rs.getString("IPHOSTNAME");
+                hostname = rs.getString("IPHOSTNAME");
             }
 
             rs.close();
@@ -985,8 +985,9 @@ public class NetworkElementFactory extends Object {
             }
 
             element = rs.getTimestamp("ipLastCapsdPoll");
-            if (element != null)
+            if (element != null) {
                 intf.m_ipLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+            }
 
             intfs.add(intf);
         }
@@ -1056,15 +1057,17 @@ public class NetworkElementFactory extends Object {
             service.setIpAddress(rs.getString("ipaddr"));
 
             element = rs.getTimestamp("lastgood");
-            if (element != null)
+            if (element != null) {
                 service.setLastGood(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
+            }
 
             service.setServiceId(rs.getInt("serviceid"));
             service.setServiceName(rs.getString("servicename"));
 
             element = rs.getTimestamp("lastfail");
-            if (element != null)
+            if (element != null) {
                 service.setLastFail(Util.formatDateToUIString(new Date(((Timestamp) element).getTime())));
+            }
 
             service.setNotify(rs.getString("notify"));
 
@@ -1477,13 +1480,13 @@ public class NetworkElementFactory extends Object {
         DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
         int j = 0;
 
-        for (int i = 0; i<normalnodes.length; i++) {
-        	nodes[j++] = normalnodes[i];
+        for (DataLinkInterface normalnode : normalnodes) {
+        	nodes[j++] = normalnode;
         	
         }
         
-        for (int i = 0; i<parentnodes.length; i++) {
-        	nodes[j++] = parentnodes[i];
+        for (DataLinkInterface parentnode : parentnodes) {
+        	nodes[j++] = parentnode;
         }
 
         return nodes;
@@ -1665,13 +1668,13 @@ public class NetworkElementFactory extends Object {
         DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
         int j = 0;
 
-        for (int i = 0; i<normalnodes.length; i++) {
-        	nodes[j++] = normalnodes[i];
+        for (DataLinkInterface normalnode : normalnodes) {
+        	nodes[j++] = normalnode;
         	
         }
         
-        for (int i = 0; i<parentnodes.length; i++) {
-        	nodes[j++] = parentnodes[i];
+        for (DataLinkInterface parentnode : parentnodes) {
+        	nodes[j++] = parentnode;
         }
 
         return nodes;
@@ -1873,9 +1876,10 @@ public class NetworkElementFactory extends Object {
             atIf.m_physaddr = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 atIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("sourcenodeID"));
             if (element != null) {
@@ -1926,9 +1930,10 @@ public class NetworkElementFactory extends Object {
             ipRtIf.m_routenexthop = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 ipRtIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("routeifindex"));
             if (element != null) {
@@ -2000,9 +2005,10 @@ public class NetworkElementFactory extends Object {
             stpIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 stpIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("bridgeport"));
             if (element != null) {
@@ -2095,9 +2101,10 @@ public class NetworkElementFactory extends Object {
             stpNode.m_stpdesignatedroot = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 stpNode.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("basenumports"));
             if (element != null) {
@@ -2182,9 +2189,10 @@ public class NetworkElementFactory extends Object {
             vlanEntry.m_vlanname = (String) element;
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 vlanEntry.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("vlantype"));
             if (element != null) {
@@ -2232,9 +2240,10 @@ public class NetworkElementFactory extends Object {
             }
 
             element = rs.getTimestamp("lastpolltime");
-            if (element != null)
+            if (element != null) {
                 dataLinkIf.m_lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
+            }
 
             element = new Integer(rs.getInt("nodeparentid"));
             if (element != null) {

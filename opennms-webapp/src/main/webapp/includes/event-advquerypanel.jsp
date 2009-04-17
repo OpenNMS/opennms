@@ -98,7 +98,7 @@
             <td><input type="text" name="nodenamelike" /></td>
             <td>
               <select name="severity" size="1">
-                <option selected="selected"><%=EventUtil.ANY_SEVERITIES_OPTION%></option>
+                <option selected="selected">Any</option>
 
                 <% for (OnmsSeverity severity : OnmsSeverity.values() ) { %>
                   <option value="<%= severity.getId() %>">
@@ -115,7 +115,7 @@
           <tr>
             <td colspan="2">
               <select name="service" size="1">
-                <option selected><%=EventUtil.ANY_SERVICES_OPTION%></option>
+                <option selected>Any</option>
 
                 <% while( serviceNameIterator.hasNext() ) { %>
                   <% String name = (String)serviceNameIterator.next(); %>

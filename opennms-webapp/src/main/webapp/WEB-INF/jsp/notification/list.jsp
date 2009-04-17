@@ -52,8 +52,6 @@
                 org.opennms.web.springframework.security.Authentication,
 		java.util.*,
 		java.sql.SQLException,
-		org.opennms.web.event.EventFactory,
-		org.opennms.web.event.EventUtil,
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
 		org.opennms.web.element.NetworkElementFactory,
@@ -72,14 +70,6 @@
      parameters used to make this query
 --%>
 <%!
-   public String getBgColor(Notification n) {
-	   String bgcolor="#cccccc";
-	   try {
-		return EventFactory.getEvent(n.getEventId()).getSeverity().getColor();
-	   } catch (Exception e) {
-	   	return bgcolor;
-	   }
-   }
 %>
 
 <%
@@ -88,15 +78,17 @@
 	Integer noticeCount = (Integer)request.getAttribute( "noticeCount" );
     NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
     Map<Integer,String[]> nodeLabels = (Map<Integer,String[]>)request.getAttribute( "nodeLabels" );
+    Map<Integer,Event> events = (Map<Integer,Event>)request.getAttribute( "events" );
 
-    if( notices == null || parms == null ) {
-        throw new ServletException( "Missing either the notices or parms request attribute." );
+    if( notices == null || noticeCount == null || parms == null || nodeLabels == null ) {
+        throw new ServletException( "Missing a required attribute." );
     }
 
     String action = parms.ackType.getShortName();
 
     //useful constant strings
     String addPositiveFilterString = "[+]";    
+
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -239,7 +231,7 @@
       </thead>
 
       <% for( int i=0; i < notices.length; i++ ) { 
-        Event event = EventFactory.getEvent( notices[i].getEventId() );
+        Event event = events.get(notices[i].getEventId());
         String eventSeverity = event.getSeverity().getLabel();
         %>
         <tr class="<%=eventSeverity%>">
@@ -249,7 +241,7 @@
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
           <td class="divider" rowspan="2">
-            <% if ( NoticeFactory.canDisplayEvent(notices[i].getEventId()) ) { %>
+            <% if ( event.getEventDisplay() ) { %>
             <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a>
             <% } %>
           </td>

@@ -1,9 +1,43 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Orignal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+
 package org.opennms.web.controller.notification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,8 +45,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.event.Event;
 import org.opennms.web.event.EventUtil;
 import org.opennms.web.event.WebEventRepository;
+import org.opennms.web.event.filter.EventCriteria;
+import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.AcknowledgeType;
 import org.opennms.web.notification.NoticeQueryParms;
@@ -119,9 +156,11 @@ public class NotificationFilterController extends AbstractController implements 
         Notification[] notices = m_webNotificationRepository.getMatchingNotifications(queryCriteria);
         int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
         Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
-
+        Set<Integer> eventIds = new TreeSet<Integer>();
+        
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {
+            eventIds.add(notice.getEventId());
             if (!nodeLabels.containsKey(notice.getNodeId())) {
                 String[] labels = null;
                 OnmsNode node = m_nodeDao.get(notice.getNodeId());
@@ -141,11 +180,19 @@ public class NotificationFilterController extends AbstractController implements 
                 nodeLabels.put( notice.getNodeId(), labels );
             }
         }
-
+        
+        Map<Integer,Event> events = new HashMap<Integer,Event>();
+        if (eventIds.size() > 0) {
+            for (Event e : m_webEventRepository.getMatchingEvents(new EventCriteria(new EventIdListFilter(eventIds)))) {
+                events.put(e.getId(), e);
+            }
+        }
+    
         ModelAndView modelAndView = new ModelAndView(m_successView);
         modelAndView.addObject("notices", notices);
         modelAndView.addObject("noticeCount", noticeCount);
         modelAndView.addObject("nodeLabels", nodeLabels);
+        modelAndView.addObject("events", events);
         modelAndView.addObject("parms", parms);
         return modelAndView;
     }

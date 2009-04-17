@@ -92,7 +92,7 @@ public class EventQueryServlet extends HttpServlet {
         ServletConfig config = this.getServletConfig();
 
         if (config.getInitParameter("redirect.url") != null) {
-            this.redirectUrl = config.getInitParameter("redirect.url");
+            redirectUrl = config.getInitParameter("redirect.url");
         }
     }
 
@@ -124,7 +124,7 @@ public class EventQueryServlet extends HttpServlet {
 
         // convenient syntax for ServiceFilter
         String service = WebSecurityUtils.sanitizeString(request.getParameter("service"));
-        if (service != null && !service.equals(EventUtil.ANY_SERVICES_OPTION)) {
+        if (service != null && !service.equalsIgnoreCase("any")) {
             filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
         }
 
@@ -136,13 +136,13 @@ public class EventQueryServlet extends HttpServlet {
 
         // convenient syntax for SeverityFilter
         String severity = WebSecurityUtils.sanitizeString(request.getParameter("severity"));
-        if (severity != null && !severity.equals(EventUtil.ANY_SEVERITIES_OPTION)) {
+        if (severity != null && !severity.equalsIgnoreCase("any")) {
             filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
         String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
-        if (relativeTime != null && !relativeTime.equals(EventUtil.ANY_RELATIVE_TIMES_OPTION)) {
+        if (relativeTime != null && !relativeTime.equalsIgnoreCase("any")) {
             try {
                 filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
             } catch (IllegalArgumentException e) {
@@ -193,7 +193,7 @@ public class EventQueryServlet extends HttpServlet {
             queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, IGNORE_LIST));
         }
 
-        response.sendRedirect(this.redirectUrl + "?" + queryString);
+        response.sendRedirect(redirectUrl + "?" + queryString);
     }
 
     protected BeforeDateFilter getBeforeDateFilter(HttpServletRequest request) {

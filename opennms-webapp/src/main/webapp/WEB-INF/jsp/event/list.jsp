@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Apr: refactoring to support ACL DAO work
 // 2008 Aug 14: Sanitize input
 // 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
@@ -80,7 +81,7 @@
 <%@page import="org.opennms.web.event.filter.NegativeExactUEIFilter"%>
 
 <%--
-  This page is written to be the display (view) portion of the EventQueryServlet
+  This page is written to be the display (view) portion of the EventFilterController
   at the /event/list URL.  It will not work by itself, as it requires two request
   attributes be set:
   
@@ -495,9 +496,9 @@
     public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, List<Filter> filters, int limit ) {
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
-      buffer.append( EventUtil.getSortStyleString(sortStyle) );
+      buffer.append( sortStyle.getShortName() );
       buffer.append( "&acktype=" );
-      buffer.append( EventUtil.getAcknowledgeTypeString(ackType) );
+      buffer.append( ackType.getShortName() );
       if (limit > 0) {
           buffer.append( "&limit=" ).append(limit);
       }
