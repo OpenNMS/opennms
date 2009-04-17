@@ -1,5 +1,14 @@
 <VacuumdConfiguration period="86400000" >
   <statement>
+    <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
+    DELETE FROM element
+     WHERE element.elementtype = 'N'
+       AND element.elementid IN
+           (SELECT nodeid
+              FROM node
+             WHERE nodetype = 'D');
+  </statement>
+  <statement>
     <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
     DELETE FROM node WHERE node.nodeType = 'D';
   </statement>
