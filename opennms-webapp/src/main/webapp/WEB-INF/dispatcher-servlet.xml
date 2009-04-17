@@ -210,6 +210,16 @@
     <property name="redirectView" value="/event/list.htm" />
   </bean>
 
+  <alias name="/event/detail.htm" alias="/event/detail.jsp" />
+  <bean name="/event/detail.htm" class="org.opennms.web.controller.event.EventFilterController">
+    <property name="successView" value="event/detail" />
+    <property name="defaultShortLimit" value="20" />
+    <property name="defaultLongLimit" value="10" />
+    <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
+    <property name="defaultSortStyle" value="ID" />
+    <property name="webEventRepository" ref="webEventRepository" />
+  </bean>
+
   <alias name="/event/list.htm" alias="/event/list" />
   <bean name="/event/list.htm" class="org.opennms.web.controller.event.EventFilterController">
     <property name="successView" value="event/list" />

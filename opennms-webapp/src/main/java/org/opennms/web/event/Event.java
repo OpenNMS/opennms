@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -199,7 +199,12 @@ public class Event {
      * Can be null.
      */
     protected Integer alarmId;
-
+    
+    /**
+     * Whether the event is displayable.
+     */
+    protected Boolean eventDisplay;
+    
     /**
      * Empty constructor to create an empty <code>Event</code> instance. All
      * fields will hold the default values.
@@ -228,15 +233,18 @@ public class Event {
      * Create an event that represents a real network event with all the
      * parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
-        this(id, uei, time, dpName, createTime, severity, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null);
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
+        this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null, null);
     }
 
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
+        this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, nodeLabel, serviceName, alarmId, null);
+    }
     /**
      * Create an event that represents a real network event with all the
      * parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId, Boolean eventDisplay) {
 
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, time, dpName, createTime.");
@@ -275,6 +283,7 @@ public class Event {
         this.nodeLabel = nodeLabel;
         this.serviceName = serviceName;
         this.alarmId = alarmId;
+        this.eventDisplay = eventDisplay;
     }
 
     public int getId() {
@@ -401,4 +410,7 @@ public class Event {
         return (alarmId);
     }
 
+    public Boolean getEventDisplay() {
+        return (eventDisplay);
+    }
 }

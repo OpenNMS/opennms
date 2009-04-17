@@ -1113,6 +1113,10 @@
   </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/detail.jsp</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/notification/browse</url-pattern>
   </servlet-mapping>
   <servlet-mapping>

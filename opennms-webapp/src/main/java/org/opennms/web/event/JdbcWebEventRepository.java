@@ -165,6 +165,8 @@ public class JdbcWebEventRepository implements WebEventRepository {
 
             event.alarmId = (Integer) rs.getObject("alarmid");
             
+            event.eventDisplay = Boolean.valueOf(rs.getString("eventDisplay").equals("Y"));
+
             return event;
         }
         
