@@ -155,7 +155,8 @@ public class PageSequenceMonitorTest {
 
     @Test
 	public void testLogin() throws Exception {
-	// NOTE we need to chagne j_acegi to j_spring when we upgrade demo
+	// NOTE we need to chagne j_acegi_security_check to j_spring_security_check when we upgrade demo
+	// aslo change j_acegi_logout to j_spring_security_logout
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
@@ -165,7 +166,7 @@ public class PageSequenceMonitorTest {
 				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
 				"  </page>\n" + 
 				"  <page path=\"/opennms/event/index.jsp\" port=\"80\" successMatch=\"Event Queries\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_security_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
+				"  <page path=\"/opennms/j_acegi_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
 				"</page-sequence>\n");
 		
 		
