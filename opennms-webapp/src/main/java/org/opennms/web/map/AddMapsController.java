@@ -88,7 +88,7 @@ public class AddMapsController implements Controller {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
-			if (!request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)) {
+			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 				log.warn(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
 				throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
 			}

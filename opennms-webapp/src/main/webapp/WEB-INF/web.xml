@@ -37,7 +37,7 @@
         /WEB-INF/applicationContext-common.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
         classpath:/META-INF/opennms/applicationContext-reporting.xml
-        /WEB-INF/applicationContext-acegi-security.xml
+        /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
     </param-value>
   </context-param>
@@ -109,15 +109,12 @@
     <param-value>http://localhost:8080/opennms/map/post</param-value>
   </context-param>
   -->
-  
-  <filter>
-    <filter-name>Acegi Filter Chain Proxy</filter-name>
-    <filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
-    <init-param>
-      <param-name>targetClass</param-name>
-      <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
-    </init-param>
-  </filter>
+
+	<filter>
+	  <!--  note the name of this filter is important and is used in the app contexts -->
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
 
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
@@ -180,7 +177,7 @@
   </filter-mapping>
   
   <filter-mapping>
-    <filter-name>Acegi Filter Chain Proxy</filter-name>
+    <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   
@@ -275,12 +272,6 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
-  <!--
-  <listener>
-    <listener-class>org.opennms.web.acegisecurity.AcegiSessionAttributeListenerOnmsEventBuilder</listener-class>
-  </listener>
-  -->
-
   <!--  RESTful Web Services -->
   <servlet>
     <servlet-name>opennmsRestWebServices</servlet-name>

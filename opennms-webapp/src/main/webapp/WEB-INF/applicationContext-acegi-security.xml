@@ -3,80 +3,6 @@
 
 <beans>
 
-  <!-- ========================== FILTER CHAIN ======================== -->
-  <bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
-    <property name="filterInvocationDefinitionSource">
-      <value>
-        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-        PATTERN_TYPE_APACHE_ANT
-        /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
-        /rest/**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
-        /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
-      </value>
-    </property>
-  </bean>
-
-  <bean id="httpSessionContextIntegrationFilter" class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
-
-  <bean id="securityContextHolderAwareRequestFilter" class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter"/>
-
-  <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-    <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
-    <constructor-arg>
-      <list>
-        <bean class="org.opennms.web.acegisecurity.SessionNotatingLogoutHandler"/>
-        <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
-      </list>
-    </constructor-arg>
-  </bean>
-
-  <!-- ========================== AUTHENTICATION ======================== -->
-  <!--
-       The authentication providers listed below will be tried in order.
-
-       You can enable LDAP and/or Radius authentication by uncommenting the
-       appropriate providers here and uncommenting their associated beans below.
-
-       If you have enabled LDAP or Radius authentication and wish to disable
-       the passwords in users.xml, comment out the daoAuthenticationProvider.
-       Note that your LDAP/Radius server will need to allow the 'rtc' user to
-       authenticate.
-   -->
-  <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
-    <property name="providers">
-      <list>
-        <ref local="daoAuthenticationProvider"/>
-        <!--<ref local="ldapAuthenticationProvider"/>-->
-        <!--<ref local="radiusAuthenticationProvider"/>-->
-        <ref local="anonymousAuthenticationProvider"/>
-      </list>
-    </property>
-  </bean>
-
-  <!-- ===================== USER DAO AUTHENTICATION ==================== -->
-  <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
-    <property name="usersConfigurationFile"
-              value="${opennms.home}/etc/users.xml"/>
-    <property name="groupsConfigurationFile"
-              value="${opennms.home}/etc/groups.xml"/>
-    <property name="useGroups" value="true"/>
-    <property name="magicUsersConfigurationFile"
-              value="${opennms.home}/etc/magic-users.properties"/>
-  </bean>
-
-  <bean id="openNMSUserDaoImpl"
-        class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
-    <property name="userDao"><ref bean="userDao"/></property>
-  </bean>
-
-  <bean id="upperCaseMd5PasswordEncoder"
-        class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
-
-  <bean id="daoAuthenticationProvider"
-        class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
-    <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
-    <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
-  </bean>
 
   <!-- ======================= LDAP AUTHENTICATION ====================== -->
   <!--
@@ -98,12 +24,12 @@
    -->
   <!--
   <bean id="initialDirContextFactory"
-        class="org.acegisecurity.ldap.DefaultInitialDirContextFactory">
+        class="org.springframework.security.ldap.DefaultInitialDirContextFactory">
     <constructor-arg value="ldap://%%%put LDAP server address here%%%:389/"/>
   </bean>
 
   <bean id="userSearch"
-        class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
+        class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
     <constructor-arg index="0">
       <value></value>
     </constructor-arg>
@@ -119,13 +45,13 @@
   </bean>
 
   <bean id="userAttributeLdapAuthoritiesPopulator"
-        class="org.opennms.web.acegisecurity.UserAttributeLdapAuthoritiesPopulator">
+        class="org.opennms.web.springframework.security.UserAttributeLdapAuthoritiesPopulator">
     <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
     <constructor-arg><value>%%%put role attribute here%%%</value></constructor-arg>
   </bean>
 
   <bean id="groupLdapAuthoritiesPopulator"
-       class="org.opennms.web.acegisecurity.UserGroupLdapAuthoritiesPopulator">
+       class="org.opennms.web.springframework.security.UserGroupLdapAuthoritiesPopulator">
    <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
    <constructor-arg>
      <value>%%% put your search group path here%%%</value>
@@ -148,9 +74,9 @@
   </bean>
 
   <bean id="ldapAuthenticationProvider"
-        class="org.acegisecurity.providers.ldap.LdapAuthenticationProvider">
+        class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
     <constructor-arg>
-      <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
+      <bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
         <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
         <property name="userSearch"><ref bean="userSearch"/></property>
       </bean>
@@ -161,148 +87,5 @@
   </bean>
    -->
 
-  <!-- ====================== RADIUS AUTHENTICATION ===================== -->
-  <!--
-       To use Radius Authentication, uncomment the following section to enable
-       the radiusAuthenticationProvider, and uncomment the reference to
-       radiusAuthenticationProvider in the authenticationManager bean above.
 
-       The first constructor argument to radiusAuthenticationProvider is the
-       Radius Server to authenticate against, the second constructor argument
-       is the Shared Secret to use during authentication. The port, timeout,
-       retries, authTypeClass, and defaultRoles properties are optional and
-       default to the values shown.
-
-       If you would like to use a Radius Attribute to assign roles to users,
-       set the rolesAttribute property to the name of the attribute. Your
-       Radius server should be configured to return a comma-separated string of
-       roles (such as "ROLE_USER, ROLE_ADMIN") in this attribute in the
-       authentication reply. To specify a locally-defined vendor-specific Radius
-       Attribute, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)".
-       If the reply from the radius server does not actually contain the
-       specified attribute, the user will be assigned the roles specified by
-       the defaultRoles property.
-   -->
-  <!--
-  <bean id="radiusAuthenticationProvider" class="org.opennms.web.acegisecurity.RadiusAuthenticationProvider">
-    <constructor-arg value="%%% Radius Server %%%"/>
-    <constructor-arg value="%%% Shared Secret %%%"/>
-   -->
-    <!--<property name="port" value="1812"/>-->
-    <!--<property name="timeout" value="5"/>-->
-    <!--<property name="retries" value="3"/>-->
-    <!--<property name="authTypeClass"><bean class="net.jradius.client.auth.PAPAuthenticator"/></property>-->
-    <!--<property name="defaultRoles" value="ROLE_USER"/>-->
-    <!--<property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
-  <!--
-  </bean>
-   -->
-
-  <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
-
-  <bean id="httpRequestAccessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
-    <property name="allowIfAllAbstainDecisions"><value>false</value></property>
-    <property name="decisionVoters">
-      <list>
-        <ref bean="roleVoter"/>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="filterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref local="httpRequestAccessDecisionManager"/></property>
-    <property name="objectDefinitionSource">
-      <value>
-        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-        PATTERN_TYPE_APACHE_ANT
-        /=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /favicon.ico=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /css/styles.css=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /css/print.css=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /js/pngfix.js=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /js/global.js=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/logo.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/logo-background.gif=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/headingbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/mainbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/headerbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /images/footerbg.png=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /admin/**=ROLE_ADMIN
-        /rtc/post/**=ROLE_RTC
-        /webstart/**=ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD
-        /frontpage.htm=ROLE_USER,ROLE_DASHBOARD
-        /dashboard.jsp=ROLE_USER,ROLE_DASHBOARD
-        /gwt.js=ROLE_USER,ROLE_DASHBOARD
-        /surveillanceservice.gwt=ROLE_USER,ROLE_DASHBOARD
-        /org.opennms.dashboard.dashboard.nocache.html=ROLE_USER,ROLE_DASHBOARD
-        /*.cache.html=ROLE_USER,ROLE_DASHBOARD
-        /*.cache.html?*=ROLE_USER,ROLE_DASHBOARD
-        /*.cache.xml=ROLE_USER,ROLE_DASHBOARD
-        /*.cache.js=ROLE_USER,ROLE_DASHBOARD
-        /org.opennms.dashboard.*.nocache.js=ROLE_USER,ROLE_DASHBOARD
-        /css/dashboard.css=ROLE_USER,ROLE_DASHBOARD
-        /images/bg*.png=ROLE_USER,ROLE_DASHBOARD
-        /images/error.png=ROLE_USER,ROLE_DASHBOARD
-        /images/progress.gif=ROLE_USER,ROLE_DASHBOARD
-        /images/rrd/error.png=ROLE_USER,ROLE_DASHBOARD
-        /graph/graph.png=ROLE_USER,ROLE_DASHBOARD
-        /**=ROLE_USER
-      </value>
-    </property>
-  </bean>
-
-  <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
-    <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
-    <property name="accessDeniedHandler">
-      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
-        <property name="errorPage" value="/accessDenied.jsp"/>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="basicExceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
-    <property name="authenticationEntryPoint"><ref local="basicProcessingFilterEntryPoint"/></property>
-    <property name="accessDeniedHandler">
-      <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
-        <property name="errorPage" value="/accessDenied.jsp"/>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="authenticationFailureUrl"><value>/acegilogin.jsp?login_error=1</value></property>
-    <property name="defaultTargetUrl"><value>/</value></property>
-    <property name="filterProcessesUrl"><value>/j_acegi_security_check</value></property>
-  </bean>
-
-  <bean id="authenticationProcessingFilterEntryPoint" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
-    <property name="loginFormUrl"><value>/acegilogin.jsp</value></property>
-    <property name="forceHttps"><value>false</value></property>
-  </bean>
-
-  <bean id="basicProcessingFilter" class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
-    <property name="authenticationManager"><ref local="authenticationManager"/></property>
-    <property name="authenticationEntryPoint"><ref local="basicProcessingFilterEntryPoint"/></property>
-  </bean>
-
-  <bean id="basicProcessingFilterEntryPoint" class="org.acegisecurity.ui.basicauth.BasicProcessingFilterEntryPoint">
-    <property name="realmName"><value>OpenNMS Realm</value></property>
-  </bean>
-
-  <bean id="anonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
-    <property name="key"><value>foobar</value></property>
-    <property name="userAttribute"><value>anonymousUser,ROLE_ANONYMOUS</value></property>
-  </bean>
-
-  <bean id="anonymousAuthenticationProvider" class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
-    <property name="key"><value>foobar</value></property>
-  </bean>
-
-  <bean class="org.opennms.web.acegisecurity.AcegiAuthenticationEventOnmsEventBuilder">
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
 </beans>

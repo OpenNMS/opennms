@@ -51,7 +51,7 @@
 
 <%@page import="org.opennms.web.WebSecurityUtils" %>
 <%@page import="org.opennms.web.XssRequestWrapper" %>
-<%@page import="org.opennms.web.acegisecurity.Authentication" %>
+<%@page import="org.opennms.web.springframework.security.Authentication" %>
 
 <%@page import="org.opennms.web.filter.Filter"%>
 

@@ -37,7 +37,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,8 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,6 +62,8 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
 import org.springframework.util.Assert;
 
 /**
@@ -89,7 +89,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * The set of valid users from users.xml, keyed by userId
      */
-    private Map<String, org.opennms.web.acegisecurity.User> m_users = null;
+    private Map<String, org.opennms.web.springframework.security.User> m_users = null;
     
     private long m_usersLastModified;
 
@@ -98,7 +98,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * The set of valid users from magic-users.properties, keyed by userId
      */
-    private Map<String, org.opennms.web.acegisecurity.User> m_magicUsers = null;
+    private Map<String, org.opennms.web.springframework.security.User> m_magicUsers = null;
 
     private Map<String, GrantedAuthority[]> m_roles = null;
     
@@ -123,7 +123,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
      * instance variable.</p>
      */
     private void parseUsers() throws DataRetrievalFailureException {
-        HashMap<String, org.opennms.web.acegisecurity.User> users = new HashMap<String, org.opennms.web.acegisecurity.User>();
+        HashMap<String, org.opennms.web.springframework.security.User> users = new HashMap<String, org.opennms.web.springframework.security.User>();
 
         long lastModified = new File(m_usersConfigurationFile).lastModified();
         Userinfo userinfo = unmarshallUsers();
@@ -131,7 +131,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         Collection<User> usersList = userinfo.getUsers().getUserCollection();
 
         for (User user : usersList) {
-            org.opennms.web.acegisecurity.User newUser = new org.opennms.web.acegisecurity.User();
+            org.opennms.web.springframework.security.User newUser = new org.opennms.web.springframework.security.User();
             newUser.setUsername(user.getUserId());
             newUser.setPassword(user.getPassword());
 
@@ -164,8 +164,8 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         Collection<Role> roles = gm.getRoles();
         for (Role role : roles) {
             String groupname = role.getMembershipGroup();
-            String acegiRole = Authentication.getAcegiRoleFromOldRoleName(role.getName());
-            if (acegiRole != null) {
+            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(role.getName());
+            if (securityRole != null) {
                 List<String> users;
                 try {
                     users = gm.getGroup(groupname).getUserCollection();
@@ -178,7 +178,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
                         roleMap.put(user, new LinkedList<String>());
                     }
                     LinkedList<String> userRoleList = roleMap.get(user);
-                    userRoleList.add(acegiRole);
+                    userRoleList.add(securityRole);
                 }
             }
         }
@@ -196,7 +196,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
      * role.
      */
     private void parseMagicUsers() throws DataRetrievalFailureException {
-        HashMap<String, org.opennms.web.acegisecurity.User> magicUsers = new HashMap<String, org.opennms.web.acegisecurity.User>();
+        HashMap<String, org.opennms.web.springframework.security.User> magicUsers = new HashMap<String, org.opennms.web.springframework.security.User>();
         HashMap<String, GrantedAuthority[]> roles = new HashMap<String, GrantedAuthority[]>();
 
         long lastModified = new File(m_magicUsersConfigurationFile).lastModified();
@@ -218,7 +218,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
             String username = properties.getProperty("user." + user + ".username");
             String password = properties.getProperty("user." + user + ".password");
 
-            org.opennms.web.acegisecurity.User newUser = new org.opennms.web.acegisecurity.User();
+            org.opennms.web.springframework.security.User newUser = new org.opennms.web.springframework.security.User();
             newUser.setUsername(username);
             newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
 
@@ -226,7 +226,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         }
 
         String[] configuredRoles = BundleLists.parseBundleList(properties.getProperty("roles"));
-        // Use roles from the groups.xml file if specified in applicationContext-acegi-security.xml
+        // Use roles from the groups.xml file if specified in applicationContext-spring-security.xml
         Map<String, LinkedList<String>> roleMap = m_useGroups ? parseGroupRoles() 
                                                               : new HashMap<String, LinkedList<String>>();
         Map<String, Boolean> roleAddDefaultMap = new HashMap<String, Boolean>();
@@ -244,9 +244,9 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
             boolean notInDefaultGroup = "true".equals(properties.getProperty("role." + role + ".notInDefaultGroup"));
 
-            String acegiRole = Authentication.getAcegiRoleFromOldRoleName(rolename);
-            if (acegiRole == null) {
-                throw new DataRetrievalFailureException("Could not find Acegi Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
+            String securityRole = Authentication.getSpringSecuirtyRoleFromOldRoleName(rolename);
+            if (securityRole == null) {
+                throw new DataRetrievalFailureException("Could not find Spring Security role mapping for old role name '" + rolename + "' for role '" + role + "'");
             }
 
             for (String authUser : authUsers) {
@@ -254,10 +254,10 @@ public class UserDaoImpl implements UserDao, InitializingBean {
                     roleMap.put(authUser, new LinkedList<String>());
                 }
                 LinkedList<String> userRoleList = roleMap.get(authUser); 
-                userRoleList.add(acegiRole);
+                userRoleList.add(securityRole);
             }
             
-            roleAddDefaultMap.put(acegiRole, !notInDefaultGroup);
+            roleAddDefaultMap.put(securityRole, !notInDefaultGroup);
         }
 
         for (String user : roleMap.keySet()) {
@@ -398,10 +398,10 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         return m_magicUsersConfigurationFile;
     }
 
-    public org.opennms.web.acegisecurity.User getByUsername(String username) {
+    public org.opennms.web.springframework.security.User getByUsername(String username) {
         reloadIfNecessary();
 
-        org.opennms.web.acegisecurity.User user;
+        org.opennms.web.springframework.security.User user;
         if (m_magicUsers.containsKey(username)) {
             user = m_magicUsers.get(username);
         } else {

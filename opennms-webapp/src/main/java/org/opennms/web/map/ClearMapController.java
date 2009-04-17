@@ -84,7 +84,7 @@ public class ClearMapController implements Controller {
 	
 		try {
 
-			if (request.isUserInRole(org.opennms.web.acegisecurity.Authentication.ADMIN_ROLE)) {
+			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 				manager.clearMap();
 				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
 			} else {

@@ -29,15 +29,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
-import org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
-import junit.framework.TestCase;
-
-public class UpperCaseMd5PasswordEncoderTest extends TestCase {
-	public void testAdminEncryption() {
-		UpperCaseMd5PasswordEncoder encoder = new UpperCaseMd5PasswordEncoder();
-		assertEquals("encoded admin password", "21232F297A57A5A743894A0E4A801FC3", encoder.encodePassword("admin", null));
-	}
+public class UpperCaseMd5PasswordEncoder extends Md5PasswordEncoder {
+    public String encodePassword(String rawPass, Object salt) {
+    	// This is almost too easy -- I'm not complaining!!
+        return super.encodePassword(rawPass, salt).toUpperCase();
+    }
 }

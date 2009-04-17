@@ -1,14 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 2008 Daniel J. Gregor, Jr..  All Rights Reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,22 +29,15 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.ui.logout.LogoutHandler;
+import junit.framework.TestCase;
 
-public class SessionNotatingLogoutHandler implements LogoutHandler {
-    public static final String SESSION_ATTRIBUTE = "EVENT_SENDING_LOGOUT_HANDLER_LOGGED_OUT";
-
-    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.setAttribute(SESSION_ATTRIBUTE, Boolean.TRUE);
-        }
-    }
+public class UpperCaseMd5PasswordEncoderTest extends TestCase {
+	public void testAdminEncryption() {
+		UpperCaseMd5PasswordEncoder encoder = new UpperCaseMd5PasswordEncoder();
+		assertEquals("encoded admin password", "21232F297A57A5A743894A0E4A801FC3", encoder.encodePassword("admin", null));
+	}
 }

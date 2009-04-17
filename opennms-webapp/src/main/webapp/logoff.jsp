@@ -7,7 +7,7 @@
 
 <div class="formOnly">
 	<h2>You have been logged off.</h2>
-	<p>You may <a href="acegilogin.jsp"><strong>log in</strong></a> again.</p>
+	<p>You may <a href="login.jsp"><strong>log in</strong></a> again.</p>
 </div>
 <hr />
 

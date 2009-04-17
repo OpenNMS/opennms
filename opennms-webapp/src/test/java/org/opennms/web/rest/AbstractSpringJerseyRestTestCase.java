@@ -70,7 +70,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
-                "/WEB-INF/applicationContext-acegi-security.xml " +
+                "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");
         
         servletContext.addInitParameter("parentContextKey", "daoContext");

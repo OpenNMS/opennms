@@ -34,7 +34,7 @@ package org.opennms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.springframework.security.Authentication;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 

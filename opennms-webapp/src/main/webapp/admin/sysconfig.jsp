@@ -41,7 +41,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.acegisecurity.Authentication,
+	import="org.opennms.web.springframework.security.Authentication,
 		org.opennms.core.resource.Vault
 	"
 %>

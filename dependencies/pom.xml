@@ -9,16 +9,19 @@
   <packaging>pom</packaging>
   <name>OpenNMS Complex Dependencies</name>
   <modules>
-    <module>opennms-acegi</module>
     <module>opennms-drools</module>
     <module>opennms-hibernate</module>
     <module>opennms-spring</module>
     <module>opennms-spring-web</module>
-    <module>opennms-spring-test</module>
+    <module>opennms-spring-security</module>
     <module>opennms-jersey</module>
     <module>opennms-mina</module>
+    <module>opennms-spring-test</module>
+    <module>opennms-spring-security-test</module>
   </modules>
   <properties>
     <springVersion>2.5.6</springVersion>
+    <springSecurityVersion>2.0.4</springSecurityVersion>
+    <springLdapVersion>1.2.1</springLdapVersion>
   </properties>
 </project>

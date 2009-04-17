@@ -29,37 +29,39 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.acegisecurity;
+package org.opennms.web.springframework.security;
 
-import static org.easymock.EasyMock.*;
-
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.opennms.test.ThrowableAnticipator;
-import org.opennms.web.acegisecurity.OpenNMSUserDaoImpl;
-import org.opennms.web.acegisecurity.User;
-import org.opennms.web.acegisecurity.UserDao;
-
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import junit.framework.TestCase;
+
+import org.opennms.test.ThrowableAnticipator;
+import org.opennms.web.springframework.security.OpenNMSUserDetailsService;
+import org.opennms.web.springframework.security.User;
+import org.opennms.web.springframework.security.UserDao;
+import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.userdetails.UsernameNotFoundException;
 
 public class OpenNMSUserDaoImplTest extends TestCase {
 	
 	public void testDaoSetter() {
 		UserDao userDao = createMock(UserDao.class);
-		OpenNMSUserDaoImpl dao = new OpenNMSUserDaoImpl();
+		OpenNMSUserDetailsService dao = new OpenNMSUserDetailsService();
 		
 		dao.setUserDao(userDao);
 	}
 	
 	public void testDaoGetter() {
 		UserDao userDao = createMock(UserDao.class);
-		OpenNMSUserDaoImpl dao = new OpenNMSUserDaoImpl();
+		OpenNMSUserDetailsService dao = new OpenNMSUserDetailsService();
 		dao.setUserDao(userDao);
 		assertEquals("getUsersDao returned what we passed to setUsersDao", userDao, dao.getUserDao());
 	}
 	
 	public void testLoadUserWithoutDao() {
-		OpenNMSUserDaoImpl dao = new OpenNMSUserDaoImpl();
+		OpenNMSUserDetailsService dao = new OpenNMSUserDetailsService();
 		ThrowableAnticipator ta = new ThrowableAnticipator();
 		ta.anticipate(new IllegalStateException("usersDao parameter must be set to a UsersDao bean"));
 		try {
@@ -72,7 +74,7 @@ public class OpenNMSUserDaoImplTest extends TestCase {
 	
 	public void testGetUser() {
 		UserDao userDao = createMock(UserDao.class);
-		OpenNMSUserDaoImpl dao = new OpenNMSUserDaoImpl();
+		OpenNMSUserDetailsService dao = new OpenNMSUserDetailsService();
 		dao.setUserDao(userDao);
 		
 		User user = new User();
@@ -90,7 +92,7 @@ public class OpenNMSUserDaoImplTest extends TestCase {
 	
 	public void testGetUnknownUser() {
 		UserDao userDao = createMock(UserDao.class);
-		OpenNMSUserDaoImpl dao = new OpenNMSUserDaoImpl();
+		OpenNMSUserDetailsService dao = new OpenNMSUserDetailsService();
 		dao.setUserDao(userDao);
 		
 		expect(userDao.getByUsername("test_user")).andReturn(null);

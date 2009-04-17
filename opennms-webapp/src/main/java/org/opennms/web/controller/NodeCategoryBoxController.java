@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.acegisecurity.Authentication;
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

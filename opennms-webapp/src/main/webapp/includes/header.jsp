@@ -117,7 +117,7 @@
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
 						User: <a href="account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-						- <a href="j_acegi_logout">Log out</a><br/>
+						- <a href="j_spring_security_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>
 						User: &hellip;<br/>

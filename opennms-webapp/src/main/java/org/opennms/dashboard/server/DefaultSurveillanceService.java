@@ -43,10 +43,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 import org.apache.log4j.Category;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
@@ -84,6 +80,10 @@ import org.opennms.web.svclayer.support.RtcNodeModel;
 import org.opennms.web.svclayer.support.RtcNodeModel.RtcNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContext;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -341,7 +341,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     protected boolean isDashboardRole() {
         boolean isDashboardRole = true;
         SecurityContext context = SecurityContextHolder.getContext();
-        if((context != null) && !(context.toString().contains(org.opennms.web.acegisecurity.Authentication.DASHBOARD_ROLE))) {
+        if((context != null) && !(context.toString().contains(org.opennms.web.springframework.security.Authentication.DASHBOARD_ROLE))) {
             isDashboardRole = false;
         }
         log().debug("User " + getUsername() + " is in dashboard role? " + isDashboardRole);
