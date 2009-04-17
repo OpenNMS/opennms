@@ -111,7 +111,7 @@ public class InventoryService implements InitializingBean {
         log().debug("getRancidNodeBase start for nodeid: " + nodeid);
         Map<String, Object> nodeModel = new TreeMap<String, Object>();
 
-        
+        nodeModel.put("RWSStatus","OK");
         OnmsNode node = m_nodeDao.get(nodeid);
         String rancidName = node.getLabel();
         
@@ -162,8 +162,9 @@ public class InventoryService implements InitializingBean {
         RWSResourceList groups;
         try {
             groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
-        } catch (RancidApiException e1) {
-            log().error(e1.getLocalizedMessage());
+        } catch (RancidApiException e) {
+            log().error(e.getLocalizedMessage());
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
             return nodeModel;
         }
             
@@ -185,19 +186,26 @@ public class InventoryService implements InitializingBean {
                     nodeModel.put("comment", rn.getComment());
                     nodeModel.put("groupname", groupname);
                     first = false;
-                } 
-                RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
-                String vs = rn.getHeadRevision();
-                InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
+                }
+                try {
+                    RancidNode rn = RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupname, rancidName);
+                    String vs = rn.getHeadRevision();
+                    InventoryNode in = (InventoryNode)rn.getNodeVersions().get(vs);
 
-                RancidNodeWrapper rnw = new RancidNodeWrapper(rn.getDeviceName(), groupname, rn.getDeviceType(), rn.getComment(), rn.getHeadRevision(),
-                  rn.getTotalRevisions(), in.getCreationDate(), rn.getRootConfigurationUrl());
+                    RancidNodeWrapper rnw = new RancidNodeWrapper(rn.getDeviceName(), groupname, rn.getDeviceType(), rn.getComment(), rn.getHeadRevision(),
+                      rn.getTotalRevisions(), in.getCreationDate(), rn.getRootConfigurationUrl());
 
-                ranlist.add(rnw); 
-                
-            }
-            catch (RancidApiException e){
-                log().debug("No device found in router.db for nodeid:" + nodeid  + " on Group: " + groupname + " .Cause: " + e.getLocalizedMessage());
+                    ranlist.add(rnw); 
+                } catch (RancidApiException e) {
+                    log().debug("No configuration found for nodeid:" + nodeid  + " on Group: " + groupname + " .Cause: " + e.getLocalizedMessage());                    
+                }
+            } catch (RancidApiException e){
+                if (e.getRancidCode() == 2) {
+                    log().debug("No device found in router.db for nodeid:" + nodeid  + " on Group: " + groupname + " .Cause: " + e.getLocalizedMessage());
+                } else {
+                    nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                    log().error(e.getLocalizedMessage());
+                }
             }
         }
             
@@ -208,8 +216,13 @@ public class InventoryService implements InitializingBean {
         try {
             RWSBucket bucket = RWSClientApi.getBucket(m_cp, rancidName);
             bucketlist.addAll(bucket.getBucketItem());
-        } catch (RancidApiException e) {
-            log().debug("No bucket found for nodeid:" + nodeid  + " nodeLabel: " + rancidName + " .Cause: " + e.getLocalizedMessage());
+        } catch (RancidApiException e) {            
+            if (e.getRancidCode() == 2) {
+                log().debug("No entry in storage for nodeid:" + nodeid  + " nodeLabel: " + rancidName);
+            } else {
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                log().error(e.getLocalizedMessage());
+            }
         }
         
         nodeModel.put("bucketitems", bucketlist);        
@@ -217,27 +230,31 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     }
 
-    public Map<String, Object> getBuckets(int nodeid,boolean isAdmin) {
+    public Map<String, Object> getBuckets(int nodeid) {
         log().debug("getBuckets start: nodeid: " + nodeid);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
         String rancidName = (String)nodeModel.get("id"); 
 
         List<BucketItem> bucketlist = new ArrayList<BucketItem>();
-        if (isAdmin) {
-            try {
-                RWSBucket bucket = RWSClientApi.getBucket(m_cp, rancidName);
-                bucketlist.addAll(bucket.getBucketItem());
-            } catch (RancidApiException e) {
-                log().debug("No bucket found for nodeid:" + nodeid  + " nodeLabel: " + rancidName + " .Cause: " + e.getLocalizedMessage());
+        try {
+            RWSBucket bucket = RWSClientApi.getBucket(m_cp, rancidName);
+            nodeModel.put("bucketexist", true);
+            bucketlist.addAll(bucket.getBucketItem());
+        } catch (RancidApiException e) {
+            if (e.getRancidCode() == 2) {
+                nodeModel.put("bucketexist", false);
+                log().debug("No entry in storage for nodeid:" + nodeid  + " nodeLabel: " + rancidName);
+            } else {
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                log().error(e.getLocalizedMessage());
             }
-            
-            nodeModel.put("bucketitems", bucketlist);        
-        }
+        }            
+        nodeModel.put("bucketitems", bucketlist);        
         return nodeModel;        
     }
     
     public Map<String, Object> getRancidNodeList(int nodeid) {
-        log().debug("getRancidlist start: nodeid: " + nodeid);
+        log().debug("getRancidNodelist start: nodeid: " + nodeid);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
         String rancidName = (String)nodeModel.get("id"); 
 
@@ -246,6 +263,7 @@ public class InventoryService implements InitializingBean {
         try {
             groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
         } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
             log().error(e.getLocalizedMessage());
             return nodeModel;
         }
@@ -282,7 +300,12 @@ public class InventoryService implements InitializingBean {
                     ranlist.add(inwr);
                 }
             } catch (RancidApiException e) {
-                log().error(e.getLocalizedMessage());
+                if (e.getRancidCode() == 2) {
+                    log().debug("No Inventory found in CVS repository for nodeid:" + nodeid  + " nodeLabel: " + rancidName);
+                } else {
+                    nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                    log().error(e.getLocalizedMessage());
+                }
             }
         }
             
@@ -305,7 +328,12 @@ public class InventoryService implements InitializingBean {
             rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, group, rancidName);
             nodeModel.put("devicename", rn.getDeviceName());
         } catch (RancidApiException e) {
-            log().error(e.getLocalizedMessage());
+            if (e.getRancidCode() == 2) {
+                log().debug("No Inventory found in CVS repository for nodeid:" + nodeid  + " nodeLabel: " + rancidName);
+            } else {
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                log().error(e.getLocalizedMessage());
+            }
             return nodeModel;
         }
 
@@ -315,6 +343,7 @@ public class InventoryService implements InitializingBean {
         try {
             versionList = RWSClientApi.getRWSResourceConfigList(m_cp, group, rancidName);
         } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
             log().error(e.getLocalizedMessage());
             return nodeModel;
         }
@@ -373,7 +402,12 @@ public class InventoryService implements InitializingBean {
             nodeModel.put("inventory",ie);
             
         } catch (RancidApiException e) {
-            log().error(e.getLocalizedMessage());
+            if (e.getRancidCode() == 2) {
+                log().debug("No Inventory found in CVS repository for nodeid:" + nodeid  + " nodeLabel: " + rancidName);
+            } else {
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                log().error(e.getLocalizedMessage());
+            }
         }
         return nodeModel;
     }
@@ -388,8 +422,9 @@ public class InventoryService implements InitializingBean {
         RWSResourceList groups;
         try {
             groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
-        } catch (RancidApiException e1) {
-            log().error(e1.getLocalizedMessage());
+        } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
+            log().error(e.getLocalizedMessage());
             return nodeModel;
         }
 
@@ -400,8 +435,9 @@ public class InventoryService implements InitializingBean {
         RWSResourceList devicetypes;
         try {
             devicetypes = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp);
-        } catch (RancidApiException e1) {
-            log().error(e1.getLocalizedMessage());
+        } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
+            log().error(e.getLocalizedMessage());
             return nodeModel;
         }
 
@@ -419,8 +455,14 @@ public class InventoryService implements InitializingBean {
             nodeModel.put("deviceexist", true);
         }
         catch (RancidApiException e){
+            if (e.getRancidCode() == 2) {
             nodeModel.put("deviceexist", false);
-            log().debug("No device found in router.db for:" + rancidName + "on Group: " + group);
+                log().debug("No device found in router.db for:" + rancidName + "on Group: " + group);
+            } else {
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                log().error(e.getLocalizedMessage());               
+                return nodeModel;
+            }
         }
 
         if (adminRole) {
@@ -439,6 +481,7 @@ public class InventoryService implements InitializingBean {
                 }
                 nodeModel.put("cloginautoenable", autoen);
             }catch (RancidApiException e){
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
                 log().error("getRancidNode: clogin get failed with reason: " + e.getLocalizedMessage());
             }
         }
@@ -459,8 +502,9 @@ public class InventoryService implements InitializingBean {
         RWSResourceList groups;
         try {
             groups = RWSClientApi.getRWSResourceGroupsList(m_cp);
-        } catch (RancidApiException e1) {
-            log().error(e1.getLocalizedMessage());
+        } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
+            log().error(e.getLocalizedMessage());
             return nodeModel;
         }
             
@@ -481,10 +525,15 @@ public class InventoryService implements InitializingBean {
                 nodeModel.put("comment", rn.getComment());
                 nodeModel.put("groupname", groupname);
                 nodeModel.put("deviceexist", true);
-            }
-            catch (RancidApiException e){
-                nodeModel.put("deviceexist", false);
-                log().debug("No device found in router.db for:" + rancidName + "on Group: " + groupname);
+            } catch (RancidApiException e){
+                if (e.getRancidCode() == 2) {
+                    nodeModel.put("deviceexist", false);
+                    log().debug("No device found in router.db for:" + rancidName + "on Group: " + groupname);
+                } else {
+                    nodeModel.put("RWSStatus",e.getLocalizedMessage());
+                    log().error(e.getLocalizedMessage());               
+                    return nodeModel;
+                }
             }
         }
                    
@@ -492,8 +541,9 @@ public class InventoryService implements InitializingBean {
         RWSResourceList devicetypes;
         try {
             devicetypes = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp);
-        } catch (RancidApiException e1) {
-            log().error(e1.getLocalizedMessage());
+        } catch (RancidApiException e) {
+            nodeModel.put("RWSStatus",e.getLocalizedMessage());
+            log().error(e.getLocalizedMessage());
             return nodeModel;
         }
 
@@ -517,6 +567,7 @@ public class InventoryService implements InitializingBean {
                 }
                 nodeModel.put("cloginautoenable", autoen);
             }catch (RancidApiException e){
+                nodeModel.put("RWSStatus",e.getLocalizedMessage());
                 log().error("getRancidNode: clogin get failed with reason: " + e.getLocalizedMessage());
             }
         }
@@ -668,7 +719,7 @@ public class InventoryService implements InitializingBean {
     public boolean deleteBucket(String bucket){
         log().debug("InventoryService deleteBucket for bucket [" + bucket + "]/ "); 
         try {
-          RWSClientApi.deleteBucket(m_cp, bucket);
+          RWSClientApi.forceDeleteBucket(m_cp, bucket);
           log().debug("InventoryService ModelAndView deleteBucket changes submitted");
         }
         catch (Exception e){
@@ -678,7 +729,19 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
-    
+    public boolean createBucket(String bucket){
+        log().debug("InventoryService createBucket for bucket [" + bucket + "]/ "); 
+        try {
+          RWSClientApi.createBucket(m_cp, bucket);
+          log().debug("InventoryService ModelAndView createBucket changes submitted");
+        }
+        catch (Exception e){
+            log().debug("createBucket has given exception on node "  + bucket + " "+ e.getMessage() );
+            return false;
+        }
+        return true;
+    }
+
     private static Category log() {
         return Logger.getLogger("Rancid");
     }

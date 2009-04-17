@@ -51,6 +51,13 @@
 
 <h2> Node: ${model.id} </h2>
 
+<h3>RWS status</h3>
+<table class="o-box">
+		<tr>
+	  		<td>${model.RWSStatus}</td>
+	  	</tr>
+</table>
+
 <!-- Elements box -->
 <h3>Associated Elements</h3>
 

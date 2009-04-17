@@ -40,7 +40,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
                 log().debug("AdminStorageDeleteBucketItemController ModelAndView onSubmit error while deleting status for: "+ bucket);
             }
      }
-        Map<String, Object> model  = m_inventoryService.getBuckets(nodeid,request.isUserInRole(Authentication.ADMIN_ROLE));
+        Map<String, Object> model  = m_inventoryService.getBuckets(nodeid);
         ModelAndView modelAndView = new ModelAndView("admin/storage/storageAdmin","model",model);
         return modelAndView;
     }
