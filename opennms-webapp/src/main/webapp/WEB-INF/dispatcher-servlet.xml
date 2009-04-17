@@ -600,6 +600,13 @@
     <property name="inventoryService" ref="inventoryService"/>
   </bean>        
   
+  <bean name="/admin/storage/storageCreateBucket.htm" class="org.opennms.web.controller.inventory.AdminStorageCreateBucketController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.AdminStorageCommClass"/>
+    <property name="formView" value="admin/storage/storageAdmin"/>
+    <property name="successView" value="admin/storage/storageAdmin"/> 
+  </bean>  
+
   <bean name="/admin/storage/storageDeleteBucket.htm" class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketController">
     <property name="inventoryService" ref="inventoryService"/>
     <property name="commandClass" value="org.opennms.web.controller.inventory.AdminStorageCommClass"/>

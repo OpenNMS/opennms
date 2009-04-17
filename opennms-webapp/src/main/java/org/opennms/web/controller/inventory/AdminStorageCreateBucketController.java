@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.web.springframework.security.Authentication;
+import org.opennms.web.acegisecurity.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
-public class AdminStorageDeleteBucketController extends SimpleFormController {
+public class AdminStorageCreateBucketController extends SimpleFormController {
 
     InventoryService m_inventoryService;
         
@@ -31,16 +31,16 @@ public class AdminStorageDeleteBucketController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit");
+        log().debug("AdminStorageCreateBucketController ModelAndView onSubmit");
 
         AdminStorageCommClass bean = (AdminStorageCommClass) command;
                        
-        log().debug("AdminStorageDeleteBucketController ModelAndView onSubmit delete bucket["+ bean.getBucket() + "]");
+        log().debug("AdminStorageCreateBucketController ModelAndView onSubmit Create bucket["+ bean.getBucket() + "]");
         if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
 
-        boolean done = m_inventoryService.deleteBucket(bean.getBucket());
+        boolean done = m_inventoryService.createBucket(bean.getBucket());
         if (!done){
-            log().error("AdminStorageDeleteBucketController ModelAndView onSubmit error while deleting status for: "+ bean.getBucket());
+            log().error("AdminStorageCreateBucketController ModelAndView onSubmit error while deleting status for: "+ bean.getBucket());
         }
         }
         String redirectURL = request.getHeader("Referer");
@@ -50,7 +50,7 @@ public class AdminStorageDeleteBucketController extends SimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
-        log().debug("AdminStorageDeleteBucketController initBinder");
+        log().debug("AdminStorageCreateBucketController initBinder");
     }
     
     private static Category log() {
