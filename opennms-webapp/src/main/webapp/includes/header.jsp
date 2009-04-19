@@ -91,6 +91,11 @@
   		<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>
   		<script type='text/javascript' src='extJS/ext-all-debug.js'></script>
 	</c:if>
+
+	<c:if test="${param.storageAdmin == 'true'}">
+  		<script type='text/javascript' src='js/rwsStorage.js'></script>
+	</c:if>
+
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
