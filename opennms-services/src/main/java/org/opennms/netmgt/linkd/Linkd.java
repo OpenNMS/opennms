@@ -496,47 +496,21 @@ public class Linkd extends AbstractServiceDaemon {
 	}
 
 	LinkableNode getNode(int nodeid) {
-		synchronized (nodes) {
-			Iterator<LinkableNode> ite = nodes.iterator();
-			while (ite.hasNext()) {
-				LinkableNode node = ite.next();
-				if (node.getNodeId() == nodeid) return node;
-			}
+		for (LinkableNode node : nodes) {
+			if (node.getNodeId() == nodeid) return node;
 		}
 		return null;
 	}
 
 	LinkableNode getNode(String ipaddr) {
-		
-		synchronized (nodes) {
-			Iterator<LinkableNode> ite = nodes.iterator();
-			while (ite.hasNext()) {
-				LinkableNode node = ite.next();
-				if (node.getSnmpPrimaryIpAddr().equals(ipaddr)) return node;
-			}
+		for (LinkableNode node : nodes) {
+			if (node.getSnmpPrimaryIpAddr().equals(ipaddr)) return node;
 		}
 		return null;
 	}
 	
 
 	private LinkableNode removeNode(int nodeid) {
-		List<LinkableNode> nodeses = new ArrayList<LinkableNode>();
-		LinkableNode node = null;
-		synchronized (nodes) {
-			Iterator<LinkableNode> ite = nodes.iterator();
-			while (ite.hasNext()) {
-				 LinkableNode curNode = ite.next();
-				if (curNode.getNodeId() == nodeid) node=curNode;
-				else nodeses.add(curNode);
-			}
-			nodes = nodeses;
-		}
-		return node;
-	}
-
-	private LinkableNode removeNode(String ipaddr) {
-		List<LinkableNode> nodeses = new ArrayList<LinkableNode>();
-		LinkableNode node = null;
 		if (nodes == null) {
 			log().debug("removeNode: nodes is null");
 			return null;
@@ -544,13 +518,32 @@ public class Linkd extends AbstractServiceDaemon {
 		synchronized (nodes) {
 			Iterator<LinkableNode> ite = nodes.iterator();
 			while (ite.hasNext()) {
-				 LinkableNode curNode = ite.next();
-				if (curNode.getSnmpPrimaryIpAddr().equals(ipaddr)) node=curNode;
-				else nodeses.add(curNode);
+				LinkableNode curNode = ite.next();
+				if (curNode.getNodeId() == nodeid) {
+					ite.remove();
+					return curNode;
+				}
 			}
-			nodes = nodeses;
 		}
-		return node;
+		return null;
+	}
+
+	private LinkableNode removeNode(String ipaddr) {
+		if (nodes == null) {
+			log().debug("removeNode: nodes is null");
+			return null;
+		}
+		synchronized (nodes) {
+			Iterator<LinkableNode> ite = nodes.iterator();
+			while (ite.hasNext()) {
+				LinkableNode curNode = ite.next();
+				if (curNode.getSnmpPrimaryIpAddr().equals(ipaddr)) {
+					ite.remove();
+					return curNode;
+				}
+			}
+		}
+		return null;
 	}
 	
     public void setQueryManager(QueryManager queryMgr) {
