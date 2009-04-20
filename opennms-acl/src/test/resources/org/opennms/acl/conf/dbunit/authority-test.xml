@@ -1,4 +1,4 @@
-<!DOCTYPE dataset SYSTEM "src/test/java/org/opennms/acl/conf/dbunit/database-schema.dtd">
+<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
 <dataset>
   <authorities name="goo" id="14" mask="0" group_id="1"/>
   <authorities name="uno" id="16" mask="0" group_id="1"/>

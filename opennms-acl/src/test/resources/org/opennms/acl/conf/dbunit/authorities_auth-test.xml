@@ -1,4 +1,4 @@
-<!DOCTYPE dataset SYSTEM "src/test/java/org/opennms/acl/conf/dbunit/database-schema.dtd">
+<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
 <dataset>
   <authorities_authentication username="max" authority="ROLE_ADMIN" id="37"/>
   <authorities_authentication username="max" authority="tre" id="38"/>

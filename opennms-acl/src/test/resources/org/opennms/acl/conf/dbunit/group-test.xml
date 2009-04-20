@@ -1,4 +1,4 @@
-<!DOCTYPE dataset SYSTEM "src/test/java/org/opennms/acl/conf/dbunit/database-schema.dtd">
+<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
 <dataset>
   <groups group_name="GROUP_ADMIN" id="1"/>
   <groups group_name="GROUP_USER"  id="2"/>
