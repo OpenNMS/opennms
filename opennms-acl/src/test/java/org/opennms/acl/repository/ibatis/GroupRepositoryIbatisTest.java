@@ -78,7 +78,7 @@ public class GroupRepositoryIbatisTest {
     @Test
     public void getFreeGroups() {
         assertNotNull(repo.getFreeGroups("paperone"));
-        assertTrue(repo.getFreeGroups("paperone").size() == 2);
+        assertTrue(repo.getFreeGroups("paperone").size() == 3);
     }
 
     @Test

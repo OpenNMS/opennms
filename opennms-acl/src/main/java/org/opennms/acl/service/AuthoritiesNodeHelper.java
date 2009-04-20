@@ -52,75 +52,78 @@ import edu.emory.mathcs.backport.java.util.Collections;
 /* This class retrieve the nodes that an authority can view */
 class AuthoritiesNodeHelper {
 
-    public AuthoritiesNodeHelper(List<AuthorityDTO> authorities) {
+	public AuthoritiesNodeHelper(List<AuthorityDTO> authorities) {
 
-        authItemsMap = new HashMap<String, Set<Integer>>();
-        itemsSet = new HashSet<Integer>();
-        if (authorities != null && authorities.size() > 0) {
-            for (AuthorityDTO authority : authorities) {
-                if (authority.hasItems()) {
-                    addAuthorityWithNodes(authority);
-                }
-            }
-        }
-    }
+		authItemsMap = new HashMap<String, Set<Integer>>();
+		itemsSet = new HashSet<Integer>();
+		if (authorities != null && authorities.size() > 0) {
+			for (AuthorityDTO authority : authorities) {
+				if (authority.hasItems()) {
+					addAuthorityWithNodes(authority);
+				}
+			}
+		}
+	}
 
-    public Boolean deleteAuthority(String authority) {
-        return authItemsMap.remove(authority) != null;
-    }
+	public Boolean deleteAuthority(String authority) {
+		return authItemsMap.remove(authority) != null;
+	}
 
-    public synchronized Boolean deleteItem(Integer id) {
+	public synchronized Boolean deleteItem(Integer id) {
 
-        Set<String> keys = authItemsMap.keySet();
-        for (String key : keys) {
-            authItemsMap.get(key).remove(id);
-        }
-        return itemsSet.remove(id);
-    }
+		Set<String> keys = authItemsMap.keySet();
+		for (String key : keys) {
+			authItemsMap.get(key).remove(id);
+		}
+		return itemsSet.remove(id);
+	}
 
-    @SuppressWarnings("unchecked")
-    public Set<String> getAuthorities() {
-        return Collections.unmodifiableSet(authItemsMap.keySet());
-    }
+	@SuppressWarnings("unchecked")
+	public Set<String> getAuthorities() {
+		return Collections.unmodifiableSet(authItemsMap.keySet());
+	}
 
-    // TODO put in a cache
-    public Set<Integer> getAuthoritiesItems(Set<AuthorityView> authorities) {
-        Set<Integer> authItems = new HashSet<Integer>();
-        for (AuthorityView auth : authorities) {
-            if (authItemsMap.containsKey(auth.getName())) {
-                authItems.addAll(new HashSet<Integer>(authItemsMap.get(auth.getName())));
-            }
-        }
-        return authItems;
-    }
+	// TODO put in a cache
+	public Set<Integer> getAuthoritiesItems(Set<AuthorityView> authorities) {
+		Set<Integer> authItems = new HashSet<Integer>();
+		for (AuthorityView auth : authorities) {
+			if (authItemsMap.containsKey(auth.getName())) {
+				authItems.addAll(new HashSet<Integer>(authItemsMap.get(auth
+						.getName())));
+			}
+		}
+		return authItems;
+	}
 
-    @SuppressWarnings("unchecked")
-    private void addAuthorityWithNodes(AuthorityDTO authority) {
+	@SuppressWarnings("unchecked")
+	public void addAuthorityWithNodes(AuthorityDTO authority) {
 
-        if (authItemsMap.containsKey(authority.getName())) {
+		if (authItemsMap.containsKey(authority.getName())) {
 
-            Set<Integer> oldItems = authItemsMap.get(authority.getName());
-            Set<Integer> itemsNew = createFreshAuthorityItems((List<String>) authority.getItems());
-            itemsSet.addAll(itemsNew);
-            oldItems.addAll(itemsNew);
-            authItemsMap.put(authority.getName(), oldItems);
+			Set<Integer> oldItems = authItemsMap.get(authority.getName());
+			Set<Integer> itemsNew = createFreshAuthorityItems((List<String>) authority
+					.getItems());
+			itemsSet.addAll(itemsNew);
+			oldItems.addAll(itemsNew);
+			authItemsMap.put(authority.getName(), oldItems);
 
-        } else {
+		} else {
 
-            Set<Integer> itemsNew = createFreshAuthorityItems((List<String>) authority.getItems());
-            itemsSet.addAll(itemsNew);
-            authItemsMap.put(authority.getName(), itemsNew);
-        }
-    }
+			Set<Integer> itemsNew = createFreshAuthorityItems((List<String>) authority
+					.getItems());
+			itemsSet.addAll(itemsNew);
+			authItemsMap.put(authority.getName(), itemsNew);
+		}
+	}
 
-    private Set<Integer> createFreshAuthorityItems(List<String> list) {
-        Set<Integer> authItems = new HashSet<Integer>();
-        for (String nodeONMSDTO : list) {
-            authItems.add(new Integer(nodeONMSDTO));
-        }
-        return authItems;
-    }
+	private Set<Integer> createFreshAuthorityItems(List<String> list) {
+		Set<Integer> authItems = new HashSet<Integer>();
+		for (String nodeONMSDTO : list) {
+			authItems.add(new Integer(nodeONMSDTO));
+		}
+		return authItems;
+	}
 
-    private Map<String, Set<Integer>> authItemsMap;
-    private Set<Integer> itemsSet;
+	private Map<String, Set<Integer>> authItemsMap;
+	private Set<Integer> itemsSet;
 }

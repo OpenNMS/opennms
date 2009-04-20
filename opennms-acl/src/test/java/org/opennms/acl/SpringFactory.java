@@ -9,7 +9,7 @@ public class SpringFactory {
 
     public static void setUpXmlWebApplicationContext() {
         if (xmlWebCtx == null) {
-            ServletContext servletContext = new MockServletContext("file:src/test/java/org/opennms/acl/conf/");
+            ServletContext servletContext = new MockServletContext("file:src/test/resources/org/opennms/acl/conf/");
             String[] paths = { "acl-context.xml" };
             xmlWebCtx = new XmlWebApplicationContext();
             xmlWebCtx.setConfigLocations(paths);
