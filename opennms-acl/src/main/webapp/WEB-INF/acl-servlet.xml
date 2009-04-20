@@ -1,0 +1,51 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <context:component-scan base-package="org.opennms.acl"/>
+    <context:annotation-config/>
+	
+	 <bean name="urlMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="userFactoryInterceptor"/> 
+                <ref bean="authoritiesFactoryInterceptor"/>  
+                <ref bean="groupFactoryInterceptor"/> 
+            </list>
+        </property>
+    </bean>
+    
+    <bean name="userFactoryInterceptor" class="org.opennms.acl.ui.interceptor.UserInterceptor"/>
+    <bean name="authoritiesFactoryInterceptor" class="org.opennms.acl.ui.interceptor.AuthorityInterceptor"/>
+     <bean name="groupFactoryInterceptor" class="org.opennms.acl.ui.interceptor.GroupInterceptor"/>
+
+     <!-- M E S S A G E S  -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" 
+        p:basename="org.opennms.acl.ui.messages.ui"/>
+        
+    <!-- V I E W  R E S O L V E R -->
+    <bean name="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+        p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="WEB-INF/jsp/" p:suffix=".jsp"/>
+
+<!-- E X C E P T I O N S -->
+<!--
+	<bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">errors/exception</prop>
+				<prop key="java.lang.IllegalArgumentException">errors/index</prop>
+				<prop key="java.lang.IndexOutOfBoundsException">errors/index</prop>
+				<prop key="java.sql.SQLException">errors/databaseProblem</prop>
+				<prop key="org.springframework.jdbc.CannotGetJdbcConnectionException">errors/dbDown</prop>
+				<prop key="org.springframework.dao.DataIntegrityViolationException">errors/duplicatedUsers</prop>
+				<prop key="org.springframework.transaction.CannotCreateTransactionException">errors/dbWrongCredentials</prop>
+			</props>
+		</property>
+	</bean>-->
+
+</beans>

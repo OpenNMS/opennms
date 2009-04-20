@@ -1,0 +1,81 @@
+<!ELEMENT dataset (
+    acl_class*,
+    acl_entry*,
+    acl_object_identity*,
+    acl_sid*,
+    authentication*,
+    authorities*,
+    authorities_items*,
+    groups*,
+    group_members*)>
+
+<!ELEMENT acl_class EMPTY>
+<!ATTLIST acl_class
+    id CDATA #REQUIRED
+    class CDATA #REQUIRED
+>
+
+<!ELEMENT acl_entry EMPTY>
+<!ATTLIST acl_entry
+    id CDATA #REQUIRED
+    acl_object_identity CDATA #REQUIRED
+    ace_order CDATA #REQUIRED
+    sid CDATA #REQUIRED
+    mask CDATA #REQUIRED
+    granting CDATA #REQUIRED
+    audit_success CDATA #REQUIRED
+    audit_failure CDATA #REQUIRED
+>
+
+<!ELEMENT acl_object_identity EMPTY>
+<!ATTLIST acl_object_identity
+    id CDATA #REQUIRED
+    object_id_class CDATA #REQUIRED
+    object_id_identity CDATA #REQUIRED
+    parent_object CDATA #IMPLIED
+    owner_sid CDATA #IMPLIED
+    entries_inheriting CDATA #REQUIRED
+>
+
+<!ELEMENT acl_sid EMPTY>
+<!ATTLIST acl_sid
+    id CDATA #REQUIRED
+    principal CDATA #REQUIRED
+    sid CDATA #REQUIRED
+>
+
+<!ELEMENT authentication EMPTY>
+<!ATTLIST authentication
+    username CDATA #REQUIRED
+    password CDATA #REQUIRED
+    enabled CDATA #IMPLIED
+    id CDATA #REQUIRED
+>
+
+<!ELEMENT authorities EMPTY>
+<!ATTLIST authorities
+    name CDATA #REQUIRED
+    id CDATA #REQUIRED
+    description CDATA #IMPLIED
+    group_id CDATA #IMPLIED
+>
+
+
+<!ELEMENT authorities_items EMPTY>
+<!ATTLIST authorities_items
+    id_acl_class CDATA #REQUIRED
+    id_authority CDATA #REQUIRED
+>
+
+<!ELEMENT groups EMPTY>
+<!ATTLIST groups
+    id CDATA #REQUIRED
+    group_name CDATA #REQUIRED
+>
+
+<!ELEMENT group_members EMPTY>
+<!ATTLIST group_members
+    group_id CDATA #REQUIRED
+    username CDATA #REQUIRED
+>
+
