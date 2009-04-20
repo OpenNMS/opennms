@@ -57,6 +57,8 @@
         <value>org.opennms.netmgt.model.OnmsMapElement</value>
         <value>org.opennms.netmgt.model.DataLinkInterface</value>
         <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
+        <value>org.opennms.netmgt.model.OnmsUser</value>
+        <value>org.opennms.netmgt.model.OnmsGroup</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
@@ -145,7 +147,16 @@
   <bean id="userNotificationDao" class="org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+  
+  <bean id="userDao" class="org.opennms.netmgt.dao.hibernate.UserDaoHibernate" >
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
 
+ 
+  <bean id="groupDao" class="org.opennms.netmgt.dao.hibernate.GroupDaoHibernate" >
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
   <bean id="applicationDao" class="org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -274,5 +285,5 @@
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
   </bean>
-  
+
 </beans>
