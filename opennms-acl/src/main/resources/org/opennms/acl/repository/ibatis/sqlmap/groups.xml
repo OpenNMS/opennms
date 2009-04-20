@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+
+	<cacheModel id="group-cache" type="LRU">
+		<flushInterval minutes="60" />
+		<flushOnExecute statement="deleteGroup" />
+		<flushOnExecute statement="updateGroup" />
+		<flushOnExecute statement="updateGroupName" />
+		<flushOnExecute statement="updateAuthorityToGroupToHidden" />
+		<flushOnExecute statement="insertGroup" />
+		<flushOnExecute statement="insertUserItem" />
+		<flushOnExecute statement="deleteUserItems" />
+		<flushOnExecute statement="insertGroupUser" />
+		<property name="cache-size" value="50" />
+	</cacheModel>
+
+	<typeAlias type="org.opennms.acl.model.GroupDTO" alias="group" />
+
+	<resultMap class="group" id="resultGroup">
+		<result column="id" property="id" jdbcType="BIGINT" />
+		<result column="group_name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap class="group" id="resultGroupComplete" extends="resultGroup">
+        <result column="id" property="authorities" select="getGroupAuthorities" javaType="list" />        
+    </resultMap>
+
+
+	<!--  S E L E C T -->
+
+	<select id="getGroup" parameterClass="int" resultMap="resultGroup" cacheModel="group-cache">
+		SELECT id, group_name
+		FROM groups
+		WHERE id = #id:BIGINT#
+		AND id > 0;
+    </select>
+        
+    <select id="getFreeGroups" resultMap="resultGroup" cacheModel="group-cache">
+    SELECT DISTINCT groups.id, groups.group_name
+    FROM groups, group_members
+    WHERE groups.id NOT IN (
+        SELECT group_members.group_id 
+        FROM group_members 
+        WHERE group_members.username = #username:VARCHAR#) 
+    AND groups.id > 0;
+    </select>
+    
+	<select id="getGroupsNumber" resultClass="int" cacheModel="group-cache">
+		SELECT count(*) FROM groups ;
+    </select>
+
+	<select id="getAllGroups" resultMap="resultGroup" cacheModel="group-cache">
+		SELECT id, group_name
+		FROM groups
+		WHERE id > 0
+		ORDER BY group_name, id;
+    </select>
+
+	<select id="getGroups" resultMap="resultGroup" cacheModel="group-cache">
+		SELECT id, group_name
+		FROM groups
+		WHERE id > 0
+		ORDER BY group_name, id
+		LIMIT $limit$ OFFSET $offset$ ;
+    </select>
+
+	<select id="getUserGroups" resultMap="resultGroup" cacheModel="group-cache">
+		SELECT groups.id, groups.group_name
+		FROM groups, group_members
+		WHERE groups.id = group_members.group_id
+		AND group_members.username = #username:VARCHAR# ;
+    </select>
+    
+    <select id="getUserGroupsComplete" resultMap="resultGroupComplete" cacheModel="group-cache">
+        SELECT groups.id, groups.group_name
+        FROM groups, group_members
+        WHERE groups.id = group_members.group_id
+        AND group_members.username = #username:VARCHAR# ;
+    </select>
+
+	<select id="getGroupMembers" resultClass="string" cacheModel="group-cache">
+		SELECT group_members.username
+		FROM group_members
+		WHERE group_members.group_id = #id:BIGINT# ;
+    </select>
+
+
+	<!--  I N S E R T -->
+
+	<insert id="insertGroup" parameterClass="group">
+		<selectKey keyProperty="id" resultClass="int">
+			select nextval('groups_id_seq')
+        </selectKey>
+		INSERT INTO groups (id, group_name)
+		VALUES (#id:INT#, #name:VARCHAR#) ;
+	</insert>
+
+	<insert id="insertGroupUser" parameterClass="map">
+		INSERT INTO group_members (username, group_id)
+		VALUES (#username:VARCHAR#, #id:INT#) ;
+    </insert>
+
+
+	<!--  U P D A T E -->
+
+	<update id="updateGroupName" parameterClass="group">
+		UPDATE groups
+		SET group_name = #name:VARCHAR#
+		WHERE id = #id# ;
+    </update>
+
+	<update id="updateGroup" parameterClass="map">
+		UPDATE groups
+		SET group_id = #groupId:BIGINT#
+		WHERE id = #id:BIGINT# ;
+    </update>
+
+	<!--  D E L E T E  -->
+
+	<delete id="deleteGroup" parameterClass="int">
+		DELETE FROM groups
+		WHERE id = #id:BIGINT# ;
+    </delete>
+
+</sqlMap>
