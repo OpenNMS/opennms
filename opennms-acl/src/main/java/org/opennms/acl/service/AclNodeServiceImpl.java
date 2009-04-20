@@ -40,7 +40,7 @@ import java.util.Set;
 import org.apache.commons.collections.FastArrayList;
 import org.opennms.acl.model.AuthorityDTO;
 import org.opennms.acl.model.AuthorityView;
-import org.opennms.acl.model.NodeONMSDTO;
+import org.opennms.acl.model.CategoryNodeONMSDTO;
 import org.opennms.acl.repository.ItemAclRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,60 +55,66 @@ import org.springframework.stereotype.Service;
 @Service("nodesItemsService")
 public class AclNodeServiceImpl implements AclItemService {
 
-    @SuppressWarnings("unchecked")
-    public void init() {
-        List<AuthorityDTO> authorities = new FastArrayList();
-        for (AuthorityDTO authorityDTO : authorityService.getAuthorities()) {
-            authorityDTO.setItems(authorityService.getIdItemsAuthority(authorityDTO.getId()));
-            if (authorityDTO.hasItems()) {
-                authorities.add(authorityDTO);
-            }
-        }
-        if (authorities.size() > 0) {
-            authItemsHelper = new AuthoritiesNodeHelper(authorities);
-        }
-        ready = true;
-    }
+	@SuppressWarnings("unchecked")
+	public void init() {
+		List<AuthorityDTO> authorities = new FastArrayList();
+		for (AuthorityDTO authorityDTO : authorityService.getAuthorities()) {
+			authorityDTO.setItems(authorityService
+					.getIdItemsAuthority(authorityDTO.getId()));
+			if (authorityDTO.hasItems()) {
+				authorities.add(authorityDTO);
+			}
+		}
+		if (authorities.size() > 0) {
+			authItemsHelper = new AuthoritiesNodeHelper(authorities);
+		}
+		ready = true;
+	}
 
-    public Boolean deleteAuthority(String authority) {
-        return authItemsHelper.deleteAuthority(authority);
-    }
+	public Boolean deleteAuthority(String authority) {
+		return authItemsHelper.deleteAuthority(authority);
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<NodeONMSDTO> getItems() {
-        return (List<NodeONMSDTO>) itemAclRepository.getItems();
-    }
+	@SuppressWarnings("unchecked")
+	public List<CategoryNodeONMSDTO> getItems() {
+		return (List<CategoryNodeONMSDTO>) itemAclRepository.getItems();
+	}
 
-    public Set<Integer> getAclItems(Set<AuthorityView> authorities) {
-        if (!ready)
-            init();
-        return authItemsHelper.getAuthoritiesItems(authorities);
-    }
+	public Set<Integer> getAclItems(Set<AuthorityView> authorities) {
+		if (!ready)
+			init();
+		return authItemsHelper.getAuthoritiesItems(authorities);
+	}
 
-    public Boolean deleteItem(Integer id) {
-        return authItemsHelper.deleteItem(id);
-    }
+	public Boolean deleteItem(Integer id) {
+		return authItemsHelper.deleteItem(id);
+	}
 
-    public List<?> getAuthorityItems(List<Integer> items) {
-        return itemAclRepository.getAuthorityItems(items);
-    }
+	public List<?> getAuthorityItems(List<Integer> items) {
+		return itemAclRepository.getAuthorityItems(items);
+	}
 
-    public List<?> getFreeItems(List<Integer> items) {
-        return itemAclRepository.getFreeItems(items);
-    }
+	public List<?> getFreeItems(List<Integer> items) {
+		return itemAclRepository.getFreeItems(items);
+	}
 
-    @Autowired
-    public void setItemAclRepository(@Qualifier("categoryNodeRepository") ItemAclRepository itemAclRepository) {
-        this.itemAclRepository = itemAclRepository;
-    }
+	public void addAuthority(AuthorityDTO authority) {
+		authItemsHelper.addAuthorityWithNodes(authority);
+	}
 
-    @Autowired
-    public void setAuthorityService(AuthorityService authorityService) {
-        this.authorityService = authorityService;
-    }
+	@Autowired
+	public void setItemAclRepository(
+			@Qualifier("categoryNodeRepository") ItemAclRepository itemAclRepository) {
+		this.itemAclRepository = itemAclRepository;
+	}
 
-    private ItemAclRepository itemAclRepository;
-    private AuthorityService authorityService;
-    private AuthoritiesNodeHelper authItemsHelper;
-    private boolean ready = false;
+	@Autowired
+	public void setAuthorityService(AuthorityService authorityService) {
+		this.authorityService = authorityService;
+	}
+
+	private ItemAclRepository itemAclRepository;
+	private AuthorityService authorityService;
+	private AuthoritiesNodeHelper authItemsHelper;
+	private boolean ready = false;
 }
