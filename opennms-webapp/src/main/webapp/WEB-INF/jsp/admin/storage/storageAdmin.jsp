@@ -207,6 +207,7 @@
     </form>
 	</th>
 	</tr>
+	<c:if test="${model.bucketlistsize == 0 }">
 	<tr>
 	<th >
 	<form id="deleteBucketForm" method="post" name="deleteBucketForm">	
@@ -215,7 +216,7 @@
 		</form>
 		</th>
 	</tr>
-	
+	</c:if>
 	</c:when>
 	<c:otherwise>
 	<tr>
