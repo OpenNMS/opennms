@@ -249,6 +249,7 @@ public class InventoryService implements InitializingBean {
                 log().error(e.getLocalizedMessage());
             }
         }            
+        nodeModel.put("bucketlistsize", bucketlist.size());
         nodeModel.put("bucketitems", bucketlist);        
         return nodeModel;        
     }
@@ -719,7 +720,7 @@ public class InventoryService implements InitializingBean {
     public boolean deleteBucket(String bucket){
         log().debug("InventoryService deleteBucket for bucket [" + bucket + "]/ "); 
         try {
-          RWSClientApi.forceDeleteBucket(m_cp, bucket);
+          RWSClientApi.deleteBucket(m_cp, bucket);
           log().debug("InventoryService ModelAndView deleteBucket changes submitted");
         }
         catch (Exception e){
