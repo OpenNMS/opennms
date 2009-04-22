@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 public class Notifd implements NotifdMBean {
@@ -124,6 +125,7 @@ public class Notifd implements NotifdMBean {
         getNotifd().setDestinationPathManager(DestinationPathFactory.getInstance());
         getNotifd().setNotificationCommandManager(NotificationCommandFactory.getInstance());
         getNotifd().setPollOutagesConfigManager(PollOutagesConfigFactory.getInstance());
+        getNotifd().setNodeDao(new NodeDaoHibernate());
         getNotifd().init();
         
     }
