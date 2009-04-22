@@ -36,11 +36,15 @@
 		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-spring-web</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-spring-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-spring-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
