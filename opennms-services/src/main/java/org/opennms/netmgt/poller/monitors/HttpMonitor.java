@@ -177,14 +177,14 @@ public class HttpMonitor extends IPv4Monitor {
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()) + ": " + e.getMessage());
+                    log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()), e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (InterruptedIOException e) {
-                    log().info("checkStatus: did not connect to host with " + httpClient.getTimeoutTracker().toString());
+                    log().info("checkStatus: did not connect to host with " + httpClient.getTimeoutTracker().toString(), e);
                     httpClient.setReason("HTTP connection timeout");
                 } catch (ConnectException e) {
-                    log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex] + ":"+ e.getMessage());
+                    log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
                     e.fillInStackTrace();
