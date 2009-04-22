@@ -338,6 +338,7 @@ public class DatabasePopulator {
         OnmsCategory cat = getCategoryDao().findByName(categoryName);
         if (cat == null) {
             cat = new OnmsCategory(categoryName);
+            cat.getAuthorizedGroups().add(categoryName+"Group");
             getCategoryDao().save(cat);
             getCategoryDao().flush();
         }
