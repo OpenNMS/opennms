@@ -236,6 +236,7 @@
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
       <plugin>
@@ -1060,6 +1061,16 @@
         <version>2.7.6</version>
       </dependency>
       <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>1.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>1.6.2</version>
+      </dependency>
+      <dependency>
         <groupId>axis</groupId>
         <artifactId>axis</artifactId>
         <version>1.4</version>
@@ -1164,6 +1175,7 @@
       <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
+        <!-- anything higher than 1.2 causes weird weird errors! -->
         <version>1.2</version>
       </dependency>
       <dependency>
@@ -1192,6 +1204,16 @@
         <version>1.0.4</version>
       </dependency>
       <dependency>
+        <groupId>org.dbunit</groupId>
+        <artifactId>dbunit</artifactId>
+        <version>2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.directwebremoting</groupId>
+        <artifactId>dwr</artifactId>
+        <version>2.0.5</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.opencsv</groupId>
         <artifactId>opencsv</artifactId>
         <version>1.8</version>
@@ -1207,6 +1229,11 @@
         <artifactId>easymock</artifactId>
         <version>2.2</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.extremecomponents</groupId>
@@ -1286,6 +1313,12 @@
         <artifactId>jstl</artifactId>
         <version>1.1.2</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>2.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -1435,12 +1468,12 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.5</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.5</version>
       </dependency>
       <dependency>
         <groupId>org.snmp4j</groupId>
