@@ -8,10 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.acl.model.AuthorityDTO;
 import org.opennms.acl.model.AuthorityView;
 
+@Ignore("test database is not thread-safe, port to opennms temporary database code")
 public class AuthoritiesNodeHelperTest {
 
     @Test
