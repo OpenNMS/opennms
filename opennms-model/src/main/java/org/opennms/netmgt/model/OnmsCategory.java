@@ -36,15 +36,20 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.hibernate.annotations.CollectionOfElements;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "category")
@@ -62,6 +67,8 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     
     /** persistent field */
     private String m_description;
+
+    private Set<String> m_authorizedGroups = new HashSet<String>();
 
     //private Set<OnmsNode> m_memberNodes;
 
@@ -105,6 +112,19 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 	}
 	public void setDescription(String description) {
 		m_description = description;
+	}
+	
+	@CollectionOfElements
+	@JoinTable(name="category_group",
+	           joinColumns=@JoinColumn(name="categoryId")
+	    )
+	@Column(name="groupId", nullable=false)
+	public Set<String> getAuthorizedGroups() {
+	    return m_authorizedGroups;
+	}
+	
+	public void setAuthorizedGroups(Set<String> authorizedGroups) {
+	    m_authorizedGroups = authorizedGroups;
 	}
 	
         /*

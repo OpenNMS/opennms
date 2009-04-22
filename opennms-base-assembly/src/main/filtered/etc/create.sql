@@ -2076,97 +2076,6 @@ create index ack_user_idx on acks(ackUser);
 
 --########################################################################
 --#
---#  users table -- This table used for OpenNMS User security (replaces users.xml)
---# 
---#  userId             : Unique ID
---#  name               : The user's full name
---#  password           : The user's password (encrypted)
---#  comments           : OpenNMS Admin's notes about this user account
---#  contact            : Place holder for now until figure out something better
---#  dutySchedule       : The user's duty schedule, same form as users.xml version for now
---#  tuiPin             : Pager ID (not sure why it is called tuiPin
---#  readOnly           : Indicates read-only account.  Only here temporarily 
---#                     : to maintain backward compatiblity
---########################################################################
-
-CREATE TABLE users (
-    id          varchar(16) not null,
-    name        varchar(64) not null,
-    password    varchar(64) not null,
-    comments    varchar(128),
---these will probably change
-    contact     varchar(128),
-    dutySchedule    varchar(64),
-    tuiPin          varchar(32),
-    readOnly    boolean not null default false,
-    
-    constraint pk_users_id primary key (id)
-);
-
---########################################################################
---#
---#  groups table -- This table used for OpenNMS Group security (replaces groups.xml)
---# 
---#  groupId            : Unique ID
---#  comments           : OpenNMS Admin's notes about this group account
---#  dutySchedule       : The groups's duty schedule, same form as groups.xml version for now
---########################################################################
-
-CREATE TABLE groups (
-    id              varchar(16) not null,
-    comments        varchar(128),
-    dutySchedule    varchar(64),
-    
-    constraint pk_groups_id primary key (id)
-
-);
-
-
---########################################################################
---#
---#  groups to user mapping table -- This table used for maintaining a many-to-many
---#     relationship between users and groups
---# 
---#  groupId          : References foreign key in the groups table
---#  userId           : References foreign key in the users table
---########################################################################
-
-CREATE TABLE group_user (
-    groupId     varchar(16) not null,
-    userId      varchar(16) not null,
-    
-    constraint groupid_fkey1 foreign key (groupId) references groups (id) ON DELETE CASCADE,
-    constraint userid_fkey1 foreign key (userId) references users (id) ON DELETE CASCADE
-);
-
-CREATE INDEX groupid_idx on group_user(groupId);
-CREATE INDEX userid_idx on group_user(userId);
-CREATE UNIQUE INDEX groupuser_unique_idx on group_user(groupId, userId);
-
-
---########################################################################
---#
---#  categories to users mapping table -- This table used for maintaining a many-to-many
---#     relationship between categories and users
---# 
---#  categoryId       : References foreign key in the groups table
---#  userId           : References foreign key in the users table
---########################################################################
-
-CREATE TABLE category_user (
-    categoryId  integer not null,
-    userId      varchar(16) not null,
-    
-    constraint categoryid_fkey2 foreign key (categoryId) references categories ON DELETE CASCADE,
-    constraint userid_fkey2 foreign key (userId) references users (id) ON DELETE CASCADE
-);
-
-CREATE INDEX catid_idx2 on category_user(categoryId);
-CREATE INDEX catuser_idx on category_user(userId);
-CREATE UNIQUE INDEX catuser_unique_idx on category_user(categoryId, userId);
-
---########################################################################
---#
 --#  categories to groups mapping table -- This table used for maintaining a many-to-many
 --#     relationship between categories and groups
 --# 
@@ -2174,12 +2083,11 @@ CREATE UNIQUE INDEX catuser_unique_idx on category_user(categoryId, userId);
 --#  groupId          : References foreign key in the users table
 --########################################################################
 
-CREATE TABLE category_group (
+create table category_group (
     categoryId  integer not null,
     groupId     varchar(16) not null,
-    
-    constraint categoryid_fkey2 foreign key (categoryId) references categories ON DELETE CASCADE,
-    constraint groupid_fkey2 foreign key (groupId) references groups (id) ON DELETE CASCADE
+
+    constraint categoryid_fkey2 foreign key (categoryId) references categories ON DELETE CASCADE
 );
 
 CREATE INDEX catid_idx3 on category_group(categoryId);
