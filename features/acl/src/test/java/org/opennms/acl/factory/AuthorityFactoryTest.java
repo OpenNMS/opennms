@@ -7,12 +7,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.acl.SpringFactory;
 import org.opennms.acl.conf.dbunit.DBAuthority;
 import org.opennms.acl.conf.dbunit.DBGroup;
 import org.opennms.acl.conf.dbunit.DBUser;
 
+@Ignore("test database is not thread-safe, port to opennms temporary database code")
 public class AuthorityFactoryTest {
 
     @BeforeClass
