@@ -31,46 +31,44 @@
 //
 package org.opennms.netmgt.collectd;
 
+import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.collectd.wmi.WmiAgentState;
+import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
+import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
+import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
+import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
+import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
+import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
-import org.opennms.netmgt.collectd.wmi.WmiCollectorException;
-import org.opennms.netmgt.collectd.wmi.WmiAgentState;
-import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
-import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
-import org.opennms.protocols.wmi.WmiManager;
-import org.opennms.protocols.wmi.WmiException;
-import org.opennms.protocols.wmi.WmiAgentConfig;
-import org.opennms.protocols.wmi.WmiResult;
-import org.opennms.protocols.wmi.WmiParams;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.wmi.WmiClient;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
+import org.opennms.protocols.wmi.WmiException;
+import org.opennms.protocols.wmi.WmiManager;
+import org.opennms.protocols.wmi.WmiParams;
+import org.opennms.protocols.wmi.WmiResult;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
+import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.File;
-import java.sql.SQLException;
-import java.beans.PropertyVetoException;
 
 /**
  * <P>
@@ -119,17 +117,20 @@ public class WmiCollector implements ServiceCollector {
         for (Wpm wpm : collection.getWpms().getWpm()) {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
-                if (!isGroupAvailable(agentState, wpm)) continue;
+                if (!isGroupAvailable(agentState, wpm)) {
+                    continue;
+                }
             }
 
             if (agentState.groupIsAvailable(wpm.getName())) {
+                WmiClient client = null;
                 // Collect the data
                 try {
                     // Tell the agent to connect
                     agentState.connect();
 
                     // And retrieve the client object for working.
-                    WmiClient client = (WmiClient) agentState.getWmiClient();
+                    client = (WmiClient) agentState.getWmiClient();
 
                     OnmsWbemObjectSet wOS;
 
@@ -171,9 +172,16 @@ public class WmiCollector implements ServiceCollector {
                             collectionSet.getResources().add(resource);
                         }
                     }
-                    client.disconnect();
                 } catch (WmiException e) {
                     log().info("unable to collect params for wpm '" + wpm.getName() + "'", e);
+                } finally {
+                    if (client != null) {
+                        try {
+                            client.disconnect();
+                        } catch (WmiException e) {
+                            log().warn("An error occurred disconnecting while collecting from WMI", e);
+                        }
+                    }
                 }
             }
         }

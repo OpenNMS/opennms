@@ -39,12 +39,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 
-/**
- * Installing j-Interop for local repos
- * mvn install:install-file -Dfile=j-interop.jar -Dpackaging=jar -DartifactId=jinterop -DgroupId=org.jinterop -Dversion=2.00.1
- * mvn install:install-file -Dfile=j-interopdeps.jar -Dpackaging=jar -DartifactId=jinteropdeps -DgroupId=org.jinterop -Dversion=2.00.1
- * mvn install:install-file -Dfile=jcifs-1.2.9.jar -Dpackaging=jar -DartifactId=jcifs -DgroupId=org.jinterop -Dversion=2.00.1
- */
 import org.jinterop.dcom.common.JIException;
 import org.jinterop.dcom.common.JISystem;
 import org.jinterop.dcom.core.IJIComObject;
@@ -53,13 +47,13 @@ import org.jinterop.dcom.core.JIProgId;
 import org.jinterop.dcom.core.JISession;
 import org.jinterop.dcom.core.JIString;
 import org.jinterop.dcom.core.JIVariant;
-import org.jinterop.dcom.impls.automation.IJIDispatch;
 import org.jinterop.dcom.impls.JIObjectFactory;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
 import org.opennms.protocols.wmi.wbem.OnmsWbemFlagReturnEnum;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
-import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectSetImpl;
+import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectImpl;
+import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectSetImpl;
 
 /**
  * <P>
@@ -160,8 +154,8 @@ public class WmiClient implements IWmiClient {
                 ArrayList<Object> objs = new ArrayList<Object>();
                 Object [] array = (Object[])type.getObjectAsArray().getArrayInstance();
 
-                for(int j = 0; j < array.length; j++) {
-                    objs.add(convertToNativeType((JIVariant)array[j]));
+                for (Object element : array) {
+                    objs.add(convertToNativeType((JIVariant)element));
                 }
                 
                 return objs;
@@ -207,7 +201,7 @@ public class WmiClient implements IWmiClient {
             m_ComStub = new JIComServer(JIProgId.valueOf(WMI_PROGID), m_Address, m_Session);
 
             IJIComObject unknown = m_ComStub.createInstance();
-            m_ComObject = (IJIComObject) unknown.queryInterface(WMI_CLSID);
+            m_ComObject = unknown.queryInterface(WMI_CLSID);
 
             // This will obtain the dispatch interface
             m_Dispatch = (IJIDispatch) JIObjectFactory.narrowObject(
@@ -243,6 +237,7 @@ public class WmiClient implements IWmiClient {
     }
 
     // TODO This needs to be completed.
+    @SuppressWarnings("unused")
     private static boolean isNumeric(String str) {
         try {
             Integer.parseInt(str);
@@ -253,6 +248,7 @@ public class WmiClient implements IWmiClient {
     }
 
     // TODO this needs to be completed.
+    @SuppressWarnings("unused")
     private static boolean isDate(String str) {
         DateFormat df = DateFormat.getDateInstance();
         Date dtm;
