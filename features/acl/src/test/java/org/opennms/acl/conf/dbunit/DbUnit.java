@@ -87,12 +87,11 @@ public abstract class DbUnit extends DBTestCase {
             } finally {
                 // connection.close();
             }
-        } catch (DatabaseUnitException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
         } catch (Exception e) {
+            /* do we care?
+            System.err.print("An error occurred deleting dataset: ");
             e.printStackTrace();
+            */
         }
 
         ++operation;
