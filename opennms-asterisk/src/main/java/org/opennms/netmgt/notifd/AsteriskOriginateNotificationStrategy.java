@@ -38,10 +38,11 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.opennms.netmgt.asterisk.utils.AsteriskOriginator;
-import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.asterisk.agi.scripts.BaseOnmsAgiScript;
+import org.opennms.netmgt.asterisk.utils.AsteriskOriginator;
+import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.netmgt.config.NotificationManager;
 
 /**
@@ -86,26 +87,27 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
             } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_SUBJECT => " + arg.getValue());
                 ao.setSubject(arg.getValue());
-                ao.setChannelVariable("OPENNMS_NOTIFY_SUBJECT", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_SUBJECT, arg.getValue());
             } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_TEXT_MSG => " + arg.getValue());
                 ao.setMessageText(arg.getValue());
-                ao.setChannelVariable("OPENNMS_NOTIFY_BODY", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_BODY, arg.getValue());
             } else if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_TUI_PIN => " + arg.getValue());
-                ao.setChannelVariable("OPENNMS_USER_PIN", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USER_PIN, arg.getValue());
             } else if (NotificationManager.PARAM_DESTINATION.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_DESTINATION => " + arg.getValue());
-                ao.setChannelVariable("OPENNMS_USERNAME", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USERNAME, arg.getValue());
             } else if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_NODE => " + arg.getValue());
-                ao.setChannelVariable("OPENNMS_NODE", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(arg.getValue()).getLabel());
             } else if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_INTERFACE => " + arg.getValue());
-                ao.setChannelVariable("OPENNMS_INTERFACE", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_INTERFACE, arg.getValue());
             } else if (NotificationManager.PARAM_SERVICE.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_SERVICE => " + arg.getValue());
-                ao.setChannelVariable("OPENNMS_SERVICE", arg.getValue());
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_SERVICE, arg.getValue());
             } else {
                 log().debug("Unconsumed arg: " + String.valueOf(arg.getSwitch()) + " => " + String.valueOf(arg.getValue()));
             }

@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.asterisk.agi.scripts;
 
+import java.net.UnknownHostException;
+
 import org.asteriskjava.fastagi.AgiChannel;
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.AgiRequest;
@@ -50,14 +52,14 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
 
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
         authenticateUser();
-        sayNodeNumber();
+        sayNode();
         sayServiceName();
         streamFile("silence/1");
         sayIpAddr();
     }
     
     public void authenticateUser() throws AgiException {
-        String actualPin = getVariable("OPENNMS_USER_PIN");
+        String actualPin = getVariable(VAR_OPENNMS_USER_PIN);
         if (actualPin == null || "".equals(actualPin)) {
             log().info("User has no TUI PIN, so proceeding without authentication");
             return;
@@ -74,44 +76,44 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         if (String.valueOf(inputPin).equals(String.valueOf(actualPin))) {
             return;
         } else {
-            log().warn("User " + getVariable("OPENNMS_USER") + " failed authentication");
+            log().warn("User " + getVariable(VAR_OPENNMS_USERNAME) + " failed authentication");
             streamFile("auth-incorrect");
             streamFile("goodbye");
             hangup();
         }
     }
     
-    public void sayNodeNumber() throws AgiException {
+    public void sayNode() throws AgiException {
         String nodeID = null;
-        nodeID = getVariable("OPENNMS_NODE");
+        String nodeLabel = null;
+        nodeID = getVariable(VAR_OPENNMS_NODEID);
+        nodeLabel = getVariable(VAR_OPENNMS_NODELABEL);
         
-        if ((nodeID != null) && (!"".equals(nodeID))) {
+        
+        if (! "".equals(nodeLabel)) {
+            log().debug("Reading node label to user: " + nodeLabel);
+            streamFileInterruptible("node");
+            sayAlphaInterruptible(nodeLabel);
+        } else if (!"".equals(nodeID)) {
             log().debug("Reading node ID to user: " + nodeID);
-            streamFile("node");
-            streamFile("number");
-            sayDigits(nodeID);
+            streamFileInterruptible("node");
+            streamFileInterruptible("number");
+            sayDigitsInterruptible(nodeID);
         } else {
-            log().debug("No node ID available");
+            log().debug("No node label or node ID available");
         }
     }
     
     public void sayIpAddr() throws AgiException {
         String ipAddr = null;
-        ipAddr = getVariable("OPENNMS_INTERFACE");
+        ipAddr = getVariable(VAR_OPENNMS_INTERFACE);
         
         if ((ipAddr != null) && (!"".equals(ipAddr))) {
             log().debug("Reading IP address to user: " + ipAddr);
             streamFile("letters/i");
             streamFile("letters/p");
             streamFile("address");
-            int i = 0;
-            for (String thisOctet : ipAddr.split("\\.")) {
-                i++;
-                sayDigits(thisOctet);
-                if (i < 4) {
-                    streamFile("letters/dot");
-                }
-            }
+            sayIpAddressInterruptible(ipAddr);
         }
     }
     
