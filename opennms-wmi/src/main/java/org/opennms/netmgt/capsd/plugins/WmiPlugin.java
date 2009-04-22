@@ -32,10 +32,7 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Map;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
@@ -47,8 +44,6 @@ import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
 import org.opennms.protocols.wmi.WmiResult;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 /**
  * <P>
@@ -66,17 +61,6 @@ public class WmiPlugin extends AbstractPlugin {
 	 */
 	private final static String PROTOCOL_NAME = "WMI";
 
-	/**
-	 * Default number of retries for TCP requests.
-	 */
-	private final static int DEFAULT_RETRY = 0;
-
-	/**
-	 * Default timeout (in milliseconds) for TCP requests.
-	 */
-	private final static int DEFAULT_TIMEOUT = 5000;
-
-	
 	private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
 	private final static String DEFAULT_WMI_OBJECT = "Status";
 	private final static String DEFAULT_WMI_COMP_VAL = "OK";
@@ -245,9 +229,10 @@ public class WmiPlugin extends AbstractPlugin {
 
 		WmiResult result = null;
 		for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
+		    WmiManager mgr = null;
 			try {
 				// Create the WMI Manager
-				WmiManager mgr = new WmiManager(host.getHostAddress(), user,
+				mgr = new WmiManager(host.getHostAddress(), user,
 						pass, domain, matchType);
 
 				// Connect to the WMI server.
@@ -274,19 +259,22 @@ public class WmiPlugin extends AbstractPlugin {
                 }
 
                 isAServer = true;
-
-				// Disconnect when complete.
-				mgr.close();
-
 			} catch (WmiException e) {
 				StringBuffer message = new StringBuffer();
 				message.append("WmiPlugin: Check failed... : ");
 				message.append(e.getMessage());
 				message.append(" : ");
-				message.append((e.getCause() == null ? "" : e.getCause()
-						.getMessage()));
+				message.append((e.getCause() == null ? "" : e.getCause().getMessage()));
 				log().info(message.toString());
 				isAServer = false;
+			} finally {
+			    if (mgr != null) {
+			        try {
+			            mgr.close();
+			        } catch (WmiException e) {
+			            log().warn("an error occurred closing the WMI Manager", e);
+			        }
+			    }
 			}
 		}
 		return result;
