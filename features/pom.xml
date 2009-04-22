@@ -9,6 +9,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+    <module>acl</module>
     <module>provisioning</module>
     <module>ticketing</module>
   </modules>
