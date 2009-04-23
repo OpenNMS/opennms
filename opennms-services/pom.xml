@@ -239,16 +239,6 @@
     </dependency>
     <dependency>
       <groupId>mx4j</groupId>
-      <artifactId>mx4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>mx4j</groupId>
-      <artifactId>mx4j-remote</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
       <scope>compile</scope>
     </dependency>

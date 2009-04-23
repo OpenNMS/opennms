@@ -60,7 +60,7 @@ import org.opennms.netmgt.config.service.Service;
 
 /**
  * <p>
- * The Manager is reponsible for launching/starting all services in the VM
+ * The Manager is responsible for launching/starting all services in the VM
  * that it is started for. The Manager operates in two modes, normal and
  * server
  * </p>
@@ -73,7 +73,7 @@ import org.opennms.netmgt.config.service.Service;
  * <p>
  * server mode: In the server mode, the Manager starts up and listens on the
  * 'control-broadcast' JMS topic for 'start' control messages for services in
- * its VM and a stop control messge for itself. When a start for a service is
+ * its VM and a stop control message for itself. When a start for a service is
  * received, it launches only that service and sends a successful 'running' or
  * an 'error' response to the Controller
  * </p>

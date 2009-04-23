@@ -1426,16 +1426,6 @@
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>
-        <artifactId>mx4j</artifactId>
-        <version>3.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>mx4j</groupId>
-        <artifactId>mx4j-remote</artifactId>
-        <version>3.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>mx4j</groupId>
         <artifactId>mx4j-tools</artifactId>
         <version>3.0.1</version>
       </dependency>

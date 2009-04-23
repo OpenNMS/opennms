@@ -138,7 +138,6 @@ public class Manager implements ManagerMBean {
         
         List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
         invoker.setServices(services);
-        
         invoker.getObjectInstances();
         List<InvokerResult> results = invoker.invokeMethods();
         
