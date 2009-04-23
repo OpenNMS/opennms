@@ -14,7 +14,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
     }
     
     public String toString() {
-        return ("<NotificationFactory.InterfaceFilter: " + this.getDescription() + ">");
+        return ("<WebNotificationRepository.InterfaceFilter: " + this.getDescription() + ">");
     }
 
     public String getIpAddress() {
