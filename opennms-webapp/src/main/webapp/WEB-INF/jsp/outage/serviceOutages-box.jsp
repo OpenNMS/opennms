@@ -56,9 +56,10 @@
 
 <%
 	Outage[] outages = (Outage[])request.getAttribute("outages");
+	Integer serviceId = (Integer)request.getAttribute("serviceId");
 %>
 
-<h3>Recent Outages</h3>
+<h3><a href="outage/list.htm?filter=service%3d<%=serviceId%>">Recent&nbsp;Outages</a></h3>
 
 <table>
 
@@ -68,7 +69,7 @@
   <tr>
     <th>Lost</th>
     <th>Regained</th>
-    <th>Outage ID</th>
+    <th>Outage&nbsp;ID</th>
   </tr>
   <%
       for(int i=0; i < outages.length; i++) {

@@ -45,6 +45,7 @@ public class ServiceOutagesController extends AbstractController implements Init
         }
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
+        modelAndView.addObject("serviceId", service.getServiceId());
         modelAndView.addObject("outages", outages);
         return modelAndView;
     }
