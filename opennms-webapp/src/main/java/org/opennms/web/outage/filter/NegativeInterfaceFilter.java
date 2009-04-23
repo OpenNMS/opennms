@@ -37,7 +37,7 @@ import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
 public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
-    public static final String TYPE = "interfacenot";
+    public static final String TYPE = "intfnot";
 
     public NegativeInterfaceFilter(String ipAddress) {
         super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.ipAddress", ipAddress);

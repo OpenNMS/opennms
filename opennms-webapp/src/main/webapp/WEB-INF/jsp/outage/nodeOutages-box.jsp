@@ -55,7 +55,7 @@
 	Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
 
-<h3 class="o-box">Recent Outages</h3>
+<h3 class="o-box"><a href="outage/list.htm?filter=node%3d<%=nodeId%>">Recent&nbsp;Outages</a></h3>
 <table class="o-box">
 <% if(outages.length == 0) { %>
   <tr>

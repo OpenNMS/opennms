@@ -57,10 +57,12 @@
 
 <%
     int nodeId = (Integer)request.getAttribute("nodeId");
+	String ipAddr = (String)request.getAttribute("ipAddr");
     Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
 
 <h3>Recent Outages</h3>
+<h3><a href="outage/list.htm?filter=intf%3d<%=ipAddr%>">Recent&nbsp;Outages</a></h3>
 
 <table>
 
