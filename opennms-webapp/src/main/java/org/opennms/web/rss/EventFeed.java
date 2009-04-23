@@ -65,7 +65,7 @@ public class EventFeed extends AbstractFeed {
 
         feed.setTitle("Events");
         feed.setDescription("OpenNMS Events");
-        feed.setLink(getUrlBase() + "event/list");
+        feed.setLink(getUrlBase() + "event/list.htm");
 
         ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
 

@@ -159,7 +159,7 @@
       <div id="linkbar">
       <ul>
         <li>
-        	<a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
+        	<a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
         </li>
         <li>
         	<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>

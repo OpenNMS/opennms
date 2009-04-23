@@ -102,8 +102,8 @@
         services = new Service[0];
     }
 
-    String eventUrl1 = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
-    String eventUrl2 = "event/list?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
+    String eventUrl1 = "event/list.htm?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
+    String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getService(nodeId, ipAddr, this.telnetServiceId);
