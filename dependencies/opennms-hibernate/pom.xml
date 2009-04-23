@@ -13,57 +13,66 @@
     can depend on to use the hibernate library.
   </description>
   <properties>
-    <hibernateVersion>3.2.5.ga</hibernateVersion>
-    <annotationsVersion>3.2.1.ga</annotationsVersion>
+    <annotationsVersion>3.4.0.GA</annotationsVersion>
+    <commonsAnnotationsVersion>3.1.0.GA</commonsAnnotationsVersion>
+    <ejbVersion>1.0.2.GA</ejbVersion>
+    <entityManagerVersion>3.4.0.GA</entityManagerVersion>
+    <hibernateVersion>3.3.1.GA</hibernateVersion>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <version>${hibernateVersion}</version>
-      <exclusions>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>asm</groupId>
-          <artifactId>asm-attrs</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>ejb3-persistence</artifactId>
+      <version>${ejbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
       <version>${annotationsVersion}</version>
       <exclusions>
-        <exclusion>
-          <groupId>javax.persistence</groupId>
-          <artifactId>ejb</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <!-- need to use cglib-nodep instead -->
-          <groupId>asm</groupId>
-          <artifactId>asm-attrs</artifactId>
-        </exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>ejb3-persistence</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-commons-annotations</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-core</artifactId></exclusion>
+        <exclusion><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-commons-annotations</artifactId>
+      <version>${commonsAnnotationsVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernateVersion}</version>
+      <exclusions>
+        <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
+        <exclusion><groupId>asm-attrs</groupId><artifactId>asm-attrs</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>${entityManagerVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>ejb3-persistence</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-commons-annotations</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-annotations</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-core</artifactId></exclusion>
+        <exclusion><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
   </dependencies>
 </project>
