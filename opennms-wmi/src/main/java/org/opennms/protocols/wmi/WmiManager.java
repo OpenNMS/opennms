@@ -291,7 +291,7 @@ public class WmiManager {
         ArrayList<Object> wmiObjects = new ArrayList<Object>();
 
 		OnmsWbemObjectSet wos = m_WmiClient.performExecQuery(params.getWql());
-
+        
         for(int i=0; i<wos.count(); i++) {
             wmiObjects.add(wos.get(i).getWmiProperties().getByName(params.getWmiObject()).getWmiValue());
         }
@@ -354,12 +354,12 @@ public class WmiManager {
 
 		/*
 		 * Check that we meet the match requirements:
-		 * - all: all objects must match
+		 * - all: all objects must match, one or more.
 		 * - none: no objects must match
 		 * - one: only one object must match
 		 * - some: more than one object but not all objects must match.
 		 */
-        if (m_MatchType.equals("all") && matches == total) {
+        if (m_MatchType.equals("all") && matches == total && matches > 0) {
 			wmiResult.setResultCode(WmiResult.RES_STATE_OK);
 		} else if (m_MatchType.equals("none") && matches == 0) {
 			wmiResult.setResultCode(WmiResult.RES_STATE_OK);
