@@ -43,9 +43,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.support.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
-import org.opennms.netmgt.provision.support.util.ParameterMap;
 
 /*
  * The JBossConnectionFactory class handles the creation of a connection to the 
