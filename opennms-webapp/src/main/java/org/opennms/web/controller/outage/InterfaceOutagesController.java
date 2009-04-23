@@ -44,6 +44,7 @@ public class InterfaceOutagesController extends AbstractController implements In
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("nodeId", iface.getNodeId());
+        modelAndView.addObject("ipAddr", iface.getIpAddress());
         modelAndView.addObject("outages", outages);
         return modelAndView;
     }

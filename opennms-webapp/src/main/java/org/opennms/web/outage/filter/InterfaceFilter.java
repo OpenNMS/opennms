@@ -37,7 +37,7 @@ import org.opennms.web.filter.SQLType;
 
 /** Encapsulates all interface filtering functionality. */
 public class InterfaceFilter extends EqualsFilter<String> {
-    public static final String TYPE = "interface";
+    public static final String TYPE = "intf";
 
     public InterfaceFilter(String ipAddress) {
         super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.ipAddress", ipAddress);
