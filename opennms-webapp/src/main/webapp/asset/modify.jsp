@@ -145,7 +145,7 @@
             <td>
               <select name="category" size="1">
               <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
-                <option <%=(Asset.CATEGORIES[i].equals(asset.getCategory()))?"selected":""%>><%=Asset.CATEGORIES[i]%></option> 
+                <option<%=(Asset.CATEGORIES[i].equals(asset.getCategory()))?" selected":""%>><%=Asset.CATEGORIES[i]%></option> 
               <% } %>
               </select>
             </td>
