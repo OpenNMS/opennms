@@ -85,7 +85,7 @@
         throw new ServletException( "No such service in database" );
     }
 
-    String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
+    String eventUrl = "event/list.htm?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
 
     String headTitle = service_db.getServiceName() + " Service on " +ipAddr;
 %>

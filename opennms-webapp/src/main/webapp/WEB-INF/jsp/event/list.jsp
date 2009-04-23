@@ -82,7 +82,7 @@
 
 <%--
   This page is written to be the display (view) portion of the EventFilterController
-  at the /event/list URL.  It will not work by itself, as it requires two request
+  at the /event/list.htm URL.  It will not work by itself, as it requires two request
   attributes be set:
   
   1) events: the list of org.opennms.web.element.Event instances to display

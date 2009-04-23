@@ -449,7 +449,7 @@
           <td class="divider" valign="middle" rowspan="1" >
 	    <% if(alarms[i].getId() > 0 ) { %>           
                 <nobr>
-                  <a href="event/list?sortby=id&acktype=unack&filter=alarm=<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
+                  <a href="event/list.htm?sortby=id&acktype=unack&filter=alarm=<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
                 </nobr>
             <% } else { %>
             <%=alarms[i].getCount()%>
@@ -593,7 +593,7 @@
       else {
         filters.remove( filter );
       }
-      StringBuffer buffer = new StringBuffer( "event/list" );
+      StringBuffer buffer = new StringBuffer( "event/list.htm" );
       buffer.append( "?sortby=" );
       buffer.append( parms.sortStyle.getShortName() );
       buffer.append( "&acktype=" );
