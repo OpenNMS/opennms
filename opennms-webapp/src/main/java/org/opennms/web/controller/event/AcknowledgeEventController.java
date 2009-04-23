@@ -68,7 +68,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public class AcknowledgeEventController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private WebEventRepository m_webEventRepository;
     
@@ -113,9 +113,9 @@ public class AcknowledgeEventController extends AbstractController implements In
 
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
-        if (action.equals(AcknowledgeType.ACKNOWLEDGED) || action.equals(AcknowledgeType.BOTH)) {
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
-        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED) || action.equals(AcknowledgeType.BOTH)) {
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
             m_webEventRepository.unacknowledgeMatchingEvents(criteria);
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);

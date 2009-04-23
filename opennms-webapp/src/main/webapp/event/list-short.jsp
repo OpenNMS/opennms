@@ -104,11 +104,8 @@
 
     String action = null;
 
-    if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
-        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    } 
-    else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
-        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+    if ( parms.ackType != null ) {
+    	action = parms.ackType.getShortName();
     }
 
     //useful constant strings
