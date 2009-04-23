@@ -64,8 +64,8 @@ package org.opennms.core.fiber;
  * exceed the core Java threads.
  * </p>
  * 
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public interface Fiber {
     /**
@@ -86,13 +86,13 @@ public interface Fiber {
      * This is the initial <code>Fiber</code> state. When the
      * <code>Fiber</code> begins it startup process it will transition to the
      * <code>STARTING</code> state. A <code>Fiber</code> in a start pending
-     * state has not begun any of the initilization process.
+     * state has not begun any of the initialization process.
      */
     public static final int START_PENDING = 0;
 
     /**
      * This state is used to define when a <code>Fiber</code> has begun the
-     * initilization process. Once the initilization process is completed the
+     * Initialization process. Once the initialization process is completed the
      * <code>Fiber</code> will transition to a <code>RUNNING</code> status.
      */
     public static final int STARTING = 1;
@@ -113,13 +113,13 @@ public interface Fiber {
 
     /**
      * This state represents the final resting state of a <code>Fiber</code>.
-     * Depending on the implementation it may be possible to resurect the
+     * Depending on the implementation it may be possible to resurrect the
      * <code>Fiber</code> from this state.
      */
     public static final int STOPPED = 4;
 
     /**
-     * This method is used to start the initilization process of the
+     * This method is used to start the initialization process of the
      * <code>Fiber</code>, which should eventually transition to a
      * <code>RUNNING</code> status.
      */

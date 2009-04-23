@@ -64,7 +64,7 @@ import org.opennms.netmgt.config.service.types.InvokeAtType;
 
 /**
  * <p>
- * The Manager is reponsible for launching/starting all services in the VM
+ * The Manager is responsible for launching/starting all services in the VM
  * that it is started for. The Manager operates in two modes, normal and
  * server
  * </p>
@@ -77,7 +77,7 @@ import org.opennms.netmgt.config.service.types.InvokeAtType;
  * <p>
  * server mode: In the server mode, the Manager starts up and listens on the
  * 'control-broadcast' JMS topic for 'start' control messages for services in
- * its VM and a stop control messge for itself. When a start for a service is
+ * its VM and a stop control message for itself. When a start for a service is
  * received, it launches only that service and sends a successful 'running' or
  * an 'error' response to the Controller
  * </p>
@@ -153,13 +153,13 @@ public class Invoker {
                 org.opennms.netmgt.config.service.Attribute[] attribs =
                     service.getAttribute();
                 if (attribs != null) {
-                    for (int j = 0; j < attribs.length; j++) {
+                    for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
                         if (log().isDebugEnabled()) {
                             log().debug("setting attribute "
-                                    + attribs[j].getName());
+                                    + attrib.getName());
                         }
 
-                        getServer().setAttribute(name, getAttribute(attribs[j]));
+                        getServer().setAttribute(name, getAttribute(attrib));
                     }
                 }
             } catch (Throwable t) {
