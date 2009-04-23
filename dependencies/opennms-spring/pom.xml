@@ -25,6 +25,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -36,6 +37,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -47,6 +49,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -58,6 +61,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -69,6 +73,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -80,6 +85,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -91,6 +97,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -102,8 +109,8 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
-        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
         <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
+        <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -114,8 +121,10 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
         <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate</artifactId></exclusion>
+        <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-core</artifactId></exclusion>
         <exclusion><groupId>org.hibernate</groupId><artifactId>hibernate-entitymanager</artifactId></exclusion>
       </exclusions>
     </dependency>
@@ -127,6 +136,7 @@
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-commons</artifactId></exclusion>
         <exclusion><groupId>asm</groupId><artifactId>asm-util</artifactId></exclusion>
+        <exclusion><groupId>c3p0</groupId><artifactId>c3p0</artifactId></exclusion>
         <exclusion><groupId>cglib</groupId><artifactId>cglib</artifactId></exclusion>
       </exclusions>
     </dependency>
