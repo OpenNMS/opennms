@@ -71,7 +71,7 @@
 <p>
   The event ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
   <br/>
-  You can re-enter it here or <a href="event/list?acktyp=unack">browse all
+  You can re-enter it here or <a href="event/list.htm?acktyp=unack">browse all
   of the events</a> to find the event you are looking for.
 </p>
 

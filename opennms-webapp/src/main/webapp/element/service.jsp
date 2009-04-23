@@ -56,7 +56,7 @@
 	String ipAddr = service.getIpAddress();
  	int serviceId = service.getServiceId();
 
-    String eventUrl = "event/list?filter=node%3D" + nodeId
+    String eventUrl = "event/list.htm?filter=node%3D" + nodeId
                       + "&filter=interface%3D" + ipAddr + "&filter=service%3D"
                       + serviceId;
 %>
