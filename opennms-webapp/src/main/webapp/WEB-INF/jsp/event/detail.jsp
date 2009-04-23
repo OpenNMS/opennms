@@ -105,18 +105,18 @@
 
       <table>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <th class="divider" width="10%">Severity</th>
-          <td class="divider"><%= event.getSeverity().getLabel() %></td>
-          <th class="divider" width="10%">Node</th>
-          <td class="divider">
+          <th class="divider" width="100em">Severity</th>
+          <td class="divider" width="28%"><%= event.getSeverity().getLabel() %></td>
+          <th class="divider" width="100em">Node</th>
+          <td class="divider" width="28%">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <th class="divider" width="10%">Acknowledged&nbsp;By</th>
-          <td class="divider"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
+          <th class="divider" width="100em">Acknowledged&nbsp;By</th>
+          <td class="divider" width="28%"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
         </tr>
         
         <tr  class="<%= event.getSeverity().getLabel() %>">
@@ -135,7 +135,7 @@
             <% } %>
           </td>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp;"%></td>
         </tr>
         
         <tr class="<%= event.getSeverity().getLabel() %>">
@@ -152,7 +152,7 @@
             <% } %>
           </td>
           <% if (parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID)) { %>
-            <th>Location Monitor ID</th>
+            <th>Location&nbsp;Monitor&nbsp;ID</th>
             <td><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
             <td colspan="2">&nbsp;</td>
           <% } else { %>
@@ -175,7 +175,7 @@
 
       <table>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Log Message</th>
+          <th>Log&nbsp;Message</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
           <td><%=event.getLogMessage()%></td>
@@ -193,7 +193,7 @@
       
       <table>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Operator Instructions</th>
+          <th>Operator&nbsp;Instructions</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
           <td>
@@ -208,9 +208,9 @@
 
       <% if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE ))) { %>
         <form method="post" action="event/acknowledge">
-          <input type="hidden" name="action" value="<%=action%>" />
+          <input type="hidden" name="actionCode" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>
-          <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+          <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
           <input type="submit" value="<%=buttonName%>"/>
         </form>
       <% } %>

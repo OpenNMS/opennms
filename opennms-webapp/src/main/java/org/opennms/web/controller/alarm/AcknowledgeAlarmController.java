@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -62,13 +63,9 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AcknowledgeAlarmController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    public final static String ACKNOWLEDGE_ACTION = "1";
-
-    public final static String UNACKNOWLEDGE_ACTION = "2";
-    
-    private WebAlarmRepository m_webAlarmRepository;
+     private WebAlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
     
@@ -110,9 +107,9 @@ public class AcknowledgeAlarmController extends AbstractController implements In
             alarmIds[i] = WebSecurityUtils.safeParseInt(alarmIdStrings[i]);
         }
 
-        if (action.equals(ACKNOWLEDGE_ACTION)) {
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.acknowledgeAlarms(alarmIds, request.getRemoteUser(), new Date());
-        } else if (action.equals(UNACKNOWLEDGE_ACTION)) {
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.unacknowledgeAlarms(alarmIds);
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);

@@ -263,7 +263,7 @@ public String buildTableRows(List<SnmpManagedInterface> interfaces, int intnodei
 			if ( curInterface.getIfIndex() > 0 ) {
 				row.append(curInterface.getIfIndex());
 			} else {
-				row.append("&nbsp");
+				row.append("&nbsp;");
 			}
 			row.append("</td>\n");
 

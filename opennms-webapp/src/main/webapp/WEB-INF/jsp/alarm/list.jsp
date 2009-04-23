@@ -117,12 +117,9 @@
     String action = null;
 
     if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) {     
-        if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) {
-            action = AcknowledgeAlarmController.ACKNOWLEDGE_ACTION;
-        } 
-        else if( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) {
-            action = AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION;
-        }
+    	if ( parms.ackType != null ) {
+    		action = parms.ackType.getShortName();
+    	}
     } 
     
     pageContext.setAttribute("action", action);
@@ -182,9 +179,9 @@
         } else if (anAction == "clear") {
         	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
         } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmController.ACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>";
         } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%=AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION%>";
+        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>";
         }
  
         if (document.alarm_action_form.alarm.length)

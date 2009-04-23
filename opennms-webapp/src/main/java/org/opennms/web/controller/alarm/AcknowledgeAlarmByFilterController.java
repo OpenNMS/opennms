@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -64,7 +65,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AcknowledgeAlarmByFilterController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
     private WebAlarmRepository m_webAlarmRepository;
     
@@ -102,8 +103,8 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
 
         // handle the filter parameters
         ArrayList<Filter> filterArray = new ArrayList<Filter>();
-        for (int i = 0; i < filterStrings.length; i++) {
-            Filter filter = AlarmUtil.getFilter(filterStrings[i]);
+        for (String filterString : filterStrings) {
+            Filter filter = AlarmUtil.getFilter(filterString);
             if (filter != null) {
                 filterArray.add(filter);
             }
@@ -113,9 +114,9 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
         
         AlarmCriteria criteria = new AlarmCriteria(filters);
 
-        if (action.equals(AcknowledgeAlarmController.ACKNOWLEDGE_ACTION)) {
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.acknowledgeMatchingAlarms(request.getRemoteUser(), new Date(), criteria);
-        } else if (action.equals(AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION)) {
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.unacknowledgeMatchingAlarms(criteria);
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);
