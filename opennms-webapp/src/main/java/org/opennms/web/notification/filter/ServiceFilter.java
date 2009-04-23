@@ -25,7 +25,7 @@ public class ServiceFilter extends EqualsFilter<Integer> {
     }
 
     public String toString() {
-        return ("<NotificationFactory.ServiceFilter: " + this.getDescription() + ">");
+        return ("<WebNotificationRepository.ServiceFilter: " + this.getDescription() + ">");
     }
 
     public int getServiceId() {
