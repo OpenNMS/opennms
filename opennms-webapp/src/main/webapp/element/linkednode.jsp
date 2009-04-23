@@ -393,7 +393,7 @@
                     <% if (intfs[i].getIfIndex() > 0) { %>
                         <%=intfs[i].getIfIndex()%>
                     <% } else { %>
-                        &nbsp
+                        &nbsp;
                     <% } %>
                 </td>
                 <td>
@@ -402,7 +402,7 @@
                     <% } else if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("") && !"0.0.0.0".equals(intfs[i].getIpAddress())) { %>
                         <%=intfs[i].getSnmpIfName()%>
                     <% } else { %>
-                        &nbsp
+                        &nbsp;
                     <% } %>
                 </td>
                 <% if (hasIfAliases) { %>
@@ -410,7 +410,7 @@
                         <% if (intfs[i].getSnmpIfAlias() != null && !intfs[i].getSnmpIfAlias().equals("")) { %>
                             <%=intfs[i].getSnmpIfAlias()%>
 		        <% } else {%>
-                            &nbsp
+                            &nbsp;
 		        <% } %>
                     </td>
 		<% } %>

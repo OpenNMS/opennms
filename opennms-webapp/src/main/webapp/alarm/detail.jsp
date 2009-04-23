@@ -100,12 +100,12 @@
     if (alarm.getAcknowledgeTime()==null)
     {
         ackButtonName = "Acknowledge";
-        action = AcknowledgeAlarmController.ACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     }
     else
     {
         ackButtonName = "Unacknowledge";
-        action = AcknowledgeAlarmController.UNACKNOWLEDGE_ACTION;
+        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
     
     String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
@@ -131,22 +131,22 @@
  
       <table>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
-          <th width="10%">Severity</th>
-          <td class="divider"><%=alarm.getSeverity().getLabel()%></td>
-          <th width="10%">Node</th>
-          <td class="divider">
+          <th width="100em">Severity</th>
+          <td class="divider" width="28%"><%=alarm.getSeverity().getLabel()%></td>
+          <th width="100em">Node</th>
+          <td class="divider" width="28%">
             <% if( alarm.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=alarm.getNodeId()%>"><%=alarm.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <th width="10%">Acknowledged&nbsp;By</th>
-          <td class="divider"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
+          <th width="100em">Acknowledged&nbsp;By</th>
+          <td class="divider" width="28%"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp;"%></td>
         </tr>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
-          <th>Last Event</th>
-          <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></a></span></td>
+          <th>Last&nbsp;Event</th>
+          <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.web.Util.formatDateToUIString(alarm.getLastEventTime())%></a></span></td>
           <th>Interface</th>
           <td>
             <% if( alarm.getIpAddress() != null ) { %>
@@ -160,11 +160,11 @@
             <% } %>
           </td>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.web.Util.formatDateToUIString(alarm.getAcknowledgeTime()) : "&nbsp;"%></td>
         </tr>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
-          <th>First Event</th>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
+          <th>First&nbsp;Event</th>
+          <td><%=org.opennms.web.Util.formatDateToUIString(alarm.getFirstEventTime())%></td>
           <th>Service</th>
           <td>
             <% if( alarm.getServiceName() != null ) { %>
@@ -177,7 +177,7 @@
               &nbsp;
             <% } %>
           </td>
-          <th>Ticket ID</th>
+          <th>Ticket&nbsp;ID</th>
           <td><% if (alarm.getTroubleTicket() == null) { %>
                 &nbsp;
               <% } else { %>
@@ -196,7 +196,7 @@
                       &nbsp;
           	<% } %>
 		</td>
-          <th>Ticket State</th>
+          <th>Ticket&nbsp;State</th>
           <td><% if (alarm.getTroubleTicketState() == null) { %>
                 &nbsp;
               <% } else { %>
@@ -205,7 +205,7 @@
           </td>
         </tr>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
-          	<th>Reduct. Key</th>
+          	<th>Reduct.&nbsp;Key</th>
           	<td colspan="5">
           	<% if( alarm.getReductionKey() != null ) { %>
           	      <%=alarm.getReductionKey()%>
@@ -218,7 +218,7 @@
 
       <table>
 	<tr class="<%=alarm.getSeverity().getLabel()%>">
-          <th>Log Message</th>
+          <th>Log&nbsp;Message</th>
         </tr>
 	<tr class="<%=alarm.getSeverity().getLabel()%>">
           <td><%=alarm.getLogMessage()%></td>
@@ -237,7 +237,7 @@
       
       <table>
 	<tr class="<%=alarm.getSeverity().getLabel()%>">
-          <th>Operator Instructions</th>
+          <th>Operator&nbsp;Instructions</th>
         </tr>
 	
 	<tr class="<%=alarm.getSeverity().getLabel()%>">
@@ -255,14 +255,14 @@
       <table>
       <tbody>
       <tr class="<%=alarm.getSeverity().getLabel()%>">
-      <th colspan="2">Acknowledgement and Severity Actions</th>
+      <th colspan="2">Acknowledgment&nbsp;and&nbsp;Severity&nbsp;Actions</th>
       </tr>
       <tr class="<%=alarm.getSeverity().getLabel()%>">
       <td>
       <form method="post" action="alarm/acknowledge">
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-        <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+        <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=ackButtonName%>" />
       </form>
       </td>
@@ -274,7 +274,7 @@
       <td>
       <form method="post" action="alarm/changeSeverity">
 	  <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-      <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />	  
+      <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />	  
       <select name="actionCode">
       	  <%if (showEscalate) { %>
           <option value="<%=escalateAction%>">Escalate</option>

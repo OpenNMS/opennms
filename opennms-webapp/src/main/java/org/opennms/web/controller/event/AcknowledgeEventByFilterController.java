@@ -52,7 +52,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class AcknowledgeEventByFilterController extends AbstractController implements InitializingBean {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     
     private WebEventRepository m_webEventRepository;
     
@@ -101,9 +101,9 @@ public class AcknowledgeEventByFilterController extends AbstractController imple
         
         EventCriteria criteria = new EventCriteria(filters);
 
-        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName()) || action.equals(AcknowledgeType.BOTH.getShortName())) {
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
-        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName()) || action.equals(AcknowledgeType.BOTH.getShortName())) {
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
             m_webEventRepository.unacknowledgeMatchingEvents(criteria);
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);

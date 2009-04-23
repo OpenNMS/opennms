@@ -93,41 +93,11 @@ public class EventFilterController extends AbstractController implements Initial
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        List<Filter> filterList = new ArrayList<Filter>();
+        AcknowledgeType ackType = m_defaultEventType;
+
         String display = request.getParameter("display");
 
-        // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
-        SortStyle sortStyle = m_defaultSortStyle;
-        if (sortStyleString != null) {
-            SortStyle temp = SortStyle.getSortStyle(sortStyleString);
-            if (temp != null) {
-                sortStyle = temp;
-            }
-        }
-
-        // handle the acknowledgement type parameter
-        String ackTypeString = request.getParameter("acktype");
-        AcknowledgeType ackType = m_defaultEventType;
-        if (ackTypeString != null) {
-            AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
-            if (temp != null) {
-                ackType = temp;
-            }
-        }
-
-        // handle the filter parameters
-        String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterList = new ArrayList<Filter>();
-        if (filterStrings != null) {
-            for (String filterString : filterStrings) {
-                Filter filter = EventUtil.getFilter(filterString);
-                if (filter != null) {
-                    filterList.add(filter);
-                }
-            }
-        }
-
-        // handle the optional limit parameter
         String limitString = request.getParameter("limit");
         int limit = "long".equals(display) ? getDefaultLongLimit() : getDefaultShortLimit();
 
@@ -135,11 +105,10 @@ public class EventFilterController extends AbstractController implements Initial
             try {
                 limit = WebSecurityUtils.safeParseInt(limitString);
             } catch (NumberFormatException e) {
-                // do nothing, the default is aready set
+                // do nothing, the default is already set
             }
         }
 
-        // handle the optional multiple parameter
         String multipleString = request.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
@@ -149,12 +118,43 @@ public class EventFilterController extends AbstractController implements Initial
             }
         }
 
+        String sortStyleString = request.getParameter("sortby");
+        SortStyle sortStyle = m_defaultSortStyle;
+        if (sortStyleString != null) {
+            SortStyle temp = SortStyle.getSortStyle(sortStyleString);
+            if (temp != null) {
+                sortStyle = temp;
+            }
+        }
+
         String idString = request.getParameter("id");
         if (idString != null) {
+            // asking for a specific ID; only filter should be event ID
             filterList.add(new EventIdFilter(WebSecurityUtils.safeParseInt(idString)));
+            ackType = null;
+        } else {
+            // otherwise, apply filters/acktype/etc.
+
+            String ackTypeString = request.getParameter("acktype");
+            if (ackTypeString != null) {
+                AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
+                if (temp != null) {
+                    ackType = temp;
+                }
+            }
+
+            String[] filterStrings = request.getParameterValues("filter");
+            if (filterStrings != null) {
+                for (String filterString : filterStrings) {
+                    Filter filter = EventUtil.getFilter(filterString);
+                    if (filter != null) {
+                        filterList.add(filter);
+                    }
+                }
+            }
+
         }
-        // put the parameters in a convenient struct
-        
+
         Filter[] filters = filterList.toArray(new Filter[0]);
         
         EventQueryParms parms = new EventQueryParms();

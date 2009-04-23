@@ -111,9 +111,9 @@
     <td width="15%">Notification Time</td>
     <td width="17%"><%=org.opennms.web.Util.formatDateToUIString(notice.getTimeSent())%></td>
     <td width="15%">Time&nbsp;Replied</td>
-    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
+    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp;"%></td>
     <td width="15%">Responder</td>
-    <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
+    <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
   </tr>
   <tr class="<%=eventSeverity%>">
     <td width="15%">Node</td>
@@ -224,7 +224,7 @@
 <% if (notice.getTimeReplied()==null) { %>
   <form method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+    <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
     <input type="button" value="Acknowledge" onClick="javascript:acknowledgeNotice()"/>
   </form>
 <% } %>
