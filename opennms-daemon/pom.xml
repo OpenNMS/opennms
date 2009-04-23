@@ -22,6 +22,13 @@
 
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
 
@@ -38,7 +45,7 @@
 
     <dependency>
       <groupId>mx4j</groupId>
-      <artifactId>mx4j</artifactId>
+      <artifactId>mx4j-tools</artifactId>
     </dependency>
 
   </dependencies>
