@@ -98,7 +98,7 @@ public class CheckWmi {
         
         String wmiWql = "";
         if (cmd.hasOption("wmiWql")) {
-            wmiObject = cmd.getOptionValue("wmiWql");
+            wmiWql = cmd.getOptionValue("wmiWql");
         } /*else {
             usage(options, cmd);
             System.exit(1);
@@ -135,7 +135,7 @@ public class CheckWmi {
 			ArrayList<Object> wmiObjects;
 			// Create the check parameters holder.
 			WmiParams clientParams;
-            if(wmiWql.isEmpty())
+            if(wmiWql == null || wmiWql.length() == 0)
                 clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass,
 					wmiObject);
             else
@@ -151,13 +151,14 @@ public class CheckWmi {
 			WmiResult result = mgr.performOp(clientParams);
 			// And retrieve the WMI objects from the results.
 			wmiObjects = result.getResponse();
-
+			
 			// Now output a brief report of the check results.
-			System.out.println("Checking: " + wmiClass + "\\" + wmiObject
+			System.out.println("Checking: " + wmiWql + " for " + wmiObject
 					+ " Op: " + compOp + " Val: " + compVal);
 			System.out.println("Check results: "
 					+ WmiResult.convertStateToString(result.getResultCode())
 					+ " (" + wmiObjects.size() + ")");
+            
 			for (int i = 0; i < wmiObjects.size(); i++) {
 				System.out.println("Result for (" + (i + 1) + ") " + wmiClass
 						+ "\\" + wmiObject + ": " + wmiObjects.get(i));
