@@ -178,6 +178,8 @@ public class WmiMonitor extends IPv4Monitor {
         if (log().isDebugEnabled())
             log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", user = " + agentConfig.getUsername() + ", " + tracker);
         
+        WmiManager mgr = null;
+        
         for (tracker.reset(); tracker.shouldRetry()
 				&& serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker
 				.nextAttempt()) {
@@ -189,7 +191,7 @@ public class WmiMonitor extends IPv4Monitor {
                         log().debug("poll: creating WmiManager object.");
 
                 // Create a client, set up details and connect.
-				WmiManager mgr = new WmiManager(ipv4Addr.getHostAddress(),
+				mgr = new WmiManager(ipv4Addr.getHostAddress(),
 						agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType);
 
 				mgr.setTimeout(tracker.getSoTimeout());
@@ -246,7 +248,15 @@ public class WmiMonitor extends IPv4Monitor {
 				log.debug("WMI Poller received exception from client: "
 						+ e.getMessage());
 				reason = "WmiException: " + e.getMessage();
-			}
+			} finally {
+                if (mgr != null) {
+                    try {
+                        mgr.close();
+                    } catch (WmiException e) {
+                        log().warn("an error occurred closing the WMI Manager", e);
+                    }
+                }
+            }
 		} // end for(;;)
 		return PollStatus.get(serviceStatus, reason, responseTime);
 	}
