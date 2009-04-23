@@ -39,8 +39,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.regexp.RE;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.model.PollStatus;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -150,8 +151,9 @@ final public class SshMonitor extends IPv4Monitor {
     @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
+        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        }
         InetAddress address = (InetAddress) iface.getAddress();
 
         return poll(address, parameters);

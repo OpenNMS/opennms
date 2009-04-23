@@ -42,8 +42,8 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.provision.support.util.ParameterMap;
 
 //import mx4j.tools.remote.*;
 
