@@ -43,7 +43,7 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
 
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        String principal = request.getHeader(m_principalRequestAttribute);
+        Object principal = request.getAttribute(m_principalRequestAttribute);
         
         if (principal == null) {
             throw new PreAuthenticatedCredentialsNotFoundException(m_principalRequestAttribute 
@@ -56,7 +56,7 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
     @Override
     protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
         if (m_credentialsRequestAttribute != null) {
-            String credentials = request.getHeader(m_credentialsRequestAttribute);
+            Object credentials = request.getAttribute(m_credentialsRequestAttribute);
             
             return credentials;
         }
