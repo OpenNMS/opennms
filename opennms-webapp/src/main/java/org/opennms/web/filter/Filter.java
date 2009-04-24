@@ -39,7 +39,7 @@ import org.hibernate.criterion.Criterion;
 public interface Filter {
     
     /**
-     * Returns an expresions for a SQL where clause. Remember to include a
+     * Returns an expression for a SQL where clause. Remember to include a
      * trailing space, but no leading AND or OR.
      */
     public String getSql();
