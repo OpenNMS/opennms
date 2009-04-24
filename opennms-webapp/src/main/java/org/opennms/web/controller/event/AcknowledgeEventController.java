@@ -51,7 +51,7 @@ import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
-import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -105,14 +105,11 @@ public class AcknowledgeEventController extends AbstractController implements In
             throw new MissingParameterException("actionCode", new String[] { "event", "actionCode" });
         }
         
-        
         List<Filter> filters = new ArrayList<Filter>();
-        for (String eventIdString : eventIdStrings) {
-            filters.add(new EventIdFilter(WebSecurityUtils.safeParseInt(eventIdString)));
-        }
-
+        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
+        System.err.println("criteria = " + criteria + ", action = " + action);
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {

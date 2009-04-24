@@ -34,6 +34,7 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.criterion.Criterion;
 import org.opennms.netmgt.model.OnmsCriteria;
 
@@ -45,7 +46,9 @@ public abstract class ConditionalFilter implements Filter {
     private Filter[] m_filters;
     
     public ConditionalFilter(String conditionType, Filter... filters){
-        if (filters.length == 0) throw new IllegalArgumentException("You must pass at least one filter");
+        if (filters.length == 0) {
+            throw new IllegalArgumentException("You must pass at least one filter");
+        }
         m_conditionType = conditionType;
         m_filters = filters;
     }
@@ -56,14 +59,16 @@ public abstract class ConditionalFilter implements Filter {
     
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
         int parametersBound = 0;
-        for(int i = 0; i < m_filters.length; i++){
-            parametersBound += m_filters[i].bindParam(ps, parameterIndex + parametersBound);
+        for (Filter mFilter : m_filters) {
+            parametersBound += mFilter.bindParam(ps, parameterIndex + parametersBound);
         }
         return parametersBound;
     }
 
     public String getDescription() {
-        if (m_filters.length == 1) return m_filters[0].getDescription();
+        if (m_filters.length == 1) {
+            return m_filters[0].getDescription();
+        }
         
         StringBuilder buf = new StringBuilder(TYPE);
         buf.append("=");
@@ -77,7 +82,9 @@ public abstract class ConditionalFilter implements Filter {
     }
 
     public String getParamSql() {
-        if (m_filters.length == 1) return m_filters[0].getParamSql();
+        if (m_filters.length == 1) {
+            return m_filters[0].getParamSql();
+        }
         
         StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
@@ -92,7 +99,9 @@ public abstract class ConditionalFilter implements Filter {
     }
 
     public String getSql() {
-        if (m_filters.length == 1) return m_filters[0].getSql();
+        if (m_filters.length == 1) {
+            return m_filters[0].getSql();
+        }
         
         StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
@@ -107,7 +116,9 @@ public abstract class ConditionalFilter implements Filter {
     }
 
     public String getTextDescription() {
-        if (m_filters.length == 1) return m_filters[0].getTextDescription();
+        if (m_filters.length == 1) {
+            return m_filters[0].getTextDescription();
+        }
         
         StringBuilder buf = new StringBuilder("( ");
         for(int i = 0; i < m_filters.length; i++){
@@ -129,5 +140,11 @@ public abstract class ConditionalFilter implements Filter {
     abstract public Criterion getCriterion();
 
     
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("description", getDescription())
+            .append("text description", getTextDescription())
+            .toString();
+    }
 
 }

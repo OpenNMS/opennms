@@ -145,11 +145,11 @@ public enum SortStyle {
             break;
     
         case ID:
-            clause = " ORDER BY ALARMID DESC";
+            clause = " ORDER BY EVENTID DESC";
             break;
     
         case REVERSE_ID:
-            clause = " ORDER BY ALARMID ASC";
+            clause = " ORDER BY EVENTID ASC";
             break;
     
         default:

@@ -102,7 +102,10 @@
         throw new ServletException( "Missing either the events, eventCount, or parms request attribute." );
     }
 
-    String action = parms.ackType.getShortName();
+    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+    if (parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
+    	action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+    }
 
     pageContext.setAttribute("addPositiveFilter", "[+]");
     pageContext.setAttribute("addNegativeFilter", "[-]");
