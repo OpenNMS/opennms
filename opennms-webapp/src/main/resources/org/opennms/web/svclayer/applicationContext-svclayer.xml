@@ -13,9 +13,9 @@
   <context:annotation-config />
   
   <bean name="webAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository" />
-  <bean name="webEventRepository" class="org.opennms.web.event.JdbcWebEventRepository" />
-  <bean name="webNotificationRepository" class="org.opennms.web.notification.JdbcWebNotificationRepository" />
-  <bean name="webOutageRepository" class="org.opennms.web.outage.JdbcWebOutageRepository" />
+  <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository" />
+  <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository" />
+  <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository" />
 
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >

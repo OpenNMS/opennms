@@ -37,7 +37,7 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsCriteria;
 
 public interface OnmsDao<T, K extends Serializable> {
-
+    
     public abstract void initialize(Object obj);
 
     public abstract void flush();
