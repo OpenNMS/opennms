@@ -241,7 +241,7 @@
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
           <td class="divider" rowspan="2">
-            <% if ( event.getEventDisplay() ) { %>
+            <% if ( event.getEventDisplay() != null && event.getEventDisplay() ) { %>
             <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a>
             <% } %>
           </td>

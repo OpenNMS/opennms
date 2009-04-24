@@ -34,6 +34,7 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.criterion.Criterion;
 
 /**
@@ -92,5 +93,12 @@ public abstract class BaseFilter<T> implements Filter {
 
     public abstract String getTextDescription();
 
-
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("description", getDescription())
+            .append("text description", getTextDescription())
+            .append("SQL field name", getSQLFieldName())
+            .append("property name", getPropertyName())
+            .toString();
+    }
 }

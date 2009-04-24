@@ -259,8 +259,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
     
     @SuppressWarnings("unchecked")
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        System.err.println("SQL IS "+sql);
-         return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
+        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
      }
 
     private JdbcOperations jdbc() {

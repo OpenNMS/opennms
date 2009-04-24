@@ -60,12 +60,23 @@ public class WebSecurityUtils {
     
     public static String sanitizeString(String raw)
     {
-        if (raw==null || raw.length()==0)
+        if (raw==null || raw.length()==0) {
             return raw;
+        }
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
         return next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    public static int[] safeParseInt(String[] dirty) throws NumberFormatException {
+        final int[] clean = new int[dirty.length];
+        String cleanString;
+        for (int i = 0; i < dirty.length; i++) {
+            cleanString = ILLEGAL_IN_INTEGER.matcher(dirty[i]).replaceAll("");
+            clean[i] = Integer.parseInt(cleanString);
+        }
+        return clean;
     }
 
 	public static int safeParseInt(String dirty) throws NumberFormatException {
