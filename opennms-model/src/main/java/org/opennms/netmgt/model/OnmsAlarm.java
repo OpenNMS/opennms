@@ -59,12 +59,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement
 @Entity
 @Table(name="alarms")
+@Filter(name="authorizedOnly", condition="nodeid in (select x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where cg.groupId in (:userGroups))")
 public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
