@@ -38,10 +38,10 @@
 package org.opennms.web.admin.groups;
 
 import java.io.IOException;
+import java.text.ChoiceFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-import java.util.Collection;
-import java.text.ChoiceFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -67,7 +67,8 @@ public class UpdateGroupServlet extends HttpServlet {
         HttpSession userSession = request.getSession(false);
 
         if (userSession != null) {
-            Group newGroup = (Group) userSession.getAttribute("group.modifyGroup.jsp");
+            //group.modifyGroup.jsp
+            Group newGroup = (Group) userSession.getAttribute("group");
 
             // get the rest of the group information from the form
             newGroup.removeAllUser();
@@ -108,7 +109,7 @@ public class UpdateGroupServlet extends HttpServlet {
                     dutySchedules.add(newDuty.toString());
                 }
             }
-            userSession.setAttribute("group.modifyGroup.jsp", newGroup);
+            userSession.setAttribute("group", newGroup);
         }
 
         // forward the request for proper display

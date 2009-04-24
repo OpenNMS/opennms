@@ -47,17 +47,19 @@
 		java.text.*,
 		org.opennms.netmgt.config.groups.*,
 		org.opennms.netmgt.config.users.*,
-		org.opennms.netmgt.dao.CategoryDao
+		org.opennms.netmgt.dao.CategoryDao,
+		org.opennms.netmgt.model.OnmsCategory
 	"
 %>
 
 <%
   	Group group = (Group)request.getAttribute("group");
-  	CategoryDao m_categoryDao = (CategoryDao)request.getAttribute("categoryDao");
+	String[] categoryListNotInGroup = (String[])request.getAttribute("categoryListNotInGroup");
+	String[] categoryListInGroup = (String[]) request.getAttribute("categoryListInGroup");
 
 	if (group == null) {
 		throw new ServletException("Could not get session attribute "
-					   + "group.modifyGroup.jsp");
+					   + "group");
 	}
 	
 	
@@ -222,7 +224,8 @@
             //we need to select all the users in the selectedUsers select list so the
             //request object will have all the users
             selectAllSelected();
-            
+            selectAllSelectedGroups();
+            alert("I am about to save");
             document.modifyGroup.redirect.value="/admin/userGroupView/groups/saveGroup";
             document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
             document.modifyGroup.submit();
@@ -233,6 +236,58 @@
     {
         document.modifyGroup.action="admin/userGroupView/groups/list.jsp";
         document.modifyGroup.submit();
+    }
+
+    //Group functions
+    function addGroup(){
+    	m3len = m3.length ;
+        for ( i=0; i<m3len ; i++)
+        {
+            if (m3.options[i].selected == true ) 
+            {
+                m4len = m4.length;
+                m4.options[m4len]= new Option(m3.options[i].text);
+            }
+        }
+        
+        for ( i = (m3len -1); i>=0; i--)
+        {
+            if (m3.options[i].selected == true ) 
+            {
+                m3.options[i] = null;
+            }
+        }
+    }
+
+    function removeGroup(){
+    	m4len = m4.length ;
+        for ( i=0; i<m4len ; i++)
+        {
+            if (m4.options[i].selected == true ) 
+            {
+                m3len = m3.length;
+                m3.options[m3len]= new Option(m4.options[i].text);
+            }
+        }
+        for ( i=(m4len-1); i>=0; i--) 
+        {
+            if (m4.options[i].selected == true ) 
+            {
+                m4.options[i] = null;
+            }
+        }
+    }
+
+    function selectAllAvailableGroups(){
+    	for (i=0; i < m3.length; i++){
+            m3.options[i].selected = true;
+        }
+    }
+
+    function selectAllSelectedGroups(){
+    	for (i=0; i < m4.length; i++){
+            m4.options[i].selected = true;
+        }
     }
 
 </script>
@@ -262,14 +317,14 @@
               <tr>
                 <td align="center">
                   Available Users <br>
-<!--                  <%=getAllUsersMinusInGroup(group)%><br>-->
+                  <%=getAllUsersMinusInGroup(group)%><br>
                   <p align="center">
                   <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br>
                   <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
                 </td>
                 <td align="center">
                   Currently in Group <br>
-<!--                  <%=getUsersList(group)%><br>-->
+                  <%=getUsersList(group)%><br>
                   <p align="center">
                   <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br>
                   <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
@@ -295,17 +350,18 @@
 	              <tr>
 	                <td align="center">
 	                  Available Categories <br>
-<!--	                  <%=getAllCategoriesMinusInGroup(m_categoryDao)%><br>-->
+	                  <%=createAvailableGroupSelectList(categoryListNotInGroup)%><br>
 	                  <p align="center">
+	                  
 	                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br>
-	                  <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+	                  <input type="button" onClick="addGroup()" value="&nbsp;&gt;&gt;&nbsp;"></p>
 	                </td>
 	                <td align="center">
 	                  Currently in Group <br>
-	                  <%=getCategoryList(m_categoryDao)%><br>
+	                  <%=createGroupSelectList(categoryListInGroup)%><br>
 	                  <p align="center">
 	                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br>
-	                  <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+	                  <input type="button" onClick="removeGroup()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
 	                </td>
 	                <td>
 	                  <input type="button" value="  Move Up   " onclick="move(-1)"> <br>
@@ -407,6 +463,8 @@
   // you would only need to change them in one spot, here
   var m1 = document.modifyGroup.availableUsers;
   var m2 = document.modifyGroup.selectedUsers;
+  var m3 = document.modifyGroup.availableGroups;
+  var m4 = document.modifyGroup.selectedGroups;
 </script>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
@@ -466,11 +524,23 @@
         return buffer.toString();
     }
     
-    private String getAllCategoriesMinusInGroup(CategoryDao categoryDao){
-    	return "<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableUsers\" size=\"10\"><option>Woohoo</option>/select>";
+    private String createAvailableGroupSelectList(String[] categories){
+    	StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableGroups\" size=\"10\">");
+    	for(String category : categories){
+    		buffer.append("<option>" + category + "</option>");
+    	}
+    	buffer.append("</select>");
+    	
+    	return buffer.toString();
     }
     
-    private String getCategoryList(CategoryDao categoryDao){
-    	return "<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableUsers\" size=\"10\"><option>A Category</option>/select>";
+    private String createGroupSelectList(String[] categories){
+    	StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"selectedGroups\" size=\"10\">");
+    	for(String category : categories){
+    		buffer.append("<option>" + category + "</option>");
+    	}
+    	buffer.append("</select>");
+    	
+    	return buffer.toString();
     }
 %>

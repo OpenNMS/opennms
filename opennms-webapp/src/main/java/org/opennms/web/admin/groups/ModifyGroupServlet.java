@@ -67,6 +67,7 @@ public class ModifyGroupServlet extends HttpServlet {
             GroupManager groupFactory = GroupFactory.getInstance();
             Group group = groupFactory.getGroup(request.getParameter("groupName"));
             userSession.setAttribute("group.modifyGroup.jsp", group);
+            
         } catch (Exception e) {
             throw new ServletException("Couldn't initialize GroupFactory", e);
         }
