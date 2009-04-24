@@ -433,6 +433,9 @@
   
   <!-- Availability Reports -->
   
+  <bean name="/report/availability/index.htm"
+  		class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+  
   <bean name="/report/availability/report.htm"
   		class="org.opennms.web.controller.AvailabilityReportController">
   	<property name="availabilityReportService" ref="availabilityReportService"/>

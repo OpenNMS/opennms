@@ -68,8 +68,8 @@ public class AvailabilityReportController extends SimpleFormController {
     public AvailabilityReportController() {
         setCommandName("availabilityReportCriteria");
         setCommandClass(AvailabilityReportCriteria.class);
-        setFormView("availability/report");
-        setSuccessView("availability/running");
+        setFormView("report/availability/report");
+        setSuccessView("report/availability/running");
     }
 
     @Override

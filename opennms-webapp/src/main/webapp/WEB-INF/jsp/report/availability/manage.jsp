@@ -11,8 +11,6 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- *
- * 2009 Jan 26: Tidy up, add license info jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -41,21 +39,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Availability" />
-	<jsp:param name="headTitle" value="Availability" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
-		value="<a href='report/availability/index.jsp'>Availability<a>" />
-	<jsp:param name="breadcrumb" value="List" />
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Availability Reports" />
+  <jsp:param name="headTitle" value="Availability Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" 
+		value="<a href='report/availability/index.htm'>Availability</a>" />
+  <jsp:param name="breadcrumb" value="Manage"/>
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/availability/list.htm" var="pagedLink">
+<c:url value="/report/availability/manage.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
 
@@ -66,6 +66,7 @@
 	</c:when>
 
 	<c:otherwise>
+		<form:form commandName="ManageAvailabilityReportCommand">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 
@@ -78,6 +79,7 @@
 					<th>period ending</th>
 					<th>available</th>
 					<th>view report</th>
+					<th>select</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -93,10 +95,15 @@
 						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
 					<a
 						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
+					</td>
+					<td><form:checkbox path="ids" value="${report.id}"/></td>
 				</tr>
 			</c:forEach>
 		</table>
+		<input type="submit" value="delete checked reports"/>
+	</form:form>
 	</c:otherwise>
 </c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

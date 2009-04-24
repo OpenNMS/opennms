@@ -57,7 +57,7 @@ public class ManageAvailabilityReportController extends SimpleFormController {
     private int m_pageSize;
     
     public ManageAvailabilityReportController() {
-        setFormView("availability/manage");
+        setFormView("report/availability/manage");
     }
 
     public void setReportListService(ReportListService reportListService) {
