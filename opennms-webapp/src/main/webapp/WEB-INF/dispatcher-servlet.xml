@@ -75,6 +75,18 @@
   	<property name="groupManager" ref="groupManager"/>
   </bean>
 
+	<!-- Converted from a Dispatcher to controller -->
+	<bean name="/admin/userGroupView/groups/modifyGroup" class="org.opennms.web.controller.admin.group.ModifyGroupController">
+  		<property name="categoryDao" ref="categoryDao"/>
+  	</bean>
+  	
+  	<bean name="/admin/userGroupView/groups/updateGroup" class="org.opennms.web.controller.admin.group.UpdateGroupController">
+  	</bean>
+  	
+  	<bean name="/admin/userGroupView/groups/saveGroup" class="org.opennms.web.controller.admin.group.SaveGroupController">
+  		<property name="categoryDao" ref="categoryDao"/>
+  	</bean>
+
   <bean name="/aggregateStatus.htm"
 		class="org.opennms.web.controller.SiteStatusViewController">
     <property name="service" ref="siteStatusViewService" />
