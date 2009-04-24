@@ -71,6 +71,7 @@ public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
        assertNotNull(matching3);
        assertEquals(1, matching3.size());
                
+       System.err.println(matching3);
     }
    
    public void enableAuthorizationFilter(final String... groupNames) {

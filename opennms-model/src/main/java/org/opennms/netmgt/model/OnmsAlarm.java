@@ -66,7 +66,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement
 @Entity
 @Table(name="alarms")
-@Filter(name="authorizedOnly", condition="nodeid in (select x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where cg.groupId in (:userGroups))")
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
