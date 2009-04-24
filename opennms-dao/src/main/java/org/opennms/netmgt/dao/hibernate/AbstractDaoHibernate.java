@@ -169,6 +169,29 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().loadAll(m_entityClass);
     }
     
+    @SuppressWarnings("unchecked")
+    public <S> List<S> findMatchingObjects(final Class<S> type, final OnmsCriteria onmsCrit ) {
+        onmsCrit.resultsOfType(type);
+        
+        HibernateCallback callback = new HibernateCallback() {
+
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
+                if (onmsCrit.getFirstResult() != null) {
+                    attachedCrit.setFirstResult(onmsCrit.getFirstResult());
+                }
+                
+                if (onmsCrit.getMaxResults() != null) {
+                    attachedCrit.setMaxResults(onmsCrit.getMaxResults());
+                }
+                
+                return attachedCrit.list();
+            }
+            
+        };
+        return getHibernateTemplate().executeFind(callback);
+    }
+    
 
     @SuppressWarnings("unchecked")
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
