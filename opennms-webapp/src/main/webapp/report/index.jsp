@@ -72,7 +72,7 @@
       <ul class="plain">
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
-        <li><a href="availability/index.jsp">Availability</a></li>
+        <li><a href="report/availability/index.htm">Availability</a></li>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
     </div>

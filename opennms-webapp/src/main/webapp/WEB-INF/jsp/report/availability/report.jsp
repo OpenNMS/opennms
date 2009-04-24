@@ -5,11 +5,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Availability" />
-  <jsp:param name="headTitle" value="Availability" />
+  <jsp:param name="title" value="Availability Reports" />
+  <jsp:param name="headTitle" value="Availability Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" 
-		value="<a href='report/availability/index.jsp'>Availability</a>" />
+		value="<a href='report/availability/index.htm'>Availability</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
