@@ -498,21 +498,22 @@
     <servlet-class>org.opennms.web.admin.groups.RemoveGroupDutySchedulesServlet</servlet-class>
   </servlet>
   
-  <servlet>
-    <!-- servlet for passing parameters to the group modify jsp -->
-    <servlet-name>modifyGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.ModifyGroupServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating the local group info during modification-->
-    <servlet-name>updateGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.UpdateGroupServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving the local group info during modification-->
-    <servlet-name>saveGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.SaveGroupServlet</servlet-class>
-  </servlet>
+<!--  <servlet>-->
+<!--     servlet for passing parameters to the group modify jsp -->
+<!--    <servlet-name>modifyGroup</servlet-name>-->
+<!--    <servlet-class>org.opennms.web.admin.groups.ModifyGroupServlet</servlet-class>-->
+<!--  </servlet>-->
+<!--  <servlet>-->
+<!--     servlet for updating the local group info during modification-->
+<!--    <servlet-name>updateGroup</servlet-name>-->
+<!--    <servlet-class>org.opennms.web.admin.groups.UpdateGroupServlet</servlet-class>-->
+<!--  </servlet>-->
+
+<!--  <servlet>-->
+<!--     servlet for saving the local group info during modification-->
+<!--    <servlet-name>saveGroup</servlet-name>-->
+<!--    <servlet-class>org.opennms.web.admin.groups.SaveGroupServlet</servlet-class>-->
+<!--  </servlet>-->
   <servlet>
     <!-- servlet for renaming the local group info during modification-->
     <servlet-name>renameGroup</servlet-name>
@@ -834,10 +835,12 @@
     
   <!-- servlet mapping for configuring users groups and views -->
   <!-- user configuration servlets -->
+  <!-- converted to Controller -->
   <servlet-mapping>
     <servlet-name>modifyUser</servlet-name>
     <url-pattern>/admin/userGroupView/users/modifyUser</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>updateUser</servlet-name>
     <url-pattern>/admin/userGroupView/users/updateUser</url-pattern>
@@ -878,15 +881,15 @@
   
   <!-- group configuration servlets -->
   <servlet-mapping>
-    <servlet-name>modifyGroup</servlet-name>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>updateGroup</servlet-name>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/updateGroup</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>saveGroup</servlet-name>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/saveGroup</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
