@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Convenience class for looking up string and integer values in a parameter
@@ -86,7 +87,7 @@ public class ParameterMap extends Object {
      * 
      * @return The int value associated with the key.
      */
-    public static int getKeyedInteger(Map map, String key, int defValue) {
+    public static int getKeyedInteger(final Map map, final String key, final int defValue) {
     	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
     }
 
@@ -98,7 +99,7 @@ public class ParameterMap extends Object {
      * 
      * @return The array of integer values associated with the key.
      */
-    public final static int[] getKeyedIntegerArray(Map map, String key, int[] defValues) {
+    public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
         int[] result = defValues;
         Object oValue = map.get(key);
 
@@ -137,7 +138,7 @@ public class ParameterMap extends Object {
      * 
      * @return The String value associated with the key.
      */
-    public static String getKeyedString(Map map, String key, String defValue) {
+    public static String getKeyedString(final Map map, final String key, final String defValue) {
 
         String value = defValue;
         Object oValue = map.get(key);
