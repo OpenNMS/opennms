@@ -47,6 +47,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.FilterManager;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
@@ -83,8 +84,6 @@ public class AlarmFilterController extends AbstractController implements Initial
 
     private WebAlarmRepository m_webAlarmRepository;
     
-
-
     /**
      * Parses the query string to determine what types of event filters to use
      * (for example, what to filter on or sort by), then does the database query
@@ -98,6 +97,7 @@ public class AlarmFilterController extends AbstractController implements Initial
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
         String display = request.getParameter("display");
 
         // handle the style sort parameter
@@ -179,7 +179,6 @@ public class AlarmFilterController extends AbstractController implements Initial
         modelAndView.addObject("alarmCount", alarmCount);
         modelAndView.addObject("parms", parms);
         return modelAndView;
-
     }
 
     private Integer getDefaultShortLimit() {
@@ -209,7 +208,7 @@ public class AlarmFilterController extends AbstractController implements Initial
     public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
-
+    
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
         Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");

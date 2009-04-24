@@ -72,7 +72,12 @@
     <beans:property name="nonMatchingEntryPoint" ref="_formLoginEntryPoint" />
   </beans:bean>
 
-   
+   <!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
+   <beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
+     <custom-filter position="LAST"/>
+     <beans:property name="filterManager" ref="filterManager" />
+     <beans:property name="groupDao" ref="groupDao" />
+   </beans:bean>
 
 
   <!--  We need a mechanism to return the correct entryPoint for rss and restful api's  -->
