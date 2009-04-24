@@ -159,6 +159,13 @@ public class OnmsCriteria {
     public void setMaxResults(Integer limit) {
     	m_maxResults = limit;
     }
+    
+    @Override
+    public String toString() {
+        return "OnmsCriteria( " + m_criteria + ") limit " + m_maxResults + " offset " + m_firstResult;
+    }
+
+
 
     /**
      * This is a subclass of Hibernate's DetachedCriteria, providing a few
