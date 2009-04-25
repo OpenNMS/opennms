@@ -29,35 +29,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.web.controller.admin.group;
+package org.opennms.web.group;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.opennms.web.group.WebGroup;
-import org.opennms.web.group.WebGroupRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-
-public class SaveGroupController extends AbstractController {
+/**
+ * WebGroupRepository
+ *
+ * @author brozow
+ */
+public interface WebGroupRepository {
     
-    @Autowired
-    WebGroupRepository m_groupRepository;
+    boolean groupExists(String groupName);
     
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        HttpSession user = request.getSession(false);
+    WebGroup getGroup(String groupName);
+    
+    void saveGroup(WebGroup group);
 
-        if (user != null) {
-            WebGroup newGroup = (WebGroup) user.getAttribute("group.modifyGroup.jsp");
-            m_groupRepository.saveGroup(newGroup);
-        }
+    void deleteGroup(String groupName);
 
-
-        return new ModelAndView("redirect:/admin/userGroupView/groups/list.jsp");
-    }
+    void renameGroup(String oldName, String newName);
 
 }

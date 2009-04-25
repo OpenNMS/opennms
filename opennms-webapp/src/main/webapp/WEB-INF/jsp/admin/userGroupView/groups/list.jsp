@@ -55,18 +55,23 @@
 
     function addNewGroup()
     {
-        newUserWin = window.open("admin/userGroupView/groups/newGroup.jsp", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+        document.allGroups.action="admin/userGroupView/groups/modifyGroup";
+        document.allGroups.operation.value="create";
+        document.allGroups.submit();
     }
     
     function detailGroup(groupName)
     {
-        document.allGroups.action="admin/userGroupView/groups/groupDetail.jsp?groupName=" + groupName;
+        document.allGroups.action="admin/userGroupView/groups/modifyGroup";
+        document.allGroups.operation.value="show";
+        document.allGroups.groupName.value=groupName;
         document.allGroups.submit();
     }
     
     function deleteGroup(groupName)
     {
-        document.allGroups.action="admin/userGroupView/groups/deleteGroup";
+        document.allGroups.action="admin/userGroupView/groups/modifyGroup";
+        document.allGroups.operation.value="delete";
         document.allGroups.groupName.value=groupName;
         document.allGroups.submit();
     }
@@ -74,19 +79,21 @@
     function modifyGroup(groupName)
     {
         document.allGroups.action="admin/userGroupView/groups/modifyGroup";
+        document.allGroups.operation.value="edit"
         document.allGroups.groupName.value=groupName;
         document.allGroups.submit();
     }
 
     function renameGroup(groupName)
     {
-        document.allGroups.groupName.value=groupName;
         var newName = prompt("Enter new name for group.", groupName);
 
         if (newName != null && newName != "")
         {
           document.allGroups.newName.value = newName;
-          document.allGroups.action="admin/userGroupView/groups/renameGroup";
+          document.allGroups.groupName.value=groupName;
+          document.allGroups.operation.value="rename";
+          document.allGroups.action="admin/userGroupView/groups/modifyGroup";
           document.allGroups.submit();
         }
     }
@@ -96,12 +103,11 @@
 <h3>Group Configuration</h3>
 
 <form method="post" name="allGroups">
-  <input type="hidden" name="redirect"/>
+  <input type="hidden" name="operation"/>
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
 
-  <%-- XXX why is this disabled?
-       <a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a> --%>
+       <a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a>
 
   <table>
 
@@ -115,13 +121,27 @@
          <c:forEach var="group" varStatus="groupStatus" items="${groups}">
          <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" >
           <td width="5%" align="center">
-            <img src="images/trash.gif" alt="Cannot delete ${group.name} group">
+            <c:choose>
+              <c:when test='${group.name != "Admin"}'>
+                <a href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><img src="images/trash.gif"></a>              
+              </c:when>
+              <c:otherwise>
+                <img src="images/trash.gif" title="Cannot delete ${group.name} group">
+              </c:otherwise>
+            </c:choose>
           </td>
           <td width="5%" align="center">
             <a href="javascript:modifyGroup('${group.name}')"><img src="images/modify.gif"></a>
           </td>
           <td width="5%" align="center">
-                <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the ${group.name} group cannot be renamed.')">
+            <c:choose>
+              <c:when test='${group.name != "Admin"}'>
+                <input id="${group.name}.doRename" type="button" name="rename" value="Rename" onclick="renameGroup('${group.name}')">
+              </c:when>
+              <c:otherwise>
+                <input id="${group.name}.doRename" type="button" name="rename" value="Rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">
+              </c:otherwise>
+            </c:choose>
           </td>
           <td>
             <a href="javascript:detailGroup('${group.name}')">${group.name}</a>

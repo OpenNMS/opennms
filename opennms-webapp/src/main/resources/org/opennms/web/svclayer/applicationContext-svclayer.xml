@@ -16,6 +16,7 @@
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository" />
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository" />
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository" />
+  <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository" />
 
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >
@@ -197,6 +198,15 @@
     <property name="groupManager" ref="groupManager"/>
   </bean>
   
+  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+  </bean>
+
+  <bean id="useranager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="userManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.getInstance</value></property>
+  </bean>
+  
+
   
   <!-- Availability Report Beans -->
   

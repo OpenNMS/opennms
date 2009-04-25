@@ -487,48 +487,6 @@
     <servlet-name>removeDutySchedules</servlet-name>
     <servlet-class>org.opennms.web.admin.users.RemoveDutySchedulesServlet</servlet-class>
   </servlet>
-  <servlet>
-    <!-- servlet for adding duty schedules to a group's notification info-->
-    <servlet-name>addGroupDutySchedules</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.AddGroupDutySchedulesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for removing duty schedules from a group's notification info-->
-    <servlet-name>removeGroupDutySchedules</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.RemoveGroupDutySchedulesServlet</servlet-class>
-  </servlet>
-  
-<!--  <servlet>-->
-<!--     servlet for passing parameters to the group modify jsp -->
-<!--    <servlet-name>modifyGroup</servlet-name>-->
-<!--    <servlet-class>org.opennms.web.admin.groups.ModifyGroupServlet</servlet-class>-->
-<!--  </servlet>-->
-<!--  <servlet>-->
-<!--     servlet for updating the local group info during modification-->
-<!--    <servlet-name>updateGroup</servlet-name>-->
-<!--    <servlet-class>org.opennms.web.admin.groups.UpdateGroupServlet</servlet-class>-->
-<!--  </servlet>-->
-
-<!--  <servlet>-->
-<!--     servlet for saving the local group info during modification-->
-<!--    <servlet-name>saveGroup</servlet-name>-->
-<!--    <servlet-class>org.opennms.web.admin.groups.SaveGroupServlet</servlet-class>-->
-<!--  </servlet>-->
-  <servlet>
-    <!-- servlet for renaming the local group info during modification-->
-    <servlet-name>renameGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.RenameGroupServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new group-->
-    <servlet-name>addNewGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.AddNewGroupServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting a group-->
-    <servlet-name>deleteGroup</servlet-name>
-    <servlet-class>org.opennms.web.admin.groups.DeleteGroupServlet</servlet-class>
-  </servlet>
   
   <servlet>
   	<servlet-name>admin-roles</servlet-name>
@@ -869,40 +827,12 @@
     <servlet-name>removeDutySchedules</servlet-name>
     <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addGroupDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/addGroupDutySchedules</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>removeGroupDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/removeDutySchedules</url-pattern>
-  </servlet-mapping>
   <!-- end of user configuration servlets -->
   
   <!-- group configuration servlets -->
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/updateGroup</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/saveGroup</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>renameGroup</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/renameGroup</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addNewGroup</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/addNewGroup</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteGroup</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/deleteGroup</url-pattern>
   </servlet-mapping>
   <!-- end of group configuration servlets -->
   

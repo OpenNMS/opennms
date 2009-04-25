@@ -47,15 +47,19 @@
 		java.text.*,
 		org.opennms.netmgt.config.groups.*,
 		org.opennms.netmgt.config.users.*,
-		org.opennms.netmgt.dao.CategoryDao,
 		org.opennms.netmgt.model.OnmsCategory
 	"
 %>
+<%@page import="org.opennms.web.group.WebGroup"%>
 
 <%
-  	Group group = (Group)session.getAttribute("group.modifyGroup.jsp");
-	String[] categoryListNotInGroup = (String[])session.getAttribute("categoryListNotInGroup");
-	String[] categoryListInGroup = (String[]) session.getAttribute("categoryListInGroup");
+  	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
+    String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
+    String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
+	String[] categoryListInGroup = group.getAuthorizedCategories().toArray(new String[0]);
+    String[] categoryListNotInGroup = group.getUnauthorizedCategories(Arrays.asList(allCategories)).toArray(new String[0]);
+    String[] selectedUsers = group.getUsers().toArray(new String[0]);
+    String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
 
 	if (group == null) {
 		throw new ServletException("Could not get session attribute group");
@@ -71,7 +75,7 @@
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.jsp'>Group List</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.htm'>Group List</a>" />
   <jsp:param name="breadcrumb" value="Modify Group" />
 </jsp:include>
 
@@ -178,14 +182,26 @@
     
     function move(incr)
     {
-        var i = m2.selectedIndex;	// current selection
+        var i = m2.selectedIndex;   // current selection
         if( i < 0 ) return;
-        var j = i + incr;		// where it will move to
+        var j = i + incr;       // where it will move to
         if( j < 0 || j >= m2.length ) return;
-        var temp = m2.options[i].text;	// swap them
+        var temp = m2.options[i].text;  // swap them
         m2.options[i].text = m2.options[j].text;
         m2.options[j].text = temp;
-        m2.selectedIndex = j;		// make new location selected
+        m2.selectedIndex = j;       // make new location selected
+    }
+
+    function move(incr)
+    {
+        var i = m4.selectedIndex;   // current selection
+        if( i < 0 ) return;
+        var j = i + incr;       // where it will move to
+        if( j < 0 || j >= m4.length ) return;
+        var temp = m4.options[i].text;  // swap them
+        m4.options[i].text = m4.options[j].text;
+        m4.options[j].text = temp;
+        m4.selectedIndex = j;       // make new location selected
     }
 
     function addGroupDutySchedules()
@@ -195,8 +211,8 @@
         if(ok)
         {
             selectAllSelected();
-            document.modifyGroup.redirect.value="redirect:/admin/userGroupView/groups/addGroupDutySchedules";
-            document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
+            selectAllSelectedCategories();
+            document.modifyGroup.operation.value="addDutySchedules";
             document.modifyGroup.submit();
         }
     }
@@ -208,8 +224,8 @@
         if(ok)
         {
             selectAllSelected();
-            document.modifyGroup.redirect.value="/admin/userGroupView/groups/modifyGroup.jsp";
-            document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
+            selectAllSelectedCategories();
+            document.modifyGroup.operation.value="removeDutySchedules";
             document.modifyGroup.submit();
         }
     }
@@ -223,22 +239,20 @@
             //we need to select all the users in the selectedUsers select list so the
             //request object will have all the users
             selectAllSelected();
-            selectAllSelectedGroups();
-            alert("I am about to save");
-            document.modifyGroup.redirect.value="redirect:/admin/userGroupView/groups/saveGroup";
-            document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
+            selectAllSelectedCategories();
+            document.modifyGroup.operation.value="save";
             document.modifyGroup.submit();
         }
     }
     
     function cancelGroup()
     {
-        document.modifyGroup.action="admin/userGroupView/groups/list.jsp";
+        document.modifyGroup.operation.value="cancel";
         document.modifyGroup.submit();
     }
 
     //Group functions
-    function addGroup(){
+    function addCategories(){
     	m3len = m3.length ;
         for ( i=0; i<m3len ; i++)
         {
@@ -258,7 +272,7 @@
         }
     }
 
-    function removeGroup(){
+    function removeCategories(){
     	m4len = m4.length ;
         for ( i=0; i<m4len ; i++)
         {
@@ -277,13 +291,13 @@
         }
     }
 
-    function selectAllAvailableGroups(){
+    function selectAllAvailableCategories(){
     	for (i=0; i < m3.length; i++){
             m3.options[i].selected = true;
         }
     }
 
-    function selectAllSelectedGroups(){
+    function selectAllSelectedCategories(){
     	for (i=0; i < m4.length; i++){
             m4.options[i].selected = true;
         }
@@ -294,7 +308,7 @@
 
 <form method="post" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
-  <input type="hidden" name="redirect"/>
+  <input type="hidden" name="operation"/>
 
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
         <tr>
@@ -316,14 +330,14 @@
               <tr>
                 <td align="center">
                   Available Users <br>
-                  <%=getAllUsersMinusInGroup(group)%><br>
+                  <%=createSelectList("availableUsers", availableUsers)%><br>
                   <p align="center">
                   <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br>
                   <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
                 </td>
                 <td align="center">
                   Currently in Group <br>
-                  <%=getUsersList(group)%><br>
+                  <%=createSelectList("selectedUsers", selectedUsers)%><br>
                   <p align="center">
                   <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br>
                   <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
@@ -349,22 +363,22 @@
 	              <tr>
 	                <td align="center">
 	                  Available Categories <br>
-	                  <%=createAvailableGroupSelectList(categoryListNotInGroup)%><br>
+	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br>
 	                  <p align="center">
 	                  
-	                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br>
-	                  <input type="button" onClick="addGroup()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"><br>
+	                  <input type="button" onClick="addCategories()" value="&nbsp;&gt;&gt;&nbsp;"></p>
 	                </td>
 	                <td align="center">
 	                  Currently in Group <br>
-	                  <%=createGroupSelectList(categoryListInGroup)%><br>
+	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br>
 	                  <p align="center">
-	                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br>
-	                  <input type="button" onClick="removeGroup()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"><br>
+	                  <input type="button" onClick="removeCategories()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
 	                </td>
 	                <td>
-	                  <input type="button" value="  Move Up   " onclick="move(-1)"> <br>
-	                  <input type="button" value="Move Down" onclick="move(1)">
+	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"> <br>
+	                  <input type="button" value="Move Down" onclick="moveCat(1)">
 	                </td>
 	              </tr>
 	            </table>
@@ -387,16 +401,11 @@
           <td><b>Begin Time</b></td>
           <td><b>End Time</b></td>
         </tr>
-                    <%
-                            Collection dutySchedules = group.getDutyScheduleCollection(); %>
-                            <input type="hidden" name="dutySchedules" value="<%=group.getDutyScheduleCount()%>">
-                    <%
-                            int i =0;
-                            Iterator iter = dutySchedules.iterator();
-                            while(iter.hasNext())
-                            {
-                                    DutySchedule tmp = new DutySchedule((String)iter.next());
-                                    Vector curSched = tmp.getAsVector();
+            <%
+                       int i = 0;
+                       for(String dutySchedSpec : group.getDutySchedules()) {
+                           DutySchedule tmp = new DutySchedule(dutySchedSpec);
+                           Vector curSched = tmp.getAsVector();
                     %>
                     <tr>
                       <td width="1%"><%=(i+1)%></td>
@@ -423,6 +432,7 @@
       </table>
 
   <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()">
+     <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>">
     <select name="numSchedules" value="3" size="1">
       <option value="1">1</option>
       <option value="2">2</option>
@@ -462,8 +472,8 @@
   // you would only need to change them in one spot, here
   var m1 = document.modifyGroup.availableUsers;
   var m2 = document.modifyGroup.selectedUsers;
-  var m3 = document.modifyGroup.availableGroups;
-  var m4 = document.modifyGroup.selectedGroups;
+  var m3 = document.modifyGroup.availableCategories;
+  var m4 = document.modifyGroup.selectedCategories;
 </script>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
@@ -471,75 +481,14 @@
 
 
 <%!
-    private String getUsersList(Group group)
-    {
-        StringBuffer buffer = new StringBuffer("<select WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"selectedUsers\" size=\"10\">");
-        
-        Enumeration users = group.enumerateUser();
-        
-        while (users != null && users.hasMoreElements())
-        {
-            buffer.append("<option>" + (String)users.nextElement() + "</option>");
+    private String createSelectList(String name, String[] categories) {
+        StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\""+name+"\" size=\"10\">");
+        for(String category : categories){
+            buffer.append("<option>" + category + "</option>");
         }
         buffer.append("</select>");
         
         return buffer.toString();
     }
     
-    private String getAllUsersMinusInGroup(Group group)
-        throws ServletException
-    {
-        StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableUsers\" size=\"10\">");
-        
-        Enumeration userEnum = group.enumerateUser();
-	List users = new ArrayList();
-	while(userEnum.hasMoreElements())
-	{
-		users.add((String)userEnum.nextElement());
-	}
-        
-        try
-        {
-	  UserFactory.init();
-          UserManager userFactory = UserFactory.getInstance();
-          List userNames = userFactory.getUserNames();
-          
-          for (int i = 0; i < userNames.size(); i++)
-          {
-              String curUser = (String)userNames.get(i);
-              
-              if (!users.contains(curUser))
-              {
-                  buffer.append("<option>" + curUser + "</option>");
-              }
-          }
-        }
-        catch(Exception e)
-        {
-            throw new ServletException("Couldn't open UserFactory", e);
-        }
-        buffer.append("</select>");
-        
-        return buffer.toString();
-    }
-    
-    private String createAvailableGroupSelectList(String[] categories){
-    	StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"availableGroups\" size=\"10\">");
-    	for(String category : categories){
-    		buffer.append("<option>" + category + "</option>");
-    	}
-    	buffer.append("</select>");
-    	
-    	return buffer.toString();
-    }
-    
-    private String createGroupSelectList(String[] categories){
-    	StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\"selectedGroups\" size=\"10\">");
-    	for(String category : categories){
-    		buffer.append("<option>" + category + "</option>");
-    	}
-    	buffer.append("</select>");
-    	
-    	return buffer.toString();
-    }
 %>

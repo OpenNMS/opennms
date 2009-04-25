@@ -61,7 +61,7 @@
         <a HREF="admin/userGroupView/users/list.jsp">Configure Users</a>
       </p>
       <p>
-        <a HREF="admin/userGroupView/groups/list.jsp">Configure Groups</a>
+        <a HREF="admin/userGroupView/groups/list.htm">Configure Groups</a>
       </p>
       <p>
         <a HREF="admin/userGroupView/roles">Configure Roles</a>
