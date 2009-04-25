@@ -53,13 +53,12 @@
 %>
 
 <%
-  	Group group = (Group)request.getAttribute("group");
-	String[] categoryListNotInGroup = (String[])request.getAttribute("categoryListNotInGroup");
-	String[] categoryListInGroup = (String[]) request.getAttribute("categoryListInGroup");
+  	Group group = (Group)session.getAttribute("group.modifyGroup.jsp");
+	String[] categoryListNotInGroup = (String[])session.getAttribute("categoryListNotInGroup");
+	String[] categoryListInGroup = (String[]) session.getAttribute("categoryListInGroup");
 
 	if (group == null) {
-		throw new ServletException("Could not get session attribute "
-					   + "group");
+		throw new ServletException("Could not get session attribute group");
 	}
 	
 	
@@ -196,7 +195,7 @@
         if(ok)
         {
             selectAllSelected();
-            document.modifyGroup.redirect.value="/admin/userGroupView/groups/addGroupDutySchedules";
+            document.modifyGroup.redirect.value="redirect:/admin/userGroupView/groups/addGroupDutySchedules";
             document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
             document.modifyGroup.submit();
         }
@@ -226,7 +225,7 @@
             selectAllSelected();
             selectAllSelectedGroups();
             alert("I am about to save");
-            document.modifyGroup.redirect.value="/admin/userGroupView/groups/saveGroup";
+            document.modifyGroup.redirect.value="redirect:/admin/userGroupView/groups/saveGroup";
             document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
             document.modifyGroup.submit();
         }
