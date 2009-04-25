@@ -33,6 +33,7 @@ package org.opennms.web.controller.admin.group;
 
 import java.util.Set;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,9 +58,9 @@ public class SaveGroupController extends AbstractController implements
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession user = request.getSession(false);
-        System.out.println("\n made it to the saveGroupController \n");
+
         if (user != null) {
-            Group newGroup = (Group) user.getAttribute("group");
+            Group newGroup = (Group) user.getAttribute("group.modifyGroup.jsp");
 
             if (newGroup != null) {
                 // now save to the xml file
@@ -70,20 +71,12 @@ public class SaveGroupController extends AbstractController implements
                     throw new ServletException("Error saving group " + newGroup.getName(), e);
                 }
             }
-        }
-        
-        String groupName = request.getParameter("groupName");
-        String groups[]  = request.getParameterValues("selectedGroups");
-        if(groups != null){
-            updateCategories(groupName, groups);
+            
+            
         }
 
-        // forward the request for proper display
-        //RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/groups/list.jsp");
-        //dispatcher.forward(request, response);
-        RedirectView redirect = new RedirectView("/admin/userGroupView/groups/list.jsp");
-        ModelAndView mav = new ModelAndView(redirect);
-        return mav;
+
+        return new ModelAndView("redirect:/admin/userGroupView/groups/list.jsp");
     }
 
     public void afterPropertiesSet() throws Exception {

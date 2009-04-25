@@ -38,13 +38,18 @@
 package org.opennms.web.controller.admin.group;
 
 import java.text.ChoiceFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -71,58 +76,77 @@ public class UpdateGroupController extends AbstractController implements Initial
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String groupName = request.getParameter("groupName");
-        
-        GroupFactory.init();
-        GroupManager groupFactory = GroupFactory.getInstance();
-        Group newGroup = groupFactory.getGroup(groupName);
-        
-          // get the rest of the group information from the form
-          newGroup.removeAllUser();
+        HttpSession userSession = request.getSession(false);
 
-          String users[] = request.getParameterValues("selectedUsers");
+        if (userSession != null) {
+            //group.modifyGroup.jsp
+            Group newGroup = (Group) userSession.getAttribute("group.modifyGroup.jsp");
 
-          if (users != null) {
-              for (int i = 0; i < users.length; i++) {
-                  newGroup.addUser(users[i]);
-              }
-          }
-          
-          Vector<Object> newSchedule = new Vector<Object>();
-          ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+            // get the rest of the group information from the form
+            newGroup.removeAllUser();
 
-          Collection<String> dutySchedules = getDutySchedulesForGroup(newGroup);
-          dutySchedules.clear();
+            String users[] = request.getParameterValues("selectedUsers");
 
-          int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
-          for (int duties = 0; duties < dutyCount; duties++) {
-              newSchedule.clear();
-              String deleteFlag = request.getParameter("deleteDuty" + duties);
-              // don't save any duties that were marked for deletion
-              if (deleteFlag == null) {
-                  for (int i = 0; i < 7; i++) {
-                      String curDayFlag = request.getParameter("duty" + duties + days.format(i));
-                      if (curDayFlag != null) {
-                          newSchedule.addElement(new Boolean(true));
-                      } else {
-                          newSchedule.addElement(new Boolean(false));
-                      }
-                  }
-                  newSchedule.addElement(request.getParameter("duty" + duties + "Begin"));
-                  newSchedule.addElement(request.getParameter("duty" + duties + "End"));
+            if (users != null) {
+                for (int i = 0; i < users.length; i++) {
+                    newGroup.addUser(users[i]);
+                }
+            }
 
-                  DutySchedule newDuty = new DutySchedule(newSchedule);
-                  dutySchedules.add(newDuty.toString());
-              }
-          }
-          
-         
-        RedirectView redirect = new RedirectView("saveGroup", true);
-        ModelAndView mav = new ModelAndView(redirect);
-        mav.addObject("groupName", groupName);
-        mav.addObject("group", newGroup);
-        mav.addObject("selectedCategories", request.getParameterValues("selectedCategories"));
-        return mav;
+            Vector<Object> newSchedule = new Vector<Object>();
+            ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+
+            Collection<String> dutySchedules = getDutySchedulesForGroup(newGroup);
+            dutySchedules.clear();
+
+            int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
+            for (int duties = 0; duties < dutyCount; duties++) {
+                newSchedule.clear();
+                String deleteFlag = request.getParameter("deleteDuty" + duties);
+                // don't save any duties that were marked for deletion
+                if (deleteFlag == null) {
+                    for (int i = 0; i < 7; i++) {
+                        String curDayFlag = request.getParameter("duty" + duties + days.format(i));
+                        if (curDayFlag != null) {
+                            newSchedule.addElement(new Boolean(true));
+                        } else {
+                            newSchedule.addElement(new Boolean(false));
+                        }
+                    }
+
+                    newSchedule.addElement(request.getParameter("duty" + duties + "Begin"));
+                    newSchedule.addElement(request.getParameter("duty" + duties + "End"));
+
+                    DutySchedule newDuty = new DutySchedule(newSchedule);
+                    dutySchedules.add(newDuty.toString());
+                }
+            }
+            userSession.setAttribute("group.modifyGroup.jsp", newGroup);
+
+            String[] allCategories = (String[])userSession.getAttribute("allCategoriesList");
+
+            String[] categoryListInGroup = request.getParameterValues("selectedCategories");
+
+            String[] categoryListNotInGroup = removeAll(allCategories, categoryListInGroup);
+
+            userSession.setAttribute("categoryListInGroup", categoryListInGroup);
+            userSession.setAttribute("categoryListNotInGroup", categoryListNotInGroup);
+
+        }
+
+        return new ModelAndView(request.getParameter("redirect"));
+    }
+
+    /**
+     * @param allCategories
+     * @param categoryListInGroup
+     * @return
+     */
+    private String[] removeAll(String[] a,  String[] b) {
+        ArrayList<String> list = new ArrayList<String>();
+        list.addAll(Arrays.asList(a));
+        list.removeAll(Arrays.asList(b));
+        return list.toArray(new String[list.size()]);
     }
 
     public void afterPropertiesSet() throws Exception {
