@@ -41,24 +41,18 @@ import java.text.ChoiceFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Vector;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.group.WebGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * A servlet that handles saving a group
@@ -69,34 +63,27 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UpdateGroupController extends AbstractController implements InitializingBean{
     private static final long serialVersionUID = 1L;
     
-    @SuppressWarnings("unchecked")
-    private List<String> getDutySchedulesForGroup(Group group) {
-        return (List<String>) group.getDutyScheduleCollection();
-    }
-
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession userSession = request.getSession(false);
 
         if (userSession != null) {
             //group.modifyGroup.jsp
-            Group newGroup = (Group) userSession.getAttribute("group.modifyGroup.jsp");
+            WebGroup newGroup = (WebGroup) userSession.getAttribute("group.modifyGroup.jsp");
 
             // get the rest of the group information from the form
-            newGroup.removeAllUser();
-
             String users[] = request.getParameterValues("selectedUsers");
+            
+            newGroup.setUsers(new ArrayList<String>(Arrays.asList(users)));
 
-            if (users != null) {
-                for (int i = 0; i < users.length; i++) {
-                    newGroup.addUser(users[i]);
-                }
-            }
-
+            String[] selectedCategories = request.getParameterValues("selectedCategories");
+            
+            newGroup.setAuthorizedCategories(new ArrayList<String>(Arrays.asList(selectedCategories)));
+            
             Vector<Object> newSchedule = new Vector<Object>();
             ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
-            Collection<String> dutySchedules = getDutySchedulesForGroup(newGroup);
+            Collection<String> dutySchedules = newGroup.getDutySchedules();
             dutySchedules.clear();
 
             int dutyCount = WebSecurityUtils.safeParseInt(request.getParameter("dutySchedules"));
@@ -121,16 +108,8 @@ public class UpdateGroupController extends AbstractController implements Initial
                     dutySchedules.add(newDuty.toString());
                 }
             }
+
             userSession.setAttribute("group.modifyGroup.jsp", newGroup);
-
-            String[] allCategories = (String[])userSession.getAttribute("allCategoriesList");
-
-            String[] categoryListInGroup = request.getParameterValues("selectedCategories");
-
-            String[] categoryListNotInGroup = removeAll(allCategories, categoryListInGroup);
-
-            userSession.setAttribute("categoryListInGroup", categoryListInGroup);
-            userSession.setAttribute("categoryListNotInGroup", categoryListNotInGroup);
 
         }
 

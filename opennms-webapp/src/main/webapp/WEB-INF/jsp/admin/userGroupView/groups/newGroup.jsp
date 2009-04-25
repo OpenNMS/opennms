@@ -48,7 +48,7 @@
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.jsp'>Group List</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.htm'>Group List</a>" />
 	<jsp:param name="breadcrumb" value="New Group" />
 </jsp:include>
 
@@ -62,12 +62,14 @@
         return;
     }
     
-    document.newGroupForm.action="admin/userGroupView/groups/addNewGroup";
+    document.newGroupForm.action="admin/userGroupView/groups/modifyGroup";
+    document.newGroupForm.operation.value="addGroup";
     document.newGroupForm.submit();
   }    
   function cancelGroup()
   {
-      document.newGroupForm.action="admin/userGroupView/groups/list.jsp";
+      document.newGroupForm.action="admin/userGroupView/groups/modifyGroup";
+      document.newGroupForm.operation.value="cancel";
       document.newGroupForm.submit();
   }
 
@@ -81,6 +83,7 @@
 <%}%>
 
 <form id="newGroupForm" method="post" name="newGroupForm">
+  <input type="hidden" name="operation" />
   <table>
     <tr>
       <td width="10%"><label id="groupNameLabel" for="groupName">Group Name:</label></td>
