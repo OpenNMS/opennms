@@ -37,11 +37,13 @@ package org.opennms.netmgt.dao;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
@@ -73,6 +75,16 @@ public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
                
        System.err.println(matching3);
     }
+   
+   public void testGetCategoriesWithAuthorizedGroups() {
+       
+       List<OnmsCategory> categories = getCategoryDao().getCategoriesWithAuthorizedGroup("RouterGroup");
+       
+       assertNotNull(categories);
+       assertEquals(1, categories.size());
+       assertEquals("Router", categories.get(0).getName());
+       
+   }
    
    public void enableAuthorizationFilter(final String... groupNames) {
        
