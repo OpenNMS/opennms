@@ -91,7 +91,6 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
                     groupNames[i] = groups.get(i).getName();
                 }
 
-                System.err.println("ENABLE AUTH FILTER for user "+user+ " with groups "+Arrays.toString(groupNames));
 
                 m_filterManager.enableAuthorizationFilter(groupNames);
             }
@@ -102,7 +101,6 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
             if (shouldFilter) {
                 m_filterManager.disableAuthorizationFilter();
             }
-            System.err.println("DISABLE AUTH FILTER");
         }
 
         

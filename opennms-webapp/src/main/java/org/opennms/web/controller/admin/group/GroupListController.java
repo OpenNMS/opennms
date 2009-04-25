@@ -57,7 +57,7 @@ public class GroupListController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Map<String, Group> groups = m_groupManager.getGroups();
-	    return new ModelAndView("admin/groups/list", "groups", groups.values());
+	    return new ModelAndView("admin/userGroupView/groups/list", "groups", groups.values());
 	}
 
 	public GroupManager getGroupManager() {

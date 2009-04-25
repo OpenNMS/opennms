@@ -49,7 +49,6 @@ import org.hibernate.type.Type;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsRestrictions;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -68,6 +67,10 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     @Override
     protected String getKey(OnmsCategory category) {
         return category.getName();
+    }
+    
+    public List<String> getAllCategoryNames() {
+        return findObjects(String.class, "select category.name from OnmsCategory as category");
     }
 
     public List<Criterion> getCriterionForCategorySetsUnion(String[]... categories) {
@@ -111,7 +114,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
      */
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName) {
         OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
-        crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?", groupName, Hibernate.STRING));
+        crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, Hibernate.STRING));
         return findMatching(crit);
     }
 }

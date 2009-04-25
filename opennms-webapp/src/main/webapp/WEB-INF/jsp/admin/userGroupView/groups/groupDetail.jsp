@@ -51,26 +51,15 @@
 	"
 %>
 
+<%@page import="org.opennms.web.group.WebGroup"%>
+
 <%
-	Group group = null;
-  	String groupName = request.getParameter("groupName");
-        if (groupName == null) {
-                throw new MissingParameterException("groupName");
-        }
 
-	try {
-		GroupFactory.init();
-		GroupManager groupFactory = GroupFactory.getInstance();
-      		group = groupFactory.getGroup(groupName);
-  	} catch (Exception e) {
-      		throw new ServletException("Could not find group " + groupName + " in group factory.", e);
-  	}
+    WebGroup group = (WebGroup)request.getAttribute("group");
 
-	if (group == null) {
-		throw new ServletException("Could not find group " + groupName);
-	}
 
 %>
+
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Group Detail" />
@@ -79,7 +68,7 @@
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.jsp'>Group List</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.htm'>Group List</a>" />
   <jsp:param name="breadcrumb" value="Group Detail" />
 </jsp:include>
 
@@ -106,7 +95,7 @@
             <tr>
               <td>
                 <b>Assigned Users:</b>
-                <% Collection users = group.getUserCollection();
+                <% Collection users = group.getUsers();
                 if (users.size() < 1)
                 { %>
                   <table width="50%" border="0" cellspacing="0" cellpadding="2" >
@@ -135,7 +124,7 @@
               <td>
               <b>Duty Schedules:</b>
                     <table width="50%" border="1" cellspacing="0" cellpadding="2" >
-                      <% Collection dutySchedules = group.getDutyScheduleCollection(); %>
+                      <% Collection dutySchedules = group.getDutySchedules(); %>
                       <%
                               int i =0;
                               Iterator iter = dutySchedules.iterator();
