@@ -61,13 +61,13 @@ public class InsServerListener extends InsServerAbstractListener {
 	 */
 	public void interrupt() {
         Category log = getLog();
-		log.info("InsServerListener Interrupted!");
 		try {
 			listener.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+		    log.error("Gor Error closing listener: " + e.getLocalizedMessage());
 		}
 		super.interrupt();
+        log.info("InsServerListener Interrupted!");
 	}
 	
 	private synchronized void cleanActiveSessions(){
@@ -134,7 +134,7 @@ public class InsServerListener extends InsServerAbstractListener {
 		InsServerListener isl = new InsServerListener();
 		isl.setListeningPort(8155);
 		//optional (if not setted, no authentication is required)
-		//isl.setSharedASCIIString("1234567890");
+		isl.setSharedASCIIString("1234567890");
 		
 		//required properties
 		

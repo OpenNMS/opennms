@@ -43,6 +43,7 @@ public abstract class InsAbstractSession extends Thread {
 	}
 
 	public void setCriteriaRestriction(String criteriaRestriction) {
+	    getLog().debug("Setting the criteria restriction for active alarm list: " + criteriaRestriction);
 		this.criteriaRestriction = criteriaRestriction;
 	}
 
@@ -50,6 +51,7 @@ public abstract class InsAbstractSession extends Thread {
         super();
         ThreadCategory.setPrefix("OpenNMS.InsProxy");
         log=ThreadCategory.getInstance(this.getClass());
+        log.debug("InsAbstract Session Constructor: loaded");
     }
 
     public Category getLog() {
@@ -69,7 +71,10 @@ public abstract class InsAbstractSession extends Thread {
         m_criteria = criteria;
     }
     
+    @SuppressWarnings("unchecked")
     protected String getIfAlias(int nodeid, int ifindex) {
+
+        log.debug("getting ifalias for nodeid: " +nodeid + " and ifindex: " + ifindex);
 
         setCriteria("nodeid = " + nodeid + " AND snmpifindex = " + ifindex);
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
@@ -84,13 +89,18 @@ public abstract class InsAbstractSession extends Thread {
                         }
                    }
         );
-        log.debug("interfacce trovate: " + iface.size());
+        log.debug("interfaces found: " + iface.size());
+
+        String ifAlias = iface.get(0).getIfAlias();
+        log.debug("ifalias found: " + ifAlias);
         
-        return iface.get(0).getIfAlias();
+        return ifAlias;
     }
 
+    @SuppressWarnings("unchecked")
     protected OnmsSnmpInterface getIfAlias(int nodeid, String ipaddr) {
 
+        log.debug("getting ifalias for nodeid: " +nodeid + " and ipaddress: " + ipaddr);
         setCriteria("nodeid = " + nodeid + " AND ipaddr = '" + ipaddr +"'");
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
@@ -104,7 +114,10 @@ public abstract class InsAbstractSession extends Thread {
                         }
                    }
         );
-        log.debug("interfacce trovate: " + iface.size());
+        log.debug("interfaces found: " + iface.size());
+
+        String ifAlias = iface.get(0).getIfAlias();
+        log.debug("ifalias found: " + ifAlias);
         
         return iface.get(0);
     }
