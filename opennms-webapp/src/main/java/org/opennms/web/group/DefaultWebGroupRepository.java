@@ -137,7 +137,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
         
         
         for(String categoryName : categoryNames) {
-            OnmsCategory category = m_categoryDao.findByName(categoryName);
+            OnmsCategory category = m_categoryDao.findByName(categoryName, false);
             if (category != null) {
                 category.getAuthorizedGroups().add(groupName);
             }

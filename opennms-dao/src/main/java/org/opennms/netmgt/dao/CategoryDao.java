@@ -44,6 +44,8 @@ public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
     public abstract OnmsCategory findByName(String name);
     
+    public abstract OnmsCategory findByName(String name, boolean useCached);
+    
     public abstract List<String> getAllCategoryNames();
     
     public abstract List<Criterion> getCriterionForCategorySetsUnion(String[]... categories);
