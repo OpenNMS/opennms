@@ -74,7 +74,8 @@
     } 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+
+<%@page import="org.springframework.web.HttpRequestHandler"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Modify Asset" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Asset" />
@@ -113,7 +114,7 @@
   </table>
 <% } %>      
 
-<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+<% if( (request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
 <form action="asset/modifyAsset" method="post">
   <input type="hidden" name="node" value="<%=nodeId%>" />
   <input type="hidden" name="isnew" value="<%=isNew%>" />
@@ -125,44 +126,45 @@
 	  </tr>
 	  <tr>
 	    <td>Display Category</td>
-	    <td><input type="text" name="displaycategory" value="<%=asset.getDisplayCategory()%>" size="20" maxlength="64"/></td>
+	    <td><%=getTextField(request, "text", "displaycategory", asset.getDisplayCategory(), "20", "64")%></td>
 	    <td>Notification Category</td>
-	    <td><input type="text" name="notifycategory"  value="<%=asset.getNotifyCategory()%>" size="20" maxlength="64"/></td>
+	    <td><%=getTextField(request, "text", "notifycategory", asset.getNotifyCategory(), "20", "64")%></td>
 	  </tr>
 	  <tr>
 	    <td>Poller Category</td>
-	    <td><input type="text" name="pollercategory" value="<%=asset.getPollerCategory()%>" size="20" maxlength="64"/></td>
+	    <td><%=getTextField(request, "text", "pollercategory", asset.getPollerCategory(), "20", "64")%></td>
 	    <td>Threshold Category</td>
-	    <td><input type="text" name="thresholdcategory"  value="<%=asset.getThresholdCategory()%>" size="20" maxlength="64"/></td>
+	    <td><%=getTextField(request, "text", "thresholdcategory", asset.getThresholdCategory(), "20", "64")%></td>
 	  </tr>
           <tr>
             <td colspan="6"><h3>Identification</h3></td>
           </tr>
           <tr>
             <td width="5%">Description</td>
-            <td colspan="3"><input type="text" name="description" value="<%=asset.getDescription()%>" size="70" maxlength="128"/></td>
+            <td colspan="3"><%=getTextField(request, "text", "description", asset.getDescription(), "70", "128")%></td>
             <td width="5%">Category</td>
             <td>
+            <%if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
               <select name="category" size="1">
               <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                 <option<%=(Asset.CATEGORIES[i].equals(asset.getCategory()))?" selected":""%>><%=Asset.CATEGORIES[i]%></option> 
               <% } %>
-              </select>
+			<% } else { getTextField(request, "text", "category", asset.getCategory(), "20", "64"); } %>
             </td>
           </tr>
           <tr>
             <td>Manufacturer</td>
-            <td><input type="text" name="manufacturer" value="<%=asset.getManufacturer()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "manufacturer", asset.getManufacturer(), "20", "64")%></td>
             <td>Model Number</td>
-            <td><input type="text" name="modelnumber" value="<%=asset.getModelNumber()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "modelnumber", asset.getModelNumber(), "20", "64")%></td>
             <td>Serial Number</td>
-            <td><input type="text" name="serialnumber"  value="<%=asset.getSerialNumber()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "serialnumber", asset.getSerialNumber(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Asset Number</td>
-            <td><input type="text" name="assetnumber" value="<%=asset.getAssetNumber()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "assetnumber", asset.getAssetNumber(), "20", "64")%></td>
             <td>Date Installed</td>
-            <td><input type="text" name="dateinstalled" value="<%=asset.getDateInstalled()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "dateinstalled", asset.getDateInstalled(), "20", "64")%></td>
             <td>Operating System</td>
 	    <% String os = asset.getOperatingSystem();
 		if(os == null || os.equals(""))
@@ -170,55 +172,54 @@
 		if (os == null)
 			os = "";
 	     %>
-            <td><input type="text" name="operatingsystem"  
-			value="<%=os%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "operatingsystem", os, "20", "64")%></td>
           </tr>
           <tr>
             <td colspan="6"><h3>Location</h3></td>
           </tr>
           <tr>
             <td>Region</td>
-            <td><input type="text" name="region" value="<%=asset.getRegion()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "region", asset.getRegion(), "20", "64")%><%-- <input type="text" name="region" value="<%=asset.getRegion()%>" size="20" maxlength="64"/> --%></td>
             <td>Division</td>
-            <td><input type="text" name="division" value="<%=asset.getDivision()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "division", asset.getDivision(), "20", "64")%></td>
             <td>Department</td>
-            <td><input type="text" name="department" value="<%=asset.getDepartment()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "department", asset.getDepartment(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Address&nbsp;1</td>
-            <td colspan="5"><input type="text" value="<%=asset.getAddress1()%>" name="address1" size="100" maxlength="256"/></td>
+            <td colspan="5"><%=getTextField(request, "text", "address1", asset.getAddress1(), "100", "256")%></td>
           </tr>
           <tr>
             <td>Address&nbsp;2</td>
-            <td colspan="5"><input type="text" value="<%=asset.getAddress2()%>" name="address2" size="100" maxlength="256"/></td>
+            <td colspan="5"><%=getTextField(request, "text", "address2", asset.getAddress2(), "100", "256")%></td>
           </tr>
           <tr>
             <td>City</td>
-            <td><input type="text" value="<%=asset.getCity()%>" name="city" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "city", asset.getCity(), "20", "64")%></td>
             <td>State</td>
-            <td><input type="text" value="<%=asset.getState()%>" name="state" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "state", asset.getState(), "20", "64")%></td>
             <td>ZIP</td>
-            <td><input type="text" value="<%=asset.getZip()%>" name="zip" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "zip", asset.getZip(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Building</td>
-            <td><input type="text" name="building" value="<%=asset.getBuilding()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "building", asset.getBuilding(), "20", "64")%></td>
             <td>Floor</td>
-            <td><input type="text" name="floor" value="<%=asset.getFloor()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "floor", asset.getFloor(), "20", "64")%></td>
             <td>Room</td>
-            <td><input type="text" name="room" value="<%=asset.getRoom()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "room", asset.getRoom(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Rack</td>
-            <td><input type="text" name="rack" value="<%=asset.getRack()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "rack", asset.getRack(), "20", "64")%></td>
             <td>Slot</td>
-            <td><input type="text" name="slot" value="<%=asset.getSlot()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "slot", asset.getSlot(), "20", "64")%></td>
             <td>Port</td>
-            <td><input type="text" name="port" value="<%=asset.getPort()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "port", asset.getPort(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Circuit&nbsp;ID</td>
-            <td><input type="text" name="circuitid" value="<%=asset.getCircuitId()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "circuitid", asset.getCircuitId(), "20", "64")%></td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
@@ -229,28 +230,30 @@
           </tr>
           <tr>
             <td>Name</td>
-            <td><input type="text" name="vendor" value="<%=asset.getVendor()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "vendor", asset.getVendor(), "20", "64")%></td>
             <td>Phone</td>
-            <td><input type="text" name="vendorphone" value="<%=asset.getVendorPhone()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "vendorphone", asset.getVendorPhone(), "20", "64")%></td>
             <td>Fax</td>
-            <td><input type="text" name="vendorfax"  value="<%=asset.getVendorFax()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "vendorfax", asset.getVendorFax(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Lease</td>
-            <td><input type="text" name="lease" value="<%=asset.getLease()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "lease", asset.getLease(), "20", "64")%></td>
             <td>Lease Expires</td>
-            <td><input type="text" name="leaseexpires" value="<%=asset.getLeaseExpires()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "leaseexpires", asset.getLeaseExpires(), "20", "64")%></td>
             <td>Vendor Asset</td>
-            <td><input type="text" name="vendorassetnumber" value="<%=asset.getVendorAssetNumber()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "vendorassetnumber", asset.getVendorAssetNumber(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Maint Contract</td>
-            <td><input type="text" name="maintcontract" value="<%=asset.getMaintContract()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "maintcontract", asset.getMaintContract(), "20", "64")%></td>
             <td>Contract Expires</td>
-            <td><input type="text" name="maintcontractexpires" value="<%=asset.getMaintContractExpires()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "maintcontractexpires", asset.getMaintContractExpires(), "20", "64")%></td>
             <td>Maint Phone</td>
-            <td><input type="text" name="supportphone" value="<%=asset.getSupportPhone()%>" size="20" maxlength="64"/></td>
+            <td><%=getTextField(request, "text", "supportphone", asset.getSupportPhone(), "20", "64")%></td>
           </tr>
+          
+          <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
           <tr>
             <td colspan="6"><h3>Authentication</h3></td>
           </tr>
@@ -262,24 +265,30 @@
             <td>Enable Password</td>
             <td><input type="text" name="enable" value="<%=asset.getEnable()%>" size="20" maxlength="32"/></td>
           </tr>
+          <% } %>
+          
           <tr>
             <td>Connection</td>
             <td>
+            <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
               <select name="connection" size="1">
               	<option></option>
               <% for( int i=0; i < Asset.CONNECTIONS.length; i++ ) { %>
                 <option <%=(Asset.CONNECTIONS[i].equals(asset.getConnection()))?"selected":""%>><%=Asset.CONNECTIONS[i]%></option> 
               <% } %>
-              </select>            
+              </select>
+              <% }else{ getTextField(request, "text", "connection", asset.getConnection(), "20", "64");}%>
             </td>
             <td>AutoEnable</td>
             <td>
+            <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
               <select name="autoenable" size="1">
               	<option></option>
               <% for( int i=0; i < Asset.AUTOENABLES.length; i++ ) { %>
                 <option <%=(Asset.AUTOENABLES[i].equals(asset.getAutoenable()))?"selected":""%>><%=Asset.AUTOENABLES[i]%></option> 
               <% } %>
               </select>
+              <% }else{ getTextField(request, "text", "autoEnable", asset.getAutoenable(), "20", "64"); } %>
              </td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
@@ -288,7 +297,7 @@
             <td colspan="6"><h3>Comments</h3></td>
           </tr>
           <tr>
-            <td colspan="6"><textarea name="comments" cols="100" rows="15"><%=asset.getComments()%></textarea></td>
+            <td colspan="6"><%=getTextArea(request, "comments", asset.getComments())%></td>
           </tr>
           <tr>
           <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
@@ -296,7 +305,7 @@
               <input type="submit" value="Submit"/>
               <input type="reset" />
             </td>
-          <% } %>
+          	
             <td colspan="3" align="right"> 
               <font size="-1">
               <% if( isNew ) { %>
@@ -306,11 +315,30 @@
               <% } %>
               </font>  
             </td>
+            <% } %>
           </tr>
         </table>
-      <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
+      <%if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
       </form>
 
       <% } %>
+      
+      <%!
+      	private String getTextField(HttpServletRequest request, String type, String name, String value, String size, String maxLength){
+	    	  if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){
+	    		  return String.format("<input type=\"%s\" name=\"%s\" value=\"%s\" size=\"%s\" maxlength=\"%s\"/>", type, name, value, size, maxLength);
+	    	  }else{
+	    	  	return String.format("<p>%s</p>", value);
+	    	  }
+      	}
+      
+	    private String getTextArea(HttpServletRequest request, String name, String value){
+	    	  if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){
+	    		  return String.format("<textarea name=\"%s\" cols=\"100\" rows=\"15\">%s</textarea>",  name, value);
+	    	  }else{
+	    	  	return String.format("<p>%s</p>", value);
+	    	  }
+	  	}
+      %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
