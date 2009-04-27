@@ -57,13 +57,19 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     public CategoryDaoHibernate() {
         super(OnmsCategory.class, false);
     }
-
+    
     public OnmsCategory findByName(String name) {
-        return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
+        return findByName(name, true);
+    }
+
+    public OnmsCategory findByName(String name, boolean useCached) {
+        if (useCached) {
+            return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
+        } else {
+            return findUnique("from OnmsCategory as category where category.name = ?", name);
+        }
     }
     
-    
-
     @Override
     protected String getKey(OnmsCategory category) {
         return category.getName();
