@@ -291,7 +291,7 @@
             <td colspan="6"><textarea name="comments" cols="100" rows="15"><%=asset.getComments()%></textarea></td>
           </tr>
           <tr>
-          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
             <td colspan="3">
               <input type="submit" value="Submit"/>
               <input type="reset" />
@@ -308,7 +308,7 @@
             </td>
           </tr>
         </table>
-      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
       </form>
 
       <% } %>

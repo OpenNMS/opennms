@@ -48,6 +48,7 @@ public final class Authentication extends Object {
     public static final String READONLY_ROLE = "ROLE_READONLY";
     public static final String DASHBOARD_ROLE = "ROLE_DASHBOARD";
     public static final String RTC_ROLE = "ROLE_RTC";
+    public static final String ROLE_PROVISION = "ROLE_PROVISION";
     
     private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
     
@@ -56,6 +57,8 @@ public final class Authentication extends Object {
     	s_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
         s_oldToNewMap.put("OpenNMS Read-Only User", READONLY_ROLE);
         s_oldToNewMap.put("OpenNMS Dashboard User", DASHBOARD_ROLE);
+        s_oldToNewMap.put("OpenNMS Provision User", ROLE_PROVISION);
+        
     	// There is no entry for USER_ROLE, because all authenticated people are users
     }
 
