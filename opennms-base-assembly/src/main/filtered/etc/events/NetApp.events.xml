@@ -784,9 +784,8 @@ Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/
 	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeFull</event-label>
 	<descr>
 &lt;p&gt;At least one volume is more than 98% full.
-The string sent with the trap gives the 
-name of the volume or volumes which exceed
-the threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+Volume or volumes which exceed the threshold: %parm[#1]%
+&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			Net-App Event: volumeFull trap received&lt;/p&gt;
@@ -812,9 +811,8 @@ the threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeNearlyFull</event-label>
 	<descr>
 &lt;p&gt;At least one volume is more than 95% full.
-The string sent with the trap gives the 
-name of the volume or volumes which exceed
-the threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+Volume or volumes which exceed the threshold: %parm[#1]%
+&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			Net-App Event: volumeNearlyFull trap received&lt;/p&gt;
