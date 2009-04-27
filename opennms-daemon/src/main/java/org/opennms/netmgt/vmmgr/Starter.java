@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -60,7 +61,6 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -235,7 +235,7 @@ public class Starter {
     private void start() {
         log().debug("Beginning startup");
 
-        MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         
         Invoker invoker = new Invoker();
         invoker.setServer(server);
