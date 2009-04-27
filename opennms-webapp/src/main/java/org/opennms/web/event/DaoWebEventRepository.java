@@ -46,6 +46,7 @@ import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DaoWebEventRepository implements WebEventRepository {
     
@@ -166,10 +167,12 @@ public class DaoWebEventRepository implements WebEventRepository {
         return event;
     }
     
+    @Transactional
     public void acknowledgeAll(String user, Date timestamp) {
         acknowledgeMatchingEvents(user, timestamp, new EventCriteria());
     }
-
+    
+    @Transactional
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
         
@@ -182,10 +185,12 @@ public class DaoWebEventRepository implements WebEventRepository {
         }
     }
     
+    @Transactional
     public int countMatchingEvents(EventCriteria criteria) {
         return m_eventDao.countMatching(getOnmsCriteria(criteria));
     }
-
+    
+    @Transactional
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
         //OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
         
@@ -199,11 +204,13 @@ public class DaoWebEventRepository implements WebEventRepository {
         eventCounts[OnmsSeverity.WARNING.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.WARNING.getId())));
         return eventCounts;
     }
-
+    
+    @Transactional
     public Event getEvent(int eventId) {
         return mapOnmsEventToEvent(m_eventDao.get(eventId));
     }
-
+    
+    @Transactional
     public Event[] getMatchingEvents(EventCriteria criteria) {
         List<Event> events = new ArrayList<Event>();
         List<OnmsEvent> onmsEvents = m_eventDao.findMatching(getOnmsCriteria(criteria));
@@ -218,11 +225,13 @@ public class DaoWebEventRepository implements WebEventRepository {
         
         return events.toArray(new Event[0]);
     }
-
+    
+    @Transactional
     public void unacknowledgeAll() {
         unacknowledgeMatchingEvents(new EventCriteria());
     }
-
+    
+    @Transactional
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
         
