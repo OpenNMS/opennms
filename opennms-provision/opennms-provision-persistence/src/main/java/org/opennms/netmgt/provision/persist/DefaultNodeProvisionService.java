@@ -45,7 +45,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         modelAndView.addObject("requisitions", m_foreignSourceRepository.getRequisitions());
         modelAndView.addObject("categories", m_categoryDao.getAllCategoryNames());
         modelAndView.addObject("success", Boolean.parseBoolean(request.getParameter("success")));
-        modelAndView.addObject("foreignSource", Boolean.parseBoolean(request.getParameter("foreignSource")));
+        modelAndView.addObject("foreignSource", request.getParameter("foreignSource"));
         return modelAndView;
     }
     
