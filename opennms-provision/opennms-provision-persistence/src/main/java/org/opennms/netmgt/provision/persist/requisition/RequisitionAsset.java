@@ -25,6 +25,14 @@ public class RequisitionAsset {
     @XmlAttribute(name="value", required=true)
     protected String m_value;
 
+    public RequisitionAsset() {
+    }
+
+    public RequisitionAsset(String name, String value) {
+        m_name = name;
+        m_value = value;
+    }
+
     public String getName() {
         return m_name;
     }

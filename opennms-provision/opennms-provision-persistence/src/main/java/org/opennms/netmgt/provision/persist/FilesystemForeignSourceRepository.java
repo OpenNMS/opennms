@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
@@ -183,17 +184,21 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_foreignSourcePath = path;
     }
     
-    private synchronized ForeignSource get(File file) throws ForeignSourceRepositoryException {
+    private synchronized ForeignSource get(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return getUnmarshaller(ForeignSource.class).unmarshal(new StreamSource(file), ForeignSource.class).getValue();
+            Unmarshaller um = getUnmarshaller(ForeignSource.class);
+            JAXBElement<ForeignSource> fs = um.unmarshal(new StreamSource(inputFile), ForeignSource.class);
+            return fs.getValue();
         } catch (JAXBException e) {
-            throw new ForeignSourceRepositoryException("unable to unmarshal " + file.getPath(), e);
+            throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
     }
 
     private synchronized Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
         try {
-            return getUnmarshaller(Requisition.class).unmarshal(new StreamSource(inputFile), Requisition.class).getValue();
+            Unmarshaller um = getUnmarshaller(Requisition.class);
+            JAXBElement<Requisition> req = um.unmarshal(new StreamSource(inputFile), Requisition.class);
+            return req.getValue();
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }

@@ -93,6 +93,10 @@
       <artifactId>jaxb-impl</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
       <version>1.0</version>
@@ -116,6 +120,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring-web</artifactId>
     </dependency>
 
     <!-- runtime only dependencies -->
