@@ -46,7 +46,7 @@ import org.opennms.netmgt.xml.event.Snmp;
 public final class SnmpInfo {
     /**
      * <P>
-     * Converts the SNMP iformation from the event into a string that can be
+     * Converts the SNMP information from the event into a string that can be
      * stored into the database. The information is formatted in by separating
      * the of the textual fields with a delimiter character (a comma ',').
      * </P>
@@ -63,8 +63,9 @@ public final class SnmpInfo {
      * @return The smnpblock as a string
      */
     public static String format(Snmp info, int maxlen) {
-        if (info == null)
+        if (info == null) {
             return null;
+        }
 
         // id
         StringBuffer snmpStr = new StringBuffer(info.getId());
@@ -72,29 +73,33 @@ public final class SnmpInfo {
         // id text
         if (info.getIdtext() != null) {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + Constants.escape(info.getIdtext(), Constants.DB_ATTRIB_DELIM));
-        } else
+        } else {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+        }
 
         // version
         snmpStr.append(Constants.DB_ATTRIB_DELIM + info.getVersion());
 
         // specific
-        if (info.hasSpecific())
+        if (info.hasSpecific()) {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + Integer.toString(info.getSpecific()));
-        else
+        } else {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+        }
 
         // generic
-        if (info.hasGeneric())
+        if (info.hasGeneric()) {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + Integer.toString(info.getGeneric()));
-        else
+        } else {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+        }
 
         // community
-        if (info.getCommunity() != null)
+        if (info.getCommunity() != null) {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + info.getCommunity());
-        else
+        } else {
             snmpStr.append(Constants.DB_ATTRIB_DELIM + "undefined");
+        }
 
         return Constants.format(snmpStr.toString(), maxlen);
     }
