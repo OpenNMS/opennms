@@ -136,7 +136,9 @@ public class InsServerListener extends InsServerAbstractListener {
 		//optional (if not setted, no authentication is required)
 		isl.setSharedASCIIString("1234567890");
 		
+		isl.setCriteriaRestriction("eventuei is not null");
 		//required properties
+		
 		
 		isl.start();
 
