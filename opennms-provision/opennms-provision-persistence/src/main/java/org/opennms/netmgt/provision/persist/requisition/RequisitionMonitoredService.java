@@ -32,6 +32,13 @@ public class RequisitionMonitoredService {
     @XmlAttribute(name="service-name", required=true)
     protected String m_serviceName;
 
+    public RequisitionMonitoredService() {
+    }
+    
+    public RequisitionMonitoredService(String serviceName) {
+        m_serviceName = serviceName;
+    }
+
     @XmlTransient
     public int getCategoryCount() {
         return (m_categories == null) ? 0 : m_categories.size();

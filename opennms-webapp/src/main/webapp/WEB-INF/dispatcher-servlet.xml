@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       >
   
   <context:annotation-config/>
 
@@ -163,11 +166,17 @@
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
   
-  <bean name="/element/nodeList.htm" class="org.opennms.web.controller.element.NodeListController">
+  <bean name="/element/nodeList.htm" class="org.opennms.web.controller.node.NodeListController">
     <property name="commandName"><value>command</value></property>
     <property name="commandClass"><value>org.opennms.web.command.NodeListCommand</value></property>
     <property name="successView"><value>element/nodeList</value></property>
     <property name="nodeListService" ref="nodeListService" />
+  </bean>
+
+  <bean name="/admin/node/add.htm" class="org.opennms.web.controller.node.NodeProvisioningController">
+    <property name="redirectView"><value>add.htm</value></property>
+    <property name="successView"><value>admin/node/add</value></property>
+    <property name="nodeProvisionService" ref="nodeProvisionService" />
   </bean>
 
   <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">

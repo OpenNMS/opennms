@@ -65,6 +65,15 @@
   	<property name="eventProxy" ref="eventProxy" />
   </bean>
 
+  <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
+	<property name="foreignSourceRepository" ref="deployedForeignSourceRepository" />
+	<property name="categoryDao" ref="categoryDao" />
+	<property name="nodeDao" ref="nodeDao" />
+	<property name="serviceTypeDao" ref="serviceTypeDao" />
+	<property name="eventProxy" ref="eventProxy" />
+	<property name="snmpPeerFactory" ref="snmpPeerFactory" />
+  </bean>
+
   <!-- Daemon Status Service beans -->
   <!--
   <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">

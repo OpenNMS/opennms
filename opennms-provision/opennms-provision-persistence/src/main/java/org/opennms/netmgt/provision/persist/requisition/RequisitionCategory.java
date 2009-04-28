@@ -22,6 +22,13 @@ public class RequisitionCategory {
     @XmlAttribute(name="name", required=true)
     protected String m_name;
 
+    public RequisitionCategory() {
+    }
+
+    public RequisitionCategory(String category) {
+        m_name = category;
+    }
+
     public String getName() {
         return m_name;
     }
