@@ -53,9 +53,15 @@
 
 <%!
     AssetModel model = new AssetModel();
+	
 %>
 
 <%
+	boolean isAuthorizedUser = false;
+
+	if( request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
+		isAuthorizedUser = true;
+	}
     String nodeIdString = request.getParameter("node");
 
     if (nodeIdString == null) {
@@ -114,7 +120,7 @@
   </table>
 <% } %>      
 
-<% if( (request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
+<% if( isAuthorizedUser ) { %>
 <form action="asset/modifyAsset" method="post">
   <input type="hidden" name="node" value="<%=nodeId%>" />
   <input type="hidden" name="isnew" value="<%=isNew%>" />
@@ -144,7 +150,7 @@
             <td colspan="3"><%=getTextField(request, "text", "description", asset.getDescription(), "70", "128")%></td>
             <td width="5%">Category</td>
             <td>
-            <%if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
+            <%if( isAuthorizedUser ) { %>
               <select name="category" size="1">
               <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                 <option<%=(Asset.CATEGORIES[i].equals(asset.getCategory()))?" selected":""%>><%=Asset.CATEGORIES[i]%></option> 
@@ -179,7 +185,7 @@
           </tr>
           <tr>
             <td>Region</td>
-            <td><%=getTextField(request, "text", "region", asset.getRegion(), "20", "64")%><%-- <input type="text" name="region" value="<%=asset.getRegion()%>" size="20" maxlength="64"/> --%></td>
+            <td><%=getTextField(request, "text", "region", asset.getRegion(), "20", "64")%></td>
             <td>Division</td>
             <td><%=getTextField(request, "text", "division", asset.getDivision(), "20", "64")%></td>
             <td>Department</td>
@@ -211,9 +217,9 @@
           </tr>
           <tr>
             <td>Rack</td>
-            <td><%=getTextField(request, "text", "rack", asset.getRack(), "20", "64")%></td>
+            <td><%=getTextField(request,  "text", "rack", asset.getRack(), "20", "64")%></td>
             <td>Slot</td>
-            <td><%=getTextField(request, "text", "slot", asset.getSlot(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "slot", asset.getSlot(), "20", "64")%></td>
             <td>Port</td>
             <td><%=getTextField(request, "text", "port", asset.getPort(), "20", "64")%></td>
           </tr>
@@ -230,7 +236,7 @@
           </tr>
           <tr>
             <td>Name</td>
-            <td><%=getTextField(request, "text", "vendor", asset.getVendor(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "vendor", asset.getVendor(), "20", "64")%></td>
             <td>Phone</td>
             <td><%=getTextField(request, "text", "vendorphone", asset.getVendorPhone(), "20", "64")%></td>
             <td>Fax</td>
@@ -238,19 +244,19 @@
           </tr>
           <tr>
             <td>Lease</td>
-            <td><%=getTextField(request, "text", "lease", asset.getLease(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "lease", asset.getLease(), "20", "64")%></td>
             <td>Lease Expires</td>
-            <td><%=getTextField(request, "text", "leaseexpires", asset.getLeaseExpires(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "leaseexpires", asset.getLeaseExpires(), "20", "64")%></td>
             <td>Vendor Asset</td>
-            <td><%=getTextField(request, "text", "vendorassetnumber", asset.getVendorAssetNumber(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "vendorassetnumber", asset.getVendorAssetNumber(), "20", "64")%></td>
           </tr>
           <tr>
             <td>Maint Contract</td>
-            <td><%=getTextField(request, "text", "maintcontract", asset.getMaintContract(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "maintcontract", asset.getMaintContract(), "20", "64")%></td>
             <td>Contract Expires</td>
-            <td><%=getTextField(request, "text", "maintcontractexpires", asset.getMaintContractExpires(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "maintcontractexpires", asset.getMaintContractExpires(), "20", "64")%></td>
             <td>Maint Phone</td>
-            <td><%=getTextField(request, "text", "supportphone", asset.getSupportPhone(), "20", "64")%></td>
+            <td><%=getTextField( request, "text", "supportphone", asset.getSupportPhone(), "20", "64")%></td>
           </tr>
           
           <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
@@ -270,18 +276,18 @@
           <tr>
             <td>Connection</td>
             <td>
-            <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
+            <% if(isAuthorizedUser){ %>
               <select name="connection" size="1">
               	<option></option>
               <% for( int i=0; i < Asset.CONNECTIONS.length; i++ ) { %>
                 <option <%=(Asset.CONNECTIONS[i].equals(asset.getConnection()))?"selected":""%>><%=Asset.CONNECTIONS[i]%></option> 
               <% } %>
               </select>
-              <% }else{ getTextField(request, "text", "connection", asset.getConnection(), "20", "64");}%>
+              <% }else{ getTextField(request,  "text", "connection", asset.getConnection(), "20", "64");}%>
             </td>
             <td>AutoEnable</td>
             <td>
-            <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
+            <% if(isAuthorizedUser){ %>
               <select name="autoenable" size="1">
               	<option></option>
               <% for( int i=0; i < Asset.AUTOENABLES.length; i++ ) { %>
@@ -297,10 +303,10 @@
             <td colspan="6"><h3>Comments</h3></td>
           </tr>
           <tr>
-            <td colspan="6"><%=getTextArea(request, "comments", asset.getComments())%></td>
+            <td colspan="6"><%=getTextArea( request, "comments", asset.getComments())%></td>
           </tr>
           <tr>
-          <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
+          <% if(isAuthorizedUser) { %>
             <td colspan="3">
               <input type="submit" value="Submit"/>
               <input type="reset" />
@@ -318,14 +324,14 @@
             <% } %>
           </tr>
         </table>
-      <%if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE)) ) { %>
+      <%if(isAuthorizedUser) { %>
       </form>
 
       <% } %>
       
-      <%!
+      <%!      	
       	private String getTextField(HttpServletRequest request, String type, String name, String value, String size, String maxLength){
-	    	  if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){
+	    	  if(request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
 	    		  return String.format("<input type=\"%s\" name=\"%s\" value=\"%s\" size=\"%s\" maxlength=\"%s\"/>", type, name, value, size, maxLength);
 	    	  }else{
 	    	  	return String.format("<p>%s</p>", value);
@@ -333,7 +339,7 @@
       	}
       
 	    private String getTextArea(HttpServletRequest request, String name, String value){
-	    	  if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){
+	    	  if(request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
 	    		  return String.format("<textarea name=\"%s\" cols=\"100\" rows=\"15\">%s</textarea>",  name, value);
 	    	  }else{
 	    	  	return String.format("<p>%s</p>", value);
