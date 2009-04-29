@@ -22,6 +22,9 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
+import org.opennms.netmgt.model.events.AddEventVisitor;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -31,14 +34,16 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 public class DefaultNodeProvisionService implements NodeProvisionService {
 
-    private EventProxy m_eventProxy;
+    private EventForwarder m_eventForwarder;
     private CategoryDao m_categoryDao;
     private NodeDao m_nodeDao;
     
@@ -169,44 +174,9 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         
         Assert.notNull(savedNode, "Failed to save node to database");
         
-        try {
-            Event e = new Event();
-            e.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-            log().debug("sending event for new node ID " + savedNode.getId());
-            e.setNodeid(savedNode.getId());
-            e.setSource(getClass().getSimpleName());
-            e.setTime(EventConstants.formatToString(new java.util.Date()));
-            m_eventProxy.send(e);
-            
-            e = new Event();
-            e.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-            e.setNodeid(savedNode.getId());
-            e.setInterface(ipAddress);
-            e.setSource(getClass().getSimpleName());
-            e.setTime(EventConstants.formatToString(new java.util.Date()));
-            m_eventProxy.send(e);
-
-            e = new Event();
-            e.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-            e.setNodeid(savedNode.getId());
-            e.setInterface(ipAddress);
-            e.setService("ICMP");
-            e.setSource(getClass().getSimpleName());
-            e.setTime(EventConstants.formatToString(new java.util.Date()));
-            m_eventProxy.send(e);
-
-            e = new Event();
-            e.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-            e.setNodeid(savedNode.getId());
-            e.setInterface(ipAddress);
-            e.setService("SNMP");
-            e.setSource(getClass().getSimpleName());
-            e.setTime(EventConstants.formatToString(new java.util.Date()));
-            m_eventProxy.send(e);
-        } catch (EventProxyException ex) {
-            throw new NodeProvisionException("Unable to send node events", ex);
-        }
-
+        log().debug("sending events for new node ID " + savedNode.getId());
+        savedNode.visit(new AddEventVisitor(m_eventForwarder));
+        
         return true;
     }
     
@@ -238,8 +208,25 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_serviceTypeDao = dao;
     }
     
-    public void setEventProxy(EventProxy proxy) {
-        m_eventProxy = proxy;
+    public void setEventProxy(final EventProxy proxy) {
+        m_eventForwarder = new EventForwarder() {
+            public void sendNow(Event event) {
+                try {
+                    proxy.send(event);
+                } catch (EventProxyException e) {
+                    throw new NodeProvisionException("Unable to send "+event, e);
+                }
+            }
+
+            public void sendNow(Log eventLog) {
+                try {
+                    proxy.send(eventLog);
+                } catch (EventProxyException e) {
+                    throw new NodeProvisionException("Unable to send eventLog "+eventLog, e);
+                }
+            }
+            
+        };
     }
 
     protected Category log() {
