@@ -130,8 +130,8 @@
             <td>
               <select name="accessMethod" >
                 <option value="rsh">RSH</option>
-                <option selected="true" value="ssh">SSH</option>
-                <option value="telnet">Telnet</option>
+                <option value="ssh">SSH</option>
+                <option value="telnet" selected="true">Telnet</option>
               </select>  
             </td>
             <td>Auto Enable:</td>
