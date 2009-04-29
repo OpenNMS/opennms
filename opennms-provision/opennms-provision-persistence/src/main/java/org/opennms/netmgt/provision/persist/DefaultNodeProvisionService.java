@@ -65,7 +65,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     }
     
     @Transactional
-    public boolean provisionNode(String foreignSource, String foreignId, String nodeLabel, String ipAddress,
+    public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
             String deviceUsername, String devicePassword, String enablePassword,
             String accessMethod, String autoEnable) throws NodeProvisionException {
@@ -175,7 +175,20 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         Assert.notNull(savedNode, "Failed to save node to database");
         
         log().debug("sending events for new node ID " + savedNode.getId());
-        savedNode.visit(new AddEventVisitor(m_eventForwarder));
+        savedNode.visit(new AddEventVisitor(m_eventForwarder) {
+
+            /* (non-Javadoc)
+             * @see org.opennms.netmgt.model.events.AddEventVisitor#createNodeAddedEvent(org.opennms.netmgt.model.OnmsNode)
+             */
+            @Override
+            protected Event createNodeAddedEvent(OnmsNode node) {
+                Event e = super.createNodeAddedEvent(node);
+                return new EventBuilder(e).addParam(EventConstants.PARM_USER, user).getEvent();
+            }
+            
+            
+            
+        });
         
         return true;
     }

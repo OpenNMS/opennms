@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.provision.persist.NodeProvisionService;
 import org.opennms.web.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -66,6 +67,8 @@ public class NodeProvisioningController extends AbstractController implements
      */
     @Transactional
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
 
         String action        = request.getParameter("actionCode");
         String redirectParms = request.getParameter("redirectParms");
@@ -87,6 +90,7 @@ public class NodeProvisioningController extends AbstractController implements
 
             String foreignSource  = request.getParameter("foreignSource");
             if (m_nodeProvisionService.provisionNode(
+                user,
                 foreignSource,
                 String.valueOf(System.currentTimeMillis()),
                 request.getParameter("nodeLabel"),
