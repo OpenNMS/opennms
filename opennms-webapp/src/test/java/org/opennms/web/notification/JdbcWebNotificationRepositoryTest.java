@@ -34,7 +34,9 @@ package org.opennms.web.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +46,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,11 +89,26 @@ public class JdbcWebNotificationRepositoryTest {
     
     @Test
     public void testNotificationCount(){
-        int notificationCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria());
-        
+        List<Filter> filterList = new ArrayList<Filter>();
+        Filter[] filters = filterList.toArray(new Filter[0]);
+        AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;
+        int notificationCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria(ackType, filters));
         assertEquals(1, notificationCount);
     }
     
+    @Test
+    public void testGetMatchingNotifications() {
+        List<Filter> filterList = new ArrayList<Filter>();
+        int limit = 10;
+        int multiple = 0;
+        AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;
+        SortStyle sortStyle = SortStyle.DEFAULT_SORT_STYLE;
+        Filter[] filters = filterList.toArray(new Filter[0]);
+        Notification[] notices = m_notificationRepo.getMatchingNotifications(new NotificationCriteria(filters, sortStyle, ackType, limit, limit * multiple));
+        assertEquals(1, notices.length);
+        assertEquals("This is a test notification", notices[0].getTextMessage());
+    }
+
     @Test
     public void testGetNotification(){
         Notification notice = m_notificationRepo.getNotification(1);
