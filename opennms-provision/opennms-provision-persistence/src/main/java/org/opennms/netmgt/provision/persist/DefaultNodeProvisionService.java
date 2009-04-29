@@ -14,6 +14,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -147,6 +148,14 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         services.add(new OnmsMonitoredService(iface, getServiceType("ICMP")));
         services.add(new OnmsMonitoredService(iface, getServiceType("SNMP")));
         iface.setMonitoredServices(services);
+        
+        OnmsAssetRecord asset = new OnmsAssetRecord();
+        asset.setAutoenable(autoEnable);
+        asset.setConnection(accessMethod);
+        asset.setEnable(enablePassword);
+        asset.setUsername(deviceUsername);
+        asset.setPassword(devicePassword);
+        node.setAssetRecord(asset);
         
         log().debug("saving database node");
         m_nodeDao.save(node);
