@@ -415,6 +415,12 @@
           <property name="file" value="${opennms.home}/etc/map.enable"/>
         </bean>
         
+        <bean class="org.opennms.web.navigate.ProvisionUserNavBarEntry">
+          <property name="name" value="Add Node"/>
+          <property name="url" value="admin/node/add.htm"/>
+          <property name="locationMatch" value="addNode"/>
+        </bean>
+
         <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">
           <property name="name" value="Admin"/>
           <property name="url" value="admin/index.jsp"/>
