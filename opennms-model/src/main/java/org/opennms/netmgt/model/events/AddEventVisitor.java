@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 
-public final class AddEventVisitor extends AbstractEntityVisitor {
+public class AddEventVisitor extends AbstractEntityVisitor {
     private static final String m_eventSource = "Provisiond";
 	private final EventForwarder m_eventForwarder;
 
@@ -68,15 +68,15 @@ public final class AddEventVisitor extends AbstractEntityVisitor {
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 
-    private Event createNodeAddedEvent(OnmsNode node) {
+    protected Event createNodeAddedEvent(OnmsNode node) {
         return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
     }
 
-    private Event createNodeGainedInterfaceEvent(OnmsIpInterface iface) {
+    protected Event createNodeGainedInterfaceEvent(OnmsIpInterface iface) {
         return EventUtils.createNodeGainedInterfaceEvent(m_eventSource, iface.getNode().getId(), iface.getInetAddress());
     }
 
-    private Event createNodeGainedServiceEvent(OnmsMonitoredService monSvc) {
+    protected Event createNodeGainedServiceEvent(OnmsMonitoredService monSvc) {
         OnmsIpInterface iface = monSvc.getIpInterface();
 		OnmsNode node = iface.getNode();
 		return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getInetAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
