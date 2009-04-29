@@ -206,8 +206,8 @@
 
   <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
     <property name="successView" value="alarm/list" />
-    <property name="defaultShortLimit" value="20" />
-    <property name="defaultLongLimit" value="10" />
+    <property name="defaultShortLimit" value="10" />
+    <property name="defaultLongLimit" value="20" />
     <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
     <property name="defaultSortStyle" value="ID" />
     <property name="webAlarmRepository" ref="webAlarmRepository" />
@@ -226,8 +226,8 @@
   <alias name="/event/detail.htm" alias="/event/detail.jsp" />
   <bean name="/event/detail.htm" class="org.opennms.web.controller.event.EventFilterController">
     <property name="successView" value="event/detail" />
-    <property name="defaultShortLimit" value="20" />
-    <property name="defaultLongLimit" value="10" />
+    <property name="defaultShortLimit" value="10" />
+    <property name="defaultLongLimit" value="20" />
     <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
     <property name="defaultSortStyle" value="ID" />
     <property name="webEventRepository" ref="webEventRepository" />
@@ -236,8 +236,8 @@
   <alias name="/event/list.htm" alias="/event/list" />
   <bean name="/event/list.htm" class="org.opennms.web.controller.event.EventFilterController">
     <property name="successView" value="event/list" />
-    <property name="defaultShortLimit" value="20" />
-    <property name="defaultLongLimit" value="10" />
+    <property name="defaultShortLimit" value="10" />
+    <property name="defaultLongLimit" value="20" />
     <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED" />
     <property name="defaultSortStyle" value="ID" />
     <property name="webEventRepository" ref="webEventRepository" />
@@ -251,8 +251,8 @@
   <alias name="/notification/list.htm" alias="/notification/browse" />
   <bean name="/notification/list.htm" class="org.opennms.web.controller.notification.NotificationFilterController">
     <property name="successView" value="notification/list" />
-    <property name="defaultShortLimit" value="20" />
-    <property name="defaultLongLimit" value="10" />
+    <property name="defaultShortLimit" value="10" />
+    <property name="defaultLongLimit" value="20" />
     <property name="defaultSortStyle" value="ID" />
     <property name="webNotificationRepository" ref="webNotificationRepository" />
     <property name="webEventRepository" ref="webEventRepository" />
@@ -262,8 +262,8 @@
   <alias name="/outage/list.htm" alias="/outage/list" />
   <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
     <property name="successView" value="outage/list" />
-    <property name="defaultShortLimit" value="20" />
-    <property name="defaultLongLimit" value="10" />
+    <property name="defaultShortLimit" value="10" />
+    <property name="defaultLongLimit" value="20" />
     <property name="defaultOutageType" value="CURRENT" />
     <property name="defaultSortStyle" value="ID" />
     <property name="webOutageRepository" ref="webOutageRepository" />
