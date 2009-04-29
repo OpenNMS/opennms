@@ -115,6 +115,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         log().debug("creating database node");
         // Create the basic node
         OnmsNode node = new OnmsNode();
+        node.setType("A");
         node.setForeignSource(foreignSource);
         node.setForeignId(foreignId);
         node.setLabel(nodeLabel);
