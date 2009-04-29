@@ -17,6 +17,7 @@
     <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
     <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
     <intercept-url pattern="/webstart/**" filters="none" />
+    <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
     <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
     <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
     
