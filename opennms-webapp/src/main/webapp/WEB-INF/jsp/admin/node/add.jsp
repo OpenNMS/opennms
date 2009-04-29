@@ -143,7 +143,7 @@
             </td>
         </tr>
 	</table>
-	<input type="submit" />
+	<input type="submit" value="Submit" />
 	<input type="reset" />
 </form>
 
