@@ -74,7 +74,8 @@
                 <warning>97</warning>
                 <service>Postgres</service>
                 <service>MySQL</service>
-                <rule><![CDATA[isPostgres | isMySQL]]></rule>
+                <service>SQLServer</service>
+                <rule><![CDATA[isPostgres | isMySQL | isSQLServer]]></rule>
             </category>
             <category>
                 <label><![CDATA[Other Servers]]></label>
