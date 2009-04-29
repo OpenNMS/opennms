@@ -32,6 +32,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 public class DefaultNodeProvisionService implements NodeProvisionService {
@@ -130,50 +131,45 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         // Create the basic node
         
         OnmsDistPoller dp = m_distPollerDao.get("localhost");
-        OnmsNode node = new OnmsNode();
-        node.setDistPoller(dp);
+        OnmsNode node = new OnmsNode(dp);
         node.setType("A");
         node.setForeignSource(foreignSource);
         node.setForeignId(foreignId);
         node.setLabel(nodeLabel);
         
-        OnmsIpInterface iface = new OnmsIpInterface();
-        iface.setNode(node);
-        iface.setIpAddress(ipAddress);
+        node.getAssetRecord().setAutoenable(autoEnable);
+        node.getAssetRecord().setConnection(accessMethod);
+        node.getAssetRecord().setEnable(enablePassword);
+        node.getAssetRecord().setUsername(deviceUsername);
+        node.getAssetRecord().setPassword(devicePassword);
+        
+        OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
         iface.setIsManaged("M");
         iface.setIsSnmpPrimary(new PrimaryType('P'));
-        node.addIpInterface(iface);
-        
-        Set<OnmsMonitoredService> services = new TreeSet<OnmsMonitoredService>();
-        services.add(new OnmsMonitoredService(iface, getServiceType("ICMP")));
-        services.add(new OnmsMonitoredService(iface, getServiceType("SNMP")));
-        iface.setMonitoredServices(services);
-        
-        OnmsAssetRecord asset = new OnmsAssetRecord();
-        asset.setAutoenable(autoEnable);
-        asset.setConnection(accessMethod);
-        asset.setEnable(enablePassword);
-        asset.setUsername(deviceUsername);
-        asset.setPassword(devicePassword);
-        node.setAssetRecord(asset);
+
+        // these are automatically added to the interface by the constructor
+        new OnmsMonitoredService(iface, getServiceType("ICMP"));
+        new OnmsMonitoredService(iface, getServiceType("SNMP"));
         
         log().debug("saving database node");
         m_nodeDao.save(node);
         
-        node = m_nodeDao.findByForeignId(foreignSource, foreignId);
+        OnmsNode savedNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
+        
+        Assert.notNull(savedNode, "Failed to save node to database");
         
         try {
-            log().debug("sending event for new node ID " + node.getNodeId());
+            log().debug("sending event for new node ID " + savedNode.getId());
             Event e = new Event();
             e.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-            e.setNodeid(node.getId());
+            e.setNodeid(savedNode.getId());
             e.setSource(getClass().getName());
             e.setTime(EventConstants.formatToString(new java.util.Date()));
             m_eventProxy.send(e);
             
             e = new Event();
             e.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-            e.setNodeid(node.getId());
+            e.setNodeid(savedNode.getId());
             e.setInterface(ipAddress);
             e.setSource(getClass().getName());
             e.setTime(EventConstants.formatToString(new java.util.Date()));
@@ -181,7 +177,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
 
             e = new Event();
             e.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-            e.setNodeid(node.getId());
+            e.setNodeid(savedNode.getId());
             e.setInterface(ipAddress);
             e.setService("ICMP");
             e.setService("SNMP");
