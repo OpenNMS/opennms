@@ -11,8 +11,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -27,6 +29,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,6 +38,10 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     private EventProxy m_eventProxy;
     private CategoryDao m_categoryDao;
     private NodeDao m_nodeDao;
+    
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+    
     private ServiceTypeDao m_serviceTypeDao;
     private ForeignSourceRepository m_foreignSourceRepository;
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -114,7 +121,10 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         
         log().debug("creating database node");
         // Create the basic node
+        
+        OnmsDistPoller dp = m_distPollerDao.get("localhost");
         OnmsNode node = new OnmsNode();
+        node.setDistPoller(dp);
         node.setType("A");
         node.setForeignSource(foreignSource);
         node.setForeignId(foreignId);
