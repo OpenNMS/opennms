@@ -78,11 +78,11 @@ public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
    
    public void testGetCategoriesWithAuthorizedGroups() {
        
-       List<OnmsCategory> categories = getCategoryDao().getCategoriesWithAuthorizedGroup("RouterGroup");
+       List<OnmsCategory> categories = getCategoryDao().getCategoriesWithAuthorizedGroup("RoutersGroup");
        
        assertNotNull(categories);
        assertEquals(1, categories.size());
-       assertEquals("Router", categories.get(0).getName());
+       assertEquals("Routers", categories.get(0).getName());
        
    }
    
