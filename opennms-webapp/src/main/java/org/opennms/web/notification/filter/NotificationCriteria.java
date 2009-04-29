@@ -66,7 +66,7 @@ public class NotificationCriteria {
         m_sortStyle = sortStyle;
         m_ackType = ackType;
         m_limit = limit;
-        m_offset = limit;
+        m_offset = offset;
     }
     
     public NotificationCriteria(AcknowledgeType ackType, Filter[] filters) {
