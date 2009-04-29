@@ -15,6 +15,7 @@ import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -136,20 +137,30 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         node.setForeignSource(foreignSource);
         node.setForeignId(foreignId);
         node.setLabel(nodeLabel);
-        
+        node.setLabelSource("U");
+
+        node.getAssetRecord().setBuilding(foreignSource);
         node.getAssetRecord().setAutoenable(autoEnable);
         node.getAssetRecord().setConnection(accessMethod);
         node.getAssetRecord().setEnable(enablePassword);
         node.getAssetRecord().setUsername(deviceUsername);
         node.getAssetRecord().setPassword(devicePassword);
         
+        for(String category : categories) {
+            node.addCategory(getCategory(category));
+        }
+        
         OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
         iface.setIsManaged("M");
-        iface.setIsSnmpPrimary(new PrimaryType('P'));
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        
+        node.addIpInterface(iface);
 
-        // these are automatically added to the interface by the constructor
-        new OnmsMonitoredService(iface, getServiceType("ICMP"));
-        new OnmsMonitoredService(iface, getServiceType("SNMP"));
+        for(String svcType : new String[] { "ICMP", "SNMP" }) {
+            OnmsMonitoredService svc = new OnmsMonitoredService(iface, getServiceType(svcType));
+            svc.setStatus("A");
+            iface.getMonitoredServices().add(svc);
+        }
         
         log().debug("saving database node");
         m_nodeDao.save(node);
@@ -159,11 +170,11 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         Assert.notNull(savedNode, "Failed to save node to database");
         
         try {
-            log().debug("sending event for new node ID " + savedNode.getId());
             Event e = new Event();
             e.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
+            log().debug("sending event for new node ID " + savedNode.getId());
             e.setNodeid(savedNode.getId());
-            e.setSource(getClass().getName());
+            e.setSource(getClass().getSimpleName());
             e.setTime(EventConstants.formatToString(new java.util.Date()));
             m_eventProxy.send(e);
             
@@ -171,7 +182,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
             e.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
             e.setNodeid(savedNode.getId());
             e.setInterface(ipAddress);
-            e.setSource(getClass().getName());
+            e.setSource(getClass().getSimpleName());
             e.setTime(EventConstants.formatToString(new java.util.Date()));
             m_eventProxy.send(e);
 
@@ -180,8 +191,16 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
             e.setNodeid(savedNode.getId());
             e.setInterface(ipAddress);
             e.setService("ICMP");
+            e.setSource(getClass().getSimpleName());
+            e.setTime(EventConstants.formatToString(new java.util.Date()));
+            m_eventProxy.send(e);
+
+            e = new Event();
+            e.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+            e.setNodeid(savedNode.getId());
+            e.setInterface(ipAddress);
             e.setService("SNMP");
-            e.setSource(getClass().getName());
+            e.setSource(getClass().getSimpleName());
             e.setTime(EventConstants.formatToString(new java.util.Date()));
             m_eventProxy.send(e);
         } catch (EventProxyException ex) {
@@ -195,6 +214,10 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         return m_serviceTypeDao.findByName(string);
     }
 
+    private OnmsCategory getCategory(String string) {
+        return m_categoryDao.findByName(string);
+    }
+
     public void setForeignSourceRepository(ForeignSourceRepository repository) {
         m_foreignSourceRepository = repository;
     }
@@ -202,10 +225,10 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
     }
-
     public void setSnmpPeerFactory(SnmpPeerFactory pf) {
         m_snmpPeerFactory = pf;
     }
+    
 
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
