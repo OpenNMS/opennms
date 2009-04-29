@@ -58,9 +58,9 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     
     @Transactional
     public boolean provisionNode(String foreignSource, String foreignId, String nodeLabel, String ipAddress,
-            String[] categories,
-            String snmpCommunity, String snmpVersion,
-            String deviceUsername, String devicePassword, String enablePassword) throws NodeProvisionException {
+            String[] categories, String snmpCommunity, String snmpVersion,
+            String deviceUsername, String devicePassword, String enablePassword,
+            String accessMethod, String autoEnable) throws NodeProvisionException {
 
         if (log().isDebugEnabled()) {
             log().debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
@@ -107,6 +107,12 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         }
         if (enablePassword != null) {
             reqNode.putAsset(new RequisitionAsset("enable", enablePassword));
+        }
+        if (accessMethod != null) {
+            reqNode.putAsset(new RequisitionAsset("connection", accessMethod));
+        }
+        if (autoEnable != null) {
+            reqNode.putAsset(new RequisitionAsset("autoenable", autoEnable));
         }
 
         // Now save it to the requisition
