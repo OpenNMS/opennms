@@ -33,7 +33,6 @@ package org.opennms.web.notification;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Order;
@@ -60,12 +59,12 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         notificationCriteria.visit(new NotificationCriteriaVisitor<RuntimeException>(){
 
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
-                if(ackType == AcknowledgeType.ACKNOWLEDGED){
+                if(ackType == AcknowledgeType.ACKNOWLEDGED) {
                     criteria.add(Restrictions.isNotNull("answeredBy"));
-                }else{
+                } else if (ackType == AcknowledgeType.UNACKNOWLEDGED) {
                    criteria.add(Restrictions.isNull("answeredBy")); 
                 }
-                
+                // AcknowledgeType.BOTH just adds no restriction
             }
 
             public void visitGroupBy() throws RuntimeException {
@@ -140,7 +139,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         
         return criteria;
     }
-    
+
     private Notification mapOnmsNotificationToNotification(OnmsNotification onmsNotification){
         if(onmsNotification != null){
             Notification notif = new Notification();
@@ -166,9 +165,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         List<OnmsNotification> notifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
         
-        Iterator<OnmsNotification> notifIt = notifs.iterator();
-        while(notifIt.hasNext()){
-            OnmsNotification notif = notifIt.next();
+        for (OnmsNotification notif : notifs) {
             notif.setAnsweredBy(user);
             notif.setRespondTime(timestamp);
             m_notificationDao.update(notif);
@@ -184,13 +181,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         List<Notification> notifications = new ArrayList<Notification>();
         List<OnmsNotification> onmsNotifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
-        
-        if(onmsNotifs.size() > 0){
-            Iterator<OnmsNotification> notifIt = onmsNotifs.iterator();
-            
-            while(notifIt.hasNext()){
-                notifications.add(mapOnmsNotificationToNotification(notifIt.next()));
-            }
+
+        for (OnmsNotification notif : onmsNotifs) {
+            notifications.add(mapOnmsNotificationToNotification(notif));
         }
         
         return notifications.toArray(new Notification[0]);
