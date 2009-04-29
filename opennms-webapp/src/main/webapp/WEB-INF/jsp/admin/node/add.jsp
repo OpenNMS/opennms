@@ -62,7 +62,7 @@
 <c:choose>
 <c:when test="${empty requisitions}">
 	<h2>Missing Requisition</h2>
-	<p>You must first <a href='admin/provisioningGroups.htm'>create a provisioning group</a> before using this page.</p>
+	<p>You must first <a href='admin/provisioningGroups.htm'>create and import a provisioning group</a> before using this page.</p>
 </c:when>
 <c:otherwise>
 <h2><span style="font-color: red">Note: this <strong>will</strong> override any unimported modifications made to the provisioning group.</span></h2>
@@ -143,7 +143,7 @@
             </td>
         </tr>
 	</table>
-	<input type="submit" value="Submit" />
+	<input type="submit" value="Provision" />
 	<input type="reset" />
 </form>
 
@@ -152,5 +152,4 @@
 
 <br />
 
-<jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
