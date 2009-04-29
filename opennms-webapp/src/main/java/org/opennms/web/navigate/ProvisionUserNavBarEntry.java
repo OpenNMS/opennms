@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,9 +10,9 @@
  *
  * Modifications:
  *
- * 2007 Dec 08: Created this file. - dj@opennms.org
+ * Created: 2009 April 29
  *
- * Copyright (C) 2007 Daniel J. Gregor, Jr.
+ * Copyright (C) 2009 The OpenNMS Group, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,12 @@ package org.opennms.web.navigate;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.web.springframework.security.Authentication;
+
+/**
+ * Handle the Quick Add Node Menu Item
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 
 public class ProvisionUserNavBarEntry extends LocationBasedNavBarEntry {
     @Override

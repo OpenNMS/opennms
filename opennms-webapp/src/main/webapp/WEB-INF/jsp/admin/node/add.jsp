@@ -12,8 +12,6 @@
 //
 // Modifications:
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -127,6 +125,23 @@
 			<td>Enable Password:</td>
 			<td><input type="text" name="enablePassword" /></td>
 		</tr>
+        <tr>
+            <td>Access Method:</td>
+            <td>
+              <select name="accessMethod" >
+                <option value="rsh">RSH</option>
+                <option selected="true" value="ssh">SSH</option>
+                <option value="telnet">Telnet</option>
+              </select>  
+            </td>
+            <td>Auto Enable:</td>
+            <td>
+              <select name="autoEnable" >
+                <option selected="true"></option>
+                <option value="A">Yes</option>
+              </select>
+            </td>
+        </tr>
 	</table>
 	<input type="submit" />
 	<input type="reset" />
