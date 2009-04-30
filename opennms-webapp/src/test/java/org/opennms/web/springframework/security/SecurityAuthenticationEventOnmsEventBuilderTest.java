@@ -59,7 +59,7 @@ import org.springframework.security.BadCredentialsException;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.event.authentication.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
-import org.springframework.security.providers.TestingAuthenticationToken;
+import org.springframework.security.providers.AbstractAuthenticationToken;
 import org.springframework.security.ui.WebAuthenticationDetails;
 
 public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
@@ -175,18 +175,30 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         }
     }
     
-    public static class TestingDetailsAuthenticationToken extends TestingAuthenticationToken {
+    public static class TestingDetailsAuthenticationToken extends AbstractAuthenticationToken {
         private static final long serialVersionUID = 1L;
+        private Object m_principal;
+        private Object m_credentials;
         private Object m_details;
 
-        public TestingDetailsAuthenticationToken(Object name, Object principal, GrantedAuthority[] authorities, Object details) {
-            super(name, principal, authorities);
+        public TestingDetailsAuthenticationToken(Object principal, Object credentials, GrantedAuthority[] authorities, Object details) {
+            super(authorities);
+            m_principal = principal;
+            m_credentials = credentials;
             m_details = details;
         }
         
         @Override
         public Object getDetails() {
             return m_details;
+        }
+
+        public Object getCredentials() {
+            return m_credentials;
+        }
+
+        public Object getPrincipal() {
+            return m_principal;
         }
     }
     
