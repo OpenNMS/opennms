@@ -557,5 +557,27 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-server-jndi</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>backport-util-concurrent</groupId>
+      <artifactId>backport-util-concurrent</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
 </project>
