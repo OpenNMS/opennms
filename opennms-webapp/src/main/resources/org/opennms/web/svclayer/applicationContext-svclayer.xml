@@ -211,7 +211,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
   </bean>
 
-  <bean id="useranager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="userManager-init">
+  <bean id="userManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="userManager-init">
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.getInstance</value></property>
   </bean>
   
