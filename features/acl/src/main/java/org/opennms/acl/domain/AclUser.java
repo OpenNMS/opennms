@@ -25,7 +25,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dess“
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //
@@ -44,7 +44,7 @@ import org.springframework.security.userdetails.User;
 /**
  * This entity is a ACL application user, extends the {@link org.springframework.security.userdetails.User} to use authentication and authorization Spring Security infrastructure.
  * 
- * @author Massimiliano Dessi (desmax74@yahoo.it)
+ * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
  */
 @SuppressWarnings("serial")

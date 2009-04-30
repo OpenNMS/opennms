@@ -25,7 +25,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dess“
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //
@@ -59,7 +59,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
- * @author Massimiliano Dessi (desmax74@yahoo.it)
+ * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
  */
 @Repository("userRepository")

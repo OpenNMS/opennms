@@ -25,7 +25,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dess“
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //
@@ -46,7 +46,7 @@ import org.opennms.acl.service.AuthorityService;
 /**
  * This entity class represent s an Authority (permission/authority/group/category/other...)
  * 
- * @author Massimiliano Dessi (desmax74@yahoo.it)
+ * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
  */
 public class Authority implements Serializable {

@@ -25,7 +25,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dess“
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //
@@ -47,7 +47,7 @@ import org.springframework.security.userdetails.jdbc.JdbcDaoImpl;
 /**
  * Used by Spring security to perform authentication
  * 
- * @author Massimiliano Dessi (desmax74@yahoo.it)
+ * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
  */
 public class AuthenticationJdbcDaoImpl extends JdbcDaoImpl {
