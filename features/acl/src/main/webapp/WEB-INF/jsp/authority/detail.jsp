@@ -26,7 +26,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dessì
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //

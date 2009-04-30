@@ -25,7 +25,7 @@
 //
 // The author can be contacted at the following email address:
 //
-//       Massimiliano Dess“
+//       Massimiliano Dess&igrave;
 //       desmax74@yahoo.it
 //
 //
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Read-only interface to expose an Authority
  * 
- * @author Massimiliano Dessi (desmax74@yahoo.it)
+ * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
  */
 public interface AuthorityView {
