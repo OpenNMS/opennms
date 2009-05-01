@@ -10,7 +10,7 @@
     </security>
   </global>
 
-  <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
+  <event-file>${install.etc.dir}/events/Standard.events.xml</event-file>
 
   <event>
     <uei>MATCH-ANY-UEI</uei>

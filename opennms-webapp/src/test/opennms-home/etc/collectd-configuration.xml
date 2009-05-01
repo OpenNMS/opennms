@@ -7,7 +7,7 @@
     <filter>IPADDR IPLIKE *.*.*.*</filter>   
     <specific>0.0.0.0</specific>
     <include-range begin="1.1.1.1" end="254.254.254.254"/>
-<!--    <include-url>file:@install.etc.dir@/include</include-url> -->
+<!--    <include-url>file:${install.etc.dir}/include</include-url> -->
     
     <service name="SNMP" interval="300000" user-defined="false" status="on">
       <parameter key="collection" value="default"/>
@@ -58,7 +58,7 @@
     <filter>IPADDR IPLIKE 1.1.1.1</filter>   
     <specific>0.0.0.0</specific>
     <include-range begin="1.1.1.1" end="1.1.1.1"/>
-<!--    <include-url>file:@install.etc.dir@/include2</include-url> -->
+<!--    <include-url>file:${install.etc.dir}/include2</include-url> -->
     <storeByIfAlias>true</storeByIfAlias>
     <storeByNodeID>normal</storeByNodeID>
     <ifAliasDomain>my_domain</ifAliasDomain>

@@ -23,5 +23,5 @@
     <severity>Indeterminate</severity>
   </event>
 
-  <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
+  <event-file>${install.etc.dir}/events/Standard.events.xml</event-file>
 </events>
