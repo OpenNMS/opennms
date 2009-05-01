@@ -69,13 +69,14 @@
             </category>
             <category>
                 <label><![CDATA[Database Servers]]></label>
-                <comment>This category includes all managed interfaces which are currently running PostgreSQL or MySQL database servers.</comment>
+                <comment>This category includes all managed interfaces which are currently running PostgreSQL, MySQL, SQLServer, or Oracle database servers.</comment>
                 <normal>99.99</normal>
                 <warning>97</warning>
-                <service>Postgres</service>
                 <service>MySQL</service>
+                <service>Oracle</service>
+                <service>Postgres</service>
                 <service>SQLServer</service>
-                <rule><![CDATA[isPostgres | isMySQL | isSQLServer]]></rule>
+                <rule><![CDATA[isMySQL | isOracle | isPostgres | isSQLServer]]></rule>
             </category>
             <category>
                 <label><![CDATA[Other Servers]]></label>

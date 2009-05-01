@@ -4,16 +4,16 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
                       http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
   <jdbc-data-source name="opennms" 
-                    database-name="@install.database.name@" 
-                    class-name="@install.database.driver@" 
-                    url="jdbc:postgresql://localhost:5432/@install.database.name@"
-                    user-name="@install.database.user@"
-                    password="@install.database.password@" />
+                    database-name="${install.database.name}" 
+                    class-name="${install.database.driver}" 
+                    url="jdbc:postgresql://localhost:5432/${install.database.name}"
+                    user-name="${install.database.user}"
+                    password="${install.database.password}" />
 
   <jdbc-data-source name="opennms-admin" 
                     database-name="template1" 
-                    class-name="@install.database.driver@" 
+                    class-name="${install.database.driver}" 
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="@install.database.admin.user@"
-                    password="@install.database.admin.password@" />
+                    user-name="${install.database.admin.user}"
+                    password="${install.database.admin.password}" />
 </datasource-configuration>

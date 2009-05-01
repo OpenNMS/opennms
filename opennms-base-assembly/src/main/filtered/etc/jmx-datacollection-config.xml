@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config
-    rrdRepository = "@install.share.dir@/rrd/snmp/">
+    rrdRepository = "${install.share.dir}/rrd/snmp/">
     <jmx-collection name="jboss">
         <rrd step = "300">
             <rra>RRA:AVERAGE:0.5:1:8928</rra>

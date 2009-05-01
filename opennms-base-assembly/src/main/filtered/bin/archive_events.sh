@@ -17,7 +17,7 @@ else
 	fi
 fi
 
-OPENNMS_HOME="@install.dir@"
+OPENNMS_HOME="${install.dir}"
 LOG4J_CONFIG="events.archiver.properties"
 
 # load libraries
