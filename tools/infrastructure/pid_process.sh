@@ -19,11 +19,11 @@ list_opennms_pids () {
 		| grep OPENNMSLAUNCH \
 		| grep -v grep \
 		| awk '{print $2}'
-	if [ -f @install.pid.file@ ]; then
+	if [ -f ${install.pid.file} ]; then
 		$PS \
 			| grep -v grep \
 			| awk '{print $2}' \
-			| grep "^`cat @install.pid.file@`$"
+			| grep "^`cat ${install.pid.file}`$"
 	fi
 	return $?
 }
