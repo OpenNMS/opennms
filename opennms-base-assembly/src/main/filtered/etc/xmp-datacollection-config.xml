@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<xmp-datacollection-config rrdRepository="@install.share.dir@/rrd/snmp/">
+<xmp-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
 
  <xmp-collection name="default" xmpStorageFlag="select">
 

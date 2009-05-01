@@ -10,7 +10,7 @@ END
 # TODO: Is this needed?  If so, document why
 ulimit -s 2048
 
-opennms_home="@install.dir@"
+opennms_home="${install.dir}"
 opennms_webapp="$opennms_home/webapps/opennms"
 
 if [ $# -ne 6 ]; then

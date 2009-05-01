@@ -4,11 +4,11 @@
 # description: Starts and stops the OpenNMS network management \
 #              poller and backend processes
 # processname: opennms
-# pidfile:     @install.pid.file@
+# pidfile:     ${install.pid.file}
 #
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $local_fs $network @install.postgresql.service@
+# Required-Start:    $local_fs $network ${install.postgresql.service}
 # Should-Start:      $time $named ypbind
 # Required-Stop:     $local_fs $network
 # Should-Stop:       $time $named ypbind
@@ -37,17 +37,17 @@
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 
 # Home directory for OpenNMS.
-OPENNMS_HOME="@install.dir@"
+OPENNMS_HOME="${install.dir}"
 
 # PID file for OpenNMS.
-OPENNMS_PIDFILE="@install.pid.file@"
+OPENNMS_PIDFILE="${install.pid.file}"
 
 # Log directory for OpenNMS
-LOG_DIRECTORY="@install.daemonlogs.dir@"
+LOG_DIRECTORY="${install.daemonlogs.dir}"
 
 # Directory where init functions are likely stored (we also check a few other
 # directories, just in case)
-INITDIR="@install.init.dir@"
+INITDIR="${install.init.dir}"
 
 # Where to redirect "start" output.
 REDIRECT="$LOG_DIRECTORY/output.log"

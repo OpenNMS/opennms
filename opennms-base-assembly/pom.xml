@@ -109,6 +109,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>2.3</version>
         <executions>
           <execution>
             <phase>process-resources</phase>
@@ -117,6 +118,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <!-- <escapeString>\</escapeString> -->
+        </configuration>
       </plugin>
     </plugins>
   </build>

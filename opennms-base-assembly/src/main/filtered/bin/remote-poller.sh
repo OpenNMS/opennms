@@ -9,7 +9,7 @@
 # - updated to use the installed location
 # Tue Dec 12 23:05:42 GMT 2006 - dj@opennms.org
 
-OPENNMS_HOME="@install.dir@"
+OPENNMS_HOME="${install.dir}"
 JAVA_CONF="$OPENNMS_HOME/etc/java.conf"
 
 #JAVA_HOME=""
