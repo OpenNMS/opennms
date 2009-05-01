@@ -23,7 +23,7 @@
     <severity>Indeterminate</severity>
   </event>
 
-  <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
+  <event-file>${install.etc.dir}/events/Standard.events.xml</event-file>
   
   <bad-element>This element should not be allowed</bad-element>
 </events>

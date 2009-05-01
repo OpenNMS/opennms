@@ -430,7 +430,7 @@ public class EventconfFactoryTest extends TestCase {
         URL url = getUrlForRelativeResourcePath(resourceSuffix);
         
         return ConfigurationTestUtils.getInputStreamForResourceWithReplacements(this, getResourceForRelativePath(resourceSuffix),
-                new String[] { "@install.etc.dir@", new File(url.getFile()).getParent() });
+                new String[] { "${install.etc.dir}", new File(url.getFile()).getParent() });
     }
 
     private URL getUrlForRelativeResourcePath(String resourceSuffix) {
