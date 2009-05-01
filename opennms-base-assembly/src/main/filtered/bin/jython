@@ -35,7 +35,7 @@ else
         fi
 fi
 
-OPENNMS_HOME="@install.dir@"
+OPENNMS_HOME="${install.dir}"
 
 # load libraries
 for script in pid_process arg_process build_classpath check_tools \

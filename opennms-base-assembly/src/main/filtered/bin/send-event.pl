@@ -1,4 +1,4 @@
-#!@install.perl.bin@
+#!${install.perl.bin}
 
 use strict;
 use Getopt::Long;

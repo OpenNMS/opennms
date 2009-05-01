@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <thresholding-config>
         <group name="default-snmp"
-                rrdRepository = "@install.share.dir@/rrd/snmp/">
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
                 <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>
                 <threshold type="low" ds-name="freeMem"  ds-type="node" value="1024" rearm="1000000" trigger="3"/>
 
@@ -52,38 +52,38 @@
         </group>
 
         <!--group name="jboss"
-                rrdRepository = "@install.share.dir@/rrd/snmp/">
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
                 <threshold type="high" ds-name="portal-core_hits"  ds-type="node" value="10" rearm="5" trigger="3"/>
                 <threshold type="high" ds-name="portal-core_access"   ds-type="node" value="10" rearm="7" trigger="3"/>
         </group-->
 
 	<group name="icmp-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="icmp"  ds-type="if" value="75000" rearm="25000" trigger="3"/>
         </group>
 
         <group name="http-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="http"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="http-8000-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="http-8000"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="http-8080-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="http-8080"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="dns-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="dns"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="dhcp-latency"
-                rrdRepository = "@install.share.dir@/rrd/response/">
+                rrdRepository = "${install.share.dir}/rrd/response/">
                 <threshold type="high" ds-name="dhcp"  ds-type="if" value="500" rearm="100" trigger="3"/>
         </group>
 </thresholding-config>
