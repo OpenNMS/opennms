@@ -52,7 +52,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
-class RrdStresser {
+public class RrdStresser {
 	
     static int currFileNum = 0;
 
