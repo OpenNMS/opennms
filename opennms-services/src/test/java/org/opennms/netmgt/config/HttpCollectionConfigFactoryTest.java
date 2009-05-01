@@ -55,7 +55,7 @@ public class HttpCollectionConfigFactoryTest extends TestCase {
                 "    xmlns:http-dc=\"http://xmlns.opennms.org/xsd/config/http-datacollection\" \n" + 
                 "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" + 
                 "    xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd\" \n" + 
-                "    rrdRepository=\"@install.share.dir@/rrd/snmp/\" >\n" + 
+                "    rrdRepository=\"${install.share.dir}/rrd/snmp/\" >\n" + 
                 "  <http-collection name=\"default\">\n" + 
                 "    <rrd step=\"300\">\n" + 
                 "      <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" + 

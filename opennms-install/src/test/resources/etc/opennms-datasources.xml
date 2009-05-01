@@ -7,13 +7,13 @@
                     database-name="test_InstallerIplikeTest" 
                     class-name="org.postgresql.Driver" 
                     url="jdbc:postgresql://localhost:5432/test_InstallerIplikeTest"
-                    user-name="@install.database.user@"
-                    password="@install.database.password@" />
+                    user-name="${install.database.user}"
+                    password="${install.database.password}" />
 
   <jdbc-data-source name="opennms-admin" 
                     database-name="template1" 
                     class-name="org.postgresql.Driver" 
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="@install.database.admin.user@"
-                    password="@install.database.admin.password@" />
+                    user-name="${install.database.admin.user}"
+                    password="${install.database.admin.password}" />
 </datasource-configuration>
