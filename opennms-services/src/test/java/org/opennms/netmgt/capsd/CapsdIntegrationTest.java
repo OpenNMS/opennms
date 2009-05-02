@@ -52,7 +52,13 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
     private Capsd m_capsd;
     private MockSnmpAgent m_agent;
 
-    protected String[] getConfigLocations() {
+   protected String[] getConfigLocations() {
+       try {
+        setupOpenNMSHomeDir();
+    } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
         return new String[] {
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml",
@@ -62,7 +68,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
                 "classpath:META-INF/opennms/smallEventConfDao.xml",
         };
     }
-    
+
     public void setCapsd(Capsd capsd) {
         m_capsd = capsd;
     }
