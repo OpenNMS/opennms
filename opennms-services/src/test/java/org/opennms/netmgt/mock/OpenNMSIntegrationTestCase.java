@@ -153,7 +153,8 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
         m_substitions.setProperty("install.database.user", "opennms");
         m_substitions.setProperty("install.database.password", "opennms");
         m_substitions.setProperty("install.share.dir", shareDir.getAbsolutePath());
-        
+        m_substitions.setProperty("install.rrdtool.bin", "/usr/local/bin/rrdtool");
+
         copyDirectory(etcSourceDir, etcDestDir);
         
         m_db.create();
@@ -305,7 +306,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
     private void doCopyFile(File srcFile, File destFile) throws IOException {
         String contents = readFileContents(srcFile);
         contents = preprocessConfigContents(srcFile, contents);
-        String results = PropertiesUtils.substitute(contents, m_substitions, "@", "@");
+        String results = PropertiesUtils.substitute(contents, m_substitions, "${", "}");
         results = postprocessConfigContents(destFile, results);
         writeFileContents(results, destFile);
     }
