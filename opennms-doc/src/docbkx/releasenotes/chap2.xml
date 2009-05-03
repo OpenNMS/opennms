@@ -131,6 +131,14 @@
 					</glossdef>
 				</glossentry>
 				<glossentry>
+					<glossterm>Web UI ACLs</glossterm>
+					<glossdef>
+						<para>Support for basic access control has been added, which allows you to
+						limit which nodes, interfaces, and services a user can view based on the
+						surveillance categories their group is assigned to.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
 					<glossterm>WMI Support</glossterm>
 					<glossdef>
 						<para>Support has been added for polling and datacollection from <ulink
