@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class SnmpDetector extends AbstractDetector {
     
-    private static final String DEFAULT_SERVICE_NAME = "SNMP";
+    protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
     public static class SnmpExchange implements Exchange {
 
