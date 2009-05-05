@@ -60,7 +60,7 @@ import org.opennms.netmgt.xml.event.Log;
  * (so perhaps needs a better name than ThresholdingVisitor)
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
+ * @author <a href="mailto:craig@opennms.org">Craig Miskell</a>
  */
 public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
     

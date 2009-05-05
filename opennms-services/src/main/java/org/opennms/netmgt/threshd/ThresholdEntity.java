@@ -322,7 +322,7 @@ public final class ThresholdEntity implements Cloneable {
 
     /**
      * Returns the evaluator states *for the given instance. 
-     * @param instance The key to use to identify the instnace to get states for.   Can be null to get the default instance
+     * @param instance The key to use to identify the instance to get states for. Can be null to get the default instance
      * @return
      */
     public List<ThresholdEvaluatorState> getThresholdEvaluatorStates(String instance) {

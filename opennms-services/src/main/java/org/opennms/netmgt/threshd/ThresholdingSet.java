@@ -86,13 +86,13 @@ public class ThresholdingSet {
         for (String groupName : groupNameList) {
             ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
             if (thresholdGroup == null) {
-                log().error("Could not get threshold group with name " + groupName);
+                log().error("initialize: Could not get threshold group with name " + groupName);
             }
             m_thresholdGroups.add(thresholdGroup);
             if (log().isDebugEnabled()) {
-                log().debug("Adding threshold group: " + thresholdGroup);
+                log().debug("initialize: Adding threshold group: " + thresholdGroup);
             }
-        }        
+        }
         m_hasThresholds = !m_thresholdGroups.isEmpty();
     }
 
@@ -106,10 +106,36 @@ public class ThresholdingSet {
     /*
      * Used to reload merge new thresholds configuration with current.
      * 
-     * Extract ThresholdEntities for triggered thresholds and override new ThresholdGroup.
+     * Extract thresholdEvaluatorStates Map from each ThresholdEntity, then copy this to new thresholdEntity
      */
     protected void mergeThresholdGroups() {
-        initialize(); // FIXME Wrong. Only to recreate old implementation behavior
+        List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
+        List<ThresholdGroup> newThresholdGroupList = new ArrayList<ThresholdGroup>();
+        for (String groupName : groupNameList) {
+            ThresholdGroup foundGroup = null;
+            for (ThresholdGroup group : m_thresholdGroups) {
+                if (group.getName().equals(groupName))
+                    foundGroup = group;
+            }
+            if (foundGroup == null) {
+                ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                if (thresholdGroup == null) {
+                    log().error("mergeThresholdGroups: Could not get threshold group with name " + groupName);
+                } else {
+                    newThresholdGroupList.add(thresholdGroup);
+                    if (log().isDebugEnabled()) {
+                        log().debug("mergeThresholdGroups: Adding threshold group: " + thresholdGroup);
+                    }
+                }
+            } else {
+                ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup);
+                newThresholdGroupList.add(thresholdGroup);
+                if (log().isDebugEnabled()) {
+                    log().debug("mergeThresholdGroups: Merging threshold group: " + thresholdGroup);
+                }
+            }
+        }
+        m_thresholdGroups = newThresholdGroupList;
     }
 
     /*

@@ -52,43 +52,60 @@ import org.springframework.util.Assert;
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
-    public DefaultThresholdsDao() {
-        
-    }
+    public DefaultThresholdsDao() {}
 
     public ThresholdGroup get(String name) {
-	ThresholdGroup group = new ThresholdGroup(name);
-
-        File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
-	group.setRrdRepository(rrdRepository);
-	
-	ThresholdResourceType nodeType = createType(name, "node");
-	group.setNodeResourceType(nodeType);
-    
-	ThresholdResourceType ifType = createType(name, "if");
-	group.setIfResourceType(ifType);
-
-	for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
-	    String id = thresh.getDsType();
-	    if (!(id.equals("if") || id.equals("node") || group.getGenericResourceTypeMap().containsKey(id))) {
-	        ThresholdResourceType genericType = createType(name, id);
-	        if (genericType.getThresholdMap().size() > 0) {
-	            log().info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
-	            group.getGenericResourceTypeMap().put(id, genericType);
-	        }
-	    }
-	}
-            
-	return group;
+        return get(name, null);
     }
 
+    public ThresholdGroup merge(ThresholdGroup group) {
+        return get(group.getName(), group);
+    }
+
+    private ThresholdGroup get(String name, ThresholdGroup group) {
+        boolean merge = group != null;
+        ThresholdGroup newGroup = new ThresholdGroup(name);
+
+        File rrdRepository = new File(getThresholdingConfigFactory().getRrdRepository(name));
+        newGroup.setRrdRepository(rrdRepository);
+
+        ThresholdResourceType nodeType = merge ? mergeType(name, "node", group.getNodeResourceType()) : createType(name, "node");
+        newGroup.setNodeResourceType(nodeType);
+
+        ThresholdResourceType ifType = merge ? mergeType(name, "if", group.getIfResourceType()): createType(name, "if");
+        newGroup.setIfResourceType(ifType);
+
+        for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
+            String id = thresh.getDsType();
+            if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
+                ThresholdResourceType genericType = merge ? mergeType(name, id, group.getGenericResourceTypeMap().get(id)) : createType(name, id);
+                if (genericType.getThresholdMap().size() > 0) {
+                    log().info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
+                    newGroup.getGenericResourceTypeMap().put(id, genericType);
+                }
+            }
+        }
+
+        return newGroup;
+    }
+    
     private Map<String, Set<ThresholdEntity>> createThresholdStateMap(String type, String groupName) {
         Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
-        
+        fillThresholdStatsMap(groupName, type, thresholdMap);
+        return thresholdMap;
+    }
+
+    private Map<String, Set<ThresholdEntity>> mergeThresholdStateMap(String groupName, ThresholdResourceType type) {
+        Map<String, Set<ThresholdEntity>> thresholdMap = type.getThresholdMap();
+        fillThresholdStatsMap(groupName, type.getDsType(), thresholdMap);
+        return thresholdMap;
+    }
+
+    private void fillThresholdStatsMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
             // See if map entry already exists for this datasource
             // If not, create a new one.
-            if (thresh.getDsType().equals(type)) {
+            if (thresh.getDsType().equals(typeName)) {
                 try {
                     BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
                     //ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
@@ -102,9 +119,9 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                     }
             
                     try {
-                    	ThresholdEntity thresholdEntity = new ThresholdEntity();
-                    	thresholdEntity.addThreshold(wrapper);
-                    	thresholdMap.get(wrapper.getDatasourceExpression()).add(thresholdEntity);
+                        ThresholdEntity thresholdEntity = new ThresholdEntity();
+                        thresholdEntity.addThreshold(wrapper);
+                        thresholdMap.get(wrapper.getDatasourceExpression()).add(thresholdEntity);
                     } catch (IllegalStateException e) {
                         log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
                     } 
@@ -112,16 +129,19 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                 catch (ThresholdExpressionException e) {
                     log().warn("Could not parse threshold expression: "+e.getMessage(), e);
                 }
-
             }
         }
-        
-        return thresholdMap;
     }
-    
-    ThresholdResourceType createType(String groupName, String type) {
+
+    private ThresholdResourceType createType(String groupName, String type) {
         ThresholdResourceType resourceType = new ThresholdResourceType(type);
         resourceType.setThresholdMap(createThresholdStateMap(type, groupName));
+        return resourceType;
+    }
+
+    private ThresholdResourceType mergeType(String groupName, String typeName, ThresholdResourceType type) {
+        ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
+        resourceType.setThresholdMap(mergeThresholdStateMap(groupName, type));
         return resourceType;
     }
 
