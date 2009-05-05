@@ -1,3 +1,33 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.                                                            
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//       
+// For more information contact: 
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
@@ -26,8 +56,11 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.springframework.dao.DataAccessException;
 
+/**
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ *
+ */
 public class ThresholdingSet {
     
     int m_nodeId;
@@ -51,7 +84,11 @@ public class ThresholdingSet {
         m_serviceName = serviceName;
         m_repository = repository;        
         initThresholdsDao();
-        List<String> groupNameList = getThresholdGroupNames(nodeId, hostAddress, serviceName);
+        initialize();
+    }
+    
+    protected void initialize() {
+        List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         m_thresholdGroups = new ArrayList<ThresholdGroup>();
         for (String groupName : groupNameList) {
             ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
@@ -62,7 +99,7 @@ public class ThresholdingSet {
             if (log().isDebugEnabled()) {
                 log().debug("Adding threshold group: " + thresholdGroup);
             }
-        }
+        }        
         m_hasThresholds = !m_thresholdGroups.isEmpty();
     }
 
@@ -70,12 +107,28 @@ public class ThresholdingSet {
         m_initialized = false;
         initThresholdsDao();
         mergeThresholdGroups();
+        m_hasThresholds = !m_thresholdGroups.isEmpty();
     }
 
+    /*
+     * Used to reload merge new thresholds configuration with current.
+     * 
+     * Extract ThresholdEntities for triggered thresholds and override new ThresholdGroup.
+     */
+    protected void mergeThresholdGroups() {
+        initialize(); // FIXME Wrong. Only to recreate old implementation behavior
+    }
+
+    /*
+     * Returns true if there are defined thresholds for this node/address/service
+     */
     public boolean hasThresholds() {
         return m_hasThresholds;
     }
 
+    /*
+     * Returns true if the specified attribute is involved in any of defined threshols for node/address/service
+     */
     public boolean hasThresholds(CollectionAttribute attribute) {
         CollectionResource resource = attribute.getResource();
         for (ThresholdGroup group : m_thresholdGroups) {
@@ -91,37 +144,40 @@ public class ThresholdingSet {
         return false;
     }
 
+    /*
+     * Apply thresholds definitions for specified resource using attribuesMap as current values.
+     * Return a list of events to be send if some thresholds must be triggered or be rearmed.
+     */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
         Date date = new Date();
         List<Event> eventsList = new ArrayList<Event>();
-        File resourceDir = resource.getResourceDir(m_repository);
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resource.getResourceTypeName());
             for(String key : entityMap.keySet()) {
                 for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                     if (passedThresholdFilters(resource, thresholdEntity, attributesMap)) {
-                        log().info("processResource: Processing threshold " + key + " : " + thresholdEntity);
+                        log().info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity);
                         Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                         Map<String, Double> values = new HashMap<String,Double>();
                         boolean valueMissing = false;
                         for(String ds: requiredDatasources) {
-                            log().info("processResource: Looking for datasource " + ds);
                             Double dsValue = getCollectionAttributeValue(resource, attributesMap, ds);
                             if(dsValue == null) {
-                                log().info("processResource: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
+                                log().info("applyThresholds: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
                                 valueMissing = true;
                             }
                             values.put(ds,dsValue);
                         }
                         if(!valueMissing) {
-                            log().info("processResource: All values found, evaluating");
+                            log().info("applyThresholds: All values found, evaluating");
                             List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resource.getInstance(), values, date);
-                            String dsLabelValue = getDataSourceLabelFromFile(resourceDir, thresholdEntity.getDatasourceLabel());
+                            String dsLabelValue = getDataSourceLabelValue(resource, attributesMap, thresholdEntity.getDatasourceLabel());
+                            if (dsLabelValue == null) dsLabelValue = "Unknown";
                             completeEventList(thresholdEvents, resource, dsLabelValue);
                             eventsList.addAll(thresholdEvents);
                         }
                     } else {
-                        log().info("processResource: Not processing threshold " + key + " : " + thresholdEntity + " because no filters matched");
+                        log().info("applyThresholds: Not processing threshold " + key + " : " + thresholdEntity + " because no filters matched");
                     }
                 }
             }
@@ -129,6 +185,10 @@ public class ThresholdingSet {
         return eventsList;
     }
     
+    /*
+     * FIXME Why ?
+     * I think that this should be part of ThresholdEntity implementation
+     */
     private void completeEventList(List<Event> eventList, CollectionResource resource, String dsLabelValue) {
         for (Event event : eventList) {
             event.setNodeid(m_nodeId);
@@ -169,28 +229,13 @@ public class ThresholdingSet {
         }
     }
 
-    private String getDataSourceLabelFromFile(File directory, String ds) {
-        String dsLabelValue = null;
-        try {
-            dsLabelValue = (ds == null ? null : ResourceTypeUtils.getStringProperty(directory, ds));
-        } catch (DataAccessException e) {
-            if (log().isDebugEnabled()) {
-                log().debug ("getDataSourceLabel: I/O exception when looking for strings.properties from " + directory + ": " + e, e);
-            }
-        }
-        return (dsLabelValue == null ? "Unknown" : dsLabelValue);
-    }
-
-    private boolean passedThresholdFilters(final CollectionResource resource, final ThresholdEntity thresholdEntity, Map<String, CollectionAttribute> attributesMap) {
-        File resourceDir = resource.getResourceDir(m_repository);
-
+    private boolean passedThresholdFilters(CollectionResource resource, ThresholdEntity thresholdEntity, Map<String, CollectionAttribute> attributesMap) {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
-
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
         if (log().isDebugEnabled()) {
-            log().debug("passedThresholdFilters: resource=" + resource + ", filters=" + filters.length);
+            log().debug("passedThresholdFilters: applying " + filters.length + " filters to resource " + resource);
         }
         int count = 1;
         for (ResourceFilter f : filters) {
@@ -199,7 +244,7 @@ public class ThresholdingSet {
             }
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = getFilterFieldValue(resourceDir, resource.getResourceTypeName(), f.getField());
+            String attr = getDataSourceLabelValue(resource, attributesMap, f.getField());
             if (attr != null) {
                 try {
                     final Pattern p = Pattern.compile(f.getContent());
@@ -216,6 +261,8 @@ public class ThresholdingSet {
                     log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
                     return false;
                 }
+            } else {
+                log().warn("passedThresholdFilters: can't find value of " + attr + " for resource " + resource);
             }
         }
         return false;
@@ -254,24 +301,30 @@ public class ThresholdingSet {
         return current - last;
     }
     
-    private String getFilterFieldValue(File resourceDirectory, String resourceType, String attribute) {
+    private String getDataSourceLabelValue(CollectionResource resource, Map<String, CollectionAttribute> attributes, String ds) {
+        if (ds == null)
+            return null;
         if (log().isDebugEnabled()) {
-            log().debug("getFilterFieldValue: Getting Value for " + resourceType + "::" + attribute);
+            log().debug("getDataSourceLabelValue: Getting Value for " + resource.getResourceTypeName() + "::" + ds);
         }
         String value = null;
-        if (attribute.equals("ID")) {
+        File resourceDirectory = resource.getResourceDir(m_repository);
+        if (ds.equals("ID")) {
             return resourceDirectory.getName();
         }
         try {
-            if (resourceType.equals("if")) {
+            if (resource.getResourceTypeName().equals("if")) {
                 String ifLabel = resourceDirectory.getName();
-                value = getIfInfo(m_nodeId, ifLabel, attribute);
+                value = getIfInfo(m_nodeId, ifLabel, ds);
             }
-            if (value == null) {
-                value = getDataSourceLabelFromFile(resourceDirectory, attribute);
+            if (value == null) { // Find value on collected string attributes
+                value = attributes.containsKey(ds) ? attributes.get(ds).getStringValue() : null;
+            }
+            if (value == null) { // Find value on saved string attributes                
+                value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
             }
         } catch (Exception e) {
-            log().warn("getFilterFieldValue: Can't get value for attribute " + attribute + ". " + e, e);
+            log().info("getDataSourceLabelValue: Can't get value for attribute " + ds + " for resource " + resource + ". " + e, e);
         }
         return value;
     }
@@ -304,15 +357,6 @@ public class ThresholdingSet {
         }
     }
     
-    /*
-     * Used to reload merge new thresholds configuration with current.
-     * 
-     * Extract ThresholdEntities for triggered thresholds and override new ThresholdGroup.
-     */
-    private void mergeThresholdGroups() {
-        // TODO Auto-generated method stub
-    }
-
     /*
      * The next code was extracted from Threshd.scheduleService.
      * 

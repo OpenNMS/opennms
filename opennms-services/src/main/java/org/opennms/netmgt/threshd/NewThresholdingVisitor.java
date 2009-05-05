@@ -49,19 +49,37 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
+/**
+ * Implements CollectionSetVisitor to implement thresholding.  
+ * Works by simply recording all the attributes that come in via visitAttribute 
+ * into an internal data structure, per resource, and then on "completeResource", does 
+ * threshold checking against that in memory structure.  
+ *
+ * Suggested usage is one per CollectableService; this object holds the current state of thresholds
+ * for this interface/service combination 
+ * (so perhaps needs a better name than ThresholdingVisitor)
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
+ */
 public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
     
+    /*
+     * Holds thresholds configuration for a node/interface/service
+     */
     private ThresholdingSet m_thresholdingSet;
     
+    /*
+     * Holds required attribute from CollectionResource to evaluate thresholds.
+     */
     private Map<String, CollectionAttribute> m_attributesMap;
     
     /*
-     * Is static because successful creation depends on thresholding-enabled.
+     * Is static because successful creation depends on thresholding-enabled parameter.
      */
-    public static NewThresholdingVisitor create(final int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, final Map<String,String> params) {
+    public static NewThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params) {
         Category log = ThreadCategory.getInstance(NewThresholdingVisitor.class);
 
-        // Use the "thresholding-enable" to use Thresholds processing on Collectd
         String enabled = params.get("thresholding-enabled");
         if (enabled == null || !enabled.equals("true")) {
             log.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
@@ -77,6 +95,9 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
         return null;
     }
 
+    /*
+     * Static method create must be used to create's new ThresholdingVisitor instance
+     */
     protected NewThresholdingVisitor(ThresholdingSet thresholdingSet) {
         m_thresholdingSet = thresholdingSet;
     }
@@ -89,29 +110,39 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     
+    /*
+     *  Initialize required attributes map (m_attributesMap)
+     */
     @Override
     public void visitResource(CollectionResource resource) {
-        // Re-initialize attributes Map.
         m_attributesMap = new HashMap<String, CollectionAttribute>();
     }        
 
     /*
-     * Must be used to hold all attributes needed because CollectionResource does not have a connection to their attributes.
+     * Update required attributes for thresholds and string attributes on m_attributeMap.
+     * This is used because CollectionResource does not have direct reference to their attributes
+     * (The way to get attribute is against AttributeGroup object contained on CollectioResource
+     * implementations).
      */
     @Override    
     public void visitAttribute(CollectionAttribute attribute) {
-        if (m_thresholdingSet.hasThresholds(attribute)) {
+        boolean isString = attribute.getType().toLowerCase().startsWith("string");
+        if (isString || m_thresholdingSet.hasThresholds(attribute)) {
             String name = attribute.getName();
             m_attributesMap.put(name, attribute);
             if (log().isDebugEnabled()) {
                 String value = attribute.getNumericValue();
                 if (value == null)
                     value = attribute.getStringValue();
-                log().debug("visitAttribute; storing value "+ value +" for attribute named " + name);
+                log().debug("visitAttribute: storing value "+ value +" for attribute named " + name);
             }
         }
     }
 
+    /*
+     * Apply threshold for specific resource (and required attributes).
+     * Send thresholds events (if exists)
+     */
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap);
@@ -123,8 +154,12 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
             try {                
                 Log eventLog = new Log();
                 eventLog.setEvents(events);
-                //Used to use a proxy for this, but the threshd implementation was  just a simple wrapper around the following call
-                // (not even any other code).  Rather than try to get an Event Proxy into this class, it's easier to just call direct.
+                /*
+                 * Used to use a proxy for this, but the threshd implementation was just a simple wrapper around the following call
+                 * (not even any other code). Rather than try to get an Event Proxy into this class, it's easier to just call direct.
+                 * 
+                 * TODO Is this the better way to send multiple events?
+                 */
                 EventIpcManagerFactory.getIpcManager().sendNow(eventLog);
             } catch (Exception e) {
                 log().info("completeResource: Failed sending threshold events: " + e, e);
