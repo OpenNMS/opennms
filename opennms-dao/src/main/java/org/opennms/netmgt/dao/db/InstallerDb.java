@@ -66,7 +66,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,6 +77,12 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.dao.db.columnchanges.AutoIntegerReplacement;
+import org.opennms.netmgt.dao.db.columnchanges.DoNotAddColumnReplacement;
+import org.opennms.netmgt.dao.db.columnchanges.EventSourceReplacement;
+import org.opennms.netmgt.dao.db.columnchanges.FixedIntegerReplacement;
+import org.opennms.netmgt.dao.db.columnchanges.NextValReplacement;
+import org.opennms.netmgt.dao.db.columnchanges.RowHasBogusDataReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -2362,41 +2367,41 @@ public class InstallerDb {
         /*
          * The DEFAULT value for these columns will take care of these primary keys
          */
-        addColumnReplacement("snmpinterface.id", new DoNotAddColumn());
-        addColumnReplacement("ipinterface.id", new DoNotAddColumn());
-        addColumnReplacement("ifservices.id", new DoNotAddColumn());
-        addColumnReplacement("acks.id", new DoNotAddColumn());
-        addColumnReplacement("assets.id", new DoNotAddColumn());
-        addColumnReplacement("atinterface.id", new DoNotAddColumn());
-        addColumnReplacement("datalinkinterface.id", new DoNotAddColumn());
-        addColumnReplacement("element.id", new DoNotAddColumn());
+        addColumnReplacement("snmpinterface.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("ipinterface.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("ifservices.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("acks.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("assets.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("atinterface.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("datalinkinterface.id", new DoNotAddColumnReplacement());
+        addColumnReplacement("element.id", new DoNotAddColumnReplacement());
 
         // Triggers will take care of these surrogate foreign keys
-        addColumnReplacement("ipinterface.snmpinterfaceid", new DoNotAddColumn());
-        addColumnReplacement("ifservices.ipinterfaceid", new DoNotAddColumn());
-        addColumnReplacement("outages.ifserviceid", new DoNotAddColumn());
+        addColumnReplacement("ipinterface.snmpinterfaceid", new DoNotAddColumnReplacement());
+        addColumnReplacement("ifservices.ipinterfaceid", new DoNotAddColumnReplacement());
+        addColumnReplacement("outages.ifserviceid", new DoNotAddColumnReplacement());
         
         addColumnReplacement("events.eventsource", new EventSourceReplacement());
         
-        addColumnReplacement("outages.outageid", new AutoInteger(1));
+        addColumnReplacement("outages.outageid", new AutoIntegerReplacement(1));
         
-        addColumnReplacement("snmpinterface.nodeid", new RowHasBogusData("snmpInterface", "nodeId"));
+        addColumnReplacement("snmpinterface.nodeid", new RowHasBogusDataReplacement("snmpInterface", "nodeId"));
         
-        addColumnReplacement("snmpinterface.snmpifindex", new RowHasBogusData("snmpInterface", "snmpIfIndex"));
+        addColumnReplacement("snmpinterface.snmpifindex", new RowHasBogusDataReplacement("snmpInterface", "snmpIfIndex"));
 
-        addColumnReplacement("ipinterface.nodeid", new RowHasBogusData("ipInterface", "nodeId"));
+        addColumnReplacement("ipinterface.nodeid", new RowHasBogusDataReplacement("ipInterface", "nodeId"));
 
-        addColumnReplacement("ipinterface.ipaddr", new RowHasBogusData("ipInterface", "ipAddr"));
+        addColumnReplacement("ipinterface.ipaddr", new RowHasBogusDataReplacement("ipInterface", "ipAddr"));
 
-        addColumnReplacement("ifservices.nodeid", new RowHasBogusData("ifservices", "nodeId"));
+        addColumnReplacement("ifservices.nodeid", new RowHasBogusDataReplacement("ifservices", "nodeId"));
 
-        addColumnReplacement("ifservices.ipaddr", new RowHasBogusData("ifservices", "ipaddr"));
+        addColumnReplacement("ifservices.ipaddr", new RowHasBogusDataReplacement("ifservices", "ipaddr"));
 
-        addColumnReplacement("ifservices.serviceid", new RowHasBogusData("ifservices", "serviceId"));
+        addColumnReplacement("ifservices.serviceid", new RowHasBogusDataReplacement("ifservices", "serviceId"));
 
-        addColumnReplacement("outages.nodeid", new RowHasBogusData("outages", "nodeId"));
+        addColumnReplacement("outages.nodeid", new RowHasBogusDataReplacement("outages", "nodeId"));
         
-        addColumnReplacement("outages.serviceid", new RowHasBogusData("outages", "serviceId"));
+        addColumnReplacement("outages.serviceid", new RowHasBogusDataReplacement("outages", "serviceId"));
         
         addColumnReplacement("usersnotified.id", new NextValReplacement("userNotifNxtId", getDataSource()));
         
@@ -2429,367 +2434,6 @@ public class InstallerDb {
         }
     }
     
-    
-    public class AutoInteger implements ColumnChangeReplacement {
-        private int m_value;
-        
-        public AutoInteger(int initialValue) {
-            m_value = initialValue;
-        }
-        
-        public int getInt() {
-            return m_value++;
-        }
-        
-        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
-            return getInt();
-        }
-
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class AutoIntegerIdMapStore implements ColumnChangeReplacement {
-        private int m_value;
-        private final String[] m_indexColumns;
-        private final Map<MultiColumnKey, Integer> m_idMap =
-            new HashMap<MultiColumnKey, Integer>();
-        
-        public AutoIntegerIdMapStore(int initialValue, String[] indexColumns) {
-            m_value = initialValue;
-            m_indexColumns = indexColumns;
-        }
-        
-        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            MultiColumnKey key = getKeyForColumns(rs, columnChanges, m_indexColumns);
-            Integer newInteger = m_value++;
-            m_idMap.put(key, newInteger);
-            return newInteger;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns, boolean noMatchOkay) throws SQLException {
-            MultiColumnKey key = getKeyForColumns(rs, columnChanges, columns);
-
-            Integer oldInteger = m_idMap.get(key);
-            Assert.isTrue(oldInteger != null || noMatchOkay, "No entry in the map for " + key);
-            
-            return oldInteger;
-        }
-        
-        private MultiColumnKey getKeyForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns) throws SQLException {
-            Object[] objects = new Object[columns.length];
-            for (int i = 0; i < columns.length; i++) { 
-                String indexColumn = columns[i];
-                
-                ColumnChange columnChange = columnChanges.get(indexColumn);
-                Assert.notNull(columnChange, "No ColumnChange entry for '" + indexColumn + "'");
-                
-                int index = columnChange.getSelectIndex();
-                Assert.isTrue(index > 0, "ColumnChange entry for '" + indexColumn + "' has no select index");
-                
-                objects[i] = rs.getObject(index);
-            }
-
-            return new MultiColumnKey(objects);
-        }
-        
-        public class MultiColumnKey {
-            private final Object[] m_keys;
-            
-            public MultiColumnKey(Object[] keys) {
-                m_keys = keys;
-            }
-            
-            @Override
-            public boolean equals(Object otherObject) {
-                if (!(otherObject instanceof MultiColumnKey)) {
-                    return false;
-                }
-                MultiColumnKey other = (MultiColumnKey) otherObject;
-                
-                if (m_keys.length != other.m_keys.length) {
-                    return false;
-                }
-                
-                for (int i = 0; i < m_keys.length; i++) {
-                    if (m_keys[i] == null && other.m_keys[i] == null) {
-                        continue;
-                    }
-                    if (m_keys[i] == null || other.m_keys[i] == null) {
-                        return false;
-                    }
-                    if (!m_keys[i].equals(other.m_keys[i])) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            }
-            
-            @Override
-            public String toString() {
-                return StringUtils.arrayToDelimitedString(m_keys, ", ");
-            }
-            
-            @Override
-            public int hashCode() {
-                int value = 1;
-                for (Object o : m_keys) {
-                    if (o != null) {
-                        // not the other way around, since 1 ^ anything == 1
-                        value = o.hashCode() ^ value;
-                    }
-                }
-                return value;
-            }
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class MapStoreIdGetter implements ColumnChangeReplacement {
-        private final AutoIntegerIdMapStore m_storeFoo;
-        private final String[] m_indexColumns;
-        private final boolean m_noMatchOkay;
-        
-        public MapStoreIdGetter(AutoIntegerIdMapStore storeFoo,
-                String[] columns, boolean noMatchOkay) {
-            m_storeFoo = storeFoo;
-            m_indexColumns = columns;
-            m_noMatchOkay = noMatchOkay;
-        }
-
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns, m_noMatchOkay);
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class EventSourceReplacement implements ColumnChangeReplacement {
-        private static final String m_replacement = "OpenNMS.Eventd";
-        
-        public EventSourceReplacement() {
-            // we do nothing!
-        }
-
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_replacement;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class FixedIntegerReplacement implements ColumnChangeReplacement {
-        private final Integer m_replacement;
-        
-        public FixedIntegerReplacement(int value) {
-            m_replacement = value;
-        }
-
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_replacement;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class TimeStampReplacement implements ColumnChangeReplacement {
-        private final Date m_replacement;
-        
-        public TimeStampReplacement(Date value) {
-            m_replacement = value;
-        }
-
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_replacement;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-
-    public class VarCharReplacement implements ColumnChangeReplacement {
-        private final String m_replacement;
-        
-        public VarCharReplacement(String value) {
-            m_replacement = value;
-        }
-
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_replacement;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class RowHasBogusData implements ColumnChangeReplacement {
-        private final String m_table;
-        private final String m_column;
-        
-        public RowHasBogusData(String table, String column) {
-            m_table = table;
-            m_column = column;
-        }
-        
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            throw new IllegalArgumentException("The '" + m_column
-                                               + "' column in the '"
-                                               + m_table
-                                               + "' table should never be "
-                                               + "null, but the entry for this "
-                                               + "row does have a null '"
-                                               + m_column + "' column.  "
-                                               + "It needs to be "
-                                               + "removed or udpated to "
-                                               + "reflect a valid '"
-                                               + m_column + "' value.");
-        }
-
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class NullReplacement implements ColumnChangeReplacement {
-        public NullReplacement() {
-            // do nothing
-        }
-        
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return null;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() {
-        }
-    }
-    
-    public class DoNotAddColumn implements ColumnChangeReplacement {
-        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return null;
-        }
-
-        public boolean addColumnIfColumnIsNew() {
-            return false;
-        }
-
-        
-        public void close() {
-        }
-    }
-    
-    public class NextValReplacement implements ColumnChangeReplacement {
-        private final String m_sequence;
-        
-        private final Connection m_connection;
-        private final PreparedStatement m_statement;
-        
-        public NextValReplacement(String sequence, DataSource dataSource) throws SQLException {
-            m_sequence = sequence;
-//            m_dataSource = dataSource;
-            m_connection = dataSource.getConnection();
-            m_statement = m_connection.prepareStatement("SELECT nextval('"
-                                                        + m_sequence
-                                                        + "')");
-        }
-        
-        private PreparedStatement getStatement() {
-            /*
-            if (m_statement == null) {
-                createStatement();
-            }
-            */
-            return m_statement;
-        }
-
-        /*
-        private void createStatement() throws SQLException {
-            m_statement = getConnection().prepareStatement("SELECT nextval('" + m_sequence + "')");
-        }
-        
-        private Connection getConnection() throws SQLException {
-            if (m_connection == null) {
-                createConnection();
-            }
-            
-            return m_connection;
-        }
-        
-        private void createConnection() throws SQLException {
-            m_connection = m_dataSource.getConnection();
-        }
-        */
-
-        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            ResultSet r = getStatement().executeQuery();
-            
-            if (!r.next()) {
-                r.close();
-                throw new SQLException("Query for next value of sequence did not return any rows.");
-            }
-            
-            int i = r.getInt(1);
-            r.close();
-            return i;
-        }
-        
-        public boolean addColumnIfColumnIsNew() {
-            return true;
-        }
-        
-        public void close() throws SQLException {
-            finalize();
-        }
-        
-        protected void finalize() throws SQLException {
-            if (m_statement != null) {
-                m_statement.close();
-            }
-            if (m_connection != null) {
-                m_connection.close();
-            }
-        }
-    }
     
     enum Status {
         OK,
