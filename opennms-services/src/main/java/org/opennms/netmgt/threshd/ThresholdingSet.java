@@ -30,7 +30,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -50,12 +49,8 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -75,8 +70,6 @@ public class ThresholdingSet {
     boolean m_hasThresholds = false;
     
     List<ThresholdGroup> m_thresholdGroups;
-
-    private Map<String, Double> m_cache = new HashMap<String,Double>();
 
     public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
         m_nodeId = nodeId;
@@ -149,19 +142,20 @@ public class ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);        
         Date date = new Date();
         List<Event> eventsList = new ArrayList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resource.getResourceTypeName());
             for(String key : entityMap.keySet()) {
                 for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
-                    if (passedThresholdFilters(resource, thresholdEntity, attributesMap)) {
+                    if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
                         log().info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity);
                         Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                         Map<String, Double> values = new HashMap<String,Double>();
                         boolean valueMissing = false;
                         for(String ds: requiredDatasources) {
-                            Double dsValue = getCollectionAttributeValue(resource, attributesMap, ds);
+                            Double dsValue = resourceWrapper.getAttributeValue(ds);
                             if(dsValue == null) {
                                 log().info("applyThresholds: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
                                 valueMissing = true;
@@ -171,9 +165,7 @@ public class ThresholdingSet {
                         if(!valueMissing) {
                             log().info("applyThresholds: All values found, evaluating");
                             List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resource.getInstance(), values, date);
-                            String dsLabelValue = getDataSourceLabelValue(resource, attributesMap, thresholdEntity.getDatasourceLabel());
-                            if (dsLabelValue == null) dsLabelValue = "Unknown";
-                            completeEventList(thresholdEvents, resource, dsLabelValue);
+                            resourceWrapper.completeEventList(thresholdEvents, thresholdEntity.getDatasourceLabel());
                             eventsList.addAll(thresholdEvents);
                         }
                     } else {
@@ -185,51 +177,7 @@ public class ThresholdingSet {
         return eventsList;
     }
     
-    /*
-     * FIXME Why ?
-     * I think that this should be part of ThresholdEntity implementation
-     */
-    private void completeEventList(List<Event> eventList, CollectionResource resource, String dsLabelValue) {
-        for (Event event : eventList) {
-            event.setNodeid(m_nodeId);
-            event.setService(m_serviceName);
-            event.setInterface(m_hostAddress);
-            Parms eventParms = event.getParms();
-            Parm eventParm;
-            Value parmValue;
-            if (dsLabelValue != null) {
-                eventParm = new Parm();
-                eventParm.setParmName("label");
-                parmValue = new Value();
-                parmValue.setContent(dsLabelValue);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-            }
-            if (resource.getResourceTypeName().equals("if")) {
-                File resourceDir = resource.getResourceDir(m_repository);
-                String ifLabel = resourceDir.getName();
-                String snmpIfIndex = getIfInfo(m_nodeId, ifLabel, "snmpifindex");
-                if (ifLabel != null) {
-                    eventParm = new Parm();
-                    eventParm.setParmName("ifLabel");
-                    parmValue = new Value();
-                    parmValue.setContent(ifLabel);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                }
-                if (snmpIfIndex != null) {
-                    eventParm = new Parm();
-                    eventParm.setParmName("ifIndex");
-                    parmValue = new Value();
-                    parmValue.setContent(snmpIfIndex);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                }                
-            }
-        }
-    }
-
-    private boolean passedThresholdFilters(CollectionResource resource, ThresholdEntity thresholdEntity, Map<String, CollectionAttribute> attributesMap) {
+    private boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
@@ -244,7 +192,7 @@ public class ThresholdingSet {
             }
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = getDataSourceLabelValue(resource, attributesMap, f.getField());
+            String attr = resource.getLabelValue(f.getField());
             if (attr != null) {
                 try {
                     final Pattern p = Pattern.compile(f.getContent());
@@ -268,71 +216,6 @@ public class ThresholdingSet {
         return false;
     }
     
-    private Double getCollectionAttributeValue(CollectionResource resource, Map<String, CollectionAttribute> attributes, String ds) {
-        if (attributes.get(ds) == null) {
-            log().warn("getCollectionAttributeValue: can't find attribute called " + ds + " on " + resource);
-            return null;
-        }
-        String numValue = attributes.get(ds).getNumericValue();
-        if (numValue == null) {
-            log().warn("getCollectionAttributeValue: can't find numeric value for " + ds + " on " + resource);
-            return null;
-        }
-        String id = resource.toString() + "." + ds;
-        Double current = Double.parseDouble(numValue);
-        if (attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
-            if (log().isDebugEnabled()) {
-                log().debug("getCollectionAttributeValue: " + id + "(gauge) value= " + current);
-            }
-            return current;
-        }
-        Double last = m_cache.get(id);
-        if (log().isDebugEnabled()) {
-            log().debug("getCollectionAttributeValue: " + id + "(counter) last=" + last + ", current=" + current);
-        }
-        m_cache.put(id, current);
-        if (last == null) {
-            return Double.NaN;
-        }
-        if (current < last) {
-            log().info("getCollectionAttributeValue: counter reset detected, ignoring value");
-            return Double.NaN;
-        }
-        return current - last;
-    }
-    
-    private String getDataSourceLabelValue(CollectionResource resource, Map<String, CollectionAttribute> attributes, String ds) {
-        if (ds == null)
-            return null;
-        if (log().isDebugEnabled()) {
-            log().debug("getDataSourceLabelValue: Getting Value for " + resource.getResourceTypeName() + "::" + ds);
-        }
-        String value = null;
-        File resourceDirectory = resource.getResourceDir(m_repository);
-        if (ds.equals("ID")) {
-            return resourceDirectory.getName();
-        }
-        try {
-            if (resource.getResourceTypeName().equals("if")) {
-                String ifLabel = resourceDirectory.getName();
-                value = getIfInfo(m_nodeId, ifLabel, ds);
-            }
-            if (value == null) { // Find value on collected string attributes
-                value = attributes.containsKey(ds) ? attributes.get(ds).getStringValue() : null;
-            }
-            if (value == null) { // Find value on saved string attributes                
-                value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
-            }
-        } catch (Exception e) {
-            log().info("getDataSourceLabelValue: Can't get value for attribute " + ds + " for resource " + resource + ". " + e, e);
-        }
-        return value;
-    }
-
-    private String getIfInfo(final int nodeid, final String ifLabel, final String attributeName) {
-        return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel).get(attributeName);
-    }
-
     protected void initThresholdsDao() {
         if (!m_initialized) {
             log().debug("initThresholdsDao: Initializing Factories and DAOs");
