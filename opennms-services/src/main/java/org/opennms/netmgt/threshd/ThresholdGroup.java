@@ -101,21 +101,22 @@ public class ThresholdGroup {
 
 	public String toString() {
 	    StringBuilder buf = new StringBuilder();
-	    buf.append("group=[node:{");
+	    buf.append("group={node:{");
 	    if (getNodeResourceType() != null) {
-	        buf.append(getNodeResourceType());
+	        buf.append(getNodeResourceType().getThresholdMap().values());
 	    }
 	    buf.append("}; iface:{");
 	    if (getIfResourceType() != null) {
-	        buf.append(getIfResourceType());
+	        buf.append(getIfResourceType().getThresholdMap().values());
 	    }
-	    buf.append("}; generic:{");
 	    if (getGenericResourceTypeMap() != null) {
 	        for (String rType : getGenericResourceTypeMap().keySet()) {
-	            buf.append(rType + " ");
+	            buf.append("}; " + rType + ":{");
+	            buf.append(getGenericResourceTypeMap().get(rType).getThresholdMap().values());
+	            buf.append("}");
 	        }
 	    }
-	    buf.append("}]");
+	    buf.append("}");
 	    String toString = buf.toString();
 	    return toString;
 	}

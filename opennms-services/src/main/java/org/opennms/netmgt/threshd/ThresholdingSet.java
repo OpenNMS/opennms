@@ -146,7 +146,7 @@ public class ThresholdingSet {
     }
 
     /*
-     * Returns true if the specified attribute is involved in any of defined threshols for node/address/service
+     * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
      */
     public boolean hasThresholds(CollectionAttribute attribute) {
         CollectionResource resource = attribute.getResource();
@@ -224,7 +224,6 @@ public class ThresholdingSet {
                     final Pattern p = Pattern.compile(f.getContent());
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
-                    
                     if (log().isDebugEnabled()) {
                         log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
                     }

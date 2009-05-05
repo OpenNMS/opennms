@@ -59,7 +59,7 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.threshd.ThresholdingVisitor;
+import org.opennms.netmgt.threshd.NewThresholdingVisitor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -100,7 +100,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * The thresholdvisitor for this collectable service; called 
      */
-    private final ThresholdingVisitor m_thresholdVisitor;
+    private final NewThresholdingVisitor m_thresholdVisitor;
     /**
      * 
      */
@@ -149,7 +149,7 @@ final class CollectableService implements ReadyRunnable {
         m_params=new ServiceParameters(roProps);
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
         
-        m_thresholdVisitor =  ThresholdingVisitor.createThresholdingVisitor(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
+        m_thresholdVisitor =  NewThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
 
     }
     

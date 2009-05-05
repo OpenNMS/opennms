@@ -124,15 +124,15 @@ public class NewThresholdingVisitorTest {
     }
 
     @Test
+    public void testCreateVisitor() {
+        createVisitor();
+    }
+
+    @Test
     public void testCreateVisitorWithoutProperEnabledIt() {
         Map<String,String> params = new HashMap<String,String>();
         NewThresholdingVisitor visitor = NewThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
         assertNull(visitor);
-    }
-
-    @Test
-    public void testCreateVisitor() {
-        createVisitor();
     }
 
     @Test
@@ -184,6 +184,49 @@ public class NewThresholdingVisitorTest {
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
     
+    @Test
+    public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
+        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runVisitInterfaceResource("127.0.0.1", "wlan0", 100, 220);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
+        setupSnmpInterfaceDatabase("127.0.0.1", "sis0");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        
+        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/sis0");
+        resourceDir.deleteOnExit();
+        resourceDir.mkdirs();
+        Properties p = new Properties();
+        p.put("myMockParam", "myMockValue");
+        ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
+        
+        runVisitInterfaceResource("127.0.0.1", "sis0", 100, 220);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
+    }
+    
+
+    @Test
+    public void testReloadConfiguration() throws Exception {
+        NewThresholdingVisitor visitor = createVisitor();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runGaugeDataTest(visitor, 4500);
+        m_anticipator.verifyAnticipated(0, 0, 0, 1, 0);
+        System.err.println("Reloading Config...");
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        visitor.reload();
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runGaugeDataTest(visitor, 4500);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
     /**
      * This bug has not been replicated, but this code covers the apparent scenario, and can be adapted to match
      * any scenario which can actually replicate the reported issue
@@ -230,34 +273,53 @@ public class NewThresholdingVisitorTest {
         EasyMock.verify(agent);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
-    
+
+    /*
+     * Reload configuration after some thresholds are triggered lost state.
+     */
     @Test
-    public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
-        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
+    public void testBug3146() throws Exception {
+        NewThresholdingVisitor visitor = createVisitor();
+
+        // Throw threshold
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runVisitInterfaceResource("127.0.0.1", "wlan0", 100, 220);
+        runGaugeDataTest(visitor, 12000);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Change Configuration
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        visitor.reload();
+
+        // Don't send event because new configuration change threshold value.
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        runGaugeDataTest(visitor, 5000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 1, 0);
+        
+        // Send Rearmed event
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        runGaugeDataTest(visitor, 1000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+    
+    private NewThresholdingVisitor createVisitor() {
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("thresholding-enabled", "true");
+        NewThresholdingVisitor visitor = NewThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
+        assertNotNull(visitor);
+        return visitor;
     }
 
-    @Test
-    public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
-        setupSnmpInterfaceDatabase("127.0.0.1", "sis0");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        
-        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/sis0");
-        resourceDir.deleteOnExit();
-        resourceDir.mkdirs();
-        Properties p = new Properties();
-        p.put("myMockParam", "myMockValue");
-        ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
-        
-        runVisitInterfaceResource("127.0.0.1", "sis0", 100, 220);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-        deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
+    private void runGaugeDataTest(NewThresholdingVisitor visitor, long value) {
+        CollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        addAttributeToCollectionResource(resource, resourceType, "freeMem", "gauge", "0", value);        
+        resource.visit(visitor);
+        EasyMock.verify(agent);
     }
-    
+
     private void runVisitInterfaceResource(String ipAddress, String ifName, long v1, long v2) {
         NewThresholdingVisitor visitor = createVisitor();
         
@@ -277,61 +339,6 @@ public class NewThresholdingVisitorTest {
         addAttributeToCollectionResource(resource, resourceType, "ifOutOctets", "counter", "ifIndex", v2);
         resource.visit(visitor);
 
-        EasyMock.verify(agent);
-    }
-
-    @Test
-    public void testReload() throws Exception {
-        NewThresholdingVisitor visitor = createVisitor();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 4500);
-        m_anticipator.verifyAnticipated(0, 0, 0, 1, 0);
-        System.err.println("Reloading Config...");
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        visitor.reload();
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 4500);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-    }
-
-    @Test
-    public void testReloadConfigAfterTriggeredThreshold() throws Exception {
-        NewThresholdingVisitor visitor = createVisitor();
-
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-
-        // Throw threshold
-        runGaugeDataTest(visitor, 12000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-
-        // Change Configuration
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        visitor.reload();
-
-        // Send Rearmed
-        m_anticipator.reset();
-
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
-        runGaugeDataTest(visitor, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-      }
-
-    
-    private NewThresholdingVisitor createVisitor() {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("thresholding-enabled", "true");
-        NewThresholdingVisitor visitor = NewThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
-        assertNotNull(visitor);
-        return visitor;
-    }
-
-    private void runGaugeDataTest(NewThresholdingVisitor visitor, long value) {
-        CollectionAgent agent = createCollectionAgent();
-        NodeResourceType resourceType = createNodeResourceType(agent);
-        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
-        addAttributeToCollectionResource(resource, resourceType, "freeMem", "gauge", "0", value);        
-        resource.visit(visitor);
         EasyMock.verify(agent);
     }
 

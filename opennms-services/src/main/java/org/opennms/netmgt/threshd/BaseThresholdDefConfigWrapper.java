@@ -130,5 +130,18 @@ public abstract class BaseThresholdDefConfigWrapper {
     public Basethresholddef getBasethresholddef() {
         return m_baseDef;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
+        return getType().equals(o.getType())
+        && getDsType().equals(o.getDsType())
+        && getDatasourceExpression().equals(o.getDatasourceExpression());
+    }
+    
+    public void merge(BaseThresholdDefConfigWrapper threshold) {
+        m_baseDef = threshold.getBasethresholddef();
+    }
+    
 }
 

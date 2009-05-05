@@ -102,6 +102,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     }
 
     private void fillThresholdStatsMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
+        boolean merge = !thresholdMap.isEmpty();
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
             // See if map entry already exists for this datasource
             // If not, create a new one.
@@ -110,18 +111,28 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                     BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
                     //ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
                     Set<ThresholdEntity> thresholdEntitySet = thresholdMap.get(wrapper.getDatasourceExpression());
-            
                     // Found set for this DS type?
                     if (thresholdEntitySet == null) {
                         // Nope, create a new set
                         thresholdEntitySet = new LinkedHashSet<ThresholdEntity>();
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntitySet);
                     }
-            
                     try {
                         ThresholdEntity thresholdEntity = new ThresholdEntity();
                         thresholdEntity.addThreshold(wrapper);
-                        thresholdMap.get(wrapper.getDatasourceExpression()).add(thresholdEntity);
+                        if (merge) {
+                            boolean updated = false;
+                            for (ThresholdEntity e : thresholdEntitySet) {
+                                if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) {
+                                    e.getThresholdConfig().merge(thresholdEntity.getThresholdConfig());
+                                    updated = true;
+                                }
+                            }
+                            if (!updated) // Does not exist!
+                                thresholdEntitySet.add(thresholdEntity);
+                        } else {
+                            thresholdEntitySet.add(thresholdEntity);
+                        }
                     } catch (IllegalStateException e) {
                         log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
                     } 

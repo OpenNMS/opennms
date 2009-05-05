@@ -166,17 +166,19 @@ public final class ThresholdEntity implements Cloneable {
             return "";
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = new StringBuffer("{");
 
         buffer.append("dsName=").append(this.getDataSourceExpression());
         buffer.append(", dsType=").append(this.getDatasourceType());
-
+        buffer.append(", evaluators=[");
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(null)) {
-            buffer.append(", ds=").append(item.getThresholdConfig().getDatasourceExpression());
+            buffer.append("{ds=").append(item.getThresholdConfig().getDatasourceExpression());
             buffer.append(", value=").append(item.getThresholdConfig().getValue());
             buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
             buffer.append(", trigger=").append(item.getThresholdConfig().getTrigger());
+            buffer.append("}");
         }
+        buffer.append("]}");
 
         return buffer.toString();
     }
@@ -342,10 +344,9 @@ public final class ThresholdEntity implements Cloneable {
         }
         return result;
     }
-
+    
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {
         return s_thresholdEvaluators;
     }
-    
 
 }
