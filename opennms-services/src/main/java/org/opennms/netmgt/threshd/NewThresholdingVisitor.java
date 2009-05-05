@@ -64,7 +64,7 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
         // Use the "thresholding-enable" to use Thresholds processing on Collectd
         String enabled = params.get("thresholding-enabled");
         if (enabled == null || !enabled.equals("true")) {
-            log.info("createThresholdingVisitor: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
+            log.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
             return null;
         }
 
@@ -73,7 +73,7 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
             return new NewThresholdingVisitor(thresholdingSet);
         }
 
-        log.warn("createThresholdingVisitor: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
+        log.warn("create: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
         return null;
     }
 

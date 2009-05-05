@@ -305,7 +305,6 @@ public class NewThresholdingVisitorTest {
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
 
         // Change Configuration
-
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
         visitor.reload();
 

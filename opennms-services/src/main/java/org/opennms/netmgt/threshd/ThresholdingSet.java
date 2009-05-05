@@ -33,6 +33,7 @@ public class ThresholdingSet {
     int m_nodeId;
     String m_hostAddress;
     String m_serviceName;
+    RrdRepository m_repository;
     
     ThresholdsDao m_thresholdsDao;
     ThreshdConfigManager m_configManager;
@@ -41,7 +42,6 @@ public class ThresholdingSet {
     boolean m_hasThresholds = false;
     
     List<ThresholdGroup> m_thresholdGroups;
-    private RrdRepository m_repository;
 
     private Map<String, Double> m_cache = new HashMap<String,Double>();
 
@@ -49,8 +49,7 @@ public class ThresholdingSet {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
-        m_repository = repository;
-        
+        m_repository = repository;        
         initThresholdsDao();
         List<String> groupNameList = getThresholdGroupNames(nodeId, hostAddress, serviceName);
         m_thresholdGroups = new ArrayList<ThresholdGroup>();
@@ -109,7 +108,7 @@ public class ThresholdingSet {
                             log().info("processResource: Looking for datasource " + ds);
                             Double dsValue = getCollectionAttributeValue(resource, attributesMap, ds);
                             if(dsValue == null) {
-                                log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
+                                log().info("processResource: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
                                 valueMissing = true;
                             }
                             values.put(ds,dsValue);
@@ -118,11 +117,7 @@ public class ThresholdingSet {
                             log().info("processResource: All values found, evaluating");
                             List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resource.getInstance(), values, date);
                             String dsLabelValue = getDataSourceLabelFromFile(resourceDir, thresholdEntity.getDatasourceLabel());
-                            if(dsLabelValue == null) {
-                                log().info("processResource: No datasource label found in CollectionSet, fetching from storage");
-                                dsLabelValue = getDataSourceLabelFromFile(resourceDir, thresholdEntity.getDatasourceLabel());
-                            }
-                            completeEventList(thresholdEvents, dsLabelValue);
+                            completeEventList(thresholdEvents, resource, dsLabelValue);
                             eventsList.addAll(thresholdEvents);
                         }
                     } else {
@@ -134,7 +129,7 @@ public class ThresholdingSet {
         return eventsList;
     }
     
-    private void completeEventList(final List<Event> eventList, String dsLabelValue) {
+    private void completeEventList(List<Event> eventList, CollectionResource resource, String dsLabelValue) {
         for (Event event : eventList) {
             event.setNodeid(m_nodeId);
             event.setService(m_serviceName);
@@ -149,7 +144,28 @@ public class ThresholdingSet {
                 parmValue.setContent(dsLabelValue);
                 eventParm.setValue(parmValue);
                 eventParms.addParm(eventParm);
-            }    
+            }
+            if (resource.getResourceTypeName().equals("if")) {
+                File resourceDir = resource.getResourceDir(m_repository);
+                String ifLabel = resourceDir.getName();
+                String snmpIfIndex = getIfInfo(m_nodeId, ifLabel, "snmpifindex");
+                if (ifLabel != null) {
+                    eventParm = new Parm();
+                    eventParm.setParmName("ifLabel");
+                    parmValue = new Value();
+                    parmValue.setContent(ifLabel);
+                    eventParm.setValue(parmValue);
+                    eventParms.addParm(eventParm);
+                }
+                if (snmpIfIndex != null) {
+                    eventParm = new Parm();
+                    eventParm.setParmName("ifIndex");
+                    parmValue = new Value();
+                    parmValue.setContent(snmpIfIndex);
+                    eventParm.setValue(parmValue);
+                    eventParms.addParm(eventParm);
+                }                
+            }
         }
     }
 
@@ -237,7 +253,6 @@ public class ThresholdingSet {
         }
         return current - last;
     }
-
     
     private String getFilterFieldValue(File resourceDirectory, String resourceType, String attribute) {
         if (log().isDebugEnabled()) {
@@ -290,13 +305,12 @@ public class ThresholdingSet {
     }
     
     /*
-     * Used to reload merge new thresholds config with current.
+     * Used to reload merge new thresholds configuration with current.
      * 
      * Extract ThresholdEntities for triggered thresholds and override new ThresholdGroup.
      */
     private void mergeThresholdGroups() {
         // TODO Auto-generated method stub
-        
     }
 
     /*
@@ -311,37 +325,32 @@ public class ThresholdingSet {
         List<String> groupNameList = new ArrayList<String>();
         for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
 
-            // Make certain the the current service is in the package
-            // and enabled!
-            //
+            // Make certain the the current service is in the package and enabled!
             if (!m_configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
                 if (log().isDebugEnabled())
-                    log().debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                    log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
-            //
             if (log().isDebugEnabled()) {
-                log().debug("createThresholdingVisitor: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
+                log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
             }
             boolean foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
             if (!foundInPkg) {
                 // The interface might be a newly added one, rebuild the package
                 // to ipList mapping and again to verify if the interface is in
                 // the package.
-                //
                 m_configManager.rebuildPackageIpListMap();
                 foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
             }
             if (!foundInPkg) {
                 if (log().isDebugEnabled())
-                    log().debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                    log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
             // Getting thresholding-group for selected service and adding to groupNameList
-            //
             for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
                 if (svc.getName().equals(serviceName)) {
                     String groupName = null;
@@ -353,7 +362,7 @@ public class ThresholdingSet {
                     if (groupName != null) {
                         groupNameList.add(groupName);
                         if (log().isDebugEnabled()) {
-                            log().debug("createThresholdingVisitor:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            log().debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
                         }
                     }
                 }
@@ -372,17 +381,22 @@ public class ThresholdingSet {
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
             if (typeMap == null) {
-                log().error("Generic Resource Type map was null (this shouldn't happen)");
+                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen)");
                 return null;
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().warn("No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
+                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();
         }
         return entityMap;
+    }
+
+    @Override
+    public String toString() {
+        return m_thresholdGroups.toString();
     }
 
     private Category log() {
