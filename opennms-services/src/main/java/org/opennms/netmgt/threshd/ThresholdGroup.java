@@ -88,15 +88,36 @@ public class ThresholdGroup {
 		return m_nodeResourceType;
 	}
 
-        /*
-         * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
-         */
-        public Map<String,ThresholdResourceType> getGenericResourceTypeMap() { // agalue
-            return m_genericResourceTypeMap;
-        }
+	/*
+	 * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
+	 */
+	public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
+	    return m_genericResourceTypeMap;
+	}
 
-        public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) { // agalue
-            m_genericResourceTypeMap = genericResourceTypeMap;
-        }
+	public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
+	    m_genericResourceTypeMap = genericResourceTypeMap;
+	}
+
+	public String toString() {
+	    StringBuilder buf = new StringBuilder();
+	    buf.append("[node: { ");
+	    if (getNodeResourceType() != null) {
+	        buf.append(getNodeResourceType());
+	    }
+	    buf.append(" }; iface: { ");
+	    if (getIfResourceType() != null) {
+	        buf.append(getIfResourceType());
+	    }
+	    buf.append(" }; generic: { ");
+	    if (getGenericResourceTypeMap() != null) {
+	        for (String rType : getGenericResourceTypeMap().keySet()) {
+	            buf.append(rType + " ");
+	        }
+	    }
+	    buf.append(" }]");
+	    String toString = buf.toString();
+	    return toString;
+	}
 
 }
