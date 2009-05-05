@@ -1,8 +1,2 @@
 <?xml version="1.0"?>
-<snmp-config port="161" retry="3" timeout="800"
-             read-community="public" 
-	         version="v1" 
-             max-vars-per-pdu="10" >
-
-</snmp-config>
-
+<snmp-config read-community="public" retry="1" timeout="1800" version="v2c" />
