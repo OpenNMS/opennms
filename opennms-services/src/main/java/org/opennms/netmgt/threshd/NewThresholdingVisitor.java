@@ -119,15 +119,14 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
     }        
 
     /*
-     * Update required attributes for thresholds and string attributes on m_attributeMap.
+     * Add/Update required attributes for thresholds on m_attributeMap.
      * This is used because CollectionResource does not have direct reference to their attributes
      * (The way to get attribute is against AttributeGroup object contained on CollectioResource
      * implementations).
      */
     @Override    
     public void visitAttribute(CollectionAttribute attribute) {
-        boolean isString = attribute.getType().toLowerCase().startsWith("string");
-        if (isString || m_thresholdingSet.hasThresholds(attribute)) {
+        if (m_thresholdingSet.hasThresholds(attribute)) {
             String name = attribute.getName();
             m_attributesMap.put(name, attribute);
             if (log().isDebugEnabled()) {

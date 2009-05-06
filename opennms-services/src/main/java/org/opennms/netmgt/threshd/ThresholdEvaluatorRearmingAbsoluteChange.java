@@ -189,13 +189,15 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             return new ThresholdEvaluatorStateRearmingAbsoluteChange(m_thresholdConfig);
         }
 
-        // FIXME This must be implemented correctly
         public boolean isTriggered() {
-            return false;
+            return wasTriggered(m_previousTriggeringSample); // TODO Is that right ?
         }
         
-        // FIXME This must be implemented correctly
         public void clearState() {
+            // Based on what evaluator does for rearmed state
+            m_lastSample = Double.NaN;
+            m_triggerCount = 0;
+            setPreviousTriggeringSample(Double.NaN);
         }
 
     }

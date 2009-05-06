@@ -127,9 +127,6 @@ public class CollectionResourceWrapper {
             if (m_resource.getResourceTypeName().equals("if")) {
                 value = getIfInfoValue(ds);
             }
-            if (value == null) { // Find value on collected string attributes
-                value = m_attributes.containsKey(ds) ? m_attributes.get(ds).getStringValue() : null;
-            }
             if (value == null) { // Find value on saved string attributes                
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
             }
