@@ -115,7 +115,7 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
     }
 
     @Override
-    protected void onInit() {
+    public void onInit() {
         send(request(getNasID(), getUser(), getPassword()), expectValidResponse(RadiusPacket.ACCESS_ACCEPT, RadiusPacket.ACCESS_CHALLENGE, RadiusPacket.ACCESS_REJECT));
     }
     
