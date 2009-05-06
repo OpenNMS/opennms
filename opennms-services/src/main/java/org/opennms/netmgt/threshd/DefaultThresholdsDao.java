@@ -124,7 +124,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {
                                 if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) {
-                                    e.getThresholdConfig().merge(thresholdEntity.getThresholdConfig());
+                                    e.merge(thresholdEntity);
                                     updated = true;
                                 }
                             }

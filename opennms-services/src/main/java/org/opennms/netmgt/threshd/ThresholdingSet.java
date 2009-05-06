@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,8 +50,11 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -136,6 +140,32 @@ public class ThresholdingSet {
             }
         }
         m_thresholdGroups = newThresholdGroupList;
+        sendMergeEventIfExists();
+    }
+
+    private void sendMergeEventIfExists() {
+        List<Event> eventList = new LinkedList<Event>();
+        for (ThresholdGroup group : m_thresholdGroups) {
+            eventList.addAll(group.getMergeEventIfExists());            
+        }
+        if (!eventList.isEmpty()) {
+            log().debug("sendMergeEventIfExists: Merge detects that " + eventList.size() + " events must be sent");
+            Events events = new Events();
+            for (Event event: eventList) {
+                event.setNodeid(m_nodeId);
+                event.setService(m_serviceName);
+                event.setInterface(m_hostAddress);
+                // FIXME label is missing this could be a problem for alarm-data
+                events.addEvent(event);
+            }
+            try {                
+                Log eventLog = new Log();
+                eventLog.setEvents(events);
+                EventIpcManagerFactory.getIpcManager().sendNow(eventLog);
+            } catch (Exception e) {
+                log().info("sendMergeEventIfExists: Failed sending threshold events: " + e, e);
+            }
+        }
     }
 
     /*
@@ -172,7 +202,7 @@ public class ThresholdingSet {
         Date date = new Date();
         List<Event> eventsList = new ArrayList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
-            Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resource.getResourceTypeName());
+            Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
             for(String key : entityMap.keySet()) {
                 for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                     if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
@@ -190,8 +220,8 @@ public class ThresholdingSet {
                         }
                         if(!valueMissing) {
                             log().info("applyThresholds: All values found, evaluating");
-                            List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resource.getInstance(), values, date);
-                            resourceWrapper.completeEventList(thresholdEvents, thresholdEntity.getDatasourceLabel());
+                            resourceWrapper.setLabel(thresholdEntity.getDatasourceLabel());
+                            List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
                             eventsList.addAll(thresholdEvents);
                         }
                     } else {

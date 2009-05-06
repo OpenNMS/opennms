@@ -54,13 +54,18 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
  */
 public final class ThresholdEntity implements Cloneable {
+    
     private static List<ThresholdEvaluator> s_thresholdEvaluators;
+    
+    private List<Event> m_mergeEventList;
 
     //Contains a list of evaluators for each used "instance".  Is populated with the list for the "default" instance (the "null" key)
     // in the Constructor.  Note that this means we must use a null-key capable map like HashMap
@@ -214,10 +219,10 @@ public final class ThresholdEntity implements Cloneable {
      *          Date to use in created events
      * @return List of events
      */
-    public List<Event> evaluateAndCreateEvents(String instance, Map<String, Double> values, Date date) {
+    public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
         double dsValue=0.0;
-        
+        String instance = resource != null ? resource.getInstance() : null;
         try {
             if (getThresholdEvaluatorStates(instance).size() > 0) {
                 dsValue=getThresholdConfig().evaluate(values);
@@ -235,7 +240,7 @@ public final class ThresholdEntity implements Cloneable {
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
-            Event event = item.getEventForState(status, date, dsValue, instance);
+            Event event = item.getEventForState(status, date, dsValue, resource);
             if (event != null) {
                 events.add(event);
             }
@@ -343,6 +348,35 @@ public final class ThresholdEntity implements Cloneable {
             m_thresholdEvaluatorStates.put(instance,result);
         }
         return result;
+    }
+    
+    /**
+     * Merges the configuration and update states using parameter entity as a reference.
+     * 
+     * @param entity
+     */
+    public void merge(ThresholdEntity entity) {
+        m_mergeEventList = new LinkedList<Event>();
+        for (String instance : m_thresholdEvaluatorStates.keySet()) {
+            for (ThresholdEvaluatorState state : m_thresholdEvaluatorStates.get(instance)) {
+                if (state.isTriggered()) {
+                    Event e = state.getEventForState(Status.RE_ARMED, new Date(), Double.NaN, null);
+                    Parm p = new Parm();
+                    p.setParmName("reason");
+                    Value v = new Value();
+                    v.setContent("Configuration has changed");
+                    p.setValue(v);
+                    e.getParms().addParm(p);
+                    m_mergeEventList.add(e);
+                    state.clearState();
+                }
+            }
+        }
+        getThresholdConfig().merge(entity.getThresholdConfig());
+    }
+    
+    public List<Event> getEventsFromMergeOperation() {
+        return m_mergeEventList;
     }
     
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {

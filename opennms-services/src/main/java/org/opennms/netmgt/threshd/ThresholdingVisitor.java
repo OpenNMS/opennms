@@ -339,6 +339,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     public void completeResource(final CollectionResource resource) {
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, m_numericAttributeValues);        
         Date date=new Date();
         List<Event> eventsList=new ArrayList<Event>();
         if(log().isDebugEnabled()) {
@@ -397,7 +398,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 	                    }
 	                    if(!valueMissing) {
 	                        log().info("All values found, evaluating");
-	                        List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resource.getInstance(), values, date);   
+	                        List<Event> thresholdEvents=threshold.evaluateAndCreateEvents(resourceWrapper, values, date);   
 	                    
 	                        //Check in the fetched values first; if the label isn't there, check on disk.
 	                        //This is acceptable because the strings.properties files tend to be tiny, so the performance implications are minimal

@@ -1,7 +1,6 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,16 +10,13 @@ import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 public class CollectionResourceWrapper {
     
     private int m_nodeId;
     private String m_hostAddress;
     private String m_serviceName;
+    private String m_label;
     private RrdRepository m_repository;
     private CollectionResource m_resource;
     private Map<String, CollectionAttribute> m_attributes;
@@ -39,6 +35,50 @@ public class CollectionResourceWrapper {
         m_attributes = attributes;
     }
     
+    public int getNodeId() {
+        return m_nodeId;
+    }
+
+    public String getHostAddress() {
+        return m_hostAddress;
+    }
+
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    public RrdRepository getRepository() {
+        return m_repository;
+    }
+
+    public String getLabel() {
+        return m_label;
+    }
+
+    public void setLabel(String label) {
+        m_label = label;
+    }
+
+    public String getInstance() {
+        return m_resource != null ? m_resource.getInstance() : null;
+    }
+    
+    public String getResourceTypeName() {
+        return m_resource != null ? m_resource.getResourceTypeName() : null;
+    }
+    
+    public File getResourceDir() {
+        return m_resource != null ? m_resource.getResourceDir(m_repository) : null;
+    }
+    
+    public String getIfInfoValue(String attributeName) {
+        File resourceDir = getResourceDir();
+        if (resourceDir == null)
+            return null;
+        String ifLabel = resourceDir.getName();
+        return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(getNodeId(), ifLabel).get(attributeName);
+    }
+
     public Double getAttributeValue(String ds) {
         if (m_attributes.get(ds) == null) {
             log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
@@ -85,8 +125,7 @@ public class CollectionResourceWrapper {
         }
         try {
             if (m_resource.getResourceTypeName().equals("if")) {
-                String ifLabel = resourceDirectory.getName();
-                value = getIfInfo(m_nodeId, ifLabel, ds);
+                value = getIfInfoValue(ds);
             }
             if (value == null) { // Find value on collected string attributes
                 value = m_attributes.containsKey(ds) ? m_attributes.get(ds).getStringValue() : null;
@@ -99,57 +138,7 @@ public class CollectionResourceWrapper {
         }
         return value;
     }
-
-    /*
-     * FIXME Why ?
-     * I think that this should be part of ThresholdEntity implementation
-     */
-    public void completeEventList(List<Event> eventList, String dsLabel) {
-        String dsLabelValue = getLabelValue(dsLabel);
-        if (dsLabelValue == null) dsLabelValue = "Unknown";
-        for (Event event : eventList) {
-            event.setNodeid(m_nodeId);
-            event.setService(m_serviceName);
-            event.setInterface(m_hostAddress);
-            Parms eventParms = event.getParms();
-            Parm eventParm;
-            Value parmValue;
-            if (dsLabelValue != null) {
-                eventParm = new Parm();
-                eventParm.setParmName("label");
-                parmValue = new Value();
-                parmValue.setContent(dsLabelValue);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-            }
-            if (m_resource.getResourceTypeName().equals("if")) {
-                File resourceDir = m_resource.getResourceDir(m_repository);
-                String ifLabel = resourceDir.getName();
-                String snmpIfIndex = getIfInfo(m_nodeId, ifLabel, "snmpifindex");
-                if (ifLabel != null) {
-                    eventParm = new Parm();
-                    eventParm.setParmName("ifLabel");
-                    parmValue = new Value();
-                    parmValue.setContent(ifLabel);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                }
-                if (snmpIfIndex != null) {
-                    eventParm = new Parm();
-                    eventParm.setParmName("ifIndex");
-                    parmValue = new Value();
-                    parmValue.setContent(snmpIfIndex);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                }                
-            }
-        }
-    }
     
-    private String getIfInfo(final int nodeid, final String ifLabel, final String attributeName) {
-        return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel).get(attributeName);
-    }
-
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }

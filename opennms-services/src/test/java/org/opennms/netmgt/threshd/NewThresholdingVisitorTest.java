@@ -275,26 +275,29 @@ public class NewThresholdingVisitorTest {
     }
 
     /*
-     * Reload configuration after some thresholds are triggered lost state.
+     * Trigger a threshold, reload configuration, then see if correct rearmed event is triggered
      */
     @Test
-    public void testBug3146() throws Exception {
+    public void testBug3146_reduceTrigger() throws Exception {
         NewThresholdingVisitor visitor = createVisitor();
 
-        // Throw threshold
+        // Trigger threshold
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
         runGaugeDataTest(visitor, 12000);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
         
         // Change Configuration
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        visitor.reload();
-
-        // Don't send event because new configuration change threshold value.
         m_anticipator.reset();
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        visitor.reload();
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+
+        // Trigger threshold
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
         runGaugeDataTest(visitor, 5000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 1, 0);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
         
         // Send Rearmed event
         m_anticipator.reset();
@@ -302,7 +305,43 @@ public class NewThresholdingVisitorTest {
         runGaugeDataTest(visitor, 1000);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
-    
+
+    @Test
+    public void testBug3146_inceaseTrigger() throws Exception {
+        NewThresholdingVisitor visitor = createVisitor();
+
+        // Trigger threshold
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runGaugeDataTest(visitor, 12000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Change Configuration
+        initFactories("/threshd-configuration.xml","/test-thresholds-3.xml");
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        visitor.reload();
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+
+        // Is not above the new threshold value
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        runGaugeDataTest(visitor, 13000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 2, 0);
+
+        // Trigger threshold
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runGaugeDataTest(visitor, 16000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Send Rearmed event
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        runGaugeDataTest(visitor, 1000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
     private NewThresholdingVisitor createVisitor() {
         Map<String,String> params = new HashMap<String,String>();
         params.put("thresholding-enabled", "true");
