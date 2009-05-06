@@ -68,10 +68,31 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class LdapAuthTest {
     
+    /**
+     * @author brozow
+     *
+     */
+    private static class AccesAnticipator implements FilterChain {
+        private boolean m_called = false;
+        public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
+            m_called = true;
+        }
+        
+        public void assertAccessDenied() {
+            assertFalse("Expected access to be denied", m_called);
+        }
+        
+        public void assertAccessAllowed() {
+            assertTrue("Expected access to be allowed", m_called);
+        }
+    }
+
     @Autowired
     FilterChainProxy m_authFilterChain;
     
     MockServletContext m_servletContext;
+    
+    AccesAnticipator m_chain = new AccesAnticipator();
     
     String m_contextPath = "/opennms";
     
@@ -84,19 +105,9 @@ public class LdapAuthTest {
     @Test
     public void testNoAuth() throws IOException, ServletException {
         
-        ServletRequest request = createRequest("GET", "/index.htm");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        
-        FilterChain chain = new FilterChain() {
-            public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
-                fail("Expected not to get here!");
-            }
-        };
-        
-        m_authFilterChain.doFilter(request, response, chain);
-        
-        assertEquals(401, response.getStatus());
+        MockHttpServletRequest request = createRequest("GET", "/index.htm");
 
+        assertAccessDenied(request);
     }
     
 
@@ -105,19 +116,49 @@ public class LdapAuthTest {
         
         MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "bobspassword");
 
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        
-        FilterChain chain = new FilterChain() {
-            public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
-                //fail("Expected not to get here!");
-            }
-        };
-        
-        m_authFilterChain.doFilter(request, response, chain);
-        
-        assertEquals(200, response.getStatus());
+        assertAccessAllowed(request);
 
     }
+
+    /**
+     * @param request
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void assertAccessAllowed(MockHttpServletRequest request)
+            throws IOException, ServletException {
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        
+        m_authFilterChain.doFilter(request, response, m_chain);
+        
+        assertEquals(200, response.getStatus());
+        m_chain.assertAccessAllowed();
+    }
+    
+    @Test
+    public void testBasicAuthInvalidPassword() throws IOException, ServletException {
+        
+        MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "invalid");
+
+        assertAccessDenied(request);
+
+    }
+
+    /**
+     * @param request
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void assertAccessDenied(MockHttpServletRequest request)
+            throws IOException, ServletException {
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        
+        m_authFilterChain.doFilter(request, response, m_chain);
+        
+        assertEquals(401, response.getStatus());
+        m_chain.assertAccessDenied();
+    }
+    
     
     protected MockHttpServletRequest createRequest(String requestType, String urlPath) {
         MockHttpServletRequest request = new MockHttpServletRequest(m_servletContext, requestType, m_contextPath + urlPath);
@@ -128,20 +169,11 @@ public class LdapAuthTest {
     
     private MockHttpServletRequest createRequest(String requestType, String urlPath, String user, String passwd) throws UnsupportedEncodingException {
         MockHttpServletRequest request = createRequest(requestType, urlPath);
+        
         String token = user + ":"  + passwd;
-        
-
         byte[] encodedToken = Base64.encodeBase64(token.getBytes("UTF-8"));
-        
-        byte[] prefix = "Basic ".getBytes("UTF-8");
-        
-        
-        byte[] headerBytes = new byte[prefix.length + encodedToken.length];
-        
-        System.arraycopy(prefix, 0, headerBytes, 0, prefix.length);
-        System.arraycopy(encodedToken, 0, headerBytes, prefix.length, encodedToken.length);
-        
-        request.addHeader("Authorization", new String(headerBytes, "UTF-8"));
+        request.addHeader("Authorization", "Basic " + new String(encodedToken, "UTF-8"));
+
         return request;
     }
 
