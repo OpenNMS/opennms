@@ -43,11 +43,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Log;
 
 /**
  * Implements CollectionSetVisitor to implement thresholding.  
@@ -145,25 +142,9 @@ public class NewThresholdingVisitor extends AbstractCollectionSetVisitor {
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap);
-        if (eventList.size() > 0) {
-            Events events = new Events();
-            for (Event event: eventList) {
-                events.addEvent(event);
-            }
-            try {                
-                Log eventLog = new Log();
-                eventLog.setEvents(events);
-                /*
-                 * Used to use a proxy for this, but the threshd implementation was just a simple wrapper around the following call
-                 * (not even any other code). Rather than try to get an Event Proxy into this class, it's easier to just call direct.
-                 * 
-                 * TODO Is this the better way to send multiple events?
-                 */
-                EventIpcManagerFactory.getIpcManager().sendNow(eventLog);
-            } catch (Exception e) {
-                log().info("completeResource: Failed sending threshold events: " + e, e);
-            }
-        }
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(eventList);
+        proxy.sendAllEvents();
     }
 
     @Override

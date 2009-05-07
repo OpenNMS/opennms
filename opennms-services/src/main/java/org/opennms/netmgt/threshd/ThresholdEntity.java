@@ -65,8 +65,6 @@ public final class ThresholdEntity implements Cloneable {
     
     private static List<ThresholdEvaluator> s_thresholdEvaluators;
     
-    private List<Event> m_mergeEventList;
-
     //Contains a list of evaluators for each used "instance".  Is populated with the list for the "default" instance (the "null" key)
     // in the Constructor.  Note that this means we must use a null-key capable map like HashMap
     private Map<String,List<ThresholdEvaluatorState>> m_thresholdEvaluatorStates = new HashMap<String,List<ThresholdEvaluatorState>>();
@@ -356,7 +354,18 @@ public final class ThresholdEntity implements Cloneable {
      * @param entity
      */
     public void merge(ThresholdEntity entity) {
-        m_mergeEventList = new LinkedList<Event>();
+        sendRearmForTriggeredStates();
+        getThresholdConfig().merge(entity.getThresholdConfig());
+    }
+
+    /**
+     * Delete this will check states and will send rearm for all triggered.
+     */
+    public void delete() {
+        sendRearmForTriggeredStates();
+    }
+    
+    private void sendRearmForTriggeredStates() {
         for (String instance : m_thresholdEvaluatorStates.keySet()) {
             for (ThresholdEvaluatorState state : m_thresholdEvaluatorStates.get(instance)) {
                 if (state.isTriggered()) {
@@ -367,18 +376,14 @@ public final class ThresholdEntity implements Cloneable {
                     v.setContent("Configuration has changed");
                     p.setValue(v);
                     e.getParms().addParm(p);
-                    m_mergeEventList.add(e);
+                    log().info("sendRearmForTriggeredStates: sending rearm for " + e);
+                    ThresholdingEventProxyFactory.getFactory().getProxy().add(e);
                     state.clearState();
                 }
             }
         }
-        getThresholdConfig().merge(entity.getThresholdConfig());
     }
-    
-    public List<Event> getEventsFromMergeOperation() {
-        return m_mergeEventList;
-    }
-    
+
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {
         return s_thresholdEvaluators;
     }

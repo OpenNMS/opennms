@@ -30,10 +30,10 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +50,8 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Log;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -86,7 +83,7 @@ public class ThresholdingSet {
     
     protected void initialize() {
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
-        m_thresholdGroups = new ArrayList<ThresholdGroup>();
+        m_thresholdGroups = new LinkedList<ThresholdGroup>();
         for (String groupName : groupNameList) {
             ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
             if (thresholdGroup == null) {
@@ -102,26 +99,44 @@ public class ThresholdingSet {
 
     public void reinitialize() {
         m_initialized = false;
+        ThresholdingEventProxyFactory.getFactory().getProxy().removeAllEvents();
         initThresholdsDao();
         mergeThresholdGroups();
         m_hasThresholds = !m_thresholdGroups.isEmpty();
+        ThresholdingEventProxyFactory.getFactory().getProxy().sendAllEvents();
     }
 
     /*
      * Used to reload merge new thresholds configuration with current.
      * 
-     * Extract thresholdEvaluatorStates Map from each ThresholdEntity, then copy this to new thresholdEntity
+     * Extract thresholdEvaluatorStates Map from each ThresholdEntity, then copy this to new thresholdEntity.
      */
     protected void mergeThresholdGroups() {
+        log().debug("mergeThresholdGroups: begin merging operation");
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
-        List<ThresholdGroup> newThresholdGroupList = new ArrayList<ThresholdGroup>();
+        // If size differs its because some groups where deleted.
+        if (groupNameList.size() != m_thresholdGroups.size()) {
+            // Deleting Groups
+            log().debug("mergeThresholdGroups: new group name list differs from current threshold group list");
+            for (Iterator<ThresholdGroup> i = m_thresholdGroups.iterator(); i.hasNext();) {
+                ThresholdGroup group = i.next();
+                if (!groupNameList.contains(group.getName())) {
+                    log().info("mergeThresholdGroups: deleting group " + group);
+                    i.remove();
+                    // FIXME Must send event for triggered states
+                }
+            }
+        }
+        List<ThresholdGroup> newThresholdGroupList = new LinkedList<ThresholdGroup>();
         for (String groupName : groupNameList) {
+            // Check if group exist on current configured list
             ThresholdGroup foundGroup = null;
             for (ThresholdGroup group : m_thresholdGroups) {
                 if (group.getName().equals(groupName))
                     foundGroup = group;
             }
             if (foundGroup == null) {
+                // Add new group
                 ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
                 if (thresholdGroup == null) {
                     log().error("mergeThresholdGroups: Could not get threshold group with name " + groupName);
@@ -132,6 +147,7 @@ public class ThresholdingSet {
                     }
                 }
             } else {
+                // Merge existing data with current data
                 ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup);
                 newThresholdGroupList.add(thresholdGroup);
                 if (log().isDebugEnabled()) {
@@ -140,32 +156,6 @@ public class ThresholdingSet {
             }
         }
         m_thresholdGroups = newThresholdGroupList;
-        sendMergeEventIfExists();
-    }
-
-    private void sendMergeEventIfExists() {
-        List<Event> eventList = new LinkedList<Event>();
-        for (ThresholdGroup group : m_thresholdGroups) {
-            eventList.addAll(group.getMergeEventIfExists());            
-        }
-        if (!eventList.isEmpty()) {
-            log().debug("sendMergeEventIfExists: Merge detects that " + eventList.size() + " events must be sent");
-            Events events = new Events();
-            for (Event event: eventList) {
-                event.setNodeid(m_nodeId);
-                event.setService(m_serviceName);
-                event.setInterface(m_hostAddress);
-                // FIXME label is missing this could be a problem for alarm-data
-                events.addEvent(event);
-            }
-            try {                
-                Log eventLog = new Log();
-                eventLog.setEvents(events);
-                EventIpcManagerFactory.getIpcManager().sendNow(eventLog);
-            } catch (Exception e) {
-                log().info("sendMergeEventIfExists: Failed sending threshold events: " + e, e);
-            }
-        }
     }
 
     /*
@@ -200,7 +190,7 @@ public class ThresholdingSet {
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);        
         Date date = new Date();
-        List<Event> eventsList = new ArrayList<Event>();
+        List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
             for(String key : entityMap.keySet()) {
@@ -304,7 +294,7 @@ public class ThresholdingSet {
      */
     private List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
 
-        List<String> groupNameList = new ArrayList<String>();
+        List<String> groupNameList = new LinkedList<String>();
         for (org.opennms.netmgt.config.threshd.Package pkg : m_configManager.getConfiguration().getPackage()) {
 
             // Make certain the the current service is in the package and enabled!

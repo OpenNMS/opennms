@@ -38,6 +38,7 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -89,27 +90,28 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return newGroup;
     }
     
-    private Map<String, Set<ThresholdEntity>> createThresholdStateMap(String type, String groupName) {
+    private Map<String, Set<ThresholdEntity>> createThresholdStateMap(String groupName, String typeName) {
         Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
-        fillThresholdStatsMap(groupName, type, thresholdMap);
+        fillThresholdStateMap(groupName, typeName, thresholdMap);
         return thresholdMap;
     }
 
     private Map<String, Set<ThresholdEntity>> mergeThresholdStateMap(String groupName, ThresholdResourceType type) {
         Map<String, Set<ThresholdEntity>> thresholdMap = type.getThresholdMap();
-        fillThresholdStatsMap(groupName, type.getDsType(), thresholdMap);
+        fillThresholdStateMap(groupName, type.getDsType(), thresholdMap);
         return thresholdMap;
     }
 
-    private void fillThresholdStatsMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
+    /*
+     * FIXME What happen if new threshold definition is gone?
+     */
+    private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
         boolean merge = !thresholdMap.isEmpty();
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
-            // See if map entry already exists for this datasource
-            // If not, create a new one.
+            // See if map entry already exists for this datasource; if not, create a new one.
             if (thresh.getDsType().equals(typeName)) {
                 try {
                     BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
-                    //ThresholdEntity thresholdEntity = thresholdMap.get(wrapper.getDatasourceExpression());
                     Set<ThresholdEntity> thresholdEntitySet = thresholdMap.get(wrapper.getDatasourceExpression());
                     // Found set for this DS type?
                     if (thresholdEntitySet == null) {
@@ -123,7 +125,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         if (merge) {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {
-                                if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) {
+                                if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) { // FIXME Create other and avoid equals
                                     e.merge(thresholdEntity);
                                     updated = true;
                                 }
@@ -134,21 +136,49 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                             thresholdEntitySet.add(thresholdEntity);
                         }
                     } catch (IllegalStateException e) {
-                        log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        log().warn("fillThresholdStateMap: Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
                     } 
                 }
                 catch (ThresholdExpressionException e) {
-                    log().warn("Could not parse threshold expression: "+e.getMessage(), e);
+                    log().warn("fillThresholdStateMap: Could not parse threshold expression: "+e.getMessage(), e);
+                }
+            }
+        }
+        // Search for deleted configuration
+        if (merge) {
+            log().debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group " + groupName + " using type " + typeName);
+            for (String expression : thresholdMap.keySet()) {
+                for (Iterator<ThresholdEntity> i = thresholdMap.get(expression).iterator(); i.hasNext();) {
+                    ThresholdEntity entity = i.next();
+                    boolean found = false;
+                    for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
+                        BaseThresholdDefConfigWrapper newConfig = null;
+                        try {
+                            newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
+                        } catch (ThresholdExpressionException e) {
+                            log().warn("fillThresholdStateMap: Could not parse threshold expression: " + e.getMessage(), e);
+                        }
+                        if (newConfig.equals(entity.getThresholdConfig())) {
+                            found = true;
+                            continue;
+                        }
+                    }
+                    if (!found) {
+                        log().info("fillThresholdStateMap(merge): deleting entity " + entity);
+                        entity.delete();
+                        i.remove();
+                    }
                 }
             }
         }
     }
 
-    private ThresholdResourceType createType(String groupName, String type) {
-        ThresholdResourceType resourceType = new ThresholdResourceType(type);
-        resourceType.setThresholdMap(createThresholdStateMap(type, groupName));
+    private ThresholdResourceType createType(String groupName, String typeName) {
+        ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
+        resourceType.setThresholdMap(createThresholdStateMap(groupName, typeName));
         return resourceType;
     }
+    
 
     private ThresholdResourceType mergeType(String groupName, String typeName, ThresholdResourceType type) {
         ThresholdResourceType resourceType = new ThresholdResourceType(typeName);

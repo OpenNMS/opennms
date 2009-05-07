@@ -42,12 +42,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Category;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.GenericIndexResource;
+import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collectd.IfResourceType;
 import org.opennms.netmgt.collectd.NodeInfo;
@@ -76,6 +80,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
@@ -226,7 +231,7 @@ public class NewThresholdingVisitorTest {
         runGaugeDataTest(visitor, 4500);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
-
+    
     /**
      * This bug has not been replicated, but this code covers the apparent scenario, and can be adapted to match
      * any scenario which can actually replicate the reported issue
@@ -275,7 +280,39 @@ public class NewThresholdingVisitorTest {
     }
 
     /*
-     * Trigger a threshold, reload configuration, then see if correct rearmed event is triggered
+     * Trigger a threshold
+     * Reload Configuration
+     * Force rearmed
+     * 
+     * FIXME As the threshold is triggered, merge operation will force rearm. The problem is that
+     * configuration never changes for this threshold; so this should be avoided. Before add rearm
+     * to the queue we must validate that BasethresholdDef are not identical. Method 'equals' is
+     * used, so we can create other method called 'identical' to check all attributes.
+     */
+    @Test
+    public void testBug3146_unrelatedChange() throws Exception {
+        NewThresholdingVisitor visitor = createVisitor();
+        
+        // Trigger threshold
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runGaugeDataTest(visitor, 12000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Reload Configuration
+        visitor.reload();
+        
+        // Send Rearmed event
+        m_anticipator.reset();
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        runGaugeDataTest(visitor, 1000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+    
+    /*
+     * Trigger a threshold
+     * Make a configuration change, reducing triggered value
+     * Reload configuration
+     * See if correct rearmed event is triggered
      */
     @Test
     public void testBug3146_reduceTrigger() throws Exception {
@@ -306,6 +343,12 @@ public class NewThresholdingVisitorTest {
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
 
+    /*
+     * Trigger a threshold
+     * Make a configuration change, incrasing triggered value
+     * Reload configuration
+     * See if correct rearmed event is triggered
+     */
     @Test
     public void testBug3146_inceaseTrigger() throws Exception {
         NewThresholdingVisitor visitor = createVisitor();
@@ -339,6 +382,31 @@ public class NewThresholdingVisitorTest {
         m_anticipator.reset();
         addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
         runGaugeDataTest(visitor, 1000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    }
+
+    /*
+     * If I have a high threshold triggered, and then replace it with their equivalent low threshold,
+     * The high definition must be removed from cache and rearmed event must be sent.
+     */
+    @Test
+    public void testBug3146_replaceThreshold() throws Exception {
+        NewThresholdingVisitor visitor = createVisitor();
+
+        // Trigger threshold
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        runFileSystemDataTest(visitor, "/opt", 500, 1000);
+        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+               
+        m_anticipator.reset();
+        log().debug("*************** Reset Configuration");
+        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed"); // Disarm triggered threshold
+        initFactories("/threshd-configuration.xml","/test-thresholds-4.xml");
+        visitor.reload();
+        
+        // Must trigger only one low threshold exceeded
+        addAnticipatedEvent("uei.opennms.org/threshold/lowThresholdExceeded");
+        runFileSystemDataTest(visitor, "/opt", 950, 1000);
         m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
     }
 
@@ -381,6 +449,35 @@ public class NewThresholdingVisitorTest {
         EasyMock.verify(agent);
     }
 
+    private void runFileSystemDataTest(NewThresholdingVisitor visitor, String fs, long value, long max) throws Exception {
+        CollectionAgent agent = createCollectionAgent();
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
+        type.setName("hrStorageIndex");
+        type.setLabel("Storage (MIB-2 Host Resources)");
+        org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
+        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        type.setStorageStrategy(strategy);
+        org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
+        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        type.setPersistenceSelectorStrategy(pstrategy);
+        GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, type);
+        Properties p = new Properties();
+        p.put("hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
+        p.put("hrStorageDescr", "/opt");
+        File f = new File(getRepository().getRrdBaseDir(), "1/hrStorageIndex/1/strings.properties");
+        ResourceTypeUtils.saveUpdatedProperties(f, p);
+        SnmpInstId inst = new SnmpInstId(1);
+        SnmpCollectionResource resource = new GenericIndexResource(resourceType, "hrStorageIndex", inst);
+        addAttributeToCollectionResource(resource, resourceType, "hrStorageUsed", "gauge", "hrStorageIndex", value);
+        addAttributeToCollectionResource(resource, resourceType, "hrStorageSize", "gauge", "hrStorageIndex", max);
+        addAttributeToCollectionResource(resource, resourceType, "hrStorageAllocUnits", "gauge", "hrStorageIndex", 1);
+        resource.visit(visitor);
+        EasyMock.verify(agent);
+        f.delete();
+    }
+
     private CollectionAgent createCollectionAgent() {
         CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
@@ -403,9 +500,9 @@ public class NewThresholdingVisitorTest {
     }
     
     private void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
-        MibObject ifInOctetsObject = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType ifInOctetsType = new NumericAttributeType(type, "default", ifInOctetsObject, new AttributeGroupType("mibGroup", "ignore"));
-        resource.setAttributeValue(ifInOctetsType, SnmpUtils.getValueFactory().getCounter32(value));
+        MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
+        SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+        resource.setAttributeValue(objectType, SnmpUtils.getValueFactory().getCounter32(value));
     }
 
     private MibObject createMibObject(String type, String alias, String instance) {
@@ -473,6 +570,10 @@ public class NewThresholdingVisitorTest {
             }
         }
         return path.delete();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

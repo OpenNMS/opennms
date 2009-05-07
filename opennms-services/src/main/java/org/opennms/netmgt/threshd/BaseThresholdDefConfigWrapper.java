@@ -131,6 +131,12 @@ public abstract class BaseThresholdDefConfigWrapper {
         return m_baseDef;
     }
 
+    /*
+     * Threshold merging config will use this to check if a new configuration is the same as other.
+     * The rule will be, if the threshold type (i.e., hiqh, low, relative), the datasource type, and
+     * the threshold expression matches, they are the same, even if they have different triger/rearm
+     * values.
+     */
     @Override
     public boolean equals(Object obj) {
         BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;

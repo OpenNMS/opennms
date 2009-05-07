@@ -136,6 +136,11 @@ public class CollectionResourceWrapper {
         return value;
     }
     
+    @Override
+    public String toString() {
+        return m_resource.toString();
+    }
+
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }

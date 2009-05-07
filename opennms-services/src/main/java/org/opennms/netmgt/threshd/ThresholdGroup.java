@@ -33,14 +33,10 @@ package org.opennms.netmgt.threshd;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.xml.event.Event;
 
 public class ThresholdGroup {
 
@@ -102,28 +98,10 @@ public class ThresholdGroup {
 	public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
 	    m_genericResourceTypeMap = genericResourceTypeMap;
 	}
-
-	public List<Event> getMergeEventIfExists() {
-	    List<Event> events = new LinkedList<Event>();
-	    events.addAll(getMergeEventIfExistsForThresholdResourceType(getNodeResourceType()));
-        events.addAll(getMergeEventIfExistsForThresholdResourceType(getIfResourceType()));
-        for (String type : getGenericResourceTypeMap().keySet())
-            events.addAll(getMergeEventIfExistsForThresholdResourceType(getGenericResourceTypeMap().get(type)));
-        return events;
-	}
-	
-	private List<Event> getMergeEventIfExistsForThresholdResourceType(ThresholdResourceType type) {
-	    List<Event> events = new LinkedList<Event>();
-	    Map<String,Set<ThresholdEntity>> entityMap = type.getThresholdMap();
-	    for (String key : entityMap.keySet()) 
-	        for (ThresholdEntity e : entityMap.get(key))
-	            events.addAll(e.getEventsFromMergeOperation());
-	    return events;
-	}
 	
 	public String toString() {
 	    StringBuilder buf = new StringBuilder();
-	    buf.append("group={node:{");
+	    buf.append(getName() + "={node:{");
 	    if (getNodeResourceType() != null) {
 	        buf.append(getNodeResourceType().getThresholdMap().values());
 	    }
