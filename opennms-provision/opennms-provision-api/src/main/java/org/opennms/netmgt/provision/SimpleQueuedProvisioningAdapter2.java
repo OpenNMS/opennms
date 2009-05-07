@@ -252,7 +252,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * 
      * @author <a href="mailto:david@opennms.org">David Hustace</a>
      */
-    class AdapterOperationSchedule {
+    static class AdapterOperationSchedule {
         long m_initalDelay;
         long m_interval;
         TimeUnit m_unit;
