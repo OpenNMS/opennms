@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-location_monitors">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="location_monitors" />
+		</preConditions> 
+
+		<createTable tableName="location_monitors">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pollresult_pkey" />
+			</column>
+			<column name="status" type="varchar(31)">
+				<constraints nullable="false" />
+			</column>
+			<column name="lastcheckintime" type="DATETIME" />
+			<column name="definitionname" type="varchar(31)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+	</changeSet>
+
+</databaseChangeLog>

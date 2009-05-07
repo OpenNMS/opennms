@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rssntn67" id="1.7.1-assets">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="assets" columnName="enable" />
+		</preConditions>
+
+		<addColumn tableName="assets">
+			<column name="username"   type="varchar(32)" />
+			<column name="password"   type="varchar(32)" />
+			<column name="enable"     type="varchar(32)" />
+			<column name="autoenable" type="char(1)" />
+			<column name="connection" type="varchar(32)" />
+		</addColumn>
+
+	</changeSet>
+
+</databaseChangeLog>

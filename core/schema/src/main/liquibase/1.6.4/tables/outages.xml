@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-outages">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="outages" />
+		</preConditions> 
+
+		<createTable tableName="outages">
+			<column name="outageid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_outageid" />
+			</column>
+			<column name="svclosteventid" type="integer" />
+			<column name="svcregainedeventid" type="integer" />
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="serviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="iflostservice" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="ifregainedservice" type="DATETIME" />
+			<column name="suppresstime" type="DATETIME" />
+			<column name="suppressedby" type="varchar(256)" />
+			<column name="ifserviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_eventid1" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="svclosteventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+		<addForeignKeyConstraint constraintName="fk_eventid2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="svcregainedeventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+		<addForeignKeyConstraint constraintName="fk_nodeid4" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+		<addForeignKeyConstraint constraintName="fk_serviceid2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="serviceid"
+			referencedTableName="service" referencedColumnNames="serviceid" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey1" onDelete="CASCADE" onUpdate="CASCADE"
+			baseTableName="outages" baseColumnNames="nodeid,ipaddr,serviceid"
+			referencedTableName="ifservices" referencedColumnNames="nodeid,ipaddr,serviceid" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="ifserviceid"
+			referencedTableName="ifservices" referencedColumnNames="id" />
+
+		<createIndex tableName="outages" indexName="outages_nodeid_ipaddr_svc_idx">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_svclostid_idx">
+			<column name="svclosteventid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_svcregainedid_idx">
+			<column name="svcregainedeventid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_serviceid_idx">
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_regainedservice_idx">
+			<column name="ifregainedservice" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_ifservivceid_idx">
+			<column name="ifserviceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

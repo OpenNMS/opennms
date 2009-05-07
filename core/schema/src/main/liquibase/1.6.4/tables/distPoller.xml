@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-distPoller">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="distpoller" />
+		</preConditions> 
+
+		<createTable tableName="distpoller">
+			<column name="dpname" type="varchar(12)">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_dpname" />
+			</column>
+			<column name="dpip" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="dpcomment" type="varchar(256)" />
+			<column name="dpdisclimit" type="numeric(5,2)" />
+			<column name="dplastnodepull" type="DATETIME" />
+			<column name="dplasteventpull" type="DATETIME" />
+			<column name="dplastpackagepush" type="DATETIME" />
+			<column name="dpadminstate" type="integer" />
+			<column name="dprunstate" type="integer" />
+		</createTable>
+
+	</changeSet>
+
+</databaseChangeLog>

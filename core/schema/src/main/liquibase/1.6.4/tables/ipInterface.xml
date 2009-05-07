@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-ipInterface">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="ipinterface" />
+		</preConditions> 
+
+		<createTable tableName="ipinterface">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="ipinterface_pkey" />
+			</column>
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ifindex" type="integer" />
+			<column name="iphostname" type="varchar(256)" />
+			<column name="ismanaged" type="char(1)" />
+			<column name="ipstatus" type="integer" />
+			<column name="iplastcapsdpoll" type="DATETIME" />
+			<column name="issnmpprimary" type="char(1)" />
+			<column name="snmpinterfaceid" type="integer" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="snmpinterface_fkey2" onDelete="SET NULL"
+			baseTableName="ipinterface" baseColumnNames="snmpinterfaceid"
+			referencedTableName="snmpinterface" referencedColumnNames="id" />
+
+		<addForeignKeyConstraint constraintName="fk_nodeid1" onDelete="CASCADE"
+			baseTableName="ipinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<sql>CREATE UNIQUE INDEX ipinterface_nodeid_ipaddr_notzero_idx ON ipinterface (nodeid, ipaddr) WHERE ipaddr != '0.0.0.0'</sql>
+
+		<createIndex tableName="ipinterface" indexName="ipinterface_nodeid_ipaddr_ismanaged_idx">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="ismanaged" />
+		</createIndex>
+		<createIndex tableName="ipinterface" indexName="ipinterface_ipaddr_ismanaged_idx">
+			<column name="ipaddr" />
+			<column name="ismanaged" />
+		</createIndex>
+		<createIndex tableName="ipinterface" indexName="ipinterface_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="ipinterface" indexName="ipinterface_ismanaged_idx">
+			<column name="ismanaged" />
+		</createIndex>
+		<createIndex tableName="ipinterface" indexName="ipinterface_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="ipinterface" indexName="ipinterface_snmpinterfaceid_idx">
+			<column name="snmpinterfaceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

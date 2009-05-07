@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-ifServices">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="ifservices" />
+		</preConditions> 
+
+		<createTable tableName="ifservices">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="ifservices_pkey" />
+			</column>
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ifindex" type="integer" />
+			<column name="serviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="lastgood" type="DATETIME" />
+			<column name="lastfail" type="DATETIME" />
+			<column name="qualifier" type="char(16)" />
+			<column name="status" type="char(1)" />
+			<column name="source" type="char(1)" />
+			<column name="notify" type="char(1)" />
+			<column name="ipinterfaceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="ipinterface_fkey" onDelete="CASCADE"
+			baseTableName="ifservices" baseColumnNames="ipinterfaceid"
+			referencedTableName="ipinterface" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="fk_nodeid3" onDelete="CASCADE"
+			baseTableName="ifservices" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+		<addForeignKeyConstraint constraintName="fk_serviceid1" onDelete="CASCADE"
+			baseTableName="ifservices" baseColumnNames="serviceid"
+			referencedTableName="service" referencedColumnNames="serviceid" />
+
+		<createIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique" unique="true">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_status">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="status" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservices_nodeid_status">
+			<column name="nodeid" />
+			<column name="status" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservices_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservices_serviceid_idx">
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservices_nodeid_serviceid_idx">
+			<column name="nodeid" />
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="ifservices" indexName="ifservicves_ipinterfaceid_idx">
+			<column name="ipinterfaceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

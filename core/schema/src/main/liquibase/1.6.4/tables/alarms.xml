@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-alarms">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="alarms" />
+		</preConditions> 
+
+		<createTable tableName="alarms">
+			<column name="alarmid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_alarmid" />
+			</column>
+			<column name="eventuei" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+			<column name="dpname" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" />
+			<column name="ipaddr" type="varchar(16)" />
+			<column name="serviceid" type="integer" />
+			<column name="reductionkey" type="varchar(256)" />
+			<column name="alarmtype" type="integer" />
+			<column name="counter" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="severity" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="lasteventid" type="integer" />
+			<column name="firsteventtime" type="DATETIME" />
+			<column name="lasteventtime" type="DATETIME" />
+			<column name="firstautomationtime" type="DATETIME" />
+			<column name="lastautomationtime" type="DATETIME" />
+			<column name="description" type="varchar(4000)" />
+			<column name="logmsg" type="varchar(256)" />
+			<column name="operinstruct" type="varchar(1024)" />
+			<column name="tticketid" type="varchar(128)" />
+			<column name="tticketstate" type="integer" />
+			<column name="mouseovertext" type="varchar(64)" />
+			<column name="suppresseduntil" type="DATETIME" />
+			<column name="suppresseduser" type="varchar(256)" />
+			<column name="suppressedtime" type="DATETIME" />
+			<column name="alarmackuser" type="varchar(256)" />
+			<column name="alarmacktime" type="DATETIME" />
+			<column name="clearuei" type="varchar(256)" />
+			<column name="managedobjectinstance" type="varchar(512)" />
+			<column name="managedobjecttype" type="varchar(512)" />
+			<column name="applicationdn" type="varchar(512)" />
+			<column name="ossprimarykey" type="varchar(512)" />
+			<column name="x733alarmtype" type="varchar(31)" />
+			<column name="x733probablecause" type="integer" defaultValue="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="qosalarmstate" type="varchar(31)" />
+			<column name="clearkey" type="varchar(256)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_eventidak2" onDelete="CASCADE"
+			baseTableName="alarms" baseColumnNames="lasteventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+
+		<createIndex tableName="alarms" indexName="alarm_uei_idx">
+			<column name="eventuei" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_reductionkey_idx" unique="true">
+			<column name="reductionkey" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_clearkey_idx">
+			<column name="clearkey" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_reduction2_idx">
+			<column name="alarmid" />
+			<column name="eventuei" />
+			<column name="dpname" />
+			<column name="nodeid" />
+			<column name="serviceid" />
+			<column name="reductionkey" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_app_dn">
+			<column name="applicationdn" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_oss_primary_key">
+			<column name="ossprimarykey" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_eventid_idx">
+			<column name="lasteventid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

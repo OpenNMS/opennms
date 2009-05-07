@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-serverMap">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="servermap" />
+		</preConditions> 
+
+		<createTable tableName="servermap">
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="servername" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="servermap" indexName="server_name_idx">
+			<column name="servername" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-node">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="node" />
+		</preConditions> 
+
+		<createTable tableName="node">
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_nodeid" />
+			</column>
+			<column name="dpname" type="varchar(12)" />
+			<column name="nodecreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="nodeparentid" type="integer" />
+			<column name="nodetype" type="char(1)" />
+			<column name="nodesysoid" type="varchar(256)" />
+			<column name="nodesysname" type="varchar(256)" />
+			<column name="nodesysdescription" type="varchar(256)" />
+			<column name="nodesyslocation" type="varchar(256)" />
+			<column name="nodesyscontact" type="varchar(256)" />
+			<column name="nodelabel" type="varchar(256)" />
+			<column name="nodelabelsource" type="char(1)" />
+			<column name="nodenetbiosname" type="varchar(16)" />
+			<column name="nodedomainname" type="varchar(16)" />
+			<column name="operatingsystem" type="varchar(64)" />
+			<column name="lastcapsdpoll" type="DATETIME" />
+			<column name="foreignsource" type="varchar(64)" />
+			<column name="foreignid" type="varchar(64)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_dpname"
+			baseTableName="node" baseColumnNames="dpname"
+			referencedTableName="distpoller" referencedColumnNames="dpname" />
+
+		<createIndex tableName="node" indexName="node_id_type_idx">
+			<column name="nodeid" />
+			<column name="nodetype" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_label_idx">
+			<column name="nodelabel" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_dpname_idx">
+			<column name="dpname" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_foreign_unique_idx" unique="true">
+			<column name="foreignsource" />
+			<column name="foreignid" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>
