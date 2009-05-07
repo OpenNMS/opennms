@@ -115,29 +115,9 @@ public class SnmpDetector extends AbstractDetector {
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             String expectedValue = null;
             
-            if (getPort() > 0) {
-                agentConfig.setPort(getPort());
-            }
+            configureAgentPTR(agentConfig);
             
-            if (getTimeout() > 0) {
-                agentConfig.setTimeout(getTimeout());
-            }
-            
-            if (getRetries() > -1) {
-                agentConfig.setRetries(getRetries());
-            }
-            
-            if (getForceVersion() != null) {
-                String version = getForceVersion();
-                
-                if (version.equalsIgnoreCase("snmpv1")) {
-                    agentConfig.setVersion(SnmpAgentConfig.VERSION1);
-                } else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c")) {
-                    agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
-                } else if (version.equalsIgnoreCase("snmpv3")) {
-                    agentConfig.setVersion(SnmpAgentConfig.VERSION3);
-                }
-            }
+            configureAgentVersion(agentConfig);
             
             if (getVbvalue() != null) {
                 expectedValue = getVbvalue();
@@ -155,8 +135,36 @@ public class SnmpDetector extends AbstractDetector {
             throw new UndeclaredThrowableException(t);
         }
     }
+
+    protected void configureAgentVersion(SnmpAgentConfig agentConfig) {
+        if (getForceVersion() != null) {
+            String version = getForceVersion();
+            
+            if (version.equalsIgnoreCase("snmpv1")) {
+                agentConfig.setVersion(SnmpAgentConfig.VERSION1);
+            } else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c")) {
+                agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
+            } else if (version.equalsIgnoreCase("snmpv3")) {
+                agentConfig.setVersion(SnmpAgentConfig.VERSION3);
+            }
+        }
+    }
+
+    protected void configureAgentPTR(SnmpAgentConfig agentConfig) {
+        if (getPort() > 0) {
+            agentConfig.setPort(getPort());
+        }
+        
+        if (getTimeout() > 0) {
+            agentConfig.setTimeout(getTimeout());
+        }
+        
+        if (getRetries() > -1) {
+            agentConfig.setRetries(getRetries());
+        }
+    }
     
-    private String getValue(SnmpAgentConfig agentConfig, String oid) {
+    protected String getValue(SnmpAgentConfig agentConfig, String oid) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
         if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
             return null;
