@@ -94,8 +94,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
      *            The map where qualification are set by the plugin.
      * @return True if the protocol is supported by the address.
      */
-    public boolean isProtocolSupported(InetAddress address,
-            Map<String, Object> qualifiers) {
+    public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         try {
             String bgpPeerIp = ParameterMap.getKeyedString(qualifiers,"bgpPeerIp", null);
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
