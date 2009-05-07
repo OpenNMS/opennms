@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-events">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="events" />
+		</preConditions> 
+
+		<createTable tableName="events">
+			<column name="eventid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_eventid" />
+			</column>
+			<column name="eventuei" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+			<column name="nodeid" type="integer" />
+			<column name="eventtime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventhost" type="varchar(256)" />
+			<column name="eventsource" type="varchar(128)">
+				<constraints nullable="false" />
+			</column>
+			<column name="ipaddr" type="varchar(16)" />
+			<column name="eventdpname" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventsnmphost" type="varchar(256)" />
+			<column name="serviceid" type="integer" />
+			<column name="evetnsnmp" type="varchar(256)" />
+			<column name="eventparms" type="text" />
+			<column name="eventcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventdescr" type="varchar(4000)" />
+			<column name="eventloggroup" type="varchar(32)" />
+			<column name="eventlogmsg" type="varchar(256)" />
+			<column name="eventseverity" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventpathoutage" type="varchar(1024)" />
+			<column name="eventcorrelation" type="varchar(1024)" />
+			<column name="eventsuppressedcount" type="integer" />
+			<column name="eventoperinstruct" type="varchar(1024)" />
+			<column name="eventautoaction" type="varchar(256)" />
+			<column name="eventoperaction" type="varchar(256)" />
+			<column name="eventoperactionmenutext" type="varchar(64)" />
+			<column name="eventnotification" type="varchar(128)" />
+			<column name="eventtticket" type="varchar(128)" />
+			<column name="eventtticketstate" type="integer" />
+			<column name="eventforward" type="varchar(256)" />
+			<column name="eventmouseovertext" type="varchar(64)" />
+			<column name="eventlog" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventdisplay" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+			<column name="eventackuser" type="varchar(256)" />
+			<column name="eventacktime" type="DATETIME" />
+			<column name="alarmid" type="integer" />
+		</createTable>
+
+		<createIndex tableName="events" indexName="events_uei_idx">
+			<column name="eventuei" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_serviceid_idx">
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_time_idx">
+			<column name="eventtime" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_severity_idx">
+			<column name="eventseverity" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_log_idx">
+			<column name="eventlog" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_display_idx">
+			<column name="eventdisplay" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_ackuser_idx">
+			<column name="eventackuser" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_acktime_idx">
+			<column name="eventacktime" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_alarmid_idx">
+			<column name="alarmid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_nodeid_display_ackuser">
+			<column name="nodeid" />
+			<column name="eventdisplay" />
+			<column name="eventackuser" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

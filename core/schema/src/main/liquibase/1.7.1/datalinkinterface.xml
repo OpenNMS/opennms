@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="mattraykow" id="1.7.1-datalinkinterface-index">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="datalinkinterface" columnName="id" />
+		</preConditions>
+
+		<sql>ALTER TABLE datalinkinterface OWNER TO ${install.database.admin.user}</sql>
+		<dropPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" />
+		<addColumn tableName="datalinkinterface">
+			<column name="id" type="integer" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+</databaseChangeLog>

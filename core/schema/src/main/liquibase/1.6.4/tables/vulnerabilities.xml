@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-vulnerabilities">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="vulnerabilities" />
+		</preConditions> 
+
+		<createTable tableName="vulnerabilities">
+			<column name="vulnerabilityid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_vulnerabilityid" />
+			</column>
+			<column name="nodeid" type="integer" />
+			<column name="ipaddr" type="varchar(16)" />
+			<column name="serviceid" type="integer" />
+			<column name="creationtime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="lastattempttime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="lastscantime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="resolvedtime" type="DATETIME" />
+			<column name="severity" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="pluginid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="pluginsubid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="logmsg" type="varchar(256)" />
+			<column name="descr" type="text" />
+			<column name="port" type="integer" />
+			<column name="protocol" type="varchar(32)" />
+			<column name="cveentry" type="varchar(255)" />
+		</createTable>
+
+		<createIndex tableName="vulnerabilities" indexName="vulnerabilities_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="vulnerabilities" indexName="vulnerabilities_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="vulnerabilities" indexName="vulnerabilities_severity_idx">
+			<column name="severity" />
+		</createIndex>
+		<createIndex tableName="vulnerabilities" indexName="vulnerabilities_port_idx">
+			<column name="port" />
+		</createIndex>
+		<createIndex tableName="vulnerabilities" indexName="vulnerabilities_protocol_idx">
+			<column name="protocol" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>
