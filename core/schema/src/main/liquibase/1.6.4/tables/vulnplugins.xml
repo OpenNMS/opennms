@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-vulnplugins">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="vulnplugins" />
+		</preConditions> 
+
+		<createTable tableName="vulnplugins">
+			<column name="pluginid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="pluginsubid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar(128)" />
+			<column name="category" type="varchar(32)" />
+			<column name="copyright" type="varchar(128)" />
+			<column name="descr" type="text" />
+			<column name="summary" type="varchar(256)" />
+			<column name="family" type="varchar(32)" />
+			<column name="version" type="varchar(32)" />
+			<column name="cveentry" type="varchar(255)" />
+			<column name="md5" type="varchar(32)" />
+		</createTable>
+
+		<addPrimaryKey tableName="vulnplugins" columnNames="pluginid,pluginsubid" constraintName="vulnplugins_plugin_idx" />
+
+	</changeSet>
+
+</databaseChangeLog>

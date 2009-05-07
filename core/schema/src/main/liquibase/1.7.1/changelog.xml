@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<include file="1.7.1/ackd.xml" />
+	<include file="1.7.1/assets.xml" />
+	<include file="1.7.1/datalinkinterface.xml" />
+	<include file="1.7.1/elements.xml" />
+	<include file="1.7.1/maps.xml" />
+	<include file="1.7.1/snmpcollect.xml" />
+
+	<!-- miscellaneous stuff -->
+	<changeSet author="rangerrick" id="1.7.1-expand-snmpPhysAddr">
+		<modifyColumn tableName="snmpinterface">
+			<column name="snmpphysaddr" type="character(16)" />
+		</modifyColumn>
+	</changeSet>
+	<changeSet author="brozow" id="1.7.1-add-last-capsd-poll">
+		<addColumn tableName="snmpinterface">
+			<column name="snmplastcapsdpoll" type="DATETIME" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.7.1-ownership">
+		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
+	</changeSet> 
+
+</databaseChangeLog>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-snmpInterface">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="snmpinterface" />
+		</preConditions> 
+
+		<createTable tableName="snmpinterface">
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="snmpinterface_pkey" />
+			</column>
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="snmpipadentnetmask" type="varchar(16)" />
+			<column name="snmpphysaddr" type="varchar(12)" />
+			<column name="snmpifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="snmpifdescr" type="varchar(256)" />
+			<column name="snmpiftype" type="integer" />
+			<column name="snmpifname" type="varchar(96)" />
+			<column name="snmpifspeed" type="bigint" />
+			<column name="snmpifadminstatus" type="integer" />
+			<column name="snmpifoperstatus" type="integer" />
+			<column name="snmpifalias" type="varchar(256)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_nodeid2" onDelete="CASCADE"
+			baseTableName="snmpinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_nodeid_ifindex_unique_idx" unique="true">
+			<column name="nodeid" />
+			<column name="snmpifindex" />
+		</createIndex>
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="snmpinterface" indexName="snmpinterface_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>
