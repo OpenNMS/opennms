@@ -102,9 +102,6 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return thresholdMap;
     }
 
-    /*
-     * FIXME What happen if new threshold definition is gone?
-     */
     private void fillThresholdStateMap(String groupName, String  typeName, Map<String, Set<ThresholdEntity>> thresholdMap) {
         boolean merge = !thresholdMap.isEmpty();
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(groupName)) {
@@ -125,7 +122,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         if (merge) {
                             boolean updated = false;
                             for (ThresholdEntity e : thresholdEntitySet) {
-                                if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) { // FIXME Create other and avoid equals
+                                // See implementation on BaseThresholdDefConfigWrapper equals are different from identical for this case.
+                                if (thresholdEntity.getThresholdConfig().equals(e.getThresholdConfig())) {
                                     e.merge(thresholdEntity);
                                     updated = true;
                                 }

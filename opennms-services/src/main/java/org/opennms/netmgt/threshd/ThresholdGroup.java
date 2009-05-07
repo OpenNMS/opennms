@@ -34,6 +34,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -120,5 +121,19 @@ public class ThresholdGroup {
 	    String toString = buf.toString();
 	    return toString;
 	}
+	
+	public void delete() {
+	    delete(getNodeResourceType());
+	    delete(getIfResourceType());
+	    for (String type : getGenericResourceTypeMap().keySet())
+	        delete(getGenericResourceTypeMap().get(type));
+	}
 
+	private void delete(ThresholdResourceType type) {
+	    Map<String,Set<ThresholdEntity>> entityMap = type.getThresholdMap();
+	    for (String key : entityMap.keySet()) 
+	        for (ThresholdEntity e : entityMap.get(key))
+	            e.delete();
+	}
+	
 }

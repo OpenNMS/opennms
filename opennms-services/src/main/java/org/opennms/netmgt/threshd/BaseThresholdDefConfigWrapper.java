@@ -145,6 +145,20 @@ public abstract class BaseThresholdDefConfigWrapper {
         && getDatasourceExpression().equals(o.getDatasourceExpression());
     }
     
+    /*
+     * Returns true only if parameter object has exactly the same values for all attributes of
+     * the current object.
+     */
+    public boolean identical(BaseThresholdDefConfigWrapper o) {
+        return equals(o)
+        && (getDsLabel() == o.getDsLabel() || getDsLabel().equals(o.getDsLabel()))
+        && (getTriggeredUEI() == o.getTriggeredUEI() || getTriggeredUEI().equals(o.getTriggeredUEI()))
+        && (getRearmedUEI() ==  o.getRearmedUEI() || getRearmedUEI().equals(o.getRearmedUEI()))
+        && getValue() == o.getValue()
+        && getRearm() == o.getRearm()
+        && getTrigger() == o.getTrigger();
+    }
+    
     public void merge(BaseThresholdDefConfigWrapper threshold) {
         m_baseDef = threshold.getBasethresholddef();
     }

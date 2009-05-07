@@ -122,8 +122,8 @@ public class ThresholdingSet {
                 ThresholdGroup group = i.next();
                 if (!groupNameList.contains(group.getName())) {
                     log().info("mergeThresholdGroups: deleting group " + group);
+                    group.delete();
                     i.remove();
-                    // FIXME Must send event for triggered states
                 }
             }
         }

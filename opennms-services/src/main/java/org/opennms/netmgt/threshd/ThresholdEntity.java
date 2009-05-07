@@ -354,8 +354,10 @@ public final class ThresholdEntity implements Cloneable {
      * @param entity
      */
     public void merge(ThresholdEntity entity) {
-        sendRearmForTriggeredStates();
-        getThresholdConfig().merge(entity.getThresholdConfig());
+        if (getThresholdConfig().identical(entity.getThresholdConfig()) == false) {
+            sendRearmForTriggeredStates();
+            getThresholdConfig().merge(entity.getThresholdConfig());
+        }
     }
 
     /**
