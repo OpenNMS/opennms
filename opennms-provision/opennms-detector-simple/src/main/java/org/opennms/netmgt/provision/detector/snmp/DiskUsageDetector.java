@@ -111,11 +111,6 @@ public class DiskUsageDetector extends SnmpDetector {
         }
         
     }
-    
-    private String getValue(SnmpAgentConfig agentConfig, String oid) {
-        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-        return (val == null ? null : val.toString());
-    }
 
     /**
      * Returns true if the protocol defined by this plugin is supported. If the
