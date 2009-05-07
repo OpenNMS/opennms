@@ -147,6 +147,11 @@
         <version>2.0-alpha1</version>
       </plugin>
       <plugin>
+	    <groupId>org.codehaus.groovy.maven</groupId>
+	    <artifactId>gmaven-plugin</artifactId>
+	    <version>${gmaven.version}</version>
+      </plugin>
+      <plugin>
         <inherited>false</inherited>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
@@ -428,6 +433,10 @@
   </reporting>
 
   <properties>
+    <!-- version to use for the gmaven plugin and related dependencies -->
+    <gmaven.version>1.0-rc-5</gmaven.version>
+    
+  
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
@@ -1543,6 +1552,16 @@
         <groupId>org.jinterop</groupId>
         <artifactId>j-interopdeps</artifactId>
         <version>2.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-mojo</artifactId>
+        <version>${gmaven.version}</version>
+	  </dependency>
+	  <dependency>
+        <groupId>org.codehaus.groovy.maven.runtime</groupId>
+        <artifactId>gmaven-runtime-1.5</artifactId>
+        <version>${gmaven.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
