@@ -11,26 +11,64 @@
 			<tableExists schemaName="${install.database.name}" tableName="ifservices" />
 		</preConditions> 
 
+		<!-- Contains a mapping of interfaces to services available on those interfaces
+			(e.g., FTP, SMTP, DNS, etc.) and recent polling status information. -->
 		<createTable tableName="ifservices">
 			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ifservices_pkey" />
 			</column>
+
+			<!-- Unique integer identifier for node -->
 			<column name="nodeid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- IP Address of node's interface -->
 			<column name="ipaddr" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- SNMP ifIndex, if available, null otherwise -->
 			<column name="ifindex" type="integer" />
+
+			<!-- Unique integer identifier of service/poller package -->
 			<column name="serviceid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Date and time of last successful poll by this poller package -->
 			<column name="lastgood" type="DATETIME" />
+
+			<!-- Date and time of last failed poll by this poller package -->
 			<column name="lastfail" type="DATETIME" />
+
+			<!-- Service qualifier.  May be used to distinguish two services which have the same serviceID.
+				For example, in the case of the HTTP service a qualifier might be the specific port on which
+				the HTTP server was found.
+			 -->
 			<column name="qualifier" type="char(16)" />
+
+			<!-- Flag indicating the status of the service.
+				'A' - Active
+				'D' - Deleted
+				'U' - Unmanaged (per capsd configuration change and CAPSD)
+				'F' - Forced unmanaged (via user interface)
+				'N' - Not polled as part of any of the packages that the interface belongs to
+				'X' - service is remotely monitored only
+			 -->
 			<column name="status" type="char(1)" />
+
+			<!-- Flag indicating how the service was detected.
+				'P' - Plugin
+				'F' - Forced (via CapsdPluginBehavior.conf) -->
 			<column name="source" type="char(1)" />
+
+			<!-- Flag indicating if this service should be notified on or not
+				'Y' - to notify
+				'N' = not to notify -->
 			<column name="notify" type="char(1)" />
+
+			<!-- The IP interface that corresponds to this interface service -->
 			<column name="ipinterfaceid" type="integer">
 				<constraints nullable="false" />
 			</column>

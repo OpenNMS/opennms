@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
+
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,10 +11,13 @@
 			<tableExists schemaName="${install.database.name}" tableName="servicemap" />
 		</preConditions> 
 
+		<!-- Contains a list of IP Addresses mapped to OpenNMS services -->
 		<createTable tableName="servicemap">
+			<!-- IP address of the device to be monitored -->
 			<column name="ipaddr" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
+			<!-- Text field to store the service name -->
 			<column name="servicemapname" type="varchar(32)">
 				<constraints nullable="false" />
 			</column>

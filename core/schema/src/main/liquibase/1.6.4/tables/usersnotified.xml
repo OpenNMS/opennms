@@ -12,16 +12,31 @@
 		</preConditions> 
 
 		<createTable tableName="usersnotified">
+
+			<!-- Unique identifier for the table -->
 			<column name="id" type="integer" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_usernotificationid" />
 			</column>
+
+			<!-- The user id of the person being paged -->
 			<column name="userid" type="varchar(256)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- The identifier for the associated notification -->
 			<column name="notifyid" type="integer" />
+
+			<!-- The timestamp of when the notification was sent -->
 			<column name="notifytime" type="DATETIME" />
+
+			<!-- A string describing the type of contact being made, ie text page, numeric page, email, etc... -->
 			<column name="media" type="varchar(32)" />
+
+			<!-- A field for storing the information used to contact the user, e.g. an email address,
+				the phone number and pin of the pager... -->
 			<column name="contactinfo" type="varchar(64)" />
+
+			<!-- A character to determine how auto acknowledge is handled for this entry -->
 			<column name="autonotify" type="char(1)" />
 		</createTable>
 

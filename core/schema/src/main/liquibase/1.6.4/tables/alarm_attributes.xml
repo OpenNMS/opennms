@@ -11,11 +11,19 @@
 			<tableExists schemaName="${install.database.name}" tableName="alarm_attributes" />
 		</preConditions> 
 
+		<!-- Use this table to add additional custom data about an alarm... somewhat
+			useful with automations and will be viewable/editable in the alarm details WebUI page. -->
 		<createTable tableName="alarm_attributes">
+
+			<!-- the alarm's ID -->
 			<column name="alarmid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- The custom attribute name -->
 			<column name="attributename" type="varchar(63)" />
+
+			<!-- The custom attribute value -->
 			<column name="attributevalue" type="varchar(255)" />
 		</createTable>
 

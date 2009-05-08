@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-stpinterface">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="stpinterface" />
+		</preConditions> 
+
+		<!-- This table maintains a record of STP interface.  It reflects information from mib-2
+			bridge mib and subinterface STP table support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
+			OID: .1.3.6.1.2.1.17 -->
+		<createTable tableName="stpinterface">
+
+			<!-- Unique integer identifier of the node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- bridge port number identifier -->
+			<column name="bridgeport" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- interface ifindex corresponding to bridge port number -->
+			<column name="ifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- integer that reflect thestp staus of the bridge port
+				'1' disabled
+				'2' blocking
+				'3' listening
+				'4' learning
+				'5' forwarding
+				'6' broken -->
+			<column name="stpportstate" type="integer" />
+
+			<!-- The contribution of this port to the path cost of paths towards the spanning tree
+				root which include this port. -->
+			<column name="stpportpathcost" type="integer" />
+
+			<!-- the unique Bridge Identifier of the Bridge recorded as the Root in the Configuration
+				BPDUs transmitted by the Designated Bridge for the segment to which the port is attached. -->
+			<column name="stpportdesignatedroot" type="varchar(16)" />
+
+			<!-- The path cost of the Designated Port of the segment connected to this port.  This value is
+				compared to the Root Path Cost field in received bridge PDUs -->
+			<column name="stpportdesignatedcost" type="integer" />
+
+			<!-- The Bridge Identifier of the bridge which this port considers to be the Designated Bridge
+				for this port's segment. -->
+			<column name="stpportdesignatedbridge" type="varchar(16)" />
+
+			<!-- The Port Identifier of the port on the Designated Bridge for this port's segment. -->
+			<column name="stpportdesignatedport" type="varchar(4)" />
+
+			<!-- Flag indicating the status of the entry.
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted
+				'K' - Unknown -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The last time when this information was retrieved -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Unique integer identifier VLAN for which this info is valid -->
+			<column name="stpvlan" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addPrimaryKey tableName="stpinterface" constraintName="pk_stpinterface" columnNames="nodeid,bridgeport,stpvlan" />
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid3" onDelete="CASCADE"
+			baseTableName="stpinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="stpinterface" indexName="stpinterface_node_ifindex_idx">
+			<column name="nodeid" />
+			<column name="ifindex" />
+		</createIndex>
+		<createIndex tableName="stpinterface" indexName="stpinterface_node_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="stpinterface" indexName="stpinterface_stpvlan_idx">
+			<column name="stpvlan" />
+		</createIndex>
+		<createIndex tableName="stpinterface" indexName="stpinterface_stpdesbridge_idx">
+			<column name="stpportdesignatedbridge" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

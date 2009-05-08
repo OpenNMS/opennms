@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-location_specific_status_changes">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="location_specific_status_changes" />
+		</preConditions> 
+
+		<!-- contains a list status changed reported for a service by a monitor in a remote location -->
+		<createTable tableName="location_specific_status_changes">
+
+			<!-- unique identifier -->
+			<column name="id" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="location_specific_status_changes_pkey" />
+			</column>
+
+			<!-- foreign key referencing a specific monitor in a remote location -->
+			<column name="locationmonitorid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- foreign key referencing a specific monitored services -->
+			<column name="ifserviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- ??? -->
+			<column name="statuscode" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- time of reported status from remote location monitor -->
+			<column name="statustime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- description of status change -->
+			<column name="statusreason" type="varchar(255)" />
+
+			<!-- data for latency reporting -->
+			<column name="responsetime" type="DOUBLE PRECISION" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="location_monitor_fkey2" onDelete="CASCADE"
+			baseTableName="location_specific_status_changes" baseColumnNames="locationmonitorid"
+			referencedTableName="location_monitors" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey4" onDelete="CASCADE"
+			baseTableName="location_specific_status_changes" baseColumnNames="ifserviceid"
+			referencedTableName="ifservices" referencedColumnNames="id" />
+
+		<createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_ifserviceid">
+			<column name="ifserviceid" />
+		</createIndex>
+		<createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_locationmonitorid">
+			<column name="locationmonitorid" />
+		</createIndex>
+		<createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_locationmonitorid_ifserviceid">
+			<column name="locationmonitorid" />
+			<column name="ifserviceid" />
+		</createIndex>
+		<createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_locationmonitorid_loc_if_time">
+			<column name="locationmonitorid" />
+			<column name="ifserviceid" />
+			<column name="statustime" />
+		</createIndex>
+		<createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_statustime">
+			<column name="statustime" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>
