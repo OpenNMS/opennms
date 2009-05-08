@@ -11,22 +11,42 @@
 			<tableExists schemaName="${install.database.name}" tableName="distpoller" />
 		</preConditions> 
 
+		<!-- Contains information on Distributed Pollers installed in this OpenNMS instance. -->
 		<createTable tableName="distpoller">
+			<!-- A human-readable name for each system.  Typically, the system's hostname (not fully qualified). -->
 			<column name="dpname" type="varchar(12)">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_dpname" />
 			</column>
+			<!-- IP address of the distributed poller. -->
 			<column name="dpip" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
+			<!-- Free-form text field -->
 			<column name="dpcomment" type="varchar(256)" />
+			<!-- Numeric representation of percentage of interface speed available to discovery process.  See documentation for "bandwidth troll" -->
 			<column name="dpdisclimit" type="numeric(5,2)" />
+			<!-- Time of last pull of new nodes from the DP -->
 			<column name="dplastnodepull" type="DATETIME" />
+			<!-- Time of last pull of events from the DP -->
 			<column name="dplasteventpull" type="DATETIME" />
+			<!-- Time of last push of Package (config) to the DP -->
 			<column name="dplastpackagepush" type="DATETIME" />
+			<!-- Reflects desired state for this distributed poller.
+				1 = Up, 0 = Down -->
 			<column name="dpadminstate" type="integer" />
+			<!-- Reflects the current perceived state of the distributed poller.
+				1 = Up, 0 = Down -->
 			<column name="dprunstate" type="integer" />
 		</createTable>
 
+		<insert tableName="distpoller">
+			<column name="dpname" value="localhost" />
+			<column name="dpip" value="127.0.0.1" />
+			<column name="dpcomment" value="This is the default poller." />
+			<column name="dpdisclimit" valueNumeric="0.10" />
+			<column name="dpadminstate" valueNumeric="1" />
+			<column name="dprunstate" valueNumeric="1" />
+		</insert>
 	</changeSet>
 
 </databaseChangeLog>

@@ -11,27 +11,51 @@
 			<tableExists schemaName="${install.database.name}" tableName="outages" />
 		</preConditions> 
 
+		<!-- This table maintains a record of outage periods for given services on specific interfaces. -->
 		<createTable tableName="outages">
+
+			<!-- Unique integer identifier for the outage -->
 			<column name="outageid" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_outageid" />
 			</column>
+
+			<!-- ID of the event that caused the outage. Will be a non-null value when a new outage
+				is inserted but might be null in case of an opennms upgrade -->
 			<column name="svclosteventid" type="integer" />
+
+			<!-- ID of the event that cleared the outage -->
 			<column name="svcregainedeventid" type="integer" />
+
+			<!-- Unique integer identifier for node -->
 			<column name="nodeid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- IP Address of node's interface -->
 			<column name="ipaddr" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Unique integer identifier of service/poller package -->
 			<column name="serviceid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Time of lost service event -->
 			<column name="iflostservice" type="DATETIME">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Time of regained service event -->
 			<column name="ifregainedservice" type="DATETIME" />
+
+			<!-- When the outage was suppressed -->
 			<column name="suppresstime" type="DATETIME" />
+
+			<!-- Who suppressed it -->
 			<column name="suppressedby" type="varchar(256)" />
+
+			<!-- the ifservice associated with this outage -->
 			<column name="ifserviceid" type="integer">
 				<constraints nullable="false" />
 			</column>
