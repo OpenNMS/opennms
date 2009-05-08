@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc. All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 May 07: Add response-text property, refactor string constants, indent. - jeffg@opennms.org
 // 2004 Apr 30: Make this extend AbstractTcpPlugin and move code up.
 // 2003 Jul 21: Explicitly close sockets.
 // 2003 Jul 18: Fixed exception to enable retries.
@@ -53,6 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -108,6 +110,13 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * 
  */
 public class HttpPlugin extends AbstractTcpPlugin {
+
+    // Names of properties configured for the protocol-plugin
+    protected static final String PROPERTY_NAME_PORT = "port";
+    protected static final String PROPERTY_NAME_MAX_RET_CODE = "max-ret-code";
+    protected static final String PROPERTY_NAME_RETURN_CODE = "check-return-code";
+    protected static final String PROPERTY_NAME_URL = "url";
+    protected static final String PROPERTY_NAME_RESPONSE_TEXT = "response-text";
 
     /**
      * Boolean indicating whether to check for a return code
@@ -200,10 +209,12 @@ public class HttpPlugin extends AbstractTcpPlugin {
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
 
-	m_queryString = "GET " + config.getKeyedString("url", DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
+        m_queryString = "GET " + config.getKeyedString(PROPERTY_NAME_URL, DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
 
         Category log = ThreadCategory.getInstance(getClass());
-        log.debug( "Query: " + m_queryString);
+        if (log.isDebugEnabled()) {
+            log.debug( "Query: " + m_queryString);
+        }
 
         try {
             BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -212,41 +223,45 @@ public class HttpPlugin extends AbstractTcpPlugin {
             char [] cbuf = new char[ 1024 ];
             int chars = 0;
             StringBuffer response = new StringBuffer();
-            try
-            {
+            try {
                 while ((chars = lineRdr.read( cbuf, 0, 1024)) != -1)
                 {
-                   String line = new String( cbuf, 0, chars );
-                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket." );
-                   response.append( line );
+                    String line = new String( cbuf, 0, chars );
+                    if (log.isDebugEnabled()) {
+                        log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket." );
+                    }
+                    response.append( line );
                 }
-
-            }
-            catch( java.net.SocketTimeoutException timeoutEx )
-            {
+            } catch ( java.net.SocketTimeoutException timeoutEx ) {
                 if ( timeoutEx.bytesTransferred > 0 )
                 {
-                   String line = new String( cbuf, 0, timeoutEx.bytesTransferred );
-                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket @ timeout!" );
-                   response.append(line);
+                    String line = new String( cbuf, 0, timeoutEx.bytesTransferred );
+                    if (log.isDebugEnabled()) {
+                        log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket @ timeout!" );
+                    }
+                    response.append(line);
                 }
             }
-            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) 
-            {
+            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) {
                 if (m_checkReturnCode) {
-		    int maxRetCode = config.getKeyedInteger("max-ret-code", 399);
-		    if ( (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL))) || (config.getKeyedBoolean("check-return-code", true) == false) )
-		    {
-		        maxRetCode = 600;
-		    }	
+                    int maxRetCode = config.getKeyedInteger(PROPERTY_NAME_MAX_RET_CODE, 399);
+                    if ( (DEFAULT_URL.equals(config.getKeyedString(PROPERTY_NAME_URL, DEFAULT_URL))) || (config.getKeyedBoolean(PROPERTY_NAME_RETURN_CODE, true) == false) )
+                    {
+                        maxRetCode = 600;
+                    }	
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-            	    log.debug(getPluginName() + ": Request returned code: " + rVal);
+                    if (log.isDebugEnabled()) {
+                        log.debug(getPluginName() + ": Request returned code: " + rVal);
+                    }
                     if (rVal >= 99 && rVal <= maxRetCode )
                         isAServer = true;
                 } else {
                     isAServer = true;
+                }
+                if (isAServer) {
+                    isAServer = checkResponseBody(config, response.toString());
                 }
             }
         } catch (SocketException e) {
@@ -266,12 +281,33 @@ public class HttpPlugin extends AbstractTcpPlugin {
      *      java.net.InetAddress)
      */
     protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
-        int[] ports = getKeyedIntegerArray(qualifiers, "port", m_defaultPorts);
+        int[] ports = getKeyedIntegerArray(qualifiers, PROPERTY_NAME_PORT, m_defaultPorts);
 
         List<ConnectionConfig> list = new LinkedList<ConnectionConfig>();
         for (int i = 0; i < ports.length; i++) {
             list.add(createConnectionConfig(address, ports[i]));
         }
         return list;
+    }
+    
+    /**
+     * Checks the response body as a substring or regular expression match
+     * according to the leading-tilde convention
+     * 
+     * @param config ConnectionConfig object from which response-text property is extracted
+     * @param response Body of HTTP response to check
+     * @return Whether the response matches the response-text property
+     */
+    protected boolean checkResponseBody(ConnectionConfig config, String response) {
+        String expectedResponse = config.getKeyedString(PROPERTY_NAME_RESPONSE_TEXT, null);
+        if (expectedResponse == null) {
+            return true;
+        }
+        if (expectedResponse.startsWith("~")) {
+            Pattern bodyPat = Pattern.compile(expectedResponse.substring(1), Pattern.DOTALL);
+            return bodyPat.matcher(response).matches();
+        } else {
+            return response.contains(expectedResponse);
+        }
     }
 }
