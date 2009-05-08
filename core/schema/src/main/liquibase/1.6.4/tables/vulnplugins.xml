@@ -11,21 +11,45 @@
 			<tableExists schemaName="${install.database.name}" tableName="vulnplugins" />
 		</preConditions> 
 
+		<!-- This table contains a list of information about Nessus plugins that are in use by
+			the nessusd daemons that are being used by vulnscand. -->
 		<createTable tableName="vulnplugins">
+
+			<!-- Plugin ID number (from Nessus) -->
 			<column name="pluginid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Specific vulnerability type within the plugin -->
 			<column name="pluginsubid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- Short name of the plugin -->
 			<column name="name" type="varchar(128)" />
+
+			<!-- Category of the plugin's behavior (scanner, attack, etc) -->
 			<column name="category" type="varchar(32)" />
+
+			<!-- Copyright notice for the plugin -->
 			<column name="copyright" type="varchar(128)" />
+
+			<!-- Verbose description of vulnerability -->
 			<column name="descr" type="text" />
+
+			<!-- Short description of plugin behavior -->
 			<column name="summary" type="varchar(256)" />
+
+			<!-- User-comprehensible type of attack (CGI abuses, Backdoors, etc) -->
 			<column name="family" type="varchar(32)" />
+
+			<!-- Version of the plugin code -->
 			<column name="version" type="varchar(32)" />
+
+			<!-- CVE entry associated with the vulnerability that this plugin tests -->
 			<column name="cveentry" type="varchar(255)" />
+
+			<!-- 128-bit hex MD5 checksum of the plugin that can be used to detect changes in the plugin code -->
 			<column name="md5" type="varchar(32)" />
 		</createTable>
 

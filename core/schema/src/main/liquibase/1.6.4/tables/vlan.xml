@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.4-vlan">
+		<preConditions onFail="MARK_RAN">
+			<tableExists schemaName="${install.database.name}" tableName="vlan" />
+		</preConditions> 
+
+		<createTable tableName="vlan">
+
+			<!-- Unique integer identifier of the associated node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The vlan identifier to be referred to in a unique fashion -->
+			<column name="vlanid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- the name the vlan -->
+			<column name="vlanname" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Indicates what type of vlan is this:
+				'1' ethernet
+				'2' FDDI
+				'3' TokenRing -->
+			<column name="vlantype" type="integer" />
+
+			<!-- An indication of what is the Vlan Status:
+				'1' operational
+				'2' suspended
+				'3' mtuTooBigForDevice
+				'4' mtuTooBigForTrunk -->
+			<column name="vlanstatus" type="integer" />
+
+			<!-- Flag indicating the status of the entry.
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted
+				'K' - Unknown -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The last time when this information was retrived -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addPrimaryKey tableName="vlan" constraintName="pk_vlan" columnNames="nodeid,vlanid" />
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid8" onDelete="CASCADE"
+			baseTableName="vlan" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="vlan" indexName="vlan_vlanname_idx">
+			<column name="vlanname" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

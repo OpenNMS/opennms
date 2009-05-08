@@ -30,6 +30,13 @@
 	<include file="1.6.4/tables/pollresults.xml" />
 	<include file="1.6.4/tables/location_monitors.xml" />
 	<include file="1.6.4/tables/location_monitor_details.xml" />
+	<include file="1.6.4/tables/location_specific_status_changes.xml" />
+	<include file="1.6.4/tables/applications.xml" />
+	<include file="1.6.4/tables/application_service_map.xml" />
+	<include file="1.6.4/tables/atinterface.xml" />
+	<include file="1.6.4/tables/vlan.xml" />
+	<include file="1.6.4/tables/stpnode.xml" />
+	<include file="1.6.4/tables/stpinterface.xml" />
 
 	<changeSet author="rangerrick" id="1.6.4-ownership">
 		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>

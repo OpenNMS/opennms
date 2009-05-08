@@ -11,26 +11,58 @@
 			<tableExists schemaName="${install.database.name}" tableName="notifications" />
 		</preConditions> 
 
+		<!-- Contains information on acknowledged and outstanding pages listed by user/groups -->
 		<createTable tableName="notifications">
+
+			<!-- The primary key of this row -->
 			<column name="notifyid" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_notifyid" />
 			</column>
+
+			<!-- The message being sent in the page. -->
 			<column name="textmsg" type="varchar(4000)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- the subject line of the message -->
 			<column name="subject" type="varchar(256)" />
+
+			<!-- The message being sent to a numeric pager -->
 			<column name="numericmsg" type="varchar(256)" />
+
+			<!-- A timestamp of when the page was originally sent. -->
 			<column name="pagetime" type="DATETIME" />
+
+			<!-- A timestamp of when the page was acknowledged. A null in this field means that the
+				page has not been answered yet. -->
 			<column name="respondtime" type="DATETIME" />
+
+			<!-- The user id of the user that answered the page, set the same for all rows with the
+				same groupId field. -->
 			<column name="answeredby" type="varchar(256)" />
+
+			<!-- The id of the node that has the problem -->
 			<column name="nodeid" type="integer" />
+
+			<!-- The id of the interface on the node that has the problem -->
 			<column name="interfaceid" type="varchar(16)" />
+
+			<!-- The id of the service on the interface that has the problem -->
 			<column name="serviceid" type="integer" />
+
+			<!-- The id of the notification queue -->
 			<column name="queueid" type="varchar(256)" />
+
+			<!-- The primary key of the event that spawned the notification -->
 			<column name="eventid" type="integer" />
+
+			<!-- The uei of the event that spawned the notification, placed here for speed of lookup
+				as notifications are processed. -->
 			<column name="eventuei" type="varchar(256)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- The name of the associated notification configuration -->
 			<column name="notifconfigname" type="varchar(63)" />
 		</createTable>
 

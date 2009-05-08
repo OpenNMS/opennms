@@ -11,22 +11,58 @@
 			<tableExists schemaName="${install.database.name}" tableName="ipinterface" />
 		</preConditions> 
 
+		<!-- Contains information on interfaces which support TCP/IP as well as current status information. -->
 		<createTable tableName="ipinterface">
+			<!-- Unique identifier -->
 			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ipinterface_pkey" />
 			</column>
+
+			<!-- Unique identifier of the node that "owns" this interface -->
 			<column name="nodeid" type="integer">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- IP Address associated with this interface -->
 			<column name="ipaddr" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
+
+			<!-- SNMP index of interface, used to uniquely identify unnumbered interfaces, or null
+				if there is no mapping to snmpInterface table.  Can be -100 if old code added an
+				snmpInterface table entry but no SNMP data could be gathered. -->
 			<column name="ifindex" type="integer" />
+
+			<!-- IP Hostname associated with this interface -->
 			<column name="iphostname" type="varchar(256)" />
+
+			<!-- Interface managed state flag:
+				'M' - Managed
+				'A' - Alias
+				'D' - Deleted
+				'U' - Unmanaged
+				'F' - Forced Unmanaged (via the user interface)
+				'N' - Not polled as part of any package
+				'X' - Remotely Monitored only
+			 -->
 			<column name="ismanaged" type="char(1)" />
+
+			<!-- If interface supports SNMP this field will hold a numeric representation of interface's
+				operational status (same as 'snmpIfOperStatus' field in the snmpInterface table).
+				1 = Up, 2 = Down, 3 = Testing -->
 			<column name="ipstatus" type="integer" />
+
+			<!-- Date and time of last poll by capsd -->
 			<column name="iplastcapsdpoll" type="DATETIME" />
+
+			<!-- Is this address the primary SNMP interface?
+				'P' - Primary SNMP
+				'S' - Secondary SNMP
+				'N' - Not eligible (does not support SNMP or or has no ifIndex)
+			-->
 			<column name="issnmpprimary" type="char(1)" />
+
+			<!-- The "snmpInterface" ID associated with this ipInterface -->
 			<column name="snmpinterfaceid" type="integer" />
 		</createTable>
 
