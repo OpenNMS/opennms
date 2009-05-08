@@ -375,7 +375,7 @@ public final class ThresholdEntity implements Cloneable {
                     Parm p = new Parm();
                     p.setParmName("reason");
                     Value v = new Value();
-                    v.setContent("Configuration has changed");
+                    v.setContent("Configuration has been changed");
                     p.setValue(v);
                     e.getParms().addParm(p);
                     log().info("sendRearmForTriggeredStates: sending rearm for " + e);
