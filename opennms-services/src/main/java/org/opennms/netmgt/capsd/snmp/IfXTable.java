@@ -83,6 +83,21 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         return new IfXTableEntry(inst.toInt());
     }
     
+    public IfXTableEntry getEntry(int ifIndex) {
+        if (getEntries() == null) {
+            return null;
+        }
+        
+        for(IfXTableEntry entry : getEntries()) {
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                return entry;
+            }
+        }
+        
+        return null;
+    }
+    
     public String getIfName(int ifIndex) {
     
         // Find ifXTable entry with matching ifIndex
@@ -108,7 +123,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         // Find ifXTable entry with matching ifIndex
 
         for(IfXTableEntry ifXEntry : getEntries()) {
-    
+            
             int ifXIndex = -1;
             Integer snmpIfIndex = ifXEntry.getIfIndex();
             if (snmpIfIndex != null)
@@ -118,6 +133,24 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
             if (ifXIndex == ifIndex) {
                 // Found match! Get the ifAlias
                 return ifXEntry.getIfAlias();
+            }
+    
+        }
+        return null;
+    }
+
+    public Long getIfHighSpeed(int ifIndex) {
+        for(IfXTableEntry ifXEntry : getEntries()) {
+            
+            int ifXIndex = -1;
+            Integer snmpIfIndex = ifXEntry.getIfIndex();
+            if (snmpIfIndex != null)
+                ifXIndex = snmpIfIndex.intValue();
+    
+            // compare with passed ifIndex
+            if (ifXIndex == ifIndex) {
+                // Found match! Get the ifAlias
+                return ifXEntry.getIfHighSpeed();
             }
     
         }

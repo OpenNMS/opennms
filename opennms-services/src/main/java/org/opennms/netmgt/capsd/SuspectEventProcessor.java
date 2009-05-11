@@ -82,6 +82,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IfXTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -911,13 +912,15 @@ final class SuspectEventProcessor implements Runnable {
             } else {
                 snmpEntry.setType(ifte.getIfType().intValue());
             }
+            
+            
+            IfXTableEntry ifxte = snmpc.hasIfXTable() ? snmpc.getIfXTable().getEntry(xifIndex) : null;
+            
+            long speed = getInterfaceSpeed(ifte, ifxte);
 
             // speed
-            if (ifte.getIfSpeed() == null) {
-                snmpEntry.setSpeed(0);
-            } else {
-                snmpEntry.setSpeed(ifte.getIfSpeed().longValue());
-            }
+            snmpEntry.setSpeed(speed);
+
 
             // admin status
             if (ifte.getIfAdminStatus() == null) {
@@ -948,6 +951,18 @@ final class SuspectEventProcessor implements Runnable {
             snmpEntry.store(dbc);
         }
         return addedSnmpInterfaceEntry;
+    }
+
+    private long getInterfaceSpeed(IfTableEntry ifte, IfXTableEntry ifxte) {
+        if (ifxte != null && ifxte.getIfHighSpeed() != null) {
+            return ifxte.getIfHighSpeed() * 1000000L; 
+        }
+        
+        if (ifte != null && ifte.getIfSpeed() != null) {
+            return ifte.getIfSpeed();
+        }
+
+        return 0;
     }
 
     /**
