@@ -30,10 +30,11 @@
  */
 package org.opennms.netmgt.provision.detector.jdbc.request;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 
 /**
  * @author thedesloge
@@ -41,21 +42,40 @@ import java.sql.SQLException;
  */
 public class JDBCRequest {
     
-    public static final JDBCRequest Null = new JDBCRequest(null) {
+    public static final JDBCRequest Null = new JDBCRequest() {
         @Override
-        public void send(Connection conn) throws SQLException {
+        public JDBCResponse send(Connection conn) throws SQLException {
+            return null;
         }
     };
-
+    
+    private String m_storedProcedure;
     
     /**
      * @param object
      */
-    public JDBCRequest(Object object) {
-        // TODO Auto-generated constructor stub
+    public JDBCRequest() {}
+
+    public JDBCResponse send(Connection conn) throws SQLException {
+        if(getStoredProcedure() != null){
+            
+            String procedureCall = "{ ? = call test." + getStoredProcedure() + "()}";
+            CallableStatement cs = conn.prepareCall(procedureCall);
+            cs.registerOutParameter(1, java.sql.Types.BIT);
+            cs.executeUpdate();
+
+            JDBCResponse response = new JDBCResponse();
+            response.setValidProcedureCall(cs.getBoolean(1));
+            return response;
+        }
+        return null;
     }
 
-    public void send(Connection conn) throws SQLException {
-        
+    public void setStoredProcedure(String storedProcedure) {
+        m_storedProcedure = storedProcedure;
+    }
+
+    public String getStoredProcedure() {
+        return m_storedProcedure;
     }
 }

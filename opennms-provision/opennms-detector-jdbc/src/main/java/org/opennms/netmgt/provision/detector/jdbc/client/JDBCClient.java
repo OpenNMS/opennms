@@ -92,7 +92,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     }
 
     public JDBCResponse sendRequest(JDBCRequest request) throws IOException, Exception {
-        return null;
+        return request.send(m_connection);
     }
 
     public void setDbDriver(String dbDriver) {
