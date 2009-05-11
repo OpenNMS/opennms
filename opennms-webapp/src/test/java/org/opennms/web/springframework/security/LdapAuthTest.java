@@ -35,7 +35,9 @@
 
 package org.opennms.web.springframework.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -120,6 +122,15 @@ public class LdapAuthTest {
 
     }
 
+    @Test
+    public void testBasicAuthInvalidPassword() throws IOException, ServletException {
+        
+        MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "invalid");
+
+        assertAccessDenied(request);
+
+    }
+
     /**
      * @param request
      * @throws IOException
@@ -135,15 +146,6 @@ public class LdapAuthTest {
         m_chain.assertAccessAllowed();
     }
     
-    @Test
-    public void testBasicAuthInvalidPassword() throws IOException, ServletException {
-        
-        MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "invalid");
-
-        assertAccessDenied(request);
-
-    }
-
     /**
      * @param request
      * @throws IOException
@@ -159,7 +161,7 @@ public class LdapAuthTest {
         m_chain.assertAccessDenied();
     }
     
-    
+
     protected MockHttpServletRequest createRequest(String requestType, String urlPath) {
         MockHttpServletRequest request = new MockHttpServletRequest(m_servletContext, requestType, m_contextPath + urlPath);
         request.setServletPath(m_contextPath + urlPath);
