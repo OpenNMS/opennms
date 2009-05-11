@@ -442,7 +442,7 @@ public abstract class JMXCollector implements ServiceCollector {
                         String objectName = beanInfo.getObjectName();
                         String excludeList = beanInfo.getExcludes();
                         //All JMX collected values are per node
-                        AttributeGroupType attribGroupType=new AttributeGroupType(objectName,"all");
+                        AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(objectName),"all");
 
                         String[] attrNames = beanInfo.getAttributeNames();
 
@@ -579,6 +579,22 @@ public abstract class JMXCollector implements ServiceCollector {
         return collectionSet;
     }
 
+    /**
+     * This method removes characters from an object name that are
+     * potentially illegal in a file or directory name, returning a
+     * name that is appropriate for use with the storeByGroup persistence
+     * method.
+     *  
+     * @param objectName
+     * @return
+     */
+    private String fixGroupName(String objectName) {
+        if (objectName == null) {
+            return "NULL";
+        }
+        return objectName.replaceAll("[.:=,]", "_");
+    }
+    
     /*
      * This method strips out the illegal character '/' and attempts to keep
      * the length of the key plus ds name to 19 or less characters. The slash
