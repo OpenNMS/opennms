@@ -99,6 +99,8 @@ public class MapPropertiesFactory extends Object {
 
 	protected  Map<String,String> iconsMap = null;
 
+	protected Map<String,String> iconsBySysoidMap = null;
+	
 	protected  Map<String,String> bgImagesMap = null;
 
 	protected  Map<Integer,Link> linksMap = null;
@@ -382,6 +384,7 @@ public class MapPropertiesFactory extends Object {
 	 *	-statusesMap: status (String) uei to Status
 	 * 	-availsMap: min (String) of avail to Avail
 	 *	-iconsMap: icon (String) label to String (icon filename)
+	 *	-iconsBySysoidMap: sysoid (String) to icon label (String)
 	 *	-bgImagesMap: background (String) image label to String (background image filename)
 	 *	-sourcesMap: source label (String) to DataSource 
 	 *	-factoriesMap: factory label (String) to MapsFactory
@@ -393,6 +396,7 @@ public class MapPropertiesFactory extends Object {
 		statusesMap = new HashMap<String,Status>();
 		availsMap = new HashMap<String,Avail>();
 		iconsMap = new HashMap<String,String>();
+		iconsBySysoidMap = new HashMap<String,String>();
 		bgImagesMap = new HashMap<String,String>();
 		linksMap = new HashMap<Integer,Link>();
 		linksBySnmpTypeMap = new HashMap<Integer,Set<Link>>();
@@ -714,6 +718,16 @@ public class MapPropertiesFactory extends Object {
 			iconsMap.put(icons[i], filename);
 		}
 		
+		// look up sysoid icons
+		String[] sysoids = BundleLists.parseBundleList(props.getProperty("sysoids"));
+		
+		for (int i = 0; i < sysoids.length; i++) {
+		    String iconName = props.getProperty("sysoid." + sysoids[i] + ".iconName");
+		    log.debug("found sysoid " + sysoids[i] + " with iconName=" + iconName
+	                    + ". Adding it.");
+	        iconsBySysoidMap.put(sysoids[i], iconName);
+		}
+		
 		defaultMapIcon = props.getProperty("icon.default.map");
 		log.debug("default map icon: "+defaultMapIcon);
 		if (defaultMapIcon == null) {
@@ -754,6 +768,10 @@ public class MapPropertiesFactory extends Object {
 
 	public Map<String,String> getIconsMap() {
 		return iconsMap;
+	}
+	
+	public Map<String,String> getIconsBySysoidMap() {
+	    return iconsBySysoidMap;
 	}
 
 	public Map<String,String> getBackgroundImagesMap() {
@@ -920,6 +938,10 @@ public class MapPropertiesFactory extends Object {
     
     public java.util.Map<String,String> getIcons() throws MapsException{
     	return getIconsMap();
+    }
+    
+    public java.util.Map<String,String> getIconsBySysoid() throws MapsException{
+        return getIconsBySysoidMap();
     }
     
     public java.util.Map<String, String> getBackgroundImages() throws MapsException {
