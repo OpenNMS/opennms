@@ -268,11 +268,20 @@ public final class IfSnmpCollector implements Runnable {
         return ifDescr;
     }
     
-    public Long getIfSpeed(final int ifIndex) {
+    public Long getInterfaceSpeed(final int ifIndex) {
         Long ifSpeed = null;
         
-        if (hasIfTable()) {
+        try {
+        
+        if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null) {
+            ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
+            log().debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+        } else if (hasIfTable()) {
             ifSpeed = m_ifTable.getIfSpeed(ifIndex);
+            log().debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+        }
+        } catch(Exception e) {
+            log().warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex " + ifIndex);
         }
         return ifSpeed;
     }
@@ -367,6 +376,6 @@ public final class IfSnmpCollector implements Runnable {
     }
 
     private Category log() {
-        return ThreadCategory.getInstance(getClass());
+        return ThreadCategory.getInstance(getClass()+"."+m_address);
     }
 }

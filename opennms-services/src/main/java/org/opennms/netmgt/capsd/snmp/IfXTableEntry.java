@@ -177,4 +177,9 @@ public final class IfXTableEntry extends SnmpTableEntry {
         return getDisplayString(IfXTableEntry.IF_ALIAS);
     }
     
+    public Long getIfHighSpeed() {
+        return getUInt32(IfXTableEntry.IF_HIGH_SPEED);
+    }
+
+
 }
