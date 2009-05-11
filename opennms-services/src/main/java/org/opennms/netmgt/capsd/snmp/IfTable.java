@@ -97,6 +97,21 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
+    public IfTableEntry getEntry(int ifIndex) {
+        if (getEntries() == null) {
+            return null;
+        }
+        
+        for(IfTableEntry entry : getEntries()) {
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                return entry;
+            }
+        }
+        
+        return null;
+    }
+    
     public int getOperStatus(int ifIndex) {
         if (getEntries() == null)
             return -1;

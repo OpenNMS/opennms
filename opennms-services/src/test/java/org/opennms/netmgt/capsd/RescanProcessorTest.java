@@ -59,7 +59,7 @@ public class RescanProcessorTest extends TestCase {
         IfTableEntry ifTableEntry = new IfTableEntry();
         ifTableEntry.storeResult(new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.5"), new SnmpInstId("0"), new TestSnmpValue.StringSnmpValue("")));
         DbSnmpInterfaceEntry dbSnmpInterfaceEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-        processor.updateSpeed(ifIndex, ifTableEntry, dbSnmpInterfaceEntry);
+        processor.updateSpeed(ifIndex, ifTableEntry, null, dbSnmpInterfaceEntry);
         
         assertEquals("DbSnmpInterfaceEntry ifSpeed value", 0, dbSnmpInterfaceEntry.getSpeed());
     }

@@ -100,6 +100,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IfXTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -625,6 +626,7 @@ public final class RescanProcessor implements Runnable {
         }
 
         IfTableEntry ifte = findEntryByIfIndex(ifIndex, snmpc);
+        IfXTableEntry ifxte = findXEntryByIfIndex(ifIndex, snmpc);
 
         /*
          * Make sure we have a valid IfTableEntry object and update
@@ -646,7 +648,7 @@ public final class RescanProcessor implements Runnable {
             updateType(ifte, dbSnmpIfEntry);
             updateDescription(ifIndex, ifte, dbSnmpIfEntry);
             updatePhysicalAddress(ifIndex, ifte, dbSnmpIfEntry);
-            updateSpeed(ifIndex, ifte, dbSnmpIfEntry);
+            updateSpeed(ifIndex, ifte, ifxte, dbSnmpIfEntry);
             updateAdminStatus(ifte, dbSnmpIfEntry);
             updateOperationalStatus(ifte, dbSnmpIfEntry);
             updateName(ifIndex, snmpc, dbSnmpIfEntry);
@@ -680,14 +682,21 @@ public final class RescanProcessor implements Runnable {
      * Find the ifTable entry for this interface.
      */
     private IfTableEntry findEntryByIfIndex(int ifIndex, IfSnmpCollector snmpc) {
-        for (IfTableEntry entry : snmpc.getIfTable().getEntries()) {
-            Integer entryIfIndex = entry.getIfIndex();
-            if (entryIfIndex != null && ifIndex == entryIfIndex.intValue()) {
-                if (log().isDebugEnabled()) {
-                    log().debug("updateNonIpInterface: found match for ifIndex: " + ifIndex);
-                }
-                return entry;
-            }
+        
+        if (snmpc.hasIfTable()) {
+            return snmpc.getIfTable().getEntry(ifIndex);
+        }
+        
+        return null;
+
+    }
+
+    /**
+     * Find the ifXTable entry for this interface.
+     */
+    private IfXTableEntry findXEntryByIfIndex(int ifIndex, IfSnmpCollector snmpc) {
+        if (snmpc.hasIfXTable()) {
+            return snmpc.getIfXTable().getEntry(ifIndex);
         }
         
         return null;
@@ -760,20 +769,34 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    void updateSpeed(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
-        Long uint;
+    void updateSpeed(int ifIndex, IfTableEntry ifte, IfXTableEntry ifxte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+        
+        
+        long speed = 0;
         try {
-            uint = ifte.getIfSpeed();   
+            speed = getInterfaceSpeed(ifte, ifxte);
         } catch (Exception e) {
             log().warn("updateNonIpInterface: ifSpeed '" + ifte.getDisplayString(IfTableEntry.IF_SPEED) + "' for ifIndex " + ifIndex + " is invalid, inserting 0: " + e, e);
-            uint = null;
+            speed = 0;
         }
-        if (uint == null) {
-            dbSnmpIfEntry.updateSpeed(0);
-        } else {
-            dbSnmpIfEntry.updateSpeed(uint.longValue());
-        }
+
+        dbSnmpIfEntry.updateSpeed(speed);
+
     }
+    
+    private long getInterfaceSpeed(IfTableEntry ifte, IfXTableEntry ifxte) {
+        if (ifxte != null && ifxte.getIfHighSpeed() != null) {
+            return ifxte.getIfHighSpeed() * 1000000L; 
+        }
+        
+        if (ifte != null && ifte.getIfSpeed() != null) {
+            return ifte.getIfSpeed();
+        }
+
+        return 0;
+    }
+
+
 
     private static Category log() {
         return ThreadCategory.getInstance(RescanProcessor.class);
@@ -1867,11 +1890,11 @@ public final class RescanProcessor implements Runnable {
                 }
 
                 // speed
-                Long uint = ifte.getIfSpeed();
+                Long speed = snmpc.getInterfaceSpeed(ifIndex);
 
                 //set the default speed to 10MB if not retrievable.
-                currSnmpIfEntry.setSpeed((uint == null
-                        ? 10000000L : uint.longValue())); 
+                currSnmpIfEntry.setSpeed((speed == null
+                        ? 10000000L : speed.longValue())); 
 
                 // admin status
                 sint = ifte.getIfAdminStatus();
