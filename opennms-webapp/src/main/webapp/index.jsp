@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -40,41 +40,67 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"  %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%
+pageContext.setAttribute("asyncLoad", Boolean.getBoolean("opennms.webui.asyncLoad"));
+%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Web Console" />
+  <jsp:param name="title" value="Web Console" />
 </jsp:include>
 
     <!-- Left Column -->
     <div id="index-contentleft">
       <!-- Services down box -->
-		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
-		<hr />
+      <c:choose>
+        <c:when test="${asyncLoad}">
+          <jsp:include page="/includes/servicesdown-box-loading.jsp" flush="false" />
+        </c:when>
+        <c:otherwise>
+          <jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+        </c:otherwise>
+      </c:choose>
+      <hr />
     </div>
 
-	<!-- Middle Column -->
-	<div id="index-contentmiddle">
-		<!-- category box(es) -->    
-		<jsp:include page="/includes/categories-box.jsp" flush="false" />
-		<hr />
-	</div>
-	
+  <!-- Middle Column -->
+  <div id="index-contentmiddle">
+    <!-- category box(es) -->    
+    <jsp:include page="/includes/categories-box.jsp" flush="false" />
+    <hr />
+  </div>
+  
     <!-- Right Column -->
-	<div id="index-contentright">
-		<!-- notification box -->    
-		<jsp:include page="/includes/notification-box.jsp" flush="false" />
-		<hr />
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-		<hr />
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
-		<hr />
-		<%--
-		<!-- security box -->    
-		Commenting out the security box include until it is functional
-		<jsp:include page="/includes/security-box.jsp" flush="false" />
-		--%>
-	</div>
+  <div id="index-contentright">
+    <!-- notification box -->    
+    <jsp:include page="/includes/notification-box.jsp" flush="false" />
+    <hr />
+    <!-- Performance box -->    
+    <c:choose>
+      <c:when test="${asyncLoad}">
+        <jsp:include page="/includes/resourceGraphs-box-loading.jsp" flush="false" />
+      </c:when>
+      <c:otherwise>
+        <jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
+      </c:otherwise>
+    </c:choose>
+    <hr />
+    <!-- KSC Reports box -->    
+    <c:choose>
+      <c:when test="${asyncLoad}">
+        <jsp:include page="/includes/KSC-box-loading.jsp" flush="false" />
+      </c:when>
+      <c:otherwise>
+        <jsp:include page="/KSC/include-box.htm" flush="false" />
+      </c:otherwise>
+    </c:choose>
+    <hr />
+    <%--
+    <!-- security box -->    
+    Commenting out the security box include until it is functional
+    <jsp:include page="/includes/security-box.jsp" flush="false" />
+    --%>
+  </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
