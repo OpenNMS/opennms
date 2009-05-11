@@ -42,6 +42,7 @@ import java.sql.SQLException;
 public class JDBCResponse {
     
     private ResultSet m_result;
+    private boolean m_isValidProcedureCall = false;
     
     public void receive(Connection conn) throws SQLException {
         
@@ -67,6 +68,18 @@ public class JDBCResponse {
         }
 
         return false;
+    }
+    
+    public boolean validProcedureCall(){
+        return isValidProcedureCall();
+    }
+
+    public void setValidProcedureCall(boolean isValidProcedureCall) {
+        m_isValidProcedureCall = isValidProcedureCall;
+    }
+
+    public boolean isValidProcedureCall() {
+        return m_isValidProcedureCall;
     }
 
 }

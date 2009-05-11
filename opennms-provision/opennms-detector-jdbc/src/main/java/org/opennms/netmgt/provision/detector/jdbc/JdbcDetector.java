@@ -56,7 +56,7 @@ public class JdbcDetector extends BasicDetector<JDBCRequest, JDBCResponse>{
     /**
      * Default constructor
      */
-    protected JdbcDetector() {
+    public JdbcDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
@@ -85,7 +85,7 @@ public class JdbcDetector extends BasicDetector<JDBCRequest, JDBCResponse>{
         return client;
     }
     
-    private ResponseValidator<JDBCResponse> resultSetNotNull(){
+    protected ResponseValidator<JDBCResponse> resultSetNotNull(){
         return new ResponseValidator<JDBCResponse>() {
 
             public boolean validate(JDBCResponse response) throws Exception {
