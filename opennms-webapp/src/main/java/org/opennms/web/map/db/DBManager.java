@@ -62,6 +62,8 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
+import org.opennms.web.map.InitializationObj;
+import org.opennms.web.map.config.MapPropertiesFactory;
 
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
@@ -759,7 +761,7 @@ public class DBManager extends Manager {
 				sqlQuery = "SELECT mapname FROM " + mapTable
 						+ " WHERE mapId = ?";
 			} else {
-				sqlQuery = "SELECT nodelabel,displaycategory FROM assets,node WHERE assets.nodeid=node.nodeid AND node.nodeid = ?";
+				sqlQuery = "SELECT nodelabel,nodesysoid FROM node WHERE nodeid = ?";
 			}
 			PreparedStatement statement = conn
 					.prepareStatement(sqlQuery);
@@ -768,10 +770,13 @@ public class DBManager extends Manager {
 			if (rs.next()) {
 				e.setLabel(rs.getString(1));
 				if (e.getType().equals(Element.NODE_TYPE)) {
-					String iconName = rs.getString(2);
-					if (iconName == null || iconName.trim().equals("")) {
-						iconName = Element.defaultNodeIcon;
+					String iconName = null;
+					if (rs.getString(2) != null && getIconBySysoid(rs.getString(2)) !=null) {
+					    iconName = getIconBySysoid(rs.getString(2));
+					} else {
+					    iconName = Element.defaultNodeIcon;
 					}
+					log.debug("DBManager: iconName = " + iconName + ", sysoid = " + rs.getString(2));
 					e.setIcon(iconName);
 				}
 			}
@@ -789,7 +794,26 @@ public class DBManager extends Manager {
 		return e;
 	}
 
-	public Element[] getAllElements() throws MapsException {
+	private String getIconBySysoid(String sysoid) throws MapsException {
+	    try {
+	        MapPropertiesFactory mpf =new MapPropertiesFactory();
+	        java.util.Map<String, String> iconsBySysoid = mpf.getIconsBySysoid();
+	        log.debug("getIconBySysoid: sysoid = " + sysoid);
+	        for (String key : iconsBySysoid.keySet()) {
+	            log.debug("getIconBySysoid: key = " + key);
+	            if(key.equals(sysoid)) {
+	                log.debug("getIconBySysoid: iconBySysoid = " + iconsBySysoid.get(key));
+	                return iconsBySysoid.get(key);
+	            }
+	        }
+            return Element.defaultNodeIcon;
+	    } catch (Exception e) {
+            log.error("Exception while getting icons by sysoid");
+            throw new MapsException(e);
+        }
+    }
+
+    public Element[] getAllElements() throws MapsException {
         Connection conn = createConnection();
 		try {
 			final String sqlQuery = "SELECT * FROM " + elementTable;
