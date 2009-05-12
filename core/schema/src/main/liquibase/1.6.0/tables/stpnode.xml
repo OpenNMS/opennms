@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-stpnode">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="stpnode" /></not>
+		</preConditions> 
+
+		<!-- This table maintains a record of general bridge interface.  It reflects information
+			from the mib-2 bridge mib  support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
+			OID: .1.3.6.1.2.1.17 -->
+		<createTable tableName="stpnode">
+
+			<!-- Unique integer identifier of the node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The MAC address used by this bridge when it must be referred to in a unique fashion. -->
+			<column name="basebridgeaddress" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The number of ports controlled by the bridge entity -->
+			<column name="basenumports" type="integer" />
+
+			<!-- Indicates what type of bridging this bridge can perform:
+				'1' unknown
+				'2' transparent-only
+				'3' sourceroute-only
+				'4' srt
+			 -->
+			<column name="basetype" type="integer" />
+
+			<!-- An indication of what version of the Spanning Tree Protocol is being run. 
+				'1' unknown
+				'2' decLb100
+				'3' ieee8011d -->
+			<column name="stpprotocolspecification" type="integer" />
+
+			<!-- The value of the write-able portion of the Bridge ID, i.e., the first two octets
+				of the (8 octet long) Bridge ID.  The other (last) 6 octets of the Bridge ID are
+				given by the value of dot1dBaseBridgeAddress. -->
+			<column name="stppriority" type="integer" />
+
+			<!-- The bridge identifier of the root of the spanning tree as determined by the Spanning
+				Tree Protocol as executed by this node -->
+			<column name="stpdesignatedroot" type="varchar(16)" />
+
+			<!-- The cost of the path to the root as seen from this bridge -->
+			<column name="stprootcost" type="integer" />
+
+			<!-- The port number of the port which offers the lowest cost path from this bridge to
+				the root bridge -->
+			<column name="stprootport" type="integer" />
+
+			<!-- Flag indicating the status of the entry:
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted
+				'K' - Unknown -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The last time when this information was retrieved -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Unique integer identifier VLAN for which this info is valid -->
+			<column name="basevlan" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- VLAN name -->
+			<column name="basevlanname" type="varchar(32)" />
+		</createTable>
+
+		<addPrimaryKey tableName="stpnode" constraintName="pk_stpnode" columnNames="nodeid,basevlan" />
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid2" onDelete="CASCADE"
+			baseTableName="stpnode" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="stpnode" indexName="stpnode_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="stpnode" indexName="stpnode_basebridgeaddress_idx">
+			<column name="basebridgeaddress" />
+		</createIndex>
+		<createIndex tableName="stpnode" indexName="stpnode_stpdesignatedroot_idx">
+			<column name="stpdesignatedroot" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

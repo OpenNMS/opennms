@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-reportlocator">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="reportlocator" /></not>
+		</preConditions> 
+
+		<!-- This table contains a record of availability reports and their location on disk -->
+		<createTable tableName="reportlocator">
+
+			<!-- Unique integer identifier for the report -->
+			<column name="reportid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Name of the report category -->
+			<column name="reportcategory" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Date report scheduled to run -->
+			<column name="reportdate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- format of the report (calenda etc) -->
+			<column name="reportformat" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- output type of the file (SVG/PDF/HTML) -->
+			<column name="reporttype" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- where on disk we put the report -->
+			<column name="reportlocation" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Have we run the report yet or not? -->
+			<column name="reportavailable" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createSequence sequenceName="reportnxtid" minValue="1" />
+
+	</changeSet>
+
+</databaseChangeLog>

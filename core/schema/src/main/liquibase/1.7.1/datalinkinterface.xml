@@ -8,7 +8,7 @@
 
 	<changeSet author="mattraykow" id="1.7.1-datalinkinterface-index">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="datalinkinterface" columnName="id" />
+			<not><columnExists tableName="datalinkinterface" columnName="id" /></not>
 		</preConditions>
 
 		<sql>ALTER TABLE datalinkinterface OWNER TO ${install.database.admin.user}</sql>

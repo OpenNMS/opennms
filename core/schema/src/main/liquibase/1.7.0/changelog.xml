@@ -9,8 +9,8 @@
 	<changeSet author="rssntn67" id="1.7.0-ifindex-persistence">
 		<preConditions onFail="MARK_RAN">
 			<and>
-				<columnExists tableName="alarms" columnName="ifindex" />
-				<columnExists tableName="events" columnName="ifindex" />
+				<not><columnExists tableName="alarms" columnName="ifindex" /></not>
+				<not><columnExists tableName="events" columnName="ifindex" /></not>
 			</and>
 		</preConditions>
 

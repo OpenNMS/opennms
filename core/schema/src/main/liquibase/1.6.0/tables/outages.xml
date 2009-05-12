@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-outages">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="outages" /></not>
+		</preConditions> 
+
+		<!-- This table maintains a record of outage periods for given services on specific interfaces. -->
+		<createTable tableName="outages">
+
+			<!-- Unique integer identifier for the outage -->
+			<column name="outageid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_outageid" />
+			</column>
+
+			<!-- ID of the event that caused the outage. Will be a non-null value when a new outage
+				is inserted but might be null in case of an opennms upgrade -->
+			<column name="svclosteventid" type="integer" />
+
+			<!-- ID of the event that cleared the outage -->
+			<column name="svcregainedeventid" type="integer" />
+
+			<!-- Unique integer identifier for node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- IP Address of node's interface -->
+			<column name="ipaddr" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Unique integer identifier of service/poller package -->
+			<column name="serviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Time of lost service event -->
+			<column name="iflostservice" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Time of regained service event -->
+			<column name="ifregainedservice" type="DATETIME" />
+
+			<!-- When the outage was suppressed -->
+			<column name="suppresstime" type="DATETIME" />
+
+			<!-- Who suppressed it -->
+			<column name="suppressedby" type="varchar(256)" />
+
+			<!-- the ifservice associated with this outage -->
+			<column name="ifserviceid" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_eventid1" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="svclosteventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+		<addForeignKeyConstraint constraintName="fk_eventid2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="svcregainedeventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+		<addForeignKeyConstraint constraintName="fk_nodeid4" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+		<addForeignKeyConstraint constraintName="fk_serviceid2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="serviceid"
+			referencedTableName="service" referencedColumnNames="serviceid" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey1" onDelete="CASCADE" onUpdate="CASCADE"
+			baseTableName="outages" baseColumnNames="nodeid,ipaddr,serviceid"
+			referencedTableName="ifservices" referencedColumnNames="nodeid,ipaddr,serviceid" />
+		<addForeignKeyConstraint constraintName="ifservices_fkey2" onDelete="CASCADE"
+			baseTableName="outages" baseColumnNames="ifserviceid"
+			referencedTableName="ifservices" referencedColumnNames="id" />
+
+		<createIndex tableName="outages" indexName="outages_nodeid_ipaddr_svc_idx">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_svclostid_idx">
+			<column name="svclosteventid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_svcregainedid_idx">
+			<column name="svcregainedeventid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_serviceid_idx">
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_regainedservice_idx">
+			<column name="ifregainedservice" />
+		</createIndex>
+		<createIndex tableName="outages" indexName="outages_ifservivceid_idx">
+			<column name="ifserviceid" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

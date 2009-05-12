@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-node">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="node" /></not>
+		</preConditions> 
+
+		<!-- Contains information on nodes discovered and potentially managed by OpenNMS.
+			nodeSys* fields map to SNMP MIB 2 system table information. -->
+		<createTable tableName="node">
+			<!-- Unique identifier for node.  Note that this is the enabler for overlapping IP
+				ranges and that uniquity is dependent on combination of dpName and IP address -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_nodeid" />
+			</column>
+
+			<!-- Distributed Poller responsible for this node -->
+			<column name="dpname" type="varchar(12)" />
+
+			<!-- Time node was added to the database -->
+			<column name="nodecreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- In the case that the node is virtual or an independent device in a chassis that should
+				be reflected as a subcomponent or "child", this field reflects the nodeID of the
+				chassis/physical node/"parent" device.  Currently unused. -->
+			<column name="nodeparentid" type="integer" />
+
+			<!-- Flag indicating status of node
+				'A' - active
+				'D' - deleted -->
+			<column name="nodetype" type="char(1)" />
+
+			<!-- SNMP MIB-2 system.sysObjectID.0 -->
+			<column name="nodesysoid" type="varchar(256)" />
+
+			<!-- SNMP MIB-2 system.sysName.0 -->
+			<column name="nodesysname" type="varchar(256)" />
+
+			<!-- SNMP MIB-2 system.sysDescr.0 -->
+			<column name="nodesysdescription" type="varchar(256)" />
+
+			<!-- SNMP MIB-2 system.sysLocation.0 -->
+			<column name="nodesyslocation" type="varchar(256)" />
+
+			<!-- SNMP MIB-2 system.sysContact.0 -->
+			<column name="nodesyscontact" type="varchar(256)" />
+
+			<!-- User-friendly name associated with the node. -->
+			<column name="nodelabel" type="varchar(256)" />
+
+			<!-- Flag indicating source of nodeLabel
+				'U' = user defined
+				'H' = IP hostname
+				'S' = sysName
+				'A' = IP address -->
+			<column name="nodelabelsource" type="char(1)" />
+
+			<!-- NetBIOS workstation name associated with the node. -->
+			<column name="nodenetbiosname" type="varchar(16)" />
+
+			<!-- NetBIOS damain name associated with the node. -->
+			<column name="nodedomainname" type="varchar(16)" />
+
+			<!-- Operating system running on the node. -->
+			<column name="operatingsystem" type="varchar(64)" />
+
+			<!-- Date and time of last Capsd scan. -->
+			<column name="lastcapsdpoll" type="DATETIME" />
+
+			<!-- When importing nodes this contains the source of the nodes, null otherwise -->
+			<column name="foreignsource" type="varchar(64)" />
+
+			<!-- When importing nodes this contains the id of the node as known to the foreign source, null otherwise -->
+			<column name="foreignid" type="varchar(64)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_dpname"
+			baseTableName="node" baseColumnNames="dpname"
+			referencedTableName="distpoller" referencedColumnNames="dpname" />
+
+		<createIndex tableName="node" indexName="node_id_type_idx">
+			<column name="nodeid" />
+			<column name="nodetype" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_label_idx">
+			<column name="nodelabel" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_dpname_idx">
+			<column name="dpname" />
+		</createIndex>
+		<createIndex tableName="node" indexName="node_foreign_unique_idx" unique="true">
+			<column name="foreignsource" />
+			<column name="foreignid" />
+		</createIndex>
+	</changeSet>
+
+</databaseChangeLog>

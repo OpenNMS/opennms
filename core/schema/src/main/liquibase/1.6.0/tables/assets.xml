@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-assets">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="assets" /></not>
+		</preConditions> 
+
+		<createTable tableName="assets">
+			<column name="id" type="integer" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_assetid" />
+			</column>
+			<column name="nodeid" type="integer" />
+			<column name="category" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="manufacturer" type="varchar(64)" />
+			<column name="vendor" type="varchar(64)" />
+			<column name="modelnumber" type="varchar(64)" />
+			<column name="serialnumber" type="varchar(64)" />
+			<column name="description" type="varchar(128)" />
+			<column name="circuitid" type="varchar(64)" />
+			<column name="assetnumber" type="varchar(64)" />
+			<column name="operatingsystem" type="varchar(64)" />
+			<column name="rack" type="varchar(64)" />
+			<column name="slot" type="varchar(64)" />
+			<column name="port" type="varchar(64)" />
+			<column name="region" type="varchar(64)" />
+			<column name="division" type="varchar(64)" />
+			<column name="department" type="varchar(64)" />
+			<column name="address1" type="varchar(256)" />
+			<column name="address2" type="varchar(256)" />
+			<column name="city" type="varchar(64)" />
+			<column name="state" type="varchar(64)" />
+			<column name="zip" type="varchar(64)" />
+			<column name="building" type="varchar(64)" />
+			<column name="floor" type="varchar(64)" />
+			<column name="room" type="varchar(64)" />
+			<column name="vendorphone" type="varchar(64)" />
+			<column name="vendorfax" type="varchar(64)" />
+			<column name="vendorassetnumber" type="varchar(64)" />
+			<column name="userlastmodified" type="char(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="lastmodifieddate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="dateinstalled" type="varchar(64)" />
+			<column name="lease" type="varchar(64)" />
+			<column name="leaseexpires" type="varchar(64)" />
+			<column name="supportphone" type="varchar(64)" />
+			<column name="maintcontract" type="varchar(64)" />
+			<column name="maintcontractexpires" type="varchar(64)" />
+			<column name="displaycategory" type="varchar(64)" />
+			<column name="notifycategory" type="varchar(64)" />
+			<column name="pollercategory" type="varchar(64)" />
+			<column name="thresholdcategory" type="varchar(64)" />
+			<column name="comment" type="text" />
+			<column name="managedobjectinstance" type="varchar(512)" />
+			<column name="managedobjecttype" type="varchar(512)" />
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_nodeid5" onDelete="CASCADE"
+			baseTableName="assets" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="assets" indexName="assets_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="assets" indexName="assets_an_idx">
+			<column name="assetnumber" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

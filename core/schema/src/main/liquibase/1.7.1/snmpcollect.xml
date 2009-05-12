@@ -9,7 +9,7 @@
 	<!-- miscellaneous stuff -->
 	<changeSet author="brozow" id="1.7.1-move-snmpcollect">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="snmpinterface" columnName="snmpcollect" />
+			<not><columnExists tableName="snmpinterface" columnName="snmpcollect" /></not>
 		</preConditions>
 
 		<addColumn tableName="snmpinterface">

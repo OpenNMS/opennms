@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-inventory">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="inventory" /></not>
+		</preConditions> 
+
+		<!-- This table maintains inventories of switch nodes. -->
+		<createTable tableName="inventory">
+
+			<!-- Unique integer identifier of the linked node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Name that describes the category of the inventory. -->
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The timestamp of the creation of the inventory. -->
+			<column name="createtime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The timestamp of last download of the inventory. -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The path where the inventory file is stored. -->
+			<column name="pathtofile" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Flag indicating the status of the entry.
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted: when the status of the node associated is Deleted -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid7" onDelete="CASCADE"
+			baseTableName="inventory" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="inventory" indexName="inventory_nodeid_name_idx">
+			<column name="nodeid" />
+			<column name="name" />
+		</createIndex>
+		<createIndex tableName="inventory" indexName="inventory_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="inventory" indexName="inventory_lastpolltime_idx">
+			<column name="lastpolltime" />
+		</createIndex>
+		<createIndex tableName="inventory" indexName="inventory_status_idx">
+			<column name="status" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>
