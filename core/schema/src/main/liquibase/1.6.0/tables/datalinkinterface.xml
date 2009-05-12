@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-datalinkinterface">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="datalinkinterface" /></not>
+		</preConditions> 
+
+		<!-- This table maintains a record of data link info among the interfaces. 
+				Data is calculated using info from other tables -->
+		<createTable tableName="datalinkinterface">
+
+			<!-- Unique integer identifier of the node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- SNMP index of interface connected to the link on the node,  -1 if it doesn't support SNMP. -->
+			<column name="ifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Unique integer identifier for linking node -->
+			<column name="nodeparentid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- SNMP index of interface linked on the parent node. -->
+			<column name="parentifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Flag indicating the status of the entry.
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted
+				'K' - Unknown -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The last time when this information was retrieved -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" columnNames="nodeid,ifindex" />
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid5" onDelete="CASCADE"
+			baseTableName="datalinkinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid6" onDelete="CASCADE"
+			baseTableName="datalinkinterface" baseColumnNames="nodeparentid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="datalinkinterface" indexName="dlint_node_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="datalinkinterface" indexName="dlint_nodeparent_idx">
+			<column name="nodeparentid" />
+		</createIndex>
+		<createIndex tableName="datalinkinterface" indexName="dlint_nodeparent_paifindex_idx">
+			<column name="nodeparentid" />
+			<column name="parentifindex" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

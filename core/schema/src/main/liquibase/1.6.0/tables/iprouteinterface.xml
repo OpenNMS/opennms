@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-iprouteinterface">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="iprouteinterface" /></not>
+		</preConditions> 
+
+		<!-- This table maintains a record of ip route info on routers. It reflects information
+			from mib-2 ipRouteTable mib support
+			.iso.org.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry OID: .1.3.6.1.2.1.4.21.1 -->
+		<createTable tableName="iprouteinterface">
+
+			<!-- Unique integer identifier of the node -->
+			<column name="nodeid" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The destination IP address of this route.  An entry with a value of
+				0.0.0.0 is considered a default route. -->
+			<column name="routedest" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Indicate the mask to be logical-ANDed with the destination address
+				before being compared to the value in the ipRouteDest field. -->
+			<column name="routemask" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The IP address of the next hop of this route.  (In the case of a route bound
+				to an interface which is realized via a broadcast media, the value of this
+				field is the agent's IP address on that interface.)
+			-->
+			<column name="routenexthop" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The index value which uniquely identifies the local interface through which the
+				next hop of this route should be reached. -->
+			<column name="routeifindex" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The routing metric for this route. The semantics of this metric are determined
+				by the routing-protocol specified in the route's ipRouteProto value.  If this
+				metric is not used, its value should be set to -1. -->
+			<column name="routemetric1" type="integer" />
+			<column name="routemetric2" type="integer" />
+			<column name="routemetric3" type="integer" />
+			<column name="routemetric4" type="integer" />
+			<column name="routemetric5" type="integer" />
+
+			<!-- The type of route.
+				'1' other
+				'2' invalid
+				'3' direct
+				'4' indirect -->
+			<column name="routetype" type="integer" />
+
+			<!-- The routing mechanism via which this route was learned. 
+				'1' other
+				'2' local
+				'3' netmgmt
+				'4' icmp
+				'5' egp
+				'6' ggp
+				'7' hello
+				'8' rip
+				'9' is-is
+				'10' es-is
+				'11' ciscolgrp
+				'12' bbnSpfIgp
+				'13' ospf
+				'14' bgp -->
+			<column name="routeproto" type="integer" />
+
+			<!-- Flag indicating the status of the entry.
+				'A' - Active
+				'N' - Not Active
+				'D' - Deleted
+				'K' - Unknown -->
+			<column name="status" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The last time when this information was retrieved -->
+			<column name="lastpolltime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addPrimaryKey tableName="iprouteinterface" constraintName="pk_iprouteinterface" columnNames="nodeid,routedest" />
+
+		<addForeignKeyConstraint constraintName="fk_ia_nodeid4" onDelete="CASCADE"
+			baseTableName="iprouteinterface" baseColumnNames="nodeid"
+			referencedTableName="node" referencedColumnNames="nodeid" />
+
+		<createIndex tableName="iprouteinterface" indexName="iprouteinterface_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="iprouteinterface" indexName="iprouteinterface_node_ifdex_idx">
+			<column name="nodeid" />
+			<column name="routeifindex" />
+		</createIndex>
+		<createIndex tableName="iprouteinterface" indexName="iprouteinterface_rnh_idx">
+			<column name="routenexthop" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

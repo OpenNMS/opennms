@@ -8,7 +8,7 @@
 
 	<changeSet author="dhustace" id="1.7.1-ackd">
 		<preConditions onFail="MARK_RAN">
-			<tableExists schemaName="${install.database.name}" tableName="acks" />
+			<not><tableExists tableName="acks" /></not>
 		</preConditions>
 
 		<createTable tableName="acks">

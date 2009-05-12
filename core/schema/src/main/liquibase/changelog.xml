@@ -6,8 +6,11 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-	<include file="1.6.4/changelog.xml" />
+	<include file="1.6.0/changelog.xml" />
 	<include file="1.7.0/changelog.xml" />
 	<include file="1.7.1/changelog.xml" />
- 
+	<!-- no schema changes in 1.7.2 -->
+	<include file="1.7.3/changelog.xml" /> 
+	<!-- no schema changes in 1.7.4 so far -->
+
 </databaseChangeLog>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-events">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="events" /></not>
+		</preConditions> 
+
+		<!-- This table provides information on the events that are passed into the event subsystem.
+			It contains information defining the event as unique, while additional information is stored
+			in the eventsDetail table. -->
+		<createTable tableName="events">
+
+			<!-- Unique identifier for the event -->
+			<column name="eventid" type="integer">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_eventid" />
+			</column>
+
+			<!-- Universal Event Identifer (UEI) for this event -->
+			<column name="eventuei" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Unique integer identifier for node -->
+			<column name="nodeid" type="integer" />
+
+			<!-- The <time> element from the Event Data Stream DTD, which is the time the event was
+				received by the source process.
+			 -->
+			<column name="eventtime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The <host> element from the Event Data Stream DTD -->
+			<column name="eventhost" type="varchar(256)" />
+
+			<!-- The entity/process which generated the event. -->
+			<column name="eventsource" type="varchar(128)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- IP Address of node's interface -->
+			<column name="ipaddr" type="varchar(16)" />
+
+			<!-- The name of the Dist Poller which received the event -->
+			<column name="eventdpname" type="varchar(12)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The <snmphost> element from the Event Data Stream DTD -->
+			<column name="eventsnmphost" type="varchar(256)" />
+
+			<!-- Unique integer identifier of service/poller package -->
+			<column name="serviceid" type="integer" />
+
+			<!-- Contains the eid, eidtext (optionally), specific, and generic identifier for the
+				SNMP Trap.  This maps directly to the <snmp> element in the Event Data Stream DTD. -->
+			<column name="evetnsnmp" type="varchar(256)" />
+
+			<!-- The <parms> element from the Event Data Stream DTD -->
+			<column name="eventparms" type="text" />
+
+			<!-- Creation time of event in database -->
+			<column name="eventcreatetime" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Free-form textual description of the event -->
+			<column name="eventdescr" type="varchar(4000)" />
+
+			<!-- Logical group with which to associate event.  This field provides
+				a means of grouping related events. -->
+			<column name="eventloggroup" type="varchar(32)" />
+
+			<!-- The log message for the event -->
+			<column name="eventlogmsg" type="varchar(256)" />
+
+			<!-- Severity of event
+				1 = Indeterminate
+				2 = Cleared (implementation is now in alarms)
+				3 = Normal
+				4 = Warning
+				5 = Minor
+				6 = Major
+				7 = Critical -->
+			<column name="eventseverity" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Event Path outage information -->
+			<column name="eventpathoutage" type="varchar(1024)" />
+
+			<!-- The event correlation configured for this event (stored as an XML string) -->
+			<column name="eventcorrelation" type="varchar(1024)" />
+
+			<!-- The number of times the event was suppressed (if event correlation was set for suppression) -->
+			<column name="eventsuppressedcount" type="integer" />
+
+			<!-- Operator instruction for event. -->
+			<column name="eventoperinstruct" type="varchar(1024)" />
+
+			<!-- Automated Action for event.  Should consist of fully-qualified pathname to executable
+				command, with possible variables used to reference event-specific data -->
+			<column name="eventautoaction" type="varchar(256)" />
+
+			<!-- Operator Action for event.  Should consist of fully-qualified pathname to executable
+				command, with possible variables used to reference event-specific data -->
+			<column name="eventoperaction" type="varchar(256)" />
+
+			<!-- Menu text displayed to Operator, which, if selected, will invoke action described in  eventOperAction -->
+			<column name="eventoperactionmenutext" type="varchar(64)" />
+
+			<!-- Notification string.  Should consist of a fully-qualified pathname to an executable
+				which invokes the notification software, and will likely contain event-specific variables -->
+			<column name="eventnotification" type="varchar(128)" />
+
+			<!-- Trouble ticket integration string.  Should consist of fully-qualified pathname to executable
+				command, with possible variables used to reference event-specific data -->
+			<column name="eventtticket" type="varchar(128)" />
+
+			<!-- Trouble ticket state: 1=on, 0=off -->
+			<column name="eventtticketstate" type="integer" />
+
+			<!-- Contains a list of triplets:
+				Destination,State,Mechanism;Destination,State,Mechanism;
+				which reflect the following:
+				- State is a boolean flag as to whether the entry is active or not.  1=on, 0=off.
+				- Destination is hostname or IP of system to forward the event to
+				- Method is the means by which it will be forwarded.  A keyword, e.g., SNMP -->
+			<column name="eventforward" type="varchar(256)" />
+
+			<!-- Text to be displayed on MouseOver event, if the event is displayed in the browser and
+				the operator needs additional info. -->
+			<column name="eventmouseovertext" type="varchar(64)" />
+
+			<!-- Flag indicating if the event is to be logged, set from the 'dest' attribute on the incoming
+				event: Y = log, N = do not log -->
+			<column name="eventlog" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Flag indicating if the event is to be displayed, set from the 'dest' attribute on the
+				incoming event: Y = display, N = do not display -->
+			<column name="eventdisplay" type="char(1)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- The user who acknowledged this event.  If null, then this event has not been acknowledged. -->
+			<column name="eventackuser" type="varchar(256)" />
+
+			<!-- The time this event was acknowledged. -->
+			<column name="eventacktime" type="DATETIME" />
+
+			<!-- If this event is configured for alarmReduction, the alarmId of the reduced event will be
+				set in this column -->
+			<column name="alarmid" type="integer" />
+		</createTable>
+
+		<createIndex tableName="events" indexName="events_uei_idx">
+			<column name="eventuei" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_nodeid_idx">
+			<column name="nodeid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_ipaddr_idx">
+			<column name="ipaddr" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_serviceid_idx">
+			<column name="serviceid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_time_idx">
+			<column name="eventtime" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_severity_idx">
+			<column name="eventseverity" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_log_idx">
+			<column name="eventlog" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_display_idx">
+			<column name="eventdisplay" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_ackuser_idx">
+			<column name="eventackuser" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_acktime_idx">
+			<column name="eventacktime" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_alarmid_idx">
+			<column name="alarmid" />
+		</createIndex>
+		<createIndex tableName="events" indexName="events_nodeid_display_ackuser">
+			<column name="nodeid" />
+			<column name="eventdisplay" />
+			<column name="eventackuser" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

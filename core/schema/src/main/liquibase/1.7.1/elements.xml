@@ -8,7 +8,7 @@
 
 	<changeSet author="rssntn67" id="1.7.1-add-element-id">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="element" columnName="id" />
+			<not><columnExists tableName="element" columnName="id" /></not>
 		</preConditions>
 
 		<sql>ALTER TABLE element OWNER TO ${install.database.admin.user}</sql>
