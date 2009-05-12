@@ -23,5 +23,16 @@
     	<artifactId>opennms-spring-test</artifactId>
     	<scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+    	<type>test-jar</type>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
