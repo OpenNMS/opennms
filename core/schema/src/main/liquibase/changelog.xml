@@ -6,6 +6,24 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
+	<preConditions>
+		<or>
+			<and>
+				<!-- must be a fresh/empty database -->
+				<not><tableExists tableName="ipinterface" /></not>
+				<not><tableExists tableName="snmpinterface" /></not>
+				<not><tableExists tableName="categories" /></not>
+			</and>
+			<!-- OR -->
+			<and>
+				<!-- all three have to exist for it to be a database we can upgrade -->
+				<tableExists tableName="ipinterface" />
+				<tableExists tableName="snmpinterface" />
+				<tableExists tableName="categories" />
+			</and>
+		</or>
+	</preConditions>
+
 	<include file="1.6.0/changelog.xml" />
 	<include file="1.7.0/changelog.xml" />
 	<include file="1.7.1/changelog.xml" />
