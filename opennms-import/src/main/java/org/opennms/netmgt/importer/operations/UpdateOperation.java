@@ -218,7 +218,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             snmpIf.setNetMask(getNetMask(ifIndex));
             snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
             snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-            snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+            snmpIf.setIfSpeed(m_collector.getInterfaceSpeed(ifIndex));
             snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         }
     }
