@@ -1,0 +1,45 @@
+ <schema targetNamespace="http://xmlns.opennms.org/xsd/config/rws"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/rws"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the rws-rancidlistreport.xml configuration file. Version: $Id$</documentation>
+  </annotation>
+
+    <element name="rws-rancidlistreport">
+    <annotation>
+      <documentation>Top-level element for the rws-rws-rancidlistreport.xml configuration file.</documentation>
+    </annotation>
+    <xs:complexType>
+      <xs:sequence>
+         <xs:element name="totalGroups" type="int" minOccurs="0"/>
+         <xs:element ref="this:groupXSet" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      </xs:complexType>
+      </element>
+  
+    <element name = "groupXSet">
+    <xs:complexType>
+    <xs:sequence>
+      <xs:element name="totalNodes" type="int" minOccurs="0"/>
+      <xs:element ref="this:nodeSet" minOccurs="0" maxOccurs="unbounded"/>    
+    </xs:sequence>
+    </xs:complexType>
+    </element>
+    
+    <element name = "nodeSet">
+    <xs:complexType>
+    <xs:sequence>
+      <xs:element name="devicename" type="string" minOccurs="0"/>
+      <xs:element name="groupname" type="string" minOccurs="0"/>
+      <xs:element name="configurationurl" type="string" minOccurs="0"/>
+      <xs:element name="creationdate" type="dateTime" minOccurs="0"/>
+      <xs:element name="status" type="string" minOccurs="0"/>
+      <xs:element name="swconfigurationurl" type="string" minOccurs="0"/>
+      <xs:element name="version" type="string" minOccurs="0"/>
+    </xs:sequence>
+    </xs:complexType>
+    </element>
+ </schema>
