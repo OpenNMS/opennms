@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rssntn67" id="1.7.3-expand-mapname">
+		<modifyColumn tableName="map">
+			<column name="mapname" type="varchar(63)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+
+	<changeSet author="brozow" id="1.7.3-category-group">
+		<preConditions>
+			<not><tableExists tableName="category_group" /></not>
+		</preConditions>
+		<createTable tableName="category_group">
+			<column name="categoryid" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="groupid" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="categoryid_fkey2" onDelete="CASCADE"
+			baseTableName="category_group" baseColumnNames="categoryid"
+			referencedTableName="categories" referencedColumnNames="categoryid" />
+
+		<createIndex tableName="category_group" indexName="catid_idx3">
+			<column name="categoryid" />
+		</createIndex>
+		<createIndex tableName="category_group" indexName="catgroup_idx">
+			<column name="groupid" />
+		</createIndex>
+		<createIndex tableName="category_group" indexName="catgroup_unique_idx" unique="true">
+			<column name="categoryid" />
+			<column name="groupid" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.7.3-ownership">
+		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
+	</changeSet> 
+
+</databaseChangeLog>

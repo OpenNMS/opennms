@@ -7,9 +7,10 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
 	<changeSet author="mattraykow" id="1.7.1-add-map-id">
+		<sql>ALTER TABLE map DROP CONSTRAINT pk_mapid CASCADE</sql>
 		<modifyColumn tableName="map">
 			<column name="mapid" type="integer" autoIncrement="true">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false" primaryKeyName="pk_mapid" />
 			</column>
 		</modifyColumn>
 	</changeSet>
