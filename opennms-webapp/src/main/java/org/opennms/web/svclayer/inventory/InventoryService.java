@@ -1,6 +1,15 @@
 package org.opennms.web.svclayer.inventory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.rmi.MarshalException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -9,22 +18,41 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.RWSConfig;
+import org.opennms.netmgt.config.rws.GroupSet;
+import org.opennms.netmgt.config.rws.InventoryMemoryRP;
+import org.opennms.netmgt.config.rws.InventorySoftwareRP;
+import org.opennms.netmgt.config.rws.Nbisinglenode;
+import org.opennms.netmgt.config.rws.RwsNbinventoryreport;
+import org.opennms.netmgt.config.rws.InventoryElement2RP;
+import org.opennms.netmgt.config.rws.RwsRancidlistreport;
+import org.opennms.netmgt.config.rws.TupleRP;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.InventoryElement2;
+import org.opennms.rancid.InventoryMemory;
 import org.opennms.rancid.InventoryNode;
+import org.opennms.rancid.InventorySoftware;
 import org.opennms.rancid.RWSBucket;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RWSResourceList;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
+import org.opennms.rancid.Tuple;
 import org.opennms.rancid.RWSBucket.BucketItem;
+import org.opennms.report.datablock.PDFWriter;
+import org.exolab.castor.xml.Marshaller;
+
 import org.opennms.web.element.ElementUtil;
 import org.opennms.web.inventory.*;
 import org.springframework.beans.factory.InitializingBean;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 public class InventoryService implements InitializingBean {
     RWSConfig m_rwsConfig;
@@ -703,6 +731,101 @@ public class InventoryService implements InitializingBean {
 
 
     }
+    public boolean runRancidListReport(String _date){
+        
+        RwsRancidlistreport rlist = InventoryReport.runRacidListReport(m_cp, _date);
+        
+        try {
+            //this is temporary
+
+            
+            // Generate source XML
+            FileWriter writer = new FileWriter("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.xml");
+            Marshaller marshaller = new Marshaller(writer);
+            marshaller.setSuppressNamespaces(true);
+            marshaller.marshal(rlist);
+
+            writer.close();
+            
+            log().debug("runRancidListReport marshal done");
+
+            // prepare PDF file
+//            String pdfFileName="/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.pdf";
+//            File file = new File(pdfFileName);
+//            FileOutputStream pdfFileWriter = new FileOutputStream(file);
+//            PDFWriter pdfWriter = new PDFWriter(ConfigFileConstants.getFilePathString()
+//                                               + "PDFInventoryReport.xsl");
+//            log().debug("runRancidListReport xsl " + ConfigFileConstants.getFilePathString()
+//                        + "PDFInventoryReport.xsl");
+//
+//            // prepare to read xml generated above
+//            File fileR = new File("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.xml");
+//            FileReader fileReader = new FileReader(fileR);
+//
+//            //invoke api to generate pdf
+//            pdfWriter.generatePDF(fileReader, pdfFileWriter,"/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.fot");
+//            log().debug("runRancidListReport pdf done");
+
+            
+//            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+//            String xmlFileName = ConfigFileConstants.getHome()
+//            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+        }
+        catch (Exception e){
+            log().debug("InventoryService runRancidListReport marshall exception "+ e.getMessage() );
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean runNodeBaseInventoryReport(String _date, String field){
+        
+        RwsNbinventoryreport rnbi = InventoryReport.runInventoryReport(m_cp, _date, field);
+        try {
+            //this is temporary
+
+            
+            // Generate source XML
+            FileWriter writer = new FileWriter("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.xml");
+            Marshaller marshaller = new Marshaller(writer);
+            marshaller.setSuppressNamespaces(true);
+            marshaller.marshal(rnbi);
+
+            writer.close();
+            
+            log().debug("runNodeBaseInventoryReport marshal done");
+
+//            // prepare PDF file
+//            String pdfFileName="/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.pdf";
+//            File file = new File(pdfFileName);
+//            FileOutputStream pdfFileWriter = new FileOutputStream(file);
+//            PDFWriter pdfWriter = new PDFWriter(ConfigFileConstants.getFilePathString()
+//                                               + "PDFInventoryReport.xsl");
+//            log().debug("runNodeBaseInventoryReport xsl " + ConfigFileConstants.getFilePathString()
+//                        + "PDFInventoryReport.xsl");
+//
+//            // prepare to read xml generated above
+//            File fileR = new File("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.xml");
+//            FileReader fileReader = new FileReader(fileR);
+//
+//            //invoke api to generate pdf
+//            pdfWriter.generatePDF(fileReader, pdfFileWriter,"/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.fot");
+//            log().debug("runNodeBaseInventoryReport pdf done");
+//
+//            
+//            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+//            String xmlFileName = ConfigFileConstants.getHome()
+//            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+        }
+        catch (Exception e){
+            log().debug("InventoryService runNodeBaseInventoryReport marshall exception "+ e.getMessage() );
+            return false;
+        }
+
+        return true;
+    }
+   
 
     public boolean deleteBucketItem(String bucket, String filename ){
         log().debug("InventoryService deleteBucketItem for bucket/filename [" + bucket + "]/ " + "[" + filename + "]"); 
