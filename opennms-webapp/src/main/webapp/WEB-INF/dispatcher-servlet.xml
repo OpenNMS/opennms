@@ -582,6 +582,10 @@
     <property name="inventoryService" ref="inventoryService"/>
   </bean>  
   
+    <bean name="/inventory/rancidReport.htm" class="org.opennms.web.controller.inventory.RancidReportController">
+    <property name="inventoryService" ref="inventoryService"/>
+  </bean>  
+  
   <bean name="/admin/rancid/rancidAdmin.htm" class="org.opennms.web.controller.inventory.AdminRancidController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean>        
@@ -627,6 +631,15 @@
     <property name="formView" value="admin/rancid/rancidAdmin"/>
     <property name="successView" value="admin/rancid/rancidAdmin"/> 
   </bean>  
+
+  
+    <bean name="/inventory/rancidReportExec.htm" class="org.opennms.web.controller.inventory.RancidReportExecController">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="commandClass" value="org.opennms.web.controller.inventory.RancidReportExecCommClass"/>
+    <property name="formView" value="inventory/rancidReport"/>
+    <property name="successView" value="inventory/rancidReport"/> 
+  </bean> 
+
   
   <bean name="/admin/storage/storageAdmin.htm" class="org.opennms.web.controller.inventory.AdminStorageController">
     <property name="inventoryService" ref="inventoryService"/>
@@ -649,6 +662,7 @@
   <bean name="/admin/storage/storageDeleteBucketItem.htm" class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketItemController">
     <property name="inventoryService" ref="inventoryService"/>
   </bean>  
+
  
 	<!-- Examples
 		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
