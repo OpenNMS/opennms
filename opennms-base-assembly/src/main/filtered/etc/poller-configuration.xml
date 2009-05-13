@@ -98,9 +98,9 @@
       <parameter key="ds-name" value="hyperic-hq" />
       <parameter key="page-sequence">
         <page-sequence>
-          <page path="/Login.do" port="7080" successMatch="HQ Login" />
+          <page path="/Login.do" port="7080" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" />
           <page path="/j_security_check.do" port="7080" method="POST"
-            failureMatch="(?s)The username or password provided does not match our records" failureMessage="HQ Login in Failed"
+            failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed"
             successMatch="HQ Dashboard">
             <parameter key="j_username" value="hqadmin" />
             <parameter key="j_password" value="hqadmin" />
