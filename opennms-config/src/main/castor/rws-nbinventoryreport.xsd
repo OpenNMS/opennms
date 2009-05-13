@@ -12,74 +12,74 @@
     <annotation>
       <documentation>Top-level element for the rws-nbinventory.xml configuration file.</documentation>
     </annotation>
-    <xs:complexType>
-      <xs:sequence>
-         <xs:element name="totalGroups" type="int" minOccurs="0"/>
-         <xs:element ref="this:groupSet" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-      </xs:complexType>
+    <complexType>
+      <sequence>
+         <element name="totalGroups" type="int" minOccurs="0"/>
+         <element ref="this:groupSet" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+      </complexType>
       </element>
   
     <element name = "groupSet">
-    <xs:complexType>
-    <xs:sequence>
-      <xs:element name="totalNodes" type="int" minOccurs="0"/>
-      <xs:element ref="this:nbisinglenode" minOccurs="0" maxOccurs="unbounded"/>    
-    </xs:sequence>
-    </xs:complexType>
+    <complexType>
+    <sequence>
+      <element name="totalNodes" type="int" minOccurs="0"/>
+      <element ref="this:nbisinglenode" minOccurs="0" maxOccurs="unbounded"/>    
+    </sequence>
+    </complexType>
     </element>
     
     <element name = "nbisinglenode">
-    <xs:complexType>
-    <xs:sequence>
-      <xs:element name="groupname" type="string" minOccurs="0"/>
-      <xs:element name="devicename" type="string" minOccurs="0"/>
-      <xs:element name="configurationurl" type="string" minOccurs="0"/>
-      <xs:element name="creationdate" type="dateTime" minOccurs="0"/>
-      <xs:element name="status" type="string" minOccurs="0"/>
-      <xs:element name="swconfigurationurl" type="string" minOccurs="0"/>
-      <xs:element name="version" type="string" minOccurs="0"/>
-      <xs:element name="comment" type="string" minOccurs="0"/>
-      <xs:element ref="this:inventoryElement2RP" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+    <complexType>
+    <sequence>
+      <element name="groupname" type="string" minOccurs="0"/>
+      <element name="devicename" type="string" minOccurs="0"/>
+      <element name="configurationurl" type="string" minOccurs="0"/>
+      <element name="creationdate" type="dateTime" minOccurs="0"/>
+      <element name="status" type="string" minOccurs="0"/>
+      <element name="swconfigurationurl" type="string" minOccurs="0"/>
+      <element name="version" type="string" minOccurs="0"/>
+      <element name="comment" type="string" minOccurs="0"/>
+      <element ref="this:inventoryElement2RP" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
   </element>
 
   <element name ="inventoryElement2RP">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element ref="this:inventoryMemoryRP" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element ref="this:inventorySoftwareRP"  minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element ref="this:tupleRP"  minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+  <complexType>
+    <sequence>
+      <element ref="this:inventoryMemoryRP" minOccurs="0" maxOccurs="unbounded"/>
+      <element ref="this:inventorySoftwareRP"  minOccurs="0" maxOccurs="unbounded"/>
+      <element ref="this:tupleRP"  minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
   </element>
 
   <element name="inventoryMemoryRP">
-  <xs:complexType> 
-    <xs:sequence>
-      <xs:element name="type" type="string" minOccurs="0"/>
-      <xs:element name="size" type="string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+  <complexType> 
+    <sequence>
+      <element name="type" type="string" minOccurs="0"/>
+      <element name="size" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
   </element>
 
   <element name="inventorySoftwareRP">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element name="type" type="string" minOccurs="0"/>
-      <xs:element name="version" type="string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+  <complexType>
+    <sequence>
+      <element name="type" type="string" minOccurs="0"/>
+      <element name="version" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
   </element>
 
   <element name="tupleRP">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element name="name" type="string" minOccurs="0"/>
-      <xs:element name="description" type="string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+  <complexType>
+    <sequence>
+      <element name="name" type="string" minOccurs="0"/>
+      <element name="description" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
  
   </element>
   </schema>

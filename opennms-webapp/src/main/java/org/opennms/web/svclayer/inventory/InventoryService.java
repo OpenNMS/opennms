@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.Reader;
 import java.rmi.MarshalException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import org.opennms.web.inventory.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
@@ -731,45 +733,69 @@ public class InventoryService implements InitializingBean {
 
 
     }
-    public boolean runRancidListReport(String _date){
+    public boolean runRancidListReport(String _date, String _type){
         
         RwsRancidlistreport rlist = InventoryReport.runRacidListReport(m_cp, _date);
-        
+                
         try {
-            //this is temporary
-
-            
             // Generate source XML
-            FileWriter writer = new FileWriter("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.xml");
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+            String datestamp = fmt.format(new java.util.Date()) ;
+            String xmlFileName = ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".xml";
+
+            FileWriter writer = new FileWriter(xmlFileName);
             Marshaller marshaller = new Marshaller(writer);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rlist);
-
             writer.close();
-            
             log().debug("runRancidListReport marshal done");
-
-            // prepare PDF file
-//            String pdfFileName="/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.pdf";
-//            File file = new File(pdfFileName);
-//            FileOutputStream pdfFileWriter = new FileOutputStream(file);
-//            PDFWriter pdfWriter = new PDFWriter(ConfigFileConstants.getFilePathString()
-//                                               + "PDFInventoryReport.xsl");
-//            log().debug("runRancidListReport xsl " + ConfigFileConstants.getFilePathString()
-//                        + "PDFInventoryReport.xsl");
-//
-//            // prepare to read xml generated above
-//            File fileR = new File("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.xml");
-//            FileReader fileReader = new FileReader(fileR);
-//
-//            //invoke api to generate pdf
-//            pdfWriter.generatePDF(fileReader, pdfFileWriter,"/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/reportlist.fot");
-//            log().debug("runRancidListReport pdf done");
-
             
-//            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-//            String xmlFileName = ConfigFileConstants.getHome()
-//            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+            if (_type.compareTo("pdftype") == 0){
+                
+                log().debug("runRancidListReport generating pdf is still not supported :( ");
+                
+//                String htmlFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".html";
+//                
+//                File file = new File(htmlFileName);
+//                FileOutputStream hmtlFileWriter = new FileOutputStream(file);
+//                PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-rancidlistreport.xsl");
+//                File fileR = new File(xmlFileName);
+//                FileReader fileReader = new FileReader(fileR);
+//                //htmlWriter.generatePDF(fileReader, hmtlFileWriter, ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".fot");
+//                htmlWriter.generateHTML(fileReader, hmtlFileWriter);
+//
+//                org.apache.fop.apps.Driver m_driver;
+//                
+//                Reader reader = new FileReader(fileR);
+//                InputSource dataSource = new InputSource(reader);
+//                
+//                String pdfFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".pdf";
+//
+//                File fileP = new File(pdfFileName);
+//                FileOutputStream pdfFileWriter = new FileOutputStream(fileP);
+//
+//                m_driver = new org.apache.fop.apps.Driver(dataSource, pdfFileWriter);
+//                m_driver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
+//                m_driver.run();
+//
+//                log().debug("runRancidListReport html done");
+                
+            } else {
+                
+                log().debug("runRancidListReport generating html");
+
+                String htmlFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".html";
+                
+                File file = new File(htmlFileName);
+                FileOutputStream hmtlFileWriter = new FileOutputStream(file);
+                PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-rancidlistreport.xsl");
+                File fileR = new File(xmlFileName);
+                FileReader fileReader = new FileReader(fileR);
+                htmlWriter.generateHTML(fileReader, hmtlFileWriter);
+                log().debug("runRancidListReport html done");
+
+            }
+
         }
         catch (Exception e){
             log().debug("InventoryService runRancidListReport marshall exception "+ e.getMessage() );
@@ -779,23 +805,21 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
-    public boolean runNodeBaseInventoryReport(String _date, String field){
+    public boolean runNodeBaseInventoryReport(String _date, String field, String _type){
         
         RwsNbinventoryreport rnbi = InventoryReport.runInventoryReport(m_cp, _date, field);
         try {
-            //this is temporary
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+            String xmlFileName = ConfigFileConstants.getHome() + "/share/reports/NODEINVENTORY" + fmt.format(new java.util.Date()) + ".xml";
 
-            
             // Generate source XML
-            FileWriter writer = new FileWriter("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.xml");
+            FileWriter writer = new FileWriter(xmlFileName);
             Marshaller marshaller = new Marshaller(writer);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rnbi);
-
             writer.close();
-            
             log().debug("runNodeBaseInventoryReport marshal done");
-
+            
 //            // prepare PDF file
 //            String pdfFileName="/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.pdf";
 //            File file = new File(pdfFileName);
@@ -812,11 +836,11 @@ public class InventoryService implements InitializingBean {
 //            //invoke api to generate pdf
 //            pdfWriter.generatePDF(fileReader, pdfFileWriter,"/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.fot");
 //            log().debug("runNodeBaseInventoryReport pdf done");
-//
-//            
-//            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-//            String xmlFileName = ConfigFileConstants.getHome()
-//            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+////
+////            
+////            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+////            String xmlFileName = ConfigFileConstants.getHome()
+////            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
         }
         catch (Exception e){
             log().debug("InventoryService runNodeBaseInventoryReport marshall exception "+ e.getMessage() );
