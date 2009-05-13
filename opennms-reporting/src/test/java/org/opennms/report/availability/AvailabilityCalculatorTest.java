@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.report.availability.svclayer.LegacyAvailabilityDataService;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -210,6 +211,9 @@ public class AvailabilityCalculatorTest extends TestCase {
         //AvailabilityData availData = null;
         try {
             AvailabilityCalculator calculator = new AvailabilityCalculator();
+            AvailabilityData data = new AvailabilityData();
+            data.setAvailabilityDataService(new LegacyAvailabilityDataService());
+            calculator.setAvailabilityData(data);
             calculator.setPeriodEndDate(m_calendar.getTime());
             calculator.setLogoURL("wahtever");
             calculator.setCalendar(calendar);

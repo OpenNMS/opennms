@@ -197,8 +197,10 @@ public class AvailabilityReport extends Object {
         m_report.setCategories(categories);
         try {
             Calendar calendar = new GregorianCalendar();
-            new AvailabilityData(categoryName, m_report, reportFormat,
-                                 monthFormat, calendar, startMonth,
+            AvailabilityData reportSource = new AvailabilityData();
+            
+            reportSource.fillReport(categoryName, m_report, reportFormat,
+                                 monthFormat, startMonth,
                                  startDate, startYear);
         } catch (Exception e) {
             log().fatal("Exception: " + e, e);
@@ -315,8 +317,6 @@ public class AvailabilityReport extends Object {
                            startMonth, startDate, startYear);
         } catch (Exception e) {
             log().error("Caught exception while generating report: " + e, e);
-            System.err.println("Caught exception while generating report: "
-                    + e);
             e.printStackTrace();
         }
     }
