@@ -116,7 +116,6 @@ public class InventoryReport {
                         continue;
                     }
                    
-                    
                     //we have groupname devicename and version
         
                     try {

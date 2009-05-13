@@ -12,34 +12,34 @@
     <annotation>
       <documentation>Top-level element for the rws-rws-rancidlistreport.xml configuration file.</documentation>
     </annotation>
-    <xs:complexType>
-      <xs:sequence>
-         <xs:element name="totalGroups" type="int" minOccurs="0"/>
-         <xs:element ref="this:groupXSet" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-      </xs:complexType>
+    <complexType>
+      <sequence>
+         <element name="totalGroups" type="int" minOccurs="0"/>
+         <element ref="this:groupXSet" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+      </complexType>
       </element>
   
     <element name = "groupXSet">
-    <xs:complexType>
-    <xs:sequence>
-      <xs:element name="totalNodes" type="int" minOccurs="0"/>
-      <xs:element ref="this:nodeSet" minOccurs="0" maxOccurs="unbounded"/>    
-    </xs:sequence>
-    </xs:complexType>
+    <complexType>
+    <sequence>
+      <element name="totalNodes" type="int" minOccurs="0"/>
+      <element ref="this:nodeSet" minOccurs="0" maxOccurs="unbounded"/>    
+    </sequence>
+    </complexType>
     </element>
     
     <element name = "nodeSet">
-    <xs:complexType>
-    <xs:sequence>
-      <xs:element name="devicename" type="string" minOccurs="0"/>
-      <xs:element name="groupname" type="string" minOccurs="0"/>
-      <xs:element name="configurationurl" type="string" minOccurs="0"/>
-      <xs:element name="creationdate" type="dateTime" minOccurs="0"/>
-      <xs:element name="status" type="string" minOccurs="0"/>
-      <xs:element name="swconfigurationurl" type="string" minOccurs="0"/>
-      <xs:element name="version" type="string" minOccurs="0"/>
-    </xs:sequence>
-    </xs:complexType>
+    <complexType>
+    <sequence>
+      <element name="devicename" type="string" minOccurs="0"/>
+      <element name="groupname" type="string" minOccurs="0"/>
+      <element name="configurationurl" type="string" minOccurs="0"/>
+      <element name="creationdate" type="dateTime" minOccurs="0"/>
+      <element name="status" type="string" minOccurs="0"/>
+      <element name="swconfigurationurl" type="string" minOccurs="0"/>
+      <element name="version" type="string" minOccurs="0"/>
+    </sequence>
+    </complexType>
     </element>
  </schema>

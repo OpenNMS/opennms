@@ -31,12 +31,12 @@ public class RancidReportExecController extends SimpleFormController {
         
         if (bean.getReporttype().compareTo("rancidlist") == 0){
             log().debug("RancidReportExecController rancidlist report ");
-            boolean done = m_inventoryService.runRancidListReport(bean.getDate());
+            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype());
             if (!done){
                 log().debug("RancidReportExecController error ");
             }
         } else if (bean.getReporttype().compareTo("inventory") == 0){
-            boolean done = m_inventoryService.runNodeBaseInventoryReport(bean.getDate(), bean.getFieldhas());
+            boolean done = m_inventoryService.runNodeBaseInventoryReport(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype());
             if (!done){
                 log().debug("RancidReportExecController error ");
             }
