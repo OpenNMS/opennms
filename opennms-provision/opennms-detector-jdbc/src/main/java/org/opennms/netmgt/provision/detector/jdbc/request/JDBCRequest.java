@@ -50,6 +50,7 @@ public class JDBCRequest {
     };
     
     private String m_storedProcedure;
+    private String m_schema = "test";
     
     /**
      * @param object
@@ -59,7 +60,7 @@ public class JDBCRequest {
     public JDBCResponse send(Connection conn) throws SQLException {
         if(getStoredProcedure() != null){
             
-            String procedureCall = "{ ? = call test." + getStoredProcedure() + "()}";
+            String procedureCall = "{ ? = call " + getStoredProcedure() + "()}";
             CallableStatement cs = conn.prepareCall(procedureCall);
             cs.registerOutParameter(1, java.sql.Types.BIT);
             cs.executeUpdate();
@@ -77,5 +78,13 @@ public class JDBCRequest {
 
     public String getStoredProcedure() {
         return m_storedProcedure;
+    }
+
+    public void setSchema(String schema) {
+        m_schema = schema;
+    }
+
+    public String getSchema() {
+        return m_schema;
     }
 }
