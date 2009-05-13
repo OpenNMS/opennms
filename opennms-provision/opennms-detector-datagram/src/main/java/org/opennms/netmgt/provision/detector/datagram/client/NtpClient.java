@@ -1,14 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -27,12 +25,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
-
 package org.opennms.netmgt.provision.detector.datagram.client;
 
 import java.io.IOException;
@@ -41,47 +37,39 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.support.Client;
+import org.opennms.netmgt.provision.support.ntp.NtpMessage;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("prototype")
+public class NtpClient implements Client<NtpMessage, DatagramPacket> {
 
-/**
- * @author brozow
- *
- */
-public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
-    
     private DatagramSocket m_socket;
+    private int m_port;
+    private InetAddress m_address;
     
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.detector.Client#close()
-     */
     public void close() {
         m_socket.close();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.detector.Client#connect(java.net.InetAddress, int, int)
-     */
-    public void connect(InetAddress address, int port, int timeout) throws IOException {
-        System.out.println("Addres: " + address + " port: " + port + " timeout: " + timeout);
+    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+        System.err.println("Addres: " + address + " port: " + port + " timeout: " + timeout);
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
-        m_socket.connect(address, port);
+        setAddress(address);
+        setPort(port);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.detector.Client#receiveBanner()
-     */
-    public DatagramPacket receiveBanner() throws IOException {
-        throw new UnsupportedOperationException("Client<DatagramPacket,DatagramPacket>.receiveBanner is not yet implemented");
+    public DatagramPacket receiveBanner() throws IOException, Exception {
+        throw new UnsupportedOperationException("Client<NtpMessage,DatagramPacket>.receiveBanner is not yet implemented");
+    }
+
+    public DatagramPacket sendRequest(NtpMessage request) throws IOException, Exception {
         
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.detector.Client#sendRequest(java.lang.Object)
-     */
-    public DatagramPacket sendRequest(DatagramPacket request) throws IOException {
-
-        m_socket.send(request);
+        byte[] buf = new NtpMessage().toByteArray();
+        DatagramPacket outpkt = new DatagramPacket(buf, buf.length, getAddress(), getPort());
+        m_socket.send(outpkt);
 
         byte[] data = new byte[512];
         DatagramPacket response = new DatagramPacket(data, data.length);
@@ -91,6 +79,20 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
         return response;
     }
 
-    
+    protected void setAddress(InetAddress address) {
+        m_address = address;
+    }
+
+    protected InetAddress getAddress() {
+        return m_address;
+    }
+
+    protected void setPort(int port) {
+        m_port = port;
+    }
+
+    protected int getPort() {
+        return m_port;
+    }
 
 }
