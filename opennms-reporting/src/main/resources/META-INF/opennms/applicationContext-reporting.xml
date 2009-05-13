@@ -17,7 +17,8 @@
 	</bean>
 
 	<bean id="calendarAvailabilityCalculator"
-		class="org.opennms.report.availability.AvailabilityCalculator">
+		class="org.opennms.report.availability.AvailabilityCalculator"
+		scope="prototype">
 		<property name="monthFormat">
 			<value>calendar</value>
 		</property>
@@ -25,10 +26,14 @@
 			<value>${opennms.report.dir}/</value>
 		</property>
 		<property name="locatorService" ref="availabilityReportLocator" />
+		<property name="availabilityData">
+			<ref local="availabilityData"/>
+		</property>
 	</bean>
 
 	<bean id="classicAvailabilityCalculator"
-		class="org.opennms.report.availability.AvailabilityCalculator">
+		class="org.opennms.report.availability.AvailabilityCalculator"
+		scope="prototype">
 		<property name="monthFormat">
 			<value>classic</value>
 		</property>
@@ -36,29 +41,10 @@
 			<value>${opennms.report.dir}/</value>
 		</property>
 		<property name="locatorService" ref="availabilityReportLocator" />
+		<property name="availabilityData">
+			<ref local="availabilityData"/>
+		</property>
 	</bean>
-
-	<!-- <bean id="adhocCalendarAvailabilityCalculator"
-		class="org.opennms.report.availability.AvailabilityCalculator">
-		<property name="reportLocatorService">
-		<ref local="simpleReportStore" />
-		</property>
-		<property name="monthFormat">
-		<value>calendar</value>
-		</property>
-		</bean>
-		
-		<bean id="adhocClassicAvailabilityCalculator"
-		class="org.opennms.report.availability.AvailabilityCalculator">
-		<property name="reportStore">
-		<ref local="simpleReportStore" />
-		</property>
-		<property name="monthFormat">
-		<value>classic</value>
-		</property>
-		</bean>
-	-->
-
 
 	<bean id="pdfReportRenderer"
 		class="org.opennms.report.availability.render.PDFReportRenderer">
@@ -139,5 +125,14 @@
 		class="org.opennms.report.availability.svclayer.DefaultAvailabilityReportService">
 		<property name="reportRunner" ref="availabilityReportRunner" />
 	</bean>
+	
+	<bean id="legacyAvailabilityDataService" class="org.opennms.report.availability.svclayer.LegacyAvailabilityDataService" />
+    
+    <bean id="availabilityData" 
+    	class="org.opennms.report.availability.AvailabilityData"
+    	lazy-init="true">
+    	<property name="availabilityDataService"> <ref local="legacyAvailabilityDataService" />
+    	</property>
+    </bean>
 
 </beans>
