@@ -114,7 +114,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private Long getSpeed() {
             Long highSpeed = getIfHighSpeed();
-            return highSpeed != null ? highSpeed : getIfSpeed(); 
+            return highSpeed != null && highSpeed > 0 ? highSpeed : getIfSpeed(); 
         }
 
         private Integer getIfOperStatus() {
