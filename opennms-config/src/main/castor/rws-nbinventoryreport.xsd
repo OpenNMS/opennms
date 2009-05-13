@@ -1,6 +1,6 @@
  <schema targetNamespace="http://xmlns.opennms.org/xsd/config/rws"
         xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:this="http://xmlns.opennms.org/xsd/config/rws"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
