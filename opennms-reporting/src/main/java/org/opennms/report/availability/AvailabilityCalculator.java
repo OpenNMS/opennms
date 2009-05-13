@@ -130,6 +130,8 @@ public class AvailabilityCalculator {
     
     private AvailabilityReportLocatorService m_locatorService;
 
+    private AvailabilityData m_availabilityData;
+
     public AvailabilityCalculator() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -175,11 +177,11 @@ public class AvailabilityCalculator {
             /* We just initialize this to make sure there are no exceptions, I guess?
              * AvailabilityData availData =
              */
-            new AvailabilityData(m_categoryName,
+            
+            m_availabilityData.fillReport(m_categoryName,
                                                               m_report,
                                                               m_reportFormat,
                                                               m_monthFormat,
-                                                              m_calendar,
                                                               m_periodEndDate);
         } catch (MarshalException me) {
             log.fatal("MarshalException ", me);
@@ -359,6 +361,10 @@ public class AvailabilityCalculator {
 
     public void setBaseDir(String baseDir) {
         m_baseDir = baseDir;
+    }
+
+    public void setAvailabilityData(AvailabilityData availabilityData) {
+        m_availabilityData = availabilityData;
     }
 
 }

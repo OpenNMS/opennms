@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.report.availability.svclayer.LegacyAvailabilityDataService;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -199,7 +200,9 @@ public class AvailabilityReportTest extends TestCase {
             /* it seems we just initialize this to make sure it works
              * availData =
              */
-            new AvailabilityData("Network Interfaces", report, "HTML", calFormat, calendar, "4", "18", "2005");
+            AvailabilityData reportSource = new AvailabilityData();
+            reportSource.setAvailabilityDataService(new LegacyAvailabilityDataService());
+            reportSource.fillReport("Network Interfaces", report, "HTML", calFormat, "4", "18", "2005");
         } catch (Exception e) {
             throw new UndeclaredThrowableException(e); 
         }
