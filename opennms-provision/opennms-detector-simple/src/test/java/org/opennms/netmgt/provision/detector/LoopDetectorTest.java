@@ -65,7 +65,7 @@ public class LoopDetectorTest implements ApplicationContextAware {
     
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
-        m_detector.setIpMatch(InetAddress.getLocalHost().getCanonicalHostName());
+        m_detector.setIpMatch(InetAddress.getLocalHost().getHostAddress());
         m_detector.init();
         assertTrue("Service detection for loopDetector failed.", m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }
