@@ -272,14 +272,15 @@ public final class IfSnmpCollector implements Runnable {
         Long ifSpeed = null;
         
         try {
-        
-        if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null) {
-            ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
-            log().debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
-        } else if (hasIfTable()) {
-            ifSpeed = m_ifTable.getIfSpeed(ifIndex);
-            log().debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
-        }
+
+            if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null && getIfXTable().getIfHighSpeed(ifIndex) > 0) {
+                ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
+                log().debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+            } else if (hasIfTable()) {
+                ifSpeed = m_ifTable.getIfSpeed(ifIndex);
+                log().debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+            }
+            
         } catch(Exception e) {
             log().warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex " + ifIndex);
         }
