@@ -954,7 +954,7 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     private long getInterfaceSpeed(IfTableEntry ifte, IfXTableEntry ifxte) {
-        if (ifxte != null && ifxte.getIfHighSpeed() != null) {
+        if (ifxte != null && ifxte.getIfHighSpeed() != null && ifxte.getIfHighSpeed() > 0) {
             return ifxte.getIfHighSpeed() * 1000000L; 
         }
         
