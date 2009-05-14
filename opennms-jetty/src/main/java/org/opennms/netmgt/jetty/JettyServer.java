@@ -111,17 +111,25 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         HandlerCollection handlers = new HandlerCollection();
 
         if (webappsDir.exists()) {
+            File rootDir = null;
             for (File file: webappsDir.listFiles()) {
                 if (file.isDirectory()) {
                     String contextPath;
                     if ("ROOT".equals(file.getName())) {
-                        contextPath = "/";
+                        // Defer this to last to avoid nested context order problems
+                        rootDir = file;
+                        continue;
                     } else {
                         contextPath = "/" + file.getName();
                     }
                     addContext(handlers, file, contextPath);
                     registerService(port, contextPath);
                 }
+            }
+            if (rootDir != null) {
+                // If we deferred a ROOT context, handle that now
+                addContext(handlers, rootDir, "/");
+                registerService(port, "/");
             }
         }
 
