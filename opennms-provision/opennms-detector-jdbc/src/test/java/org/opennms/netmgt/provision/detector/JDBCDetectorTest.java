@@ -18,13 +18,9 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -43,14 +39,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @JUnitTemporaryDatabase
-public class JDBCDetectorTest implements ApplicationContextAware{
+public class JDBCDetectorTest{
     
-    private JdbcDetector m_detector;
+    @Autowired
+    public JdbcDetector m_detector;
     
     @Autowired
     DataSource m_dataSource;
-
-    private ApplicationContext m_applicationContext;
     
     @Before
     public void setUp() throws UnknownHostException {
@@ -69,7 +64,6 @@ public class JDBCDetectorTest implements ApplicationContextAware{
         }
         
         
-        m_detector = getDetector(JdbcDetector.class);
         m_detector.setDbDriver("org.postgresql.Driver");
         m_detector.setPort(5432);
         m_detector.setUrl(url);
@@ -102,17 +96,6 @@ public class JDBCDetectorTest implements ApplicationContextAware{
         m_detector.init();
         
         assertFalse(m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor()));
-    }
-	
-	private JdbcDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (JdbcDetector)bean;
-    }
-
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
     }
 	
 }
