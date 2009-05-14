@@ -92,11 +92,13 @@ public class InsServerListener extends InsServerAbstractListener {
 	public void flushEvent(Event event){
 	      Category log = getLog();
 	      log.debug("Flushing "+event.getUei());
-          int nodeid = (int) event.getNodeid();
+	      int nodeid = 0;
+	      if (event.hasNodeid())
+	          nodeid = (int) event.getNodeid();
 
-          if (event.getIfIndex() > 0 ) {
+          if (event.hasIfIndex() && event.getIfIndex() > 0 ) {
               event.setIfAlias(getIfAlias(nodeid,event.getIfIndex()));
-          } else if (!event.getInterface().equals("0.0.0.0")) {
+          } else if (event.getInterface() != null && !event.getInterface().equals("0.0.0.0")) {
               OnmsSnmpInterface iface = getIfAlias(nodeid,event.getInterface()); 
               if (iface != null ) {
                   event.setIfIndex(iface.getIfIndex());
