@@ -49,138 +49,28 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class ParameterMap extends Object {
 	
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is a string it is converted to a long and the original string
-     * value is replaced in the map. The converted value is returned to the
-     * caller. If the value cannot be converted then the default value is stored
-     * in the map. If the specified key does not exist in the map then the
-     * default value is returned.
-     * 
-     * @return The long value associated with the key.
-     */
-	public static long getKeyedLong(final Map map, final String key, final long defValue) {
-        long value = defValue;
-        Object oValue = map.get(key);
-
-        if (oValue != null && oValue instanceof String) {
-            try {
-                value = Long.parseLong((String) oValue);
-            } catch (NumberFormatException ne) {
-                value = defValue;
-                ThreadCategory.getInstance(ParameterMap.class).info("getLongByKey: Failed to convert value " + oValue + " for key " + key);
-            }
-            map.put(key, new Long(value));
-        } else if (oValue != null) {
-            value = ((Number) oValue).longValue();
-        }
-        return value;
-	}
+    @Deprecated
+    public static long getKeyedLong(final Map map, final String key, final long defValue) {
+      return org.opennms.core.utils.ParameterMap.getKeyedLong(map, key, defValue);
+    }
 	
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is a string it is converted to an integer and the original string
-     * value is replaced in the map. The converted value is returned to the
-     * caller. If the value cannot be converted then the default value is stored
-     * in the map. If the specified key does not exist in the map then the
-     * default value is returned.
-     * 
-     * @return The int value associated with the key.
-     */
-    public static int getKeyedInteger(Map map, String key, int defValue) {
-    	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
+    @Deprecated
+    public static int getKeyedInteger(final Map map, final String key, final int defValue) {
+    	return org.opennms.core.utils.ParameterMap.getKeyedInteger(map, key, defValue);
     }
 
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is a string is is converted to an integer and the original string
-     * value is replaced in the map. The converted value is returned to the
-     * caller. If the value cannot be converted then the default value is used.
-     * 
-     * @return The array of integer values associated with the key.
-     */
-    public final static int[] getKeyedIntegerArray(Map map, String key, int[] defValues) {
-        int[] result = defValues;
-        Object oValue = map.get(key);
-
-        if (oValue != null && oValue instanceof int[]) {
-            result = (int[]) oValue;
-        } else if (oValue != null) {
-            List tmpList = new ArrayList(5);
-
-            // Split on spaces, commas, colons, or semicolons
-            //
-            StringTokenizer ints = new StringTokenizer(oValue.toString(), " ;:,");
-            while (ints.hasMoreElements()) {
-                try {
-                    int x = Integer.parseInt(ints.nextToken());
-                    tmpList.add(new Integer(x));
-                } catch (NumberFormatException e) {
-                    ThreadCategory.getInstance(ParameterMap.class).warn("getKeyedIntegerList: list member for key " + key + " is malformed", e);
-                }
-            }
-            result = new int[tmpList.size()];
-
-            for (int x = 0; x < result.length; x++)
-                result[x] = ((Integer) tmpList.get(x)).intValue();
-
-            map.put(key, result);
-        }
-        return result;
+    @Deprecated
+    public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
+      return org.opennms.core.utils.ParameterMap.getKeyedIntegerArray(map, key, defValues);
     }
 
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is not a String it is converted to a String and the original value
-     * is replaced in the map. The converted value is returned to the caller. If
-     * the specified key does not exist in the map then the default value is
-     * returned.
-     * 
-     * @return The String value associated with the key.
-     */
-    public static String getKeyedString(Map map, String key, String defValue) {
-
-        String value = defValue;
-        Object oValue = map.get(key);
-
-        if (oValue != null && oValue instanceof String) {
-            value = (String) oValue;
-        } else if (oValue != null) {
-            value = oValue.toString();
-            map.put(key, value);
-        }
-        return value;
+    @Deprecated
+    public static String getKeyedString(final Map map, final String key, final String defValue) {
+      return org.opennms.core.utils.ParameterMap.getKeyedString(map, key, defValue);
     }
 
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is a string it is converted to a boolean and the original string
-     * value is replaced in the map. The converted value is returned to the
-     * caller. If the value cannot be converted then the default value is stored
-     * in the map. If the specified key does not exist in the map then the
-     * default value is returned.
-     *
-     * @return The bool value associated with the key.
-     */
+    @Deprecated
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
-        boolean value = defValue;
-        Object oValue = map.get(key);
-
-               if (oValue != null && oValue instanceof String) {
-                       oValue = Boolean.valueOf((String) oValue);
-               }
-
-        if (oValue != null && oValue instanceof Boolean) {
-            try {
-                value = ((Boolean) oValue).booleanValue();
-            } catch (NumberFormatException ne) {
-                value = defValue;
-               ThreadCategory.getInstance(ParameterMap.class).info("getBoolByKey: Failed to convert value " + oValue + " for key " + key);
-            }
-            map.put(key, Boolean.valueOf(value));
-        } else if (oValue != null) {
-            value = ((Boolean) oValue).booleanValue();
-        }
-        return value;
+      return org.opennms.core.utils.ParameterMap.getKeyedBoolean(map, key, defValue);
     }
 }
