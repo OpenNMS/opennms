@@ -17,7 +17,7 @@ SQL_FILE="$1"; shift
 LOG_FILE="/tmp/unicode-convert.log"
 
 if [ -z "$SQL_FILE" ]; then
-	SQL_FILE=@install.etc.dir@/create.sql
+	SQL_FILE=${install.etc.dir}/create.sql
 fi
 
 FILE="/tmp/pg_dump-${DATABASE}"

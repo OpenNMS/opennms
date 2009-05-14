@@ -134,7 +134,7 @@ public class PropertiesGraphDaoTest extends TestCase {
             + " GPRINT:octOut:MAX:\"Max  \\\\: %8.2lf %s\\\\n\"\n";
     
     private static final String s_adhoc =
-        "command.prefix=@install.rrdtool.bin@ graph - --imgformat PNG --start {1} --end {2}\n"
+        "command.prefix=${install.rrdtool.bin} graph - --imgformat PNG --start {1} --end {2}\n"
         + "output.mime=image/png\n"
         + "adhoc.command.title=--title=\"{3}\"\n"
         + "adhoc.command.ds=DEF:{4}={0}:{5}:{6}\n"

@@ -105,6 +105,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <escapeString>\</escapeString>
+        </configuration>
       </plugin>
     </plugins>
   </build>

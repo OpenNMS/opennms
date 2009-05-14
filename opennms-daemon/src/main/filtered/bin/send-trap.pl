@@ -1,4 +1,4 @@
-#!@install.perl.bin@
+#!${install.perl.bin}
 #
 # a quick hack of a script to send traps
 # by Ben Reed (ben@opennms.org)

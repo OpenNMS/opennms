@@ -34,7 +34,7 @@
 #
 # put an '@' here so we don't break maven substition
 
-opennms_home="@install.dir@"
+opennms_home="${install.dir}"
 searchdirs="/usr /opt /Library"
 dryrun=0
 
