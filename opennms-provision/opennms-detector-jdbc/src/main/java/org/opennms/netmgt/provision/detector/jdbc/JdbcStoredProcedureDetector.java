@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class JdbcStoredProcedureDetector extends JdbcDetector {
+public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     
     private final static String DEFAULT_STORED_PROCEDURE = "isRunning";
     private final static String DEFAULT_SCHEMA = "test";
