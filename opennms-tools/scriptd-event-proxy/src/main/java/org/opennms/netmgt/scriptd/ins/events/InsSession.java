@@ -311,7 +311,7 @@ class InsSession extends InsAbstractSession {
           if (ev.getIfIndex() != null) {
               e.setIfIndex(ev.getIfIndex());
               e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
-          } else if (!ev.getIpAddr().equals("0.0.0.0")) {
+          } else if (ev.getIpAddr() != null && !ev.getIpAddr().equals("0.0.0.0")) {
               OnmsSnmpInterface iface = getIfAlias(ev.getNode().getId(), ev.getIpAddr());
               if (iface != null) {
                   e.setIfIndex(iface.getIfIndex());
