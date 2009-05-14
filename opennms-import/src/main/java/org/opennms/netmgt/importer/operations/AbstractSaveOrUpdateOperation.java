@@ -193,7 +193,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
             newSnmpIf.setNetMask(getNetMask(ifIndex));
             newSnmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
             newSnmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-            newSnmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+            newSnmpIf.setIfSpeed(m_collector.getInterfaceSpeed(ifIndex));
             newSnmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
 
             OnmsIpInterface newIpIf = null;
@@ -257,7 +257,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         snmpIf.setNetMask(getNetMask(ifIndex));
         snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
         snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
-        snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
+        snmpIf.setIfSpeed(m_collector.getInterfaceSpeed(ifIndex));
         snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
         
         if (ipIf.getIsSnmpPrimary() == CollectionType.PRIMARY) {
