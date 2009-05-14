@@ -45,7 +45,6 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAttribute;
-import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -57,7 +56,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
-public class ThresholdingSet {
+public abstract class ThresholdingSet {
     
     int m_nodeId;
     String m_hostAddress;
@@ -168,14 +167,13 @@ public class ThresholdingSet {
     /*
      * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
      */
-    public boolean hasThresholds(CollectionAttribute attribute) {
-        CollectionResource resource = attribute.getResource();
+    public boolean hasThresholds(String resourceTypeName, String attributeName) {
         for (ThresholdGroup group : m_thresholdGroups) {
-            Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resource.getResourceTypeName());
+            Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
             for(String key : entityMap.keySet()) {
                 for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                     Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
-                    if (requiredDatasources.contains(attribute.getName()))
+                    if (requiredDatasources.contains(attributeName))
                         return true;
                 }
             }
@@ -187,8 +185,7 @@ public class ThresholdingSet {
      * Apply thresholds definitions for specified resource using attribuesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
-    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);        
+    protected List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
         Date date = new Date();
         List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
@@ -223,7 +220,7 @@ public class ThresholdingSet {
         return eventsList;
     }
     
-    private boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
+    protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
@@ -344,7 +341,7 @@ public class ThresholdingSet {
         return groupNameList;
     }
 
-    private Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+    protected Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -371,7 +368,7 @@ public class ThresholdingSet {
         return m_thresholdGroups.toString();
     }
 
-    private Category log() {
+    protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 

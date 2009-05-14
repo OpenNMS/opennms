@@ -80,7 +80,7 @@ public class CollectionResourceWrapper {
     }
 
     public Double getAttributeValue(String ds) {
-        if (m_attributes.get(ds) == null) {
+        if (m_attributes == null || m_attributes.get(ds) == null) {
             log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
             return null;
         }

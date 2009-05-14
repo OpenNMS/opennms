@@ -32,13 +32,16 @@ package org.opennms.netmgt.threshd;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -83,6 +86,9 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 
 /**
@@ -94,17 +100,16 @@ public class ThresholdingVisitorTest {
     ThresholdingVisitor m_visitor;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
+    List<Event> m_anticipatedEvents;
     
     @Before
     public void setUp() throws Exception {
-
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getIPList((String)EasyMock.anyObject())).andReturn(Collections.singletonList("127.0.0.1")).anyTimes();
         FilterDaoFactory.setInstance(m_filterDao);
         EasyMock.replay(m_filterDao);
-        initFactories("/threshd-configuration.xml","/test-thresholds.xml");
 
         m_anticipator = new EventAnticipator();
         MockEventIpcManager eventMgr = new MockEventIpcManager();
@@ -112,6 +117,9 @@ public class ThresholdingVisitorTest {
         eventMgr.setSynchronous(true);
         EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
         EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
+        
+        initFactories("/threshd-configuration.xml","/test-thresholds.xml");
+        m_anticipatedEvents = new ArrayList<Event>();
     }
 
     private void initFactories(String threshd, String thresholds) throws Exception {
@@ -140,16 +148,26 @@ public class ThresholdingVisitorTest {
         assertNull(visitor);
     }
 
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     */
     @Test
-    public void testVisitResourceGaugeData() {
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+    public void testResourceGaugeData() {
+        addHighThresholdEvent(1, 10000, 5000, 15000, "Unknown", null, "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 15000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        verifyEvents(0);
     }
 
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     */
     @Test
-    public void testVisitResourceCounterData() {
+    public void testResourceCounterData() {
         ThresholdingVisitor visitor = createVisitor();
 
         CollectionAgent agent = createCollectionAgent();
@@ -157,8 +175,9 @@ public class ThresholdingVisitorTest {
         MibObject mibObject = createMibObject("counter", "freeMem", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        // Add Events
+        addHighThresholdEvent(1, 10000, 5000, 15000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, 1000, "Unknown", null, "freeMem", null, null);
 
         // Collect Step 1 : Initialize counter cache
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
@@ -186,24 +205,34 @@ public class ThresholdingVisitorTest {
         resource.visit(visitor);
 
         EasyMock.verify(agent);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        verifyEvents(0);
     }
-    
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     */
     @Test
     public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
         setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runVisitInterfaceResource("127.0.0.1", "wlan0", 100, 220);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "1");
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "1");
+        runInterfaceResource("127.0.0.1", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        verifyEvents(0);
     }
 
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     */
     @Test
     public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
         setupSnmpInterfaceDatabase("127.0.0.1", "sis0");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "sis0", "1");
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifInOctets", "sis0", "1");
+
         File resourceDir = new File(getRepository().getRrdBaseDir(), "1/sis0");
         resourceDir.deleteOnExit();
         resourceDir.mkdirs();
@@ -211,31 +240,47 @@ public class ThresholdingVisitorTest {
         p.put("myMockParam", "myMockValue");
         ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
         
-        runVisitInterfaceResource("127.0.0.1", "sis0", 100, 220);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        runInterfaceResource("127.0.0.1", "sis0", 100, 220); // real value = 220 - 100 = 120
+        verifyEvents(0);
         deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
     }
     
-
+    /*
+     * Before call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     * 
+     * After call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     */
     @Test
     public void testReloadConfiguration() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        
+        // Step 1: No events
+        addHighThresholdEvent(1, 10000, 5000, 4500, "Unknown", null, "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
-        m_anticipator.verifyAnticipated(0, 0, 0, 1, 0);
-        System.err.println("Reloading Config...");
+        verifyEvents(1);
+        
+        // Step 2: Change configuration
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
         visitor.reload();
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        resetAnticipator();
+        
+        // Step 3: Trigger threshold with new configuration values
+        addHighThresholdEvent(1, 4000, 2000, 4500, "Unknown", null, "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        verifyEvents(0);
     }
-    
-    /**
+
+    /*
      * This bug has not been replicated, but this code covers the apparent scenario, and can be adapted to match
      * any scenario which can actually replicate the reported issue
-     * @throws Exception
+     * 
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug2746.xml
      */
     @Test
     public void testBug2746() throws Exception{
@@ -248,166 +293,210 @@ public class ThresholdingVisitorTest {
         MibObject mibObject = createMibObject("gauge", "bug2746", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        // Add Events
+        addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
 
-        // Collect Step 1 : Initialize counter cache
+        // Step 1 : Initialize counter cache
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(20));
         resource.visit(visitor);
         
-        //Repeat a couple of times with the same value, to replicate a steady state
+        // Repeat a couple of times with the same value, to replicate a steady state
         resource.visit(visitor);
         resource.visit(visitor);
         resource.visit(visitor);
 
-        // Collect Step 2 : Trigger
+        // Step 2 : Trigger
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(60));
         resource.visit(visitor);
 
-        // Collect Step 3 : Don't rearm, but do drop
+        // Step 3 : Don't rearm, but do drop
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(45));
         resource.visit(visitor);
 
-        // Collect Step 4 : Shouldn't trigger again
+        // Step 4 : Shouldn't trigger again
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(55));
         resource.visit(visitor);
 
         EasyMock.verify(agent);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        verifyEvents(0);
     }
 
     /*
-     * Trigger a threshold
-     * Reload Configuration
-     * Force rearmed
-     * 
-     * FIXME As the threshold is triggered, merge operation will force rearm. The problem is that
-     * configuration never changes for this threshold; so this should be avoided. Before add rearm
-     * to the queue we must validate that BasethresholdDef are not identical. Method 'equals' is
-     * used, so we can create other method called 'identical' to check all attributes.
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
      */
     @Test
     public void testBug3146_unrelatedChange() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         
-        // Trigger threshold
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 12000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        // Add Events
+        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, 1000, "Unknown", null, "freeMem", null, null);
         
-        // Reload Configuration
+        // Step 1: Trigger threshold
+        runGaugeDataTest(visitor, 12000);
+        
+        // Step 2: Reload Configuration (changes are not related to triggered threshold)
         visitor.reload();
         
-        // Send Rearmed event
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        // Step 3: Send Rearmed event
         runGaugeDataTest(visitor, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Verify Events
+        verifyEvents(0);
     }
     
     /*
-     * Trigger a threshold
-     * Make a configuration change, reducing triggered value
-     * Reload configuration
-     * See if correct rearmed event is triggered
+     * Before call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     * 
+     * After call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
      */
     @Test
     public void testBug3146_reduceTrigger() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
 
-        // Trigger threshold
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 12000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-        
-        // Change Configuration
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
-        visitor.reload();
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        // Add Events
+        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 4000, 2000, 5000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 4000, 2000, 1000, "Unknown", null, "freeMem", null, null);
 
-        // Trigger threshold
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 5000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        // Step 1: Trigger threshold
+        runGaugeDataTest(visitor, 12000);
         
-        // Send Rearmed event
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        // Step 2: Change Configuration (reducing value for already triggered threshold)
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+
+        // Step 3: Execute Merge Configuration
+        visitor.reload();
+
+        // Step 4: Trigger threshold (with new value)
+        runGaugeDataTest(visitor, 5000);
+        
+        // Step 5: Send Rearmed event (with new value)
         runGaugeDataTest(visitor, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        // Verify Events
+        verifyEvents(0);
     }
 
     /*
-     * Trigger a threshold
-     * Make a configuration change, incrasing triggered value
-     * Reload configuration
-     * See if correct rearmed event is triggered
+     * Before call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     * 
+     * After call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-3.xml
      */
     @Test
     public void testBug3146_inceaseTrigger() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
 
-        // Trigger threshold
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        // Add Events
+        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
+
+        // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
         
-        // Change Configuration
+        // Step 2: Change Configuration (increasing value for already triggered threshold)
         initFactories("/threshd-configuration.xml","/test-thresholds-3.xml");
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
-        visitor.reload();
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-
-        // Is not above the new threshold value
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
-        runGaugeDataTest(visitor, 13000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 2, 0);
-
-        // Trigger threshold
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
-        runGaugeDataTest(visitor, 16000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
         
-        // Send Rearmed event
-        m_anticipator.reset();
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed");
+        // Step 3: Execute Merge Configuration (Rearmed Event must be sent).
+        visitor.reload();
+        verifyEvents(0);
+        
+        // Step 4: New collected data is not above the new threshold value. No Events generated
+        resetAnticipator();
+        addHighThresholdEvent(1, 15000, 14000, 13000, "Unknown", null, "freeMem", null, null);
+        runGaugeDataTest(visitor, 13000);
+        verifyEvents(1);
+        
+        // Step 5: Trigger and rearm a threshold using new configuration
+        resetAnticipator();
+        addHighThresholdEvent(1, 15000, 14000, 16000, "Unknown", null, "freeMem", null, null);
+        addHighRearmEvent(1, 15000, 14000, 1000, "Unknown", null, "freeMem", null, null);
+        runGaugeDataTest(visitor, 16000);
         runGaugeDataTest(visitor, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        verifyEvents(0);
     }
 
     /*
      * If I have a high threshold triggered, and then replace it with their equivalent low threshold,
      * The high definition must be removed from cache and rearmed event must be sent.
+     * 
+     * Before call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     * 
+     * After call visitor.reload(), this test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-4.xml
      */
     @Test
     public void testBug3146_replaceThreshold() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
+        
+        // Add Events
+        String lowThresholdUei = "uei.opennms.org/threshold/lowThresholdExceeded";
+        String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
+        String lowExpression = "(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
+        addHighRearmEvent(1, 30, 25, Double.NaN, "/opt", "1", highExpression, null, null);
+        addEvent(lowThresholdUei, "SNMP", 1, 10, 20, 5, "/opt", "1", lowExpression, null, null);
 
-        // Trigger threshold
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdExceeded");
+        // Step 1: Trigger threshold
         runFileSystemDataTest(visitor, "/opt", 500, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
-               
-        m_anticipator.reset();
-        log().debug("*************** Reset Configuration");
-        addAnticipatedEvent("uei.opennms.org/threshold/highThresholdRearmed"); // Disarm triggered threshold
+
+        // Step 2: Reload Configuration (merge). Threshold definition was replaced.
         initFactories("/threshd-configuration.xml","/test-thresholds-4.xml");
         visitor.reload();
         
-        // Must trigger only one low threshold exceeded
-        addAnticipatedEvent("uei.opennms.org/threshold/lowThresholdExceeded");
+        // Step 3: Must trigger only one low threshold exceeded
         runFileSystemDataTest(visitor, "/opt", 950, 1000);
-        m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+        
+        verifyEvents(0);
+    }
+    
+    /*
+     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
+     */
+    @Test    
+    public void testLatencyThresholdingSet() throws Exception {
+        setupSnmpInterfaceDatabase("127.0.0.1", "lo0");
+
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
+        assertTrue(thresholdingSet.hasThresholds()); // Global Test
+        assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
+        Map<String, Double> attributes = new HashMap<String, Double>();        
+
+        attributes.put("http", 90.0);
+        List<Event> events = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(events.size() == 0);
+
+        attributes.put("http", 200.0);
+        events = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(events.size() == 0); // Trigger == 1
+        events = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(events.size() == 0); // Trigger == 2
+        events = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(events.size() == 1); // Trigger == 3
+
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "HTTP", 3, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(events);
+        proxy.sendAllEvents();
+        verifyEvents(0);
     }
 
     private ThresholdingVisitor createVisitor() {
@@ -427,7 +516,7 @@ public class ThresholdingVisitorTest {
         EasyMock.verify(agent);
     }
 
-    private void runVisitInterfaceResource(String ipAddress, String ifName, long v1, long v2) {
+    private void runInterfaceResource(String ipAddress, String ifName, long v1, long v2) {
         ThresholdingVisitor visitor = createVisitor();
         
         SnmpIfData ifData = createSnmpIfData(ipAddress, ifName);
@@ -522,15 +611,131 @@ public class ThresholdingVisitorTest {
         return repo;		
     }
 
-    private void addAnticipatedEvent(String uei) {
+    private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+    }
+
+    private void addHighRearmEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+    }
+
+    private void addEvent(String uei, String service, int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
         Event e = new Event();
         e.setUei(uei);
         e.setNodeid(1);
         e.setInterface("127.0.0.1");
-        e.setService("SNMP");
-        m_anticipator.anticipateEvent(e);
+        e.setService(service);
+        Parms parms = new Parms();
+
+        Parm p = new Parm();
+        p.setParmName("label");
+        Value v = new Value();
+        v.setContent(label);
+        p.setValue(v);
+        parms.addParm(p);
+
+        if (ifLabel != null) {
+            p = new Parm();
+            p.setParmName("ifLabel");
+            v = new Value();
+            v.setContent(ifLabel);
+            p.setValue(v);
+            parms.addParm(p);            
+        }
+        
+        if (ifIndex != null) {
+            p = new Parm();
+            p.setParmName("ifIndex");
+            v = new Value();
+            v.setContent(ifIndex);
+            p.setValue(v);
+            parms.addParm(p);   
+        }
+        
+        p = new Parm();
+        p.setParmName("ds");
+        v = new Value();
+        v.setContent(ds);
+        p.setValue(v);
+        parms.addParm(p);
+        
+        p = new Parm();
+        p.setParmName("value");
+        v = new Value();
+        v.setContent(Double.toString(value));
+        p.setValue(v);
+        parms.addParm(p);
+
+        p = new Parm();
+        p.setParmName("instance");
+        v = new Value();
+        v.setContent(instance);
+        p.setValue(v);
+        parms.addParm(p);
+
+        p = new Parm();
+        p.setParmName("trigger");
+        v = new Value();
+        v.setContent(Integer.toString(trigger));
+        p.setValue(v);
+        parms.addParm(p);
+
+        p = new Parm();
+        p.setParmName("threshold");
+        v = new Value();
+        v.setContent(Double.toString(threshold));
+        p.setValue(v);
+        parms.addParm(p);
+        
+        p = new Parm();
+        p.setParmName("rearm");
+        v = new Value();
+        v.setContent(Double.toString(rearm));
+        p.setValue(v);
+        parms.addParm(p);
+
+        e.setParms(parms);
+        m_anticipator.anticipateEvent(e, true);
+        m_anticipatedEvents.add(e);
     }
     
+    void verifyEvents(int remainEvents) {
+        if (remainEvents == 0) {
+            List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
+            log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
+            for (int i = 0; i < m_anticipatedEvents.size(); i++) {
+                String anticipated = eventToString(m_anticipatedEvents.get(i));
+                String received = eventToString(receivedList.get(i));
+                log().info("verifyEvents: Anticipated " + anticipated);
+                log().info("verifyEvents: Received    " + received);
+                assertTrue(received.startsWith(anticipated));
+            }
+        }
+        m_anticipator.verifyAnticipated(1000, 0, 0, remainEvents, 0);
+    }
+    
+    public String eventToString(Event e) {
+        StringBuffer b = new StringBuffer();
+        b.append(e.getUei());
+        b.append(";");
+        b.append(e.getNodeid());
+        b.append(";");
+        b.append(e.getInterface());
+        b.append(";");
+        b.append(e.getService());
+        b.append(";");
+        for (Parm p : e.getParms().getParm()) {
+            b.append(p.getParmName() + "=" + p.getValue().getContent());
+            b.append(";");
+        }
+        return b.toString();
+    }
+    
+    void resetAnticipator() {
+        m_anticipator.reset();
+        m_anticipatedEvents.clear();
+    }
+
     private SnmpIfData createSnmpIfData(String ipAddress, String ifName) {
         OnmsNode node = new OnmsNode();
         node.setId(1);

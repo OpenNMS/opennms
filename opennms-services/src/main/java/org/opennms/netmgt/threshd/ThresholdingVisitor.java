@@ -64,7 +64,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Holds thresholds configuration for a node/interface/service
      */
-    private ThresholdingSet m_thresholdingSet;
+    private CollectorThresholdingSet m_thresholdingSet;
     
     /*
      * Holds required attribute from CollectionResource to evaluate thresholds.
@@ -83,7 +83,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             return null;
         }
 
-        ThresholdingSet thresholdingSet = new ThresholdingSet(nodeId, hostAddress, serviceName, repo);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo);
         if (thresholdingSet.hasThresholds()) {
             return new ThresholdingVisitor(thresholdingSet);
         }
@@ -95,7 +95,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Static method create must be used to create's new ThresholdingVisitor instance
      */
-    protected ThresholdingVisitor(ThresholdingSet thresholdingSet) {
+    protected ThresholdingVisitor(CollectorThresholdingSet thresholdingSet) {
         m_thresholdingSet = thresholdingSet;
     }
     
