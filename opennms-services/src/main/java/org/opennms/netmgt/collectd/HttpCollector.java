@@ -499,7 +499,12 @@ public class HttpCollector implements ServiceCollector {
         //review the httpclient code, looks like virtual host is checked for null
         //and if true, sets Host to the connection's host property
         params.setVirtualHost(collectionSet.getUriDef().getUrl().getVirtualHost());
-        Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), "retries", DEFAULT_RETRY_COUNT);
+        
+        String key = "retry";
+        if (collectionSet.getParameters().containsKey("retries")) {
+            key = "retries";
+        }
+        Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), key, DEFAULT_RETRY_COUNT);
         params.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(retryCount, false));
         
         params.setParameter(HttpMethodParams.USER_AGENT, determineUserAgent(collectionSet, params));
