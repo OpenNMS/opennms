@@ -1,0 +1,2574 @@
+<events>
+<!-- Start of auto generated data from MIB: PM-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmRebootStartedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmRebootStartedTrap</event-label>
+	<descr>
+&lt;p&gt;PM is in process of rebooting.
+The name of the user who issued the command is contained
+in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmRebootStartedTrap trap received 
+			pmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDaemonStarted</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDaemonStarted</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when daemon in the appliance started.
+The daemon name is contained in pmTrapObjectDaemonName.
+The name of the user who start the daemon is contained in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDaemonStarted trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDaemonStoped</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDaemonStoped</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when daemon in the appliance stopped.
+The daemon name is contained in pmTrapObjectDaemonName.
+The name of the user who stop the daemon is contained in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDaemonStoped trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSessionTerminatedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSessionTerminatedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when one previous session is 
+terminated by another user.
+The name of the user who terminated the session is contained in pmTrapObjectUserName.
+The name of the user who was terminated from the session is contained 
+in pmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSessionTerminatedTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmConfigurationStoredTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmConfigurationStoredTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when 'store backup configuration' command is successful.
+pmTrapObjectUserName is name of the user who executed the command.
+pmTrapObjectFileName is name of the file where the configuration was stored.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmConfigurationStoredTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmConfigurationRestoredTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmConfigurationRestoredTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when 'restore backup configuration' command is successful.
+pmTrapObjectUserName is name of the user who executed the command.
+pmTrapObjectFileName is name of the file used to restored the configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmConfigurationRestoredTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmLocalUserAddedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmLocalUserAddedTrap</event-label>
+	<descr>
+&lt;p&gt;A new user has been added to the local user database.
+The name of the user who added the new user is contained in pmTrapObjectUserName.
+The name of the new user is contained in pmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmLocalUserAddedTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmLocalUserDeletedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmLocalUserDeletedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been deleted from the local user database.
+The name of the user who deleted the user is contained in pmTrapObjectUserName.
+The name of the user who was deleted is contained in pmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmLocalUserDeletedTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmLocalUserModifiedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmLocalUserModifiedTrap</event-label>
+	<descr>
+&lt;p&gt;A user has been modified in the local user database.
+The name of the user who modified the data is contained in pmTrapObjectUserName.
+The name of the user who was modified is contained in pmTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmLocalUserModifiedTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmFirmwareUpgradeStarted</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmFirmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of a software image.
+The name of the user who initiate the process is contained 
+in pmTrapObjectUserName.
+The current firmware version is contained in pmTrapFirmwareVersion.
+The new firmware version is contained in pmTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmFirmwareUpgradeStarted trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapFirmwareVersion=%parm[#2]% 
+			pmTrapNewFirmwareVersion=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmFirmwareUpgradeResultsTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmFirmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+The new FW version is contained in pmTrapNewFirmwareVersion.
+The result of the process is contained in pmTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmFirmwareUpgradeResultsTrap trap received 
+			pmTrapFirmwareUpgradeResult=%parm[#1]% 
+			pmTrapNewFirmwareVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmApplianceAlertTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmApplianceAlertTrap</event-label>
+	<descr>
+&lt;p&gt;An appliance alert was detected on a ssh or telnet session.
+The name of user who was logged into the appliance when 
+trap occurred is contained in pmTrapObjectUserName.
+The index of the appliance alert that was detected in the message is 
+contained in pmTrapObjectAlertIndex.
+The appliance alert that was detected is contained in pmTrapObjectAlertString.
+The line text where the appliance alert was detected is contained 
+in pmTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmApplianceAlertTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectAlertIndex=%parm[#2]% 
+			pmTrapObjectAlertString=%parm[#3]% 
+			pmTrapObjectAlertMessage=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsApplianceStartedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctAcsApplianceStartedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is started.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctAcsApplianceStartedTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>50</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmUserLoginTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when user logged into the appliance.
+The name of the user who logged in is contained in 
+pmTrapObjectUserName and the method used to log into appliance 
+is contained in pmTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		console(4)
+		plugdevice(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmUserLoginTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>51</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmUserLogoutTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmUserLogoutTrap</event-label>
+	<descr>
+&lt;p&gt;A user logged out of the appliance.
+The name of the user who logged in is contained in 
+pmTrapObjectUserName and the method used to log into appliance 
+is contained in pmTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ssh(1)
+		telnet(2)
+		webui(3)
+		console(4)
+		plugdevice(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmUserLogoutTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>52</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmAuthenticationFailureTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmAuthenticationFailureTrap</event-label>
+	<descr>
+&lt;p&gt;A user failed to authenticate with the appliance.
+The name of the user who failed to authenticate is contained in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmAuthenticationFailureTrap trap received 
+			pmTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>100</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPortPowerOnDetectTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPortPowerOnDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has detected that the power on/off control signal
+(RS232C - DCD signal) is high on a serial port indicating that the
+server attached to the port is powered on.
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of the DCD
+signal from low to high.
+The affected serial port number is contained in pmTrapObjectSerialPortNumber.
+The affected serial port name is contained in pmTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPortPowerOnDetectTrap trap received 
+			pmTrapObjectSerialPortName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>101</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPortPowerOffDetectTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPortPowerOffDetectTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance has detected that the power on/off control signal
+(RS232C - DCD signal) is low on a serial port indicating that the
+server attached to the port is powered off.
+This trap is sent on initialization if the condition is detected.
+Subsequent traps occur only if there is a transition of the DCD
+signal from high to low.
+The affected serial port number is contained in pmTrapObjectSerialPortNumber.
+The affected serial port name is contained in pmTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPortPowerOffDetectTrap trap received 
+			pmTrapObjectSerialPortName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>153</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDataBufferNFSFailure</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDataBufferNFSFailure</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is sending data buffering data to a NFS server 
+and the write operation fails.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDataBufferNFSFailure trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>154</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDataBufferNFSRecovery</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDataBufferNFSRecovery</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the NFS server is back online after a failure in a 
+Data Buffering write operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDataBufferNFSRecovery trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>200</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDataBufferFullThresholdLowTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDataBufferFullThresholdLowTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has reached configured Low level Threshold.
+pmTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDataBufferFullThresholdLowTrap trap received 
+			pmTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>201</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDataBufferFullThresholdMedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDataBufferFullThresholdMedTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has reached configured Med level Threshold.
+pmTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDataBufferFullThresholdMedTrap trap received 
+			pmTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>202</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmDataBufferFullLostDataTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmDataBufferFullLostDataTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+global data buffer has exceeded beyond the size of buffer and data lost has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmDataBufferFullLostDataTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>300</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduOnlineTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduOnlineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device unit(PDU) attached to the appliance is online. 
+The port number on the appliance that the power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The power device ID is contained in pmTrapObjectPduId.
+The number of outlets of the power device is contained in pmTrapObjectPduSocket.
+The vendor of the power device is contained in pmTrapObjectPduVendor&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cyclades(1)
+		spc(2)
+		serverTech(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduOnlineTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduSocket=%parm[#4]% 
+			pmTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>301</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduOfflineTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduOfflineTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance is offline.
+The port number on the appliance that the power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The power device ID is contained in pmTrapObjectPduId.
+The number of outlets of the power device is contained in pmTrapObjectPduSocket.
+The vendor of the power device is contained in pmTrapObjectPduVendor.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cyclades(1)
+		spc(2)
+		serverTech(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduOfflineTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduSocket=%parm[#4]% 
+			pmTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>302</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduIdChangedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduIdChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The ID of the PDU was changed.
+The port number on the appliance that the power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The old power device ID is contained in pmTrapObjectPduIdOld.
+The new power device ID is contained in pmTrapObjectPduId.
+The vendor of the power device is contained in pmTrapObjectPduVendor.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduIdOld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		cyclades(1)
+		spc(2)
+		serverTech(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduIdChangedTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduIdOld=%parm[#3]% 
+			pmTrapObjectPduId=%parm[#4]% 
+			pmTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>303</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduMaxLoadHighTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduMaxLoadHighTrap</event-label>
+	<descr>
+&lt;p&gt;The current on a power device attached to the appliance is above its high critical threshold.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the problem is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that detected the problem is contained in the pmTrapObjectPduId.
+The Type of the PDU Element that detected the problem is contained in the pmTrapObjectPduElementType.
+The Name of the Pdu Element that detected the problem is contained in the pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduMaxLoadHighTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>304</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduMinLoadLowTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduMinLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;The current on a power device attached to the appliance is below its low critical threshold.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the problem is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that detected the problem is contained in the pmTrapObjectPduId.
+The Type of the PDU Element that detected the problem is contained in the pmTrapObjectPduElementType.
+The Name of the Pdu Element that detected the problem is contained in the pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduMinLoadLowTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>307</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduFirmwareUpgradeStarted</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduFirmwareUpgradeStarted</event-label>
+	<descr>
+&lt;p&gt;The appliance has started an upgrade of the PM software.
+The name of the user who initiate the process is contained in pmTrapObjectUserName.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the problem is contained in the pmTrapObjectPduNumber.
+The current firmware version is contained in pmTrapFirmwareVersion.
+The new firmware version is contained in pmTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduFirmwareUpgradeStarted trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]% 
+			pmTrapObjectPduNumber=%parm[#3]% 
+			pmTrapFirmwareVersion=%parm[#4]% 
+			pmTrapNewFirmwareVersion=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>308</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduFirmwareUpgradeResultsTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduFirmwareUpgradeResultsTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that gone beneath the minimum threshold is contained in the pmTrapObjectPduNumber.
+The new FW version is contained in pmTrapNewFirmwareVersion.
+The result of the process is contained in pmTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		imageUpgradeSuccess(1)
+		imageUpgradeInternalError(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduFirmwareUpgradeResultsTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapFirmwareUpgradeResult=%parm[#3]% 
+			pmTrapNewFirmwareVersion=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>309</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduHwOcpTripped</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduHwOcpTripped</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is tripped.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The number of the PDU that was tripped is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that was tripped is contained in the pmTrapObjectPduId. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduHwOcpTripped trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>310</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduHwOcpReset</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduHwOcpReset</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is reset.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The number of the PDU whose HW OCP was reset is contained in the pmTrapObjectPduNumber.
+The ID of the PDU ID whose HW OCP was reset is contained in the pmTrapObjectPduId. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduHwOcpReset trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>311</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduMaxLoadBackTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduMaxLoadBackTrap</event-label>
+	<descr>
+&lt;p&gt;The current on a power device attached to the appliance is back to normal.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the event is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that detected the event is contained in the pmTrapObjectPduId.
+The Type of the PDU Element that detected the event is contained in the pmTrapObjectPduElementType.
+The Name of the Pdu Element that detected the event is contained in the pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduMaxLoadBackTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>312</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduWarnLoadTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduWarnLoadTrap</event-label>
+	<descr>
+&lt;p&gt;The current on a power device attached to the appliance is above its high warning threshold.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the problem is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that detected the problem is contained in the pmTrapObjectPduId.
+The Type of the PDU Element that detected the problem is contained in the pmTrapObjectPduElementType.
+The Name of the Pdu Element that detected the problem is contained in the pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduWarnLoadTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>313</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmPduLowLoadLowTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmPduLowLoadLowTrap</event-label>
+	<descr>
+&lt;p&gt;The current on a power device attached to the appliance is below its low warning threshold.
+The port number on the appliance that the power device is attached to is contained in the pmTrapObjectSerialPortNumber.
+The PDU# that detected the problem is contained in the pmTrapObjectPduNumber.
+The ID of the PDU that detected the problem is contained in the pmTrapObjectPduId.
+The Type of the PDU Element that detected the problem is contained in the pmTrapObjectPduElementType.
+The Name of the Pdu Element that detected the problem is contained in the pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmPduLowLoadLowTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>350</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletNameChangedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletNameChangedTrap</event-label>
+	<descr>
+&lt;p&gt;The name of socket was changed.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the power device is contained in the pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that has changed the name is contained in pmTrapObjectSocketNumber.
+The old socket name is contained in pmTrapObjectSocketOldName.
+The socket name that has changed to the on state is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletNameChangedTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketOldName=%parm[#5]% 
+			pmTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>351</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletCmdOnTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletCmdOnTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has been issued the on command.
+The name of the user who issued the on command is contained in pmTrapObjectUserName.      
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that was issued the on command is contained in pmTrapObjectSocketNumber.
+The socket name that was issued the on command is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletCmdOnTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]% 
+			pmTrapObjectPduNumber=%parm[#3]% 
+			pmTrapObjectPduId=%parm[#4]% 
+			pmTrapObjectSocketNumber=%parm[#5]% 
+			pmTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>352</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletStatusOnTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletStatusOnTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has changed to the on state.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that has changed to the on state is contained pmTrapObjectSocketNumber.
+The number of the power device is contained in the pmTrapObjectPduNumber.
+The socket name that has changed to the on state is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletStatusOnTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>353</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletCmdOffTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletCmdOffTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has been issued the off command.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that was issued the off command is contained in pmTrapObjectSocketNumber.
+The socket name that was issued the off command is contained in pmTrapObjectSocketName.
+The name of the user who issued the off command is contained in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletCmdOffTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]% 
+			pmTrapObjectPduNumber=%parm[#3]% 
+			pmTrapObjectPduId=%parm[#4]% 
+			pmTrapObjectSocketNumber=%parm[#5]% 
+			pmTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>354</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletStatusOffTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletStatusOffTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has changed to the off state.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the power device is contained in the pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that has changed to the off state is contained in pmTrapObjectSocketNumber.
+The socket name that has changed to the off state is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletStatusOffTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>355</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletCmdCycleTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletCmdCycleTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has been issued the cycle command.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that was issued the cycle command is contained in pmTrapObjectSocketNumber.
+The socket name that was issued the cycle command is contained in pmTrapObjectSocketName.
+The name of the user who issued the cycle command is contained in pmTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletCmdCycleTrap trap received 
+			pmTrapObjectUserName=%parm[#1]% 
+			pmTrapObjectSerialPortNumber=%parm[#2]% 
+			pmTrapObjectPduNumber=%parm[#3]% 
+			pmTrapObjectPduId=%parm[#4]% 
+			pmTrapObjectSocketNumber=%parm[#5]% 
+			pmTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>356</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletCycleFinishedTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletCycleFinishedTrap</event-label>
+	<descr>
+&lt;p&gt;An outlet on a chain of power device has completed the cycle command.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The power device number in the chain is contained in pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that was issued the cycle command is contained in pmTrapObjectSocketNumber.
+The socket name that was issued the cycle command is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletCycleFinishedTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>357</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletOnSenseFailTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletOnSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an on sense failure for a socket.
+An on sense failure occurs when a socket should be in the on state but is actually in the off state.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the power device is contained in the pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that has changed to the on state is contained in pmTrapObjectSocketNumber.
+The socket name that has changed to the on state is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletOnSenseFailTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>358</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmOutletOffSenseFailTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmOutletOffSenseFailTrap</event-label>
+	<descr>
+&lt;p&gt;A power device attached to the appliance has detected an off sense failure for a socket.
+An off sense failure occurs when a socket should be in the off state but is actually in the on state.
+The port number on the appliance that the chain of power device is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the power device is contained in the pmTrapObjectPduNumber.
+The ID of the power device is contained in pmTrapObjectPduId.
+The socket number that has changed to the on state is contained in pmTrapObjectSocketNumber.
+The socket name that has changed to the on state is contained in pmTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmOutletOffSenseFailTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectSocketNumber=%parm[#4]% 
+			pmTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>500</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmTemperatureExceededMaxTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmTemperatureExceededMaxTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance temperature has exceeded the maximum threshold configured.
+The maximum temperature configured is contained in pmTrapObjectTemperatureMaximumValue.
+The threshold configured is contained in the pmTrapObjectTemperatureMaxThreshold.
+The current temperature is contained in pmTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMaximumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMaxThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmTemperatureExceededMaxTrap trap received 
+			pmTrapObjectTemperatureMaximumValue=%parm[#1]% 
+			pmTrapObjectTemperatureMaxThreshold=%parm[#2]% 
+			pmTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>501</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmTemperatureReachedMaxTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmTemperatureReachedMaxTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance temperature has gone beneath the maximum threshold configured.
+The maximum temperature configured is contained in pmTrapObjectTemperatureMaximumValue
+The threshold confiugred is contained in pmTrapObjectTemperatureMaxThreshold.
+The current temperature is contained in pmTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMaximumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMaxThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmTemperatureReachedMaxTrap trap received 
+			pmTrapObjectTemperatureMaximumValue=%parm[#1]% 
+			pmTrapObjectTemperatureMaxThreshold=%parm[#2]% 
+			pmTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>502</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmTemperatureExceededMinTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmTemperatureExceededMinTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance temperature has exceeded the minimum threshold configured.
+The minimum temperature configured is contained in pmTrapObjectTemperatureMinimumValue.
+The threshold configured is contained in the pmTrapObjectTemperatureMinThreshold.
+The current temperature is contained in pmTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMinimumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMinThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmTemperatureExceededMinTrap trap received 
+			pmTrapObjectTemperatureMinimumValue=%parm[#1]% 
+			pmTrapObjectTemperatureMinThreshold=%parm[#2]% 
+			pmTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>503</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmTemperatureReachedMinTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmTemperatureReachedMinTrap</event-label>
+	<descr>
+&lt;p&gt;The appliance temperature has gone beneath the minimum threshold configured.
+The minimum temperature configured is contained in pmTrapObjectTemperatureMinimumValue
+The threshold confiugred is contained in pmTrapObjectTemperatureMinThreshold.
+The current temperature is contained in pmTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMinimumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureMinThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmTemperatureReachedMinTrap trap received 
+			pmTrapObjectTemperatureMinimumValue=%parm[#1]% 
+			pmTrapObjectTemperatureMinThreshold=%parm[#2]% 
+			pmTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>507</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdNormalTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdNormalTrap</event-label>
+	<descr>
+&lt;p&gt;A sensor attached to the appliance cleared its alarm.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdNormalTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>508</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdHighCriticalTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdHighCriticalTrap</event-label>
+	<descr>
+&lt;p&gt;A sensor attached to the appliance is above its high critical threshold.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdHighCriticalTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>509</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdHighWarningTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdHighWarningTrap</event-label>
+	<descr>
+&lt;p&gt;A sensor attached to the appliance is above its high warning threshold.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdHighWarningTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>510</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdLowWarningTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdLowWarningTrap</event-label>
+	<descr>
+&lt;p&gt;A sensor attached to the appliance is below its low warning threshold.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdLowWarningTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>511</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdLowCriticalTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdLowCriticalTrap</event-label>
+	<descr>
+&lt;p&gt;A sensor attached to the appliance is below its low critical threshold.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdLowCriticalTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.10418.17.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>512</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/avocent/traps/avctPmSensorThresholdDigitalSensorAlarmTrap</uei>
+	<event-label>PM-TRAP-MIB defined trap event: avctPmSensorThresholdDigitalSensorAlarmTrap</event-label>
+	<descr>
+&lt;p&gt;A digital sensor attached to the appliance is in its alarm state.
+The port number of the appliance where the sensor is attached to is contained in pmTrapObjectSerialPortNumber.
+The number of the PDU where the sensor is attached is contained in pmTrapObjectPduNumber.
+The ID of the PDU where the sensor is attached is contained in pmTrapObjectPduId.
+The Type of the sensor is contained in pmTrapObjectPduElementType.
+The Name of the sensor is contained in pmTrapObjectPduElementName.
+The current value detected when this trap was originated is contained in pmTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	pmTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avctPmSensorThresholdDigitalSensorAlarmTrap trap received 
+			pmTrapObjectSerialPortNumber=%parm[#1]% 
+			pmTrapObjectPduNumber=%parm[#2]% 
+			pmTrapObjectPduId=%parm[#3]% 
+			pmTrapObjectPduElementType=%parm[#4]% 
+			pmTrapObjectPduElementName=%parm[#5]% 
+			pmTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: PM-TRAP-MIB -->
+</events>

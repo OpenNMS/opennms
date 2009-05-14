@@ -871,7 +871,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientServerUnavailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerUnavailable</event-label>
 	<descr>This trap will be generated when the requested authentication server is not available.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;UnavailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -897,7 +897,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientNoServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
 	<logmsg dest='logndisplay'>Juniper Event: No RADIUS authentication server available.</logmsg>
@@ -919,7 +919,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientServerUnavailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerUnavailable</event-label>
 	<descr>This trap will be generated when the requested accounting server is not available.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;UnavailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -945,7 +945,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientNoServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
 	<logmsg dest='logndisplay'>Juniper Event: No RADIUS accounting server available.</logmsg>
@@ -967,7 +967,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAuthClientServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerAvailable</event-label>
 	<descr>This trap will be generated when the requested authentication server becomes available again after a period of time.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -975,7 +975,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: RADIUS authentication server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -992,7 +992,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/mib2opennms/juniRadiusAcctClientServerAvailable</uei>
+	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerAvailable</event-label>
 	<descr>This trap will be generated when the requested accounting server becomes available again after a period of time.&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -1000,7 +1000,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	</descr>
 	<logmsg dest='logndisplay'>Juniper Event: RADUS accounting server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <!-- End of auto generated data from MIB: Juniper-RADIUS-CLIENT-MIB -->
 <!-- Start of data from MIB: Juniper-System-MIB -->
