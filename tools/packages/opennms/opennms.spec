@@ -271,8 +271,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
-    grep -v '/WEB-INF/web\.xml$' | \
-    grep -v '/WEB-INF/configuration\.properties$' | \
+    grep -v '/WEB-INF/[^/]*\.xml$' | \
+    grep -v '/WEB-INF/[^/]*\.properties$' | \
     sort >> %{_tmppath}/files.jetty
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -281,8 +281,8 @@ find $RPM_BUILD_ROOT%{jettydir} -type d | \
 # webapps
 find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,," | \
-    grep -v '/WEB-INF/web\.xml$' | \
-    grep -v '/WEB-INF/configuration\.properties$' | \
+    grep -v '/WEB-INF/[^/]*\.xml$' | \
+    grep -v '/WEB-INF/[^/]*\.properties$' | \
     sort > %{_tmppath}/files.webapp
 find $RPM_BUILD_ROOT%{webappsdir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -323,13 +323,13 @@ rm -rf $RPM_BUILD_ROOT
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
 %{instprefix}/jetty-webapps
-%config  %{jettydir}/%{servletdir}/WEB-INF/web.xml
-%config  %{jettydir}/%{servletdir}/WEB-INF/configuration.properties
+%config %{jettydir}/%{servletdir}/WEB-INF/*.xml
+%config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 
 %files webapp-standalone -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%config %{webappsdir}/%{servletdir}/WEB-INF/web.xml
-%config %{webappsdir}/%{servletdir}/WEB-INF/configuration.properties
+%config %{webappsdir}/%{servletdir}/WEB-INF/*.xml
+%config %{webappsdir}/%{servletdir}/WEB-INF/*.properties
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
