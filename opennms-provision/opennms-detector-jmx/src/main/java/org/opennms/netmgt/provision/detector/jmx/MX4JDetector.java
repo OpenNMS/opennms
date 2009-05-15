@@ -40,9 +40,9 @@ import org.springframework.stereotype.Component;
 public class MX4JDetector extends AbstractJsr160Detector {
     
     public MX4JDetector(){
-        super("MX4J", DEFAULT_PORT);
-        setFriendlyName("JMXRMI");
-        setFactory("mx4j");
+        super("MX4J", 9004);
+        setFriendlyName("mx4j");
+        setFactory("STANDARD");
     }
 
     @Override
