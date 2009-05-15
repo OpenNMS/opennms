@@ -695,6 +695,7 @@
         </property>
       </activation>
       <modules>
+        <module>opennms-doc</module>
         <module>opennms-tools</module>
       </modules>
     </profile>
