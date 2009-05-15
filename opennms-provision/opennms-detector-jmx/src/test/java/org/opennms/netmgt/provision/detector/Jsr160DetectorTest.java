@@ -30,28 +30,72 @@
  */
 package org.opennms.netmgt.provision.detector;
 
-import java.net.UnknownHostException;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
+import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author Donald Desloge
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class Jsr160DetectorTest {
     
-    // private Jsr160Detector m_detector;
+    @Autowired
+    public Jsr160Detector m_detector;
+    
+    public MBeanServer m_beanServer;
+    private Registry m_registry;
     
     @Before
-    public void setUp() {
-       // m_detector = new Jsr160Detector(); 
+    public void setUp() throws IOException {
+        assertNotNull(m_detector);
+        
+        m_beanServer = ManagementFactory.getPlatformMBeanServer();
+        
+        m_registry = LocateRegistry.createRegistry(9999);
+        
+       
     }
     
     @Test
-    public void testMyDetector() throws UnknownHostException {
-        //Tested against a local installation of a JBossServer
-        //assertTrue(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.103"), new NullDetectorMonitor()));
+    public void testDetectorSuccess() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
+        
+        JMXConnectorServer connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
+        connectorServer.start();
+        
+        m_detector.setPort(9999);
+        m_detector.setUrlPath("/server");
+        m_detector.onInit();
+
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        
+        connectorServer.stop();
+       
     }
 }

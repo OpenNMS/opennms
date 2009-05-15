@@ -1,13 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,27 +34,20 @@ package org.opennms.netmgt.provision.detector.jmx;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-/**
- * @author Donald Desloge
- *
- */
+
 @Component
 @Scope("prototype")
-public class Jsr160Detector extends AbstractJsr160Detector{
-
-    private static final String DEFAULT_SERVICE_NAME = "JSR160";
+public class MX4JDetector extends AbstractJsr160Detector {
     
-    /**
-     * Default constructor
-     */
-    public Jsr160Detector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    public MX4JDetector(){
+        super("MX4J", DEFAULT_PORT);
+        setFriendlyName("JMXRMI");
+        setFactory("mx4j");
     }
-
 
     @Override
     public void onInit() {
         expectBeanCount(greatThan(0));
+        
     }
-
 }

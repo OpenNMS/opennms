@@ -1,13 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,32 +29,27 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.detector.jmx;
+package org.opennms.netmgt.provision.detector.jmx.client;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * @author Donald Desloge
- *
- */
-@Component
-@Scope("prototype")
-public class Jsr160Detector extends AbstractJsr160Detector{
+import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
 
-    private static final String DEFAULT_SERVICE_NAME = "JSR160";
+public class JBossClient extends JMXClient {
     
-    /**
-     * Default constructor
-     */
-    public Jsr160Detector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+    @Override
+    protected ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
+        return JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
-
 
     @Override
-    public void onInit() {
-        expectBeanCount(greatThan(0));
+    protected Map<String, Object> generateMap(int port, int timeout) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("port", port);
+        map.put("timeout", timeout);
+        return map;
     }
-
 }
