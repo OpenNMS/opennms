@@ -79,12 +79,25 @@
 		</para>
 	</section>
 
+	<section id="introduction-1.6.5">
+		<title>Release 1.6.5</title>
+		
+		<para>
+			Release 1.6.5 is a small bugfix release in the 1.6 series.  It is a
+			recommended upgrade for all users.
+		</para>
+		
+		<para>
+			The codename for 1.6.5 is <emphasis>Eastern Conference Finals</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.6.4">
 		<title>Release 1.6.4</title>
 		
 		<para>
 			Release 1.6.4 continues the 1.6 series with a fix for a showstopper exception
-			in OpenNMS 1.6.3.  It is a <emphasis>strongly</emphasis>recommended upgrade
+			in OpenNMS 1.6.3.  It is a <emphasis>strongly</emphasis> recommended upgrade
 			for all users.
 		</para>
 		

@@ -273,7 +273,7 @@ public final class IfSnmpCollector implements Runnable {
         
         try {
 
-            if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null && getIfXTable().getIfHighSpeed(ifIndex) > 0) {
+            if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null && getIfXTable().getIfHighSpeed(ifIndex) > 4294) {
                 ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
                 log().debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
             } else if (hasIfTable()) {
