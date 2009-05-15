@@ -5,4 +5,4 @@ LC_ALL=C
 PATH=$PWD/maven/bin:$PATH
 export LANG LC_ALL PATH
 
-./build.sh -X -Dtagging -DautoVersionSubmodules=true "$@" release:prepare
+./build.sh -Dtagging -DautoVersionSubmodules=true "$@" release:prepare
