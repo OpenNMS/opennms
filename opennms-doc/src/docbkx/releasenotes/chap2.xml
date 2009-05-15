@@ -151,6 +151,128 @@
 
 	</section>
 
+	<section id="opennms-1.6.5">
+		<title>Changes in OpenNMS 1.6.5</title>
+
+		<section id="opennms-1.6.5-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Capsd will now use ifHighSpeed instead of ifSpeed when available  (Bug <ulink
+					url="http://bugzilla.opennms.org/show_bug.cgi?id=1822">#1822</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The SNMP configuration shipped with OpenNMS now uses SNMP v2c, fewer retries,
+					and a longer timeout by default, for more efficient scanning. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3050">#3050</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graphing has been added or updated for
+					Alcatel-Lucent, Allot, Alteon, Aruba, Ascend, Avocent, Bluecat, BlueCoat,
+					Cisco Airespace, Lucent, NetApp, Overture, Packeteer, and Powerware devices
+					(Bugs 
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3096">#3096</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3099">#3099</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3109">#3109</ulink>,
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3138">#3138</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support has been added for using raw instance identifiers in
+					thresholds when no data source label can be inferred (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3108">#3108</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support was added for a number of new Cisco devices in Linkd (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3110">#3110</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support has been added for extracting the bgpPeerRemoteAddr instance
+					identifier from the varbinds of the bgpEstablished and bgpBackwardTransition
+					traps defined in the BGP4-MIB.  This allows us to make meaningful alarm
+					annotations for these events so that the resulting alarms can self-clear. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3156">#3156</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Some tools have been added to OpenNMS "contrib" for creating SNMP walk dumps
+					suitable for debugging with OpenNMS's mock SNMP server. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3173">#3173</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The default "Database" category now includes MSSQL and Oracle in addition
+					to MySQL and PostgreSQL. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3175">#3175</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+    
+		<section id="opennms-1.6.5-bugfixes">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The Capsd HTTP plugin now properly honors response-text parameters.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2774">#2774</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The HTTP collector now properly honors the "retry" parameter.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3133">#3133</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Hyperic HQ service monitor definition now detects Hyperic HQ 4.x properly.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3106">#3106</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Multiple nodes with the same name/label can now be distinguished from each other
+					in category views.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3112">#3112</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Vacuumd cleans out old (invalid) nodes from topology map tables.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3121">#3121</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The JMX collector now works when store-by-group persisting is enabled.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3160">#3160</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Configuration file filtering has been fixed so that tags aren't properly
+					expanded in opennms.properties.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3174">#3174</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The remote poller build now ensures it is compiled with the correct version
+					of Groovy.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3176">#3176</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+    
+		<para>The full list of changes is available in <ulink
+		url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.6.5">bugzilla</ulink>.</para>
+
+	</section>
+
 	<section id="opennms-1.6.4">
 		<title>Changes in OpenNMS 1.6.4</title>
 
