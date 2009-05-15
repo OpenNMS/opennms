@@ -30,12 +30,14 @@
  */
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -48,7 +50,9 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
@@ -68,34 +72,62 @@ public class Jsr160DetectorTest {
     @Autowired
     public Jsr160Detector m_detector;
     
-    public MBeanServer m_beanServer;
-    private Registry m_registry;
+    public static MBeanServer m_beanServer;
+    private static Registry m_registry;
+    private JMXConnectorServer m_connectorServer;
+    
+    @BeforeClass
+    public static void beforeTest() throws RemoteException{
+        m_registry = LocateRegistry.createRegistry(9999);
+        m_beanServer = ManagementFactory.getPlatformMBeanServer();
+    }
     
     @Before
     public void setUp() throws IOException {
         assertNotNull(m_detector);
         
-        m_beanServer = ManagementFactory.getPlatformMBeanServer();
         
-        m_registry = LocateRegistry.createRegistry(9999);
+        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
         
-       
+        m_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
+        m_connectorServer.start();
+    }
+    
+    @After
+    public void tearDown() throws IOException{
+        m_connectorServer.stop();
     }
     
     @Test
     public void testDetectorSuccess() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
-        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
-        
-        JMXConnectorServer connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
-        connectorServer.start();
         
         m_detector.setPort(9999);
         m_detector.setUrlPath("/server");
         m_detector.onInit();
 
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
-        
-        connectorServer.stop();
        
+    }
+    
+    @Test
+    public void testDetectorWrongPort() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        
+        m_detector.setPort(9000);
+        m_detector.setUrlPath("/server");
+        m_detector.onInit();
+
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        
+    }
+    
+    @Test
+    public void testDetectorWrongUrlPath() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        
+        m_detector.setPort(9000);
+        m_detector.setUrlPath("/wrongurlpath");
+        m_detector.onInit();
+
+        assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        
     }
 }
