@@ -1487,7 +1487,7 @@ create table atinterface (
 
 
 
-create index atinterface_nodeid_idx on atinterface USING HASH(nodeid) ;
+create index atinterface_nodeid_idx on atinterface(nodeid);
 create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
 create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
 
