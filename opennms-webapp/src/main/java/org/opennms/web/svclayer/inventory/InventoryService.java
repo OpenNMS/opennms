@@ -810,7 +810,8 @@ public class InventoryService implements InitializingBean {
         RwsNbinventoryreport rnbi = InventoryReport.runInventoryReport(m_cp, _date, field);
         try {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
-            String xmlFileName = ConfigFileConstants.getHome() + "/share/reports/NODEINVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+            String datestamp = fmt.format(new java.util.Date()) ;
+            String xmlFileName = ConfigFileConstants.getHome() + "/share/reports/NODEINVENTORY" + datestamp + ".xml";
 
             // Generate source XML
             FileWriter writer = new FileWriter(xmlFileName);
@@ -820,27 +821,51 @@ public class InventoryService implements InitializingBean {
             writer.close();
             log().debug("runNodeBaseInventoryReport marshal done");
             
-//            // prepare PDF file
-//            String pdfFileName="/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.pdf";
-//            File file = new File(pdfFileName);
-//            FileOutputStream pdfFileWriter = new FileOutputStream(file);
-//            PDFWriter pdfWriter = new PDFWriter(ConfigFileConstants.getFilePathString()
-//                                               + "PDFInventoryReport.xsl");
-//            log().debug("runNodeBaseInventoryReport xsl " + ConfigFileConstants.getFilePathString()
-//                        + "PDFInventoryReport.xsl");
+            if (_type.compareTo("pdftype") == 0){
+                
+                log().debug("runNodeBaseInventoryReport generating pdf is still not supported :( ");
+                
+//                String htmlFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".html";
+//                
+//                File file = new File(htmlFileName);
+//                FileOutputStream hmtlFileWriter = new FileOutputStream(file);
+//                PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-rancidlistreport.xsl");
+//                File fileR = new File(xmlFileName);
+//                FileReader fileReader = new FileReader(fileR);
+//                //htmlWriter.generatePDF(fileReader, hmtlFileWriter, ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".fot");
+//                htmlWriter.generateHTML(fileReader, hmtlFileWriter);
 //
-//            // prepare to read xml generated above
-//            File fileR = new File("/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.xml");
-//            FileReader fileReader = new FileReader(fileR);
+//                org.apache.fop.apps.Driver m_driver;
+//                
+//                Reader reader = new FileReader(fileR);
+//                InputSource dataSource = new InputSource(reader);
+//                
+//                String pdfFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".pdf";
 //
-//            //invoke api to generate pdf
-//            pdfWriter.generatePDF(fileReader, pdfFileWriter,"/home/gugli/OPENNMS/trunk/target/opennms-1.7.4-SNAPSHOT/logs/webapp/report.fot");
-//            log().debug("runNodeBaseInventoryReport pdf done");
-////
-////            
-////            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-////            String xmlFileName = ConfigFileConstants.getHome()
-////            + "/share/reports/RANCID-INVENTORY" + fmt.format(new java.util.Date()) + ".xml";
+//                File fileP = new File(pdfFileName);
+//                FileOutputStream pdfFileWriter = new FileOutputStream(fileP);
+//
+//                m_driver = new org.apache.fop.apps.Driver(dataSource, pdfFileWriter);
+//                m_driver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
+//                m_driver.run();
+//
+//                log().debug("runRancidListReport html done");
+                
+            } else {
+                
+                log().debug("runNodeBaseInventoryReport generating html");
+
+                String htmlFileName=ConfigFileConstants.getHome() + "/share/reports/NODEINVENTORY" + datestamp + ".html";
+                
+                File file = new File(htmlFileName);
+                FileOutputStream hmtlFileWriter = new FileOutputStream(file);
+                PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-nbinventoryreport.xsl");
+                File fileR = new File(xmlFileName);
+                FileReader fileReader = new FileReader(fileR);
+                htmlWriter.generateHTML(fileReader, hmtlFileWriter);
+                log().debug("runNodeBaseInventoryReport html done");
+
+            }
         }
         catch (Exception e){
             log().debug("InventoryService runNodeBaseInventoryReport marshall exception "+ e.getMessage() );

@@ -15,6 +15,7 @@
     <complexType>
       <sequence>
          <element name="totalGroups" type="int" minOccurs="0"/>
+         <element name="dateInventory" type="string" minOccurs="0"/>
          <element ref="this:groupSet" minOccurs="0" maxOccurs="unbounded"/>
       </sequence>
       </complexType>
