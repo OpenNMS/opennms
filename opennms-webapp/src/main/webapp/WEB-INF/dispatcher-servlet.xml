@@ -636,8 +636,8 @@
     <bean name="/inventory/rancidReportExec.htm" class="org.opennms.web.controller.inventory.RancidReportExecController">
     <property name="inventoryService" ref="inventoryService"/>
     <property name="commandClass" value="org.opennms.web.controller.inventory.RancidReportExecCommClass"/>
-    <property name="formView" value="inventory/rancidReport"/>
-    <property name="successView" value="inventory/rancidReport"/> 
+    <property name="formView" value="inventory/rancidReportExec"/>
+    <property name="successView" value="inventory/rancidReportExec"/> 
   </bean> 
 
   
