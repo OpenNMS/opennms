@@ -102,13 +102,13 @@ public class InventoryReport {
                     } catch (Exception e){
                         //no inventory, skip node....
                         log().debug("InventoryService runNodeBaseInventoryReport device has no inventory ["+deviceName+ "]"); 
-                        if (!withKey){
-                            Nbisinglenode nbisn = new Nbisinglenode();
-                            nbisn.setDevicename(deviceName);
-                            nbisn.setGroupname(groupName);
-                            nbisn.setComment("No inventory associated");
-                            groupSet.addNbisinglenode(nbisn);
-                        }
+//                        if (!withKey){
+//                            Nbisinglenode nbisn = new Nbisinglenode();
+//                            nbisn.setDevicename(deviceName);
+//                            nbisn.setGroupname(groupName);
+//                            nbisn.setComment("No inventory associated");
+//                            groupSet.addNbisinglenode(nbisn);
+//                        }
                         continue;
                     }
                     if (versionMatch.compareTo("") == 0){
@@ -141,16 +141,18 @@ public class InventoryReport {
             
                         List<InventoryElement2RP> ie2rpList = new ArrayList<InventoryElement2RP>();
                         Iterator<InventoryElement2> ie2rpIter = nodeBaseInv.getIe().iterator();
-                        InventoryElement2RP ie2rp = new InventoryElement2RP();
             
                         while (ie2rpIter.hasNext()){
+                            
+                            InventoryElement2RP ie2rp = new InventoryElement2RP();
+
                             InventoryElement2 ie2 = ie2rpIter.next();
                             Iterator<Tuple> iterTuple = ie2.getTupleList().iterator();
                             Iterator<InventoryMemory> iterMemory = ie2.getMemoryList().iterator();
                             Iterator<InventorySoftware> iterSoftware = ie2.getSoftwareList().iterator();
                             
-                            TupleRP tmp2 = new TupleRP();
                             while (iterTuple.hasNext()){
+                                TupleRP tmp2 = new TupleRP();
                                 Tuple tmp1 = iterTuple.next();
                                 tmp2.setName(tmp1.getName());
                                 //filter here
@@ -161,8 +163,8 @@ public class InventoryReport {
                                 ie2rp.addTupleRP(tmp2);
                             }
                             
-                            InventoryMemoryRP tmp3 = new InventoryMemoryRP();
                             while (iterMemory.hasNext()){
+                                InventoryMemoryRP tmp3 = new InventoryMemoryRP();
                                 InventoryMemory tmp1 = iterMemory.next();
                                 //filter here
                                 if (withKey && tmp1.getSize().contains(field)){
@@ -175,8 +177,8 @@ public class InventoryReport {
                                 tmp3.setType(tmp1.getType());
                                 ie2rp.addInventoryMemoryRP(tmp3);
                             }
-                            InventorySoftwareRP tmp4 = new InventorySoftwareRP();
                             while (iterSoftware.hasNext()){
+                                InventorySoftwareRP tmp4 = new InventorySoftwareRP();
                                 InventorySoftware tmp1 = iterSoftware.next();
                                 //filter here
                                 if(withKey && tmp1.getType().contains(field)){
@@ -187,6 +189,7 @@ public class InventoryReport {
                                     includeNbisn = true;
                                 }
                                 tmp4.setVersion(tmp1.getVersion());
+
                                 ie2rp.addInventorySoftwareRP(tmp4);
                             }
                             
@@ -210,6 +213,7 @@ public class InventoryReport {
                 }
                 rnbi.addGroupSet(groupSet);
                 rnbi.setTotalGroups(totalGroups);
+                rnbi.setDateInventory(_date);
             }
             log().debug("InventoryService runNodeBaseInventoryReport ended");
             return rnbi;
