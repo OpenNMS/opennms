@@ -75,6 +75,10 @@
 			<input type="radio" name="reportfiletype" value="htmltype" default/> HTML
 		</td>
 		</tr>
+		<tr>
+		    <th width="50%"><label id="reportemail" for="reportemail">Email to:</label></th>
+		    <td><input id="reportemail" type="text" name="reportemail" value=""></td>
+		</tr>
 		 <tr>
 		 	<th></th>
 		 	<th><input id="run" type="button" value="run" onClick="runInventory()">

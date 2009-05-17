@@ -41,17 +41,33 @@
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="Admin Rancid" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Admin Rancid" />
+  <jsp:param name="headTitle" value="Rancid Report" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Rancid</a>" />
+  <jsp:param name="breadcrumb" value="Rancid Reports" />
 </jsp:include>
 
 <div class="TwoColLeft">
     <!-- general info box -->
-    <h3>Report Generated</h3>
-    <table class="o-box">
-	</table>
-	
+    <h3>Report in progress</h3>
+    <table class="o-box"
+		<tr> 
+		<td>Report Type</td>
+        <td>${type}</td>
+		</tr>
+		<tr> 
+		<td>Report Date</td>
+        <td>${date}</td>
+		</tr>
+		<tr> 
+		<td>Search field</td>
+        <td>${searchfield}</td>
+		</tr>
+		<tr> 
+		<td>File format</td>
+        <td>${reportformat}</td>
+		</tr>
+		
+</table>
 
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
