@@ -61,9 +61,6 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     /*
      * Apply thresholds definitions for specified service using attribuesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
-     * 
-     * TODO
-     * - Create JUnit Tests
      */
     public List<Event> applyThresholds(String svcName, Map<String, Double> attributes) {
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, m_hostAddress);

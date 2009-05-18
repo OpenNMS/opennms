@@ -485,12 +485,18 @@ public class ThresholdingVisitorTest {
         assertTrue(events.size() == 0);
 
         attributes.put("http", 200.0);
-        events = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(events.size() == 0); // Trigger == 1
-        events = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(events.size() == 0); // Trigger == 2
-        events = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(events.size() == 1); // Trigger == 3
+        if (thresholdingSet.hasThresholds("http")) {
+            events = thresholdingSet.applyThresholds("http", attributes);
+            assertTrue(events.size() == 0); // Trigger == 1
+        }
+        if (thresholdingSet.hasThresholds("http")) {
+            events = thresholdingSet.applyThresholds("http", attributes);
+            assertTrue(events.size() == 0); // Trigger == 2
+        }
+        if (thresholdingSet.hasThresholds("http")) {
+            events = thresholdingSet.applyThresholds("http", attributes);
+            assertTrue(events.size() == 1); // Trigger == 3
+        }
 
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "HTTP", 3, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();

@@ -5,7 +5,7 @@
    
    <package name="example1">
        <filter>IPADDR IPLIKE *.*.*.*</filter>   
-       <specific>0.0.0.0</specific>
+       <specific>127.0.0.1</specific>
        
        <service name="SNMP" interval="3000" user-defined="false" status="on">
            <parameter key="thresholding-group" value="default-snmp"/>

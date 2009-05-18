@@ -168,17 +168,19 @@ public abstract class ThresholdingSet {
      * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
      */
     public boolean hasThresholds(String resourceTypeName, String attributeName) {
+        boolean ok = false;
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
             for(String key : entityMap.keySet()) {
                 for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                     Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                     if (requiredDatasources.contains(attributeName))
-                        return true;
+                        ok = true;
                 }
             }
         }
-        return false;
+        log().debug("hasThresholds: " + resourceTypeName + "@" + attributeName + "? " + ok);
+        return ok;
     }
 
     /*
@@ -186,6 +188,7 @@ public abstract class ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     protected List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
+        log().debug("applyThresholds: Applying thresholds on " + resourceWrapper + " using " + attributesMap.size() + " attributes.");
         Date date = new Date();
         List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
