@@ -23,6 +23,7 @@ public class InitializationObj extends  MapPropertiesFactory {
 	List<Severity> severities;
 	List<Avail> avails;
 	java.util.Map<String,String> icons;
+	java.util.Map<String,String> iconsBySysoid;
 	java.util.Map<String,String> backgroundImages;
 	java.util.Map<String, String> mapElementDimensions;
     String defaultNodeIcon;
@@ -157,6 +158,14 @@ public class InitializationObj extends  MapPropertiesFactory {
 		this.icons = icons;
 	}
 
+	 public java.util.Map<String, String> getIconsBySysoid() {
+	     return iconsBySysoid;
+    }
+
+	public void setIconsBySysoid(java.util.Map<String, String> iconsBySysoid) {
+	    this.iconsBySysoid = iconsBySysoid;
+	}
+
 	public java.util.Map<String, String> getBackgroundImages() {
 		return backgroundImages;
 	}
@@ -227,6 +236,7 @@ public class InitializationObj extends  MapPropertiesFactory {
 	        severities=mpf.getSeverities();
 	        avails=mpf.getAvails();
 	        icons=mpf.getIcons();
+	        iconsBySysoid=mpf.getIconsBySysoid();
 	        backgroundImages=mpf.getBackgroundImages();
 	        mapElementDimensions=mpf.getMapElementDimensions();
 	        defaultNodeIcon=mpf.getDefaultNodeIcon();
@@ -248,6 +258,7 @@ public class InitializationObj extends  MapPropertiesFactory {
 		severities=mpf.getSeverities();
 		avails=mpf.getAvails();
 		icons=mpf.getIcons();
+		iconsBySysoid=mpf.getIconsBySysoid();
 		backgroundImages=mpf.getBackgroundImages();
 		mapElementDimensions=mpf.getMapElementDimensions();
         defaultNodeIcon=mpf.getDefaultNodeIcon();

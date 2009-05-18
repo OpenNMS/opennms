@@ -30,8 +30,6 @@
  */
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.netmgt.provision.detector.jmx.client.JMXClient;
-import org.opennms.netmgt.provision.detector.jmx.client.Jsr160Client;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -41,110 +39,21 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class Jsr160Detector extends JMXDetector{
+public class Jsr160Detector extends AbstractJsr160Detector{
 
     private static final String DEFAULT_SERVICE_NAME = "JSR160";
-
-    private static int DEFAULT_PORT = 9003;
-    
-    private String m_factory = "STANDARD";
-    private String m_friendlyName = "jsr160";
-    private String m_protocol = "rmi";
-    private String m_type = "default";
-    private String m_urlPath = "/jmxrmi";
-    private String m_username = "opennms";
-    private String m_password = "OPENNMS";
     
     /**
      * Default constructor
      */
-    protected Jsr160Detector() {
+    public Jsr160Detector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
-    /**
-     * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
-     */
-    protected Jsr160Detector(String serviceName, int port) {
-        super(serviceName, port);
-    }
 
     @Override
-    protected JMXClient getClient() {
-        Jsr160Client client = new Jsr160Client();
-        client.setFactory(getFactory());
-        client.setFriendlyName(getFriendlyName());
-        client.setProtocol(getProtocol());
-        client.setUrlPath(getUrlPath());
-        client.setUsername(getUsername());
-        client.setPassword(getPassword());
-        client.setType(getType());
-        
-        return new Jsr160Client();
-    }
-
-    @Override
-    protected void onInit() {
+    public void onInit() {
         expectBeanCount(greatThan(0));
-    }
-
-    public void setFactory(String factory) {
-        m_factory = factory;
-    }
-
-    public String getFactory() {
-        return m_factory;
-    }
-
-    public void setFriendlyName(String friendlyName) {
-        m_friendlyName = friendlyName;
-    }
-
-    public String getFriendlyName() {
-        return m_friendlyName;
-    }
-
-    public void setProtocol(String protocol) {
-        m_protocol = protocol;
-    }
-
-    public String getProtocol() {
-        return m_protocol;
-    }
-
-    public void setType(String type) {
-        m_type = type;
-    }
-
-    public String getType() {
-        return m_type;
-    }
-
-    public void setUrlPath(String urlPath) {
-        m_urlPath = urlPath;
-    }
-
-    public String getUrlPath() {
-        return m_urlPath;
-    }
-
-    public void setUsername(String username) {
-        m_username = username;
-    }
-
-    public String getUsername() {
-        return m_username;
-    }
-
-    public void setPassword(String password) {
-        m_password = password;
-    }
-
-    public String getPassword() {
-        return m_password;
     }
 
 }

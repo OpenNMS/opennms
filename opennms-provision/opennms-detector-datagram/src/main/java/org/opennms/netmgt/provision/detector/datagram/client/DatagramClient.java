@@ -79,8 +79,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.Client#sendRequest(java.lang.Object)
      */
-    public DatagramPacket sendRequest(DatagramPacket request)
-            throws IOException {
+    public DatagramPacket sendRequest(DatagramPacket request) throws IOException {
 
         m_socket.send(request);
 

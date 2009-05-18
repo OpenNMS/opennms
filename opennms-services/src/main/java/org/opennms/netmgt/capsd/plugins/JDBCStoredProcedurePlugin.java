@@ -79,8 +79,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 		boolean status = false;
 		CallableStatement cs = null;
 		try {
-			String storedProcedure = ParameterMap.getKeyedString(qualifiers,
-					"stored-procedure", DEFAULT_STORED_PROCEDURE);
+			String storedProcedure = ParameterMap.getKeyedString(qualifiers, "stored-procedure", DEFAULT_STORED_PROCEDURE);
 			String procedureCall = "{ ? = call test." + storedProcedure + "()}";
 			cs = con.prepareCall(procedureCall);
 			log().debug("Calling stored procedure: " + procedureCall);

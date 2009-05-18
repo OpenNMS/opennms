@@ -51,6 +51,7 @@
 	</table>
 
 	<table name="snmpInterface">
+		<join column="id" table="ipInterface" table-column="snmpinterfaceid"/>
 		<column name="id" visible="false"/>
 		<column name="nodeID" visible="false"/>
 		<column name="ipAddr" visible="false"/>
@@ -60,6 +61,7 @@
 		<column name="snmpIfDescr"/>
 		<column name="snmpIfType"/>
 		<column name="snmpIfSpeed"/>
+		<column name="snmpIfAlias"/>
 		<column name="snmpIfAdminStatus"/>
 		<column name="snmpIfOperStatus"/>
 	</table>

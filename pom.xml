@@ -147,6 +147,14 @@
         <version>2.0-alpha1</version>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.0-rc-5</version>
+        <configuration>
+          <providerSelection>1.5</providerSelection>
+        </configuration>
+      </plugin>
+      <plugin>
         <inherited>false</inherited>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
@@ -428,6 +436,7 @@
   </reporting>
 
   <properties>
+  
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
@@ -1022,7 +1031,7 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>rancid-api</artifactId>
-        <version>0.92</version>
+        <version>0.93</version>
       </dependency>
       <dependency>
         <groupId>org.dnsjava</groupId>
@@ -1543,6 +1552,16 @@
         <groupId>org.jinterop</groupId>
         <artifactId>j-interopdeps</artifactId>
         <version>2.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-mojo</artifactId>
+        <version>${gmaven.version}</version>
+	  </dependency>
+	  <dependency>
+        <groupId>org.codehaus.groovy.maven.runtime</groupId>
+        <artifactId>gmaven-runtime-1.5</artifactId>
+        <version>${gmaven.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

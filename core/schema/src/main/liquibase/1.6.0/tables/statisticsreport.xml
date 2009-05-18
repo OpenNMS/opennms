@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.6.0-statisticsreport">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="statisticsreport" /></not>
+		</preConditions> 
+
+		<!-- This table contains a record of statistics reports -->
+		<createTable tableName="statisticsreport">
+
+			<column name="id" type="integer" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_statisticsreport_id" />
+			</column>
+			<column name="startdate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="enddate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+			<column name="jobstarteddate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="jobcompleteddate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="purgedate" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createIndex tableName="statisticsreport" indexName="statisticsreport_startdate">
+			<column name="startdate" />
+		</createIndex>
+		<createIndex tableName="statisticsreport" indexName="statisticsreport_name">
+			<column name="name" />
+		</createIndex>
+		<createIndex tableName="statisticsreport" indexName="statisticsreport_purgedate">
+			<column name="purgedate" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>
