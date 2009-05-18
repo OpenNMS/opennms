@@ -128,19 +128,25 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
-
-        if (rrdPath == null) {
-            log().debug("storeResponseTime: RRD repository not specified in parameters, latency data will not be stored.");
-            return;
-        }
+        String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
 
         if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
             entries.put(dsName, entries.get(DEFAULT_BASENAME));
             entries.remove(DEFAULT_BASENAME);
         }
 
+        if (thresholds.toLowerCase().equals("true")) {
+            applyThresholds(rrdPath, svc, entries);
+        } else {
+            log().debug("storeResponseTime: Thresholds processing is not enabled. Check thresholding-enabled parameter on service definition");
+        }
+
+        if (rrdPath == null) {
+            log().debug("storeResponseTime: RRD repository not specified in parameters, latency data will not be stored.");
+            return;
+        }
+
         updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
-        applyThresholds(rrdPath, svc, entries);
     }
 
     private void applyThresholds(String rrdPath, MonitoredService service, LinkedHashMap<String, Number> entries) {
@@ -149,11 +155,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             repository.setRrdBaseDir(new File(rrdPath));
             m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
         }
-        LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
-        for (String ds : entries.keySet()) {
-            attributes.put(ds, entries.get(ds).doubleValue());
-        }
         if (m_thresholdingSet.hasThresholds(service.getSvcName())) {
+            LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
+            for (String ds : entries.keySet()) {
+                attributes.put(ds, entries.get(ds).doubleValue());
+            }
             List<Event> events = m_thresholdingSet.applyThresholds(service.getSvcName(), attributes);
             ThresholdingEventProxy proxy = new ThresholdingEventProxy();
             proxy.add(events);
@@ -298,7 +304,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      * Should be called when thresholds configuration has been reloaded
      */
     public void refreshThresholds() {
-        if (m_thresholdingSet != null && m_thresholdingSet.hasThresholds())
+        if (m_thresholdingSet != null)
             m_thresholdingSet.reinitialize();
     }
 
