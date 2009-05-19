@@ -19,7 +19,7 @@ public class Migration {
     private String m_databaseUser;
     private String m_adminUser;
     private String m_adminPassword;
-    private String m_migrationFile;
+    private String m_changeLog;
 
     /**
      * Get the JDBC connection URL.  Defaults to jdbc:postgresql://host/database.
@@ -81,38 +81,10 @@ public class Migration {
         m_adminPassword = adminPassword;
     }
 
-    public String getMigrationFile() {
-        return m_migrationFile;
+    public String getChangeLog() {
+        return m_changeLog;
     }
-    public void setMigrationFile(String migrationFile) {
-        m_migrationFile = migrationFile;
-    }
-
-    public void perform() throws MigrationException {
-        Database db;
-        try {
-            db = CommandLineUtils.createDatabaseObject(
-                this.getClass().getClassLoader(),
-                getJdbcUrl(),
-                getAdminUser(),
-                getAdminPassword(),
-                getJdbcDriver(),
-                "public",
-                null);
-        } catch (JDBCException e) {
-            throw new MigrationException("unable to get database implementation for JDBC driver " + getJdbcDriver(), e);
-        }
-
-        if (db != null) {
-            FileSystemFileOpener fsOpener = new FileSystemFileOpener();
-            CommandLineFileOpener clOpener = new CommandLineFileOpener(this.getClass().getClassLoader());
-            CompositeFileOpener fileOpener = new CompositeFileOpener(fsOpener, clOpener);
-            Liquibase liquibase = new Liquibase(getMigrationFile(), fileOpener, db);
-
-        }
-    }
-
-    private ClassLoader getMigrationClassLoader() {
-        return null;
+    public void setChangeLog(String changeLog) {
+        m_changeLog = changeLog;
     }
 }
