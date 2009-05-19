@@ -137,6 +137,13 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_parameters = null;
         
     }
+    
+    /**
+     * Should be called when thresholds configuration has been reloaded
+     */
+    public synchronized void refreshThresholds() {
+        ((LatencyStoringServiceMonitorAdaptor)getServiceMonitor()).refreshThresholds();
+    }
 
 
     /**

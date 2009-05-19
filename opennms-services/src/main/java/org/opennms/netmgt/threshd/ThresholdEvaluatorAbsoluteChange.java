@@ -36,17 +36,12 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 /**
@@ -65,7 +60,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         return TYPE.equals(type);
     }
     
-    public static class ThresholdEvaluatorStateAbsoluteChange implements ThresholdEvaluatorState {
+    public static class ThresholdEvaluatorStateAbsoluteChange extends AbstractThresholdEvaluatorState {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
         private double m_change;
 
@@ -133,86 +128,23 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
-        public Event getEventForState(Status status, Date date, double dsValue, String dsInstance) {
+        public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
                 if(uei==null || "".equals(uei)) {
                     uei=EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI;
                 }
-                return createBasicEvent(uei, date, dsValue, dsInstance);
+                return createBasicEvent(uei, date, dsValue, resource);
             } else {
                 return null;
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue, String dsInstance) {
-            // create the event to be sent
-            Event event = new Event();
-            event.setUei(uei);
-
-            // set the source of the event to the datasource name
-            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());
-
-            // Set event host
-            try {
-                event.setHost(InetAddress.getLocalHost().getHostName());
-            } catch (UnknownHostException e) {
-                event.setHost("unresolved.host");
-                log().warn("Failed to resolve local hostname: " + e, e);
-            }
-
-            // Set event time
-            event.setTime(EventConstants.formatToString(date));
-
-            // Add appropriate parms
-            Parms eventParms = new Parms();
-            Parm eventParm = null;
-            Value parmValue = null;
-
-            // Add datasource name
-            eventParm = new Parm();
-            eventParm.setParmName("ds");
-            parmValue = new Value();
-            parmValue.setContent(getThresholdConfig().getDatasourceExpression());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add last known value of the datasource
-            eventParm = new Parm();
-            eventParm.setParmName("value");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(dsValue));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add the previous value of the datasource
-            eventParm = new Parm();
-            eventParm.setParmName("previousValue");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(getPreviousTriggeringSample()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add the change threshold defined for this threshold
-            eventParm = new Parm();
-            eventParm.setParmName("changeThreshold");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(getThresholdConfig().getValue()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-            
-            // Add the instance name of the resource in question
-            eventParm = new Parm();
-            eventParm.setParmName("instance");
-            parmValue = new Value();
-            parmValue.setContent(dsInstance != null ? dsInstance : "null");
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add Parms to the event
-            event.setParms(eventParms);
-            
-            return event;
+        private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
+            Map<String,String> params = new HashMap<String,String>();
+            params.put("previousValue", Double.toString(getPreviousTriggeringSample()));
+            params.put("changeThreshold", Double.toString(getThresholdConfig().getValue()));
+            return createBasicEvent(uei, date, dsValue, resource, params);
         }
 
         public double getPreviousTriggeringSample() {
@@ -231,12 +163,17 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_change = change;
         }
 
-        private final Category log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-        
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateAbsoluteChange(m_thresholdConfig);
+        }
+
+        // FIXME This must be implemented correctly
+        public boolean isTriggered() {
+            return false;
+        }
+
+        // FIXME This must be implemented correctly
+        public void clearState() {
         }
     }
 

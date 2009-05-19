@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange;
@@ -266,7 +264,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         parmPresentWithValue(event, "multiplier", "1.1");
         
         // And again with a non-null instance
-        event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, "testInstance");
+        event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, new MockCollectionResourceWrapper("testInstance"));
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
         assertNotNull("event should have parms", event.getParms());

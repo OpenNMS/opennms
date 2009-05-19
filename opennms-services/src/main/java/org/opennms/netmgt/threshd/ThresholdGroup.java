@@ -34,6 +34,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -88,15 +89,51 @@ public class ThresholdGroup {
 		return m_nodeResourceType;
 	}
 
-        /*
-         * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
-         */
-        public Map<String,ThresholdResourceType> getGenericResourceTypeMap() { // agalue
-            return m_genericResourceTypeMap;
-        }
+	/*
+	 * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
+	 */
+	public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
+	    return m_genericResourceTypeMap;
+	}
 
-        public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) { // agalue
-            m_genericResourceTypeMap = genericResourceTypeMap;
-        }
+	public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
+	    m_genericResourceTypeMap = genericResourceTypeMap;
+	}
+	
+	public String toString() {
+	    StringBuilder buf = new StringBuilder();
+	    buf.append(getName() + "={node:{");
+	    if (getNodeResourceType() != null) {
+	        buf.append(getNodeResourceType().getThresholdMap().values());
+	    }
+	    buf.append("}; iface:{");
+	    if (getIfResourceType() != null) {
+	        buf.append(getIfResourceType().getThresholdMap().values());
+	    }
+	    if (getGenericResourceTypeMap() != null) {
+	        for (String rType : getGenericResourceTypeMap().keySet()) {
+	            buf.append("}; " + rType + ":{");
+	            buf.append(getGenericResourceTypeMap().get(rType).getThresholdMap().values());
+	            buf.append("}");
+	        }
+	    }
+	    buf.append("}");
+	    String toString = buf.toString();
+	    return toString;
+	}
+	
+	public void delete() {
+	    delete(getNodeResourceType());
+	    delete(getIfResourceType());
+	    for (String type : getGenericResourceTypeMap().keySet())
+	        delete(getGenericResourceTypeMap().get(type));
+	}
 
+	private void delete(ThresholdResourceType type) {
+	    Map<String,Set<ThresholdEntity>> entityMap = type.getThresholdMap();
+	    for (String key : entityMap.keySet()) 
+	        for (ThresholdEntity e : entityMap.get(key))
+	            e.delete();
+	}
+	
 }

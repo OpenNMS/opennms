@@ -130,5 +130,38 @@ public abstract class BaseThresholdDefConfigWrapper {
     public Basethresholddef getBasethresholddef() {
         return m_baseDef;
     }
+
+    /*
+     * Threshold merging config will use this to check if a new configuration is the same as other.
+     * The rule will be, if the threshold type (i.e., hiqh, low, relative), the datasource type, and
+     * the threshold expression matches, they are the same, even if they have different triger/rearm
+     * values.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
+        return getType().equals(o.getType())
+        && getDsType().equals(o.getDsType())
+        && getDatasourceExpression().equals(o.getDatasourceExpression());
+    }
+    
+    /*
+     * Returns true only if parameter object has exactly the same values for all attributes of
+     * the current object.
+     */
+    public boolean identical(BaseThresholdDefConfigWrapper o) {
+        return equals(o)
+        && (getDsLabel() == o.getDsLabel() || getDsLabel().equals(o.getDsLabel()))
+        && (getTriggeredUEI() == o.getTriggeredUEI() || getTriggeredUEI().equals(o.getTriggeredUEI()))
+        && (getRearmedUEI() ==  o.getRearmedUEI() || getRearmedUEI().equals(o.getRearmedUEI()))
+        && getValue() == o.getValue()
+        && getRearm() == o.getRearm()
+        && getTrigger() == o.getTrigger();
+    }
+    
+    public void merge(BaseThresholdDefConfigWrapper threshold) {
+        m_baseDef = threshold.getBasethresholddef();
+    }
+    
 }
 

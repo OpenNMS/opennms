@@ -54,5 +54,7 @@ public interface PollConfig extends Timer {
     public long getCurrentTime(); 
     
     public void refresh();
+    
+    public void refreshThresholds();
 
 }

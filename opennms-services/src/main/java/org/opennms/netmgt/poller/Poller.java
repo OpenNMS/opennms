@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 May 14: added threshold config change handler for in-line thresholds processing
 // 2006 Apr 27: added support for pathOutageEnabled
 // 2006 Apr 17: added path outage processing for nodeDown event
 // 2003 Nov 11: Merged changes from Rackspace project
@@ -510,12 +511,21 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     public void refreshServicePackages() {
-	PollableVisitor visitor = new PollableVisitorAdaptor() {
-		public void visitService(PollableService service) {
-			service.refreshConfig();
-		}
-	};
-	getNetwork().visit(visitor);
+        PollableVisitor visitor = new PollableVisitorAdaptor() {
+            public void visitService(PollableService service) {
+                service.refreshConfig();
+            }
+        };
+        getNetwork().visit(visitor);
+    }
+
+    public void refreshServiceThresholds() {
+        PollableVisitor visitor = new PollableVisitorAdaptor() {
+            public void visitService(PollableService service) {
+                service.refreshThresholds();
+            }
+        };
+        getNetwork().visit(visitor);
     }
 
 }
