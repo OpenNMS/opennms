@@ -36,10 +36,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Date;
 
 import org.junit.Test;
@@ -49,7 +45,6 @@ import org.opennms.netmgt.threshd.ThresholdEvaluatorHighLow.ThresholdEvaluatorSt
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
-import junit.framework.TestCase;
 
 public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTest {
     @Test
@@ -656,12 +651,12 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         parmPresentAndValueNonNull(event, "instance");
         
         // High exceed, with non-null instance
-        event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, "testInstance");
+        event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, new MockCollectionResourceWrapper("testInstance"));
         assertEquals("UEI should be the highThresholdExceededUEI", EventConstants.HIGH_THRESHOLD_EVENT_UEI, event.getUei());
         parmPresentWithValue(event, "instance", "testInstance");
         
         // High rearm, with non-null instance
-        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0, "testInstance");
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 94.0, new MockCollectionResourceWrapper("testInstance"));
         assertEquals("UEI should be the highThresholdRearmedUEI", EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, event.getUei());
         parmPresentWithValue(event, "instance", "testInstance");
         
@@ -681,12 +676,12 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         parmPresentAndValueNonNull(event, "instance");
         
         // Low exceed, with non-null instance
-        event=item.getEventForState(Status.TRIGGERED, new Date(), 94.0, "testInstance");
+        event=item.getEventForState(Status.TRIGGERED, new Date(), 94.0, new MockCollectionResourceWrapper("testInstance"));
         assertEquals("UEI should be the lowThresholdExceededUEI", EventConstants.LOW_THRESHOLD_EVENT_UEI, event.getUei());
         parmPresentWithValue(event, "instance", "testInstance");
         
         // Low rearm, with non-null instance
-        event=item.getEventForState(Status.RE_ARMED, new Date(), 100.0, "testInstance");
+        event=item.getEventForState(Status.RE_ARMED, new Date(), 100.0, new MockCollectionResourceWrapper("testInstance"));
         assertEquals("UEI should be the lowThresholdRearmedUEI", EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, event.getUei());
         parmPresentWithValue(event, "instance", "testInstance");
     }

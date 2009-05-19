@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.ThresholdingConfigFactory;
  */
 public interface ThresholdsDao {
 	
-	ThresholdGroup get(String name);
-        ThresholdingConfigFactory getThresholdingConfigFactory();
+    ThresholdGroup get(String name);
+    ThresholdGroup merge(ThresholdGroup group);
+    ThresholdingConfigFactory getThresholdingConfigFactory();
 }

@@ -37,17 +37,12 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
@@ -64,7 +59,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         return new ThresholdEvaluatorStateHighLow(threshold);
     }
     
-    public static class ThresholdEvaluatorStateHighLow implements ThresholdEvaluatorState {
+    public static class ThresholdEvaluatorStateHighLow extends AbstractThresholdEvaluatorState {
         /**
          * Castor Threshold object containing threshold configuration data.
          */
@@ -86,6 +81,8 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
          * the rearm value.
          */
         private boolean m_armed;
+        
+        private CollectionResourceWrapper m_lastCollectionResourceUsed;
 
         public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold) {
             Assert.notNull(threshold, "threshold argument cannot be null");
@@ -185,7 +182,16 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getExceededCount() >= getThresholdConfig().getTrigger();
         }
         
-        public Event getEventForState(Status status, Date date, double dsValue, String dsInstance) {
+        public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
+            /*
+             * If resource is null, we will use m_lastCollectionResourceUsed; else we will use provided resource.
+             * For future calls we will preserve the latest not null resource on m_lastCollectionResourceUsed.
+             * See ThresholdEntity.merge
+             */
+            if (resource == null) {
+                resource = m_lastCollectionResourceUsed;
+            }
+            m_lastCollectionResourceUsed = resource;
             String uei;
             switch (status) {
             case TRIGGERED:
@@ -194,12 +200,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, dsInstance);
+                    return createBasicEvent(uei, date, dsValue, resource);
                 } else if ("high".equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, dsInstance);
+                    return createBasicEvent(uei, date, dsValue, resource);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
@@ -210,12 +216,12 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, dsInstance);
+                    return createBasicEvent(uei, date, dsValue, resource);
                 } else if ("high".equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
                     }
-                    return createBasicEvent(uei, date, dsValue, dsInstance);
+                    return createBasicEvent(uei, date, dsValue, resource);
                 } else {
                     throw new IllegalArgumentException("Threshold type " + getThresholdConfig().getType().toString() + " is not supported");
                 } 
@@ -228,91 +234,27 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             }
         }
         
-        private Event createBasicEvent(String uei, Date date, double dsValue, String dsInstance) {
-            // create the event to be sent
-            Event event = new Event();
-            event.setUei(uei);
-
-            // set the source of the event to the datasource name
-            event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());
-
-            // Set event host
-            try {
-                event.setHost(InetAddress.getLocalHost().getHostName());
-            } catch (UnknownHostException e) {
-                event.setHost("unresolved.host");
-                log().warn("Failed to resolve local hostname: " + e, e);
-            }
-
-            // Set event time
-            event.setTime(EventConstants.formatToString(date));
-
-            // Add appropriate parms
-            Parms eventParms = new Parms();
-            Parm eventParm = null;
-            Value parmValue = null;
-
-            // Add datasource name
-            eventParm = new Parm();
-            eventParm.setParmName("ds");
-            parmValue = new Value();
-            parmValue.setContent(getThresholdConfig().getDatasourceExpression());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add last known value of the datasource fetched from its RRD file
-            eventParm = new Parm();
-            eventParm.setParmName("value");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(dsValue));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add configured threshold value
-            eventParm = new Parm();
-            eventParm.setParmName("threshold");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(getThresholdConfig().getValue()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add configured trigger value
-            eventParm = new Parm();
-            eventParm.setParmName("trigger");
-            parmValue = new Value();
-            parmValue.setContent(Integer.toString(getThresholdConfig().getTrigger()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add configured rearm value
-            eventParm = new Parm();
-            eventParm.setParmName("rearm");
-            parmValue = new Value();
-            parmValue.setContent(Double.toString(getThresholdConfig().getRearm()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-            
-            // Add the instance name of the resource in question
-            eventParm = new Parm();
-            eventParm.setParmName("instance");
-            parmValue = new Value();
-            parmValue.setContent(dsInstance != null ? dsInstance : "null");
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-            
-            // Add Parms to the event
-            event.setParms(eventParms);
-            
-            return event;
+        private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
+            Map<String,String> params = new HashMap<String,String>();
+            params.put("threshold", Double.toString(getThresholdConfig().getValue()));
+            params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
+            params.put("rearm", Double.toString(getThresholdConfig().getRearm()));
+            return createBasicEvent(uei, date, dsValue, resource, params);
         }
         
-        private final Category log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateHighLow(m_thresholdConfig);
         }
+
+        public boolean isTriggered() {
+            return !isArmed();
+        }
+        
+        public void clearState() {
+            setArmed(true);
+            setExceededCount(0);
+        }
+        
     }
 
 }

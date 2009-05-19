@@ -58,11 +58,15 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.threshd.LatencyThresholdingSet;
+import org.opennms.netmgt.threshd.ThresholdingEventProxy;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * 
@@ -76,6 +80,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     private ServiceMonitor m_serviceMonitor;
     private PollerConfig m_pollerConfig;
     private Package m_pkg;
+    
+    private LatencyThresholdingSet m_thresholdingSet;
 
     public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg) {
         m_serviceMonitor = monitor;
@@ -122,18 +128,45 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
-
-        if (rrdPath == null) {
-            log().debug("storeResponseTime: RRD repository not specified in parameters, latency data will not be stored.");
-            return;
-        }
+        String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
 
         if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
             entries.put(dsName, entries.get(DEFAULT_BASENAME));
             entries.remove(DEFAULT_BASENAME);
         }
 
+        if (thresholds.toLowerCase().equals("true")) {
+            applyThresholds(rrdPath, svc, dsName, entries);
+        } else {
+            log().debug("storeResponseTime: Thresholds processing is not enabled. Check thresholding-enabled parameter on service definition");
+        }
+
+        if (rrdPath == null) {
+            log().debug("storeResponseTime: RRD repository not specified in parameters, latency data will not be stored.");
+            return;
+        }
+
         updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
+    }
+
+    private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
+        if (m_thresholdingSet == null) {
+            RrdRepository repository = new RrdRepository();
+            repository.setRrdBaseDir(new File(rrdPath));
+            m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
+        }
+        if (m_thresholdingSet.hasThresholds(dsName)) {
+            LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
+            for (String ds : entries.keySet()) {
+                attributes.put(ds, entries.get(ds).doubleValue());
+            }
+            List<Event> events = m_thresholdingSet.applyThresholds(dsName, attributes);
+            if (events.size() > 0) {
+                ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+                proxy.add(events);
+                proxy.sendAllEvents();
+            }
+        }
     }
 
     /**
@@ -267,6 +300,14 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     public void release(MonitoredService svc) {
         m_serviceMonitor.release(svc);
+    }
+
+    /**
+     * Should be called when thresholds configuration has been reloaded
+     */
+    public void refreshThresholds() {
+        if (m_thresholdingSet != null)
+            m_thresholdingSet.reinitialize();
     }
 
 }
