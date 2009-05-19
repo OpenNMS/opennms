@@ -71,8 +71,8 @@
 		 <tr>
 		 <th> Report format: </th>
 		 <td>
-		 	<input type="radio" name="reportfiletype" value="pdftype" /> PDF
-			<input type="radio" name="reportfiletype" value="htmltype" default/> HTML
+		 	<input type="radio" name="reportfiletype" value="pdftype" > XML
+			<input type="radio" name="reportfiletype" value="htmltype" checked> HTML
 		</td>
 		</tr>
 		<tr>
