@@ -92,14 +92,6 @@
   <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
-    
-    function acknowledgeNotice()
-    {
-        document.acknowledge.submit();
-    }
-</script>
-
 <h3>Notice #<%=notice.getId()%> 
   <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
     from event #<a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%=notice.getEventId()%></a>
@@ -223,9 +215,10 @@
      
 <% if (notice.getTimeReplied()==null) { %>
   <form method="post" name="acknowledge" action="notification/acknowledge">
+    <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
     <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
-    <input type="button" value="Acknowledge" onClick="javascript:acknowledgeNotice()"/>
+    <input type="submit" value="Acknowledge" />
   </form>
 <% } %>
       
