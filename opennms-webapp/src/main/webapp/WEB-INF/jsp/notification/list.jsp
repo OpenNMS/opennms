@@ -207,14 +207,9 @@
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
+          <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>        
-	<!--			<% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <p><input TYPE="reset" />
-						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
-          </p>
-        <% } %> -->
       <table>
 			<thead>
 			  <tr>
