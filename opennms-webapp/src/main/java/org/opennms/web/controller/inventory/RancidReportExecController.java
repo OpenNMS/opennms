@@ -1,6 +1,9 @@
 package org.opennms.web.controller.inventory;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.text.ParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +48,13 @@ public class RancidReportExecController extends SimpleFormController {
                 log().debug("RancidReportExecController error ");
             }
         }
-        mav.addObject("date", bean.getDate());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/M/d");
+        try {
+            mav.addObject("date", format.parse(bean.getDate()));
+        }
+        catch (ParseException pe){
+            mav.addObject("date", format.format(Calendar.getInstance().getTime()));
+        }
         mav.addObject("searchfield", bean.getFieldhas());
         if( bean.getReportfiletype().compareTo("pdftype") == 0){
             mav.addObject("reportformat", "PDF");

@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -78,7 +81,13 @@ public class InventoryReport implements Runnable {
             try {            
                 //parse date
                 SimpleDateFormat format = new SimpleDateFormat("yyyy/M/d");
-                Date tmp_date = format.parse(theDate);
+                Date tmp_date = new Date();
+                try {
+                    tmp_date = format.parse(theDate);
+                }
+                catch (ParseException pe){
+                    tmp_date = Calendar.getInstance().getTime();
+                }
                 log().debug("InventoryService runNodeBaseInventoryReport date[" + tmp_date.toString() + "]"); 
 
                 RwsNbinventoryreport rnbi = new RwsNbinventoryreport();
@@ -99,13 +108,12 @@ public class InventoryReport implements Runnable {
                     Iterator<String> iterDevice = deviceListStr.iterator();
                     int totalNodes = 0;
                     while (iterDevice.hasNext()){
-                        groupIsEmpty = false;
+                        //groupIsEmpty = false;
                         if (!groupIsIncremented){
                             totalGroups++;
                             groupIsIncremented = true;
                         }
                         String deviceName = iterDevice.next();
-                        totalNodes++;
                         log().debug("InventoryService runNodeBaseInventoryReport device [" + deviceName + "]");
                         String versionMatch="";
                         try {
@@ -234,6 +242,8 @@ public class InventoryReport implements Runnable {
                             // includeNbsin is true the fiels has been found
                             // data must be included
                             if(!withKey || includeNbisn){
+                                groupIsEmpty = false;
+                                totalNodes++;
                                 groupSet.addNbisinglenode(nbisn);
                             }
                             //else skip 
@@ -242,11 +252,13 @@ public class InventoryReport implements Runnable {
                             continue;
 
                         }
-                        groupSet.setTotalNodes(totalNodes);
+                        if (!groupIsEmpty){
+                            groupSet.setTotalNodes(totalNodes);
+                        }
                     }
                     rnbi.addGroupSet(groupSet);
                     rnbi.setTotalGroups(totalGroups);
-                    rnbi.setDateInventory(theDate);
+                    rnbi.setDateInventory(format.format(tmp_date));
                 }
                 log().debug("InventoryService runNodeBaseInventoryReport object filled");
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -263,7 +275,11 @@ public class InventoryReport implements Runnable {
 
                 if (reportFormat.compareTo("pdftype") == 0){
 
-                    log().debug("runNodeBaseInventoryReport generating pdf is still not supported :( ");
+                    log().debug("runNodeBaseInventoryReport generating pdf is still not supported :( sending xml");
+                    log().debug("runNodeBaseInventoryReport xml sending email");
+                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName);
+                    mailer.send();
+
 
                 } else {
 
@@ -295,7 +311,13 @@ public class InventoryReport implements Runnable {
 
                 //parse date
                 SimpleDateFormat format = new SimpleDateFormat("yyyy/M/d");
-                Date tmp_date = format.parse(theDate);
+                Date tmp_date = new Date();
+                try {
+                    tmp_date = format.parse(theDate);
+                }
+                catch (ParseException pe){
+                    tmp_date = Calendar.getInstance().getTime();
+                }
                 log().debug("InventoryService runRacidListReport date[" + tmp_date.toString() + "]"); 
 
                 //get the list of groups
@@ -398,33 +420,13 @@ public class InventoryReport implements Runnable {
 
                 if (reportFormat.compareTo("pdftype") == 0){
 
-                    log().debug("runRancidListReport generating pdf is still not supported :( ");
+                    log().debug("runRancidListReport generating pdf is still not supported :( sending xml");
+                    
+                    log().debug("runRancidListReport xml sending email");
+                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName);
+                    mailer.send();
+                    
 
-                    //                        String htmlFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".html";
-                    //                        
-                    //                        File file = new File(htmlFileName);
-                    //                        FileOutputStream hmtlFileWriter = new FileOutputStream(file);
-                    //                        PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-rancidlistreport.xsl");
-                    //                        File fileR = new File(xmlFileName);
-                    //                        FileReader fileReader = new FileReader(fileR);
-                    //                        //htmlWriter.generatePDF(fileReader, hmtlFileWriter, ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".fot");
-                    //                        htmlWriter.generateHTML(fileReader, hmtlFileWriter);
-                    //
-                    //                        org.apache.fop.apps.Driver m_driver;
-                    //                        
-                    //                        Reader reader = new FileReader(fileR);
-                    //                        InputSource dataSource = new InputSource(reader);
-                    //                        
-                    //                        String pdfFileName=ConfigFileConstants.getHome() + "/share/reports/RANCIDLISTREPORT" + datestamp + ".pdf";
-                    //
-                    //                        File fileP = new File(pdfFileName);
-                    //                        FileOutputStream pdfFileWriter = new FileOutputStream(fileP);
-                    //
-                    //                        m_driver = new org.apache.fop.apps.Driver(dataSource, pdfFileWriter);
-                    //                        m_driver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
-                    //                        m_driver.run();
-                    //
-                    //                        log().debug("runRancidListReport html done");
 
                 } else {
 
