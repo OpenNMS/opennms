@@ -29,6 +29,8 @@
  */
 package org.opennms.netmgt.dao.db;
 
+import java.lang.reflect.Method;
+
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -55,8 +57,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         }
         
         testContext.markApplicationContextDirty();
-        testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE,
-                Boolean.TRUE);
+        testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
 
     }
     
@@ -71,6 +72,19 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         
     }
 
+    private JUnitTemporaryDatabase findAnnotation(TestContext testContext) {
+        JUnitTemporaryDatabase jtd = null;
+        Method testMethod = testContext.getTestMethod();
+        if (testMethod != null) {
+            jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
+        }
+        if (jtd == null) {
+            Class<?> testClass = testContext.getTestClass();
+            jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
+        }
+        return jtd;
+    }
+    
     public void beforeTestMethod(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)\n", testContext);
     }
@@ -79,7 +93,8 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
         String dbName = getDatabaseName(testContext);
         TemporaryDatabase dataSource = new TemporaryDatabase(dbName);
-        dataSource.setPopulateSchema(true);
+        JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+        dataSource.setPopulateSchema(jtd == null? true : jtd.populate());
         dataSource.create();
         
         LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(dataSource);
