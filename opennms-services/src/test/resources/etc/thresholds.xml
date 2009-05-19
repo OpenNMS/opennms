@@ -32,4 +32,8 @@
             trigger="1"
             triggeredUEI="uei.opennms.org/testOrg/swapLessThan8GB" expression="memAvailSwap/1024/1024"/>
     </group>
+    <group name="icmp-latency" rrdRepository = "/usr/local/opennms/share/rrd/response/">
+        <threshold type="high" ds-name="icmp" ds-type="if" value="80" rearm="50" trigger="1"/>
+    </group>
+    
 </thresholding-config>

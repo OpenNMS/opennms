@@ -58,8 +58,14 @@ public interface ThresholdEvaluatorState {
 
     public Status evaluate(double dsValue);
 
-    //public Event getEventForState(Status status, Date date, double dsValue);
-    public Event getEventForState(Status status, Date date, double dsValue, String instance);
+    public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource);
+    
+    /**
+     * Return true if current state is TRIGGERED
+     */
+    public boolean isTriggered();
+    
+    public void clearState();
     
     public BaseThresholdDefConfigWrapper getThresholdConfig();
 

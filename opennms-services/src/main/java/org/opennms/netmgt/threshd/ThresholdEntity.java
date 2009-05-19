@@ -54,14 +54,17 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
  */
 public final class ThresholdEntity implements Cloneable {
+    
     private static List<ThresholdEvaluator> s_thresholdEvaluators;
-
+    
     //Contains a list of evaluators for each used "instance".  Is populated with the list for the "default" instance (the "null" key)
     // in the Constructor.  Note that this means we must use a null-key capable map like HashMap
     private Map<String,List<ThresholdEvaluatorState>> m_thresholdEvaluatorStates = new HashMap<String,List<ThresholdEvaluatorState>>();
@@ -166,17 +169,19 @@ public final class ThresholdEntity implements Cloneable {
             return "";
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = new StringBuffer("{");
 
         buffer.append("dsName=").append(this.getDataSourceExpression());
         buffer.append(", dsType=").append(this.getDatasourceType());
-
+        buffer.append(", evaluators=[");
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(null)) {
-            buffer.append(", ds=").append(item.getThresholdConfig().getDatasourceExpression());
+            buffer.append("{ds=").append(item.getThresholdConfig().getDatasourceExpression());
             buffer.append(", value=").append(item.getThresholdConfig().getValue());
             buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
             buffer.append(", trigger=").append(item.getThresholdConfig().getTrigger());
+            buffer.append("}");
         }
+        buffer.append("]}");
 
         return buffer.toString();
     }
@@ -212,10 +217,10 @@ public final class ThresholdEntity implements Cloneable {
      *          Date to use in created events
      * @return List of events
      */
-    public List<Event> evaluateAndCreateEvents(String instance, Map<String, Double> values, Date date) {
+    public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
         double dsValue=0.0;
-        
+        String instance = resource != null ? resource.getInstance() : null;
         try {
             if (getThresholdEvaluatorStates(instance).size() > 0) {
                 dsValue=getThresholdConfig().evaluate(values);
@@ -233,7 +238,7 @@ public final class ThresholdEntity implements Cloneable {
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
-            Event event = item.getEventForState(status, date, dsValue, instance);
+            Event event = item.getEventForState(status, date, dsValue, resource);
             if (event != null) {
                 events.add(event);
             }
@@ -322,7 +327,7 @@ public final class ThresholdEntity implements Cloneable {
 
     /**
      * Returns the evaluator states *for the given instance. 
-     * @param instance The key to use to identify the instnace to get states for.   Can be null to get the default instance
+     * @param instance The key to use to identify the instance to get states for. Can be null to get the default instance
      * @return
      */
     public List<ThresholdEvaluatorState> getThresholdEvaluatorStates(String instance) {
@@ -342,10 +347,47 @@ public final class ThresholdEntity implements Cloneable {
         }
         return result;
     }
+    
+    /**
+     * Merges the configuration and update states using parameter entity as a reference.
+     * 
+     * @param entity
+     */
+    public void merge(ThresholdEntity entity) {
+        if (getThresholdConfig().identical(entity.getThresholdConfig()) == false) {
+            sendRearmForTriggeredStates();
+            getThresholdConfig().merge(entity.getThresholdConfig());
+        }
+    }
+
+    /**
+     * Delete this will check states and will send rearm for all triggered.
+     */
+    public void delete() {
+        sendRearmForTriggeredStates();
+    }
+    
+    private void sendRearmForTriggeredStates() {
+        for (String instance : m_thresholdEvaluatorStates.keySet()) {
+            for (ThresholdEvaluatorState state : m_thresholdEvaluatorStates.get(instance)) {
+                if (state.isTriggered()) {
+                    Event e = state.getEventForState(Status.RE_ARMED, new Date(), Double.NaN, null);
+                    Parm p = new Parm();
+                    p.setParmName("reason");
+                    Value v = new Value();
+                    v.setContent("Configuration has been changed");
+                    p.setValue(v);
+                    e.getParms().addParm(p);
+                    log().info("sendRearmForTriggeredStates: sending rearm for " + e);
+                    ThresholdingEventProxyFactory.getFactory().getProxy().add(e);
+                    state.clearState();
+                }
+            }
+        }
+    }
 
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {
         return s_thresholdEvaluators;
     }
-    
 
 }

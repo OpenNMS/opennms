@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp"
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="freeMem"  ds-type="node" value="10000" rearm="5000" trigger="1"/>
+                <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
+                	<resource-filter field='snmpifalias'>wlan0</resource-filter>
+                	<resource-filter field='myMockParam'>myMockValue</resource-filter>
+                </threshold>
+                <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frReceivedFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frSentFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
+                	<resource-filter field='frIntf'>^0$</resource-filter>
+                	<resource-filter field='frDlci'>^1.+</resource-filter>
+                </threshold>
+                <expression type="low" ds-type="hrStorageIndex" value="10.0" rearm="20.0" trigger="1" ds-label="hrStorageDescr"
+                    expression="(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)">
+                    <resource-filter field="hrStorageDescr">^/opt</resource-filter>
+                </expression>
+        </group>
+</thresholding-config>

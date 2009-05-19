@@ -149,7 +149,7 @@ final class CollectableService implements ReadyRunnable {
         m_params=new ServiceParameters(roProps);
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
         
-        m_thresholdVisitor =  ThresholdingVisitor.createThresholdingVisitor(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
 
     }
     

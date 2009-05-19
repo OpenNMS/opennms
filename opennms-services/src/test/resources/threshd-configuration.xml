@@ -3,12 +3,15 @@
 <threshd-configuration 
    threads="5">
    
-   <package name="thresholding-visitor-test">
+   <package name="thresholding-visitor-test-a">
        <filter>IPADDR != '0.0.0.0'</filter>
        <service name="SNMP" interval="3000" user-defined="false" status="on">
            <parameter key="thresholding-group" value="generic-snmp"/>
        </service>       
+       <service name="HTTP" interval="3000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="http-latency"/>
+       </service>       
        <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
    </package>
-   
+
 </threshd-configuration>

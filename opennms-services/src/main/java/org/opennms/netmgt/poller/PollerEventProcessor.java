@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 May 14: added threshold config change handler for in-line thresholds processing
 // 2004 Jan 06: Added support for SUSPEND_POLLING_SERVICE_EVENT_UEI and
 // 		RESUME_POLLING_SERVICE_EVENT_UEI
 // 2003 Nov 11: Merged changes from Rackspace project
@@ -55,6 +56,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -576,6 +579,11 @@ final class PollerEventProcessor implements EventListener {
 		log.info("Reloading poller config factory and polloutages config factory");
         
 		scheduledOutagesChangeHandler(log);
+	} else if(event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
+        log.info("Reloading thresholding configuration in pollerd");
+        
+	    thresholdsConfigChangeHandler(log);
+
 	} else if(!event.hasNodeid()) {
 	    // For all other events, if the event doesn't have a nodeId it can't be processed.
 
@@ -644,12 +652,7 @@ final class PollerEventProcessor implements EventListener {
     	EventUtils.checkInterface(e);
     	EventUtils.checkService(e);
     	EventUtils.requireParm(e, EventConstants.PARM_DEMAND_POLL_ID);
-    	
-    	
     	m_demandPollDao.get(EventUtils.getIntParm(e, EventConstants.PARM_DEMAND_POLL_ID, -1));
-    	
-    	
-    	
     }
 
     private void scheduledOutagesChangeHandler(Category log) {
@@ -661,6 +664,18 @@ final class PollerEventProcessor implements EventListener {
 			log.error("Failed to reload PollerConfigFactory because "+e.getMessage(), e);
 		}
         getPoller().refreshServicePackages();
+    }
+    
+    private void thresholdsConfigChangeHandler(Category log) {
+        // FIXME Is this really necesary ?
+        try {
+            ThresholdingConfigFactory.reload();
+            ThreshdConfigFactory.reload();
+        } catch (Exception e) {
+            log.error("thresholdsConfigChangeHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
+            return;
+        }
+        getPoller().refreshServiceThresholds();
     }
 
     /**
