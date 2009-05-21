@@ -9,6 +9,14 @@
   <artifactId>org.opennms.core.schema</artifactId>
   <name>OpenNMS Core Schema</name>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/liquibase</directory>
+      </resource>
+    </resources>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -33,6 +41,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -40,13 +53,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 

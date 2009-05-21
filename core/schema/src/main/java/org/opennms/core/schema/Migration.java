@@ -1,15 +1,5 @@
 package org.opennms.core.schema;
 
-import java.sql.Driver;
-
-import liquibase.CompositeFileOpener;
-import liquibase.FileSystemFileOpener;
-import liquibase.Liquibase;
-import liquibase.commandline.CommandLineFileOpener;
-import liquibase.commandline.CommandLineUtils;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.exception.JDBCException;
 
 public class Migration {
     private String m_jdbcUrl;

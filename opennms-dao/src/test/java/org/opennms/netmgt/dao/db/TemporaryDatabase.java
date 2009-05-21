@@ -65,15 +65,15 @@ import org.springframework.util.StringUtils;
 public class TemporaryDatabase implements DataSource {
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
 
-    private static final String DRIVER_PROPERTY = "mock.db.driver";
-    private static final String URL_PROPERTY = "mock.db.url";
-    private static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
-    private static final String ADMIN_PASSWORD_PROPERTY = "mock.db.adminPassword";
+    public static final String DRIVER_PROPERTY = "mock.db.driver";
+    public static final String URL_PROPERTY = "mock.db.url";
+    public static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
+    public static final String ADMIN_PASSWORD_PROPERTY = "mock.db.adminPassword";
 
-    private static final String DEFAULT_DRIVER = "org.postgresql.Driver";
-    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
-    private static final String DEFAULT_ADMIN_USER = "postgres";
-    private static final String DEFAULT_ADMIN_PASSWORD = "";
+    public static final String DEFAULT_DRIVER = "org.postgresql.Driver";
+    public static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
+    public static final String DEFAULT_ADMIN_USER = "postgres";
+    public static final String DEFAULT_ADMIN_PASSWORD = "";
 
     private static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
 
