@@ -25,8 +25,4 @@
 		</addColumn>
 	</changeSet>
 
-	<changeSet author="rangerrick" id="1.7.1-ownership">
-		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
-	</changeSet> 
-
 </databaseChangeLog>

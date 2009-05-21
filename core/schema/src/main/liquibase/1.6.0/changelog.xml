@@ -48,8 +48,4 @@
 	<include file="1.6.0/tables/statisticsreportdata.xml" />
 	<include file="1.6.0/tables/quartz.xml" />
 
-	<changeSet author="rangerrick" id="1.6.0-ownership">
-		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
-	</changeSet> 
-
 </databaseChangeLog>
