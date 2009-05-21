@@ -49,13 +49,13 @@
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/newInterface.jsp?action=new'>Add Interface</a>" />
   <jsp:param name="breadcrumb" value="Interface Added" />
 </jsp:include>
 
 <h3>Finished Adding Interface</h3>
 <p>
-  OpenNMS should not need to be restarted, but it may take a moment for
-  the categories to be updated.
+  It may take some time for the interface to be scanned and categories updated.
 </p>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
