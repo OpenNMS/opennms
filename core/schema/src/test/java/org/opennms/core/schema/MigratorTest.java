@@ -1,5 +1,12 @@
 package org.opennms.core.schema;
 
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.sql.DataSource;
 
 import org.junit.Before;
@@ -10,6 +17,7 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,11 +38,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath:/migratorTest.xml"
 })
 @JUnitTemporaryDatabase(populate=false)
 public class MigratorTest {
@@ -42,14 +46,40 @@ public class MigratorTest {
     @Autowired
     DataSource m_dataSource;
 
+    @Autowired
+    ResourceLoader m_resourceLoader;
+
     private Migration m_migration;
-    
+    private String m_changeLog = "changelog.xml";
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        m_migration = new Migration();
+        m_migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        m_migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        m_migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        m_migration.setChangeLog(m_changeLog);
     }
 
     @Test
-    public void testNothing() {
-        
+    public void testUpdate() throws Exception {
+        Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.migrate(m_migration);
+
+        Connection conn = null;
+        try {
+            conn = m_dataSource.getConnection();
+            Set<String> tables = new HashSet<String>();
+            ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
+            while (rs.next()) {
+                tables.add(rs.getString("TABLE_NAME"));
+            }
+            assertTrue("must contain table 'alarms'", tables.contains("alarms"));
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
     }
 }

@@ -988,8 +988,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         ResultSet rs = st.executeQuery("SELECT eventsource from events");
         int count = 0;
         while (rs.next()) {
-            assertEquals("expected events eventsrource", "OpenNMS.Eventd",
-                         rs.getString(1));
+            assertEquals("expected events eventsource", "OpenNMS.Eventd", rs.getString(1));
             count++;
         }
         assertEquals("expected column count", 1, count);
