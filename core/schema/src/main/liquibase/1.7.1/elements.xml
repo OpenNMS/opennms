@@ -18,6 +18,11 @@
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 		</addColumn>
+
+		<rollback>
+			<dropPrimaryKey tableName="element" />
+			<dropColumn tableName="element" columnName="id" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

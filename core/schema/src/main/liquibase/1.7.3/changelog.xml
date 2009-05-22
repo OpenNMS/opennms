@@ -12,6 +12,13 @@
 				<constraints nullable="false" />
 			</column>
 		</modifyColumn>
+		<rollback>
+			<modifyColumn tableName="map">
+				<column name="mapname" type="varchar(40)">
+					<constraints nullable="false" />
+				</column>
+			</modifyColumn>
+		</rollback>
 	</changeSet>
 
 	<changeSet author="brozow" id="1.7.3-category-group">
@@ -41,6 +48,10 @@
 			<column name="categoryid" />
 			<column name="groupid" />
 		</createIndex>
+
+		<rollback>
+			<dropTable tableName="category_group" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

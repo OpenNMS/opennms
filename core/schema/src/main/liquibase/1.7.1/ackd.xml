@@ -37,6 +37,9 @@
 			<column name="ackuser" />
 		</createIndex>
 
+		<rollback>
+			<dropTable tableName="acks" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

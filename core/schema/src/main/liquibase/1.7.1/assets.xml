@@ -19,6 +19,13 @@
 			<column name="connection" type="varchar(32)" />
 		</addColumn>
 
+		<rollback>
+			<dropColumn tableName="assets" columnName="username" />
+			<dropColumn tableName="assets" columnName="password" />
+			<dropColumn tableName="assets" columnName="enable" />
+			<dropColumn tableName="assets" columnName="autoenable" />
+			<dropColumn tableName="assets" columnName="connection" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>
