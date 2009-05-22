@@ -23,6 +23,7 @@
     <module>opennms-detector-jmx</module>
     <module>opennms-detector-jdbc</module>
     <module>opennms-detector-ssh</module>
+    <module>opennms-detector-generic</module>
   </modules>
   <dependencyManagement>
     <dependencies>
