@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getOutageTimeInWindow">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        ipid ALIAS FOR $2;
+        sid ALIAS FOR $3;
+        xtime ALIAS FOR $4;
+        ytime ALIAS FOR $5;
+        orec RECORD;
+        lostTime timestamp without time zone;
+        gainTime timestamp without time zone;
+        downtime float8;
+        zero CONSTANT float8 := 0.0;
+        epochTime CONSTANT timestamp without time zone := to_timestamp(''01 Jan 1970 00:00:00'', ''DD Mon YYYY HH24:MI:SS'');
+   BEGIN
+        downtime = zero;
+        FOR orec IN SELECT ifLostService,ifRegainedService
+                FROM outages WHERE (nodeID = nid AND ipAddr = ipid AND serviceID = sid AND
+                                   ((ifRegainedService IS NULL AND ifLostService &lt;= xtime)  OR
+                                    (ifRegainedService &gt; ytime)))
+        LOOP
+         BEGIN
+                gainTime := epochTime;
+                lostTime := orec.ifLostService;
+                IF orec.ifRegainedService IS NOT NULL THEN
+                        gainTime := orec.ifRegainedService;
+                END IF;
+                --
+                -- Find the appropriate records
+                --
+                IF xtime &gt; lostTime THEN
+                 --
+                 -- for any outage to be in window of 
+                 -- opportunity the lost time must ALWAYS be
+                 -- less that the x time.
+                 --
+                 IF gainTime = epochTime THEN
+                  --
+                  -- if the gain time is epochTime then the outage
+                  -- does not have an uptime.
+                  --
+                   IF ytime &gt; lostTime THEN
+                    downtime := downtime + EXTRACT(EPOCH FROM (xtime - ytime));
+                   ELSE
+                    downtime := downtime + EXTRACT(EPOCH FROM (xtime - lostTime));
+                   END IF;
+                 ELSE
+                  IF xtime &gt; gainTime AND gainTime &gt; ytime THEN
+                   --
+                   -- regain time between x &amp; y
+                   --
+                    IF ytime &gt; lostTime THEN
+                     downtime := downtime + EXTRACT (EPOCH FROM (gainTime - ytime));
+                    ELSE
+                     downtime := downtime + EXTRACT (EPOCH FROM (gainTime - lostTime));
+                    END IF; 
+                  ELSE
+                   IF gainTime &gt; xtime THEN
+                   --
+                   -- regain time greater than x, lost less that x
+                   --
+                    IF ytime &gt; lostTime THEN
+                     downtime := downtime + EXTRACT (EPOCH FROM (xtime - ytime));
+                    ELSE
+                     downtime := downtime + EXTRACT (EPOCH FROM (xtime - lostTime));
+                    END IF;
+                   -- end gainTime &gt; xtime
+                   END IF;
+                  -- end xtime &gt; gainTime AND gainTime &gt; ytime
+                  END IF;
+                 -- end gaintime == epochTime
+                 END IF;
+                -- end xtime &gt; lostTime
+                END IF;
+         END;
+        END LOOP;
+        RETURN downtime*1000.0;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+</changeSet>
+
+</databaseChangeLog>
