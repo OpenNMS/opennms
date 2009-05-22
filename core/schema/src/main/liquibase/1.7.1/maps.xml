@@ -13,6 +13,15 @@
 				<constraints primaryKey="true" nullable="false" primaryKeyName="pk_mapid" />
 			</column>
 		</modifyColumn>
+
+		<rollback>
+			<dropPrimaryKey tableName="map" constraintName="pk_mapid" />
+			<modifyColumn tableName="map">
+				<column name="mapid" type="integer">
+					<constraints nullable="false" />
+				</column>
+			</modifyColumn>
+		</rollback>
 	</changeSet>
 
 	<changeSet author="rssntn67" id="1.7.1-add-map-group">
@@ -23,6 +32,10 @@
 		<addColumn tableName="map">
 			<column name="mapgroup" type="varchar(64)" />
 		</addColumn>
+
+		<rollback>
+			<dropColumn tableName="map" columnName="mapgroup" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

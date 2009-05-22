@@ -18,6 +18,11 @@
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 		</addColumn>
+
+		<rollback>
+			<dropPrimaryKey tableName="datalinkinterface" />
+			<dropColumn tableName="datalinkinterface" columnName="id" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

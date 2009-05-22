@@ -25,6 +25,11 @@
 			<column name="lasteventtime" />
 		</createIndex>
 
+		<rollback>
+			<dropIndex tableName="alarms" indexName="alarm_lasteventtime_idx" />
+			<dropColumn tableName="alarms" columnName="ifindex" />
+			<dropColumn tableName="events" columnName="ifindex" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

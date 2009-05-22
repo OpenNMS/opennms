@@ -16,13 +16,21 @@
 	<!-- miscellaneous stuff -->
 	<changeSet author="rangerrick" id="1.7.1-expand-snmpPhysAddr">
 		<modifyColumn tableName="snmpinterface">
-			<column name="snmpphysaddr" type="character(16)" />
+			<column name="snmpphysaddr" type="varchar(16)" />
 		</modifyColumn>
+		<rollback>
+			<modifyColumn tableName="snmpinterface">
+				<column name="snmpphysaddr" type="char(12)" />
+			</modifyColumn>
+		</rollback>
 	</changeSet>
 	<changeSet author="brozow" id="1.7.1-add-last-capsd-poll">
 		<addColumn tableName="snmpinterface">
 			<column name="snmplastcapsdpoll" type="DATETIME" />
 		</addColumn>
+		<rollback>
+			<dropColumn tableName="snmpinterface" columnName="snmplastcapsdpoll" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>
