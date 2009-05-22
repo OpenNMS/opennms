@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getManagedServiceCountForNode">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getManagedServiceCountForNode(integer)
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        orec RECORD;
+        counter float8;
+   BEGIN
+        counter = 0;
+         FOR orec IN SELECT distinct ifservices.nodeid, ifservices.serviceid, ifservices.ipaddr
+                FROM ipinterface, ifservices
+                WHERE ifservices.nodeid = nid
+                        AND ipinterface.nodeid = nid
+                        AND ipinterface.ismanaged = ''M''
+                        AND ifservices.ipaddr = ipinterface.ipaddr
+                        AND ifservices.status = ''A''
+        LOOP
+                BEGIN
+                         counter := counter + 1;
+                END;
+        END LOOP;
+        RETURN counter;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+</changeSet>
+
+</databaseChangeLog>

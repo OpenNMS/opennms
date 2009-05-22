@@ -70,12 +70,21 @@ public class MigratorTest {
         Connection conn = null;
         try {
             conn = m_dataSource.getConnection();
+
             Set<String> tables = new HashSet<String>();
             ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
             while (rs.next()) {
-                tables.add(rs.getString("TABLE_NAME"));
+                tables.add(rs.getString("TABLE_NAME").toLowerCase());
             }
             assertTrue("must contain table 'alarms'", tables.contains("alarms"));
+
+            Set<String> procs = new HashSet<String>();
+            rs = conn.getMetaData().getProcedures(null, null, "%");
+            while (rs.next()) {
+                procs.add(rs.getString("PROCEDURE_NAME").toLowerCase());
+            }
+            System.err.println("procs = " + procs);
+            assertTrue("must have stored procedure 'setSnmpInterfaceKeysOnUpdate'", procs.contains("setsnmpinterfacekeysonupdate"));
         } finally {
             if (conn != null) {
                 conn.close();
