@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
     TemporaryDatabaseExecutionListener.class,
     DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
