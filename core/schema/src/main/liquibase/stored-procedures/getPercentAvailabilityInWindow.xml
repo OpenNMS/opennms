@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runOnChange="true" author="rangerrick" id="getPercentAvailabilityInWindow">
+<createProcedure>
+CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
+        RETURNS float8 AS '
+   DECLARE
+        nid ALIAS FOR $1;
+        ipid ALIAS FOR $2;
+        sid ALIAS FOR $3;
+        xtime ALIAS FOR $4;
+        ytime ALIAS FOR $5;
+        downtime float8;
+   BEGIN
+        downtime := getOutageTimeInWindow(nid, ipid, sid, xtime, ytime);
+        IF xtime &gt; ytime THEN
+                RETURN 100 * (1 - (downtime / (EXTRACT(EPOCH FROM (xtime - ytime))* 1000)));
+        ELSE
+                RETURN 100 * (1 - (downtime / (EXTRACT(EPOCH FROM (ytime - xtime))* 1000)));
+        END IF;
+   END;
+' LANGUAGE 'plpgsql';
+</createProcedure>
+</changeSet>
+
+</databaseChangeLog>

@@ -31,6 +31,28 @@
 	<include file="1.7.3/changelog.xml" /> 
 	<!-- no schema changes in 1.7.4 so far -->
 
+	<changeSet author="rangerrick" id="createlang-plpgsql" runOnChange="true">
+		<createProcedure>
+			CREATE LANGUAGE plpgsql;
+		</createProcedure>
+	</changeSet>
+
+	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
+	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
+	<include file="stored-procedures/getManagedOutageForIntfInWindow.xml" />
+	<include file="stored-procedures/getManagedOutageForNodeInWindow.xml" />
+	<include file="stored-procedures/getManagedServiceCountForIntf.xml" />
+	<include file="stored-procedures/getManagedServiceCountForNode.xml" />
+	<include file="stored-procedures/getOutageTimeInWindow.xml" />
+	<include file="stored-procedures/getPercentAvailabilityInWindow.xml" />
+
+	<include file="triggers/setIfServiceKeysOnInsertTrigger.xml" />
+	<include file="triggers/setIfServiceKeysOnUpdateTrigger.xml" />
+	<include file="triggers/setIpInterfaceKeysOnInsertTrigger.xml" />
+	<include file="triggers/setIpInterfaceKeysOnUpdateTrigger.xml" />
+	<include file="triggers/setSnmpInterfaceKeysOnInsertTrigger.xml" />
+	<include file="triggers/setSnmpInterfaceKeysOnUpdateTrigger.xml" />
+
 	<changeSet id="grant-permissions" author="rangerrick" runAlways="true" context="production">
 		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
 	</changeSet>
