@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -88,5 +89,14 @@ public class MigratorTest {
                 conn.close();
             }
         }
+    }
+    
+    @Test
+    @Ignore("takes a long time, just did this to make sure 'upgrades' would not bomb")
+    public void testUpdateTwice() throws Exception {
+        Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.migrate(m_migration);
+        m.migrate(m_migration);
     }
 }

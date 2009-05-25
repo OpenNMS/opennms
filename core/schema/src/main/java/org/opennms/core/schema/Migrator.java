@@ -16,6 +16,8 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -25,6 +27,21 @@ public class Migrator {
 
     @Autowired
     DataSource m_dataSource;
+
+    public Migrator() {
+        initLogging();
+    }
+
+    private void initLogging() {
+        Logger l = Logger.getLogger("liquibase");
+        if (log().isDebugEnabled()) {
+            l.setLevel(Level.DEBUG);
+        } else if (log().isInfoEnabled()) {
+            l.setLevel(Level.INFO);
+        } else {
+            l.setLevel(Level.WARN);
+        }
+    }
 
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
