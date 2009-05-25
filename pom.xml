@@ -690,6 +690,17 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.schema</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.schema</artifactId>
+        <classifier>liquibase</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller</artifactId>
         <version>${project.version}</version>
