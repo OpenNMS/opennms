@@ -81,6 +81,15 @@
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.schema</artifactId>
+      <classifier>liquibase</classifier>
+    </dependency>
 
     <!-- Non-OpenNMS dependencies -->
     <dependency>
