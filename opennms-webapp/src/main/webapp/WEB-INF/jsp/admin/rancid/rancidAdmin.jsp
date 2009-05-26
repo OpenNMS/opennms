@@ -65,16 +65,6 @@
 	  	
 	</table>
 
-	<h3>Select Group</h3>
-	<table class="o-box">
-	<tr>
-	<th>Group</th>
-	</tr>
-	<c:forEach items="${model.grouplist}" var="groupelem">	
-	<tr><td><a href="admin/rancid/rancidAdmin.htm?node=${model.db_id}?group=${groupelem}">${groupelem}</a></td></tr>
-	</c:forEach>
-	</table>
-  
 	<h3>Rancid Info</h3>
 		<table class="o-box">
 	<c:choose>
@@ -135,19 +125,15 @@
 		</c:when>
 		<c:otherwise>
  <form id="createForm" method="post" name="createForm">
+			<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 			
 			<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 			
 		<tr>
 			<th width="50%">Device Name</th>
 			<td>${model.id}</td>
 		</tr>		 
 		<tr>
-			<th>Group</th><td>
-			<select name="groupName" size="1">
-	<c:forEach items="${model.grouplist}" var="groupelem">
-	<option value="${groupelem}">${groupelem}</option>	
-	</c:forEach>
-	</select>
-		</td>
+			<th>Group</th>
+			<td>${model.groupname}</td>
 		</tr>	
 		<tr>
 			<th>Device Type</th>
@@ -206,13 +192,16 @@
 	
 		<tr>
 			<th>Status</th>
-			<td><em>${model.status}</em>
+			<td>
+			 <c:if test="${!empty model.status}">			
+			<em>${model.status}</em>
 	<form id="newUserForm2" method="post" name="newUserForm2">	
 	<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
 	<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
 	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
 	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
 	</form>
+	</c:if>
 			</td>
 		</tr>
 		</c:otherwise>
@@ -307,7 +296,20 @@
 	 
 	 </c:otherwise>
 	 </c:choose>
+
+	<h3>Select Group</h3>
+	<table class="o-box">
+	<tr>
+	<th>Group</th>
+	</tr>
+	<c:forEach items="${model.grouplist}" var="groupelem">	
+	<tr><td><a href="admin/rancid/rancidAdmin.htm?node=${model.db_id}&group=${groupelem}">${groupelem}</a></td></tr>
+	</c:forEach>
+	</table>
+
 </div>
+
+  
 
   <div class="TwoColRight">
       <h3>Descriptions</h3>
