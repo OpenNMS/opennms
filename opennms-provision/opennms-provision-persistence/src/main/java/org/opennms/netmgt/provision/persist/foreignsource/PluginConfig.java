@@ -139,6 +139,9 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return the parameters
      */
     public Set<PluginParameter> getParameters() {
+        for (PluginParameter p : m_parameters) {
+            p.setPluginConfig(this);
+        }
         return m_parameters;
     }
     
@@ -146,6 +149,9 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @param parameters the parameters to set
      */
     public void setParameters(Set<PluginParameter> list) {
+        for (PluginParameter p : list) {
+            p.setPluginConfig(this);
+        }
         m_parameters = list;
     }
     
@@ -154,7 +160,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      */
     public Map<String,String> getParameterMap() {
         Map<String,String> parms = new LinkedHashMap<String,String>();
-        for (PluginParameter p : m_parameters) {
+        for (PluginParameter p : getParameters()) {
             parms.put(p.getKey(), p.getValue());
         }
         return Collections.unmodifiableMap(parms);
@@ -166,7 +172,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
     public void setParameterMap(Map<String, String> parameters) {
         m_parameters.clear();
         for (Entry<String,String> set : parameters.entrySet()) {
-            m_parameters.add(new PluginParameter(set));
+            m_parameters.add(new PluginParameter(this, set));
         }
     }
 
@@ -175,7 +181,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return the parameter value
      */
     public String getParameter(String key) {
-        for (PluginParameter p : m_parameters) {
+        for (PluginParameter p : getParameters()) {
             if (p.getKey().equals(key)) {
                 return p.getValue();
             }
@@ -188,7 +194,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @param value the parameter value
      */
     public void addParameter(String key, String value) {
-        m_parameters.add(new PluginParameter(key, value));
+        m_parameters.add(new PluginParameter(this, key, value));
     }
 
     public void removeParameters(PluginParameter p) {
@@ -211,7 +217,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
 
     private String getParametersAsString() {
         StringBuilder sb = new StringBuilder();
-        for (PluginParameter p : m_parameters) {
+        for (PluginParameter p : getParameters()) {
             sb.append(p.getKey()).append('=').append(p.getValue()).append('/');
         }
         if (sb.length() > 0) {
