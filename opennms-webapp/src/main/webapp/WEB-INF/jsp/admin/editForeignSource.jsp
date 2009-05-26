@@ -47,7 +47,7 @@
 
 		<tree:tree root="${detector}" childProperty="parameters" var="parameter" varStatus="detectorParameterIter">
 			<tree:nodeForm>
-				<tree:select label="key" property="key" items="${detector.availableParameterKeys}" />
+				<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" />
 				<tree:field label="value" property="value" />
 			</tree:nodeForm>
 		</tree:tree>
@@ -67,7 +67,7 @@
 		</tree:nodeForm>
 
 		<tree:tree root="${policy}" childProperty="parameters" var="parameter" varStatus="policyParameterIter">
-			
+
 			<c:choose>
 				<c:when test="${pluginInfo[policy.pluginClass].required[parameter.key]}">
 					<c:set var="showDelete" value="false" scope="request" />
@@ -86,7 +86,7 @@
 				<c:otherwise>
 					<c:set var="showDelete" value="true" scope="request" />
 					<tree:nodeForm>
-						<tree:select label="key" property="key" items="${policy.availableParameterKeys}" />
+						<tree:select label="key" property="key" items="${parameter.availableParameterKeys}" />
 	               		<tree:field label="value" property="value" />
 					</tree:nodeForm>
 				</c:otherwise>
