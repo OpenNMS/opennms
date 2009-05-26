@@ -446,6 +446,7 @@ public class InventoryService implements InitializingBean {
         List<String> devicetypelist = devicetypes.getResource();
         nodeModel.put("devicetypelist",devicetypelist);
         
+        nodeModel.put("groupname", group);
         
         try {
             RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, group, rancidName);
@@ -453,7 +454,6 @@ public class InventoryService implements InitializingBean {
             nodeModel.put("status", rn.getState());
             nodeModel.put("devicetype", rn.getDeviceType());
             nodeModel.put("comment", rn.getComment());
-            nodeModel.put("groupname", group);
             nodeModel.put("deviceexist", true);
         }
         catch (RancidApiException e){
@@ -517,6 +517,7 @@ public class InventoryService implements InitializingBean {
         String groupname;
         while (iter1.hasNext()){
             groupname = iter1.next();
+            nodeModel.put("groupname", groupname);
             log().debug("getRancidNodeWithClogin " + rancidName + " group " + groupname);        
             
             try {
@@ -525,8 +526,8 @@ public class InventoryService implements InitializingBean {
                 nodeModel.put("status", rn.getState());
                 nodeModel.put("devicetype", rn.getDeviceType());
                 nodeModel.put("comment", rn.getComment());
-                nodeModel.put("groupname", groupname);
                 nodeModel.put("deviceexist", true);
+                break;
             } catch (RancidApiException e){
                 if (e.getRancidCode() == 2) {
                     nodeModel.put("deviceexist", false);
