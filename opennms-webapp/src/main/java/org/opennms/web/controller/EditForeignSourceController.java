@@ -141,6 +141,7 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
+        System.err.println("treeCmd = " + treeCmd);
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);
