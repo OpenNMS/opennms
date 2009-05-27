@@ -64,7 +64,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     
     private static final String PASSIVE_STATUS_UEI = "uei.opennms.org/services/passiveServiceStatus";
 
-    private volatile Map m_statusTable = null;
+    private volatile Map<PassiveStatusKey, PollStatus> m_statusTable = null;
     private volatile EventIpcManager m_eventMgr;
     private volatile boolean m_initialized = false;
 
@@ -95,7 +95,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
         checkPreRequisites();
         createMessageSelectorAndSubscribe();
         
-        m_statusTable = new HashMap();
+        m_statusTable = new HashMap<PassiveStatusKey, PollStatus>();
         
         String sql = "select node.nodeLabel AS nodeLabel, outages.ipAddr AS ipAddr, service.serviceName AS serviceName " +
                 "FROM outages " +
