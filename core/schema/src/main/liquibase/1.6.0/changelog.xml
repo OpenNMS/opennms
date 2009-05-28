@@ -10,8 +10,8 @@
 	<include file="1.6.0/tables/serviceMap.xml" />
 	<include file="1.6.0/tables/distPoller.xml" />
 	<include file="1.6.0/tables/node.xml" />
-	<include file="1.6.0/tables/snmpinterface.xml" />
-	<include file="1.6.0/tables/ipinterface.xml" />
+	<include file="1.6.0/tables/snmpInterface.xml" />
+	<include file="1.6.0/tables/ipInterface.xml" />
 	<include file="1.6.0/tables/service.xml" />
 	<include file="1.6.0/tables/ifservices.xml" />
 	<include file="1.6.0/tables/events.xml" />

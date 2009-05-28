@@ -11,7 +11,6 @@
 			<not><columnExists tableName="datalinkinterface" columnName="id" /></not>
 		</preConditions>
 
-		<sql>ALTER TABLE datalinkinterface OWNER TO ${install.database.admin.user}</sql>
 		<dropPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" />
 		<addColumn tableName="datalinkinterface">
 			<column name="id" type="integer" autoIncrement="true">
