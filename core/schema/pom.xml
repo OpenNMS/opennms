@@ -10,11 +10,11 @@
   <name>OpenNMS Core Schema</name>
 
   <build>
-    <resources>
-      <resource>
+    <testResources>
+      <testResource>
         <directory>src/main/liquibase</directory>
-      </resource>
-    </resources>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -44,7 +44,7 @@
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-      <version>1.9.3</version>
+      <version>1.9.3-onms</version>
       <scope>compile</scope>
     </dependency>
 

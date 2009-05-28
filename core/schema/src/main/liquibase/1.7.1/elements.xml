@@ -11,7 +11,6 @@
 			<not><columnExists tableName="element" columnName="id" /></not>
 		</preConditions>
 
-		<sql>ALTER TABLE element OWNER TO ${install.database.admin.user}</sql>
 		<dropPrimaryKey tableName="element" constraintName="pk_element" />
 		<addColumn tableName="element">
 			<column name="id" type="integer" autoIncrement="true">

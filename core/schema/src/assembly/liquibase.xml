@@ -7,6 +7,7 @@
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
+		<outputDirectory></outputDirectory>
       <includes>
         <include>**/*.xml</include>
       </includes>
