@@ -8,16 +8,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.log.LogFactory;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -33,14 +33,7 @@ public class Migrator {
     }
 
     private void initLogging() {
-        Logger l = Logger.getLogger("liquibase");
-        if (log().isDebugEnabled()) {
-            l.setLevel(Level.DEBUG);
-        } else if (log().isInfoEnabled()) {
-            l.setLevel(Level.INFO);
-        } else {
-            l.setLevel(Level.WARN);
-        }
+        LogFactory.getLogger().setLevel(Level.INFO);
     }
 
     public void setDataSource(DataSource dataSource) {
@@ -99,7 +92,7 @@ public class Migrator {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURL());
             } else {
-                log().warn("file " + migration.getChangeLog() + " does not exist");
+//                log().warn("file " + migration.getChangeLog() + " does not exist");
             }
         } catch (MalformedURLException e) {
             log().warn("unable to figure out URL for " + migration.getChangeLog(), e);

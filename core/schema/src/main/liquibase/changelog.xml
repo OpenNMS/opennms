@@ -31,12 +31,6 @@
 	<include file="1.7.3/changelog.xml" /> 
 	<!-- no schema changes in 1.7.4 so far -->
 
-	<changeSet author="rangerrick" id="createlang-plpgsql" runOnChange="true">
-		<createProcedure>
-			CREATE LANGUAGE plpgsql;
-		</createProcedure>
-	</changeSet>
-
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
 	<include file="stored-procedures/getManagedOutageForIntfInWindow.xml" />
@@ -54,6 +48,9 @@
 	<include file="triggers/setSnmpInterfaceKeysOnUpdateTrigger.xml" />
 
 	<changeSet id="grant-permissions" author="rangerrick" runAlways="true" context="production">
+		<preConditions>
+			<dbms type="postgresql" />
+		</preConditions>
 		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
 	</changeSet>
 
