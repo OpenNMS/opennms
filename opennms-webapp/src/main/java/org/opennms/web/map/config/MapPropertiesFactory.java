@@ -719,13 +719,15 @@ public class MapPropertiesFactory extends Object {
 		}
 		
 		// look up sysoid icons
-		String[] sysoids = BundleLists.parseBundleList(props.getProperty("sysoids"));
+		if (props.getProperty("sysoids") != null && props.getProperty("sysoids") != "") {
+		    String[] sysoids = BundleLists.parseBundleList(props.getProperty("sysoids"));
 		
-		for (int i = 0; i < sysoids.length; i++) {
-		    String iconName = props.getProperty("sysoid." + sysoids[i] + ".iconName");
-		    log.debug("found sysoid " + sysoids[i] + " with iconName=" + iconName
-	                    + ". Adding it.");
-	        iconsBySysoidMap.put(sysoids[i], iconName);
+		    for (int i = 0; i < sysoids.length; i++) {
+		        String iconName = props.getProperty("sysoid." + sysoids[i] + ".iconName");
+		        log.debug("found sysoid " + sysoids[i] + " with iconName=" + iconName
+	                        + ". Adding it.");
+	            iconsBySysoidMap.put(sysoids[i], iconName);
+		    }
 		}
 		
 		defaultMapIcon = props.getProperty("icon.default.map");

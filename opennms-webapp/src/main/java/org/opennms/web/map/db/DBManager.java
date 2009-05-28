@@ -798,19 +798,21 @@ public class DBManager extends Manager {
 	    try {
 	        MapPropertiesFactory mpf =new MapPropertiesFactory();
 	        java.util.Map<String, String> iconsBySysoid = mpf.getIconsBySysoid();
-	        log.debug("getIconBySysoid: sysoid = " + sysoid);
-	        for (String key : iconsBySysoid.keySet()) {
-	            log.debug("getIconBySysoid: key = " + key);
-	            if(key.equals(sysoid)) {
-	                log.debug("getIconBySysoid: iconBySysoid = " + iconsBySysoid.get(key));
-	                return iconsBySysoid.get(key);
+	        if (iconsBySysoid != null) {
+	            log.debug("getIconBySysoid: sysoid = " + sysoid);
+	            for (String key : iconsBySysoid.keySet()) {
+	                log.debug("getIconBySysoid: key = " + key);
+	                if(key.equals(sysoid)) {
+	                    log.debug("getIconBySysoid: iconBySysoid = " + iconsBySysoid.get(key));
+	                    return iconsBySysoid.get(key);
+	                }
 	            }
 	        }
-            return Element.defaultNodeIcon;
 	    } catch (Exception e) {
             log.error("Exception while getting icons by sysoid");
             throw new MapsException(e);
         }
+	    return Element.defaultNodeIcon;
     }
 
     public Element[] getAllElements() throws MapsException {
