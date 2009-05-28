@@ -49,12 +49,16 @@
 	session="true"
 %>
 
+
+<%@page import="org.opennms.core.resource.Vault"%>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Reports" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="report" />
   <jsp:param name="breadcrumb" value="Reports" />
 </jsp:include>
+
 
   <div class="TwoColLeft">
     <h3>Reports</h3>
@@ -73,6 +77,9 @@
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
         <li><a href="report/availability/index.htm">Availability</a></li>
+<% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
+        <li><a href="inventory/rancidReport.htm">Inventory</a></li>
+<% }%>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
     </div>
@@ -110,6 +117,12 @@
           month-to-date, previous month, and last twelve months by categories.
       </p>
       
+<% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
+      <p><b>Inventory Reports</b> provide html or XML report list of 
+       nodes inventories and rancid devices matching at a specific date using
+       a search matching criteria .
+      </p>
+<% } %> 
       <p><b>Statistics Reports</b> provide regularly scheduled statistical
           reports on collected numerical data (response time, SNMP performance
           data, etc.).
