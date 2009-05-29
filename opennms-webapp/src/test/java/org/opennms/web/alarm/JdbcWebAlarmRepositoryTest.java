@@ -94,15 +94,16 @@ public class JdbcWebAlarmRepositoryTest{
     
     @Test
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
-        m_alarmRepo.acknowledgeMatchingAlarms("TestUser", new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
+        String user = "TestUser";
+        m_alarmRepo.acknowledgeMatchingAlarms(user, new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
         
-        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         
         assertEquals(1, matchingAlarmCount);
         
-        m_alarmRepo.unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
+        m_alarmRepo.unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)), user);
         
-        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         
         assertEquals(0, matchingAlarmCount);
         
@@ -110,14 +111,15 @@ public class JdbcWebAlarmRepositoryTest{
     
     @Test
     public void testAcknowledgeUnacknowledgeAllAlarms(){
-        m_alarmRepo.acknowledgeAll("TestUser", new Date());
+        String user = "TestUser";
+        m_alarmRepo.acknowledgeAll(user, new Date());
         
-        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(1, matchingAlarmCount);
         
-        m_alarmRepo.unacknowledgeAll();
+        m_alarmRepo.unacknowledgeAll(user);
         
-        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(0, matchingAlarmCount);
     }
     

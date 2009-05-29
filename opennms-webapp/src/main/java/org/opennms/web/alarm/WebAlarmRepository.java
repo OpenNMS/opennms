@@ -45,11 +45,11 @@ public interface WebAlarmRepository {
 
     public abstract void acknowledgeAll(String user, Date timestamp);
 
-    public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria);
+    public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user);
 
-    public void unacknowledgeAlarms(int[] alarmIds);
+    public void unacknowledgeAlarms(int[] alarmIds, String user);
 
-    public abstract void unacknowledgeAll();
+    public abstract void unacknowledgeAll(String user);
     
     public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
     

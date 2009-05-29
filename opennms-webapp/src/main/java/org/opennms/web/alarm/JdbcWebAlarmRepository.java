@@ -241,16 +241,16 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
-    public void unacknowledgeAlarms(int[] alarmIds) {
-        unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
+    public void unacknowledgeAlarms(int[] alarmIds, String user) {
+        unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
     }
 
-    public void unacknowledgeMatchingAlarms(AlarmCriteria criteria) {
+    public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
         String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL ", criteria);
         jdbc().update(sql, paramSetter(criteria));
     }
     
-    public void unacknowledgeAll() {
+    public void unacknowledgeAll(String user) {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL ");
     }
     
