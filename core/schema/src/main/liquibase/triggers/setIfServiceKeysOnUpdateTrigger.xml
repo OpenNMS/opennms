@@ -6,17 +6,10 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet author="rangerrick" id="delete-setIfServiceKeysOnUpdateTrigger" failOnError="false">
-	<preConditions onFail="MARK_RAN">
-		<tableExists tableName="outages" />
-	</preConditions>
-	<createProcedure>
-		DROP TRIGGER setIfServiceKeysOnUpdateTrigger ON outages;
-	</createProcedure>
-</changeSet>
-
 <changeSet runOnChange="true" author="rangerrick" id="setIfServiceKeysOnUpdateTrigger">
 <createProcedure>
+SELECT drop_trigger_if_exists('setifservicekeysonupdatetrigger', 'outages');
+
 CREATE OR REPLACE FUNCTION setIfServiceKeysOnUpdate() RETURNS trigger AS '
 BEGIN
 

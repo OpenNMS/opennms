@@ -47,6 +47,10 @@
 			<column name="resourceid" />
 		</createIndex>
 
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 </databaseChangeLog>

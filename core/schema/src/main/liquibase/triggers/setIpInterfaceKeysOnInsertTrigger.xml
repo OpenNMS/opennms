@@ -6,17 +6,10 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet author="rangerrick" id="delete-setIpInterfaceKeysOnInsertTrigger" failOnError="false">
-	<preConditions onFail="MARK_RAN">
-		<tableExists tableName="ifservices" />
-	</preConditions>
-	<createProcedure>
-		DROP TRIGGER setIpInterfaceKeysOnInsertTrigger ON ifServices;
-	</createProcedure>
-</changeSet>
-
 <changeSet runOnChange="true" author="rangerrick" id="setIpInterfaceKeysOnInsertTrigger">
 <createProcedure>
+SELECT drop_trigger_if_exists('setipinterfacekeysoninserttrigger', 'ifservices');
+
 CREATE OR REPLACE FUNCTION setIpInterfaceKeysOnInsert() RETURNS trigger AS '
 BEGIN
 

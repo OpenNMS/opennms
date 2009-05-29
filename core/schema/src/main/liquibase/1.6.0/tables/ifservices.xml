@@ -14,7 +14,7 @@
 		<!-- Contains a mapping of interfaces to services available on those interfaces
 			(e.g., FTP, SMTP, DNS, etc.) and recent polling status information. -->
 		<createTable tableName="ifservices">
-			<column name="id" type="integer">
+			<column name="id" type="integer" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ifservices_pkey" />
 			</column>
 
@@ -111,6 +111,10 @@
 		<createIndex tableName="ifservices" indexName="ifservicves_ipinterfaceid_idx">
 			<column name="ipinterfaceid" />
 		</createIndex>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
 
 	</changeSet>
 

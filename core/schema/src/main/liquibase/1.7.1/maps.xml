@@ -22,6 +22,11 @@
 				</column>
 			</modifyColumn>
 		</rollback>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 	<changeSet author="rssntn67" id="1.7.1-add-map-group">
