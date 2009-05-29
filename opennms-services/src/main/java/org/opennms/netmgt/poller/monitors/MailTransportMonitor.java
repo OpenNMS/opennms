@@ -62,6 +62,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 
+//TODO: adjust to use new javamail-configuration.xml
+
 /**
  * This <code>ServiceMonitor</code> is designed to monitor the transport of
  * SMTP email.
