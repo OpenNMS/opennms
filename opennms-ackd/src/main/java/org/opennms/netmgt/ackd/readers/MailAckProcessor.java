@@ -53,13 +53,13 @@ import javax.mail.internet.InternetAddress;
 
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
-import org.opennms.netmgt.ackd.AckService;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.InitializingBean;
 
 class MailAckProcessor implements Runnable, InitializingBean {
