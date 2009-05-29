@@ -35,11 +35,11 @@ public class MultilineOrientedResponse {
     private List<String> m_responseList;
     
     public MultilineOrientedResponse() {
-        m_responseList = new ArrayList<String>();
+        setResponseList(new ArrayList<String>());
     }
     
     public void addLine(String line) {
-        m_responseList.add(line);
+        getResponseList().add(line);
     }
 
 
@@ -48,7 +48,7 @@ public class MultilineOrientedResponse {
     }
     
     public boolean startsWith(String prefix) {
-        for(String line : m_responseList) {
+        for(String line : getResponseList()) {
            if(!line.startsWith(prefix)) {
                return false;
            }
@@ -63,7 +63,7 @@ public class MultilineOrientedResponse {
      */
     public boolean expectedCodeRange(int beginCodeRange, int endCodeRange) {
 
-        for(String line : m_responseList) {
+        for(String line : getResponseList()) {
             if(!validateCodeRange(getCode(line), beginCodeRange, endCodeRange)) {
                 return false;
             }
@@ -182,6 +182,14 @@ public class MultilineOrientedResponse {
 //    }
     
     public String toString() {
-        return m_responseList.isEmpty() ? "MultilineOrientedResponse" : String.format("Response: %s", m_responseList.toArray());
+        return getResponseList().isEmpty() ? "MultilineOrientedResponse" : String.format("Response: %s", getResponseList().toArray());
+    }
+
+    public void setResponseList(List<String> responseList) {
+        m_responseList = responseList;
+    }
+
+    public List<String> getResponseList() {
+        return m_responseList;
     }
 }
