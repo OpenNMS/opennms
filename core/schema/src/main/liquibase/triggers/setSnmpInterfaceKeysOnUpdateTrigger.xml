@@ -6,17 +6,10 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet author="rangerrick" id="delete-setSnmpInterfaceKeysOnUpdateTrigger" failOnError="false">
-	<preConditions onFail="MARK_RAN">
-		<tableExists tableName="ipinterface" />
-	</preConditions>
-	<createProcedure>
-		DROP TRIGGER setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
-	</createProcedure>
-</changeSet>
-
-<changeSet author="rangerrick" id="setSnmpInterfaceKeysOnUpdateTrigger">
+<changeSet runOnChange="true" author="rangerrick" id="setSnmpInterfaceKeysOnUpdateTrigger">
 <createProcedure>
+SELECT drop_trigger_if_exists('setsnmpinterfacekeysonupdatetrigger', 'ipinterface');
+
 CREATE OR REPLACE FUNCTION setSnmpInterfaceKeysOnUpdate() RETURNS trigger AS '
 BEGIN
 

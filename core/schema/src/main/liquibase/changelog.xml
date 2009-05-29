@@ -39,6 +39,7 @@
 	<include file="stored-procedures/getManagedServiceCountForNode.xml" />
 	<include file="stored-procedures/getOutageTimeInWindow.xml" />
 	<include file="stored-procedures/getPercentAvailabilityInWindow.xml" />
+	<include file="stored-procedures/dropTriggerIfExists.xml" />
 
 	<include file="triggers/setIfServiceKeysOnInsertTrigger.xml" />
 	<include file="triggers/setIfServiceKeysOnUpdateTrigger.xml" />

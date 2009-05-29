@@ -370,13 +370,11 @@ public class InstallerDb {
         ResultSet rs;
 
         m_out.print("- adding PL/pgSQL call handler... ");
-        rs = st.executeQuery("SELECT oid FROM pg_proc WHERE "
-                + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
+        rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
         if (rs.next()) {
             m_out.println("EXISTS");
         } else {
-            st.execute("CREATE FUNCTION plpgsql_call_handler () "
-                    + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
+            st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
             m_out.println("OK");
         }
 
@@ -1917,12 +1915,26 @@ public class InstallerDb {
         return exists;
     }
 
+    public void databaseSetUser() throws SQLException {
+        ResultSet rs = getAdminConnection().getMetaData().getTables(null, "public", "%", null);
+        HashSet<String> objects = new HashSet<String>();
+        while (rs.next()) {
+            objects.add(rs.getString("TABLE_NAME"));
+        }
+        PreparedStatement st = getAdminConnection().prepareStatement("ALTER TABLE ? OWNER TO ?");
+        for (String objName : objects) {
+            st.setString(1, objName);
+            st.setString(2, m_user);
+            st.execute();
+        }
+        st.close();
+    }
+
     public void databaseAddUser() throws SQLException {
         assertUserSet();
 
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass
-                + "' CREATEDB CREATEUSER");
+        st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass + "' CREATEDB CREATEUSER");
     }
 
     public boolean databaseDBExists() throws SQLException {
