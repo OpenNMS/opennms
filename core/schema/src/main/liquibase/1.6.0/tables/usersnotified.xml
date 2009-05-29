@@ -14,7 +14,7 @@
 		<createTable tableName="usersnotified">
 
 			<!-- Unique identifier for the table -->
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_usernotificationid" />
 			</column>
 

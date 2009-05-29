@@ -60,7 +60,7 @@
 			<column name="start_time" type="BIGINT"><constraints nullable="false" /></column>
 			<column name="end_time" type="BIGINT" />
 			<column name="calendar_name" type="varchar(80)" />
-			<column name="misfir_instr" type="smallint" />
+			<column name="misfire_instr" type="smallint" />
 			<column name="job_data" type="bytea" />
 		</createTable>
 		<addPrimaryKey tableName="qrtz_triggers" constraintName="pk_qrtz_triggers" columnNames="trigger_name,trigger_group" />
