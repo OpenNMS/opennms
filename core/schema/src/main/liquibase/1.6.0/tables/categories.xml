@@ -25,6 +25,10 @@
 			<column name="categoryname" />
 		</createIndex>
 
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('catNxtId') " />
+		</modifySql>
+
 		<insert tableName="categories"><column name="categoryname" value="Routers" /></insert>
 		<insert tableName="categories"><column name="categoryname" value="Switches" /></insert>
 		<insert tableName="categories"><column name="categoryname" value="Servers" /></insert>
