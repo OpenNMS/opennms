@@ -38,8 +38,11 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.NotificationDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
@@ -50,6 +53,9 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
     
     @Autowired
     NotificationDao m_notificationDao;
+    
+    @Autowired
+    AckService m_ackService;
     
     private OnmsCriteria getOnmsCriteria(final NotificationCriteria notificationCriteria){
         final OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
@@ -166,9 +172,11 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         List<OnmsNotification> notifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
         
         for (OnmsNotification notif : notifs) {
-            notif.setAnsweredBy(user);
-            notif.setRespondTime(timestamp);
-            m_notificationDao.update(notif);
+            
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(notif, user);
+            ack.setAckAction(AckAction.ACKNOWLEDGE);
+            ack.setAckTime(timestamp);
+            m_ackService.processAck(ack);
         }
     }
     

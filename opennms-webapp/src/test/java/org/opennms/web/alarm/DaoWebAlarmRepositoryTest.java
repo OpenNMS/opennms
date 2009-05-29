@@ -176,16 +176,18 @@ public class DaoWebAlarmRepositoryTest {
     
     @Test
     @Transactional
-    public void testAcknowledgeUnacknowledge(){
-        m_alarmRepo.acknowledgeMatchingAlarms("TestUser", new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
+    public void testAcknowledgeUnacknowledge() {
         
-        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        String user = "TestUser";
+        m_alarmRepo.acknowledgeMatchingAlarms(user, new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
+        
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         
         assertEquals(1, matchingAlarmCount);
         
-        m_alarmRepo.unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
+        m_alarmRepo.unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)), user);
         
-        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         
         assertEquals(0, matchingAlarmCount);
     }
@@ -214,13 +216,14 @@ public class DaoWebAlarmRepositoryTest {
 
     @Test
     @Transactional
-    public void testAcknowledgeUnacknowledgeAllAlarms(){
+    public void testAcknowledgeUnacknowledgeAllAlarms() {
+        String user = "TestUser";
         m_alarmRepo.acknowledgeAll("TestUser", new Date());
         
         int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(1, matchingAlarmCount);
         
-        m_alarmRepo.unacknowledgeAll();
+        m_alarmRepo.unacknowledgeAll(user);
         
         matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(0, matchingAlarmCount);
@@ -228,7 +231,7 @@ public class DaoWebAlarmRepositoryTest {
     
     @Test
     @Transactional
-    public void testEscalateAlarms(){
+    public void testEscalateAlarms() {
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
         

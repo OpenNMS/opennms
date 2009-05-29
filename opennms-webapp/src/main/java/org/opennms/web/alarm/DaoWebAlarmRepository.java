@@ -40,9 +40,12 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
@@ -54,6 +57,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
     AlarmDao m_alarmDao;
+    
+    @Autowired
+    AckService m_ackService;
     
     private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
@@ -191,11 +197,12 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
         
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
-        while(alarmsIt.hasNext()){
+        while(alarmsIt.hasNext()) {
             OnmsAlarm alarm = alarmsIt.next();
-            alarm.setAlarmAckUser(user);
-            alarm.setAlarmAckTime(timestamp);
-            m_alarmDao.update(alarm);
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
+            ack.setAckTime(timestamp);
+            ack.setAckAction(AckAction.ACKNOWLEDGE);
+            m_ackService.processAck(ack);
         }
     }
     
@@ -206,8 +213,10 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while(alarmsIt.hasNext()){
             OnmsAlarm alarm = alarmsIt.next();
-            alarm.setSeverity(OnmsSeverity.CLEARED);
-            alarm.setAlarmType(Alarm.RESOLUTION_TYPE);
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
+            ack.setAckTime(timestamp);
+            ack.setAckAction(AckAction.CLEAR);
+            m_ackService.processAck(ack);
             m_alarmDao.update(alarm);
         }
     }
@@ -240,11 +249,10 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while(alarmsIt.hasNext()){
             OnmsAlarm alarm = alarmsIt.next();
-            
-            if(alarm.getSeverity().getId() < OnmsSeverity.CRITICAL.getId()){
-                alarm.setSeverityId(alarm.getSeverity().getId() + 1);
-            }
-            m_alarmDao.update(alarm);
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
+            ack.setAckTime(timestamp);
+            ack.setAckAction(AckAction.ESCALATE);
+            m_ackService.processAck(ack);
         }
 
     }
@@ -267,18 +275,18 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     }
     
     @Transactional
-    public void unacknowledgeAll() {
-        unacknowledgeMatchingAlarms(new AlarmCriteria());
+    public void unacknowledgeAll(String user) {
+        unacknowledgeMatchingAlarms(new AlarmCriteria(), user);
     }
     
     @Transactional
-    public void unacknowledgeMatchingAlarms(AlarmCriteria criteria) {
+    public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
         
         for(OnmsAlarm alarm : alarms) {
-            alarm.setAlarmAckUser(null);
-            alarm.setAlarmAckTime(null);
-            m_alarmDao.update(alarm);
+            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
+            ack.setAckAction(AckAction.UNACKNOWLEDGE);
+            m_ackService.processAck(ack);
         }
 
     }
@@ -293,8 +301,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     }
 
     @Transactional
-    public void unacknowledgeAlarms(int[] alarmIds) {
-        unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
+    public void unacknowledgeAlarms(int[] alarmIds, String user) {
+        unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
     }
 
 }

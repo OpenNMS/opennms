@@ -110,7 +110,7 @@ public class AcknowledgeAlarmController extends AbstractController implements In
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.acknowledgeAlarms(alarmIds, request.getRemoteUser(), new Date());
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
-            m_webAlarmRepository.unacknowledgeAlarms(alarmIds);
+            m_webAlarmRepository.unacknowledgeAlarms(alarmIds, request.getRemoteUser());
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);
         }
