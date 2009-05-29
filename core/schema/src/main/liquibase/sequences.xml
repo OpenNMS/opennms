@@ -84,5 +84,11 @@
 	</preConditions> 
 	<createSequence sequenceName="mapnxtid" />
 </changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="reportnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="reportnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="reportnxtid" />
+</changeSet>
 
 </databaseChangeLog>
