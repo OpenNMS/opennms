@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runOnChange="false" author="rangerrick" id="opennmsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="opennmsnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="opennmsnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="nodenxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="nodenxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="nodenxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="servicenxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="servicenxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="servicenxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="eventsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="eventsnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="eventsnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="alarmsnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="alarmsnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="alarmsnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="outagenxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="outagenxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="outagenxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="notifynxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="notifynxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="notifynxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="vulnnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="vulnnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="vulnnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="catnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="catnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="catnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="usernotifnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="usernotifnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="usernotifnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="demandpollnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="demandpollnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="demandpollnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="pollresultnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="pollresultnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="pollresultnxtid" />
+</changeSet>
+<changeSet runOnChange="false" author="rangerrick" id="mapnxtid">
+	<preConditions onFail="MARK_RAN">
+		<not><sequenceExists sequenceName="mapnxtid" /></not>
+	</preConditions> 
+	<createSequence sequenceName="mapnxtid" />
+</changeSet>
+
+</databaseChangeLog>
