@@ -60,7 +60,7 @@
 
 			<!-- Contains the eid, eidtext (optionally), specific, and generic identifier for the
 				SNMP Trap.  This maps directly to the <snmp> element in the Event Data Stream DTD. -->
-			<column name="evetnsnmp" type="varchar(256)" />
+			<column name="eventsnmp" type="varchar(256)" />
 
 			<!-- The <parms> element from the Event Data Stream DTD -->
 			<column name="eventparms" type="text" />
