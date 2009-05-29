@@ -40,6 +40,11 @@
 		<rollback>
 			<dropTable tableName="acks" />
 		</rollback>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 </databaseChangeLog>
