@@ -635,8 +635,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     
     public void escalate(String ackUser) {
         m_severity = OnmsSeverity.escalate(m_severity);
-        m_alarmAckUser = ackUser;
-        m_alarmAckTime = Calendar.getInstance().getTime();
+//        m_alarmAckUser = ackUser;
+//        m_alarmAckTime = Calendar.getInstance().getTime();
     }
 
     @Transient

@@ -142,6 +142,8 @@ public class OnmsAcknowledgment {
             throw new IllegalArgumentException("Acknowledgable is null.");
         }
         
+        m_ackUser = user;
+        m_ackTime = ackTime;
         m_ackType = a.getType();
         m_refId = a.getAckId();
     }

@@ -33,28 +33,28 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ackd;
+package org.opennms.netmgt.model.acknowledgments;
 
 import java.util.Collection;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Transactional boundary for processing acknowledgements
+ * Transactional boundary for processing acknowledgments
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="makilto:jeffg@opennms.org">Jeff Gehlbach</a>
  * 
+ * Acknowledgment 
+ * 
  */
 @Transactional(readOnly=false)
 public interface AckService {
-        
+
+    
     void processAck(OnmsAcknowledgment ack);
     
     void processAcks(Collection<OnmsAcknowledgment> acks);
-
-    void setEventForwarder(EventForwarder eventForwarder);
 
 }

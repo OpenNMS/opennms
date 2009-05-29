@@ -42,6 +42,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -105,8 +106,6 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     }
 
 	public void afterPropertiesSet() throws Exception {
-	    //FIXME wire this instead
-	    m_ackService.setEventForwarder(m_eventForwarder);
 	}
 
     public String getName() {
