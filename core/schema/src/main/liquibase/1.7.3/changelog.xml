@@ -29,7 +29,7 @@
 			<column name="categoryid" type="integer">
 				<constraints nullable="false" />
 			</column>
-			<column name="groupid" type="integer">
+			<column name="groupid" type="varchar(16)">
 				<constraints nullable="false" />
 			</column>
 		</createTable>
