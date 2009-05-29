@@ -16,6 +16,7 @@
 
 		<addColumn tableName="alarms">
 			<column name="ifindex" type="integer" />
+			<column name="eventparms" type="text" />
 		</addColumn>
 		<addColumn tableName="events">
 			<column name="ifindex" type="integer" />
