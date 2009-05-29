@@ -22,6 +22,11 @@
 			<dropPrimaryKey tableName="element" />
 			<dropColumn tableName="element" columnName="id" />
 		</rollback>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 </databaseChangeLog>

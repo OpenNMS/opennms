@@ -16,7 +16,7 @@
 		<createTable tableName="snmpinterface">
 
 			<!-- Unique identifier for this SNMP interface -->
-			<column name="id" type="integer">
+			<column name="id" type="integer" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="snmpinterface_pkey" />
 			</column>
 
@@ -80,6 +80,10 @@
 		<createIndex tableName="snmpinterface" indexName="snmpinterface_ipaddr_idx">
 			<column name="ipaddr" />
 		</createIndex>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
 
 	</changeSet>
 

@@ -50,6 +50,10 @@
 			<column name="purgedate" />
 		</createIndex>
 
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 </databaseChangeLog>

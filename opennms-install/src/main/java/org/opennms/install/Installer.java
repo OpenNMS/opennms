@@ -67,6 +67,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -75,6 +77,8 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.opennms.core.schema.Migration;
+import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
@@ -126,6 +130,8 @@ public class Installer {
     protected Options options = new Options();
     protected CommandLine m_commandLine;
     private PrintStream m_out;
+    private Migration m_migration = new Migration();
+    private Migrator m_migrator = new Migrator();
 
     Properties m_properties = null;
 
@@ -154,27 +160,34 @@ public class Installer {
         }
 
         if (doDatabase) {
-            m_installerDb.setForce(m_force);
-            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
-            m_installerDb.setNoRevert(m_do_not_revert);
-    
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
             Reader fr = new FileReader(cfgFile);
-            JdbcDataSource adminDs = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
+            JdbcDataSource adminDsConfig = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
+            DataSource adminDs = new SimpleDataSource(adminDsConfig);
             fr.close();
-            m_installerDb.setAdminDataSource(new SimpleDataSource(adminDs));
 
             fr = new FileReader(cfgFile);
-            JdbcDataSource ds = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
-            m_installerDb.setDataSource(new SimpleDataSource(ds));
+            JdbcDataSource dsConfig = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
+            DataSource ds = new SimpleDataSource(dsConfig);
             fr.close();
 
-            m_installerDb.setPostgresOpennmsUser(ds.getUserName());
-            m_installerDb.setPostgresOpennmsPassword(ds.getPassword());
-            m_installerDb.setDatabaseName(ds.getDatabaseName());
-            
+            m_installerDb.setForce(m_force);
+            m_installerDb.setIgnoreNotNull(m_ignore_not_null);
+            m_installerDb.setNoRevert(m_do_not_revert);
+            m_installerDb.setAdminDataSource(adminDs);
+            m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
+            m_installerDb.setPostgresOpennmsPassword(dsConfig.getPassword());
+            m_installerDb.setDataSource(ds);
+            m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
+
+            m_migrator.setDataSource(ds);
+            m_migration.setAdminUser(adminDsConfig.getUserName());
+            m_migration.setAdminPassword(adminDsConfig.getPassword());
+            m_migration.setDatabaseUser(dsConfig.getUserName());
+            m_migration.setChangeLog("changelog.xml");
         }
+
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -211,18 +224,17 @@ public class Installer {
         }
 
         if (m_update_database || m_fix_constraint) {
-            m_installerDb.readTables();
+            // OLDINSTALL m_installerDb.readTables();
         }
 
         if (m_update_database) {
-            // XXX Check and optionally modify pg_hba.conf
-
             if (!m_installerDb.databaseUserExists()) {
                 m_installerDb.databaseAddUser();
             }
             if (!m_installerDb.databaseDBExists()) {
                 m_installerDb.databaseAddDB();
             }
+            m_installerDb.updatePlPgsql();
         }
 
         if (doDatabase) {
@@ -231,9 +243,9 @@ public class Installer {
         
         // We can now use the opennms database
 
+        /* OLDINSTALL
         if (m_fix_constraint) {
-            m_installerDb.fixConstraint(m_fix_constraint_name,
-                                        m_fix_constraint_remove_rows);
+            m_installerDb.fixConstraint(m_fix_constraint_name, m_fix_constraint_remove_rows);
         }
 
         if (m_update_database) {
@@ -260,6 +272,16 @@ public class Installer {
         if (m_do_inserts) {
             m_installerDb.insertData();
             handleConfigurationChanges();
+        }
+        */
+
+        handleConfigurationChanges();
+
+        if (m_update_database) {
+            m_installerDb.databaseSetUser();
+            m_installerDb.disconnect();
+            m_out.println("- Migrating/creating database:");
+            m_migrator.migrate(m_migration);
         }
 
         if (m_update_unicode) {
@@ -394,8 +416,7 @@ public class Installer {
         }
 
         m_installerDb.setStoredProcedureDirectory(m_etc_dir);
-        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator
-                + "create.sql");
+        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
     public String fetchProperty(String property) throws Exception {

@@ -82,6 +82,11 @@
 		<createIndex indexName="atinterface_atphysaddr_idx" tableName="atinterface">
 			<column name="atphysaddr" />
 		</createIndex>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
+
 	</changeSet>
 
 	<!--

@@ -14,7 +14,7 @@
 		<!-- Contains information on interfaces which support TCP/IP as well as current status information. -->
 		<createTable tableName="ipinterface">
 			<!-- Unique identifier -->
-			<column name="id" type="integer">
+			<column name="id" type="integer" autoIncrement="true">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ipinterface_pkey" />
 			</column>
 
@@ -97,6 +97,10 @@
 		<createIndex tableName="ipinterface" indexName="ipinterface_snmpinterfaceid_idx">
 			<column name="snmpinterfaceid" />
 		</createIndex>
+
+		<modifySql>
+			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
+		</modifySql>
 
 	</changeSet>
 
