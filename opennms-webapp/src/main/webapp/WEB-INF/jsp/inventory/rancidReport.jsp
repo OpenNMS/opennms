@@ -100,11 +100,12 @@
 
           <p><b>Matching</b> provide a string to match on. The report will only contain
           the items that match the specified string.
-          If you leave it blank the report data contains all items. 
+          If you leave it blank the report data contains all items. This matching applies
+          only to inventory report, it will be ignored in case of rancid list report.
       </p>
 
       <p><b>Report Type</b> Selecting <em>Rancid</em> you get a list of all the rancid
-            devices in router.db (for every rancid group) at a specified date for matching string. 
+            devices in router.db (for every rancid group) at a specified date. 
             Selecting <em>Inventory</em> you get a list of all inventory items for each device
             that had inventory data at the specified data for matching string
       </p>
