@@ -58,6 +58,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
 
     public DhcpResponse receiveBanner() throws IOException, Exception {
         m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
+        System.err.println("got a response from server: " + m_responseTime);
         DhcpResponse response = new DhcpResponse(m_responseTime);
         return response;
     }
