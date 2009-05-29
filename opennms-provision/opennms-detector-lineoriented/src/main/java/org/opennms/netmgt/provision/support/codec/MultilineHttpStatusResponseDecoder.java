@@ -1,13 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,30 +36,22 @@ import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.opennms.netmgt.provision.detector.simple.response.MultilineHttpResponse;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 
-/**
- * @author thedesloge
- *
- */
-public class MultiLineDecoder extends CumulativeProtocolDecoder {
+
+public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
     
-    private final String m_multilineIndicator;
-    private Charset m_charset;
-    protected String CURRENT_RESPONSE = "CURRENT_RESPONSE";
-    
-    public MultiLineDecoder(Charset charset, String multilineIndicator) {
-        setCharset(charset);
-        m_multilineIndicator = multilineIndicator;
+    public MultilineHttpStatusResponseDecoder(Charset charset) {
+        super(charset, "\r\n");
     }
     
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-        MultilineOrientedResponse response = (MultilineOrientedResponse) session.getAttribute(CURRENT_RESPONSE);
+        MultilineOrientedResponse response = (MultilineHttpResponse) session.getAttribute(CURRENT_RESPONSE);
         if(response == null) {
-            response = new MultilineOrientedResponse();
+            response = new MultilineHttpResponse();
             session.setAttribute(CURRENT_RESPONSE, response);
         }
         // Remember the initial position.
@@ -115,19 +108,7 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
     
     protected boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
         String line = in.getString(getCharset().newDecoder());
-        return line.substring(3, 4).equals(getMultilineIndicator());
-    }
-
-    public void setCharset(Charset charset) {
-        m_charset = charset;
-    }
-
-    public Charset getCharset() {
-        return m_charset;
-    }
-
-    public String getMultilineIndicator() {
-        return m_multilineIndicator;
+        return !line.equals("\r\n"); //line.substring(3, 4).equals(getMultilineIndicator());
     }
 
 }
