@@ -24,6 +24,8 @@
 		</or>
 	</preConditions>
 
+	<include file="sequences.xml" />
+
 	<include file="1.6.0/changelog.xml" />
 	<include file="1.7.0/changelog.xml" />
 	<include file="1.7.1/changelog.xml" />
@@ -47,8 +49,6 @@
 	<include file="triggers/setIpInterfaceKeysOnUpdateTrigger.xml" />
 	<include file="triggers/setSnmpInterfaceKeysOnInsertTrigger.xml" />
 	<include file="triggers/setSnmpInterfaceKeysOnUpdateTrigger.xml" />
-
-	<include file="sequences.xml" />
 
 	<changeSet id="grant-permissions" author="rangerrick" runAlways="true" context="production">
 		<preConditions>
