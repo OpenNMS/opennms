@@ -117,7 +117,7 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.acknowledgeMatchingAlarms(request.getRemoteUser(), new Date(), criteria);
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
-            m_webAlarmRepository.unacknowledgeMatchingAlarms(criteria);
+            m_webAlarmRepository.unacknowledgeMatchingAlarms(criteria, request.getRemoteUser());
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);
         }
