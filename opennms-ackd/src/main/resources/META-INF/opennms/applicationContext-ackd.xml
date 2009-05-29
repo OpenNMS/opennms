@@ -9,11 +9,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
   
-  <bean id="ackService" class="org.opennms.netmgt.ackd.DefaultAckService" >
-    <property name="ackDao" ref="acknowledgmentDao" />
-    <property name="eventForwarder" ref="eventForwarder" />
-  </bean>
-  
   <bean id="javaMailReadScheduler" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor" >
     <constructor-arg>
       <value>1</value>

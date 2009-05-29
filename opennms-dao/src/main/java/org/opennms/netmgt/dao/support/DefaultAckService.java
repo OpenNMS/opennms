@@ -33,18 +33,17 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ackd;
+package org.opennms.netmgt.dao.support;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class provides the work of acknowledging <code>Acknowledgables</code> associated with
@@ -55,8 +54,8 @@ import org.opennms.netmgt.model.events.EventForwarder;
  */
 public class DefaultAckService implements AckService {
     
+    @Autowired
     private AcknowledgmentDao m_ackDao;
-    private EventForwarder m_eventForwarder;
     
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         for (OnmsAcknowledgment ack : acks) {
@@ -67,7 +66,6 @@ public class DefaultAckService implements AckService {
     public void processAck(OnmsAcknowledgment ack) {
         
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
-        EventBuilder ebuilder;
         
         if (ackables == null || ackables.size() < 1) {
             throw new IllegalStateException("No acknowlegables in the datbase for ack: "+ack);
@@ -79,6 +77,8 @@ public class DefaultAckService implements AckService {
             case ACKNOWLEDGE:
                 ackable.acknowledge(ack.getAckUser());
                 break;
+            case UNACKNOWLEDGE:
+                ackable.unacknowledge(ack.getAckUser());
             case CLEAR:
                 ackable.clear(ack.getAckUser());
                 break;
@@ -91,15 +91,6 @@ public class DefaultAckService implements AckService {
             m_ackDao.updateAckable(ackable);
             m_ackDao.save(ack);
             m_ackDao.flush();
-            ebuilder = new EventBuilder(EventConstants.EVENT_ACKNOWLEDGED_UEI, "Ackd");
-            OnmsNode node = ackable.getNode();
-            ebuilder.setNode(node == null ? null : node);
-            //ebuilder.setTime(ack.getAckTime());
-            ebuilder.addParam("ackId", ack.getId().intValue());
-            ebuilder.addParam("refId", ack.getRefId().intValue());
-            ebuilder.addParam("ackType", String.valueOf(ack.getAckType())); //FIXME: needs string qualification like AckAction
-            ebuilder.addParam("ackAction", String.valueOf(ack.getAckAction()));
-            m_eventForwarder.sendNow(ebuilder.getEvent());
         }
     }
 
@@ -109,10 +100,6 @@ public class DefaultAckService implements AckService {
 
     public AcknowledgmentDao getAckDao() {
         return m_ackDao;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
     }
 
 }
