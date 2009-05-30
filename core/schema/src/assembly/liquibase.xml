@@ -6,7 +6,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/classes</directory>
+      <directory>src/main/liquibase</directory>
 		<outputDirectory></outputDirectory>
       <includes>
         <include>**/*.xml</include>
