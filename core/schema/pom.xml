@@ -14,6 +14,9 @@
       <testResource>
         <directory>src/main/liquibase</directory>
       </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
     </testResources>
     <plugins>
       <plugin>
