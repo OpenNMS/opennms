@@ -40,7 +40,7 @@ public class DhcpResponse {
     }
     
     public boolean validate(long num) {
-        return num > m_responseTime;
+        return m_responseTime > num;
     }
 
 }

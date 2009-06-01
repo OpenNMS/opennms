@@ -34,10 +34,11 @@ package org.opennms.netmgt.provision.detector.dhcp.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.detector.dhcp.request.DhcpRequest;
 import org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.dhcp.Dhcpd;
+
 
 public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     
@@ -52,7 +53,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address;
-        m_timeout = port;
+        m_timeout = timeout;
         
     }
 
