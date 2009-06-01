@@ -147,6 +147,8 @@ final class Receiver2 implements Runnable, Fiber {
 
             } catch (InterruptedIOException ex) {
                 // ignore
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                log.warn("An error occurred when reading DHCP response. Ignoring exception: ", ex);
             } catch (IOException ex) {
                 synchronized (this) {
                     if (m_status == RUNNING)
