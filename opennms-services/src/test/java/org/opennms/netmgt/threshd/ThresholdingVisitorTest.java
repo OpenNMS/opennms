@@ -467,6 +467,51 @@ public class ThresholdingVisitorTest {
         
         verifyEvents(0);
     }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3193.xml
+     */
+    @Test
+    public void testBug3193() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3193.xml");
+        ThresholdingVisitor visitor = createVisitor();
+
+        CollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        MibObject mibObject = createMibObject("counter", "myCounter", "0");
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+
+        // Add Events
+        addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
+        addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
+        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+
+        // Collect Step 1 : First Data (Last should be NaN)
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(50));
+        resource.visit(visitor);
+
+        // Collect Step 2 : First Value (last - current = 60)
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(110));
+        resource.visit(visitor);
+
+        // Collect Step 3 : Second Value (last - current = 110). Trigger
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(220));
+        resource.visit(visitor);
+
+        // Collect Step 3 : Third Value (last - current = 40). Rearm
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(260));
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        verifyEvents(0);
+    }
     
     /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
