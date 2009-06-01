@@ -327,6 +327,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     public void completeResource(CollectionResource resource) {
         Date date=new Date();
         List<Event> eventsList=new ArrayList<Event>();
+
+        // The local cache for this instance of iterating through the numeric values
+        // pulled out of the collection Set via getValue();
+        Map<String, Double> localCache = new HashMap<String,Double>();
+
         if(log().isDebugEnabled()) {
             log().debug("Completing Resource "+resource.getResourceTypeName() + "/" + resource.getOwnerName() +"/"+(resource.getInstance()==null?"default":resource.getInstance())
                         +": "+resource.getType()+" ("+resource+")");
@@ -374,7 +379,19 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 	                    
 	                    for(String ds: requiredDatasources) {
 	                        log().info("Looking for datasource "+ds);
-	                        Double dsValue=getValue(resource, ds);
+
+                            // Maintain the method level dsValue cache for this iteration through
+                            // the data sources.  getValue can only be used once per ds per call
+                            // to completeResource()
+                            String vid = resource.toString() + "." + ds;
+                            Double dsValue=localCache.get(vid);
+                            if(dsValue==null) {
+                                dsValue=getValue(resource, ds);
+                                localCache.put(vid, dsValue);
+                            } else if(log().isDebugEnabled()) {
+                                log().debug("Using method level dsValue cache for datasource value=" + dsValue);
+                            }
+
 	                        if(dsValue==null) {
 	                            log().info("Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
 	                            valueMissing=true;
@@ -630,11 +647,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             if (resourceType.equals("if")) {
                 String ifLabel = resourceDirectory.getName();
                 value = this.getIfInfo(m_nodeId, ifLabel, attribute);
-            } else {
+            }
+            if (value == null) {
                 //Check in the current set of collected string vars first, then check numeric vars; only then check on disk (in string properties)
                 value=m_stringAttributeValues.get(attribute);
                 if(value==null) {
-                    value=m_numericAttributeValues.get(attribute).getNumericValue();
+                    if (m_numericAttributeValues.get(attribute) != null)
+                        value=m_numericAttributeValues.get(attribute).getNumericValue();
                     if(value==null) {
                         if (log().isDebugEnabled()) {
                             log().debug("Value not found in collection set, getting from " + resourceDirectory);
