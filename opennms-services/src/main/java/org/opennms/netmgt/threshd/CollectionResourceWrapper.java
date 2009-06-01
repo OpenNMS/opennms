@@ -1,6 +1,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +26,13 @@ public class CollectionResourceWrapper {
      * Holds last values for counter attributes (in order to calculate delta)
      */
     static private Map<String, Double> s_cache = new ConcurrentHashMap<String,Double>();
+    
+    /*
+     * To avoid update static cache on every call of getAttributeValue.
+     * In some cases, the same DS could be needed in many thresholds definitions for same resource.
+     * See Bug 3193
+     */
+    private Map<String, Double> m_localCache = new HashMap<String,Double>();
 
     public CollectionResourceWrapper(int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
         m_nodeId = nodeId;
@@ -97,19 +105,27 @@ public class CollectionResourceWrapper {
             }
             return current;
         }
-        Double last = s_cache.get(id);
-        if (log().isDebugEnabled()) {
-            log().debug("getAttributeValue: " + id + "(counter) last=" + last + ", current=" + current);
+        return getCounterValue(id, current);
+    }
+
+    private Double getCounterValue(String id, Double current) {
+        if (m_localCache.containsKey(id) == false) {
+            Double last = s_cache.get(id);
+            if (log().isDebugEnabled()) {
+                log().debug("getAttributeValue: " + id + "(counter) last=" + last + ", current=" + current);
+            }
+            s_cache.put(id, current);
+            if (last == null) {
+                m_localCache.put(id, Double.NaN);
+                log().info("getAttributeValue: unknown last value, ignoring current");
+            } else if (current < last) {
+                log().info("getAttributeValue: counter reset detected, ignoring value");
+                m_localCache.put(id, Double.NaN);
+            } else {
+                m_localCache.put(id, current - last);
+            }
         }
-        s_cache.put(id, current);
-        if (last == null) {
-            return Double.NaN;
-        }
-        if (current < last) {
-            log().info("getAttributeValue: counter reset detected, ignoring value");
-            return Double.NaN;
-        }
-        return current - last;
+        return m_localCache.get(id);
     }
 
     public String getLabelValue(String ds) {
