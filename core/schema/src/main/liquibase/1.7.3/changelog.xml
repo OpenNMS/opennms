@@ -22,7 +22,7 @@
 	</changeSet>
 
 	<changeSet author="brozow" id="1.7.3-category-group">
-		<preConditions>
+		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="category_group" /></not>
 		</preConditions>
 		<createTable tableName="category_group">
