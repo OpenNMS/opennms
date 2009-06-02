@@ -55,14 +55,14 @@ import org.opennms.netmgt.xml.event.Event;
  * BroadcastEventProcessor is responsible for receiving events from eventd and
  * queuing them to the data updaters.
  * 
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
-    private final FifoQueue m_updaterQ;
+    private final FifoQueue<Runnable> m_updaterQ;
 
     /**
      * Constructor
@@ -70,7 +70,7 @@ final class BroadcastEventProcessor implements EventListener {
      * @param updaterQ
      *            The queue where events of interest are added.
      */
-    BroadcastEventProcessor(FifoQueue updaterQ) {
+    BroadcastEventProcessor(FifoQueue<Runnable> updaterQ) {
         m_updaterQ = updaterQ;
     }
 
@@ -78,7 +78,7 @@ final class BroadcastEventProcessor implements EventListener {
      * Create a list of UEIs of interest to the RTC and subscribe to eventd
      */
     public void start() {
-        List ueisOfInterest = new ArrayList();
+        List<String> ueisOfInterest = new ArrayList<String>();
 
         // add the nodeGainedService event
         ueisOfInterest.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);

@@ -112,6 +112,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * The initial number of updater threads
      */
+    @SuppressWarnings("unused")
     private static final int NUM_UPDATERS = 5;
 
     /**

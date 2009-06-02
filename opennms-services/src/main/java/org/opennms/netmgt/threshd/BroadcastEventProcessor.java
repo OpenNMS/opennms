@@ -60,30 +60,32 @@ import org.opennms.netmgt.xml.event.Value;
 
 /**
  * 
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
     /**
      * The map of service names to service thresholders.
      */
+    @SuppressWarnings("unused")
     private Map m_monitors;
 
     /**
-     * The scheduler assocated with this receiver
+     * The scheduler associated with this receiver
      * 
      */
+    @SuppressWarnings("unused")
     private final Scheduler m_scheduler;
 
     /**
      * List of ThresholdableService objects.
      */
-    private final List m_thresholdableServices;
+    private final List<ThresholdableService> m_thresholdableServices;
 
     private final Threshd m_threshd;
 
     /**
-     * This constructor is called to initilize the JMS event receiver. A
+     * This constructor is called to initialize the JMS event receiver. A
      * connection to the message server is opened and this instance is setup as
      * the endpoint for broadcast events. When a new event arrives it is
      * processed and the appropriate action is taken.
@@ -93,7 +95,8 @@ final class BroadcastEventProcessor implements EventListener {
      *            thresholding.
      * 
      */
-    BroadcastEventProcessor(Threshd threshd, List thresholdableServices) {
+    @SuppressWarnings("deprecation")
+    BroadcastEventProcessor(Threshd threshd, List<ThresholdableService> thresholdableServices) {
 
         // Set the configuration for this event
         // receiver.
@@ -102,7 +105,7 @@ final class BroadcastEventProcessor implements EventListener {
         m_scheduler = m_threshd.getScheduler();
         m_thresholdableServices = thresholdableServices;
 
-        // Create the jms message selector
+        // Create the message selector
         installMessageSelector();
     }
 
@@ -110,9 +113,9 @@ final class BroadcastEventProcessor implements EventListener {
      * Create message selector to set to the subscription
      */
     private void installMessageSelector() {
-        // Create the JMS selector for the ueis this service is interested in
+        // Create the JMS selector for the UEIs this service is interested in
         //
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -288,6 +291,7 @@ final class BroadcastEventProcessor implements EventListener {
      * @param event
      *            The event to process.
      */
+    @SuppressWarnings("deprecation")
     private void reinitializePrimarySnmpInterfaceHandler(Event event) {
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -304,10 +308,7 @@ final class BroadcastEventProcessor implements EventListener {
         // address for reinitialization
         //
         synchronized (m_thresholdableServices) {
-            Iterator iter = m_thresholdableServices.iterator();
-            while (iter.hasNext()) {
-                ThresholdableService tSvc = (ThresholdableService) iter.next();
-
+            for (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
                 if (addr.getHostAddress().equals(event.getInterface())) {
                     synchronized (tSvc) {
@@ -362,10 +363,7 @@ final class BroadcastEventProcessor implements EventListener {
         
        //Mark *all* thresholdable Services for reinit (very similar to reinitializePrimarySnmpInterfaceHandler but without the interface check)
         synchronized (m_thresholdableServices) {
-            Iterator iter = m_thresholdableServices.iterator();
-            while (iter.hasNext()) {
-                ThresholdableService tSvc = (ThresholdableService) iter.next();
-
+            for (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
                 synchronized (tSvc) {
                     ThresholderUpdates updates = tSvc.getThresholderUpdates();
@@ -417,12 +415,13 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
+    @SuppressWarnings("deprecation")
     private void primarySnmpInterfaceChangedHandler(Event event) {
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
-        // Extract the old and new primary SNMP interface adddresses from the
+        // Extract the old and new primary SNMP interface addresses from the
         // event parms.
         //
         String oldPrimaryIfAddr = null;
@@ -467,9 +466,9 @@ final class BroadcastEventProcessor implements EventListener {
             //
             synchronized (m_thresholdableServices) {
                 ThresholdableService tSvc = null;
-                ListIterator liter = m_thresholdableServices.listIterator();
+                ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
                 while (liter.hasNext()) {
-                    tSvc = (ThresholdableService) liter.next();
+                    tSvc = liter.next();
 
                     InetAddress addr = (InetAddress) tSvc.getAddress();
                     if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {

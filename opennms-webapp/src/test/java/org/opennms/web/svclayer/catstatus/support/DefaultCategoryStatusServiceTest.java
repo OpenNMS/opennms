@@ -90,7 +90,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		expect(viewDisplayDao.getView()).andReturn(view);
 		replay(viewDisplayDao);
 		
-		Collection categories = categoryStatusService.getCategoriesStatus();
+		Collection<StatusSection> categories = categoryStatusService.getCategoriesStatus();
 	
 		verify(viewDisplayDao);
 		
@@ -111,7 +111,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		//category.setCategoryComment("Category One Comment");
 	
 		OnmsOutage outage = new OnmsOutage();
-		Collection <OnmsOutage>outages = new ArrayList();
+		Collection<OnmsOutage> outages = new ArrayList<OnmsOutage>();
 		
 		outage.setId(300);
 		
@@ -135,7 +135,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		view.addSection(section);
 		List <String>services = new ArrayList<String>();
 		services.add("HTTP");
-		ServiceSelector selector = new ServiceSelector("isHTTP",(List<String>) services);
+//		ServiceSelector selector = new ServiceSelector("isHTTP",(List<String>) services);
 		
 		
 		
