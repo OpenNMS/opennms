@@ -39,18 +39,21 @@ package org.opennms.netmgt.config;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
- * @author david hustace <david@opennms.org>
+ * @author David Hustace <david@opennms.org>
  */
 
 public abstract class NotificationCommandManager {
@@ -72,19 +75,36 @@ public abstract class NotificationCommandManager {
      * @throws ValidationException
      */
     protected void parseXML(Reader reader) throws MarshalException, ValidationException {
-        NotificationCommands config = CastorUtils.unmarshal(NotificationCommands.class, reader);
+        NotificationCommands config = getXML(reader);
 
         Map<String, Command> commands = new HashMap<String, Command>();
         for (Command curCommand : getCommandsFromConfig(config)) {
-            commands.put(curCommand.getName(), curCommand);
+            if (curCommand != null && curCommand.getName() != null) {
+                commands.put(curCommand.getName(), curCommand);
+            } else {
+                log().warn("invalid notification command: " + curCommand);
+            }
         }
 
         m_commands = commands;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("deprecation")
+    private NotificationCommands getXML(Reader reader)
+            throws MarshalException, ValidationException {
+        return CastorUtils.unmarshal(NotificationCommands.class, reader);
+    }
+
     private List<Command> getCommandsFromConfig(NotificationCommands config) {
+        if (config == null) {
+            log().warn("no notification commands found");
+            return Collections.emptyList();
+        }
         return config.getCommandCollection();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(NotificationCommandManager.class);
     }
 
     /**
