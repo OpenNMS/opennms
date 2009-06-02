@@ -41,8 +41,8 @@ import java.util.StringTokenizer;
 /**
  * This class is used to hold an email address
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason</A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  */
 public class EmailAddress {
     private String address;
@@ -65,12 +65,12 @@ public class EmailAddress {
         String addressTail = address.substring(address.indexOf("@") + 1, address.length());
         StringTokenizer tokens = new StringTokenizer(addressTail, ".");
 
-        List tokenList = new ArrayList();
+        List<String> tokenList = new ArrayList<String>();
         while (tokens.hasMoreTokens()) {
             tokenList.add(tokens.nextToken());
         }
 
-        // walk this list backward filling in tld, domain and server
+        // walk this list backward filling in TLD, domain and server
         tld = (String) tokenList.get(tokenList.size() - 1);
         domain = (String) tokenList.get(tokenList.size() - 2);
 

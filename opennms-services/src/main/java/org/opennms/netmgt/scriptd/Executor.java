@@ -36,6 +36,7 @@ package org.opennms.netmgt.scriptd;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
@@ -60,15 +61,15 @@ import org.apache.bsf.BSFManager;
  * This class is used as a thread for launching scripts to handle received
  * events.
  * 
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org"/>OpenNMS </a>
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
+ * @author <a href="http://www.opennms.org"/>OpenNMS</a>
  * 
  */
 final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of events.
      */
-    private FifoQueue m_execQ;
+    private FifoQueue<Runnable> m_execQ;
 
     /**
      * The worker thread that executes the <code>run</code> method.
@@ -93,12 +94,12 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The configured scripts (no UEI specified).
      */
-    private ArrayList m_eventScripts;
+    private ArrayList<EventScript> m_eventScripts;
 
     /**
      * The configured scripts (UEI specified).
      */
-    private Hashtable m_eventScriptMap;
+    private Hashtable<String,List<EventScript>> m_eventScriptMap;
 
     /**
      * The BSF manager
@@ -115,7 +116,7 @@ final class Executor implements Runnable, PausableFiber {
      * @param config
      *            The <em>Scriptd</em> configuration.
      */
-    Executor(FifoQueue execQ, ScriptdConfigFactory config) {
+    Executor(FifoQueue<Runnable> execQ, ScriptdConfigFactory config) {
         m_execQ = execQ;
         m_config = config;
 
@@ -135,8 +136,8 @@ final class Executor implements Runnable, PausableFiber {
 
         EventScript[] scripts = m_config.getEventScripts();
 
-        m_eventScripts = new ArrayList();
-        m_eventScriptMap = new Hashtable();
+        m_eventScripts = new ArrayList<EventScript>();
+        m_eventScriptMap = new Hashtable<String,List<EventScript>>();
 
         for (int i = 0; i < scripts.length; i++) {
             Uei[] ueis = scripts[i].getUei();
@@ -148,10 +149,10 @@ final class Executor implements Runnable, PausableFiber {
 
                     String uei = ueis[j].getName();
 
-                    ArrayList list = (ArrayList) m_eventScriptMap.get(uei);
+                    List<EventScript> list = m_eventScriptMap.get(uei);
 
                     if (list == null) {
-                        list = new ArrayList();
+                        list = new ArrayList<EventScript>();
                         list.add(scripts[i]);
                         m_eventScriptMap.put(uei, list);
                     } else {
@@ -250,10 +251,10 @@ final class Executor implements Runnable, PausableFiber {
 
             Script[] attachedScripts = event.getScript();
 
-            ArrayList mapScripts = null;
+            List<EventScript> mapScripts = null;
 
             try {
-                mapScripts = (ArrayList) m_eventScriptMap.get(event.getUei());
+                mapScripts = m_eventScriptMap.get(event.getUei());
             }
 
             catch (Exception ex) {

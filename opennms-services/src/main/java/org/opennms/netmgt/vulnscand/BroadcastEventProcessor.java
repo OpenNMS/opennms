@@ -47,33 +47,35 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  * 
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
     /**
-     * SQL query to retrieve nodeid of a particulary interface address
+     * SQL query to retrieve node ID of a particular interface address
      */
+    @SuppressWarnings("unused")
     private static String SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
 
     /**
      * The location where suspectInterface events are enqueued for processing.
      */
-    private final FifoQueue m_suspectQ;
+    @SuppressWarnings("unused")
+    private final FifoQueue<Runnable> m_suspectQ;
 
     /**
      * The Vulnscand rescan scheduler
      */
+    @SuppressWarnings("unused")
     private final Object m_scheduler;
 
     /**
      * Create message selector to set to the subscription
      */
-    private void installJmsMessageSelector() {
-        // Create the JMS selector for the ueis this service is interested in
-        //
-        List ueiList = new ArrayList();
+    private void installMessageSelector() {
+        // Create the message selector for the UEIs this service is interested in
+        List<String> ueiList = new ArrayList<String>();
 
         // specificVulnerabilityScan
         ueiList.add(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI);
@@ -82,7 +84,7 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
-     * This constructor is called to initilize the JMS event receiver. A
+     * This constructor is called to initialize the event receiver. A
      * connection to the message server is opened and this instance is setup as
      * the endpoint for broadcast events. When a new event arrives it is
      * processed and the appropriate action is taken.
@@ -94,18 +96,14 @@ final class BroadcastEventProcessor implements EventListener {
      *            Rescan scheduler.
      * 
      */
-    BroadcastEventProcessor(FifoQueue suspectQ, Object scheduler) {
-        Category log = ThreadCategory.getInstance(getClass());
-
+    BroadcastEventProcessor(FifoQueue<Runnable> suspectQ, Object scheduler) {
         // Suspect queue
-        //
         m_suspectQ = suspectQ;
 
         // Scheduler
-        //
         m_scheduler = scheduler;
 
-        installJmsMessageSelector();
+        installMessageSelector();
     }
 
     /**
