@@ -62,7 +62,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
- * If a database conneciton is not passed to the store method, then a temporary
+ * If a database connection is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
  * 
@@ -141,6 +141,7 @@ public final class DbIpInterfaceEntry {
      * The SNMP ifIndex
      */
     private int m_ifIndex;
+    private int m_originalIfIndex;
 
     /**
      * The hostname string, if any
@@ -415,7 +416,7 @@ public final class DbIpInterfaceEntry {
             if (m_ifIndex == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
             } else {
-                stmt.setInt(ndx++, m_ifIndex);
+                stmt.setInt(ndx++, m_originalIfIndex);
             }
         }
         
@@ -539,6 +540,7 @@ public final class DbIpInterfaceEntry {
         m_nodeId = nid;
         m_ipAddr = address;
         m_ifIndex = -1;
+        m_originalIfIndex = -1;
         m_managedState = STATE_UNKNOWN;
         m_status = -1;
         m_lastPoll = null;
@@ -567,6 +569,7 @@ public final class DbIpInterfaceEntry {
         m_nodeId = nid;
         m_ipAddr = address;
         m_ifIndex = ifIndex;
+        m_originalIfIndex = ifIndex;
         m_status = -1;
         m_lastPoll = null;
         m_managedState = STATE_UNKNOWN;
