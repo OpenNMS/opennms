@@ -8,79 +8,119 @@
 
 <changeSet runOnChange="false" author="rangerrick" id="opennmsnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="opennmsnxtid" /></not>
-	</preConditions> 
+		<!-- <not><sequenceExists sequenceName="opennmsnxtid" /></not> -->
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'opennmsnxtid'
+		</sqlCheck>
+	</preConditions>
 	<createSequence sequenceName="opennmsnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="nodenxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="nodenxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'nodenxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="nodenxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="servicenxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="servicenxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'servicenxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="servicenxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="eventsnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="eventsnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'eventsnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="eventsnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="alarmsnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="alarmsnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'alarmsnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="alarmsnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="outagenxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="outagenxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'outagenxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="outagenxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="notifynxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="notifynxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'notifynxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="notifynxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="vulnnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="vulnnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'vulnnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="vulnnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="catnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="catnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'catnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="catnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="usernotifnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="usernotifnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'usernotifnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="usernotifnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="demandpollnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="demandpollnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'demandpollnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="demandpollnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="pollresultnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="pollresultnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'pollresultnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="pollresultnxtid" />
 </changeSet>
 <changeSet runOnChange="false" author="rangerrick" id="mapnxtid">
 	<preConditions onFail="MARK_RAN">
-		<not><sequenceExists sequenceName="mapnxtid" /></not>
+		<sqlCheck expectedResult="0">
+			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'mapnxtid'
+		</sqlCheck>
 	</preConditions> 
 	<createSequence sequenceName="mapnxtid" />
 </changeSet>
