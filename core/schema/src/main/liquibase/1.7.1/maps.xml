@@ -31,7 +31,7 @@
 
 	<changeSet author="rssntn67" id="1.7.1-add-map-group">
 		<preConditions onFail="MARK_RAN">
-			<columnExists tableName="map" columnName="mapgroup" />
+			<not><columnExists tableName="map" columnName="mapgroup" /></not>
 		</preConditions>
 
 		<addColumn tableName="map">
