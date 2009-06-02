@@ -50,10 +50,10 @@ public class BeanInfo {
 
     private String[] attributes;
 
-    private ArrayList operations;
+    private ArrayList<Object> operations;
 
     public BeanInfo() {
-        operations = new ArrayList();
+        operations = new ArrayList<Object>();
     }
 
     public void setAttributes(String[] attr) {
@@ -68,7 +68,7 @@ public class BeanInfo {
         operations.add(attr);
     }
 
-    public ArrayList getOperations() {
+    public ArrayList<Object> getOperations() {
         return operations;
     }
 

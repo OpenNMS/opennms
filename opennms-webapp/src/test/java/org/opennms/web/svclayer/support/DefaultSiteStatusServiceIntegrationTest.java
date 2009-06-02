@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -183,7 +184,7 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         createOutageForNodeInCategory("Routers");
         createOutageForNodeInCategory("Servers");
         
-        Collection<AggregateStatus> aggrStati;
+        List<AggregateStatus> aggrStati;
         Collection<AggregateStatusDefinition> defs = new ArrayList<AggregateStatusDefinition>();
         
         AggregateStatusDefinition definition;
@@ -211,24 +212,24 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         view.setColumnName("building");
         view.setColumnValue("HQ");
         view.setStatusDefinitions(new LinkedHashSet<AggregateStatusDefinition>(defs));
-        
-        aggrStati = m_aggregateService.createAggregateStatuses(view);
+
+        aggrStati = new ArrayList<AggregateStatus>(m_aggregateService.createAggregateStatuses(view));
         
         AggregateStatus status;
-        status = (AggregateStatus)((ArrayList)aggrStati).get(0);
+        status = aggrStati.get(0);
         assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
         
-        status = (AggregateStatus)((ArrayList)aggrStati).get(1);
+        status = aggrStati.get(1);
         assertEquals(status.getStatus(), AggregateStatus.ALL_NODES_UP);
         
-        status = (AggregateStatus)((ArrayList)aggrStati).get(2);
+        status = aggrStati.get(2);
         assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
 
-//        status = (AggregateStatus)((ArrayList)aggrStati).get(3);
+//        status = aggrStati.get(3);
 //        assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
 //        assertEquals(new Integer(6), status.getDownEntityCount());
 //        
-//        status = (AggregateStatus)((ArrayList)aggrStati).get(4);
+//        status = aggrStati.get(4);
 //        assertEquals(status.getStatus(), AggregateStatus.ALL_NODES_UP);
 
     }

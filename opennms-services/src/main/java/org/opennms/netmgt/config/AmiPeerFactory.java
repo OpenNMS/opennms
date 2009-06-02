@@ -55,18 +55,18 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
-import org.opennms.protocols.ami.AmiAgentConfig;
 import org.opennms.netmgt.config.common.Range;
+import org.opennms.protocols.ami.AmiAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 
 /**
- * This class is the main respository for AMI configuration information used by
+ * This class is the main repository for AMI configuration information used by
  * the capabilities daemon. When this class is loaded it reads the AMI
  * configuration into memory, and uses the configuration to find the
  * {@link org.opennms.protocols.ami.AmiAgentConfig AmiAgentConfig} objects for specific
@@ -111,7 +111,6 @@ public class AmiPeerFactory extends PeerFactory {
      */
     private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
         InputStream cfgIn = new FileInputStream(configFile);
-
         m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
     }
@@ -176,9 +175,9 @@ public class AmiPeerFactory extends PeerFactory {
     public static synchronized void saveCurrent() throws Exception {
         optimize();
 
-        // Marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the XML from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
@@ -203,11 +202,8 @@ public class AmiPeerFactory extends PeerFactory {
         Category log = log();
 
         // First pass: Remove empty definition elements
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
+        for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
+            Definition definition = definitionsIterator.next();
             if (definition.getSpecificCount() == 0
                 && definition.getRangeCount() == 0) {
                 if (log.isDebugEnabled())
@@ -217,15 +213,9 @@ public class AmiPeerFactory extends PeerFactory {
         }
 
         // Second pass: Replace single IP range elements with specific elements
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-            for (Iterator rangesIterator =
-                     definition.getRangeCollection().iterator();
-                 rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
+        for (Definition definition : m_config.getDefinitionCollection()) {
+            for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+                Range range = rangesIterator.next();
                 if (range.getBegin().equals(range.getEnd())) {
                     definition.addSpecific(range.getBegin());
                     rangesIterator.remove();
@@ -235,40 +225,23 @@ public class AmiPeerFactory extends PeerFactory {
 
         // Third pass: Sort specific and range elements for improved XML
         // readability and then combine them into fewer elements where possible
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-
+        for (Definition definition : m_config.getDefinitionCollection()) {
             // Sort specifics
-            TreeMap specificsMap = new TreeMap();
-            for (Iterator specificsIterator =
-                     definition.getSpecificCollection().iterator();
-                 specificsIterator.hasNext();) {
-                String specific = ((String) specificsIterator.next()).trim();
-                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()),
-                                 specific);
+            TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
+            for (String specific : definition.getSpecificCollection()) {
+                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific.trim());
             }
 
             // Sort ranges
-            TreeMap rangesMap = new TreeMap();
-            for (Iterator rangesIterator =
-                     definition.getRangeCollection().iterator();
-                 rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
-                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()),
-                              range);
+            TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
+            for (Range range : definition.getRangeCollection()) {
+                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()), range);
             }
 
             // Combine consecutive specifics into ranges
             Integer priorSpecific = null;
             Range addedRange = null;
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
-
+            for (Integer specific : specificsMap.keySet()) {
                 if (priorSpecific == null) {
                     priorSpecific = specific;
                     continue;
@@ -280,8 +253,7 @@ public class AmiPeerFactory extends PeerFactory {
                 if (specificInt == priorSpecificInt + 1) {
                     if (addedRange == null) {
                         addedRange = new Range();
-                        addedRange.setBegin
-                             (IPv4Address.addressToString(priorSpecificInt));
+                        addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
                         rangesMap.put(priorSpecific, addedRange);
                         specificsMap.remove(priorSpecific);
                     }
@@ -297,21 +269,16 @@ public class AmiPeerFactory extends PeerFactory {
             }
 
             // Move specifics to ranges
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
+            for (Integer specific : new ArrayList<Integer>(specificsMap.keySet())) {
                 int specificInt = specific.intValue();
-                for (Iterator rangesIterator =
-                         new ArrayList(rangesMap.keySet()).iterator();
-                     rangesIterator.hasNext();) {
-                    Integer begin = (Integer) rangesIterator.next();
+                for (Integer begin : new ArrayList<Integer>(rangesMap.keySet())) {
                     int beginInt = begin.intValue();
 
-                    if (specificInt < beginInt - 1)
+                    if (specificInt < beginInt - 1) {
                         continue;
+                    }
 
-                    Range range = (Range) rangesMap.get(begin);
+                    Range range = rangesMap.get(begin);
 
                     int endInt = new IPv4Address(range.getEnd()).getAddress();
 
@@ -343,22 +310,18 @@ public class AmiPeerFactory extends PeerFactory {
             Range priorRange = null;
             int priorBegin = 0;
             int priorEnd = 0;
-            for (Iterator rangesIterator =
-                     rangesMap.keySet().iterator();
-                 rangesIterator.hasNext();) {
-                Integer rangeKey = (Integer) rangesIterator.next();
+            for (Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                Integer rangeKey = rangesIterator.next();
 
-                Range range = (Range) rangesMap.get(rangeKey);
+                Range range = rangesMap.get(rangeKey);
 
                 int begin = rangeKey.intValue();
                 int end = new IPv4Address(range.getEnd()).getAddress();
 
                 if (priorRange != null) {
                     if (begin - priorEnd <= 1) {
-                        priorRange.setBegin(IPv4Address.addressToString
-                                             (Math.min(priorBegin, begin)));
-                        priorRange.setEnd(IPv4Address.addressToString
-                                           (Math.max(priorEnd, end)));
+                        priorRange.setBegin(IPv4Address.addressToString (Math.min(priorBegin, begin)));
+                        priorRange.setEnd(IPv4Address.addressToString (Math.max(priorEnd, end)));
 
                         rangesIterator.remove();
                         continue;
@@ -371,8 +334,8 @@ public class AmiPeerFactory extends PeerFactory {
             }
 
             // Update changes made to sorted maps
-            definition.setSpecificCollection(new ArrayList(specificsMap.values()));
-            definition.setRangeCollection(new ArrayList(rangesMap.values()));
+            definition.setSpecific(specificsMap.values().toArray(new String[0]));
+            definition.setRange(rangesMap.values().toArray(new Range[0]));
         }
     }
 
@@ -400,7 +363,7 @@ public class AmiPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated password into
      * the currently loaded ami-config.xml.
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
-     * @param ip the ip address of a definition
+     * @param ip the IP address of a definition
      * @param password the password for a definition
      * @throws UnknownHostException
      */
@@ -412,25 +375,20 @@ public class AmiPeerFactory extends PeerFactory {
 
         // Copy the current definitions so that elements can be added and
         // removed
-        ArrayList definitions =
-            new ArrayList(m_config.getDefinitionCollection());
+        ArrayList<Definition> definitions = new ArrayList<Definition>(m_config.getDefinitionCollection());
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
-
+        for (Definition currentDefinition : definitions) {
             if ((currentDefinition.getPassword() != null
-                 && currentDefinition.getPassword().equals(password))
+                && currentDefinition.getPassword().equals(password))
                 || (currentDefinition.getPassword() == null
-                    && m_config.getPassword() != null
-                    && m_config.getPassword().equals(password))) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition "
-                              + "with password " + password);
+                && m_config.getPassword() != null
+                && m_config.getPassword().equals(password))) {
+                if (log.isDebugEnabled()) {
+                    log.debug("define: Found existing definition with password " + password);
+                }
                 definition = currentDefinition;
                 break;
             }
@@ -449,38 +407,29 @@ public class AmiPeerFactory extends PeerFactory {
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+        for (Definition currentDefinition : definitions) {
 
-            // Ignore this definition if it was the one identified by the first
-            // step
+            // Ignore this definition if it was the one identified by the first step
             if (currentDefinition == definition)
                 continue;
 
             // Remove any specific elements that match IP
             while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Removed an existing specific "
-                              + "element with IP " + ip);
+                if (log.isDebugEnabled()) {
+                    log.debug("define: Removed an existing specific element with IP " + ip);
+                }
             }
 
             // Split and replace any range elements that contain IP
-            ArrayList ranges =
-                new ArrayList(currentDefinition.getRangeCollection());
+            ArrayList<Range> ranges = new ArrayList<Range>(currentDefinition.getRangeCollection());
             Range[] rangesArray = currentDefinition.getRange();
-            for (int rangesArrayIndex = 0;
-                 rangesArrayIndex < rangesArray.length;
-                 rangesArrayIndex++) {
+            for (int rangesArrayIndex = 0; rangesArrayIndex < rangesArray.length; rangesArrayIndex++) {
                 Range range = rangesArray[rangesArrayIndex];
                 int begin = new IPv4Address(range.getBegin()).getAddress();
                 int end = new IPv4Address(range.getEnd()).getAddress();
                 if (address >= begin && address <= end) {
                     if (log.isDebugEnabled())
-                        log.debug("define: Splitting range element "
-                                  + "with begin " + range.getBegin() + " and "
-                                  + "end " + range.getEnd());
+                        log.debug(String.format("define: Splitting range element with begin %s and end %s", range.getBegin(), range.getEnd()));
 
                     if (begin == end) {
                         ranges.remove(range);
@@ -510,11 +459,11 @@ public class AmiPeerFactory extends PeerFactory {
                     ranges.add(tail);
                 }
             }
-            currentDefinition.setRangeCollection(ranges);
+            currentDefinition.setRange(ranges.toArray(new Range[0]));
         }
 
         // Store the altered list of definitions
-        m_config.setDefinitionCollection(definitions);
+        m_config.setDefinition(definitions.toArray(new Definition[0]));
     }
     
     public synchronized AmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
@@ -530,15 +479,13 @@ public class AmiPeerFactory extends PeerFactory {
 
         // Attempt to locate the node
         //
-        Enumeration edef = m_config.enumerateDefinition();
+        Enumeration<Definition> edef = m_config.enumerateDefinition();
         DEFLOOP: while (edef.hasMoreElements()) {
             Definition def = (Definition) edef.nextElement();
 
             // check the specifics first
-            //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = ((String) espec.nextElement()).trim();
+            for (String saddr : def.getSpecificCollection()) {
+                saddr = saddr.trim();
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -547,16 +494,13 @@ public class AmiPeerFactory extends PeerFactory {
                     }
                 } catch (UnknownHostException e) {
                     Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("AmiPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log.warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
                 }
             }
 
             // check the ranges
-            //
             long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
+            for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
@@ -570,15 +514,12 @@ public class AmiPeerFactory extends PeerFactory {
                     }
                 } catch (UnknownHostException e) {
                     Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("AmiPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log.warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
                 }
             }
             
-            // check the matching ip expressions
-            //
-            Enumeration eMatch = def.enumerateIpMatch();
-            while (eMatch.hasMoreElements()) {
-                String ipMatch = (String)eMatch.nextElement();
+            // check the matching IP expressions
+            for (String ipMatch : def.getIpMatchCollection()) {
                 if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
                     setAmiAgentConfig(agentConfig, def);
                     break DEFLOOP;

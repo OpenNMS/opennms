@@ -183,7 +183,7 @@ public class DNSAddressRequest {
      * The list of answers.
      * </P>
      */
-    public List m_answers;
+    public List<DNSAddressRR> m_answers;
 
     /**
      * <P>
@@ -228,7 +228,7 @@ public class DNSAddressRequest {
 
     /**
      * <P>
-     * Constructs a DNSAddressRequest for ths hostname passed. The host string
+     * Constructs a DNSAddressRequest for the hostname passed. The host string
      * that is passed to the address string should be a hostname in "x.y.z"
      * where x, y, and z are strings. This is not suppose to be a dotted decimal
      * address.
@@ -266,7 +266,7 @@ public class DNSAddressRequest {
             globalID = m_reqID + 1; // prevents negative numbers.
         }
 
-        m_answers = new ArrayList();
+        m_answers = new ArrayList<DNSAddressRR>();
     }
 
     /**
@@ -333,15 +333,20 @@ public class DNSAddressRequest {
 
         int numQueries = dnsIn.readShort();
         int numAnswers = dnsIn.readShort();
+        @SuppressWarnings("unused")
         int numAuthorities = dnsIn.readShort();
+        @SuppressWarnings("unused")
         int numAdditional = dnsIn.readShort();
 
         while (numQueries-- > 0) {
             //
             // discard questions
             //
+            @SuppressWarnings("unused")
             String rname = dnsIn.readDomainName();
+            @SuppressWarnings("unused")
             int rtype = dnsIn.readShort();
+            @SuppressWarnings("unused")
             int rclass = dnsIn.readShort();
         }
 
@@ -404,7 +409,7 @@ public class DNSAddressRequest {
      * 
      * @return The list of received answers.
      */
-    public List getAnswers() {
+    public List<DNSAddressRR> getAnswers() {
         return m_answers;
     }
 

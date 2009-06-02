@@ -159,6 +159,7 @@ public class MockNetworkTest extends TestCase {
             m_expectedStatus = status;
         }
 
+        @SuppressWarnings("unchecked")
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
@@ -376,6 +377,7 @@ public class MockNetworkTest extends TestCase {
 
     }
     
+    @SuppressWarnings("unchecked")
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", "1.1.1.1", "ICMP");
@@ -403,7 +405,7 @@ public class MockNetworkTest extends TestCase {
         assertTrue(pollerConfig.nodeOutageProcessingEnabled());
 
         // test to ensure that the poller has packages
-        Enumeration pkgs = pollerConfig.enumeratePackage();
+        Enumeration<Package> pkgs = pollerConfig.enumeratePackage();
         assertNotNull(pkgs);
         int pkgCount = 0;
         Package pkg = null;
@@ -417,7 +419,7 @@ public class MockNetworkTest extends TestCase {
         // ensure a sample interface is in the package
         assertTrue(pollerConfig.interfaceInPackage("192.168.1.1", pkg));
 
-        Enumeration svcs = pkg.enumerateService();
+        Enumeration<Service> svcs = pkg.enumerateService();
         assertNotNull(svcs);
         while (svcs.hasMoreElements()) {
             Service svc = (Service) svcs.nextElement();
@@ -533,7 +535,7 @@ public class MockNetworkTest extends TestCase {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
-        Collection outages = pkg.getOutageCalendarCollection();
+        Collection<String> outages = pkg.getOutageCalendarCollection();
         assertTrue(outages.contains("outage1"));
         assertTrue(outages.contains("outage2"));
 

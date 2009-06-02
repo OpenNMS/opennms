@@ -48,7 +48,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +85,7 @@ final class ConvertToEvent {
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
+    @SuppressWarnings("unused")
     private static String m_localAddr;
 
     /**
@@ -93,6 +93,7 @@ final class ConvertToEvent {
      */
     private String m_eventXML;
 
+    @SuppressWarnings("unused")
     private static Event e;
 
     /**
@@ -102,7 +103,7 @@ final class ConvertToEvent {
     private Log m_log;
 
     /**
-     * The internet addrress of the sending agent.
+     * The Internet address of the sending agent.
      */
     private InetAddress m_sender;
 
@@ -114,7 +115,7 @@ final class ConvertToEvent {
     /**
      * The list of event that have been acknowledged.
      */
-    private List m_ackEvents;
+    private List<Event> m_ackEvents;
 
     private Event m_event;
 
@@ -175,7 +176,7 @@ final class ConvertToEvent {
         e.m_sender = addr;
         e.m_port = port;
         e.m_eventXML = new String(data, 0, len, "US-ASCII");
-        e.m_ackEvents = new ArrayList(16);
+        e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
         String m_logPrefix = Syslogd.LOG4J_CATEGORY;
@@ -363,11 +364,7 @@ final class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        Iterator match = ueiList.getUeiMatchCollection().iterator();
-        UeiMatch uei;
-        while (match.hasNext()) {
-
-            uei = (UeiMatch) match.next();
+        for (UeiMatch uei : ueiList.getUeiMatchCollection()) {
             if (uei.getMatch().getType().equals("substr")) {
                 if (log.isDebugEnabled()) {
                     log.debug("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
@@ -427,12 +424,8 @@ final class ConvertToEvent {
 
         // Time to verify if we need to hide the message
 
-        match = hideMessage.getHideMatchCollection().iterator();
-
-        HideMatch hide;
-    	boolean doHide = false;
-        while (match.hasNext()) {
-            hide = (HideMatch) match.next();
+        boolean doHide = false;
+        for (HideMatch hide : hideMessage.getHideMatchCollection()) {
             if (hide.getMatch().getType().equals("substr")) {
                 if (message.contains(hide.getMatch().getExpression())) {
                     // We should hide the message based on this match
@@ -468,8 +461,7 @@ final class ConvertToEvent {
         String processName = "";
         String processIdStr = "";
 
-        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1)
-                && spaceIdx == (colonIdx + 1)) {
+        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
@@ -480,14 +472,10 @@ final class ConvertToEvent {
                 log.debug("ERROR Bad process id '" + processIdStr + "'");
                 processId = 0;
             }
-        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0
-                && spaceIdx == (colonIdx + 1)) {
+        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
         }
-
-        // log.debug(processName +"," + processId + " " + timestamp + " " +
-        // message);
 
         // Using parms provides configurability.
         logmsg.setContent(message);
@@ -536,10 +524,9 @@ final class ConvertToEvent {
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
-        // Good thing(tm)
+        // Good thing(TM)
         event.setParms(eventParms);
 
-        // log.debug("Returning from SyslogToEvent " + event.toString());
         e.m_event = event;
         return e;
     }
@@ -548,7 +535,7 @@ final class ConvertToEvent {
      * Decodes the XML package from the remote agent. If an error occurs or
      * the datagram had malformed XML then an exception is generated.
      *
-     * @return The toplevel <code>Log</code> element of the XML document.
+     * @return The top-level <code>Log</code> element of the XML document.
      * @throws org.exolab.castor.xml.ValidationException
      *          Throws if the documents data does not match the defined XML
      *          Schema Definition.
@@ -597,7 +584,7 @@ final class ConvertToEvent {
     /**
      * Get the acknowledged events
      */
-    public List getAckedEvents() {
+    public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 
@@ -624,7 +611,7 @@ final class ConvertToEvent {
 
     /**
      * Returns the hash code of the instance. The hash code is computed by
-     * taking the bitwise XOR of the port and the agent's internet address
+     * taking the bitwise XOR of the port and the agent's Internet address
      * hash code.
      *
      * @return The 32-bit has code for the instance.
