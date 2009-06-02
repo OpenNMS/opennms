@@ -219,11 +219,10 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doAddInterface(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
         
-        Requisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "1.1.1.1");
+        Requisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "");
         treeCmd.setFormData(formData);
         
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".interface[0]");
-        
         
         return showForm(request, response, errors);
     }
