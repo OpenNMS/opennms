@@ -16,7 +16,7 @@
                 </threshold>
                 <expression type="high" ds-type="hrStorageIndex" value="30.0" rearm="25.0" trigger="1" ds-label="hrStorageDescr"
                     expression="(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)">
-                    <resource-filter field="hrStorageDescr">^/opt</resource-filter>
+                    <resource-filter field="hrStorageDescr">^/opt.*</resource-filter>
                 </expression>
         </group>
 
@@ -84,7 +84,7 @@
 
         <group name="http-latency"
                 rrdRepository = "${install.share.dir}/rrd/response/">
-                <threshold type="high" ds-name="http"  ds-type="if" value="100" rearm="50" trigger="3"/>
+                <threshold type="high" ds-name="http"  ds-type="if" value="100" rearm="50" trigger="5"/>
         </group>
 
         <group name="http-8000-latency"
