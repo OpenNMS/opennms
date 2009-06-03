@@ -57,17 +57,10 @@ import org.springframework.core.io.Resource;
 
 public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 
-	private Resource m_moFile;
-	
-	public PropsMockSnmpMOLoaderImpl(Resource myMoFile) {
-		m_moFile = myMoFile;
+	public List<ManagedObject> loadMOs(Resource moFile) {
+	    ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
 		
-	}
-	
-	public List<ManagedObject> loadMOs() {
-		ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
-		
-        Properties moProps = loadProperties(m_moFile);
+        Properties moProps = loadProperties(moFile);
         if (moProps == null) return null;
 
 		Enumeration<Object> moKeys = moProps.keys();

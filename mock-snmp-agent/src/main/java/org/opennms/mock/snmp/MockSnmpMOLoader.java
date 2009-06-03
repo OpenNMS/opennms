@@ -34,10 +34,11 @@ package org.opennms.mock.snmp;
 import java.util.List;
 
 import org.snmp4j.agent.ManagedObject;
+import org.springframework.core.io.Resource;
 
 /*
  * @author Jeff Gehlbach <jeffg jeffg org>
  */
 public interface MockSnmpMOLoader {
-	public List<ManagedObject> loadMOs();
+	public List<ManagedObject> loadMOs(Resource moFile);
 }

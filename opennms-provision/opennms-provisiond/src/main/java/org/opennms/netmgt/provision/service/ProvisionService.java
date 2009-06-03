@@ -204,8 +204,10 @@ public interface ProvisionService {
     
     public abstract List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(String foreignSourceName);
 
+    @Transactional
     public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
 
+    @Transactional
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
 
