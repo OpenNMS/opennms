@@ -36,10 +36,18 @@
 			<parameter key="searchfilter" value="CN=testuser"/>
 			<parameter key="dn" value="DN=example,DN=org,OU=users,CN=opennms"/>
 			<parameter key="password" value="passwordforopennmsuser"/>
-            <parameter key="retry" value="2"/>
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
-        </service>
-        <service name="ICMP" interval="300000" user-defined="false" status="on">
+		</service>
+		<service name="Memcached" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="11211"/>
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
+			<parameter key="ds-name" value="memcached"/>
+			<parameter key="rrd-base-name" value="memcached" />
+		</service>
+		<service name="ICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
@@ -553,10 +561,11 @@
         <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
     </package>
     
-    	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
-    	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
-    	<monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
-    	<monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
+	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
+	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+	<monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
+	<monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
+	<monitor service="Memcached" 	class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
