@@ -25,6 +25,9 @@
 		</rollback>
 	</changeSet>
 	<changeSet author="brozow" id="1.7.1-add-last-capsd-poll">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="snmpinterface" columnName="snmplastcapsdpoll" /></not>
+		</preConditions>
 		<addColumn tableName="snmpinterface">
 			<column name="snmplastcapsdpoll" type="DATETIME" />
 		</addColumn>
