@@ -14,6 +14,11 @@
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
     </protocol-plugin>
+    <protocol-plugin protocol="Memcached" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
+        <property key="port" value="11211" />
+        <property key="timeout" value="2000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
     <protocol-plugin protocol="NTP" class-name="org.opennms.netmgt.capsd.plugins.NtpPlugin" scan="on">
         <property key="port" value="123" />
         <property key="timeout" value="3000" />
