@@ -122,6 +122,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      */
     public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
         super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
+        m_moLoader = new PropertiesBackedManagedObject();
         m_address = bindAddress;
         m_moFile = moFile;
         agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
@@ -437,6 +438,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     @Override
     protected void unregisterSnmpMIBs() {
+        unregisterManagedObjects();
     }
 
     @Override
@@ -455,13 +457,14 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     @Override
     protected void unregisterManagedObjects() {
-        // here we should unregister those objects previously registered...
+        Iterator<ManagedObject> moListIter = m_moList.iterator();
+        while (moListIter.hasNext()) {
+            server.unregister(moListIter.next(), null);
+        }
     }
 
     protected List<ManagedObject> createMockMOs() {
-//        m_moLoader = new PropsMockSnmpMOLoaderImpl(m_moFile);
-        m_moLoader = new PropertiesBackedManagedObject(m_moFile);
-        return m_moLoader.loadMOs();
+        return m_moLoader.loadMOs(m_moFile);
     }
     
     private ManagedObject findMOForOid(OID oid) {
@@ -505,6 +508,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     
     public void updateCounter64Value(String oid, long val) {
         updateValue(oid, new Counter64(val));
+    }
+    
+    public void updateValuesFromResource(Resource moFile) {
+        unregisterManagedObjects();
+        m_moFile = moFile;
+        registerManagedObjects();
     }
     
     public String toString() {

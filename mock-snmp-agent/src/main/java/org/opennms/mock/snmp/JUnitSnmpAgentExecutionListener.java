@@ -58,8 +58,16 @@ public class JUnitSnmpAgentExecutionListener extends
         ResourceLoader loader = new DefaultResourceLoader();
         Resource resource = loader.getResource(config.resource());
         MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun( resource, host +"/"+ config.port());
+        
         System.err.println("Set up agent "+agent);
         testContext.setAttribute(MOCK_SNMP_AGENT, agent);
+        
+        // FIXME: Is there a better way to inject the MockSnmpAgent into the test class?  Seems that spring doesn't have appropriate hooks
+        if (testContext.getTestInstance() instanceof MockSnmpAgentAware) {
+            System.err.println("injecting agent into MockSnmpAgentAware test: " + testContext.getTestInstance());
+            ((MockSnmpAgentAware)testContext.getTestInstance()).setMockSnmpAgent(agent);
+            
+        }
         
     }
 
