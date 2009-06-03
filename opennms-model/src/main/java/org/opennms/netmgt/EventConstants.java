@@ -595,9 +595,11 @@ public class EventConstants {
     
     public final static String TL1_AUTONOMOUS_MESSAGE_UEI = "uei.opennms.org/api/tl1d/message/autonomous";
 
-    public final static String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/rancid/configuration/DownloadSuccess";
-    public final static String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/rancid/configuration/DownloadFailure";
+    public final static String RANCID_DOWNLOAD_SUCCESS_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess";
+    public final static String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure";
+    public final static String RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted";
 
+   
     //
     // end eventUEIs
     //
@@ -605,7 +607,6 @@ public class EventConstants {
     //
     // Various event parms sent
     //
-
     /**
      * The criticalPathIp used in determining if a node down event is
      * due to a path outage
