@@ -456,18 +456,18 @@ public class ThresholdingVisitorTest {
         addEvent(lowThresholdUei, "SNMP", 1, 10, 20, 5, "/opt", "1", lowExpression, null, null);
 
         // Step 1: Trigger threshold
-        runFileSystemDataTest(visitor, "/opt", 500, 1000);
+        runFileSystemDataTest(visitor, 1, "/opt", 500, 1000);
 
         // Step 2: Reload Configuration (merge). Threshold definition was replaced.
         initFactories("/threshd-configuration.xml","/test-thresholds-4.xml");
         visitor.reload();
         
         // Step 3: Must trigger only one low threshold exceeded
-        runFileSystemDataTest(visitor, "/opt", 950, 1000);
+        runFileSystemDataTest(visitor, 1, "/opt", 950, 1000);
         
         verifyEvents(0);
     }
-
+    
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
@@ -515,6 +515,8 @@ public class ThresholdingVisitorTest {
     
     /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
+     * 
+     * This test validate that Bug 1582 has been fixed.
      */
     @Test    
     public void testLatencyThresholdingSet() throws Exception {
@@ -526,27 +528,66 @@ public class ThresholdingVisitorTest {
         Map<String, Double> attributes = new HashMap<String, Double>();        
 
         attributes.put("http", 90.0);
-        List<Event> events = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(events.size() == 0);
+        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(triggerEvents.size() == 0);
 
+        // Test Trigger
         attributes.put("http", 200.0);
-        if (thresholdingSet.hasThresholds("http")) {
-            events = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(events.size() == 0); // Trigger == 1
+        for (int i = 1; i < 5; i++) {
+            log().debug("testLatencyThresholdingSet: run number " + i);
+            if (thresholdingSet.hasThresholds("http")) {
+                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+                assertTrue(triggerEvents.size() == 0);
+            }
         }
         if (thresholdingSet.hasThresholds("http")) {
-            events = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(events.size() == 0); // Trigger == 2
+            log().debug("testLatencyThresholdingSet: run number 5");
+            triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+            assertTrue(triggerEvents.size() == 1);
         }
+        
+        // Test Rearm
+        List<Event> rearmEvents = null;
         if (thresholdingSet.hasThresholds("http")) {
-            events = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(events.size() == 1); // Trigger == 3
+            attributes.put("http", 40.0);
+            rearmEvents = thresholdingSet.applyThresholds("http", attributes);
+            assertTrue(rearmEvents.size() == 1);
         }
 
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "HTTP", 3, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
+        // Validate Events
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(events);
+        proxy.add(triggerEvents);
+        proxy.add(rearmEvents);
         proxy.sendAllEvents();
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds.xml
+     * 
+     * It is important to add ".*" at the end of resource-filter tag definition in order to match many resources
+     * like this test; for example:
+     * 
+     * <resource-filter field="hrStorageDescr">^/opt.*</resource-filter>
+     * 
+     * If we forgot it, /opt01 will not pass threshold filter
+     */
+    @Test
+    public void testThresholsFilters() throws Exception {
+        ThresholdingVisitor visitor = createVisitor();
+        
+        String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
+        addHighThresholdEvent(1, 30, 25, 60, "/opt01", "2", highExpression, null, null);
+
+        runFileSystemDataTest(visitor, 1, "/opt", 50, 100);
+        runFileSystemDataTest(visitor, 2, "/opt01", 60, 100);
+        runFileSystemDataTest(visitor, 3, "/home", 70, 100);
+        
         verifyEvents(0);
     }
 
@@ -589,10 +630,11 @@ public class ThresholdingVisitorTest {
         EasyMock.verify(agent);
     }
 
-    private void runFileSystemDataTest(ThresholdingVisitor visitor, String fs, long value, long max) throws Exception {
+    private void runFileSystemDataTest(ThresholdingVisitor visitor, int resourceId, String fs, long value, long max) throws Exception {
         CollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        // Creating DataCollection ResourceType
         org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName("hrStorageIndex");
         type.setLabel("Storage (MIB-2 Host Resources)");
@@ -602,17 +644,21 @@ public class ThresholdingVisitorTest {
         org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
         pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
+        // Creating Generic ResourceType
         GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, type);
+        // Creating strings.properties file
         Properties p = new Properties();
         p.put("hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
-        p.put("hrStorageDescr", "/opt");
-        File f = new File(getRepository().getRrdBaseDir(), "1/hrStorageIndex/1/strings.properties");
+        p.put("hrStorageDescr", fs);
+        File f = new File(getRepository().getRrdBaseDir(), "1/hrStorageIndex/" + resourceId + "/strings.properties");
         ResourceTypeUtils.saveUpdatedProperties(f, p);
-        SnmpInstId inst = new SnmpInstId(1);
+        // Creating Resource
+        SnmpInstId inst = new SnmpInstId(resourceId);
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "hrStorageIndex", inst);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageUsed", "gauge", "hrStorageIndex", value);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageSize", "gauge", "hrStorageIndex", max);
         addAttributeToCollectionResource(resource, resourceType, "hrStorageAllocUnits", "gauge", "hrStorageIndex", 1);
+        // Run Visitor
         resource.visit(visitor);
         EasyMock.verify(agent);
         f.delete();

@@ -255,7 +255,7 @@ public abstract class ThresholdingSet {
                     return false;
                 }
             } else {
-                log().warn("passedThresholdFilters: can't find value of " + attr + " for resource " + resource);
+                log().warn("passedThresholdFilters: can't find value of " + f.getField() + " for resource " + resource);
             }
         }
         return false;
