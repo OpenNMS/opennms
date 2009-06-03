@@ -129,6 +129,14 @@ public class MockSnmpAgentTest extends TestCase {
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
 
     }
+    
+    public void testUpdateFromFile() throws Exception {
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        
+        m_agent.updateValuesFromResource(new ClassPathResource("differentSnmpData.properties"));
+        
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
+    }
 
     private void assertResultFromGet(String oidStr, int expectedSyntax, Integer32 expected) throws Exception {
         assertResult(PDU.GET, oidStr, oidStr, expectedSyntax, expected);

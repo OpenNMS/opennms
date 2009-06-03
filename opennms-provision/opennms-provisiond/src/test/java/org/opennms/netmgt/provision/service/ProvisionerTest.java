@@ -56,6 +56,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -126,7 +128,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
-public class ProvisionerTest {
+public class ProvisionerTest implements MockSnmpAgentAware {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -169,6 +171,12 @@ public class ProvisionerTest {
     private ForeignSourceRepository m_foreignSourceRepository;
     
     private ForeignSource m_foreignSource;
+
+    private MockSnmpAgent m_agent;
+    
+    public void setMockSnmpAgent(MockSnmpAgent agent) {
+        m_agent = agent;
+    }
     
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -357,6 +365,67 @@ public class ProvisionerTest {
         
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
+        
+        
+        // Node Delete
+        importFromResource("classpath:/nonodes.xml");
+
+        //Verify node count
+        assertEquals(0, getNodeDao().countAll());
+        
+        
+    }
+
+    
+    
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @Transactional
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    public void testImportAddrThenChangeAddr() throws Exception {
+        
+        importFromResource("classpath:/requisition_then_scan.xml");
+
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        
+        scan.run();
+        
+        m_nodeDao.flush();
+        
+        assertEquals(2, getInterfaceDao().countAll());
+
+        m_agent.updateValuesFromResource(m_resourceLoader.getResource("classpath:snmpTestData2.properties"));
+        
+        importFromResource("classpath:/requisition_primary_addr_changed.xml");
+        
+        NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        
+        scan2.run();
+        
+        m_nodeDao.flush();
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        System.err.println(getInterfaceDao().findAll());
         
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
