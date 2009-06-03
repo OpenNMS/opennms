@@ -37,6 +37,7 @@ package org.opennms.netmgt.provision;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
@@ -304,24 +306,28 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     public void doNodeConfigChanged(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED DoNodeConfigChanged: nodeid: " + nodeId);
-        try {
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
-                RWSClientApi.updateRWSRancidNode(cp, rNode);
+                updateConfiguration(nodeId,m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)),cp, retry);
             } else {
                 log().warn("No node found in nodeRancid Map for nodeid: " + nodeId);
             }
+    }
+
+    private void updateConfiguration(int nodeid, RancidNode rNode,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
+        log().debug("Updating Rancid Router.db configuration: node: " + rNode.getDeviceName() + " type: " + rNode.getDeviceType() + " group: " + rNode.getGroup());
+        try {
+                RWSClientApi.updateRWSRancidNode(cp, rNode);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
-                log().info("Rancid Provisioning Adapter: retry ConfigChange on standByConn: " + cp.getUrl());
-                doNodeConfigChanged(nodeId, cp, false);
+                log().info("Rancid Provisioning Adapter: retry update on standByConn: " + cp.getUrl());
+                updateConfiguration(nodeid, rNode, cp, false);
             } else {
-                sendAndThrow(nodeId, e);            
+                sendAndThrow(nodeid, e);            
             }
         }
     }
-    
+
     private void sendAndThrow(int nodeId, Exception e) {
             log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow: nodeid: " + nodeId);
             log().debug("RANCID PROVISIONING ADAPTER CALLED sendAndThrow: Exception: " + e.getMessage());
@@ -525,7 +531,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 updateRancidNodeState(nodeId, false);
-                doNodeConfigChanged(nodeId,m_cp,true);
             } else {
                 log().warn("node does not exist with nodeid: " + e.getNodeid());
             }
@@ -539,13 +544,39 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 updateRancidNodeState(nodeId, false);
-                doNodeConfigChanged(nodeId,m_cp,true);
             } else {
                 log().warn("node does not exist with nodeid: " + e.getNodeid());
             }
         }
     }
 
+    @EventHandler(uei = EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI)
+    public void handleRancidGroupProcessingCompleted(Event e) {
+        log().debug("get Event uei/id: " + e.getUei() + "/" + e.getDbid());
+        if (e.getParms() != null ) {
+            Iterator<Parm> ite = e.getParms().iterateParm();
+            while (ite.hasNext()) {
+                Parm parm = ite.next();
+                if (parm.getParmName().equals("rancidGroupName")) {
+                    updateGroupConfiguration(parm.getValue().getContent());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void updateGroupConfiguration(String group) {
+        Iterator<Integer> ite = m_onmsNodeRancidNodeMap.keySet().iterator();
+        while (ite.hasNext()) {
+            Integer nodeId = ite.next();
+            RancidNode rnode = m_onmsNodeRancidNodeMap.get(nodeId);
+            if (group.equals(rnode.getGroup())) {
+                updateConfiguration(nodeId.intValue(), rnode, m_cp, true);
+            }
+        }
+
+    }
+    
     private void updateRancidNodeState(int nodeid, boolean up) {
         RancidNode rnode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeid));
         rnode.setStateUp(up);
@@ -571,6 +602,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             handleRancidDownLoadFailure(e);
         else if (e.getUei().equals(EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI))
             handleRancidDownLoadSuccess(e);
+        else if (e.getUei().equals(EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI))
+            handleRancidGroupProcessingCompleted(e);
     }
 
     private void createMessageSelectorAndSubscribe() {

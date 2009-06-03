@@ -52,7 +52,7 @@ public interface RancidAdapterConfig {
     public abstract String getType(String sysoid);  
 
     /**
-     * Return if current time is part of specified outage.
+     * Return if current time is ready to be scheduled.
      * 
      * @param ipaddress
      *          the ipaddress of the node
