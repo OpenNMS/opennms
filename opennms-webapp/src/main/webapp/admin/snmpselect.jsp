@@ -158,9 +158,9 @@
 	</p>
 
 	<p>
-		In order to change what interfaces are scheduled for collection, simple check
-		or uncheck the box beside the interface(s) you wish to change, and then
-		select "Update Collection".
+		In order to change what interfaces are scheduled for collection, simply click
+		the collect column and a combobox will appear. Then select what type of collection
+		and it will update immediately.
 	</p>
 
 	<p>
