@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="rangerrick" id="1.7.4-fix-broken-autoincrement">
+		<addAutoIncrement tableName="acks" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="acks_id_seq" />
+
+		<addAutoIncrement tableName="assets" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="assets_id_seq" />
+
+		<addAutoIncrement tableName="atinterface" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="atinterface_id_seq" />
+
+		<addAutoIncrement tableName="categories" columnName="categoryid" columnDataType="integer" />
+		<dropSequence sequenceName="categories_categoryid_seq" />
+
+		<addAutoIncrement tableName="datalinkinterface" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="datalinkinterface_id_seq" />
+
+		<addAutoIncrement tableName="element" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="element_id_seq" />
+
+		<addAutoIncrement tableName="ifservices" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="ifservices_id_seq" />
+
+		<addAutoIncrement tableName="ipinterface" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="ipinterface_id_seq" />
+
+		<addAutoIncrement tableName="map" columnName="mapid" columnDataType="integer" />
+		<dropSequence sequenceName="map_mapid_seq" />
+
+		<addAutoIncrement tableName="resourcereference" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="resourcereference_id_seq" />
+
+		<addAutoIncrement tableName="snmpinterface" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="snmpinterface_id_seq" />
+
+		<addAutoIncrement tableName="statisticsreport" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="statisticsreport_id_seq" />
+
+		<addAutoIncrement tableName="statisticsreportdata" columnName="id" columnDataType="integer" />
+		<dropSequence sequenceName="statisticsreportdata_id_seq" />
+
+		<modifySql>
+			<replace replace="DEFAULT 'acks_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'assets_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'atinterface_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'categories_categoryid_seq'" with="DEFAULT nextval('catNxtId')" />
+			<replace replace="DEFAULT 'datalinkinterface_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'element_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'ifservices_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'ipinterface_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'map_mapid_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'resourcereference_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'snmpinterface_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'statisticsreport_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+			<replace replace="DEFAULT 'statisticsreportdata_id_seq'" with="DEFAULT nextval('opennmsNxtId')" />
+		</modifySql>
+	</changeSet>
+
+	<changeSet author="rangerrick" id="1.7.4-categories-fix-missing-data">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM categories</sqlCheck>
+		</preConditions> 
+
+		<insert tableName="categories"><column name="categoryname" value="Routers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Switches" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Servers" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Production" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Test" /></insert>
+		<insert tableName="categories"><column name="categoryname" value="Development" /></insert>
+	</changeSet>
+
+</databaseChangeLog>

@@ -215,4 +215,16 @@
 		<insert tableName="qrtz_locks"><column name="lock_name" value="MISFIRE_ACCESS" /></insert>
 	</changeSet>
 
+	<changeSet author="rangerrick" id="qrtz_locks-data">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM qrtz_locks WHERE lock_name='TRIGGER_ACCESS'</sqlCheck>
+		</preConditions> 
+
+		<insert tableName="qrtz_locks"><column name="lock_name" value="TRIGGER_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="JOB_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="CALENDAR_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="STATE_ACCESS" /></insert>
+		<insert tableName="qrtz_locks"><column name="lock_name" value="MISFIRE_ACCESS" /></insert>
+	</changeSet>
+
 </databaseChangeLog>

@@ -31,7 +31,7 @@
 	<include file="1.7.1/changelog.xml" />
 	<!-- no schema changes in 1.7.2 -->
 	<include file="1.7.3/changelog.xml" /> 
-	<!-- no schema changes in 1.7.4 so far -->
+	<include file="1.7.4/changelog.xml" />
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
