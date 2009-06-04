@@ -171,7 +171,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 				
 				for(StatusNode statusNode : statusCategory.getNodes()){
 				
-					assertEquals("Label does not match","superLabel",statusNode.getLlabel());
+					assertEquals("Label does not match","superLabel",statusNode.getLabel());
 				}
 			}
 			
