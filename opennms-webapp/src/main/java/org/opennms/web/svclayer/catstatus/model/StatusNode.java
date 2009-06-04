@@ -67,7 +67,7 @@ public class StatusNode {
 	}
 	
 	
-	public String getLlabel() {
+	public String getLabel() {
 		return m_label;
 	}
 	public void setLabel(String m_label) {
