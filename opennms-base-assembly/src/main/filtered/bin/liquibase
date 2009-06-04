@@ -1,0 +1,25 @@
+#!/bin/sh -
+
+OPENNMS_HOME="${install.dir}"
+
+if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
+	. "$OPENNMS_HOME/etc/opennms.conf"
+fi
+
+DB_JAR=`ls -1 $OPENNMS_HOME/lib/postgresql*.jar | sort -u | tail -n 1`
+SCHEMA_JAR=`ls -1 $OPENNMS_HOME/lib/org.opennms.core.schema-*-liquibase.jar | sort -u | tail -n 1`
+export CLASSPATH="$DB_JAR:$SCHEMA_JAR:$CLASSPATH"
+
+exec ${install.bin.dir}/runjava -r -- \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dinstall.database.admin.user="${install.database.admin.user}" \
+	-Dinstall.database.admin.password="${install.database.admin.password}" \
+	-Dinstall.database.user="${install.database.user}" \
+	-Dinstall.database.name="${install.database.name}" \
+	-jar $OPENNMS_HOME/lib/liquibase*.jar \
+		--classpath="$CLASSPATH" \
+		--url="jdbc:postgresql://localhost:5432/${install.database.name}" \
+		--username="${install.database.user}" \
+		--password="${install.database.password}" \
+		--includeSystemClasspath=true \
+		"$@"

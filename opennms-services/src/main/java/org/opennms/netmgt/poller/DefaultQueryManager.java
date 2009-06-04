@@ -155,12 +155,12 @@ public class DefaultQueryManager implements QueryManager {
      * @return
      * @throws SQLException
      */
-    public List getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
+    public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
         java.sql.Connection dbConn = getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            List serviceIds = new ArrayList();
+            List<Integer> serviceIds = new ArrayList<Integer>();
             Category log = log();
             stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
             stmt.setString(1, ipaddr);
@@ -169,7 +169,7 @@ public class DefaultQueryManager implements QueryManager {
                 log.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
 
             while (rs.next()) {
-                serviceIds.add(rs.getObject(1));
+                serviceIds.add(rs.getInt(1));
             }
             return serviceIds;
         } finally {
@@ -319,8 +319,8 @@ public class DefaultQueryManager implements QueryManager {
      * @return
      * @throws SQLException
      */
-    public List getInterfacesWithService(String svcName) throws SQLException {
-        List ifkeys;
+    public List<IfKey> getInterfacesWithService(String svcName) throws SQLException {
+        List<IfKey> ifkeys = new ArrayList<IfKey>();
         Category log = log();
         java.sql.Connection dbConn = getConnection();
 
@@ -335,7 +335,6 @@ public class DefaultQueryManager implements QueryManager {
         // interface/service
         // pair which passes the criteria
         //
-        ifkeys = new ArrayList();
         while (rs.next()) {
             IfKey key = new IfKey(rs.getInt(1), rs.getString(2));
             ifkeys.add(key);
@@ -563,12 +562,8 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     public String[] getCriticalPath(int nodeId) {
-        Category log = ThreadCategory.getInstance(getClass());
-        
         final String[] cpath = new String[2];
-        Querier querier = new Querier(
-                                      getDataSource(),
-                                      "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
+        Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
     
             @Override
             public void processRow(ResultSet rs) throws SQLException {

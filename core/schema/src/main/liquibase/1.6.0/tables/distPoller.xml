@@ -49,4 +49,19 @@
 		</insert>
 	</changeSet>
 
+	<changeSet author="rangerrick" id="1.6.0-distPoller-data">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM distpoller WHERE dpname='localhost' AND dpip='127.0.0.1'</sqlCheck>
+		</preConditions> 
+
+		<insert tableName="distpoller">
+			<column name="dpname" value="localhost" />
+			<column name="dpip" value="127.0.0.1" />
+			<column name="dpcomment" value="This is the default poller." />
+			<column name="dpdisclimit" valueNumeric="0.10" />
+			<column name="dpadminstate" valueNumeric="1" />
+			<column name="dprunstate" valueNumeric="1" />
+		</insert>
+	</changeSet>
+
 </databaseChangeLog>

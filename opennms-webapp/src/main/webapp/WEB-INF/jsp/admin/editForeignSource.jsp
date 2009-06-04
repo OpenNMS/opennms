@@ -28,9 +28,11 @@
 	<br />
 	<br />
 	
+	<c:set var="showDelete" value="false" scope="request" />
 	<tree:nodeForm>
     	<tree:field label="Scan Interval" property="scanInterval" />
     </tree:nodeForm>
+	<c:set var="showDelete" value="true" scope="request" />
     
 	<h4>
 		Detectors <tree:actionButton label="Add Detector" action="addDetector" />

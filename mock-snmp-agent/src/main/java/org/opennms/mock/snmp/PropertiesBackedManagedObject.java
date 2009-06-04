@@ -59,14 +59,14 @@ import org.springframework.core.io.Resource;
  */
 public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable, MOAccess {
     
+    
     private TreeMap<OID, Object> m_vars = null;
     
     private MOScope m_scope = null;
     
-    public PropertiesBackedManagedObject(Resource moFile) {
-        
+    public List<ManagedObject> loadMOs(Resource moFile) {
         Properties props = PropsMockSnmpMOLoaderImpl.loadProperties(moFile);
-        
+
         m_vars = new TreeMap<OID, Object>();
 
         for(Entry<Object, Object> e : props.entrySet()) {
@@ -74,14 +74,15 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
             Object value = e.getValue();
             m_vars.put(new OID(key), value);
         }
+
+
+        m_scope = new DefaultMOScope(m_vars.firstKey(),
+                                     true,
+                                     m_vars.lastKey(),
+                                     true
+        );
         
-        
-        m_scope = new DefaultMOScope(
-                    m_vars.firstKey(),
-                    true,
-                    m_vars.lastKey(),
-                    true
-                );
+        return Collections.singletonList((ManagedObject)this);
     }
     
     public void cleanup(SubRequest request) {
@@ -166,10 +167,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 
     public void updateValue(OID oid, Variable value) {
         m_vars.put(oid, value);
-    }
-
-    public List<ManagedObject> loadMOs() {
-        return Collections.singletonList((ManagedObject)this);
     }
 
     public boolean isAccessibleForCreate() {

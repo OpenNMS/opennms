@@ -79,7 +79,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
     private Package m_package;
 
     /**
-     * The service informaion for this interface/service pair
+     * The service information for this interface/service pair
      */
     private final Service m_service;
 
@@ -89,7 +89,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
     private int m_status;
 
     /**
-     * The last time a threshold check ocurred
+     * The last time a threshold check occurred
      */
     private long m_lastThresholdCheckTime;
 

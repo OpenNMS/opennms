@@ -229,7 +229,7 @@ public class NodeLabel {
      * 'nodelabelsource' fields for the node with the provided nodeID. A
      * NodeLabel object is returned initialized with the retrieved values.
      * 
-     * WARNING: A properly instantiated and initlaized Vault class object is
+     * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
      * 
@@ -302,7 +302,7 @@ public class NodeLabel {
      * 'node' table for the specified nodeID. A database connection is retrieved
      * from the Vault.
      * 
-     * WARNING: A properly instantiated and initlaized Vault class object is
+     * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
      * 
@@ -381,7 +381,7 @@ public class NodeLabel {
      * This method determines what label should be associated with a particular
      * node. A database connection is retrieved from the Vault.
      * 
-     * WARNING: A properly instantiated and initlaized Vault class object is
+     * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
      * 
@@ -485,8 +485,8 @@ public class NodeLabel {
         if (log.isDebugEnabled())
             log.debug("NodeLabel.computeLabel: primary interface select method: " + method);
 
-        List ipv4AddrList = new ArrayList();
-        List ipHostNameList = new ArrayList();
+        List<IPv4Address> ipv4AddrList = new ArrayList<IPv4Address>();
+        List<String> ipHostNameList = new ArrayList<String>();
 
         // Issue SQL query to retrieve all managed interface IP addresses from
         // 'ipinterface' table
@@ -519,8 +519,8 @@ public class NodeLabel {
             if (log.isDebugEnabled())
                 log.debug("NodeLabel.computeLabel: unable to find a primary address for node " + nodeID + ", returning null");
 
-            ipv4AddrList = new ArrayList();
-            ipHostNameList = new ArrayList();
+            ipv4AddrList = new ArrayList<IPv4Address>();
+            ipHostNameList = new ArrayList<String>();
 
             // Issue SQL query to retrieve all non-managed interface IP
             // addresses from 'ipinterface' table
@@ -550,7 +550,7 @@ public class NodeLabel {
         // We now know the IP address of the primary interface so
         // now see if it has a IP host name
         int index = ipv4AddrList.indexOf(primaryAddr);
-        String primaryHostName = (String) ipHostNameList.get(index);
+        String primaryHostName = ipHostNameList.get(index);
 
         // If length of string is > 0 then the primary interface has a hostname
         if (primaryHostName.length() != 0) {
@@ -628,7 +628,7 @@ public class NodeLabel {
      *             if there is any problem processing the information in the
      *             result set.
      */
-    private static void loadAddressList(ResultSet rs, List ipv4AddrList, List ipHostNameList) throws SQLException {
+    private static void loadAddressList(ResultSet rs, List<IPv4Address> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
         Category log = ThreadCategory.getInstance(NodeLabel.class);
 
         // Process result set, store retrieved addresses/host names in lists
@@ -666,7 +666,7 @@ public class NodeLabel {
      * @return The IPv4Address object from the address list which has been
      *         selected as the primary interface.
      */
-    private static IPv4Address selectPrimaryAddress(List ipv4AddrList, String method) {
+    private static IPv4Address selectPrimaryAddress(List<IPv4Address> ipv4AddrList, String method) {
         Category log = ThreadCategory.getInstance(NodeLabel.class);
 
         // Determine which interface is the primary interface
@@ -674,15 +674,15 @@ public class NodeLabel {
         // integer is the smallest or largest depending upon the
         // configured selection method.)
         IPv4Address primaryAddr = null;
-        Iterator iter = ipv4AddrList.iterator();
+        Iterator<IPv4Address> iter = ipv4AddrList.iterator();
         while (iter.hasNext()) {
             if (primaryAddr == null) {
-                primaryAddr = (IPv4Address) iter.next();
+                primaryAddr = iter.next();
 
                 if (log.isDebugEnabled())
                     log.debug("NodeLabel.computeLabel: primaryAddr: " + primaryAddr.toString());
             } else {
-                IPv4Address currentAddr = (IPv4Address) iter.next();
+                IPv4Address currentAddr = iter.next();
 
                 int current = currentAddr.getAddress();
                 int primary = primaryAddr.getAddress();
