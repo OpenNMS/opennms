@@ -677,6 +677,12 @@ case "$COMMAND" in
 		fi
 		;;
 
+	configtest)
+		$opennms_echo "Validating XML files: \c"
+		checkXmlFiles
+		echo "PASSED"
+		;;
+
 	pause)
 		doPause
 		;;
