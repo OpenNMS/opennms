@@ -16,6 +16,29 @@
 	</preConditions>
 	<createSequence sequenceName="opennmsnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="opennmsnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'opennmsnxtid',
+			(SELECT max(id) + 1 AS id FROM (
+				SELECT id FROM acks UNION
+				SELECT id FROM assets UNION
+				SELECT id FROM atinterface UNION
+				SELECT id FROM datalinkinterface UNION
+				SELECT id FROM element UNION
+				SELECT id FROM ifservices UNION
+				SELECT id FROM ipinterface UNION
+				SELECT mapid FROM map UNION
+				SELECT id FROM resourcereference UNION
+				SELECT id FROM snmpinterface UNION
+				SELECT id FROM statisticsreport UNION
+				SELECT id FROM statisticsreportdata
+			) AS id),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="nodenxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -25,6 +48,16 @@
 	</preConditions> 
 	<createSequence sequenceName="nodenxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="nodenxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'nodenxtid',
+			(SELECT max(nodeid) + 1 AS id FROM node),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="servicenxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -34,6 +67,16 @@
 	</preConditions> 
 	<createSequence sequenceName="servicenxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="servicenxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'servicenxtid',
+			(SELECT max(serviceid) + 1 AS id FROM service),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="eventsnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -43,6 +86,16 @@
 	</preConditions> 
 	<createSequence sequenceName="eventsnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="eventsnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'eventsnxtid',
+			(SELECT max(eventid) + 1 AS id FROM events),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="alarmsnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -52,6 +105,16 @@
 	</preConditions> 
 	<createSequence sequenceName="alarmsnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="alarmsnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'alarmsnxtid',
+			(SELECT max(alarmid) + 1 AS id FROM alarms),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="outagenxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -61,6 +124,16 @@
 	</preConditions> 
 	<createSequence sequenceName="outagenxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="outagenxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'outagenxtid',
+			(SELECT max(outageid) + 1 AS id FROM outages),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="notifynxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -70,6 +143,16 @@
 	</preConditions> 
 	<createSequence sequenceName="notifynxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="notifynxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'notifynxtid',
+			(SELECT max(notifyid) + 1 AS id FROM notifications),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="vulnnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -79,6 +162,16 @@
 	</preConditions> 
 	<createSequence sequenceName="vulnnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="vulnnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'vulnnxtid',
+			(SELECT max(vulnerabilityid) + 1 AS id FROM vulnerabilities),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="catnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -88,6 +181,16 @@
 	</preConditions> 
 	<createSequence sequenceName="catnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="catnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'catnxtid',
+			(SELECT max(categoryid) + 1 AS id FROM categories),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="usernotifnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -97,6 +200,16 @@
 	</preConditions> 
 	<createSequence sequenceName="usernotifnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="usernotifnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'usernotifnxtid',
+			(SELECT max(id) + 1 AS id FROM usersnotified),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="demandpollnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -106,6 +219,16 @@
 	</preConditions> 
 	<createSequence sequenceName="demandpollnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="demandpollnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'demandpollnxtid',
+			(SELECT max(id) + 1 AS id FROM demandpolls),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="pollresultnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -115,6 +238,16 @@
 	</preConditions> 
 	<createSequence sequenceName="pollresultnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="pollresultnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'pollresultnxtid',
+			(SELECT max(id) + 1 AS id FROM pollresults),
+			true
+		);
+	</sql>
+</changeSet>
+
 <changeSet runOnChange="false" author="rangerrick" id="mapnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -124,5 +257,15 @@
 	</preConditions> 
 	<createSequence sequenceName="mapnxtid" />
 </changeSet>
+<changeSet runAlways="true" author="rangerrick" id="mapnxtid-update-sequence">
+	<sql>
+		SELECT pg_catalog.setval(
+			'mapnxtid',
+			(SELECT max(mapid) + 1 AS id FROM map),
+			true
+		);
+	</sql>
+</changeSet>
+
 
 </databaseChangeLog>
