@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/legacy-database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/legacy-database-reports"
+	xmlns:types="http://xmlns.opennms.org/xsd/config/database-report-types"
+	elementFormDefault="qualified">
+	
+	  <import namespace="http://xmlns.opennms.org/xsd/config/database-report-types"
+          schemaLocation="database-report-types.xsd"/>
+
+	<element name="legacy-database-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for opennms legacy reports
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>A report definition</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="types:reportParm" />
+			</sequence>
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="type" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="pdf-template" type="string" use="required">
+				<annotation>
+					<documentation>XSLT for PDF report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="svg-template" type="string" use="required">
+				<annotation>
+					<documentation>XSLT for SVG report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="html-template" type="string" use="required">
+				<annotation>
+					<documentation>XSLT for HTML report</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>
