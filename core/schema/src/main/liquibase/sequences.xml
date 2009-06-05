@@ -17,6 +17,20 @@
 	<createSequence sequenceName="opennmsnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="opennmsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="acks" />
+		<tableExists tableName="assets" />
+		<tableExists tableName="atinterface" />
+		<tableExists tableName="datalinkinterface" />
+		<tableExists tableName="element" />
+		<tableExists tableName="ifservices" />
+		<tableExists tableName="ipinterface" />
+		<tableExists tableName="map" />
+		<tableExists tableName="resourcereference" />
+		<tableExists tableName="snmpinterface" />
+		<tableExists tableName="statisticsreport" />
+		<tableExists tableName="statisticsreportdata" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'opennmsnxtid',
@@ -49,6 +63,9 @@
 	<createSequence sequenceName="nodenxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="nodenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="node" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'nodenxtid',
@@ -68,6 +85,9 @@
 	<createSequence sequenceName="servicenxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="servicenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="service" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'servicenxtid',
@@ -87,6 +107,9 @@
 	<createSequence sequenceName="eventsnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="eventsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="events" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'eventsnxtid',
@@ -106,6 +129,9 @@
 	<createSequence sequenceName="alarmsnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="alarmsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="alarms" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'alarmsnxtid',
@@ -125,6 +151,9 @@
 	<createSequence sequenceName="outagenxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="outagenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="outages" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'outagenxtid',
@@ -144,6 +173,9 @@
 	<createSequence sequenceName="notifynxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="notifynxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="notifications" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'notifynxtid',
@@ -163,6 +195,9 @@
 	<createSequence sequenceName="vulnnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="vulnnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="vulnerabilities" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'vulnnxtid',
@@ -182,6 +217,9 @@
 	<createSequence sequenceName="catnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="catnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="categories" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'catnxtid',
@@ -201,6 +239,9 @@
 	<createSequence sequenceName="usernotifnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="usernotifnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="usersnotified" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'usernotifnxtid',
@@ -220,6 +261,9 @@
 	<createSequence sequenceName="demandpollnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="demandpollnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="demandpolls" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'demandpollnxtid',
@@ -239,6 +283,9 @@
 	<createSequence sequenceName="pollresultnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="pollresultnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="pollresults" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'pollresultnxtid',
@@ -258,6 +305,9 @@
 	<createSequence sequenceName="mapnxtid" />
 </changeSet>
 <changeSet runAlways="true" author="rangerrick" id="mapnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="map" />
+	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'mapnxtid',
