@@ -57,6 +57,7 @@ public class MigratorTest {
         m_migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         m_migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         m_migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        m_migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         m_migration.setChangeLog(m_changeLog);
     }
 
@@ -64,6 +65,9 @@ public class MigratorTest {
     public void testUpdate() throws Exception {
         Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
+        m.setAdminDataSource(m_dataSource);
+
+        m.prepareDatabase(m_migration);
         m.migrate(m_migration);
 
         Connection conn = null;

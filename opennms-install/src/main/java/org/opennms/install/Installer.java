@@ -182,9 +182,13 @@ public class Installer {
             m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
 
             m_migrator.setDataSource(ds);
+            m_migrator.setAdminDataSource(adminDs);
+            m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
+
             m_migration.setAdminUser(adminDsConfig.getUserName());
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
+            m_migration.setDatabasePassword(dsConfig.getPassword());
             m_migration.setChangeLog("changelog.xml");
         }
 
@@ -205,17 +209,6 @@ public class Installer {
          * create it if it doesn't already exist).
          */
 
-        if (doDatabase) {
-            if (!m_ignore_database_version) {
-                m_installerDb.databaseCheckVersion();
-            }
-            m_installerDb.databaseCheckLanguage();
-
-            m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser() + "' as the PostgreSQL user for OpenNMS");
-            m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword() + "' as the PostgreSQL password for OpenNMS");
-            m_out.println("* using '" + m_installerDb.getDatabaseName() + "' as the PostgreSQL database name for OpenNMS");
-        }
-
         verifyFilesAndDirectories();
 
         if (m_install_webapp) {
@@ -227,14 +220,17 @@ public class Installer {
             // OLDINSTALL m_installerDb.readTables();
         }
 
+        if (doDatabase) {
+            m_installerDb.databaseCheckLanguage();
+            m_migrator.validateDatabaseVersion();
+
+            m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser() + "' as the PostgreSQL user for OpenNMS");
+            m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword() + "' as the PostgreSQL password for OpenNMS");
+            m_out.println("* using '" + m_installerDb.getDatabaseName() + "' as the PostgreSQL database name for OpenNMS");
+        }
+
         if (m_update_database) {
-            if (!m_installerDb.databaseUserExists()) {
-                m_installerDb.databaseAddUser();
-            }
-            if (!m_installerDb.databaseDBExists()) {
-                m_installerDb.databaseAddDB();
-            }
-            m_installerDb.updatePlPgsql();
+            m_migrator.prepareDatabase(m_migration);
         }
 
         if (doDatabase) {
