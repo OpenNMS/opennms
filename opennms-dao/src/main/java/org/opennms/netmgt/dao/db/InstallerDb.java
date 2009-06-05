@@ -1526,6 +1526,7 @@ public class InstallerDb {
     }
 
 
+    @Deprecated
     public void databaseCheckVersion() throws Exception {
         m_out.print("- checking database version... ");
 
@@ -1930,6 +1931,7 @@ public class InstallerDb {
         st.close();
     }
 
+    @Deprecated
     public void databaseAddUser() throws SQLException {
         assertUserSet();
 
@@ -1952,6 +1954,7 @@ public class InstallerDb {
         return exists;
     }
 
+    @Deprecated
     public void databaseAddDB() throws Exception {
         assertUserSet();
 
