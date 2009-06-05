@@ -222,6 +222,7 @@ public class Installer {
 
         if (doDatabase) {
             m_installerDb.databaseCheckLanguage();
+            m_installerDb.disconnect();
             m_migrator.validateDatabaseVersion();
 
             m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser() + "' as the PostgreSQL user for OpenNMS");
