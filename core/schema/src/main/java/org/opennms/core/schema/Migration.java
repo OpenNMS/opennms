@@ -7,6 +7,7 @@ public class Migration {
     private String m_databaseHost;
     private String m_databaseName;
     private String m_databaseUser;
+    private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
     private String m_changeLog;
@@ -55,6 +56,13 @@ public class Migration {
     }
     public void setDatabaseUser(String databaseUser) {
         m_databaseUser = databaseUser;
+    }
+
+    public String getDatabasePassword() {
+        return m_databasePassword;
+    }
+    public void setDatabasePassword(String databasePassword) {
+        m_databasePassword = databasePassword;
     }
 
     public String getAdminUser() {
