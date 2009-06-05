@@ -248,7 +248,7 @@ public class Migrator {
         try {
             database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
         } catch (Exception e) {
-            safeCloseConnection(connection);
+            cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to determine the Liquibase database object", e);
         }
 
@@ -260,11 +260,11 @@ public class Migrator {
         try {
             liquibase.update("");
         } catch (Exception e) {
-            safeCloseConnection(connection);
+            cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to update the database", e);
         }
 
-        safeCloseConnection(connection);
+        cleanUpDatabase(connection, null, null);
     }
 
     protected ResourceLoader getMigrationResourceLoader(Migration migration) {
