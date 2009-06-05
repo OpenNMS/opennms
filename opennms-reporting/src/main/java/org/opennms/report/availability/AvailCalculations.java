@@ -498,7 +498,7 @@ public class AvailCalculations extends Object {
                     value.setType("data");
 
                     Value datevalue = new Value();
-                    SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+                    SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     datevalue.setContent(fmt.format(new Date(outageSince.getOutTime())));
                     datevalue.setType("other");
 
