@@ -260,4 +260,12 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    public String getDefaultMapForUser(String user) {
+        for (Group group: findGroupsForUser(user)) {
+            if (group.getDefaultMap() != null)
+                return group.getDefaultMap();
+        }
+        return null;
+    }
+
 }

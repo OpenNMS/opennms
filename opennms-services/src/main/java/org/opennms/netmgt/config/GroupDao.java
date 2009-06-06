@@ -151,4 +151,6 @@ public interface GroupDao {
     public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end);
     
     public List<Group> findGroupsForUser(String user);
+    
+    public String getDefaultMapForUser(String user);
 }
