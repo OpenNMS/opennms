@@ -153,7 +153,7 @@ public class Installer {
         parseArguments(argv);
 
         boolean doDatabase = (m_update_database || m_do_inserts || m_update_iplike || m_update_unicode || m_fix_constraint);
-        
+
         if (!doDatabase && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
             System.exit(1);
@@ -185,6 +185,7 @@ public class Installer {
             m_migrator.setAdminDataSource(adminDs);
             m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
 
+            m_migration.setDatabaseName(dsConfig.getDatabaseName());
             m_migration.setAdminUser(adminDsConfig.getUserName());
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
