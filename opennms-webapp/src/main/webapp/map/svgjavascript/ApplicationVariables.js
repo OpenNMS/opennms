@@ -77,6 +77,9 @@ var mapSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
 
+// variable to support the default map
+var defaultMap;
+
 // variables for CATEGORIES --- categories are loaded by init()
 var selectedCategoryInList=0;
 var selCategories; 

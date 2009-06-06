@@ -24,6 +24,7 @@ var DELETEMAPS_ACTION = "DeleteMaps";
 var CLEAR_ACTION = "Clear";
 var DELETEMAP_ACTION = "DeleteMap";
 var SWITCH_MODE_ACTION = "SwitchMode";
+var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
 var LOADMAPS_ACTION = "LoadMaps";
 var LOADNODES_ACTION = "LoadNodes";
 var NEWMAP_ACTION = "NewMap";

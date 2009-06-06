@@ -1,3 +1,39 @@
+function loadDefaultMap(){
+	loading++;
+	assertLoading();
+	postMapRequest ( "LoadDefaultMap."+suffix+"?action="+LOADDEFAULTMAP_ACTION, null, handleLoadDefaultMapResponse, "text/xml", null );	
+}
+
+function handleLoadDefaultMapResponse(data) {
+	var str = '';
+	var failed = true;
+	if(data.success || data.status==200) {
+		str = data.content;
+		if(testResponse(LOADDEFAULTMAP_ACTION, str)){
+			str=str.substring(LOADDEFAULTMAP_ACTION.length+2,str.length);
+			failed = false;
+		}
+	}
+    var st = str.split("&");
+	if(str.indexOf("+")>=0){
+		for(var k=0;k<st.length;k++){
+			var nodeToken = st[k];
+			var nodeST = nodeToken.split("+");
+			var name,id,owner;
+			id=nodeST[0];
+			name=nodeST[1];
+			owner=nodeST[2];
+			defaultMap = new ElemMap(id, name, owner);
+		}
+	}
+	loading--;	
+	assertLoading();
+        // Open the default map if it is defined
+        if (defaultMap.getId() > 0 ) {
+                openMapSetUp(defaultMap.getId());
+        }
+}
+
 function loadMaps(){
 	loading++;
 	assertLoading();

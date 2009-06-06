@@ -300,7 +300,25 @@ public class ResponseAssembler {
 		log.debug("getMapsResponse: String assembled: "+strToSend);
 		return strToSend;
 	}
-	
+
+	   protected static String getMapsResponse(String action, VMapInfo map) {
+	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+	        log = ThreadCategory.getInstance(ResponseAssembler.class);
+	        
+	        String strToSend=getActionOKMapResponse(action);
+	                
+	        if(map!=null){
+	            // create the string containing the main informations about maps
+	            // the string will have the form:
+	            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
+	                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
+	        } else {
+	            strToSend=getMapErrorResponse(action);
+	        }
+	        log.debug("getMapsResponse: String assembled: "+strToSend);
+	        return strToSend;
+	    }
+
 	protected static String getCloseMapResponse(String action) {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
