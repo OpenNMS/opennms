@@ -313,16 +313,6 @@ public class Migrator {
         }
     }
 
-    private void safeCloseConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                log().warn("unable to close migration connection", e);
-            }
-        }
-    }
-
     private Category log() {
         return ThreadCategory.getInstance(Migrator.class);
     }
