@@ -1,5 +1,7 @@
 package org.opennms.core.schema;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 public class Migration {
     private String m_jdbcUrl;
@@ -84,5 +86,17 @@ public class Migration {
     }
     public void setChangeLog(String changeLog) {
         m_changeLog = changeLog;
+    }
+    
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("database", getDatabaseName())
+            .append("host", getDatabaseHost())
+            .append("driver", getJdbcDriver())
+            .append("url", getJdbcUrl())
+            .append("admin-user", getAdminUser())
+            .append("user", getDatabaseUser())
+            .append("changelog", getChangeLog())
+            .toString();
     }
 }

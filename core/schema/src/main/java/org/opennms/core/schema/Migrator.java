@@ -190,6 +190,14 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             rs = st.executeQuery("SELECT datname from pg_database WHERE datname = '" + migration.getDatabaseName() + "'");
+            if (rs.next()) {
+                String datname = rs.getString("datname");
+                if (datname != null && datname.equalsIgnoreCase(migration.getDatabaseName())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
             return rs.next();
         } catch (SQLException e) {
             throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
