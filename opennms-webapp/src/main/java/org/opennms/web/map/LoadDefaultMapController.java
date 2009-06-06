@@ -46,7 +46,6 @@ import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
@@ -61,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * proper session objects to use when working with maps
  * 
  */
-public class OpenMapController implements Controller {
+public class LoadDefaultMapController implements Controller {
 	Category log;
 
 	private Manager manager;
@@ -79,77 +78,18 @@ public class OpenMapController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-
-		log.debug(request.getQueryString());
-		String mapIdStr = request.getParameter("MapId");
-		log.debug("MapId=" + mapIdStr);
-		String mapWidthStr = request.getParameter("MapWidth");
-        log.debug("MapWidth=" + mapWidthStr);
-        String mapHeightStr = request.getParameter("MapHeight");
-        log.debug("MapHeight=" + mapHeightStr);
-        String adminModeStr = request.getParameter("adminMode");
-        log.debug("adminMode=" + adminModeStr);
 		
 		String user = request.getRemoteUser();
-		
-		String role = MapsConstants.ROLE_USER;
 
-		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))) {
-			role=MapsConstants.ROLE_ADMIN;
-			log.info(user + " has Admin mode");
-		}					
+	      log.debug("Loading Default Map for user: " + user);
 
-		float widthFactor = 1;
-		float heightFactor =1;
-		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
-
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
-			int mapWidth = WebSecurityUtils.safeParseInt(mapWidthStr);
-			int mapHeight = WebSecurityUtils.safeParseInt(mapHeightStr);
-			
-			log.debug("Current mapWidth=" + mapWidth
-						+ " and MapHeight=" + mapHeight);
-			VMap map = null;
-			if(mapIdStr!=null){
-				int mapid = WebSecurityUtils.safeParseInt(mapIdStr);
-				log.debug("Opening map "+mapid+" for user "+user);
-				map = manager.openMap(mapid, user, !(adminModeStr.equals("true")));
-			}else{
-				log.debug("Try to Opening default map");
-				VMapInfo defaultmapinfo = manager.getDefaultMapsMenu(user);
-				if (defaultmapinfo != null ) {
-	                map = manager.openMap(defaultmapinfo.getId(),user,!(adminModeStr.equals("true")));
-				} else {
-				    map = manager.openMap();
-				}
-			}
-			 
-
-			if(map != null){
-				int oldMapWidth = map.getWidth();
-				int oldMapHeight = map.getHeight();
-				widthFactor = (float) mapWidth / oldMapWidth;
-				heightFactor = (float) mapHeight / oldMapHeight;
-
-				log.debug("Old saved mapWidth=" + oldMapWidth
-						+ " and MapHeight=" + oldMapHeight);
-				log.debug("widthFactor=" + widthFactor);
-				log.debug("heightFactor=" + heightFactor);
-				log.debug("Setting new width and height to the session map");
-				
-				map.setHeight(mapHeight);
-				map.setWidth(mapWidth);
-				map.setAccessMode(role);
-				
-			}
-			
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.OPENMAP_ACTION, map,widthFactor,heightFactor,true));
-
+		    VMapInfo maps  = manager.getDefaultMapsMenu(user);
+			bw.write(ResponseAssembler.getMapsResponse(MapsConstants.LOADDEFAULTMAP_ACTION,maps));
 		} catch (Exception e) {
-			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user+", and role:"+role,e);
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.OPENMAP_ACTION));
+			log.error("Error while loading default map for user:"+user,e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADDEFAULTMAP_ACTION));
 		} finally {
 			bw.close();
 		}

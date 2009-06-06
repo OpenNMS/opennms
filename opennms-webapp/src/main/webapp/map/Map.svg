@@ -42,6 +42,9 @@ function startUp() {
 	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
 	mapSvgElement.appendChild(map.getSvgNode());
 
+	defaultMap = new ElemMap(-2, null, null);
+	
+	
 	// Instantiate the menus
 	mapMenu = 
 new Menu(menuSvgElement,mapMenuId,"Map",mapMenuX,mapMenuY,menuWidth,menuHeight,menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel); 	
@@ -58,6 +61,7 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 	
 	loadMaps();
 	loadNodes();
+	loadDefaultMap();
 		
 	addLegend();
 
