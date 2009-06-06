@@ -300,6 +300,7 @@ public class DatabasePopulator {
         map.setBackground("fake_background.jpg");
         map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
         map.setType(OnmsMap.USER_GENERATED_MAP);
+        map.setMapGroup("admin");
         getOnmsMapDao().save(map);
         getOnmsMapDao().flush();
 

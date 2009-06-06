@@ -187,5 +187,54 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertNull(getOnmsMapDao().findMapById(1));
     }
     
+    public void testFindMapByOwner() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByOwner("admin");
+        assertEquals(1, maps.size());
+        OnmsMap map = maps.iterator().next();
+        assertEquals("DB_Pop_Test_Map", map.getName());
+        assertEquals("fake_background.jpg", map.getBackground());
+        assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
+        assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
+    }
+    
+    public void testFindMapbyGroup() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByGroup("admin");
+        assertEquals(1, maps.size());
+        OnmsMap map = maps.iterator().next();
+        assertEquals("DB_Pop_Test_Map", map.getName());
+        assertEquals("fake_background.jpg", map.getBackground());
+        assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
+        assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());        
+    }
+
+    public void testFindMapbyGroup1() {
+        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByGroup("");
+        assertEquals(0, maps.size());
+    }
+
+    
+    
+    public void testFindVisibleMapByGroup() {
+        // create a new map
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestVisibleMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
+        map.setMapGroup("testGroup");
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+        Collection<OnmsMap> maps = getOnmsMapDao().findVisibleMapsByGroup("testGroup");
+        assertEquals(2, maps.size());
+    }
+
+    public void testFindVisibleMapByGroup2() {
+        // create a new map
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestVisibleMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
+        map.setMapGroup("testGroup");
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+        Collection<OnmsMap> maps = getOnmsMapDao().findVisibleMapsByGroup("wrongGroup");
+        assertEquals(1, maps.size());
+    }
+
     
 }

@@ -56,4 +56,20 @@ public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> 
     public Collection<OnmsMap> findUserMaps() {
         return findMapsByType(OnmsMap.USER_GENERATED_MAP);
     }
+    
+    public Collection<OnmsMap> findMapsByGroup(String group) {
+        return find("from OnmsMap as map where map.mapGroup = ?", group);
+    }
+
+    public Collection<OnmsMap> findMapsByOwner(String owner) {
+        return find("from OnmsMap as map where map.owner = ?", owner);
+    }
+
+    public Collection<OnmsMap> findVisibleMapsByGroup(String group) {
+        Object[] values = {OnmsMap.ACCESS_MODE_ADMIN, OnmsMap.ACCESS_MODE_USER,OnmsMap.ACCESS_MODE_GROUP,group};
+        return find("from OnmsMap as map where map.accessMode = ? or map.accessMode = ? or " +
+        		"(map.accessMode = ? and map.mapGroup = ?)", values);
+    }
+    
+    
 }

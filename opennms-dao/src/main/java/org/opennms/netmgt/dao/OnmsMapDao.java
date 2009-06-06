@@ -44,4 +44,7 @@ public interface OnmsMapDao extends OnmsDao<OnmsMap, Integer> {
     public abstract Collection<OnmsMap> findMapsByType(String mapType);
     public abstract Collection<OnmsMap> findAutoMaps();
     public abstract Collection<OnmsMap> findUserMaps();
+    public abstract Collection<OnmsMap> findMapsByOwner(String owner);
+    public abstract Collection<OnmsMap> findMapsByGroup(String group);
+    public abstract Collection<OnmsMap> findVisibleMapsByGroup(String group);
 }
