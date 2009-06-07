@@ -84,6 +84,14 @@ final public class MemcachedMonitor extends IPv4Monitor {
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
 
+    private static final String[] m_keys = new String[] {
+        "uptime", "rusage_user", "rusage_system",
+        "curr_items", "total_items", "bytes",
+        "curr_connections", "total_connections", "connection_structures",
+        "cmd_get", "cmd_set", "get_hits", "get_misses", "evictions",
+        "bytes_read", "bytes_written", "threads"
+    };
+    
     /**
      * Poll the specified address for Memcached service availability.
      * 
@@ -131,6 +139,9 @@ final public class MemcachedMonitor extends IPv4Monitor {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 Map<String, Number> statProps = new LinkedHashMap<String,Number>();
+                for (String key : m_keys) {
+                    statProps.put(key, null);
+                }
 
                 String line = null;
                 if (reader != null) {
@@ -150,7 +161,9 @@ final public class MemcachedMonitor extends IPv4Monitor {
                                 if (key.length() > 20) {
                                     key = key.substring(0, 20);
                                 }
-                                statProps.put(key, value);
+                                if (statProps.containsKey(key)) {
+                                    statProps.put(key, value);
+                                }
                             } catch (Exception e) {
                                 // ignore errors parsing
                             }
