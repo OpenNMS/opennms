@@ -50,6 +50,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
@@ -65,6 +67,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class GroupController extends AbstractController {
 
+    @Autowired
+    private OnmsMapDao m_onmsMapDao;
+    
     @Autowired
     private CategoryDao m_categoryDao;
     
@@ -215,8 +220,19 @@ public class GroupController extends AbstractController {
         userSession.setAttribute("group.modifyGroup.jsp", group);
         userSession.setAttribute("allCategories.modifyGroup.jsp", m_categoryDao.getAllCategoryNames().toArray(new String[0]));
         userSession.setAttribute("allUsers.modifyGroup.jsp", m_userManager.getUserNames().toArray(new String[0]));
+        userSession.setAttribute("allVisibleMaps.modifyGroup.jsp", getVisibleMapsName(group).toArray(new String[0]));
             
         return new ModelAndView("admin/userGroupView/groups/modifyGroup");
+    }
+    
+    private Collection<String> getVisibleMapsName(WebGroup group) {
+      
+        Collection<OnmsMap> maps = m_onmsMapDao.findVisibleMapsByGroup(group.getName());
+        Collection<String> mapnames = new ArrayList<String>(maps.size());
+        for (OnmsMap map: maps) {
+            mapnames.add(map.getName());
+        }
+        return mapnames;
     }
 
     private ModelAndView saveGroup(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -250,6 +266,10 @@ public class GroupController extends AbstractController {
 
     private void updateGroup(HttpServletRequest request, WebGroup newGroup) {
         // get the rest of the group information from the form
+        String defaultMap = request.getParameter("groupDefaultMap");
+        if (!defaultMap.equals(""))
+            newGroup.setDefaultMap(defaultMap);
+        
         String users[] = request.getParameterValues("selectedUsers");
         
         List<String> userList = users == null ? Collections.<String>emptyList() : Arrays.asList(users);

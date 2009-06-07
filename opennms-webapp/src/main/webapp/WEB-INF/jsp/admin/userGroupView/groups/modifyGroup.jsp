@@ -56,10 +56,12 @@
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
+    String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
 	String[] categoryListInGroup = group.getAuthorizedCategories().toArray(new String[0]);
     String[] categoryListNotInGroup = group.getUnauthorizedCategories(Arrays.asList(allCategories)).toArray(new String[0]);
     String[] selectedUsers = group.getUsers().toArray(new String[0]);
     String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
+
 
 	if (group == null) {
 		throw new ServletException("Could not get session attribute group");
@@ -309,6 +311,31 @@
 <form method="post" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
+        <tr>
+          <td>
+                Assign a default map to group selecting from selection list.
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <select name="groupDefaultMap">
+          	<option selected><%=group.getDefaultMap()%></option>
+          	<%
+          	for (String mapname: allVisibleMaps) {
+          	    if (!mapname.equals(group.getDefaultMap())) { 
+          	%>
+          	<option><%=mapname%></option>
+          	<%    
+          	    }
+          	}
+          	%>
+          </select>
+          </td>
+        </tr>
+        
+        </table>
+
 
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
         <tr>
@@ -492,3 +519,4 @@
     }
     
 %>
+
