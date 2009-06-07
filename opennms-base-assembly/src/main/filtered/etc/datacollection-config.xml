@@ -26,6 +26,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+   <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+   </resourceType>
+
     <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
                   resourceLabel="${cvmTempStatusDescr} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
@@ -351,6 +356,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+   <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+   </resourceType>
+
     <groups>
       <group name="cisco-frame-relay" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.1" instance="frCircuitIfIndex" alias="frIfName"     type="string" />
@@ -450,6 +460,10 @@
         <mibObj oid=".1.3.6.1.2.1.10.132.2"     instance="0" alias="coffeePotCapacity" type="integer" />
         <mibObj oid=".1.3.6.1.2.1.10.132.4.1.2" instance="0" alias="coffeePotLevel"    type="integer" />
         <mibObj oid=".1.3.6.1.2.1.10.132.4.1.6" instance="0" alias="coffeePotTemp"     type="integer" />
+      </group>
+      <group name="mib2-powerethernet" ifType="all">
+        <mibObj oid="1.3.6.1.2.1.105.1.3.1.1.2" instance="pethMainPseGroupIndex" alias="pethMainPsePower" type="gauge" />
+        <mibObj oid="1.3.6.1.2.1.105.1.3.1.1.4" instance="pethMainPseGroupIndex" alias="pethMainPseConsumptionPower" type="gauge" />
       </group>
       <group name="mib2-tcp" ifType="ignore">
         <mibObj oid=".1.3.6.1.2.1.6.5"  instance="0" alias="tcpActiveOpens"  type="Counter32" />
@@ -811,6 +825,15 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.17" instance="0" alias="ccmRegVMailDev"      type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.18" instance="0" alias="ccmUnregVMailDev"    type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.19" instance="0" alias="ccmRejVMailDev"      type="gauge32" />
+      </group>
+      <group name="cisco-css" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.2" instance="ciscoApCntIndex" alias="ciscoApCntName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.18" instance="ciscoApCntIndex" alias="ciscoApCntHits" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.19" instance="ciscoApCntIndex" alias="ciscoApCntRedirs" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.20" instance="ciscoApCntIndex" alias="ciscoApCntDrops" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.25" instance="ciscoApCntIndex" alias="ciscoApCntBytes" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.26" instance="ciscoApCntIndex" alias="ciscoApCntFrames" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.60" instance="ciscoApCntIndex" alias="ciscoApCntSorry" type="counter32" />
       </group>
       <group name="cisco-memory" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="1" alias="ciscoMemoryPoolUsed" type="gauge" />
@@ -2334,6 +2357,7 @@
           <includeGroup>mib2-interfaces</includeGroup>
           <includeGroup>mib2-tcp</includeGroup>
           <includeGroup>mib2-icmp</includeGroup>
+          <includeGroup>mib2-powerethernet</includeGroup>
         </collect>
       </systemDef>
 
@@ -2473,6 +2497,13 @@
         <sysoid>.1.3.6.1.4.1.9.1.380</sysoid>
         <collect>
           <includeGroup>cisco-aironet-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco CSS">
+        <sysoidMask>.1.3.6.1.4.1.9.9.</sysoidMask>
+        <collect>
+          <includeGroup>cisco-css</includeGroup>
         </collect>
       </systemDef>
 
