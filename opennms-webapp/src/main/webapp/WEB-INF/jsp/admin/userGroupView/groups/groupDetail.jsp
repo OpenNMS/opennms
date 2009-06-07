@@ -91,6 +91,21 @@
       </tr>
       <tr>
         <td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="2">
+            <tr>
+              <td width="10%" valign="top">
+                <b>Default Map:</b>
+              </td>
+              <td width="90%" valign="top">
+                <%=group.getDefaultMap()%>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
           <table width="100%" border="0" cellspacing="0" cellpadding="2" >
             <tr>
               <td>
