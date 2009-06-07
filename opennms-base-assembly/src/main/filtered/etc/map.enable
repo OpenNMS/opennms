@@ -1,57 +1,17 @@
-# File to enable mapping in OpenNMS
+# File to disable mapping in OpenNMS
 #
-# In order to enable access to the maps in OpenNMS
-# move this file to $OPENNMS_HOME/etc/map.enable.
+# In order to disable access to the maps in OpenNMS
+# move this file to $OPENNMS_HOME/etc/map.disable.
 #
 # Notes: The initial generation of the map will use
 # a lot of memory and a lot of CPU. 
 #
 # Also, it is best if you have a broswer that 
-# suports SVG. At the moment, only Internet 
-# Explorer supports the SVG Plug-in from Adobe:
+# supports SVG. At the moment we support:
 #
-# http://www.adobe.com/svg/viewer/install/?image/svg+xml
+#     Internet Explorer 7+ with the SVG Plug-in from Adobe:
+#     http://www.adobe.com/svg/viewer/install/?image/svg+xml
 #
-# but it is supposedly possible to build SVG
-# support into Mozilla. If you don't have an SVG
-# browser, you can use the PNG format, but the 
-# conversion will use lots of memory and could
-# fail.
-#
-# You also have to have the option
-#
-# -Djava.awt.headless=true
-# 
-# in Tomcat4. From /usr/bin/dtomcat4 (also known
-# as catalina.sh on some distros):
-#
-#
-# elif [ "$1" = "start" ] ; then
-#
-#  shift
-#  touch "$CATALINA_BASE"/logs/catalina.out
-#  if [ "$1" = "-security" ] ; then
-#    echo "Using Security Manager"
-#    shift
-#    "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
-#      -Djava.awt.headless=true \
-#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-#      -Djava.security.manager \
-#      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-#      -Dcatalina.base="$CATALINA_BASE" \
-#      -Dcatalina.home="$CATALINA_HOME" \
-#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-#      org.apache.catalina.startup.Bootstrap "$@" start \
-#      >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
-#  else
-#    "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
-#      -Djava.awt.headless=true \
-#      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-#      -Dcatalina.base="$CATALINA_BASE" \
-#      -Dcatalina.home="$CATALINA_HOME" \
-#      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-#      org.apache.catalina.startup.Bootstrap "$@" start \
-#      >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
-#  fi
-
-
+#     Firefox 3.0+
+#  
+#     Safari 3.2+ (Well we have to fix a bug on moving icons but it works)
