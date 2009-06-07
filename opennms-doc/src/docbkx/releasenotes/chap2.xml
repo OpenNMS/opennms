@@ -18,6 +18,16 @@
 
 			<glosslist>
 				<glossentry>
+					<glossterm>Database Schema Updates</glossterm>
+					<glossdef>
+						<para>The OpenNMS installer has been changed to use
+						<ulink url="http://www.liquibase.org/">LiquiBase</ulink> for database
+						schema management.  It has been tested with a number of upgrade paths, but
+						<emphasis>it is even more strongly recommended than usual that you back up
+						your database before upgrading</emphasis>.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
 					<glossterm>DAO Updates</glossterm>
 					<glossdef>
 						<para>Many more parts of the OpenNMS data access layer have been updated to
