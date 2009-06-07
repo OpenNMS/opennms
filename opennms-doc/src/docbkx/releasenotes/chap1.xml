@@ -4,6 +4,25 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.4">
+		<title>Release 1.7.4</title>
+		
+		<para>
+			Release 1.7.4 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.8.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			Since 1.7.3, more work has gone on in the Provisiond code, as well as ACLs, RANCID
+			reports, thresholding fixes, enabling maps by default, and an entirely new way of
+			creating the OpenNMS database under the covers.
+		</para>
+		
+		<para>
+			The codename for 1.7.4 is <emphasis>eels</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.3">
 		<title>Release 1.7.3</title>
 		
