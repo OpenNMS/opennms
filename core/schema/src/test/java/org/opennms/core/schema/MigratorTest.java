@@ -66,6 +66,9 @@ public class MigratorTest {
         Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
         m.setAdminDataSource(m_dataSource);
+        m.setValidateDatabaseVersion(false);
+        m.setCreateUser(false);
+        m.setCreateDatabase(false);
 
         m.prepareDatabase(m_migration);
         m.migrate(m_migration);
