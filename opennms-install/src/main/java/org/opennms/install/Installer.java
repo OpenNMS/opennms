@@ -226,9 +226,9 @@ public class Installer {
             m_installerDb.disconnect();
             m_migrator.validateDatabaseVersion();
 
-            m_out.println("* using '" + m_installerDb.getPostgresOpennmsUser() + "' as the PostgreSQL user for OpenNMS");
-            m_out.println("* using '" + m_installerDb.getPostgresOpennmsPassword() + "' as the PostgreSQL password for OpenNMS");
-            m_out.println("* using '" + m_installerDb.getDatabaseName() + "' as the PostgreSQL database name for OpenNMS");
+            m_out.println(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
+            m_out.println(String.format("* using '%s' as the PostgreSQL password for OpenNMS", m_migration.getAdminPassword()));
+            m_out.println(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
         }
 
         if (m_update_database) {
