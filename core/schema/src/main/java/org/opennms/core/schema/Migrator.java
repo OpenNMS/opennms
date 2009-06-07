@@ -34,6 +34,8 @@ public class Migrator {
     private DataSource m_adminDataSource;
     private Float m_databaseVersion;
     private boolean m_validateDatabaseVersion = true;
+    private boolean m_createUser = true;
+    private boolean m_createDatabase = true;
 
     public Migrator() {
         initLogging();
@@ -61,6 +63,14 @@ public class Migrator {
 
     public void setValidateDatabaseVersion(boolean validate) {
         m_validateDatabaseVersion = validate;
+    }
+
+    public void setCreateUser(boolean create) {
+        m_createUser = create;
+    }
+
+    public void setCreateDatabase(boolean create) {
+        m_createDatabase = create;
     }
 
     public Float getDatabaseVersion() throws MigrationException {
@@ -172,7 +182,7 @@ public class Migrator {
     }
 
     public void createUser(Migration migration) throws MigrationException {
-        if (databaseUserExists(migration)) {
+        if (!m_createUser || databaseUserExists(migration)) {
             return;
         }
 
@@ -215,7 +225,7 @@ public class Migrator {
     }
 
     public void createDatabase(Migration migration) throws MigrationException {
-        if (databaseExists(migration)) {
+        if (!m_createDatabase || databaseExists(migration)) {
             return;
         }
         if (!databaseUserExists(migration)) {
@@ -231,7 +241,7 @@ public class Migrator {
             st.execute("CREATE DATABASE \"" + migration.getDatabaseName() + "\" WITH ENCODING='UNICODE'");
             st.execute("GRANT ALL ON DATABASE \"" + migration.getDatabaseName() + "\" TO \"" + migration.getDatabaseUser() + "\"");
         } catch (SQLException e) {
-            throw new MigrationException("an error occurred creating the OpenNMS user", e);
+            throw new MigrationException("an error occurred creating the OpenNMS database", e);
         } finally {
             cleanUpDatabase(c, st, rs);
         }
