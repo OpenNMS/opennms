@@ -236,7 +236,7 @@ install -c -m 644 features/remote-poller/target/*-jar-with-dependencies.jar $RPM
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
-cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
+cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 %endif
