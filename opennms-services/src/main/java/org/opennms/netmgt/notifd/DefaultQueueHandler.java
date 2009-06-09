@@ -96,7 +96,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * 
      */
     public void setNoticeQueue(NoticeQueue noticeQueue) {
-        m_noticeQueue = noticeQueue;
+        synchronized (m_noticeQueue) {
+            m_noticeQueue = noticeQueue;
+        }
     }
 
     /**
@@ -169,22 +171,24 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     public void processQueue() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        try {
-            Long now = new Long(System.currentTimeMillis());
-            SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
-
-            for (List<NotificationTask> list : readyNotices.values()) {
-                for (NotificationTask task : list) {
-                    startTask(task);
+        synchronized(m_noticeQueue) {
+            try {
+                Long now = new Long(System.currentTimeMillis());
+                SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
+    
+                for (List<NotificationTask> list : readyNotices.values()) {
+                    for (NotificationTask task : list) {
+                        startTask(task);
+                    }
                 }
+                readyNotices.clear();
+    
+                log.debug("current state of tree: ");
+                log.debug("\n" + m_noticeQueue);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                
             }
-            readyNotices.clear();
-
-            log.debug("current state of tree: ");
-            log.debug("\n" + m_noticeQueue);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            
         }
     }
 
