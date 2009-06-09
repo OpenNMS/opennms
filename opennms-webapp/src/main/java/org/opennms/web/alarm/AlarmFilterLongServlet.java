@@ -119,7 +119,10 @@ public class AlarmFilterLongServlet extends HttpServlet {
 
         if (limitString != null) {
             try {
-                limit = WebSecurityUtils.safeParseInt(limitString);
+                int newlimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newlimit > 0) {
+                    limit = newlimit;
+                }
             } catch (NumberFormatException e) {
                 // do nothing, the default is aready set
             }
@@ -130,7 +133,7 @@ public class AlarmFilterLongServlet extends HttpServlet {
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = WebSecurityUtils.safeParseInt(multipleString);
+                multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
             } catch (NumberFormatException e) {
             }
         }
