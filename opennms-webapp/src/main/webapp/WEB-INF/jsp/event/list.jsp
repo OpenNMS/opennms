@@ -358,7 +358,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <% if(events[i].getServiceName() != null) { %>
+            <% if(events[i].getServiceName() != null && events[i].getServiceName() != "") { %>
               <% Filter serviceFilter = new ServiceFilter(events[i].getServiceId()); %>
               <% if( events[i].getNodeId() != 0 && events[i].getIpAddress() != null ) { %>
                 <a href="element/service.jsp?node=<%=events[i].getNodeId()%>&intf=<%=events[i].getIpAddress()%>&service=<%=events[i].getServiceId()%>" title="More info on this service"><%=events[i].getServiceName()%></a>

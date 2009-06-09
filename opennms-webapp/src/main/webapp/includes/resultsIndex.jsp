@@ -81,9 +81,14 @@
     //get the count    
     long count = WebSecurityUtils.safeParseLong(countString);
     
-    //get the limit and multiple, use the defaults if not set in the request
-    int limit    = (limitString    != null) ? WebSecurityUtils.safeParseInt(limitString)    : DEFAULT_LIMIT;
-    int multiple = (multipleString != null) ? WebSecurityUtils.safeParseInt(multipleString) : DEFAULT_MULTIPLE;
+    //get the limit, use the default if not set in the request
+    int limit    = (limitString != null) ? WebSecurityUtils.safeParseInt(limitString) : DEFAULT_LIMIT;
+    if (limit < 1) {
+    	limit = DEFAULT_LIMIT;
+    }
+
+    // get the multiple, use the default if not set in the request
+    int multiple = (multipleString != null) ? Math.max(DEFAULT_MULTIPLE, WebSecurityUtils.safeParseInt(multipleString)) : DEFAULT_MULTIPLE;
 
     //format the base url to accept limit and multiple parameters
     if( baseUrl.indexOf("?") < 0 ) {

@@ -61,8 +61,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * A controller that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
  * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class EventFilterController extends AbstractController implements InitializingBean {
     public static final int DEFAULT_MULTIPLE = 0;
@@ -103,7 +103,10 @@ public class EventFilterController extends AbstractController implements Initial
 
         if (limitString != null) {
             try {
-                limit = WebSecurityUtils.safeParseInt(limitString);
+                int newlimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newlimit > 0) {
+                    limit = newlimit;
+                }
             } catch (NumberFormatException e) {
                 // do nothing, the default is already set
             }
@@ -113,7 +116,7 @@ public class EventFilterController extends AbstractController implements Initial
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = WebSecurityUtils.safeParseInt(multipleString);
+                multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
             } catch (NumberFormatException e) {
             }
         }

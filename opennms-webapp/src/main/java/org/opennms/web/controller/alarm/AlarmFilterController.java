@@ -47,7 +47,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.model.FilterManager;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.Alarm;
@@ -110,7 +109,7 @@ public class AlarmFilterController extends AbstractController implements Initial
             }
         }
 
-        // handle the acknowledgement type parameter
+        // handle the acknowledgment type parameter
         String ackTypeString = request.getParameter("acktype");
         AcknowledgeType ackType = m_defaultAcknowledgeType;
         if (ackTypeString != null) {
@@ -138,9 +137,12 @@ public class AlarmFilterController extends AbstractController implements Initial
 
         if (limitString != null) {
             try {
-                limit = WebSecurityUtils.safeParseInt(limitString);
+                int newlimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newlimit > 0) {
+                    limit = newlimit;
+                }
             } catch (NumberFormatException e) {
-                // do nothing, the default is aready set
+                // do nothing, the default is already set
             }
         }
 
@@ -149,7 +151,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = WebSecurityUtils.safeParseInt(multipleString);
+                multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
             } catch (NumberFormatException e) {
             }
         }
