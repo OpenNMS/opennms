@@ -132,15 +132,15 @@
 	  </tr>
 	  <tr>
 	    <td>Display Category</td>
-	    <td><%=getTextField(request, "text", "displaycategory", asset.getDisplayCategory(), "20", "64")%></td>
+	    <td colspan="2"><%=getTextField(request, "text", "displaycategory", asset.getDisplayCategory(), "20", "64")%></td>
 	    <td>Notification Category</td>
-	    <td><%=getTextField(request, "text", "notifycategory", asset.getNotifyCategory(), "20", "64")%></td>
+	    <td colspan="2"><%=getTextField(request, "text", "notifycategory", asset.getNotifyCategory(), "20", "64")%></td>
 	  </tr>
 	  <tr>
 	    <td>Poller Category</td>
-	    <td><%=getTextField(request, "text", "pollercategory", asset.getPollerCategory(), "20", "64")%></td>
+	    <td colspan="2"><%=getTextField(request, "text", "pollercategory", asset.getPollerCategory(), "20", "64")%></td>
 	    <td>Threshold Category</td>
-	    <td><%=getTextField(request, "text", "thresholdcategory", asset.getThresholdCategory(), "20", "64")%></td>
+	    <td colspan="2"><%=getTextField(request, "text", "thresholdcategory", asset.getThresholdCategory(), "20", "64")%></td>
 	  </tr>
           <tr>
             <td colspan="6"><h3>Identification</h3></td>
