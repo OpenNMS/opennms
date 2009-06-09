@@ -4,6 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
     rrdRepository="${install.share.dir}/rrd/snmp/" >
+  <!--
   <http-collection name="doc-count">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:8928</rra>
@@ -23,4 +24,5 @@
       </uri>
     </uris>
   </http-collection>
+  -->
 </http-datacollection-config>
