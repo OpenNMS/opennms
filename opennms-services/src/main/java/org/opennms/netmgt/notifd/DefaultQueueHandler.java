@@ -53,8 +53,8 @@ import org.opennms.core.utils.TimeConverter;
  * status of the process or how long the process is run. If the process has run
  * long than allocated it is terminated during collection.
  * 
- * @author <a href="mailto:jason@opennms.org">Jason Johns </a>
- * @author <a href="http://www.opennms.org/>OpenNMS </a>
+ * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
+ * @author <a href="http://www.opennms.org/>OpenNMS</a>
  * 
  */
 public class DefaultQueueHandler implements NotifdQueueHandler {
@@ -95,10 +95,8 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     /**
      * 
      */
-    public void setNoticeQueue(NoticeQueue noticeQueue) {
-        synchronized (m_noticeQueue) {
-            m_noticeQueue = noticeQueue;
-        }
+    public synchronized void setNoticeQueue(NoticeQueue noticeQueue) {
+        m_noticeQueue = noticeQueue;
     }
 
     /**
@@ -109,7 +107,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     }
 
     /**
-     * The main worker of the fiber. This method is executed by the encapsualted
+     * The main worker of the fiber. This method is executed by the encapsulated
      * thread to read commands from the execution queue and to execute those
      * commands. If the thread is interrupted or the status changes to
      * <code>STOP_PENDING</code> then the method will return as quickly as
@@ -171,23 +169,25 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     public void processQueue() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        synchronized(m_noticeQueue) {
-            try {
-                Long now = new Long(System.currentTimeMillis());
-                SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
-    
-                for (List<NotificationTask> list : readyNotices.values()) {
-                    for (NotificationTask task : list) {
-                        startTask(task);
+        if (m_noticeQueue != null) {
+            synchronized(m_noticeQueue) {
+                try {
+                    Long now = new Long(System.currentTimeMillis());
+                    SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
+        
+                    for (List<NotificationTask> list : readyNotices.values()) {
+                        for (NotificationTask task : list) {
+                            startTask(task);
+                        }
                     }
+                    readyNotices.clear();
+        
+                    log.debug("current state of tree: ");
+                    log.debug("\n" + m_noticeQueue);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    
                 }
-                readyNotices.clear();
-    
-                log.debug("current state of tree: ");
-                log.debug("\n" + m_noticeQueue);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                
             }
         }
     }
@@ -200,10 +200,10 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     /**
      * Starts the fiber. If the fiber has already been run or is currently
      * running then an exception is generated. The status of the fiber is
-     * updated to <code>STARTING</code> and will transisition to <code>
+     * updated to <code>STARTING</code> and will transition to <code>
      * RUNNING</code>
      * when the fiber finishes initializing and begins processing the
-     * encapsulaed queue.
+     * encapsulated queue.
      * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.

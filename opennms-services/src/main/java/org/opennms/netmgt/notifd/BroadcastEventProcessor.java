@@ -374,25 +374,30 @@ public final class BroadcastEventProcessor implements EventListener {
 
     protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map<String, String> params) throws Exception {
         int noticeId = -1;
-        synchronized(m_noticeQueues) {
-            NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
-            long now = System.currentTimeMillis();
-    
-            if (getUserManager().hasUser(targetName)) {
-                NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null, null);
-    
-                if (newTask != null) {
-                    noticeQueue.putItem(now, newTask);
-                }
-            } else if (targetName.indexOf("@") > -1) {
-                NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
-    
-                if (newTask != null) {
-                    noticeQueue.putItem(now, newTask);
-                }
-            } else {
-                log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+        NoticeQueue noticeQueue = null;
+        if (m_noticeQueues != null) {
+            synchronized (m_noticeQueues) {
+                noticeQueue = m_noticeQueues.get(queueID);
             }
+        }
+        long now = System.currentTimeMillis();
+
+        if (getUserManager().hasUser(targetName)) {
+            NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null, null);
+
+            if (newTask != null) {
+                noticeQueue.putItem(now, newTask);
+            }
+        } else if (targetName.indexOf("@") > -1) {
+            NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
+
+            if (newTask != null) {
+                synchronized (noticeQueue) {
+                    noticeQueue.putItem(now, newTask);
+                }
+            }
+        } else {
+            log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
         }
     }
 
@@ -791,7 +796,9 @@ public final class BroadcastEventProcessor implements EventListener {
                 for (int index = 0; index < tasks.length; index++) {
                     NotificationTask task = tasks[index];
                     if (task != null) {
-                        noticeQueue.putItem(task.getSendTime(), task);
+                        synchronized(noticeQueue) {
+                            noticeQueue.putItem(task.getSendTime(), task);
+                        }
                         targetSiblings.add(task);
                     }
                 }
@@ -1142,16 +1149,12 @@ public final class BroadcastEventProcessor implements EventListener {
         m_userManager = userManager;
     }
 
-    public Map<String, NoticeQueue> getNoticeQueues() {
-        synchronized(m_noticeQueues) {
-            return m_noticeQueues;
-        }
+    public synchronized Map<String, NoticeQueue> getNoticeQueues() {
+        return m_noticeQueues;
     }
 
     public void setNoticeQueues(Map<String, NoticeQueue> noticeQueues) {
-        synchronized(m_noticeQueues) {
-            m_noticeQueues = noticeQueues;
-        }
+        m_noticeQueues = noticeQueues;
     }
 
 } // end class
