@@ -140,6 +140,15 @@ public final class DiscoveryConfigFactory {
 
         m_singleton = new DiscoveryConfigFactory(cfgFile.getPath());
 
+        try {
+            m_singleton.getInitialSleepTime();
+            m_singleton.getRestartSleepTime();
+            m_singleton.getIntraPacketDelay();
+            m_singleton.getConfiguredAddresses();
+        } catch (Exception e) {
+            throw new ValidationException("An error occurred while validating the configuration.", e);
+        }
+        
         m_loaded = true;
     }
 
