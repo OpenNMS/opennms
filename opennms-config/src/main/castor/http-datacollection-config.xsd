@@ -32,7 +32,7 @@
 
     <complexType>
       <sequence>
-        <element ref="http-dc:http-collection" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="http-dc:http-collection" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="rrdRepository" type="string" use="required">
         <annotation>
