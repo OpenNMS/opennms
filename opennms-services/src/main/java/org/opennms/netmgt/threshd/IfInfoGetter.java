@@ -44,7 +44,8 @@ import java.util.Map;
  */
 public interface IfInfoGetter {
 
-    public abstract Map<String, String> getIfInfoForNodeAndLabel(int nodeId,
-            String ifLabel);
+    public abstract Map<String, String> getIfInfoForNodeAndLabel(int nodeId, String ifLabel);
+    
+    public abstract String getIfLabel(int nodeId, String ipAddress);
 
 }
