@@ -128,6 +128,21 @@ public final class PollerConfigFactory extends PollerConfigManager {
         PollerConfigFactory config = new PollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         reader.close();
 
+        for (org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackageCollection()) {
+            for (org.opennms.netmgt.config.poller.Service service : pollerPackage.getServiceCollection()) {
+                for (org.opennms.netmgt.config.poller.Parameter parm : service.getParameterCollection()) {
+                    if (parm.getKey().equals("ds-name")) {
+                        if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
+                            throw new ValidationException(
+                                String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
+                                parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         setInstance(config);
     }
 
