@@ -11,6 +11,7 @@ import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.poller.LatencyCollectionResource;
 
 public class CollectionResourceWrapper {
     
@@ -18,6 +19,8 @@ public class CollectionResourceWrapper {
     private String m_hostAddress;
     private String m_serviceName;
     private String m_label;
+    private String m_iflabel;
+    private String m_ifindex;
     private RrdRepository m_repository;
     private CollectionResource m_resource;
     private Map<String, CollectionAttribute> m_attributes;
@@ -33,7 +36,12 @@ public class CollectionResourceWrapper {
      * See Bug 3193
      */
     private Map<String, Double> m_localCache = new HashMap<String,Double>();
-
+    
+    /*
+     * Holds interface ifInfo data for interface resource only. This avoid multiple calls to database for same resource.
+     */
+    private Map<String, String> m_ifInfo;
+    
     public CollectionResourceWrapper(int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
@@ -41,7 +49,27 @@ public class CollectionResourceWrapper {
         m_repository = repository;
         m_resource = resource;
         m_attributes = attributes;
-    }
+        if (isAnInterfaceResource()) {
+            File resourceDir = getResourceDir();
+            if (resourceDir != null) {
+                JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
+                if (resource instanceof LatencyCollectionResource) {
+                    m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), resourceDir.getName());
+                } else {
+                    m_iflabel = resourceDir.getName();
+                }
+                m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
+                if (m_ifInfo != null) {
+                    m_hostAddress = m_ifInfo.get("ipaddr"); // See Bug 2711
+                    m_ifindex = m_ifInfo.get("snmpifindex");
+                } else {
+                    log().info("Can't find ifInfo for " + m_iflabel);
+                }
+            } else {
+                log().info("Can't find resource directory for " + m_resource);
+            }        
+        }
+    }    
     
     public int getNodeId() {
         return m_nodeId;
@@ -79,12 +107,35 @@ public class CollectionResourceWrapper {
         return m_resource != null ? m_resource.getResourceDir(m_repository) : null;
     }
     
-    public String getIfInfoValue(String attributeName) {
-        File resourceDir = getResourceDir();
-        if (resourceDir == null)
-            return null;
-        String ifLabel = resourceDir.getName();
-        return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(getNodeId(), ifLabel).get(attributeName);
+    public String getIfLabel() {
+        return m_iflabel;
+    }
+    
+    public String getIfIndex() {
+        return m_ifindex;
+    }
+    
+    public String getIfInfoValue(String attribute) {
+        return m_ifInfo.get(attribute);
+    }
+    
+    public boolean isAnInterfaceResource() {
+        return getResourceTypeName() != null && getResourceTypeName().equals("if");
+    }
+
+    public boolean isValidInterfaceResource() {
+        if (m_ifInfo == null) {
+            return false;
+        }
+        try {
+            if(null == m_ifindex)
+                return false;
+            if(Integer.parseInt(m_ifindex) < 0)
+                return false;
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
     }
 
     public Double getAttributeValue(String ds) {
@@ -140,7 +191,7 @@ public class CollectionResourceWrapper {
             return resourceDirectory.getName();
         }
         try {
-            if (m_resource.getResourceTypeName().equals("if")) {
+            if (isAnInterfaceResource()) { // Get Value from ifInfo only for Interface Resource
                 value = getIfInfoValue(ds);
             }
             if (value == null) { // Find value on saved string attributes                

@@ -1,6 +1,5 @@
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -28,15 +27,16 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         event.setUei(uei);
         event.setNodeid(resource.getNodeId());
         event.setService(resource.getServiceName());
-        event.setInterface(resource.getHostAddress());
-                
+        
+        // As a suggestion from Bug2711. Host Address will contain Interface IP Address for Interface Resource
+        event.setInterface(resource.getHostAddress());            
+
         Parms eventParms = new Parms();
         addEventParm(eventParms, "label", dsLabelValue);
         
-        if (resource.getResourceTypeName() != null && resource.getResourceTypeName().equals("if")) {
-            File resourceDir = resource.getResourceDir();
-            addEventParm(eventParms, "ifLabel", resourceDir.getName());
-            addEventParm(eventParms, "ifIndex", resource.getIfInfoValue("snmpifindex"));
+        if (resource.isAnInterfaceResource()) {
+            addEventParm(eventParms, "ifLabel", resource.getIfLabel());
+            addEventParm(eventParms, "ifIndex", resource.getIfIndex());
         }
 
         // set the source of the event to the datasource name

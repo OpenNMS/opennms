@@ -213,6 +213,43 @@ public class IfLabel extends Object {
         return labels;
     }
 
+    public static String getIfLabel(Connection conn, int nodeId, String ipAddr) throws SQLException {
+        if (ipAddr == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        String label = null;
+
+        PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=?");
+        stmt.setInt(1, nodeId);
+        stmt.setString(2, ipAddr);
+
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            String name = rs.getString("snmpifname");
+            String descr = rs.getString("snmpifdescr");
+            String physAddr = rs.getString("snmpphysaddr");
+
+            if (name != null || descr != null) {
+                label = getIfLabel(name, descr, physAddr);
+            } else {
+                log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                label = "no_ifLabel";
+            }
+        }
+
+        if (rs.next()) {
+            log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
+        }
+
+        rs.close();
+        stmt.close();
+
+        return label;
+
+    }
+
     public static String getIfLabel(int nodeId, String ipAddr) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -222,31 +259,7 @@ public class IfLabel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=?");
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                String name = rs.getString("snmpifname");
-                String descr = rs.getString("snmpifdescr");
-                String physAddr = rs.getString("snmpphysaddr");
-
-                if (name != null || descr != null) {
-                    label = getIfLabel(name, descr, physAddr);
-                } else {
-                    log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-                    label = "no_ifLabel";
-                }
-            }
-
-            if (rs.next()) {
-                log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
-            }
-
-            rs.close();
-            stmt.close();
+            label = getIfLabel(conn, nodeId, ipAddr);
         } finally {
             Vault.releaseDbConnection(conn);
         }

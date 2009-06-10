@@ -453,7 +453,7 @@ public class ThresholdingVisitorTest {
         String lowExpression = "(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
         addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
         addHighRearmEvent(1, 30, 25, Double.NaN, "/opt", "1", highExpression, null, null);
-        addEvent(lowThresholdUei, "SNMP", 1, 10, 20, 5, "/opt", "1", lowExpression, null, null);
+        addEvent(lowThresholdUei, "127.0.0.1", "SNMP", 1, 10, 20, 5, "/opt", "1", lowExpression, null, null);
 
         // Step 1: Trigger threshold
         runFileSystemDataTest(visitor, 1, "/opt", 500, 1000);
@@ -514,9 +514,55 @@ public class ThresholdingVisitorTest {
     }
     
     /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     */
+    @Test
+    public void testBug2711_noIpAddress() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, false);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
+        runInterfaceResource("0.0.0.0", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     */
+    @Test
+    public void testBug2711_noIP_noSnmpIfInfo() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, true);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
+        runInterfaceResource("10.10.0.1", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        verifyEvents(2);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     */
+    @Test
+    public void testBug2711_noIP_badIfIndex() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        setupSnmpInterfaceWithoutIpDatabase("wlan0", -100, false);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
+        runInterfaceResource("0.0.0.0", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        verifyEvents(2);
+    }
+
+    /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
      * This test validate that Bug 1582 has been fixed.
+     * ifLabel and ifIndex are set correctly based on Bug 2711
      */
     @Test    
     public void testLatencyThresholdingSet() throws Exception {
@@ -555,8 +601,8 @@ public class ThresholdingVisitorTest {
         }
 
         // Validate Events
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", "127.0.0.1", null);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "lo0", "1");
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", "lo0", "1");
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -709,18 +755,18 @@ public class ThresholdingVisitorTest {
     }
 
     private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
     }
 
     private void addHighRearmEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
     }
 
-    private void addEvent(String uei, String service, int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
+    private void addEvent(String uei, String ipaddr, String service, int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
         Event e = new Event();
         e.setUei(uei);
         e.setNodeid(1);
-        e.setInterface("127.0.0.1");
+        e.setInterface(ipaddr);
         e.setService(service);
         Parms parms = new Parms();
 
@@ -853,9 +899,29 @@ public class ThresholdingVisitorTest {
         network.setIfAlias(ifName);
         network.addService("ICMP");
         network.addService("SNMP");
+        network.addService("HTTP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
+        DataSourceFactory.setInstance(db);
+    }
+    
+    private void setupSnmpInterfaceWithoutIpDatabase(String ifName, int ifIndex, boolean skipUpdate) throws Exception {
+        // Setup Non-IP Address Interface
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        network.addNode(1, "testNode");
+        network.addInterface("127.0.0.1");
+        network.setIfAlias("eth0");
+        network.addService("ICMP");
+        network.addService("SNMP");
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        // Updating SNMP ifData for eth0
+        db.update("update snmpInterface set snmpifName=?, snmpifDescr=? where id=?", "eth0", "eth0", 1);
+        // Adding non-IP Interface wlan0
+        if (!skipUpdate)
+            db.update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias, snmpifName, snmpifDescr, snmpifIndex) values (?, ?, ?, ?, ?, ?)", 1, "0.0.0.0", ifName, ifName, ifName, ifIndex);
         DataSourceFactory.setInstance(db);
     }
     
