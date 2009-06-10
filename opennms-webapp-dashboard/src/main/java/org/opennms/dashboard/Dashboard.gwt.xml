@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.4//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.4/distro-source/core/src/gwt-module.dtd">
+<module rename-to='dashboard'>
+
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+      <inherits name='com.google.gwt.user.User'/>
+
+      <!--  inherit css based theme -->
+      <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+      
+      <!-- Specify the application specific style sheet.              -->
+      <stylesheet src='Dashboard.css' />
+      
+      <!-- Specify the app entry point class.                         -->
+      <entry-point class='org.opennms.dashboard.client.Dashboard'/>
+</module>
