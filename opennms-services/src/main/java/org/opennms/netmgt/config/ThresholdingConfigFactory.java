@@ -47,7 +47,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -62,7 +61,7 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
- * This class is the main respository for thresholding configuration information
+ * This class is the main repository for thresholding configuration information
  * used by the thresholding daemon.. When this class is loaded it reads the
  * thresholding configuration into memory.
  * 
@@ -139,11 +138,9 @@ public final class ThresholdingConfigFactory {
      */ 
     private void initGroupMap() {
         Map<String, Group> groupMap = new HashMap<String, Group>();
-        
-        Iterator iter = m_config.getGroupCollection().iterator();
-        while (iter.hasNext()) {
-            Group group = (Group) iter.next();
-            groupMap.put(group.getName(), group);
+
+        for (Group g : m_config.getGroupCollection()) {
+            groupMap.put(g.getName(), g);
         }
         
         m_groupMap = groupMap;
@@ -173,8 +170,20 @@ public final class ThresholdingConfigFactory {
             log().debug("init: config file path: " + cfgFile.getPath());
         }
 
-        m_singleton = new ThresholdingConfigFactory(cfgFile.getPath());
+        ThresholdingConfigFactory tcf = new ThresholdingConfigFactory(cfgFile.getPath());
 
+        for (String groupName : tcf.getGroupNames()) {
+            Group g = tcf.getGroup(groupName);
+            for (org.opennms.netmgt.config.threshd.Threshold threshold :  g.getThresholdCollection()) {
+                if (threshold.getDsName().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
+                    throw new ValidationException(
+                        String.format("ds-name '%s' in group '%s' is greater than %d characters",
+                            threshold.getDsName(), groupName, ConfigFileConstants.RRD_DS_MAX_SIZE)
+                    );
+                }
+            }
+        }
+        m_singleton = tcf;
         m_loaded = true;
     }
 
@@ -254,7 +263,6 @@ public final class ThresholdingConfigFactory {
      * @throws IllegalArgumentException
      *             if group name does not exist in the group map.
      */
-    @SuppressWarnings("unchecked")
     public Collection<Basethresholddef> getThresholds(String groupName) {
         Group group=getGroup(groupName);
         Collection<Basethresholddef> result=new ArrayList<Basethresholddef>();
@@ -271,9 +279,9 @@ public final class ThresholdingConfigFactory {
      * Saves the current in-memory configuration to disk and reloads
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-        // marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
 
