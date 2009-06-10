@@ -85,11 +85,11 @@ final public class MemcachedMonitor extends IPv4Monitor {
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
 
     private static final String[] m_keys = new String[] {
-        "uptime", "rusage_user", "rusage_system",
-        "curr_items", "total_items", "bytes",
-        "curr_connections", "total_connections", "connection_structures",
-        "cmd_get", "cmd_set", "get_hits", "get_misses", "evictions",
-        "bytes_read", "bytes_written", "threads"
+        "uptime", "rusageuser", "rusage_system",
+        "curr_items", "totalitems", "bytes",
+        "currconnections", "totalconnections", "connectionstructure",
+        "cmdget", "cmdset", "gethits", "getmisses", "evictions",
+        "bytesread", "byteswritten", "threads"
     };
     
     /**
@@ -158,8 +158,8 @@ final public class MemcachedMonitor extends IPv4Monitor {
                                 }
                                 String key = statEntry[1].toLowerCase();
                                 key = key.replaceAll("_", "");
-                                if (key.length() > 20) {
-                                    key = key.substring(0, 20);
+                                if (key.length() > 19) {
+                                    key = key.substring(0, 19);
                                 }
                                 if (statProps.containsKey(key)) {
                                     statProps.put(key, value);
