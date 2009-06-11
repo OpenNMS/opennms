@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runAlways="true" author="rangerrick" id="opennmsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="acks" />
+		<tableExists tableName="assets" />
+		<tableExists tableName="atinterface" />
+		<tableExists tableName="datalinkinterface" />
+		<tableExists tableName="element" />
+		<tableExists tableName="ifservices" />
+		<tableExists tableName="ipinterface" />
+		<tableExists tableName="map" />
+		<tableExists tableName="resourcereference" />
+		<tableExists tableName="snmpinterface" />
+		<tableExists tableName="statisticsreport" />
+		<tableExists tableName="statisticsreportdata" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'opennmsnxtid',
+			(SELECT max(id) + 1 AS id FROM (
+				SELECT id FROM acks UNION
+				SELECT id FROM assets UNION
+				SELECT id FROM atinterface UNION
+				SELECT id FROM datalinkinterface UNION
+				SELECT id FROM element UNION
+				SELECT id FROM ifservices UNION
+				SELECT id FROM ipinterface UNION
+				SELECT mapid FROM map UNION
+				SELECT id FROM resourcereference UNION
+				SELECT id FROM snmpinterface UNION
+				SELECT id FROM statisticsreport UNION
+				SELECT id FROM statisticsreportdata
+			) AS id),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="nodenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="node" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'nodenxtid',
+			(SELECT max(nodeid) + 1 AS id FROM node),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="servicenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="service" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'servicenxtid',
+			(SELECT max(serviceid) + 1 AS id FROM service),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="eventsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="events" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'eventsnxtid',
+			(SELECT max(eventid) + 1 AS id FROM events),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="alarmsnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="alarms" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'alarmsnxtid',
+			(SELECT max(alarmid) + 1 AS id FROM alarms),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="outagenxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="outages" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'outagenxtid',
+			(SELECT max(outageid) + 1 AS id FROM outages),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="notifynxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="notifications" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'notifynxtid',
+			(SELECT max(notifyid) + 1 AS id FROM notifications),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="vulnnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="vulnerabilities" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'vulnnxtid',
+			(SELECT max(vulnerabilityid) + 1 AS id FROM vulnerabilities),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="catnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="categories" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'catnxtid',
+			(SELECT max(categoryid) + 1 AS id FROM categories),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="usernotifnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="usersnotified" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'usernotifnxtid',
+			(SELECT max(id) + 1 AS id FROM usersnotified),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="demandpollnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="demandpolls" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'demandpollnxtid',
+			(SELECT max(id) + 1 AS id FROM demandpolls),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="pollresultnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="pollresults" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'pollresultnxtid',
+			(SELECT max(id) + 1 AS id FROM pollresults),
+			true
+		);
+	</sql>
+</changeSet>
+
+<changeSet runAlways="true" author="rangerrick" id="mapnxtid-update-sequence">
+	<preConditions onFail="MARK_RAN">
+		<tableExists tableName="map" />
+	</preConditions>
+	<sql>
+		SELECT pg_catalog.setval(
+			'mapnxtid',
+			(SELECT max(mapid) + 1 AS id FROM map),
+			true
+		);
+	</sql>
+</changeSet>
+
+
+</databaseChangeLog>
