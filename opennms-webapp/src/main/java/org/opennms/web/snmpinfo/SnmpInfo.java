@@ -1,4 +1,4 @@
-package org.opennms.secret.web.snmpinfo;
+package org.opennms.web.snmpinfo;
 
 import java.net.UnknownHostException;
 
