@@ -117,8 +117,13 @@ public class OpenMapController implements Controller {
 				log.debug("Opening map "+mapid+" for user "+user);
 				map = manager.openMap(mapid, user, !(adminModeStr.equals("true")));
 			}else{
-				log.debug("Opening map without passing mapid");
-				map = manager.openMap();
+				log.debug("Try to Opening default map");
+				VMapInfo defaultmapinfo = manager.getDefaultMapsMenu(user);
+				if (defaultmapinfo != null ) {
+	                map = manager.openMap(defaultmapinfo.getId(),user,!(adminModeStr.equals("true")));
+				} else {
+				    map = manager.openMap();
+				}
 			}
 			 
 

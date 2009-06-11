@@ -36,6 +36,7 @@
 package org.opennms.mock.snmp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -67,11 +68,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
 @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", port=9161)
-public class JUnitSnmpAgentExecutionListenerTest {
+public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
     
     OID m_oid = new OID(".1.3.5.1.1.1.0");
 
+    MockSnmpAgent m_agent = null;
     
+    public void setMockSnmpAgent(MockSnmpAgent agent) {
+        m_agent = agent;
+    }
+    
+    @Test
+    public void testAgentInjection() {
+        assertNotNull(m_agent);
+    }
+
     @Test
     public void testClassAgent() throws Exception {
         assertEquals(new OctetString("TestData"), get(localhost(), 9161, m_oid));
@@ -88,6 +99,7 @@ public class JUnitSnmpAgentExecutionListenerTest {
     public void testMethodAgent() throws Exception {
         assertEquals(new OctetString("DifferentTestData"), get(localhost(), 9162, m_oid));
     }
+    
 
 
     /**

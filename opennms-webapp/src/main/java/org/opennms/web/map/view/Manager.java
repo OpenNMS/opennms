@@ -195,7 +195,17 @@ public interface Manager {
      * @return a List of MapMenu objects.
      * @throws MapsException
      */
-    public List<VMapInfo> getVisibleMapsMenu(String user)throws MapsException;
+    public List<VMapInfo> getVisibleMapsMenu(String user) throws MapsException;
+
+    /**
+     * get the default map for specified user in input 
+     * if exists null otherwise 
+     * @param user
+     * @return a MapMenu object.
+     * @throws MapsException
+     */
+    public VMapInfo getDefaultMapsMenu(String user) throws MapsException;
+
 
     /**
      * Take all the maps in the tree of maps considering the with name in input

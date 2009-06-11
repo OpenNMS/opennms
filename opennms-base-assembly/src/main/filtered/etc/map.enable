@@ -1,0 +1,17 @@
+# File to disable mapping in OpenNMS
+#
+# In order to disable access to the maps in OpenNMS
+# move this file to $OPENNMS_HOME/etc/map.disable.
+#
+# Notes: The initial generation of the map will use
+# a lot of memory and a lot of CPU. 
+#
+# Also, it is best if you have a broswer that 
+# supports SVG. At the moment we support:
+#
+#     Internet Explorer 7+ with the SVG Plug-in from Adobe:
+#     http://www.adobe.com/svg/viewer/install/?image/svg+xml
+#
+#     Firefox 3.0+
+#  
+#     Safari 3.2+ (Well we have to fix a bug on moving icons but it works)

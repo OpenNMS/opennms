@@ -63,6 +63,18 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
-    }    
+    }
+
+    /*
+     * Check Valid Interface Resource based on suggestions from Bug 2711
+     */
+    @Override
+    protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
+        if (resource.isAnInterfaceResource() && !resource.isValidInterfaceResource()) {
+            log().info("passedThresholdFilters: Could not get data interface information for '" + resource.getIfLabel() + "' or this interface has an invalid ifIndex.  Not evaluating threshold.");
+            return false;
+        }
+        return super.passedThresholdFilters(resource, thresholdEntity);
+    }
 
 }
