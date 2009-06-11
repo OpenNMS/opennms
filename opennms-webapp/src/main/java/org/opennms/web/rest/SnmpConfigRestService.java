@@ -53,7 +53,7 @@ import javax.ws.rs.core.Response;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.secret.web.snmpinfo.SnmpInfo;
+import org.opennms.web.snmpinfo.SnmpInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

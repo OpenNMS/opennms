@@ -268,7 +268,7 @@
           <srcdir>${basedir}/src/main/java</srcdir>
           <verbose>false</verbose>
           <includes>
-            <include>org/opennms/secret/web/snmpinfo/*.java</include>
+            <include>org/opennms/web/snmpinfo/*.java</include>
           </includes>
           <schemas>
             <schema>
@@ -472,7 +472,6 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    <!-- XXX used by the new "webapp-ng"/"secret" stuff directly -->
     <dependency>
       <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
