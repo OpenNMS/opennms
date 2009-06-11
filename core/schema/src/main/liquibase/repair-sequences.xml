@@ -25,18 +25,18 @@
 		SELECT pg_catalog.setval(
 			'opennmsnxtid',
 			(SELECT max(id) + 1 AS id FROM (
-				SELECT id FROM acks UNION
-				SELECT id FROM assets UNION
-				SELECT id FROM atinterface UNION
-				SELECT id FROM datalinkinterface UNION
-				SELECT id FROM element UNION
-				SELECT id FROM ifservices UNION
-				SELECT id FROM ipinterface UNION
-				SELECT mapid FROM map UNION
-				SELECT id FROM resourcereference UNION
-				SELECT id FROM snmpinterface UNION
-				SELECT id FROM statisticsreport UNION
-				SELECT id FROM statisticsreportdata
+				SELECT max(id)    FROM acks              UNION
+				SELECT max(id)    FROM assets            UNION
+				SELECT max(id)    FROM atinterface       UNION
+				SELECT max(id)    FROM datalinkinterface UNION
+				SELECT max(id)    FROM element           UNION
+				SELECT max(id)    FROM ifservices        UNION
+				SELECT max(id)    FROM ipinterface       UNION
+				SELECT max(mapid) FROM map               UNION
+				SELECT max(id)    FROM resourcereference UNION
+				SELECT max(id)    FROM snmpinterface     UNION
+				SELECT max(id)    FROM statisticsreport  UNION
+				SELECT max(id)    FROM statisticsreportdata
 			) AS id),
 			true
 		);
