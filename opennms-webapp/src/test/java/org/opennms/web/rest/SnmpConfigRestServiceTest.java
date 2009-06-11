@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.secret.web.snmpinfo.SnmpInfo;
+import org.opennms.web.snmpinfo.SnmpInfo;
 
 /*
  * TODO
