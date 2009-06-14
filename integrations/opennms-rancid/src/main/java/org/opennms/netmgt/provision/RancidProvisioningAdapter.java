@@ -557,7 +557,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Iterator<Parm> ite = e.getParms().iterateParm();
             while (ite.hasNext()) {
                 Parm parm = ite.next();
-                if (parm.getParmName().equals("rancidGroupName")) {
+                log().debug("parm name: " + parm.getParmName());
+                if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
                     updateGroupConfiguration(parm.getValue().getContent());
                     break;
                 }
