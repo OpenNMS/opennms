@@ -611,6 +611,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         List<String> ueiList = new ArrayList<String>();
         ueiList.add(EventConstants.RANCID_DOWNLOAD_FAILURE_UEI);
         ueiList.add(EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI);
+        ueiList.add(EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI);
         
         getEventSubscriptionService().addEventListener(this, ueiList);
     }
