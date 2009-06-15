@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>org.opennms.features</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.7.5-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.feature.webapp</artifactId>
+  <packaging>pom</packaging>
+  <name>Opennms Webapp</name>
+  <url>http://opennms.org</url>
+  
+  
+  <modules>
+    <module>base</module>
+    <module>api</module>
+    <module>home</module>
+  </modules>
+</project>

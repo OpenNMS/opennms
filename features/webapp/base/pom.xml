@@ -1,0 +1,24 @@
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>org.opennms.feature.webapp</artifactId>
+    <groupId>org.opennms.features</groupId>
+    <version>1.7.5-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.webapp</groupId>
+  <artifactId>org.opennms.features.webapp.base</artifactId>
+  <packaging>war</packaging>
+  <name>Opennms Base Webapp Container Module</name>
+  <url>http://opennms.org</url>
+  <build>
+    <finalName>org.opennms.features.webapp.base</finalName>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
