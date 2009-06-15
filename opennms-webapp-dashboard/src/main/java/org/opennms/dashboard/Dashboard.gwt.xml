@@ -9,7 +9,7 @@
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
       
       <!-- Specify the application specific style sheet.              -->
-      <stylesheet src='Dashboard.css' />
+      <stylesheet src='dashboard.css' />
       
       <!-- Specify the app entry point class.                         -->
       <entry-point class='org.opennms.dashboard.client.Dashboard'/>
