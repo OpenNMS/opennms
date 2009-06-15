@@ -124,6 +124,7 @@
     <module>opennms-base-assembly</module>
     <module>integration-tests</module>
     <module>opennms-webapp-dashboard</module>
+    <module>opennms-modular-webapp</module>
   </modules>
   <build>
   <pluginManagement>
