@@ -11,9 +11,55 @@
   <name>Opennms Base Webapp Container Module</name>
   <url>http://opennms.org</url>
   <build>
-    <finalName>org.opennms.features.webapp.base</finalName>
+		<plugins>
+		  <plugin>
+	      	<groupId>org.codehaus.cargo</groupId>
+	      	<artifactId>cargo-maven2-plugin</artifactId>
+	      	<extensions>true</extensions>
+	      	<executions>
+	      		<execution>
+	      			<goals>
+	      				<goal>uberwar</goal>
+	      			</goals>
+	      		</execution>
+	      	</executions>
+	      	<configuration>
+	      		<descriptor>src/assemble/merge.xml</descriptor>
+	      		<container>
+	      			<containerId>jetty6x</containerId>
+	      			<type>embedded</type>
+	      		</container>
+	      	</configuration>
+	      </plugin>
+	      
+<!--	      <plugin>-->
+<!--        	<groupId>org.mortbay.jetty</groupId>-->
+<!--        	<artifactId>maven-jetty-plugin</artifactId>-->
+<!--        	<configuration>-->
+<!--          		<webApp>${basedir}/target/org.opennms.features.webapp.base-${project.version}.war</webApp>-->
+<!--       		</configuration>-->
+<!--      	  </plugin>-->
+	      
+      </plugins>
+      
   </build>
+  
   <dependencies>
+  	
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-webapp</artifactId>
+  		<type>war</type>
+  		<version>${project.version}</version>
+  	</dependency>
+  
+  	<dependency>
+  		<groupId>org.opennms.features.webapp</groupId>
+  		<artifactId>org.opennms.features.webapp.home</artifactId>
+  		<type>war</type>
+  		<version>${project.version}</version>
+  	</dependency>
+  	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
