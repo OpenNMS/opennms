@@ -52,7 +52,7 @@
 
 	<include file="repair-sequences.xml" />
 
-	<changeSet id="grant-permissions" author="rangerrick" runAlways="true" context="production">
+	<changeSet id="grant-permissions" author="rangerrick" runOnChange="true" runAlways="true" context="production">
 		<preConditions>
 			<dbms type="postgresql" />
 		</preConditions>
