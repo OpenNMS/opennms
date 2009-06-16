@@ -7,8 +7,12 @@
 			<surname>Giles</surname>
 			<firstname>Steve</firstname>
 		</author>
+		<author>
+			<surname>Balog</surname>
+			<firstname>Tarus</firstname>
+		</author>
 	</authorgroup> 
-	<pubdate>2001</pubdate>
+	<!-- <pubdate>2001</pubdate> -->
 	<pubsnumber>Revision: @opennms.version@</pubsnumber>
 	<!-- 
 	<legalnotice>
