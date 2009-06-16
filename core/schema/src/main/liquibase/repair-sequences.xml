@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet runAlways="true" author="rangerrick" id="opennmsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="opennmsnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="acks" />
 		<tableExists tableName="assets" />
@@ -25,175 +25,175 @@
 		SELECT pg_catalog.setval(
 			'opennmsnxtid',
 			(SELECT max(id) + 1 AS id FROM (
-				SELECT max(id)    FROM acks              UNION
-				SELECT max(id)    FROM assets            UNION
-				SELECT max(id)    FROM atinterface       UNION
-				SELECT max(id)    FROM datalinkinterface UNION
-				SELECT max(id)    FROM element           UNION
-				SELECT max(id)    FROM ifservices        UNION
-				SELECT max(id)    FROM ipinterface       UNION
-				SELECT max(mapid) FROM map               UNION
-				SELECT max(id)    FROM resourcereference UNION
-				SELECT max(id)    FROM snmpinterface     UNION
-				SELECT max(id)    FROM statisticsreport  UNION
-				SELECT max(id)    FROM statisticsreportdata
-			) AS id),
+				(SELECT max(id)    FROM acks                 LIMIT 1) UNION
+				(SELECT max(id)    FROM assets               LIMIT 1) UNION
+				(SELECT max(id)    FROM atinterface          LIMIT 1) UNION
+				(SELECT max(id)    FROM datalinkinterface    LIMIT 1) UNION
+				(SELECT max(id)    FROM element              LIMIT 1) UNION
+				(SELECT max(id)    FROM ifservices           LIMIT 1) UNION
+				(SELECT max(id)    FROM ipinterface          LIMIT 1) UNION
+				(SELECT max(mapid) FROM map                  LIMIT 1) UNION
+				(SELECT max(id)    FROM resourcereference    LIMIT 1) UNION
+				(SELECT max(id)    FROM snmpinterface        LIMIT 1) UNION
+				(SELECT max(id)    FROM statisticsreport     LIMIT 1) UNION
+				(SELECT max(id)    FROM statisticsreportdata LIMIT 1)
+			) AS id LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="nodenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="nodenxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="node" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'nodenxtid',
-			(SELECT max(nodeid) + 1 AS id FROM node),
+			(SELECT max(nodeid) + 1 AS id FROM node LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="servicenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="servicenxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="service" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'servicenxtid',
-			(SELECT max(serviceid) + 1 AS id FROM service),
+			(SELECT max(serviceid) + 1 AS id FROM service LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="eventsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="eventsnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="events" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'eventsnxtid',
-			(SELECT max(eventid) + 1 AS id FROM events),
+			(SELECT max(eventid) + 1 AS id FROM events LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="alarmsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="alarmsnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="alarms" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'alarmsnxtid',
-			(SELECT max(alarmid) + 1 AS id FROM alarms),
+			(SELECT max(alarmid) + 1 AS id FROM alarms LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="outagenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="outagenxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="outages" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'outagenxtid',
-			(SELECT max(outageid) + 1 AS id FROM outages),
+			(SELECT max(outageid) + 1 AS id FROM outages LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="notifynxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="notifynxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="notifications" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'notifynxtid',
-			(SELECT max(notifyid) + 1 AS id FROM notifications),
+			(SELECT max(notifyid) + 1 AS id FROM notifications LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="vulnnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="vulnnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="vulnerabilities" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'vulnnxtid',
-			(SELECT max(vulnerabilityid) + 1 AS id FROM vulnerabilities),
+			(SELECT max(vulnerabilityid) + 1 AS id FROM vulnerabilities LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="catnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="catnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="categories" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'catnxtid',
-			(SELECT max(categoryid) + 1 AS id FROM categories),
+			(SELECT max(categoryid) + 1 AS id FROM categories LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="usernotifnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="usernotifnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="usersnotified" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'usernotifnxtid',
-			(SELECT max(id) + 1 AS id FROM usersnotified),
+			(SELECT max(id) + 1 AS id FROM usersnotified LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="demandpollnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="demandpollnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="demandpolls" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'demandpollnxtid',
-			(SELECT max(id) + 1 AS id FROM demandpolls),
+			(SELECT max(id) + 1 AS id FROM demandpolls LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="pollresultnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="pollresultnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="pollresults" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'pollresultnxtid',
-			(SELECT max(id) + 1 AS id FROM pollresults),
+			(SELECT max(id) + 1 AS id FROM pollresults LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" author="rangerrick" id="mapnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="mapnxtid-update-sequence">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="map" />
 	</preConditions>
 	<sql>
 		SELECT pg_catalog.setval(
 			'mapnxtid',
-			(SELECT max(mapid) + 1 AS id FROM map),
+			(SELECT max(mapid) + 1 AS id FROM map LIMIT 1),
 			true
 		);
 	</sql>
