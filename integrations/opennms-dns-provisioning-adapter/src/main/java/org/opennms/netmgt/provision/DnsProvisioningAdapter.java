@@ -176,9 +176,11 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     private void doUpdate(AdapterOperation op) {
         OnmsNode node = null;
+        log().debug("doUpdate: operation: " + op.getType().name());
         try {
             node = m_nodeDao.get(op.getNodeId());
             DnsRecord record = new DnsRecord(node);
+            log().debug("doUpdate: DnsRecord: hostname: " + record.getHostname() + " zone: " + record.getZone() + " ip address " + record.getIp().getHostAddress());
             DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
 
             Update update = new Update(Name.fromString(record.getZone()));
