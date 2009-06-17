@@ -33,6 +33,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -62,8 +63,6 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
     private static boolean m_loaded = false;
 
     /**
-     * Private constructor
-     * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
@@ -71,9 +70,14 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public OpennmsServerConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         super(rdr);
 
+    }
+
+    public OpennmsServerConfigFactory(InputStream is) throws MarshalException, ValidationException {
+        super(is);
     }
 
     /**

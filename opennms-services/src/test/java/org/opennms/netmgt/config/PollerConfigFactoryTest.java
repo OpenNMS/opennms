@@ -36,7 +36,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
@@ -47,8 +47,10 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.mock.MockLogAppender;
@@ -93,11 +95,11 @@ public class PollerConfigFactoryTest extends TestCase {
         MockLogAppender.setupLogging();
         
         Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
-        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
-        r.close();
+        InputStream s = dbConfig.getInputStream();
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(s);
+        s.close();
         DatabaseSchemaConfigFactory.setInstance(dscf);
-        
+
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
         network.addNode(1, "Router");
@@ -143,23 +145,22 @@ public class PollerConfigFactoryTest extends TestCase {
     static class TestPollerConfigManager extends PollerConfigManager {
         private String m_xml;
 
+        @SuppressWarnings("deprecation")
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(new StringReader(xml), localServer, verifyServer);
             save();
         }
 
+        @SuppressWarnings("deprecation")
         public void update() throws IOException, MarshalException, ValidationException {
-            reloadXML(new StringReader(m_xml));
+            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+            setUpInternalData();
         }
 
         protected void saveXml(String xml) throws IOException {
             m_xml = xml;
         }
 
-//        protected List getIpList(Package pkg) {
-//            return Collections.EMPTY_LIST;
-//        }
-//        
         public String getXml() {
             return m_xml;
         }

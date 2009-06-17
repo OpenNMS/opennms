@@ -99,13 +99,20 @@ public class ConfigurationTestUtils extends Assert {
         return file;
     }
 
+    /**
+     * Use getInputStreamForResource instead.
+     * 
+     * @param obj
+     * @param resource
+     * @return
+     */
+    @Deprecated
     public static Reader getReaderForResource(Object obj, String resource) {
         return new InputStreamReader(getInputStreamForResource(obj, resource));
     }
 
-    public static InputStream getInputStreamForResource(Object obj,
-            String resource) {
-        assertFalse("obj should not be an instance of java.lang.Class; you usually want to use 'this'", obj instanceof Class);
+    public static InputStream getInputStreamForResource(Object obj, String resource) {
+        assertFalse("obj should not be an instance of java.lang.Class; you usually want to use 'this'", obj instanceof Class<?>);
         InputStream is = getClass(obj).getResourceAsStream(resource);
         assertNotNull("could not get resource '" + resource + "' as an input stream", is);
         return is;
@@ -149,6 +156,10 @@ public class ConfigurationTestUtils extends Assert {
         return newConfig;
     }
 
+    /**
+     * Use getInputStreamForConfigFile instead.
+     */
+    @Deprecated
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
         return new InputStreamReader(getInputStreamForConfigFile(configFile));
     }

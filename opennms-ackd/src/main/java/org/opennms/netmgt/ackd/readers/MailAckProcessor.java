@@ -232,6 +232,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
         return msgs;
     }
 
+    @SuppressWarnings("unchecked")
     private String createLog(Message msg) {
         StringBuilder bldr = new StringBuilder();
         Enumeration<Header> allHeaders;

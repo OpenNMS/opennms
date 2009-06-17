@@ -40,8 +40,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -63,7 +65,7 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * database schema for the filters from the database-schema xml file.
+ * database schema for the filters from the database-schema XML file.
  *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
@@ -103,6 +105,8 @@ public final class DatabaseSchemaConfigFactory {
 
     /**
      * Private constructor
+     * @throws ValidationException 
+     * @throws MarshalException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
@@ -112,21 +116,26 @@ public final class DatabaseSchemaConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DatabaseSchemaConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        FileReader cfgIn = new FileReader(configFile);
-
-        parseXML(cfgIn);
-
-        cfgIn.close();
+        InputStream cfgStream = null;
+        try {
+            cfgStream = new FileInputStream(configFile);
+            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream);
+            finishConstruction();
+        } finally {
+            if (cfgStream != null) {
+                IOUtils.closeQuietly(cfgStream);
+            }
+        }
     }
 
+    @Deprecated
     public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
-        parseXML(reader);
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader);
+        finishConstruction();
     }
 
-    private void parseXML(Reader rdr) throws IOException, MarshalException, ValidationException {
-
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, rdr);
-
+    public DatabaseSchemaConfigFactory(InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
         finishConstruction();
     }
 

@@ -37,13 +37,14 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.test.ConfigurationTestUtils;
@@ -75,11 +76,11 @@ public class C3P0ConnectionFactoryTest extends TestCase {
     }
 
     private C3P0ConnectionFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException {
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "opennms-datasources.xml");
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "opennms-datasources.xml");
         try {
-            return new C3P0ConnectionFactory(rdr, database);
+            return new C3P0ConnectionFactory(stream, database);
         } finally {
-            rdr.close();
+            IOUtils.closeQuietly(stream);
         }
     }
 }

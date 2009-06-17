@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.capsd;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -71,20 +72,32 @@ public class CapsdTest extends OpenNMSTestCase {
 
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), this.myLocalHost() + "/9161");
 
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
-        DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml"));
+        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
+        configStream.close();
+
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml");
+        DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(configStream);
+        configStream.close();
         CapsdConfigFactory.setInstance(capsdConfig);
         
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
+        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
+        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
+        configStream.close();
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
-        
-        PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/poller-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
 
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/poller-configuration.xml");
+        PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        configStream.close();
         RrdTestUtils.initialize();
 
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/datacollection-config.xml")));
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/datacollection-config.xml");
+        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(configStream));
+        configStream.close();
 
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
+        CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        configStream.close();
         
         JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
         
