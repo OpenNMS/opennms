@@ -50,6 +50,8 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 
@@ -115,7 +117,8 @@ public class MonitoringLocationsFactoryTest extends TestCase {
 
         public void update() throws IOException, MarshalException,
                 ValidationException {
-            reloadXML(new StringReader(m_xml));
+            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+            setUpInternalData();
         }
 
         protected void saveXml(String xml) throws IOException {

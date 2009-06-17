@@ -324,7 +324,6 @@ final class MergeableDefinition {
      * Sorts the specifics in the current wrapped definition.
      *
      */
-    @SuppressWarnings("unchecked")
     public void sortSpecifics() {
         String[] specifics = getConfigDef().getSpecific();
         Arrays.sort(specifics, new SpecificComparator());
@@ -334,7 +333,6 @@ final class MergeableDefinition {
     /**
      * Sorts ranges with the current wrapped definition.
      */
-    @SuppressWarnings("unchecked")
     public void sortRanges() {
         Range[] ranges = getConfigDef().getRange();
         Arrays.sort(ranges, new RangeComparator());

@@ -39,8 +39,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.log4j.Category;
@@ -102,21 +103,14 @@ public final class ServiceConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ServiceConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        FileReader cfgIn = new FileReader(configFile);
-
-        // load the config
-        //
-        parseXml(cfgIn);
-        
-        cfgIn.close();
+        InputStream cfgStream = new FileInputStream(new File(configFile));
+        m_config = CastorUtils.unmarshal(ServiceConfiguration.class, cfgStream);
+        cfgStream.close();
     }
     
+    @Deprecated
     public ServiceConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        parseXml(rdr);
-    }
-
-    private void parseXml(Reader cfgIn) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ServiceConfiguration.class, cfgIn);
+        m_config = CastorUtils.unmarshal(ServiceConfiguration.class, rdr);
     }
 
     /**

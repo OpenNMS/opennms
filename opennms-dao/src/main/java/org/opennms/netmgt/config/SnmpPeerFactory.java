@@ -122,6 +122,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource);
     }
     
+    @Deprecated
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
     }

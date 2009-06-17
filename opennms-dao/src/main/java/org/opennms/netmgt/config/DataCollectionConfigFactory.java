@@ -43,7 +43,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -125,17 +126,29 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      *                Thrown if the contents do not match the required schema.
      */
     private DataCollectionConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        Reader inputStreamReader = new InputStreamReader(new FileInputStream(configFile));
-        marshal(inputStreamReader);
-        inputStreamReader.close();
+        InputStream stream = new FileInputStream(configFile);
+        try {
+            m_config = CastorUtils.unmarshal(DatacollectionConfig.class, stream);        
+            setUpFactory();
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
-
+    
+    @Deprecated
     public DataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-        marshal(rdr);
+        m_config = CastorUtils.unmarshal(DatacollectionConfig.class, rdr);        
+        setUpFactory();
     }
 
-    private void marshal(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatacollectionConfig.class, rdr);        
+    public DataCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(DatacollectionConfig.class, stream);
+        setUpFactory();
+    }
+
+    protected void setUpFactory() {
         buildCollectionMap();
         processConfiguredResourceTypes();
         validateResourceTypes();

@@ -38,6 +38,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -96,10 +97,33 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws ValidationException
      * @throws IOException
      */
+    @Deprecated
     public PollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        reloadXML(reader);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
+        setUpInternalData();
+    }
+
+    public PollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        m_localServer = localServer;
+        m_verifyServer = verifyServer;
+        unmarshalConfig(stream);
+        setUpInternalData();
+    }
+
+    protected void setConfig(PollerConfiguration conf) {
+        m_config = conf;
+    }
+
+    protected void unmarshalConfig(InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, is);
+    }
+
+    protected void setUpInternalData() {
+        createUrlIpMap();
+        createPackageIpListMap();
+        createServiceMonitors();
     }
 
     public abstract void update() throws IOException, MarshalException, ValidationException;
@@ -109,7 +133,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * The config class loaded from the config file
      */
-    private PollerConfiguration m_config;
+    protected PollerConfiguration m_config;
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
@@ -156,21 +180,14 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-    protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
-        createUrlIpMap();
-        createPackageIpListMap();
-        createServiceMonitors();
-    }
-
     /**
      * Saves the current in-memory configuration to disk and reloads
      */
     public synchronized void save() throws MarshalException, IOException, ValidationException {
     
-        // marshall to a string first, then write the string to the file. This
+        // marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         saveXml(stringWriter.toString());

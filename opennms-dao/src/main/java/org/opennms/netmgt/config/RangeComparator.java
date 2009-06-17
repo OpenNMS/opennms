@@ -47,14 +47,14 @@ import org.opennms.netmgt.config.common.Range;
  * Use this class to compare two castor generated Range objects from the SnmpConfig class.
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class RangeComparator implements Comparator {
+public class RangeComparator implements Comparator<Range> {
     Category log = ThreadCategory.getInstance(getClass());
 
-    public int compare(Object rng1, Object rng2) {
+    public int compare(Range rng1, Range rng2) {
         long compared = 0;
         try {
-            final long range1Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((Range)rng1).getBegin()));
-            final long range2Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((Range)rng2).getBegin()));
+            final long range1Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName((rng1).getBegin()));
+            final long range2Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName((rng2).getBegin()));
             compared = range1Begin - range2Begin;
         } catch (UnknownHostException e) {
             log.error("compare: Exception sorting ranges.", e);

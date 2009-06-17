@@ -47,10 +47,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
@@ -62,7 +63,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 
 public class DefaultCapsdConfigManager extends CapsdConfigManager {
     /**
-     * Timestamp of the file for the currently loadded configuration
+     * Timestamp of the file for the currently loaded configuration
      */
     private long m_currentVersion = -1L;
 
@@ -70,8 +71,13 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
         super();
     }
   
+    @Deprecated
     public DefaultCapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         super(rdr);
+    }
+
+    public DefaultCapsdConfigManager(InputStream is) throws MarshalException, ValidationException {
+        super(is);
     }
 
     protected synchronized void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
@@ -83,12 +89,15 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
             log().debug("Reloading capsd configuration file");
             
             long lastModified = configFile.lastModified();
-            
-            Reader rdr = new FileReader(configFile);
+
+            InputStream is = null;
             try {
-                loadXml(rdr);
+                is = new FileInputStream(configFile);
+                loadXml(is);
             } finally {
-                IOUtils.closeQuietly(rdr);
+                if (is != null) {
+                    IOUtils.closeQuietly(is);
+                }
             }
             
             // Update currentVersion after we have successfully reloaded

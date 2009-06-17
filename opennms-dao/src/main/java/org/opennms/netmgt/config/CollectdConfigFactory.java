@@ -43,9 +43,10 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -119,12 +120,15 @@ public class CollectdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
-        InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
-
+        InputStream stream = null;
         try {
-            initialize(rdr, localServer, verifyServer);
+            stream = new FileInputStream(configFile);
+            CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
+            m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
         } finally {
-            rdr.close();
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
         }
     }
 
@@ -138,16 +142,14 @@ public class CollectdConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public CollectdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
-        initialize(rdr, localServer, verifyServer);
+        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, rdr);
+        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
     }
 
-    private void initialize(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-        // FIXME: These fields are unused; should they be removed?
-        //m_verifyServer = verifyServer;
-        //m_localServer = localServer;
-
-        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, rdr);
+    public CollectdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
         m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
     }
 

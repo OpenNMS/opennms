@@ -35,8 +35,6 @@
  */
 package org.opennms.netmgt.asterisk.agi.scripts;
 
-import java.net.UnknownHostException;
-
 import org.asteriskjava.fastagi.AgiChannel;
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.AgiRequest;

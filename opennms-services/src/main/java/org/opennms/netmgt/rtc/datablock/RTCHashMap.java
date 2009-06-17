@@ -54,9 +54,10 @@ import java.util.Map;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
+@SuppressWarnings("unchecked")
 public class RTCHashMap {
 	
-	Map m_map;
+    Map m_map;
 	
     /**
      * Default constructor

@@ -122,7 +122,6 @@ public class SyslogTimeStamp extends Format {
 
     // UNDONE - all the positions in ParseExceptions are zero.
 
-    @SuppressWarnings({"UnnecessaryLocalVariable"})
     public Date parseTimestamp(String source) throws ParseException {
         String monName = null;
         String dateStr = null;

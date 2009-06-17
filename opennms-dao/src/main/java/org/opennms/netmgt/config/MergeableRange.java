@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.common.Range;
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */
-final class MergeableRange implements Comparable {
+final class MergeableRange implements Comparable<Range> {
     private Range m_range;
     private RangeComparator m_comparator;
     private final MergeableSpecific m_first;
@@ -60,7 +60,7 @@ final class MergeableRange implements Comparable {
      * (non-Javadoc)
      * @see java.lang.Comparable#compareTo(T)
      */
-    public int compareTo(Object range) {
+    public int compareTo(Range range) {
         return m_comparator.compare(getRange(), range);
     }
     

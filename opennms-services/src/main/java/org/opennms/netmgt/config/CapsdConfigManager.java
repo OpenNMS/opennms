@@ -116,14 +116,25 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     public CapsdConfigManager() {
     }
 
+    @Deprecated
     public CapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         loadXml(rdr);
+    }
+
+    public CapsdConfigManager(InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(CapsdConfiguration.class, is);
     }
 
     protected abstract void saveXml(String xml) throws IOException;
 
     protected abstract void update() throws IOException, FileNotFoundException, MarshalException, ValidationException;
 
+    protected void loadXml(InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(CapsdConfiguration.class, is);
+        loadIncludeUrls();
+    }
+
+    @SuppressWarnings("deprecation")
     protected void loadXml(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(CapsdConfiguration.class, rdr);
         loadIncludeUrls();
@@ -642,57 +653,46 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return ThreadCategory.getInstance(getClass());
     }
 
-    @SuppressWarnings("unchecked") 
     public List<ProtocolPlugin> getProtocolPlugins() {
         return m_config.getProtocolPluginCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<IpManagement> getIpManagements() {
         return m_config.getIpManagementCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<Range> getRanges(IpManagement mgt) {
         return mgt.getRangeCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getSpecifics(IpManagement mgt) {
         return mgt.getSpecificCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getIncludeUrls(IpManagement mgt) {
         return mgt.getIncludeUrlCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin) {
         return plugin.getProtocolConfigurationCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Property> getPluginProperties(ProtocolPlugin plugin) {
         return plugin.getPropertyCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf) {
         return pluginConf.getPropertyCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Range> getRanges(ProtocolConfiguration pluginConf) {
         return pluginConf.getRangeCollection();
     }
     
-    @SuppressWarnings("unchecked")
     public List<String> getSpecifics(ProtocolConfiguration pluginConf) {
         return pluginConf.getSpecificCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<SmbAuth> getSmbAuths(SmbConfig cfg) {
         return cfg.getSmbAuthCollection();
     }

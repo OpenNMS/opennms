@@ -177,7 +177,6 @@ final class SyslogProcessor implements Runnable {
     /**
      * The event processing execution context.
      */
-    @SuppressWarnings({"UnusedLabel"})
     public void run() {
         // The runnable context
         //

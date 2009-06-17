@@ -48,17 +48,17 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:david@openmms.org">David Hustace</a>
  *
  */
-public class SpecificComparator implements Comparator {
+public class SpecificComparator implements Comparator<String> {
     Category log = ThreadCategory.getInstance(getClass());
 
     /**
      * returns the difference of spec1 - spec2
      */
-    public int compare(Object spec1, Object spec2) {
+    public int compare(String spec1, String spec2) {
         long compared = 0;
         try {
-            final long specific1 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((String)spec1)));
-            final long specific2 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(((String)spec2)));
+            final long specific1 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(spec1));
+            final long specific2 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(spec2));
             compared = specific1 - specific2;
         } catch (UnknownHostException e) {
             log.error("compare: Exception sorting ranges.", e);
