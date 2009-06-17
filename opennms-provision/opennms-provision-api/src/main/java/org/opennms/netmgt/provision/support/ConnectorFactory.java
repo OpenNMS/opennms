@@ -9,8 +9,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 public class ConnectorFactory {
     
-    private static final int MAX_AVAILABLE_CONNECTORS = 2000;
-    Semaphore m_available = new Semaphore(MAX_AVAILABLE_CONNECTORS);
+    Semaphore m_available = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000")));
     
     Executor m_executor = Executors.newSingleThreadExecutor();
     
