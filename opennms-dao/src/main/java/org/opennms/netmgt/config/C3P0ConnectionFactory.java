@@ -43,7 +43,7 @@ package org.opennms.netmgt.config;
 import java.beans.PropertyVetoException;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
@@ -52,6 +52,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -94,6 +95,12 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
      */    
     private ComboPooledDataSource m_pool;
 
+    protected C3P0ConnectionFactory(InputStream stream, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+        log().info("C3P0ConnectionFactory: setting up data sources from input stream.");
+        JdbcDataSource ds = marshalDataSourceFromConfig(stream, dsName);
+        initializePool(ds);
+    }
+
     protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         log().info("C3P0ConnectionFactory: setting up data sources from reader argument.");
         try {
@@ -110,20 +117,27 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
          * positively identify the source of the error.
          */
         FileInputStream fileInputStream = new FileInputStream(configFile);
-        final Reader rdr = new InputStreamReader(fileInputStream);
         log().info("C3P0ConnectionFactory: setting up data sources from:"+configFile);
         try {
-            JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+            JdbcDataSource ds = marshalDataSourceFromConfig(fileInputStream, dsName);
             initializePool(ds);
         } finally {
-            rdr.close();
-            fileInputStream.close();
+            IOUtils.closeQuietly(fileInputStream);
         }
     }
 
+    public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, String dsName) throws MarshalException, ValidationException {
+        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream);
+        return validateDataSourceConfiguration(dsName, dsc);
+    }
+
+    @SuppressWarnings("deprecation")
     public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
+        return validateDataSourceConfiguration(dsName, dsc);
+    }
 
+    private static JdbcDataSource validateDataSourceConfiguration(String dsName, DataSourceConfiguration dsc) {
         for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
             if (jdbcDs.getName().equals(dsName)) {
                 return jdbcDs;
@@ -207,7 +221,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
 
     public void close() throws SQLException {
         log().info("Closing c3p0 pool");
-        m_pool.close(true);
+        m_pool.close();
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {

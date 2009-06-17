@@ -41,11 +41,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -94,8 +96,14 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public PollerConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         super(reader, localServer, verifyServer);
+        m_currentVersion = currentVersion;
+    }
+
+    public PollerConfigFactory(long currentVersion, InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        super(stream, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
 
@@ -124,9 +132,16 @@ public final class PollerConfigFactory extends PollerConfigManager {
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader reader = new FileReader(cfgFile);
-        PollerConfigFactory config = new PollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        reader.close();
+        InputStream stream = null;
+        PollerConfigFactory config = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            config = new PollerConfigFactory(cfgFile.lastModified(), stream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
 
         for (org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackageCollection()) {
             for (org.opennms.netmgt.config.poller.Service service : pollerPackage.getServiceCollection()) {
@@ -205,7 +220,16 @@ public final class PollerConfigFactory extends PollerConfigManager {
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileReader(cfgFile));
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                unmarshalConfig(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
+            init();
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

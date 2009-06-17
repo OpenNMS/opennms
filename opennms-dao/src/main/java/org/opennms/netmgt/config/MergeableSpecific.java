@@ -47,7 +47,7 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public final class MergeableSpecific implements Comparable {
+public final class MergeableSpecific implements Comparable<String> {
     private String m_specific;
     private SpecificComparator m_comparator;
     private long m_value;
@@ -68,7 +68,7 @@ public final class MergeableSpecific implements Comparable {
      * Uses a comparable comparing to Specifics from the config package.
      * 
      */
-    public int compareTo(Object specific) {
+    public int compareTo(String specific) {
         return m_comparator.compare(m_specific, specific);
     }
     public String getSpecific() {

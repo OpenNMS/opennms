@@ -108,7 +108,6 @@ final class SyslogdIPMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-    @SuppressWarnings({"EmptyCatchBlock"})
     static synchronized void dataSourceSync() throws SQLException {
         java.sql.Connection c = null;
         try {
