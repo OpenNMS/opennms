@@ -47,6 +47,7 @@ class DnsRecord {
     private String m_zone;
     
     DnsRecord(OnmsNode node) {
+        
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         if (primaryInterface == null) {
