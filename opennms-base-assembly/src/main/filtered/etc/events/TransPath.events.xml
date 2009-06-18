@@ -20,7 +20,7 @@
                  </varbind>
                  <varbind>
                          <vbnumber>4</vbnumber>
-                         <vbvalue>~*Point*Code*Unavailable*</vbvalue>
+                         <vbvalue>~.*Point.*Code.*Unavailable.*</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeUnavailable</uei>
@@ -144,7 +144,7 @@ alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>4</vbnumber>
-                         <vbvalue>~.*Point*Code*</vbvalue>
+                         <vbvalue>~.*Point.*Code.*</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeAvailable</uei>
@@ -246,7 +246,7 @@ alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeUnavailable:%dpname%:%nodeid%:%parm[#1]" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeUnavailable:%dpname%:%nodeid%:%parm[#1]" />
 </event>
 <event>
 	<mask>
@@ -366,7 +366,7 @@ alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -486,7 +486,7 @@ alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarmSet:%dpname%:%nodeid%:%parm[#1]%"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarmSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -606,7 +606,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -726,7 +726,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/qualityOfServiceSet:%dpname%:%nodeid%:%parm[#1]%"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/qualityOfServiceSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -845,7 +845,7 @@ and log are correlated based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -964,7 +964,7 @@ and log are correlated based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/processingErrorSet:%dpname%:%nodeid%:%parm[#1]%"/>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/processingErrorSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -1089,7 +1089,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Minor</severity>
     <operinstruct> &lt;p&gt;Eseguire Controlli</operinstruct> 
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1214,7 +1214,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Major</severity>
     <operinstruct> &lt;p&gt;Eseguire Controlli</operinstruct> 
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1236,7 +1236,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>OverloadHeavy</vbvalue>
+                         <vbvalue>~OverloadHeavy</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy</uei>
@@ -1339,7 +1339,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Critical</severity>
     <operinstruct> &lt;p&gt;ESEGUIRE PROCEDURA Troubleshooting su SC2200 di Davide Sciandra</operinstruct> 
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1361,7 +1361,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>OverloadLight</vbvalue>
+                         <vbvalue>~OverloadLight</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadLightCleared</uei>
@@ -1463,7 +1463,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadLight:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadLight:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -1485,7 +1485,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>OverloadMedium</vbvalue>
+                         <vbvalue>~OverloadMedium</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadMediumCleared</uei>
@@ -1587,7 +1587,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadMedium:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadMedium:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -1609,7 +1609,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>OverloadHeavy</vbvalue>
+                         <vbvalue>~OverloadHeavy</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavyCleared</uei>
@@ -1711,7 +1711,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -1831,7 +1831,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1951,7 +1951,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/equipmentError:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/equipmentError:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <event>
 	<mask>
@@ -2071,7 +2071,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -2191,7 +2191,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
 			tpAlarmTime=%parm[#14]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/environmentError:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/environmentError:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-TRANSPATH-MIB -->
 </events>
