@@ -9,13 +9,10 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 public class ConnectorFactory {
     
-    private static ConnectorFactory s_connectorFactory;
-    private static Semaphore s_available = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000")));
     
-    Executor m_executor = Executors.newSingleThreadExecutor();
+    private static Semaphore s_available;
     
-    public static ConnectorFactory getConnectorFactory(){
-        
+    static{
         if(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors") != null){
             
             if(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors")) == 0){
@@ -24,12 +21,9 @@ public class ConnectorFactory {
                 s_available = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000")));
             }
         }
-        
-        if(s_connectorFactory == null){
-            s_connectorFactory = new ConnectorFactory();
-        }
-        return s_connectorFactory;
     }
+    
+    private static Executor s_executor = Executors.newSingleThreadExecutor();
     
     public SocketConnector getConnector() throws InterruptedException {
         if(s_available != null){
@@ -43,16 +37,19 @@ public class ConnectorFactory {
 
         public void run() {
             System.err.println("Disposing the connector");
-            
-            connector.dispose();
-            if(s_available != null){
-                s_available.release();
+            try{
+                connector.dispose();
+            }finally{
+                if(s_available != null){
+                    s_available.release();
+                } 
             }
+            
         }
            
        };
        
-       m_executor.execute(r);
+       s_executor.execute(r);
     }
     
     private SocketConnector createConnector() throws InterruptedException{
