@@ -1236,7 +1236,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>~OverloadHeavy</vbvalue>
+                         <vbvalue>OverloadHeavy</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy</uei>
@@ -1361,7 +1361,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>~OverloadLight</vbvalue>
+                         <vbvalue>OverloadLight</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadLightCleared</uei>
@@ -1485,7 +1485,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>~OverloadMedium</vbvalue>
+                         <vbvalue>OverloadMedium</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadMediumCleared</uei>
@@ -1609,7 +1609,7 @@ based on the alarm time.&lt;/p&gt;&lt;table&gt;
                  </varbind>
                  <varbind>
                          <vbnumber>3</vbnumber>
-                         <vbvalue>~OverloadHeavy</vbvalue>
+                         <vbvalue>OverloadHeavy</vbvalue>
                  </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavyCleared</uei>
