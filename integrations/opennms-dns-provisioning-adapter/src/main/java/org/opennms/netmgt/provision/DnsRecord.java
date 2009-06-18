@@ -38,6 +38,8 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Set;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -50,17 +52,23 @@ class DnsRecord {
         
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
+        
         if (primaryInterface == null) {
+            log().debug("Constructor: no primary interface found for nodeid: " + node.getNodeId());
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                 m_ip = onmsIpInterface.getInetAddress();
                 break;
             }
         } else {
+            log().debug("Constructor: primary interface found for nodeid: " + node.getNodeId());
             m_ip = primaryInterface.getInetAddress();
         }
+        log().debug("Constructor: set ip address: " + m_ip);
         m_hostname = node.getLabel() + ".";
+        log().debug("Constructor: set hostname: " + m_hostname);
         m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+        log().debug("Constructor: set zone: " + m_zone);
 
     }
 
@@ -75,4 +83,9 @@ class DnsRecord {
     public String getHostname() {
         return m_hostname;
     }
+    
+    private static Category log() {
+        return ThreadCategory.getInstance(DnsRecord.class);
+    }
+
 }
