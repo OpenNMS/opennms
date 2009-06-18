@@ -46,7 +46,7 @@
                   </restriction>
                 </simpleType>      
             </attribute>
-            <attribute name="new-suspect-on-message" type="boolean" use="required">
+            <attribute name="new-suspect-on-message" type="boolean" use="optional" default="false" >
                 <annotation>
                     <documentation>Whether messages from devices unknown to OpenNMS should
                         generate newSuspect events.
