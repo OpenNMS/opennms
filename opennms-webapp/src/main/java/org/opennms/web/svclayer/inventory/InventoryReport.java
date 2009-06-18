@@ -97,169 +97,177 @@ public class InventoryReport implements Runnable {
                 List<String> groupListStr= groupList.getResource();
                 Iterator<String> iterGroup = groupListStr.iterator();
                 int totalGroups = 0;
+                String groupName = "";
                 while (iterGroup.hasNext()){
-                    String groupName = iterGroup.next();
-                    GroupSet groupSet = new GroupSet(); 
-                    boolean groupIsEmpty = true;
-                    boolean groupIsIncremented = false;
-                    log().debug("InventoryService runNodeBaseInventoryReport group [" + groupName + "]"); 
-                    RWSResourceList deviceList = RWSClientApi.getRWSResourceDeviceList(cProperties, groupName);
-                    List<String> deviceListStr= deviceList.getResource();
-                    Iterator<String> iterDevice = deviceListStr.iterator();
-                    int totalNodes = 0;
-                    while (iterDevice.hasNext()){
-                        //groupIsEmpty = false;
-                        if (!groupIsIncremented){
-                            totalGroups++;
-                            groupIsIncremented = true;
-                        }
-                        String deviceName = iterDevice.next();
-                        log().debug("InventoryService runNodeBaseInventoryReport device [" + deviceName + "]");
-                        String versionMatch="";
-                        try {
-                            RWSResourceList versionList = RWSClientApi.getRWSResourceConfigList(cProperties, groupName, deviceName);
-                            List<String> versionListStr= versionList.getResource();
-                            Iterator<String> iterVersion = versionListStr.iterator();
-
-                            RancidNode rancidNode;
-                            rancidNode = RWSClientApi.getRWSRancidNodeInventory(cProperties ,groupName, deviceName);
-
-                            boolean found = false;
-
-                            while (iterVersion.hasNext() && !found)  {
-                                versionMatch = iterVersion.next();
-                                InventoryNode invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
-                                log().debug("InventoryService runNodeBaseInventoryReport InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"] config ["+ invNode.getConfigurationUrl() +"]"); 
-                                if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
-                                    found = true;
-                                    log().debug("InventoryService runNodeBaseInventoryReport Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]"); 
-                                }
+                    try {
+                        groupName = iterGroup.next();
+                        GroupSet groupSet = new GroupSet(); 
+                        boolean groupIsEmpty = true;
+                        boolean groupIsIncremented = false;
+                        log().debug("InventoryService runNodeBaseInventoryReport group [" + groupName + "]"); 
+                        RWSResourceList deviceList = RWSClientApi.getRWSResourceDeviceList(cProperties, groupName);
+                        List<String> deviceListStr= deviceList.getResource();
+                        Iterator<String> iterDevice = deviceListStr.iterator();
+                        int totalNodes = 0;
+                        while (iterDevice.hasNext()){
+                            //groupIsEmpty = false;
+                            if (!groupIsIncremented){
+                                totalGroups++;
+                                groupIsIncremented = true;
                             }
-                            if (found == false) {
-                                // skip device
-                                log().debug("InventoryService runNodeBaseInventoryReport device has no inventory at this date["+deviceName+ "]"); 
+                            String deviceName = iterDevice.next();
+                            log().debug("InventoryService runNodeBaseInventoryReport device [" + deviceName + "]");
+                            String versionMatch="";
+                            try {
+                                RWSResourceList versionList = RWSClientApi.getRWSResourceConfigList(cProperties, groupName, deviceName);
+                                List<String> versionListStr= versionList.getResource();
+                                Iterator<String> iterVersion = versionListStr.iterator();
+
+                                RancidNode rancidNode;
+                                rancidNode = RWSClientApi.getRWSRancidNodeInventory(cProperties ,groupName, deviceName);
+
+                                boolean found = false;
+
+                                while (iterVersion.hasNext() && !found)  {
+                                    versionMatch = iterVersion.next();
+                                    InventoryNode invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
+                                    log().debug("InventoryService runNodeBaseInventoryReport InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"] config ["+ invNode.getConfigurationUrl() +"]"); 
+                                    if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
+                                        found = true;
+                                        log().debug("InventoryService runNodeBaseInventoryReport Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]"); 
+                                    }
+                                }
+                                if (found == false) {
+                                    // skip device
+                                    log().debug("InventoryService runNodeBaseInventoryReport device has no inventory at this date["+deviceName+ "]"); 
+                                    continue;
+                                }
+                            } catch (Exception e){
+                                //no inventory, skip node....
+                                log().debug("InventoryService runNodeBaseInventoryReport device has no inventory ["+deviceName+ "]"); 
+                                //                            if (!withKey){
+                                //                                Nbisinglenode nbisn = new Nbisinglenode();
+                                //                                nbisn.setDevicename(deviceName);
+                                //                                nbisn.setGroupname(groupName);
+                                //                                nbisn.setComment("No inventory associated");
+                                //                                groupSet.addNbisinglenode(nbisn);
+                                //                            }
                                 continue;
                             }
-                        } catch (Exception e){
-                            //no inventory, skip node....
-                            log().debug("InventoryService runNodeBaseInventoryReport device has no inventory ["+deviceName+ "]"); 
-                            //                            if (!withKey){
-                            //                                Nbisinglenode nbisn = new Nbisinglenode();
-                            //                                nbisn.setDevicename(deviceName);
-                            //                                nbisn.setGroupname(groupName);
-                            //                                nbisn.setComment("No inventory associated");
-                            //                                groupSet.addNbisinglenode(nbisn);
-                            //                            }
-                            continue;
-                        }
-                        if (versionMatch.compareTo("") == 0){
-                            log().debug("InventoryService runNodeBaseInventoryReport device skipped ["+deviceName+ "]"); 
-                            continue;
-                        }
+                            if (versionMatch.compareTo("") == 0){
+                                log().debug("InventoryService runNodeBaseInventoryReport device skipped ["+deviceName+ "]"); 
+                                continue;
+                            }
 
-                        //we have groupname devicename and version
+                            //we have groupname devicename and version
 
-                        try {
-                            NodeBaseInventory nodeBaseInv = getNodeBaseInventory(cProperties, deviceName, groupName, versionMatch);
+                            try {
+                                NodeBaseInventory nodeBaseInv = getNodeBaseInventory(cProperties, deviceName, groupName, versionMatch);
 
-                            //marshall xml and save to disk
-                            log().debug("InventoryService runNodeBaseInventoryReport MARSHALL [" + deviceName + "] group ["+groupName+"] Version ["+ versionMatch +"]"); 
-                            log().debug("InventoryService runNodeBaseInventoryReport data [" + nodeBaseInv.expand()); 
+                                //marshall xml and save to disk
+                                log().debug("InventoryService runNodeBaseInventoryReport MARSHALL [" + deviceName + "] group ["+groupName+"] Version ["+ versionMatch +"]"); 
+                                log().debug("InventoryService runNodeBaseInventoryReport data [" + nodeBaseInv.expand()); 
 
 
 
-                            Nbisinglenode nbisn = new Nbisinglenode();
-                            boolean includeNbisn = false;
+                                Nbisinglenode nbisn = new Nbisinglenode();
+                                boolean includeNbisn = false;
 
 
-                            nbisn.setConfigurationurl(nodeBaseInv.getConfigurationurl());
-                            nbisn.setCreationdate(nodeBaseInv.getCreationdate());
-                            nbisn.setDevicename(nodeBaseInv.getDevicename());
-                            nbisn.setGroupname(nodeBaseInv.getGroupname());
-                            nbisn.setStatus(nodeBaseInv.getStatus());
-                            nbisn.setSwconfigurationurl(nodeBaseInv.getSwconfigurationurl());
-                            nbisn.setVersion(nodeBaseInv.getVersion());
+                                nbisn.setConfigurationurl(nodeBaseInv.getConfigurationurl());
+                                nbisn.setCreationdate(nodeBaseInv.getCreationdate());
+                                nbisn.setDevicename(nodeBaseInv.getDevicename());
+                                nbisn.setGroupname(nodeBaseInv.getGroupname());
+                                nbisn.setStatus(nodeBaseInv.getStatus());
+                                nbisn.setSwconfigurationurl(nodeBaseInv.getSwconfigurationurl());
+                                nbisn.setVersion(nodeBaseInv.getVersion());
 
-                            List<InventoryElement2RP> ie2rpList = new ArrayList<InventoryElement2RP>();
-                            Iterator<InventoryElement2> ie2rpIter = nodeBaseInv.getIe().iterator();
+                                List<InventoryElement2RP> ie2rpList = new ArrayList<InventoryElement2RP>();
+                                Iterator<InventoryElement2> ie2rpIter = nodeBaseInv.getIe().iterator();
 
-                            while (ie2rpIter.hasNext()){
+                                while (ie2rpIter.hasNext()){
 
-                                InventoryElement2RP ie2rp = new InventoryElement2RP();
+                                    InventoryElement2RP ie2rp = new InventoryElement2RP();
 
-                                InventoryElement2 ie2 = ie2rpIter.next();
-                                Iterator<Tuple> iterTuple = ie2.getTupleList().iterator();
-                                Iterator<InventoryMemory> iterMemory = ie2.getMemoryList().iterator();
-                                Iterator<InventorySoftware> iterSoftware = ie2.getSoftwareList().iterator();
+                                    InventoryElement2 ie2 = ie2rpIter.next();
+                                    Iterator<Tuple> iterTuple = ie2.getTupleList().iterator();
+                                    Iterator<InventoryMemory> iterMemory = ie2.getMemoryList().iterator();
+                                    Iterator<InventorySoftware> iterSoftware = ie2.getSoftwareList().iterator();
 
-                                while (iterTuple.hasNext()){
-                                    TupleRP tmp2 = new TupleRP();
-                                    Tuple tmp1 = iterTuple.next();
-                                    tmp2.setName(tmp1.getName());
-                                    //filter here
-                                    if (withKey && tmp1.getDescription().contains(theField)){
-                                        includeNbisn = true;
+                                    while (iterTuple.hasNext()){
+                                        TupleRP tmp2 = new TupleRP();
+                                        Tuple tmp1 = iterTuple.next();
+                                        tmp2.setName(tmp1.getName());
+                                        //filter here
+                                        if (withKey && tmp1.getDescription().contains(theField)){
+                                            includeNbisn = true;
+                                        }
+                                        tmp2.setDescription(tmp1.getDescription());
+                                        ie2rp.addTupleRP(tmp2);
                                     }
-                                    tmp2.setDescription(tmp1.getDescription());
-                                    ie2rp.addTupleRP(tmp2);
+
+                                    while (iterMemory.hasNext()){
+                                        InventoryMemoryRP tmp3 = new InventoryMemoryRP();
+                                        InventoryMemory tmp1 = iterMemory.next();
+                                        //filter here
+                                        if (withKey && tmp1.getSize().contains(theField)){
+                                            includeNbisn = true;
+                                        }
+                                        tmp3.setSize(tmp1.getSize());
+                                        if (withKey && tmp1.getType().contains(theField)){
+                                            includeNbisn = true;
+                                        }
+                                        tmp3.setType(tmp1.getType());
+                                        ie2rp.addInventoryMemoryRP(tmp3);
+                                    }
+                                    while (iterSoftware.hasNext()){
+                                        InventorySoftwareRP tmp4 = new InventorySoftwareRP();
+                                        InventorySoftware tmp1 = iterSoftware.next();
+                                        //filter here
+                                        if(withKey && tmp1.getType().contains(theField)){
+                                            includeNbisn = true;
+                                        }
+                                        tmp4.setType(tmp1.getType());
+                                        if(withKey && tmp1.getVersion().contains(theField)){
+                                            includeNbisn = true;
+                                        }
+                                        tmp4.setVersion(tmp1.getVersion());
+
+                                        ie2rp.addInventorySoftwareRP(tmp4);
+                                    }
+
+                                    ie2rpList.add(ie2rp);
+
                                 }
-
-                                while (iterMemory.hasNext()){
-                                    InventoryMemoryRP tmp3 = new InventoryMemoryRP();
-                                    InventoryMemory tmp1 = iterMemory.next();
-                                    //filter here
-                                    if (withKey && tmp1.getSize().contains(theField)){
-                                        includeNbisn = true;
-                                    }
-                                    tmp3.setSize(tmp1.getSize());
-                                    if (withKey && tmp1.getType().contains(theField)){
-                                        includeNbisn = true;
-                                    }
-                                    tmp3.setType(tmp1.getType());
-                                    ie2rp.addInventoryMemoryRP(tmp3);
+                                nbisn.setInventoryElement2RP(ie2rpList);
+                                // if withKey is false then include it in any case
+                                // includeNbsin is true the fiels has been found
+                                // data must be included
+                                if(!withKey || includeNbisn){
+                                    groupIsEmpty = false;
+                                    totalNodes++;
+                                    groupSet.addNbisinglenode(nbisn);
                                 }
-                                while (iterSoftware.hasNext()){
-                                    InventorySoftwareRP tmp4 = new InventorySoftwareRP();
-                                    InventorySoftware tmp1 = iterSoftware.next();
-                                    //filter here
-                                    if(withKey && tmp1.getType().contains(theField)){
-                                        includeNbisn = true;
-                                    }
-                                    tmp4.setType(tmp1.getType());
-                                    if(withKey && tmp1.getVersion().contains(theField)){
-                                        includeNbisn = true;
-                                    }
-                                    tmp4.setVersion(tmp1.getVersion());
-
-                                    ie2rp.addInventorySoftwareRP(tmp4);
-                                }
-
-                                ie2rpList.add(ie2rp);
+                                //else skip 
+                            }catch (Exception e){
+                                log().debug("InventoryService runNodeBaseInventoryReport device has inventory errors ["+deviceName+ "]"); 
+                                continue;
 
                             }
-                            nbisn.setInventoryElement2RP(ie2rpList);
-                            // if withKey is false then include it in any case
-                            // includeNbsin is true the fiels has been found
-                            // data must be included
-                            if(!withKey || includeNbisn){
-                                groupIsEmpty = false;
-                                totalNodes++;
-                                groupSet.addNbisinglenode(nbisn);
+                            if (!groupIsEmpty){
+                                groupSet.setTotalNodes(totalNodes);
                             }
-                            //else skip 
-                        }catch (Exception e){
-                            log().debug("InventoryService runNodeBaseInventoryReport device has inventory errors ["+deviceName+ "]"); 
-                            continue;
-
                         }
-                        if (!groupIsEmpty){
-                            groupSet.setTotalNodes(totalNodes);
-                        }
+                        rnbi.addGroupSet(groupSet);
+                        rnbi.setTotalGroups(totalGroups);
+                        rnbi.setDateInventory(format.format(tmp_date));
                     }
-                    rnbi.addGroupSet(groupSet);
-                    rnbi.setTotalGroups(totalGroups);
-                    rnbi.setDateInventory(format.format(tmp_date));
+                    catch(Exception e){
+                        log().debug("InventoryService runNodeBaseInventoryReport group [" + groupName + "] skipped"); 
+                    }
                 }
+
+
                 log().debug("InventoryService runNodeBaseInventoryReport object filled");
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
                 String datestamp = fmt.format(new java.util.Date()) ;
@@ -326,83 +334,89 @@ public class InventoryReport implements Runnable {
                 Iterator<String> iterGroup = groupListStr.iterator();
                 int totalGroups = 0;
 
+                String groupName="";
                 while (iterGroup.hasNext()){
-                    String groupName = iterGroup.next();
-                    log().debug("InventoryService runRacidListReport group [" + groupName + "]"); 
-                    RWSResourceList deviceList = RWSClientApi.getRWSResourceDeviceList(cProperties, groupName);
-                    List<String> deviceListStr= deviceList.getResource();
-                    Iterator<String> iterDevice = deviceListStr.iterator();
-                    int totalNodes = 0;
+                    try {
+                        groupName = iterGroup.next();
+                        log().debug("InventoryService runRacidListReport group [" + groupName + "]"); 
+                        RWSResourceList deviceList = RWSClientApi.getRWSResourceDeviceList(cProperties, groupName);
 
-                    GroupXSet gs = new GroupXSet();
-                    boolean groupHasDevices = false;
-                    boolean groupTotalIncremented = false;
+                        List<String> deviceListStr= deviceList.getResource();
+                        Iterator<String> iterDevice = deviceListStr.iterator();
+                        int totalNodes = 0;
 
-                    while (iterDevice.hasNext()){
-                        String deviceName = iterDevice.next();
-                        //totalNodes++;
-                        log().debug("InventoryService runRacidListReport device [" + deviceName + "]");
-                        String versionMatch="";
-                        try {
-                            RWSResourceList versionList = RWSClientApi.getRWSResourceConfigList(cProperties, groupName, deviceName);
-                            List<String> versionListStr= versionList.getResource();
-                            Iterator<String> iterVersion = versionListStr.iterator();
+                        GroupXSet gs = new GroupXSet();
+                        boolean groupHasDevices = false;
+                        boolean groupTotalIncremented = false;
 
-                            RancidNode rancidNode;
-                            rancidNode = RWSClientApi.getRWSRancidNodeInventory(cProperties ,groupName, deviceName);
+                        while (iterDevice.hasNext()){
+                            String deviceName = iterDevice.next();
+                            //totalNodes++;
+                            log().debug("InventoryService runRacidListReport device [" + deviceName + "]");
+                            String versionMatch="";
+                            try {
+                                RWSResourceList versionList = RWSClientApi.getRWSResourceConfigList(cProperties, groupName, deviceName);
+                                List<String> versionListStr= versionList.getResource();
+                                Iterator<String> iterVersion = versionListStr.iterator();
 
-                            boolean found = false;
+                                RancidNode rancidNode;
+                                rancidNode = RWSClientApi.getRWSRancidNodeInventory(cProperties ,groupName, deviceName);
 
-                            InventoryNode invNode = new InventoryNode(rancidNode);
-                            while (iterVersion.hasNext() && !found)  {
-                                versionMatch = iterVersion.next();
-                                invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
-                                log().debug("InventoryService runRacidListReport InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"] config ["+ invNode.getConfigurationUrl() +"]"); 
-                                if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
-                                    found = true;
-                                    log().debug("InventoryService runRacidListReport Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]"); 
+                                boolean found = false;
+
+                                InventoryNode invNode = new InventoryNode(rancidNode);
+                                while (iterVersion.hasNext() && !found)  {
+                                    versionMatch = iterVersion.next();
+                                    invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
+                                    log().debug("InventoryService runRacidListReport InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"] config ["+ invNode.getConfigurationUrl() +"]"); 
+                                    if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
+                                        found = true;
+                                        log().debug("InventoryService runRacidListReport Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]"); 
+                                    }
                                 }
-                            }
-                            if (found == false) {
-                                // skip device
-                                log().debug("InventoryService runRacidListReport device has no inventory at this date["+deviceName+ "]"); 
+                                if (found == false) {
+                                    // skip device
+                                    log().debug("InventoryService runRacidListReport device has no inventory at this date["+deviceName+ "]"); 
+                                    continue;
+                                } else{
+                                    NodeSet ns = new NodeSet();
+                                    ns.setDevicename(deviceName);
+                                    ns.setGroupname(groupName);
+                                    ns.setVersion(versionMatch);
+                                    ns.setConfigurationurl(invNode.getConfigurationUrl());
+                                    ns.setSwconfigurationurl(invNode.getSoftwareImageUrl());
+                                    ns.setStatus(rancidNode.getState());
+
+                                    gs.addNodeSet(ns);
+
+                                    groupHasDevices = true;
+                                    if (!groupTotalIncremented){
+                                        totalGroups++;
+                                        groupTotalIncremented = true;
+                                    }
+                                    totalNodes ++;
+                                }
+                            } catch (Exception e){
+                                //no inventory, skip node....
+                                log().debug("InventoryService runRacidListReport device has no inventory ["+deviceName+ "]"); 
+                                //                            Nbisinglenode nbisn = new Nbisinglenode();
+                                //                            nbisn.setDevicename(deviceName);
+                                //                            nbisn.setGroupname(groupName);
+                                //                            nbisn.setComment("No inventory associated");
+                                //                            groupSet.addNbisinglenode(nbisn);
                                 continue;
-                            } else{
-                                NodeSet ns = new NodeSet();
-                                ns.setDevicename(deviceName);
-                                ns.setGroupname(groupName);
-                                ns.setVersion(versionMatch);
-                                ns.setConfigurationurl(invNode.getConfigurationUrl());
-                                ns.setSwconfigurationurl(invNode.getSoftwareImageUrl());
-                                ns.setStatus(rancidNode.getState());
-
-                                gs.addNodeSet(ns);
-
-                                groupHasDevices = true;
-                                if (!groupTotalIncremented){
-                                    totalGroups++;
-                                    groupTotalIncremented = true;
-                                }
-                                totalNodes ++;
                             }
-                        } catch (Exception e){
-                            //no inventory, skip node....
-                            log().debug("InventoryService runRacidListReport device has no inventory ["+deviceName+ "]"); 
-                            //                            Nbisinglenode nbisn = new Nbisinglenode();
-                            //                            nbisn.setDevicename(deviceName);
-                            //                            nbisn.setGroupname(groupName);
-                            //                            nbisn.setComment("No inventory associated");
-                            //                            groupSet.addNbisinglenode(nbisn);
-                            continue;
+                            if (versionMatch.compareTo("") == 0){
+                                log().debug("InventoryService runNodeBaseInventoryReport device skipped ["+deviceName+ "]"); 
+                                continue;
+                            }
                         }
-                        if (versionMatch.compareTo("") == 0){
-                            log().debug("InventoryService runNodeBaseInventoryReport device skipped ["+deviceName+ "]"); 
-                            continue;
+                        if (groupHasDevices){
+                            gs.setTotalNodes(totalNodes);
+                            rlist.addGroupXSet(gs);
                         }
-                    }
-                    if (groupHasDevices){
-                        gs.setTotalNodes(totalNodes);
-                        rlist.addGroupXSet(gs);
+                    }catch(Exception e){
+                        log().debug("InventoryService runNodeBaseInventoryReport group [" + groupName + "] skipped"); 
                     }
                 }
                 rlist.setTotalGroups(totalGroups);
