@@ -72,7 +72,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;
     
-    private static ConnectorFactory s_connectorFactory = ConnectorFactory.getConnectorFactory();
+    private ConnectorFactory s_connectorFactory = new ConnectorFactory();
     private SocketConnector m_connector;
     
     public AsyncBasicDetector(String serviceName, int port) {
@@ -122,6 +122,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     }
     
     public void dispose(){
+        info("calling dispose on detector %s", getServiceName());
         s_connectorFactory.dispose(m_connector);
         m_connector = null;
     }
