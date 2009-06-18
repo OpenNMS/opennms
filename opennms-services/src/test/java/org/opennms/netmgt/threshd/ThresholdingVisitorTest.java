@@ -46,8 +46,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.ThreadCategory;
@@ -97,6 +100,7 @@ import org.opennms.test.mock.MockLogAppender;
  */
 public class ThresholdingVisitorTest {
 
+    Level m_defaultErrorLevelToCheck;
     ThresholdingVisitor m_visitor;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
@@ -104,6 +108,7 @@ public class ThresholdingVisitorTest {
     
     @Before
     public void setUp() throws Exception {
+        m_defaultErrorLevelToCheck = Level.WARN;
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
@@ -132,7 +137,7 @@ public class ThresholdingVisitorTest {
     
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNotGreaterOrEqual(m_defaultErrorLevelToCheck);
         EasyMock.verify(m_filterDao);
     }
 
@@ -556,6 +561,58 @@ public class ThresholdingVisitorTest {
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
         runInterfaceResource("0.0.0.0", "wlan0", 100, 220); // real value = 220 - 100 = 120
         verifyEvents(2);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     * 
+     * There is no Frame Relay related thresholds definitions on test-thresholds-2.xml
+     * When visit resources, getEntityMap from ThresholdingSet must null
+     */
+    @Test
+    public void testBug3227() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3227.xml");
+        ThresholdingVisitor visitor = createVisitor();
+
+        CollectionAgent agent = createCollectionAgent();
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+
+        // Creating DataCollection ResourceType
+        org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
+        type.setName("frCircuitIfIndex");
+        type.setLabel("Frame-Relay (RFC1315)");
+        org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
+        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        type.setStorageStrategy(strategy);
+        org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
+        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        type.setPersistenceSelectorStrategy(pstrategy);
+        
+        // Creating Generic ResourceType
+        GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, type);
+
+        // Creating Resource
+        SnmpInstId inst = new SnmpInstId(100);
+        SnmpCollectionResource resource = new GenericIndexResource(resourceType, "frCircuitIfIndex", inst);
+        addAttributeToCollectionResource(resource, resourceType, "frReceivedOctets", "counter", "frCircuitIfIndex", 1000);
+        addAttributeToCollectionResource(resource, resourceType, "frSentOctets", "counter", "frCircuitIfIndex", 1000);
+        
+        /*
+         * Run Visitor
+         * I must receive 3 warnings because getEntityMap should be called 3 times.
+         * One for each attribute and one for each resource.
+         * Original code will throw a NullPointerException after call getEntityMap.
+         */
+        m_defaultErrorLevelToCheck = Level.ERROR;
+        resource.visit(visitor);
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        Assert.assertEquals(3, events.length);
+        for (LoggingEvent e : events) {
+            Assert.assertEquals("getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.", e.getMessage());
+        }
     }
 
     /*
