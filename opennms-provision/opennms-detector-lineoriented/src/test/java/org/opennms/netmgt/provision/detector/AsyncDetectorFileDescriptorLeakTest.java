@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
@@ -40,6 +41,11 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         m_detector.init();
     }
     
+    @BeforeClass
+    public static void beforeTest(){
+        System.setProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000");
+    }
+    
     @After
     public void tearDown() throws IOException {
         if(m_server != null){
@@ -60,7 +66,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         };
         m_server.init();
         m_server.startServer();
-       
+        
         m_detector.setPort(m_server.getLocalPort());
         
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
@@ -81,7 +87,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
-    @Repeat(100)
+    @Repeat(10000)
     public void testNoServerPresent() throws Exception {
         
         m_detector.setPort(1999);
