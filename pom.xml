@@ -104,6 +104,7 @@
     <module>opennms-config-utils</module>
     <module>opennms-dao</module>
     <module>opennms-daemon</module>
+    <module>opennms-sms-api</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -1001,6 +1002,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-sms-api</artifactId>
+        <scope>compile</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-spring</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1475,6 +1482,11 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.5.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.smslib</groupId>
+        <artifactId>smslib</artifactId>
+        <version>3.4.1</version>
       </dependency>
       <dependency>
         <groupId>org.snmp4j</groupId>
