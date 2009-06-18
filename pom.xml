@@ -515,6 +515,7 @@
 
    <updatePolicy>daily</updatePolicy>
 
+   <minaVersion>2.0.0-M6</minaVersion>
   </properties>
 
   <profiles>
@@ -1440,6 +1441,11 @@
             <artifactId>jmxri</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-core</artifactId>
+        <version>${minaVersion}</version>
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>
