@@ -13,10 +13,6 @@
     can depend on to use the apache mina library
   </description>
 
-  <properties>
-    <minaVersion>2.0.0-M4</minaVersion>
-  </properties>
-
   <dependencies>
 
     <!-- Mina -->
