@@ -80,6 +80,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
         @SuppressWarnings("unused")
         private PrimaryType() {
+            //this exists for Hibernate
         }
 
         public PrimaryType(char collType) {
@@ -167,6 +168,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         public static PrimaryType SECONDARY = new PrimaryType('S');
         public static PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
 
+        public static PrimaryType getCanonical(PrimaryType issnmpprimary) {
+            switch (issnmpprimary.getCharCode()) {
+            case 'P': return PRIMARY;
+            case 'S': return SECONDARY;
+            case 'N': return NOT_ELIGIBLE;
+            default: return NOT_ELIGIBLE;
+            }
+        }
+            
 
     }
 
@@ -291,7 +301,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
-        m_isSnmpPrimary = issnmpprimary;
+        m_isSnmpPrimary = PrimaryType.getCanonical(issnmpprimary);
     }
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
