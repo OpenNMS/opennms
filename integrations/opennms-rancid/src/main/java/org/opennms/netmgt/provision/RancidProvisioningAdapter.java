@@ -122,6 +122,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     return getSuitableIpForRancid(nodeId);
                 }
             });
+            log().debug("Found Suitable ip address: " + ipaddress);
             long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
             int retries = m_rancidAdapterConfig.getRetries(ipaddress);
             log().debug("Setting initialDelay(sec): " + initialDelay);
@@ -409,15 +410,17 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
         String ipaddress = getSuitableIpForRancid(node);
+        log().debug("Found Suitable ip address: " + ipaddress + " for node: " + node.getLabel() );
         if (m_rancidAdapterConfig.useCategories(ipaddress)) {
            r_node.setDeviceType(getTypeFromCategories(node)); 
         } else {
             r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId()));
         }
-        r_node.setStateUp(true);
+        r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
         r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
+        
 
     }
     
