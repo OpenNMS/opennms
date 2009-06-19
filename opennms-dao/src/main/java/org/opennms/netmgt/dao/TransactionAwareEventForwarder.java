@@ -54,6 +54,14 @@ import org.springframework.util.Assert;
  */
 public class TransactionAwareEventForwarder implements EventForwarder, InitializingBean {
     
+    public TransactionAwareEventForwarder() {
+    }
+
+    public TransactionAwareEventForwarder(EventForwarder forwarder) throws Exception {
+       setEventForwarder(forwarder);
+       afterPropertiesSet();
+    }
+
     public static class PendingEventsSynchronization extends TransactionSynchronizationAdapter {
         
         private PendingEventsHolder m_eventsHolder;
