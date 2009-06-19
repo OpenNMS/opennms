@@ -14,6 +14,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -221,8 +222,8 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_serviceTypeDao = dao;
     }
     
-    public void setEventProxy(final EventProxy proxy) {
-        m_eventForwarder = new EventForwarder() {
+    public void setEventProxy(final EventProxy proxy) throws Exception {
+        EventForwarder proxyForwarder = new EventForwarder() {
             public void sendNow(Event event) {
                 try {
                     proxy.send(event);
@@ -240,6 +241,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
             }
             
         };
+        m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
     }
 
     protected Category log() {
