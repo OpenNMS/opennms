@@ -49,6 +49,7 @@ import java.net.PortUnreachableException;
 import java.net.Socket;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -106,6 +107,11 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
      * the trivial time service (actually adding a negative value)
      */
     private static final int EPOCH_ADJ_FACTOR = 2085978496;
+
+    /**
+     * Whether to persist the skew value in addition to the response latency
+     */
+    private static final boolean DEFAULT_PERSIST_SKEW = false;
     
     /**
      * Poll the specified address for service availability.
@@ -156,22 +162,25 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
         //
         int allowedSkew = ParameterMap.getKeyedInteger(parameters, "allowed-skew", DEFAULT_ALLOWED_SKEW);
 
+        // Determine whether to persist the skew value in addition to the latency
+        boolean persistSkew = ParameterMap.getKeyedBoolean(parameters, "persist-skew", DEFAULT_PERSIST_SKEW);
+
         // Give it a whirl
         //
         PollStatus serviceStatus = PollStatus.unavailable();
 
         String protocol = ParameterMap.getKeyedString(parameters, "protocol", DEFAULT_PROTOCOL).toLowerCase();
-        if (! protocol.equals("tcp") && ! protocol.equals("udp")) {
+        if (! protocol.equalsIgnoreCase("tcp") && ! protocol.equalsIgnoreCase("udp")) {
             throw new  IllegalArgumentException("Unsupported protocol, only TCP and UDP currently supported");
-        } else if (protocol.equals("udp")) {
+        } else if (protocol.equalsIgnoreCase("udp")) {
             // TODO test UDP support
-            log().warn("UDP support is untested");
+            log().warn("UDP support is largely untested");
         }
         
-        if (protocol.equals("tcp")) {
-            serviceStatus = pollTimeTcp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew);
-        } else if (protocol.equals("udp")) {
-            serviceStatus = pollTimeUdp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew);
+        if (protocol.equalsIgnoreCase("tcp")) {
+            serviceStatus = pollTimeTcp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew, persistSkew);
+        } else if (protocol.equalsIgnoreCase("udp")) {
+            serviceStatus = pollTimeUdp(svc, parameters, serviceStatus, tracker, ipv4Addr, port, allowedSkew, persistSkew);
         }
 
         //
@@ -179,11 +188,24 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
         //
         return serviceStatus;
     }
-    
-    public PollStatus pollTimeTcp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew) {
+
+    public void storeResult(PollStatus serviceStatus, Number skew, Double responseTime, boolean persistSkew) {
+        Map<String,Number> skewProps = new LinkedHashMap<String,Number>();
+        if (persistSkew) {
+            skewProps.put("skew", skew);
+	    if (log().isDebugEnabled()) {
+                log().debug("persistSkew: Persisting time skew (value = " + skew + ") for this node");
+            }
+        }
+        skewProps.put("response-time", responseTime);
+        serviceStatus.setProperties(skewProps);
+    }
+
+    public PollStatus pollTimeTcp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;
+
         for (tracker.reset(); tracker.shouldRetry() && !gotTime; tracker.nextAttempt()) {
             Socket socket = null;
             try {
@@ -205,7 +227,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
                 if (bytesRead != 4)
                     continue;
                 if (log().isDebugEnabled()) {
-                    log().debug("poll: bytes read = " + bytesRead);
+                    log().debug("pollTimeTcp: bytes read = " + bytesRead);
                 }
                 
                 try {
@@ -218,7 +240,8 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
                 }
                 
                 localTime  = (int)(System.currentTimeMillis() / 1000) - EPOCH_ADJ_FACTOR;
-                serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis());
+                gotTime = true;
+                serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (NoRouteToHostException e) {
                 serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
             } catch (InterruptedIOException e) {
@@ -235,7 +258,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
                 } catch (IOException e) {
                     e.fillInStackTrace();
                     if (log().isDebugEnabled())
-                        log().debug("poll: Error closing socket.", e);
+                        log().debug("pollTimeTcp: Error closing socket.", e);
                 }
             }
         }
@@ -243,7 +266,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
     }
 
 
-    public PollStatus pollTimeUdp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew) {
+    public PollStatus pollTimeUdp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;
@@ -274,7 +297,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
                 if (bytesRead != 4)
                     continue;
                 if (log().isDebugEnabled()) {
-                    log().debug("poll: bytes read = " + bytesRead);
+                    log().debug("pollTimeUdp: bytes read = " + bytesRead);
                 }
                 
                 try {
@@ -287,7 +310,8 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
                 }
                 
                 localTime  = (int)(System.currentTimeMillis() / 1000) - EPOCH_ADJ_FACTOR;
-                serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis());
+                gotTime = true;
+                serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (PortUnreachableException e) {
                 serviceStatus = logDown(Level.DEBUG, "Port unreachable exception for address " + ipv4Addr.getHostAddress(), e);
             } catch (NoRouteToHostException e) {
@@ -304,7 +328,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
         return serviceStatus;
     }
     
-    private PollStatus qualifyTime(int remoteTime, int localTime, int allowedSkew, PollStatus serviceStatus, double responseTime) {
+    private PollStatus qualifyTime(int remoteTime, int localTime, int allowedSkew, PollStatus serviceStatus, double responseTime, boolean persistSkew) {
         if (log().isDebugEnabled()) {
             log().debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
         }
@@ -316,8 +340,11 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
         } else if ((remoteTime > localTime) && (remoteTime - localTime > allowedSkew)) {
             serviceStatus = logDown(Level.DEBUG, "Remote time is " + (remoteTime - localTime) + " seconds ahead of local, more than the allowable " + allowedSkew);
         } else {
-            serviceStatus = PollStatus.available(responseTime);
+            serviceStatus = PollStatus.available();
         }
+
+        storeResult(serviceStatus, remoteTime - localTime, responseTime, persistSkew);
+
         return serviceStatus;
     }
 }
