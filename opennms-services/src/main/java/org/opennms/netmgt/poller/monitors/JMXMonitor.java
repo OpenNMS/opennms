@@ -30,6 +30,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 
