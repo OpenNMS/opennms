@@ -169,11 +169,14 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         public static PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
 
         public static PrimaryType getCanonical(PrimaryType issnmpprimary) {
+            if (issnmpprimary == null) {
+                return NOT_ELIGIBLE;
+            }
             switch (issnmpprimary.getCharCode()) {
-            case 'P': return PRIMARY;
-            case 'S': return SECONDARY;
-            case 'N': return NOT_ELIGIBLE;
-            default: return NOT_ELIGIBLE;
+                case 'P': return PRIMARY;
+                case 'S': return SECONDARY;
+                case 'N': return NOT_ELIGIBLE;
+                default: return NOT_ELIGIBLE;
             }
         }
             
