@@ -1617,17 +1617,6 @@
       <url>http://repo.opennms.org/snapshots</url>
     </repository>
     <repository>
-     <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>java-net-maven2-repo</id>
-      <url>http://download.java.net/maven/2</url>
-    </repository>
-    <repository>
       <id>maven-restlet</id>
       <name>Public online Restlet repository</name>
       <url>http://maven.restlet.org</url>
