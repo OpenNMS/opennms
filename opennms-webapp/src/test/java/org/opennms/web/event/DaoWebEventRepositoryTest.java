@@ -97,6 +97,18 @@ public class DaoWebEventRepositoryTest {
         event.setEventDisplay("Y");
         m_dbPopulator.getEventDao().save(event);
         m_dbPopulator.getEventDao().flush();
+        
+        OnmsEvent event2 = new OnmsEvent();
+        event2.setDistPoller(getDistPoller("localhost", "127.0.0.1"));
+        event2.setEventUei("uei.opennms.org/test3");
+        event2.setEventTime(new Date());
+        event2.setEventSource("test");
+        event2.setEventCreateTime(new Date());
+        event2.setEventSeverity(OnmsSeverity.CLEARED.getId());
+        event2.setEventLog("Y");
+        event2.setEventDisplay("N");
+        m_dbPopulator.getEventDao().save(event2);
+        m_dbPopulator.getEventDao().flush();
     }
     
     private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
