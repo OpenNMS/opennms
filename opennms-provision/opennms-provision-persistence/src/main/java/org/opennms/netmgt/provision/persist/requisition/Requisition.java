@@ -61,7 +61,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
             for (RequisitionNode n : m_nodes) {
                 if (n.getForeignId().equals(foreignId)) {
                     if (log().isDebugEnabled()) {
-                        log().debug(String.format("returning node '%s' for foreign id '%d'", n, foreignId));
+                        log().debug(String.format("returning node '%s' for foreign id '%s'", n, foreignId));
                     }
                     return n;
                 }
