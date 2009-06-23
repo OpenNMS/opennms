@@ -1,7 +1,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -36,9 +36,9 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         RrdTestUtils.initialize();
 
         // make a fake database schema with hibernate
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(testContext.getTestInstance(), config.schemaConfig());
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
+        InputStream is = ConfigurationTestUtils.getInputStreamForResource(testContext.getTestInstance(), config.schemaConfig());
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         // set up temporary directories for RRD files
         m_fileAnticipator = new FileAnticipator();
@@ -48,15 +48,15 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         testContext.setAttribute("rrdDirectory", m_snmpRrdDirectory);
 
         // set up the collection configuration factory
-        rdr = ConfigurationTestUtils.getReaderForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
+        is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
         if (config.datacollectionType().equalsIgnoreCase("http")) {
-            HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(rdr);
+            HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
         } else {
             throw new UnsupportedOperationException("data collection type '" + config.datacollectionType() + "' not supported");
         }
-        rdr.close();
+        is.close();
     }
 
     @Override

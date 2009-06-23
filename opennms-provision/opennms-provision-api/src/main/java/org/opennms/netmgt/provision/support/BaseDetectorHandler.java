@@ -80,6 +80,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         session.close(true);
     }
 
+    @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {    
         System.out.printf("Client Receiving: %s\n", message.toString().trim());

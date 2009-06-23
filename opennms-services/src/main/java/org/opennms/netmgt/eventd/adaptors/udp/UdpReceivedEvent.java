@@ -147,6 +147,7 @@ final class UdpReceivedEvent {
      * @throws org.exolab.castor.xml.MarshalException
      *             Thrown if the XML is malformed and cannot be converted.
      */
+    @SuppressWarnings("deprecation")
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
             StringReader rdr = new StringReader(m_eventXML);

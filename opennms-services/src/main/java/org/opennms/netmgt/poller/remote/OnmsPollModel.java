@@ -44,8 +44,8 @@ import java.util.Date;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class OnmsPollModel implements Serializable {
-	
-	private long m_pollInterval;
+    private static final long serialVersionUID = 1L;
+    private long m_pollInterval;
     
     public OnmsPollModel() {
         m_pollInterval = -1L;

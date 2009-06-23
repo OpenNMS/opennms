@@ -49,7 +49,7 @@ public class Jsr160Monitor extends JMXMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.JMXMonitor#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
      */
-    public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
+    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
         return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
 

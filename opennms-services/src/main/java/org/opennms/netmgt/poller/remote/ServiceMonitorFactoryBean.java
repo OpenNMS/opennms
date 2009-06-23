@@ -50,14 +50,14 @@ import org.springframework.util.Assert;
 public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean {
 	
 	private ServiceMonitor m_serviceMonitor;
-	private Class m_monitorClass;
-	private Map m_monitorParameters;
+	private Class<?> m_monitorClass;
+	private Map<String,Object> m_monitorParameters;
 	
-	public void setMonitorClass(Class serviceClass) {
+	public void setMonitorClass(Class<?> serviceClass) {
 		m_monitorClass = serviceClass;
 	}
 	
-	public void setMonitorParameters(Map serviceParameters) {
+	public void setMonitorParameters(Map<String,Object> serviceParameters) {
 		m_monitorParameters = serviceParameters;
 	}
 
@@ -65,7 +65,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean 
 		return m_serviceMonitor;
 	}
 
-	public Class getObjectType() {
+	public Class<?> getObjectType() {
 		return m_monitorClass;
 	}
 
@@ -79,7 +79,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean 
 		Assert.state(ServiceMonitor.class.isAssignableFrom(m_monitorClass), "monitorClass must implement the ServiceMonitor interface");
 		
 		if (m_monitorParameters == null)
-			m_monitorParameters = new HashMap();
+			m_monitorParameters = new HashMap<String,Object>();
 		
 		m_serviceMonitor = (ServiceMonitor)m_monitorClass.newInstance();
 		m_serviceMonitor.initialize(m_monitorParameters);

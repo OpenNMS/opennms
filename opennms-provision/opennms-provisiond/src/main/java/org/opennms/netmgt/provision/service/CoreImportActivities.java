@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
@@ -84,24 +86,16 @@ public class CoreImportActivities {
 
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
-
-        System.out.println("Loading Spec File!");
-        
-        
+        info("Loading requisition from resource " + resource);
         Requisition specFile = m_provisionService.loadRequisition(resource);
-        
-        System.out.println("Finished Loading Spec File!");
+        debug("Finished loading requisition.");
 
         return specFile;
     }
     
-    
-    
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
     public ImportOperationsManager auditNodes(Requisition specFile) {
-        
-        System.out.println("Auditing Nodes");
-        
+        info("Auditing nodes for requisition " + specFile);
 
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
@@ -111,10 +105,9 @@ public class CoreImportActivities {
         ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService);
         
         opsMgr.setForeignSource(foreignSource);
-        
         opsMgr.auditNodes(specFile);
-        
-        System.out.println("Finished Auditing Nodes");
+
+        debug("Finished auditing nodes.");
         
         return opsMgr;
     }
@@ -122,16 +115,15 @@ public class CoreImportActivities {
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
     public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
 
+        info("Scheduling nodes for phase " + currentPhase);
         
-        
-        System.out.println("Scheduling Nodes");
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
-
         for(final ImportOperation op : operations) {
             LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
+
+            debug("Created lifecycle %s for operation %s", nodeScan, op);
             
-            System.out.printf("Created  LifeCycle %s for op %s\n", nodeScan, op);
             nodeScan.setAttribute("operation", op);
             nodeScan.trigger();
         }
@@ -142,9 +134,9 @@ public class CoreImportActivities {
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
     public void scanNode(ImportOperation operation) {
-        
-        System.out.println("Running scan phase of "+operation);
+        info("Running scan phase of " + operation);
         operation.scan();
+
         System.out.println("Finished Running scan phase of "+operation);
     }
     
@@ -188,5 +180,19 @@ public class CoreImportActivities {
                return "set parent for node "+nodeReq.getNodeLabel();
            }
         }; 
+    }
+
+    protected void info(String format, Object... args) {
+        log().info(String.format(format, args));
+    }
+
+    protected void debug(String format, Object... args) {
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
+        }
+    }
+
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

@@ -62,24 +62,14 @@ import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
-import org.opennms.netmgt.model.AckAction;
-import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.OnmsUserNotification;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -139,6 +129,7 @@ public class AvailabilityDatabasePopulator {
         OnmsCategory ops = getCategory("OPS_Online");
         
         OnmsCategory catRouter = getCategory("Routers");
+        @SuppressWarnings("unused")
         OnmsCategory catSwitches = getCategory("Switches");
         OnmsCategory catServers = getCategory("Servers");
         getCategory("Production");
@@ -235,8 +226,10 @@ public class AvailabilityDatabasePopulator {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             OnmsMonitoredService node1If1Svc1 = getMonitoredServiceDao().get(1, "192.168.100.1", "ICMP");
             OnmsMonitoredService node2If1Svc1 = getMonitoredServiceDao().get(2, "192.168.100.2", "ICMP");
+            @SuppressWarnings("unused")
             OnmsMonitoredService node2If1Svc2 = getMonitoredServiceDao().get(2, "192.168.100.2", "SNMP");
             OnmsMonitoredService node2If2Svc1 = getMonitoredServiceDao().get(2, "192.168.100.3", "ICMP");
+            @SuppressWarnings("unused")
             OnmsMonitoredService node2If2Svc2 = getMonitoredServiceDao().get(2, "192.168.100.3", "HTTP");
             OnmsOutage outage1 = new OnmsOutage(df.parse("2005-05-01 09:00:00"), df.parse("2005-05-01 09:30:00"), event, event, node1If1Svc1, null, null);
             getOutageDao().save(outage1);

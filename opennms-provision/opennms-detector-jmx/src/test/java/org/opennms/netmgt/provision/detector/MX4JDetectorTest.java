@@ -41,7 +41,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXConnectorServer;
@@ -67,12 +66,11 @@ public class MX4JDetectorTest {
     public MX4JDetector m_detector;
     
     public static MBeanServer m_beanServer;
-    private static Registry m_registry;
     private JMXConnectorServer m_connectorServer;
     
     @BeforeClass
     public static void beforeTest() throws RemoteException{
-        m_registry = LocateRegistry.createRegistry(9999);
+        LocateRegistry.createRegistry(9999);
         m_beanServer = ManagementFactory.getPlatformMBeanServer();
     }
     

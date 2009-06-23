@@ -55,6 +55,7 @@ import java.util.Map;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 @SuppressWarnings("unchecked")
+// FIXME: THIS IS INSANE
 public class RTCHashMap {
 	
     Map m_map;
@@ -440,17 +441,17 @@ public class RTCHashMap {
 		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
 	}
 	
-	public List getRTCNodes(long nodeid) {
+	public List<RTCNode> getRTCNodes(long nodeid) {
 		Long key = new Long(nodeid);
-		List nodes = (List)get(key);
-		if (nodes == null) return Collections.EMPTY_LIST;
+		List<RTCNode> nodes = (List<RTCNode>)get(key);
+		if (nodes == null) return Collections.emptyList();
 		return Collections.unmodifiableList(nodes); 
 	}
 	
-	public List getRTCNodes(long nodeid, String ip) {
+	public List<RTCNode> getRTCNodes(long nodeid, String ip) {
 		String key = Long.toString(nodeid)+ip;
-		List nodes = (List)get(key);
-		if (nodes == null) return Collections.EMPTY_LIST;
+		List<RTCNode> nodes = (List<RTCNode>)get(key);
+		if (nodes == null) return Collections.emptyList();
 		return Collections.unmodifiableList(nodes);
 	}
 

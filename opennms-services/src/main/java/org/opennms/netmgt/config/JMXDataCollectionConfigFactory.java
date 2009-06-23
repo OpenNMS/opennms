@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -115,19 +115,38 @@ public final class JMXDataCollectionConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private JMXDataCollectionConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        initialize(new InputStreamReader(cfgIn));
-        cfgIn.close();
+        InputStream cfgIn = null;
+        try {
+            cfgIn = new FileInputStream(configFile);
+            initialize(cfgIn);
+        } finally {
+            if (cfgIn != null) {
+                IOUtils.closeQuietly(cfgIn);
+            }
+        }
     }
-    
+
+    public JMXDataCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        initialize(stream);
+    }
+
+    @Deprecated
     public JMXDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
     	initialize(rdr);
     }
-    
+
+    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, stream);
+        buildCollectionMap();
+    }
+
+    @Deprecated
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, rdr);
+        buildCollectionMap();
+    }
 
+    private void buildCollectionMap() {
         // Build collection map which is a hash map of Collection
         // objects indexed by collection name...also build
         // collection group map which is a hash map indexed
@@ -146,7 +165,7 @@ public final class JMXDataCollectionConfigFactory {
         // groupMapName -> Group
         //
         // This is parsed and built at initialization for
-        // faster processing at run-timne.
+        // faster processing at run-time.
         // 
         m_collectionMap = new HashMap<String, JmxCollection>();
         m_collectionGroupMap = new HashMap<String, Map<String, Mbean>>();

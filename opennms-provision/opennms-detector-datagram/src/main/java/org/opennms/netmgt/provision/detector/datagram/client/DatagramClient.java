@@ -40,6 +40,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.support.Client;
 
 
@@ -62,7 +64,10 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @see org.opennms.netmgt.provision.detector.Client#connect(java.net.InetAddress, int, int)
      */
     public void connect(InetAddress address, int port, int timeout) throws IOException {
-        System.out.println("Addres: " + address + " port: " + port + " timeout: " + timeout);
+        if (log().isDebugEnabled()) {
+            log().debug("Addres: " + address + " port: " + port + " timeout: " + timeout);
+        }
+
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
         m_socket.connect(address, port);
@@ -92,5 +97,8 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     }
 
     
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
 }

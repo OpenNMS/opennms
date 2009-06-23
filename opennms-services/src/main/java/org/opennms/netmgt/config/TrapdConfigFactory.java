@@ -40,6 +40,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -91,6 +92,11 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_config = CastorUtils.unmarshal(TrapdConfiguration.class, new FileSystemResource(configFile));
     }
     
+    public TrapdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(TrapdConfiguration.class, stream);
+    }
+
+    @Deprecated
     public TrapdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(TrapdConfiguration.class, rdr);
     }

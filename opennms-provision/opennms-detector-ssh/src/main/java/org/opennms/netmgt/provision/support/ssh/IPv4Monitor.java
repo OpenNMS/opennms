@@ -65,14 +65,14 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * <P>
      * This method is called after the framework creates an instance of the
      * plug-in. The framework passes the object a proxy object that can be used
-     * to retreive configuration information specific to the plug-in.
+     * to retrieve configuration information specific to the plug-in.
      * Additionally, any parameters for the plug-in from the package definition
      * are passed using the parameters element.
      * </P>
      * 
      * <P>
      * If there is a critical error, like missing service libraries, the the
-     * montior may throw a ServiceMonitorException. If the plug-in throws an
+     * monitor may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
      * @param parameters
@@ -83,6 +83,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
+    @SuppressWarnings("unchecked")
     public void initialize(Map parameters) {
     }
 
@@ -160,6 +161,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     public void release(MonitoredService svc) {
     }
     
+    @SuppressWarnings("unchecked")
     abstract public PollStatus poll(MonitoredService svc, Map parameters);
 
 	protected Category log() {

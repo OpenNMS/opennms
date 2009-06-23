@@ -42,8 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -60,6 +58,7 @@ public class DestinationPathFactory extends DestinationPathManager {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static File m_notifConfFile;
 
     /**
@@ -117,8 +116,8 @@ public class DestinationPathFactory extends DestinationPathManager {
         InputStream configIn = new FileInputStream(m_pathsConfFile);
         m_lastModified = m_pathsConfFile.lastModified();
 
-        Reader reader = new InputStreamReader(configIn);
-        parseXML(reader);
+        parseXML(configIn);
+        configIn.close();
     }
 
     /**

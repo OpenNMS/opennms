@@ -51,7 +51,7 @@ import junit.framework.TestCase;
 public class XmlrpcdConfigFactoryTest extends TestCase {
     
     public void testReadOldStyleConfiguration() throws MarshalException, ValidationException, IOException {
-        XmlrpcdConfigFactory f = new XmlrpcdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/etc/xmlrpcd-configuration-old.xml"));
+        XmlrpcdConfigFactory f = new XmlrpcdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/xmlrpcd-configuration-old.xml"));
 
         // should have exactly one external server entry, and one subscription entry
         assertEquals("one external server", 1, f.getExternalServerCollection().size());
@@ -71,7 +71,7 @@ public class XmlrpcdConfigFactoryTest extends TestCase {
     }
 
     public void testReadNewStyleConfiguration() throws MarshalException, ValidationException, IOException {
-        XmlrpcdConfigFactory f = new XmlrpcdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/etc/xmlrpcd-configuration-new.xml"));
+        XmlrpcdConfigFactory f = new XmlrpcdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/xmlrpcd-configuration-new.xml"));
         ExternalServers e = null;
         Subscription s = null;
 

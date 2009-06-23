@@ -80,7 +80,7 @@ final public class HttpsMonitor extends HttpMonitor {
      */
     private static final int[] DEFAULT_PORTS = { 443 };
 
-    protected int[] determinePorts(Map parameters) {
+    protected int[] determinePorts(Map<String, Object> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 

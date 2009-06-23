@@ -39,21 +39,19 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import org.apache.log4j.Category;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
-import java.util.regex.Pattern;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class is used to test if a particular process is listed

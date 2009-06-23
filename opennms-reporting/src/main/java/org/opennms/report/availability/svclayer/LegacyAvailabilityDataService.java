@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.log4j.Category;
-
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -25,8 +22,6 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.report.availability.AvailabilityConstants;
-import org.opennms.report.availability.AvailabilityData;
-import org.opennms.report.availability.AvailabilityReport;
 import org.opennms.report.datablock.Node;
 import org.opennms.report.datablock.Outage;
 import org.opennms.report.datablock.OutageSvcTimesList;

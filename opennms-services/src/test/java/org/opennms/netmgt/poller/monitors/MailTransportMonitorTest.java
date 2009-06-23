@@ -69,8 +69,9 @@ import org.springframework.core.io.Resource;
 public class MailTransportMonitorTest extends TestCase {
 
     MailTransportMonitor m_monitor;
-    Map<String, String> m_params;
+    Map<String, Object> m_params;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -86,7 +87,7 @@ public class MailTransportMonitorTest extends TestCase {
         m_monitor = new MailTransportMonitor();
         m_monitor.initialize(Collections.EMPTY_MAP);
 
-        m_params = new HashMap<String, String>();
+        m_params = new HashMap<String, Object>();
         m_params.put("timeout", "3000");
         m_params.put("retries", "1");
     }

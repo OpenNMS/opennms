@@ -441,7 +441,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			boolean first = true;
 			do {
 				try {
-					readyRun = (ReadyRunnable) in.remove();
+					readyRun = in.remove();
 					if (in.size() == maxLoops && first) {
 						maxLoops++;
 					}
@@ -546,7 +546,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			boolean first = true;
 			do {
 				try {
-					readyRun = (ReadyRunnable) in.remove();
+					readyRun = in.remove();
 					if (in.size() == maxLoops && first) {
 						maxLoops++;
 					}
@@ -750,12 +750,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			// are peekable fifo queues.
 			//
 			int runned = 0;
-			FifoQueue out = m_runner.getRunQueue();
+			FifoQueue<Runnable> out = m_runner.getRunQueue();
 			synchronized (m_queues) {
 				// get an iterator so that we can cycle
 				// through the queue elements.
 				//
-				Iterator iter = m_queues.keySet().iterator();
+				Iterator<Long> iter = m_queues.keySet().iterator();
 				while (iter.hasNext()) {
 					// Peak for Runnable objects until
 					// there are no more ready runnables
@@ -764,7 +764,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					// if we didn't add a count then it would
 					// be possible to starve other queues.
 					//
-					Long key = (Long) iter.next();
+					Long key = iter.next();
 					PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
 					if (in.isEmpty()) {
 						continue;

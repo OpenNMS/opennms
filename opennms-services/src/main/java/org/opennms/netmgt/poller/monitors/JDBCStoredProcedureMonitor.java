@@ -63,7 +63,7 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
    public JDBCStoredProcedureMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
    }
 
-   public PollStatus checkDatabaseStatus(Connection con, Map parameters)
+   public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters)
    {
 	   
       PollStatus status = PollStatus.unavailable();

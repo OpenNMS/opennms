@@ -53,7 +53,6 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockCategoryFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -189,7 +188,6 @@ public class AvailabilityReportIntegrationTest {
     @Test
     public void testBuiltCalendarReport() {
 
-        Calendar calendar = new GregorianCalendar(2005, 4, 20);
         long oneHundred = 100;
         Day day;
         

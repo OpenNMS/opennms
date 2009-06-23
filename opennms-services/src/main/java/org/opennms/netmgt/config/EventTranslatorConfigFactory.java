@@ -39,7 +39,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -122,16 +123,29 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * 
      */
     private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException, MarshalException, ValidationException {
-        Reader rdr = new InputStreamReader(new FileInputStream(configFile));
-        marshallReader(rdr, dbConnFactory);
-        rdr.close();
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(configFile);
+            marshall(stream, dbConnFactory);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
-    
+
+    @Deprecated
     public EventTranslatorConfigFactory(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        marshallReader(rdr, dbConnFactory);
+        marshall(rdr, dbConnFactory);
     }
-    
-    private synchronized void marshallReader(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
+
+    private synchronized void marshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
+        m_dbConnFactory = dbConnFactory;
+    }
+
+    @Deprecated
+    private synchronized void marshall(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, rdr);
         m_dbConnFactory = dbConnFactory;
     }

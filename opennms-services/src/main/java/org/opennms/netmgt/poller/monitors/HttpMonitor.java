@@ -121,7 +121,7 @@ public class HttpMonitor extends IPv4Monitor {
      * @return The availability of the interface and if a transition event should be suppressed.
      *  
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {
@@ -131,7 +131,7 @@ public class HttpMonitor extends IPv4Monitor {
         // Cycle through the port list
         //
         int currentPort = -1;
-        HttpMonitorClient httpClient = new HttpMonitorClient(iface, new TreeMap<String, String>(parameters));
+        HttpMonitorClient httpClient = new HttpMonitorClient(iface, new TreeMap<String, Object>(parameters));
 
         for (int portIndex = 0; portIndex < determinePorts(httpClient.getParameters()).length && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
@@ -211,12 +211,12 @@ public class HttpMonitor extends IPv4Monitor {
         return socket;
     }
 
-    private boolean determineVerbosity(final Map<String, String> parameters) {
+    private boolean determineVerbosity(final Map<String, Object> parameters) {
         final String verbose = ParameterMap.getKeyedString(parameters, "verbose", null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
-    private String determineUserAgent(final Map<String, String> parameters) {
+    private String determineUserAgent(final Map<String, Object> parameters) {
         String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
         if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
@@ -224,7 +224,7 @@ public class HttpMonitor extends IPv4Monitor {
         return agent;
     }
 
-    String determineBasicAuthentication(final Map<String, String> parameters) {
+    String determineBasicAuthentication(final Map<String, Object> parameters) {
         String credentials = ParameterMap.getKeyedString(parameters, "basic-authentication", null);
 
         if (isNotBlank(credentials)) {
@@ -244,11 +244,11 @@ public class HttpMonitor extends IPv4Monitor {
         return credentials;
     }
 
-    private String determineHttpHeader(final Map<String, String> parameters, String key) {
+    private String determineHttpHeader(final Map<String, Object> parameters, String key) {
         return ParameterMap.getKeyedString(parameters, key, null);
     }
     
-    private String determineVirtualHost(NetworkInterface iface, final Map<String, String> parameters) {
+    private String determineVirtualHost(NetworkInterface iface, final Map<String, Object> parameters) {
         boolean res = ParameterMap.getKeyedBoolean(parameters, "resolve-ip", false);
         String virtualHost = ParameterMap.getKeyedString(parameters, "host-name", null);
 
@@ -264,19 +264,19 @@ public class HttpMonitor extends IPv4Monitor {
     }
 
 
-    private String determineResponseText(final Map<String, String> parameters) {
+    private String determineResponseText(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "response-text", null);
     }
 
-    private String determineResponse(final Map<String, String> parameters) {
+    private String determineResponse(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "response", determineDefaultResponseRange(determineUrl(parameters)));
     }
 
-    private String determineUrl(final Map<String, String> parameters) {
+    private String determineUrl(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
     }
 
-    protected int[] determinePorts(final Map<String, String> parameters) {
+    protected int[] determinePorts(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
@@ -298,7 +298,7 @@ public class HttpMonitor extends IPv4Monitor {
     final class HttpMonitorClient {
         private double m_responseTime;
         NetworkInterface m_iface;
-        Map<String, String> m_parameters;
+        Map<String, Object> m_parameters;
         String m_httpCmd;
         Socket m_httpSocket;
         private BufferedReader m_lineRdr;
@@ -312,7 +312,7 @@ public class HttpMonitor extends IPv4Monitor {
         private String m_responseText;
         private boolean m_responseTextFound = false;
         
-        HttpMonitorClient(NetworkInterface iface, TreeMap<String, String>parameters) {
+        HttpMonitorClient(NetworkInterface iface, TreeMap<String, Object>parameters) {
             m_iface = iface;
             m_parameters = parameters;
             buildCommand();
@@ -333,7 +333,7 @@ public class HttpMonitor extends IPv4Monitor {
             return m_currentPort;
         }
 
-        public Map<String, String> getParameters() {
+        public Map<String, Object> getParameters() {
             return m_parameters;
         }
 

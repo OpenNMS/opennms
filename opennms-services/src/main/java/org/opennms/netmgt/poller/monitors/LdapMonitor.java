@@ -137,7 +137,7 @@ final public class LdapMonitor extends IPv4Monitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;

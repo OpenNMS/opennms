@@ -41,11 +41,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -54,9 +56,9 @@ import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * Poller service from the poller-configuration xml file.
+ * Poller service from the poller-configuration XML file.
  * 
- * A mapping of the configured URLs to the iplist they contain is built at
+ * A mapping of the configured URLs to the IP list they contain is built at
  * init() time so as to avoid numerous file reads.
  * 
  * <strong>Note: </strong>Users of this class should make sure the
@@ -94,8 +96,14 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public SnmpInterfacePollerConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         super(reader, localServer, verifyServer);
+        m_currentVersion = currentVersion;
+    }
+
+    public SnmpInterfacePollerConfigFactory(long currentVersion, InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+        super(stream, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
 
@@ -124,11 +132,16 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader reader = new FileReader(cfgFile);
-        SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        reader.close();
-
-        setInstance(config);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            SnmpInterfacePollerConfigFactory config = new SnmpInterfacePollerConfigFactory(cfgFile.lastModified(), stream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+            setInstance(config);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
 
     private static Category logStatic() {
@@ -190,7 +203,15 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileReader(cfgFile));
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                reloadXML(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

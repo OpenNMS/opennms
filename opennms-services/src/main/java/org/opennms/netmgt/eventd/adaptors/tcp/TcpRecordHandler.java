@@ -124,6 +124,7 @@ final class TcpRecordHandler implements Runnable {
         /**
          * The level for this manager
          */
+        @SuppressWarnings("unused")
         int getLevel() {
             return m_level;
         }

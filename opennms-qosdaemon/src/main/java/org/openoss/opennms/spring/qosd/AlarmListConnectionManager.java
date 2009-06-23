@@ -28,6 +28,9 @@ package org.openoss.opennms.spring.qosd;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.oss.fm.monitor.AlarmKey;
+import javax.oss.fm.monitor.AlarmValue;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
@@ -58,7 +61,7 @@ public interface AlarmListConnectionManager {
 	 * Sends the AlarmList to the AlarmMonitorBean
 	 * @param alarmList
 	 */
-	public abstract void send(Hashtable alarmList);
+	public abstract void send(Hashtable<AlarmKey,AlarmValue> alarmList);
 
 	/**
 	 * Starts the ConnectionManagerThread

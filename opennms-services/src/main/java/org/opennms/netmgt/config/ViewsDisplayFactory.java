@@ -40,15 +40,14 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Collection;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -118,37 +117,39 @@ public class ViewsDisplayFactory {
      * Parses the viewsdisplay.xml via the Castor classes
      */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        Reader reader = getReader();
+        InputStream stream = null;
         try {
-            unmarshal(reader);
+            stream = getStream();
+            unmarshal(stream);
         } finally {
-            reader.close();
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
         }
     }
     
-    private void unmarshal(Reader reader) throws MarshalException, ValidationException {
-        m_viewInfo = CastorUtils.unmarshal(Viewinfo.class, reader);
+    private void unmarshal(InputStream stream) throws MarshalException, ValidationException {
+        m_viewInfo = CastorUtils.unmarshal(Viewinfo.class, stream);
+        updateViewsMap();
+    }
+    
+    private void updateViewsMap() {
         Map<String, View> viewsMap = new HashMap<String,View>();
 
-        Collection viewList = m_viewInfo.getViewCollection();
-        Iterator i = viewList.iterator();
-
-        while (i.hasNext()) {
-            View view = (View) i.next();
+        for (View view : m_viewInfo.getViewCollection()) {
             viewsMap.put(view.getViewName(), view);
         }
         
         m_viewsMap = viewsMap;
     }
     
-    private Reader getReader() throws IOException, FileNotFoundException {
+    private InputStream getStream() throws IOException {
         File viewsDisplayFile = getViewsDisplayFile();
-
-        Reader reader = new FileReader(viewsDisplayFile);
-        m_lastModified = m_viewsDisplayFile.lastModified();
-        return reader;
+        m_lastModified = viewsDisplayFile.lastModified();
+        InputStream stream = new FileInputStream(viewsDisplayFile);
+        return stream;
     }
-    
+
     public void setViewsDisplayFile(File viewsDisplayFile) {
         m_viewsDisplayFile = viewsDisplayFile;
     }

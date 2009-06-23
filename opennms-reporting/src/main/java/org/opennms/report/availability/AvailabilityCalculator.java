@@ -85,6 +85,7 @@ public class AvailabilityCalculator {
 
     // calendar
 
+    @SuppressWarnings("unused")
     private Calendar m_calendar;
 
     // start date

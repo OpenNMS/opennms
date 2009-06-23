@@ -31,11 +31,11 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
-
-import org.opennms.test.ConfigurationTestUtils;
+import java.io.InputStream;
 
 import junit.framework.TestCase;
+
+import org.opennms.test.ConfigurationTestUtils;
 
 /**
  * Tests for VacuumdConfigFactory.
@@ -50,11 +50,11 @@ public class VacuumdConfigFactoryTest extends TestCase {
      * @throws Exception
      */
     public void testLoadDefaultConfig() throws Exception {
-        Reader reader = ConfigurationTestUtils.getReaderForConfigFile("vacuumd-configuration.xml");
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("vacuumd-configuration.xml");
         try {
-            new VacuumdConfigFactory(reader);
+            new VacuumdConfigFactory(is);
         } finally {
-            reader.close();
+            is.close();
         }
     }
 }

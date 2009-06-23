@@ -37,17 +37,17 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rws.StandbyUrl;
-
-import org.opennms.netmgt.config.rws.BaseUrl;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.rancid.ConnectionProperties;
 
 /**
@@ -114,20 +114,23 @@ abstract public class RWSConfigManager implements RWSConfig {
         return standbyUrl;
     }
     
-     public synchronized boolean hasStandbyUrl() {
-
-         return (m_config.getStandbyUrlCount() > 0);
-        
+    public synchronized boolean hasStandbyUrl() {
+        return (m_config.getStandbyUrlCount() > 0);
     }
 
+    @Deprecated
     public RWSConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
+    }
+
+    public RWSConfigManager(InputStream stream) throws MarshalException, ValidationException, IOException {
+        reloadXML(stream);
     }
 
     public RWSConfigManager() {
     }
     
-//    public abstract void update() throws IOException, MarshalException, ValidationException;
+    //    public abstract void update() throws IOException, MarshalException, ValidationException;
 //
 //    protected abstract void saveXml(String xml) throws IOException;
 //
@@ -136,9 +139,13 @@ abstract public class RWSConfigManager implements RWSConfig {
 //     */
     private RwsConfiguration m_config;
 
+    @Deprecated
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (RwsConfiguration) Unmarshaller.unmarshal(RwsConfiguration.class, reader);
-        // call the init methids that populate local object
+        m_config = CastorUtils.unmarshal(RwsConfiguration.class, reader);
+    }
+
+    protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
     }
 
 //    /**

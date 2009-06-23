@@ -28,6 +28,9 @@ package org.openoss.opennms.spring.qosd.spring;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.oss.fm.monitor.AlarmKey;
+import javax.oss.fm.monitor.AlarmValue;
+
 import org.apache.log4j.Logger;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
@@ -145,7 +148,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#send(java.util.Hashtable)
 	 */
-	public void send(Hashtable alarmList) {
+	public void send(Hashtable<AlarmKey,AlarmValue> alarmList) {
 		this.alarmMonitorDao.updateAlarmList(alarmList);
 	}
 

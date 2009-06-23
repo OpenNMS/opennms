@@ -87,7 +87,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
     }
 
     /**
@@ -164,7 +164,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     public void release(MonitoredService svc) {
     }
     
-    abstract public PollStatus poll(MonitoredService svc, Map parameters);
+    abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
 	protected Category log() {
 		return ThreadCategory.getInstance(getClass());

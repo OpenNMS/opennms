@@ -122,7 +122,7 @@ final public class Pop3Monitor extends IPv4Monitor {
      *         should be supressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface

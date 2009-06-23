@@ -47,6 +47,8 @@ import java.net.InetAddress;
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
 public final class Message implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private DHCPMessage m_dhcpmsg;
 
     private InetAddress m_target;

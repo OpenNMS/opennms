@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 import org.opennms.netmgt.provision.service.tasks.SequenceTask;
 
@@ -65,10 +66,8 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     final Object[] m_providers;
     final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
-    public DefaultLifeCycleInstance(Phase containingPhase,
-            LifeCycleRepository repository,
-            DefaultTaskCoordinator coordinator, String lifeCycleName,
-            String[] phaseNames, Object[] providers) {
+    public DefaultLifeCycleInstance(Phase containingPhase, LifeCycleRepository repository,
+            DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
 
         super(coordinator, containingPhase);
         m_containingPhase = containingPhase;
@@ -77,9 +76,16 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         m_name = lifeCycleName;
         m_providers = providers;
         
+        if (log().isDebugEnabled()) {
+            log().debug("Set up default lifecycle instance: " + this);
+        }
+
         m_phases = new Phase[phaseNames.length];
         for(int i = 0; i < phaseNames.length; i++) {
             m_phases[i] = new Phase(this, this, phaseNames[i], m_providers);
+            if (log().isDebugEnabled()) {
+                log().debug(String.format("Adding phase %s to lifecycle", m_phases[i].getName()));
+            }
             add(m_phases[i]);
         }
         
@@ -132,7 +138,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     
     public <T> T findAttributeByType(Class<T> clazz) {
         T result = null;
-        for(Entry entry : m_attributes.entrySet()) {
+        for(Entry<String, Object> entry : m_attributes.entrySet()) {
             if (clazz.isInstance(entry.getValue())) {
                 if (result != null) {
                     throw new IllegalStateException("More than one attribute of type "+clazz+" in lifecycle "+this);
@@ -158,7 +164,11 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     public String toString() {
-        return "LifeCycleInstance "+getName();
-    }
-
+        return new ToStringBuilder(this)
+            .append("name", m_name)
+            .append("containing phase", m_containingPhase)
+            .append("repository", m_repository)
+            .append("coordinator", m_coordinator)
+            .toString();
+   }
 }

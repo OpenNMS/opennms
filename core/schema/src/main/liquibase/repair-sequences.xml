@@ -24,20 +24,20 @@
 	<sql>
 		SELECT pg_catalog.setval(
 			'opennmsnxtid',
-			(SELECT max(id) + 1 AS id FROM (
-				(SELECT max(id)    FROM acks                 LIMIT 1) UNION
-				(SELECT max(id)    FROM assets               LIMIT 1) UNION
-				(SELECT max(id)    FROM atinterface          LIMIT 1) UNION
-				(SELECT max(id)    FROM datalinkinterface    LIMIT 1) UNION
-				(SELECT max(id)    FROM element              LIMIT 1) UNION
-				(SELECT max(id)    FROM ifservices           LIMIT 1) UNION
-				(SELECT max(id)    FROM ipinterface          LIMIT 1) UNION
-				(SELECT max(mapid) FROM map                  LIMIT 1) UNION
-				(SELECT max(id)    FROM resourcereference    LIMIT 1) UNION
-				(SELECT max(id)    FROM snmpinterface        LIMIT 1) UNION
-				(SELECT max(id)    FROM statisticsreport     LIMIT 1) UNION
-				(SELECT max(id)    FROM statisticsreportdata LIMIT 1)
-			) AS id LIMIT 1),
+			(SELECT max(multiMax.id) + 1 AS id FROM (
+				(SELECT max(id)    AS id FROM acks                 LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM assets               LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM atinterface          LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM datalinkinterface    LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM element              LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM ifservices           LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM ipinterface          LIMIT 1) UNION
+				(SELECT max(mapid) AS id FROM map                  LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM resourcereference    LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM snmpinterface        LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM statisticsreport     LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM statisticsreportdata LIMIT 1)
+			) AS multiMax LIMIT 1),
 			true
 		);
 	</sql>

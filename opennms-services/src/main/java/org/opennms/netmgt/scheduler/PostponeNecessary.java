@@ -37,13 +37,13 @@ package org.opennms.netmgt.scheduler;
  * @author brozow
  */
 public class PostponeNecessary extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     /**
      * 
      */
     public PostponeNecessary() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -51,7 +51,6 @@ public class PostponeNecessary extends RuntimeException {
      */
     public PostponeNecessary(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -60,7 +59,6 @@ public class PostponeNecessary extends RuntimeException {
      */
     public PostponeNecessary(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -68,7 +66,6 @@ public class PostponeNecessary extends RuntimeException {
      */
     public PostponeNecessary(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

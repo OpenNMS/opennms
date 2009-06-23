@@ -52,10 +52,11 @@ import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
@@ -466,7 +467,7 @@ public abstract class JMXCollector implements ServiceCollector {
                              * This section is for ObjectNames that use the
                              * '*' wildcard
                              */
-                            Set<ObjectName> mbeanSet = mbeanServer.queryNames(new ObjectName(objectName), null);
+                            Set<ObjectName> mbeanSet = getObjectNames(mbeanServer, objectName);
                             for (Iterator<ObjectName> objectNameIter = mbeanSet.iterator(); objectNameIter.hasNext(); ) {
                                 ObjectName oName = objectNameIter.next();
                                 if (log.isDebugEnabled()) {
@@ -561,6 +562,12 @@ public abstract class JMXCollector implements ServiceCollector {
         
         collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
         return collectionSet;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<ObjectName> getObjectNames(MBeanServerConnection mbeanServer, String objectName) throws IOException,
+            MalformedObjectNameException {
+        return mbeanServer.queryNames(new ObjectName(objectName), null);
     }
 
     /**
@@ -711,7 +718,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     String ds_name = attr.getAlias();
                     if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Priority.WARN))
+                        if (log.isEnabledFor(Level.WARN))
                             log.warn("buildDataSourceList: alias '"
                                     + attr.getAlias()
                                     + "' exceeds 19 char maximum for RRD data "
@@ -740,7 +747,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     // Add the new data source to the list
                     dsList.put(objectName + "|" + attr.getName(), ds);
-                } else if (log.isEnabledFor(Priority.WARN)) {
+                } else if (log.isEnabledFor(Level.WARN)) {
                     log.warn("buildDataSourceList: Data type '"
                             + attr.getType()
                             + "' not supported.  Only integer-type data may be "

@@ -190,7 +190,7 @@ public class EventMaskValueList extends ArrayList<String> {
      * 
      * @see java.util.ArrayList#removeAll(Collection)
      */
-    public boolean removeAll(Collection o) {
+    public boolean removeAll(Collection<?> o) {
         boolean ret = super.removeAll(o);
         evaluateHashCode();
         return ret;

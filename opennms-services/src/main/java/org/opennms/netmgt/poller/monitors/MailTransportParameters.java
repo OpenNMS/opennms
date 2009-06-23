@@ -91,6 +91,7 @@ public class MailTransportParameters {
         return m_transportTest;
     }
 
+    @SuppressWarnings("deprecation")
     MailTransportTest parseMailTransportTest(String test) {
         try {
             return CastorUtils.unmarshal(MailTransportTest.class, new StringReader(test));

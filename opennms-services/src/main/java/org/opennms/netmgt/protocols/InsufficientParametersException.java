@@ -41,6 +41,7 @@ package org.opennms.netmgt.protocols;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
 public class InsufficientParametersException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     public InsufficientParametersException(String message) {
         super(message);

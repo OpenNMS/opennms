@@ -36,10 +36,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -70,7 +69,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
     }
 
     private void loadConfig() throws Exception {
-        Reader reader;
+        InputStream stream = null;
         long lastModified;
         
         File file = null;
@@ -82,13 +81,13 @@ public class DefaultPollerConfigDao implements InitializingBean {
         
         if (file != null) {
             lastModified = file.lastModified();
-            reader = new FileReader(file);
+            stream = new FileInputStream(file);
         } else {
             lastModified = System.currentTimeMillis();
-            reader = new InputStreamReader(getConfigResource().getInputStream());
+            stream = getConfigResource().getInputStream();
         }
 
-        setPollerConfig(new PollerConfigFactory(lastModified, reader, getLocalServer(), isVerifyServer()));
+        setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
     }
     
     private Category log() {

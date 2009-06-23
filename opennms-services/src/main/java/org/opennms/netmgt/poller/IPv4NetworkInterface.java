@@ -49,7 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
  * <P>
  * The NetworkInterface class is designed to be a well defined front for passing
  * interfaces to a service monitor. There are many different types of network in
- * use today including IPv4, IPv6, IPX, and others. To accomidate the possible
+ * use today including IPv4, IPv6, IPX, and others. To accommodate the possible
  * differences this class provides the basic information that a monitor can use
  * to determine the type of interface and its expected address type.
  * </P>
@@ -57,7 +57,7 @@ import org.opennms.core.utils.ThreadCategory;
  * <P>
  * In addition to providing typing and address information, the interface allows
  * for the monitor to associate key-value pairs with an interface. This can be
- * used to save state information between the various invocations if neccessary.
+ * used to save state information between the various invocations if necessary.
  * The attributes may be shared with other monitors concurrently, so a monitor
  * must be careful to choose unique keys to prevent namespace collisions.
  * </P>
@@ -68,6 +68,8 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 public class IPv4NetworkInterface implements NetworkInterface, Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The map of attributes for this interface.
      */

@@ -45,8 +45,6 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -177,12 +175,9 @@ public class CollectdTest extends TestCase {
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
-        pollOutagesRdr.close();
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
 
-        Reader collectdReader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml");
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(collectdReader, "nms1", false);
+        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml"), "nms1", false);
         CollectdConfigFactory.setInstance(collectdConfig);
 
         m_collectd = new Collectd();
@@ -213,13 +208,13 @@ public class CollectdTest extends TestCase {
 
         m_collectdPackage = new CollectdPackage(pkg, "localhost", false);
         
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("thresholds.xml")));
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
     }
 
     @Override
     public void runTest() throws Throwable {
         super.runTest();
-        // FIXME: we get a threshd warning still if we enable this  :(
+        // FIXME: we get a Threshd warning still if we enable this  :(
         // MockLogAppender.assertNoWarningsOrGreater();
         EasyMock.verify(m_filterDao);
     }
@@ -330,6 +325,7 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
+    @SuppressWarnings("unchecked")
     public void testOneMatchingSpec() throws CollectionException {
         String svcName = "SNMP";
         OnmsIpInterface iface = getInterface();
@@ -409,6 +405,7 @@ public class CollectdTest extends TestCase {
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 
+    @SuppressWarnings("unchecked")
     private void setupCollector(String svcName) {
         Collector collector = new Collector();
         collector.setService(svcName);

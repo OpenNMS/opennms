@@ -41,6 +41,8 @@ package org.opennms.netmgt.rtc;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class RTCException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Default class constructor. Constructs a new exception with a default
      * message.

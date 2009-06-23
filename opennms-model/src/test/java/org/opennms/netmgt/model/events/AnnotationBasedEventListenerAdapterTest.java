@@ -73,36 +73,43 @@ public class AnnotationBasedEventListenerAdapterTest {
         public int illegalArgsHandled = 0;
         public int genExceptionsHandled = 0;
         
+        @SuppressWarnings("unused")
         @EventHandler(uei=EventConstants.NODE_DOWN_EVENT_UEI)
         public void handleAnEvent(Event e) {
             receivedEventCount++;
         }
         
+        @SuppressWarnings("unused")
         @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
         public void handleAnotherEvent(Event e) {
             throw new IllegalArgumentException("test generated exception");
         }
         
+        @SuppressWarnings("unused")
         @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
         public void handleYetAnotherEvent(Event e) {
             throw new IllegalStateException("test generated state exception");
         }
         
+        @SuppressWarnings("unused")
         @EventPreProcessor()
         public void preProcess(Event e) {
             preProcessedEvents++;
         }
         
+        @SuppressWarnings("unused")
         @EventPostProcessor
         public void postProcess(Event e) {
             postProcessedEvents++;
         }
         
+        @SuppressWarnings("unused")
         @EventExceptionHandler
         public void handleException(Event e, IllegalArgumentException ex) {
             illegalArgsHandled++;
         }
         
+        @SuppressWarnings("unused")
         @EventExceptionHandler
         public void handleException(Event e, Exception ex) {
             genExceptionsHandled++;

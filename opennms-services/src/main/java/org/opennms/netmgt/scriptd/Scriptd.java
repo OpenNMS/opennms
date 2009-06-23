@@ -48,6 +48,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class implements a script execution service. This service subscribes to
@@ -110,7 +111,7 @@ public final class Scriptd extends AbstractServiceDaemon {
 
         // A queue for execution
 
-        FifoQueue execQ = new FifoQueueImpl();
+        FifoQueue<Event> execQ = new FifoQueueImpl<Event>();
 
         // start the event reader
 

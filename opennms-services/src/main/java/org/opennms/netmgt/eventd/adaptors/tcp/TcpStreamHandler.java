@@ -42,7 +42,7 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -259,13 +260,13 @@ final class TcpStreamHandler implements Runnable {
             m_recsPerConn -= (m_recsPerConn > 0 ? 1 : 0);
 
             // convert the pipe input stream into a buffered input stream
-            InputStreamReader in = new InputStreamReader(new BufferedInputStream(pipeIn));
+            InputStream stream = new BufferedInputStream(pipeIn);
 
-            // Unmarshall the XML document
+            // Unmarshal the XML document
             Log eLog = null;
             boolean doCleanup = false;
             try {
-                eLog = CastorUtils.unmarshal(Log.class, in);
+                eLog = CastorUtils.unmarshal(Log.class, stream);
                 log().debug("Event record converted");
             } catch (ValidationException e) {
                 log().error("The XML record is not valid: " + e, e);
@@ -273,6 +274,10 @@ final class TcpStreamHandler implements Runnable {
             } catch (MarshalException e) {
                 log().error("Could not unmarshall the XML record: " + e, e);
                 doCleanup = true;
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
             }
 
             // clean up the data on the current pipe if necessary
@@ -284,7 +289,7 @@ final class TcpStreamHandler implements Runnable {
                  * be blocked writing.
                  */
                 try {
-                    while (in.read() != -1) {
+                    while (stream.read() != -1) {
                         /* do nothing */;
                     }
                 } catch (IOException e) {

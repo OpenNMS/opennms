@@ -141,7 +141,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -214,7 +214,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {   
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {   
         NetworkInterface iface = svc.getNetInterface();
         
         String returnValue = new String ();

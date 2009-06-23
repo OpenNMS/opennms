@@ -130,7 +130,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
     public void testThresholds() throws Exception {
         System.setProperty("opennms.home", "src/test/resources");
         
-        Map<String,String> parameters = new HashMap<String,String>();
+        Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("rrd-repository", "/tmp");
         parameters.put("ds-name", "icmp");
         parameters.put("rrd-base-name", "icmp");

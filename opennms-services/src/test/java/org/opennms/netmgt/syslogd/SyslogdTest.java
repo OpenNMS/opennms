@@ -39,9 +39,10 @@
 //
 package org.opennms.netmgt.syslogd;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -78,11 +79,14 @@ public class SyslogdTest extends OpenNMSTestCase {
         db.populate(network);
         DataSourceFactory.setInstance(db);
         
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/etc/syslogd-configuration.xml");
-        try {  
-            new SyslogdConfigFactory(rdr);
+        InputStream stream = null;
+        try {
+            stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml");
+            new SyslogdConfigFactory(stream);
         } finally {
-            rdr.close();
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
         }
 
         m_syslogd = new Syslogd();

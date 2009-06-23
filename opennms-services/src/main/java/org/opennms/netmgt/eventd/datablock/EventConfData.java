@@ -87,13 +87,14 @@ public class EventConfData extends Object {
      * 
      * @return true if the event matches the passed key
      */
+    @SuppressWarnings("unchecked")
     private boolean eventMatchesKey(EventKey eventKey, org.opennms.netmgt.xml.event.Event event) {
         // go through the key elements and see if this event will match
         boolean maskMatch = true;
 
-        Iterator keysetIter = eventKey.keySet().iterator();
+        Iterator<String> keysetIter = eventKey.keySet().iterator();
         while (keysetIter.hasNext() && maskMatch) {
-            String key = (String) keysetIter.next();
+            String key = keysetIter.next();
 
             List maskValues = (List) eventKey.get(key);
 
@@ -117,12 +118,12 @@ public class EventConfData extends Object {
      * 
      * @return true if the values passes the mask
      */
-    protected static boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
+    protected static boolean eventValuePassesMaskValue(String eventvalue, List<String> maskValues) {
         boolean maskMatch = false;
 
-        Iterator valiter = maskValues.iterator();
+        Iterator<String> valiter = maskValues.iterator();
         while (valiter.hasNext() && !maskMatch) {
-            String keyvalue = (String) valiter.next();
+            String keyvalue = valiter.next();
             if (keyvalue != null && eventvalue != null) {
                 int len = keyvalue.length();
                 if (keyvalue.equals(eventvalue)) {

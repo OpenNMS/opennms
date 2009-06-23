@@ -134,7 +134,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
-    public Collection getRoles() {
+    public Collection<Role> getRoles() {
         try {
             return m_groupManager.getRoles();
         } catch (Exception e) {
@@ -150,7 +150,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
-    public List getUserSchedulesForRole(String user, String role) {
+    public List<Schedule> getUserSchedulesForRole(String user, String role) {
         try {
             return m_groupManager.getUserSchedulesForRole(user, role);
         } catch (Exception e) {

@@ -55,6 +55,7 @@ public class MockGroupManager extends GroupManager {
         parseXML();
     }
 
+    @SuppressWarnings("deprecation")
     private void parseXML() throws MarshalException, ValidationException {
         Reader reader = new StringReader(m_xmlString);
         parseXml(reader);

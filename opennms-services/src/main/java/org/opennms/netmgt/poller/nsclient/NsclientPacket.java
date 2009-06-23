@@ -32,7 +32,6 @@
 package org.opennms.netmgt.poller.nsclient;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -77,17 +76,17 @@ public class NsclientPacket {
     /**
      * This member is used to convert result codes to strings and vice versa.
      */
-    public static HashMap StateStrings = new HashMap();
+    public static final HashMap<String,Short> STATE_STRINGS = new HashMap<String,Short>();
 
     /**
      * Populates the member used for converting result codes to strings and
      * vice versa.
      */
     static {
-        StateStrings.put(new String("OK"), new Short(RES_STATE_OK));
-        StateStrings.put("WARNING", new Short(RES_STATE_WARNING));
-        StateStrings.put("CRITICAL", new Short(RES_STATE_CRIT));
-        StateStrings.put("UNKNOWN", new Short(RES_STATE_UNKNOWN));
+        STATE_STRINGS.put("OK", RES_STATE_OK);
+        STATE_STRINGS.put("WARNING", RES_STATE_WARNING);
+        STATE_STRINGS.put("CRITICAL", RES_STATE_CRIT);
+        STATE_STRINGS.put("UNKNOWN", RES_STATE_UNKNOWN);
 
     }
 
@@ -100,12 +99,10 @@ public class NsclientPacket {
      *         no correspond code found.
      */
     public static String convertStateToString(short type) {
-        Iterator iter = StateStrings.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry e = (Map.Entry) iter.next();
-            short val = ((Short) e.getValue()).shortValue();
+        for (Map.Entry<String,Short> e : STATE_STRINGS.entrySet()) {
+            short val = e.getValue();
             if (val == type)
-                return (String) e.getKey();
+                return e.getKey();
         }
         return "UNKNOWN";
     }
@@ -118,7 +115,7 @@ public class NsclientPacket {
      * @return the short ID for the result code.
      */
     public static short convertStringToType(String type) {
-        return ((Short) StateStrings.get(type)).shortValue();
+        return ((Short) STATE_STRINGS.get(type)).shortValue();
     }
 
     /**

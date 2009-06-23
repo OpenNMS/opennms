@@ -101,6 +101,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         };
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         Properties p = new Properties();

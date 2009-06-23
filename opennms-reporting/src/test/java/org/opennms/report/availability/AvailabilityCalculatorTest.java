@@ -37,7 +37,7 @@
 //
 package org.opennms.report.availability;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -76,9 +76,9 @@ public class AvailabilityCalculatorTest extends TestCase {
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
 
-        Reader rdr = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         m_catFactory = new MockCategoryFactory();
         CategoryFactory.setInstance(m_catFactory);

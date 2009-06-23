@@ -41,9 +41,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="david@opennms.org">David Hustace</a>
  */
 public class SeveritySubLabels extends ExtendedCategoryAxis {
+    private static final long serialVersionUID = 4985544589299368239L;
 
-    private static final long serialVersionUID = -2409809186462909526L;
-    
     public SeveritySubLabels() {
         super(null);
     }
@@ -58,6 +57,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
      * @param category  the category.
      * @param label  the label.
      */
+    @SuppressWarnings("unchecked")
     public void addSubLabel(Comparable category, String label) {
         super.addSubLabel(category, convertLabel(label));
     }

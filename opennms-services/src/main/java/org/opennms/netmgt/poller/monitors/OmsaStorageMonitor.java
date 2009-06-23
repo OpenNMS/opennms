@@ -77,7 +77,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return m_serviceName;
     }
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
@@ -117,7 +117,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return;
     }
 
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
         
         PollStatus status = PollStatus.available();
@@ -201,7 +201,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-	private SnmpAgentConfig configureAgent(Map parameters, NetworkInterface iface, InetAddress ipaddr) throws RuntimeException {
+	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, NetworkInterface iface, InetAddress ipaddr) throws RuntimeException {
 		SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(snmpAgentConfigKey);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));

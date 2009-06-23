@@ -24,6 +24,8 @@ import javax.ejb.RemoveException;
 import javax.ejb.CreateException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.oss.fm.monitor.AlarmKey;
+import javax.oss.fm.monitor.AlarmValue;
 import javax.oss.fm.monitor.JVTAlarmMonitorHome;
 import javax.oss.fm.monitor.JVTAlarmMonitorSession;
 import javax.rmi.PortableRemoteObject;
@@ -52,7 +54,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	private JVTAlarmMonitorSession session;
 	private Object ref;
 	private AlarmMonitor alarmInternals;
-	private Hashtable alarmList;  // current alarm list - omit cleared and acknowledged alarms
+	private Hashtable<AlarmKey,AlarmValue> alarmList;  // current alarm list - omit cleared and acknowledged alarms
 	private int send_status = SENT;
 	private boolean init = false;
 	private String rebuilt_message="not set";
@@ -72,7 +74,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#send(java.util.Hashtable)
 	 */
-	public void send(Hashtable alarmList)
+	public void send(Hashtable<AlarmKey, AlarmValue> alarmList)
 	{
 		this.alarmList = alarmList;
 		send_status = SEND;

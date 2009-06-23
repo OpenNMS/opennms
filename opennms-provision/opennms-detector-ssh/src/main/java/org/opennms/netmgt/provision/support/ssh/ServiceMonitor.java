@@ -93,6 +93,7 @@ public interface ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
+    @SuppressWarnings("unchecked")
     public void initialize(Map parameters);
 
     /**
@@ -191,5 +192,6 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_AVAILABLE
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
+    @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map parameters);
 }

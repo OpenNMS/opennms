@@ -463,6 +463,7 @@ public class NSClientCollector implements ServiceCollector {
             return (now.getTime() - lastchecked.getTime() > recheckInterval);
         }
 
+        @SuppressWarnings("unused")
         public void didCheckGroupAvailability(String groupName) {
             NSClientGroupState groupState = m_groupStates.get(groupName);
             if (groupState == null) {

@@ -52,7 +52,7 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         return;
     }
 
@@ -80,7 +80,7 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
         int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);

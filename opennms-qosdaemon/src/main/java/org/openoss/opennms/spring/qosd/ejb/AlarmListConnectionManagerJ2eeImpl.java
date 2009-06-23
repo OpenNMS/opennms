@@ -28,6 +28,9 @@
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.oss.fm.monitor.AlarmKey;
+import javax.oss.fm.monitor.AlarmValue;
+
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -69,7 +72,7 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 		cmt.run();
 	}
 
-	public void send(Hashtable alarmList) {
+	public void send(Hashtable<AlarmKey,AlarmValue> alarmList) {
 		cmt.send(alarmList);
 
 	}

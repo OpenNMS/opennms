@@ -35,7 +35,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
@@ -79,9 +78,7 @@ public final class EventdConfigFactory extends EventdConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
     private EventdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        
-        super(new FileReader(configFile));
-
+        super(configFile);
     }
 
     /**

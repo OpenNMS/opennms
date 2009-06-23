@@ -44,6 +44,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -63,14 +65,14 @@ public class DefaultTaskCoordinator implements InitializingBean {
     private class RunnableActor extends Thread {
         private final BlockingQueue<Future<Runnable>> m_queue;
         public RunnableActor(BlockingQueue<Future<Runnable>> queue) {
+            super("RunnableActor");
             m_queue = queue;
             start();
         }
         
         public void run() {
-            try {
-                int count = 0;
-                while(true) {
+            while(true) {
+                try {
                     Runnable r = m_queue.take().get();
                     if (r != null) {
                         r.run();
@@ -78,13 +80,13 @@ public class DefaultTaskCoordinator implements InitializingBean {
                     if (m_loopDelay != null) {
                         sleep(m_loopDelay);
                     }
+                } catch (InterruptedException e) {
+                    log().warn("runnable actor interrupted", e);
+                } catch (ExecutionException e) {
+                    log().warn("runnable actor execution failed", e);
+                } catch (Throwable e) {
+                    log().error("an unknown error occurred in the runnable actor", e);
                 }
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
     }
@@ -92,6 +94,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
 
     private final BlockingQueue<Future<Runnable>> m_queue;
     private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
+    @SuppressWarnings("unused")
     private final RunnableActor m_actor;
     
     private String m_defaultExecutor ;
@@ -212,22 +215,22 @@ public class DefaultTaskCoordinator implements InitializingBean {
     
     
     private void notifyDependents(Task completed) {
-        System.err.printf("Task %s completed!\n", completed);
+        // log().debug(String.format("Task %s completed!", completed));
         completed.onComplete();
 
         final Set<Task> dependents = completed.getDependents();
-        //System.err.printf("Task %s afters = %s\n", completed, dependents);
         for(Task dependent : dependents) {
-            //System.err.printf("Checking the prereqs for %s\n", dependent);
             dependent.doCompletePrerequisite(completed);
             if (dependent.isReady()) {
-                System.err.printf("\tTask %s %s ready.\n", dependent, dependent.isReady() ? "is" : "is not");
+                if (log().isDebugEnabled()) {
+                    // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
+                }
             }
             
             dependent.submitIfReady();
         }
-        
-        System.err.printf("CLEAN: removing dependents of %s\n", completed);
+
+        // log().debug(String.format("CLEAN: removing dependents of %s", completed));
         completed.clearDependents();
         
         
@@ -263,7 +266,9 @@ public class DefaultTaskCoordinator implements InitializingBean {
     private CompletionService<Runnable> getCompletionService(String name) {
         CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
         CompletionService<Runnable> selected = completionService != null ? completionService : m_defaultCompletionService;
-        System.err.printf("USING COMPLETION SERVICE %s : %s!!!!!!\n", name, selected);
+        if (log().isDebugEnabled()) {
+            // log().debug(String.format("USING COMPLETION SERVICE %s : %s!", name, selected));
+        }
         return selected;
     }
     
@@ -276,19 +281,21 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
     void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
+        @SuppressWarnings("unused")
         Runnable r = new Runnable() {
             public void run() {
                 try {
                     workToBeDone.run();
                 } catch (Throwable t) {
-                    System.err.println("Unexpected Exception processing: "+workToBeDone);
-                    t.printStackTrace();
+                    log().warn("Unexpected Exception processing: "+workToBeDone, t);
                 }
             }
         };
         final String preferredExecutor = executorPreference;
         getCompletionService(preferredExecutor).submit(workToBeDone, completionProcessor);
-        System.out.printf("SUBMIT: Task %s to executor %s\n", workToBeDone, preferredExecutor);
+        if (log().isDebugEnabled()) {
+            // log().debug(String.format("SUBMIT: Task %s to executor %s\n", workToBeDone, preferredExecutor));
+        }
     }
     
     public void addExecutor(String executorName, Executor executor) {
@@ -302,4 +309,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         }
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

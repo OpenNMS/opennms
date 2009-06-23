@@ -40,13 +40,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -78,28 +77,42 @@ public class MonitoringLocationsFactory {
     private static MonitoringLocationsConfiguration m_config;
 
     public MonitoringLocationsFactory(String configFile) throws MarshalException, ValidationException, IOException {
-        InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
-        
+        InputStream stream = null;
         try {
-            initialize(rdr);
+            stream = new FileInputStream(configFile);
+            initialize(stream);
         } finally {
-            rdr.close();
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
         }
     }
 
+    public MonitoringLocationsFactory(InputStream stream) throws MarshalException, ValidationException {
+        initialize(stream);
+    }
+
+    @Deprecated
     public MonitoringLocationsFactory(Reader rdr) throws MarshalException, ValidationException {
         initialize(rdr);
     }
 
+    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+        log().debug("initialize: initializing monitoring locations factory.");
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream);
+        initializeDefsMap();
+    }
+
+    @Deprecated
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         log().debug("initialize: initializing monitoring locations factory.");
         m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr);
+        initializeDefsMap();
+    }
 
+    private void initializeDefsMap() {
         m_defsMap = new HashMap<String, LocationDef>();
-        Collection defList = m_config.getLocations().getLocationDefCollection();
-        Iterator i = defList.iterator();
-        while (i.hasNext()) {
-            LocationDef def = (LocationDef) i.next();
+        for (LocationDef def : m_config.getLocations().getLocationDefCollection()) {
             m_defsMap.put(def.getLocationName(), def);
         }
     }

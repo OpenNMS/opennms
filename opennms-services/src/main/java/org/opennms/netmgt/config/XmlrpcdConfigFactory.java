@@ -42,13 +42,14 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -98,9 +99,15 @@ public final class XmlrpcdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private XmlrpcdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
-        unmarshal(rdr);
-        rdr.close();
+        InputStream is = null;
+        try {
+            is = new FileInputStream(configFile);
+            unmarshal(is);
+        } finally {
+            if (is != null) {
+                IOUtils.closeQuietly(is);
+            }
+        }
     }
     
     /**
@@ -113,12 +120,24 @@ public final class XmlrpcdConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public XmlrpcdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         unmarshal(rdr);
     }
 
+    public XmlrpcdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        unmarshal(stream);
+    }
+
+    @Deprecated
     private void unmarshal(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(XmlrpcdConfiguration.class, rdr);
+
+        handleLegacyConfiguration();
+    }
+
+    private void unmarshal(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(XmlrpcdConfiguration.class, stream);
 
         handleLegacyConfiguration();
     }

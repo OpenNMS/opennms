@@ -42,11 +42,12 @@ package org.opennms.netmgt.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -87,13 +88,17 @@ public final class VacuumdConfigFactory {
     private VacuumdConfiguration m_config;
 
     /**
-     * Private constructor
      * @param rdr Reader
      * @throws MarshalException
      * @throws ValidationException
      */
+    @Deprecated
     public VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(VacuumdConfiguration.class, rdr);
+    }
+    
+    public VacuumdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(VacuumdConfiguration.class, stream);
     }
 
     /**
@@ -116,12 +121,15 @@ public final class VacuumdConfigFactory {
             return;
         }
 
-        Reader reader = new InputStreamReader(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME)));
+        InputStream is = null;
 
         try {
-            setInstance(new VacuumdConfigFactory(reader));
+            is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME));
+            setInstance(new VacuumdConfigFactory(is));
         } finally {
-            reader.close();
+            if (is != null) {
+                IOUtils.closeQuietly(is);
+            }
         }
         
         m_loadedFromFile = true;
@@ -172,16 +180,14 @@ public final class VacuumdConfigFactory {
      * Returns a Collection of automations defined in the config
      * @return
      */
-    @SuppressWarnings("unchecked")
     public synchronized Collection<Automation> getAutomations() {
         return m_config.getAutomations().getAutomationCollection();
     }
     
     /**
-     * Returns a Collectionn of triggers defined in the config
+     * Returns a Collection of triggers defined in the config
      * @return 
      */
-    @SuppressWarnings("unchecked")
 	public synchronized Collection<Trigger> getTriggers() {
         return m_config.getTriggers().getTriggerCollection();
     }
@@ -190,7 +196,6 @@ public final class VacuumdConfigFactory {
      * Returns a Collection of actions defined in the config
      * @return
      */
-    @SuppressWarnings("unchecked")
     public synchronized Collection<Action> getActions() {
         return m_config.getActions().getActionCollection();
     }
@@ -199,12 +204,10 @@ public final class VacuumdConfigFactory {
      * Returns a Collection of named events to that may have
      * been configured to be sent after an automation has run.
      */
-    @SuppressWarnings("unchecked")
     public synchronized Collection<AutoEvent> getAutoEvents() {
         return m_config.getAutoEvents().getAutoEventCollection();
     }
 
-    @SuppressWarnings("unchecked")
     public synchronized Collection<ActionEvent> getActionEvents() {
         return m_config.getActionEvents().getActionEventCollection();
     }

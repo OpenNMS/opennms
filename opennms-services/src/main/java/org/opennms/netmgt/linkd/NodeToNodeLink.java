@@ -48,9 +48,9 @@ public class NodeToNodeLink {
 	int parentifindex;
 
 
-	private NodeToNodeLink() {
-		throw new UnsupportedOperationException(
-		"default constructor not supported");
+	@SuppressWarnings("unused")
+    private NodeToNodeLink() {
+		throw new UnsupportedOperationException("default constructor not supported");
 	}
 
 	public NodeToNodeLink(int nodeId, int ifindex) {

@@ -36,6 +36,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
 import org.springframework.context.annotation.Scope;
@@ -54,7 +56,9 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     }
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        System.err.println("Addres: " + address + " port: " + port + " timeout: " + timeout);
+        if (log().isDebugEnabled()) {
+            log().debug("Address: " + address + ", port: " + port + ", timeout: " + timeout);
+        }
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
         setAddress(address);
@@ -93,6 +97,10 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
 
     protected int getPort() {
         return m_port;
+    }
+
+    private Logger log() {
+        return ThreadCategory.getInstance(NtpClient.class);
     }
 
 }

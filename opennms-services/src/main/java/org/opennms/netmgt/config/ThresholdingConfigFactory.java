@@ -39,16 +39,17 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -106,26 +107,25 @@ public final class ThresholdingConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ThresholdingConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        FileReader cfgIn = new FileReader(configFile);
+        InputStream stream = null;
 
         try {
-            parseXML(cfgIn);
+            stream = new FileInputStream(configFile);
+            parseXML(stream);
         } finally {
-            try {
-                cfgIn.close();
-            } catch (IOException e) {
-                // do nothing
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
             }
         }
 
     }
     
-    public ThresholdingConfigFactory(Reader reader) throws MarshalException, ValidationException {
-        parseXML(reader);
+    public ThresholdingConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        parseXML(stream);
     }
 
-    private void parseXML(Reader cfgIn) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ThresholdingConfig.class, cfgIn);
+    private void parseXML(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(ThresholdingConfig.class, stream);
         initGroupMap();
     }
     
@@ -301,10 +301,15 @@ public final class ThresholdingConfigFactory {
     public void update() throws IOException, MarshalException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-        Reader r = new FileReader(cfgFile);
-        parseXML(r);
-
-        r.close();
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            parseXML(stream);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
     
     private static Category log() {

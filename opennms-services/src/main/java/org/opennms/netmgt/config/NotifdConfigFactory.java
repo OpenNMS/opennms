@@ -44,9 +44,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -109,13 +108,16 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
 
-        InputStream configIn = new FileInputStream(m_notifdConfFile);
-        m_lastModified = m_notifdConfFile.lastModified();
-
-        Reader reader = new InputStreamReader(configIn);
-        parseXml(reader);
-        reader.close();
-        configIn.close();
+        InputStream configIn = null;
+        try {
+            configIn = new FileInputStream(m_notifdConfFile);
+            m_lastModified = m_notifdConfFile.lastModified();
+            parseXml(configIn);
+        } finally {
+            if (configIn != null) {
+                IOUtils.closeQuietly(configIn);
+            }
+        }
     }
 
     /**

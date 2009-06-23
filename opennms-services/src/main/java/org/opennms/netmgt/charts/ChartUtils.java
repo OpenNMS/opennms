@@ -153,6 +153,7 @@ public class ChartUtils {
      * @param barChart TODO
      * @param subLabelClass
      */
+    @SuppressWarnings("unchecked")
     private static void addSubLabels(JFreeChart barChart, String subLabelClass) {
         ExtendedCategoryAxis subLabels;
         CategoryPlot plot = barChart.getCategoryPlot();
@@ -176,6 +177,7 @@ public class ChartUtils {
      * @param barChart TODO
      * @param chartConfig
      */
+    @SuppressWarnings("unchecked")
     private static void customizeSeries(JFreeChart barChart, BarChart chartConfig) {
         
         /*
@@ -218,7 +220,7 @@ public class ChartUtils {
      * @param barChart
      */
     private static void addSubTitles(BarChart chartConfig, JFreeChart barChart) {
-        Iterator it;
+        Iterator<SubTitle> it;
         /*
          * Add subtitles.
          */
@@ -282,9 +284,9 @@ public class ChartUtils {
         Connection conn = null;
         try {
             conn = DataSourceFactory.getInstance().getConnection();
-            Iterator it = chartConfig.getSeriesDefCollection().iterator();
+            Iterator<SeriesDef> it = chartConfig.getSeriesDefCollection().iterator();
             while (it.hasNext()) {
-                SeriesDef def = (SeriesDef) it.next();
+                SeriesDef def = it.next();
                 JDBCCategoryDataset dataSet = new JDBCCategoryDataset(conn, def.getJdbcDataSet().getSql());
             
                 for (int i = 0; i < dataSet.getRowCount(); i++) {
@@ -423,7 +425,7 @@ public class ChartUtils {
      * @throws IOException
      */
     public static BarChart getBarChartConfigByName(String chartName) throws MarshalException, ValidationException, IOException {
-        Iterator it = getChartCollectionIterator();
+        Iterator<BarChart> it = getChartCollectionIterator();
         BarChart chart = null;
         while (it.hasNext()) {
             chart = (BarChart)it.next();
@@ -441,7 +443,7 @@ public class ChartUtils {
      * @throws MarshalException
      * @throws ValidationException
      */
-    public static Iterator getChartCollectionIterator() throws IOException, MarshalException, ValidationException {
+    public static Iterator<BarChart> getChartCollectionIterator() throws IOException, MarshalException, ValidationException {
         return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection().iterator();
     }
     

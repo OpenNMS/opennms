@@ -35,9 +35,13 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
@@ -60,12 +64,30 @@ public class EventdConfigManager {
      * @throws MarshalException 
      * @throws IOException 
      */
+    @Deprecated
     protected EventdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
         reader.close();
 
     }
     
+    protected EventdConfigManager(InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+
+    }
+    
+    public EventdConfigManager(String configFile) throws FileNotFoundException, MarshalException, ValidationException {
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(configFile);
+            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
+    }
+
     /**
      * Return the IP address on which eventd listens for TCP connections.
      * 

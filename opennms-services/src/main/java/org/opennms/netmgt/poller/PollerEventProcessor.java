@@ -47,7 +47,6 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -88,9 +87,9 @@ final class PollerEventProcessor implements EventListener {
      * Create message selector to set to the subscription
      */
     private void createMessageSelectorAndSubscribe() {
-        // Create the selector for the ueis this service is interested in
+        // Create the selector for the UEIs this service is interested in
         //
-        List ueiList = new ArrayList();
+        List<String> ueiList = new ArrayList<String>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -192,6 +191,7 @@ final class PollerEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Is this the result of a resumePollingService event?
+        @SuppressWarnings("unused")
         String whichEvent = "Unexpected Event: " + event.getUei() + ": ";
         if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             whichEvent = "nodeGainedService: ";
@@ -200,9 +200,7 @@ final class PollerEventProcessor implements EventListener {
         }
         
 
-        // First make sure the service gained is in active state before trying
-        // to
-        // schedule
+        // First make sure the service gained is in active state before trying to schedule
 
         String ipAddr = event.getInterface();
         int nodeId = (int) event.getNodeid();
@@ -250,9 +248,7 @@ final class PollerEventProcessor implements EventListener {
             Value parmValue = null;
             String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+            for (Parm parm : parms.getParmCollection()) {
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -361,9 +357,7 @@ final class PollerEventProcessor implements EventListener {
             Value parmValue = null;
             String parmContent = null;
 
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+            for (Parm parm : parms.getParmCollection()) {
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -426,9 +420,8 @@ final class PollerEventProcessor implements EventListener {
             String parmName = null;
             Value parmValue = null;
             String parmContent = null;
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
+            
+            for (Parm parm : parms.getParmCollection()) {
                 parmName = parm.getParmName();
                 parmValue = parm.getValue();
                 if (parmValue == null)
@@ -643,10 +636,11 @@ final class PollerEventProcessor implements EventListener {
                 serviceDeletedHandler(event);
             }
 
-        } // end single event proces
+        } // end single event process
 
     } // end onEvent()
     
+    @SuppressWarnings("unused")
     private void demandPollServiceHandler(Event e) throws InsufficientInformationException {
     	EventUtils.checkNodeId(e);
     	EventUtils.checkInterface(e);
@@ -667,7 +661,7 @@ final class PollerEventProcessor implements EventListener {
     }
     
     private void thresholdsConfigChangeHandler(Category log) {
-        // FIXME Is this really necesary ?
+        // FIXME Is this really necessary ?
         try {
             ThresholdingConfigFactory.reload();
             ThreshdConfigFactory.reload();
@@ -704,7 +698,7 @@ final class PollerEventProcessor implements EventListener {
     }
 
     /**
-     * @return Returns the xmlrpc.
+     * @return Returns the XMLRPC.
      */
     private boolean isXmlRPCEnabled() {
         return getPollerConfig().getXmlrpc();

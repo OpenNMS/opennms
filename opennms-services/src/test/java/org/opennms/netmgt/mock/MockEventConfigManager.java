@@ -35,7 +35,6 @@ package org.opennms.netmgt.mock;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -47,9 +46,7 @@ import org.opennms.netmgt.config.EventdConfigManager;
  */
 public class MockEventConfigManager extends EventdConfigManager {
 
-    public MockEventConfigManager(String config) throws MarshalException, ValidationException, IOException {
-        super( new StringReader(config));
-    }
+    @SuppressWarnings("deprecation")
     public MockEventConfigManager(Reader rdr) throws MarshalException, ValidationException, IOException {
         super(rdr);
     }

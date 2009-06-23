@@ -42,21 +42,23 @@ import java.util.List;
 import org.opennms.netmgt.config.categories.Category;
 
 /**
- * This class is used to encapsulate a category in the categories xml file.
+ * This class is used to encapsulate a category in the categories XML file.
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class RTCCategory extends Category {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The 'effective' rule
      */
     private String m_effectiveRule;
 
     /**
-     * The nodes list - list of node ids
+     * The nodes list - list of node IDs
      */
-    private List m_nodes;
+    private List<Long> m_nodes;
 
     /**
      * The default constructor - initializes the values
@@ -71,7 +73,7 @@ public class RTCCategory extends Category {
 
         m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
 
-        m_nodes = Collections.synchronizedList(new ArrayList());
+        m_nodes = Collections.synchronizedList(new ArrayList<Long>());
     }
 
     /**
@@ -81,7 +83,7 @@ public class RTCCategory extends Category {
      *            the node to add
      */
     public void addNode(RTCNode node) {
-        Long longnodeid = new Long(node.getNodeID());
+        Long longnodeid = node.getNodeID();
 
         if (!m_nodes.contains(longnodeid))
             m_nodes.add(longnodeid);
@@ -91,7 +93,7 @@ public class RTCCategory extends Category {
      * Add to the nodes in this category
      * 
      * @param nodeid
-     *            the nodeid to add
+     *            the node ID to add
      */
     public void addNode(long nodeid) {
         Long longnodeid = new Long(nodeid);
@@ -104,7 +106,7 @@ public class RTCCategory extends Category {
      * Delete from the nodes in this category
      * 
      * @param nodeid
-     *            the nodeid to delete
+     *            the node ID to delete
      */
     public void deleteNode(long nodeid) {
         Long longnodeid = new Long(nodeid);
@@ -127,9 +129,9 @@ public class RTCCategory extends Category {
 
         boolean found = false;
 
-        Enumeration en = enumerateService();
+        Enumeration<String> en = enumerateService();
         while (en.hasMoreElements()) {
-            String svc = (String) en.nextElement();
+            String svc = en.nextElement();
             if (svc.equals(svcname)) {
                 found = true;
                 break;
@@ -149,11 +151,11 @@ public class RTCCategory extends Category {
     }
 
     /**
-     * Get the node ids in this category
+     * Get the node IDs in this category
      * 
-     * @return the list of node ids in this category
+     * @return the list of node IDs in this category
      */
-    public List getNodes() {
+    public List<Long> getNodes() {
         return m_nodes;
     }
 }

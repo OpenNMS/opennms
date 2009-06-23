@@ -37,6 +37,8 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -67,13 +69,19 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     }
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        
-        System.out.println("Loading JDBC driver: '" + getDbDriver() + "'");
+        log().info("connecting to JDBC on " + address);
+        if (log().isDebugEnabled()) {
+            log().debug("Loading JDBC driver: '" + getDbDriver() + "'");
+        }
         Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
-        System.out.println("JDBC driver loaded: '" + getDbDriver() + "'");
+        if (log().isDebugEnabled()) {
+            log().debug("JDBC driver loaded: '" + getDbDriver() + "'");
+        }
 
         String url = DBTools.constructUrl(getUrl(), address.getCanonicalHostName());
-        System.out.println("Constructed JDBC url: '" + url + "'");
+        if (log().isDebugEnabled()) {
+            log().debug("Constructed JDBC url: '" + url + "'");
+        }
 
         Properties props = new Properties();
         props.setProperty("user", getUser());
@@ -81,8 +89,9 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         props.setProperty("timeout", String.valueOf(timeout/1000));
         m_connection = driver.connect(url, props);
 
-        System.out.println("Got database connection: '" + m_connection + "' (" + url + ", " + getUser() + ", " + getPassword() + ")");
-        
+        if (log().isDebugEnabled()) {
+            log().debug("Got database connection: '" + m_connection + "' (" + url + ", " + getUser() + ", " + getPassword() + ")");
+        }
     }
 
     public JDBCResponse receiveBanner() throws IOException, Exception {
@@ -126,5 +135,8 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     public String getUrl() {
         return m_url;
     }
-    
+
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }
