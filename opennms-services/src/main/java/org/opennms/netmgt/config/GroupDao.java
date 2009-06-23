@@ -136,7 +136,7 @@ public interface GroupDao {
     
     public String[] getRoleNames();
     
-    public Collection getRoles();
+    public Collection<Role> getRoles();
     
     public Role getRole(String roleName);
 
@@ -144,7 +144,7 @@ public interface GroupDao {
        
     public List<Schedule> getSchedulesForRoleAt(String roleId, Date time);
     
-    public List getUserSchedulesForRole(String userId, String roleid);
+    public List<Schedule> getUserSchedulesForRole(String userId, String roleid);
     
     public boolean isUserScheduledForRole(String userId, String roleid, Date time);
     

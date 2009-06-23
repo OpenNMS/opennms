@@ -41,11 +41,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -95,8 +97,14 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
+    @Deprecated
     public LinkdConfigFactory(long currentVersion, Reader reader) throws MarshalException, ValidationException, IOException {
         super(reader);
+        m_currentVersion = currentVersion;
+    }
+
+    public LinkdConfigFactory(long currentVersion, InputStream stream) throws MarshalException, ValidationException, IOException {
+        super(stream);
         m_currentVersion = currentVersion;
     }
 
@@ -122,11 +130,16 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader reader = new FileReader(cfgFile);
-        LinkdConfigFactory config = new LinkdConfigFactory(cfgFile.lastModified(), reader);
-        reader.close();
-
-        setInstance(config);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            LinkdConfigFactory config = new LinkdConfigFactory(cfgFile.lastModified(), stream);
+            setInstance(config);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
 
     private static Category logStatic() {
@@ -188,7 +201,15 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileReader(cfgFile));
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                reloadXML(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

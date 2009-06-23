@@ -62,6 +62,7 @@ public class Interface extends StandardNamedObject {
             return new ServiceComparator(name);
         }
 
+        @SuppressWarnings("unused")
         static ServiceComparator make(Service svc) {
             return new ServiceComparator(svc.getName());
         }

@@ -34,6 +34,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 
@@ -57,8 +58,13 @@ public abstract class ChartConfigManager {
      * @throws ValidationException
      * @throws IOException
      */
+    @Deprecated
     public synchronized static void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
         m_configuration = CastorUtils.unmarshal(ChartConfiguration.class, reader);
+    }
+    
+    public synchronized static void parseXml(InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_configuration = CastorUtils.unmarshal(ChartConfiguration.class, stream);
     }
     
     /**
@@ -71,9 +77,9 @@ public abstract class ChartConfigManager {
      * 
      */
     public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
-        // marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_configuration, stringWriter);
         String xml = stringWriter.toString();

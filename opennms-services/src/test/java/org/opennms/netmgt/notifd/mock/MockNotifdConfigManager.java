@@ -61,6 +61,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      * @throws ValidationException
      * @throws MarshalException
      */
+    @SuppressWarnings("deprecation")
     public MockNotifdConfigManager(String configString) throws MarshalException, ValidationException, IOException {
         Reader reader = new StringReader(configString);
         parseXml(reader);

@@ -45,7 +45,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -86,15 +85,22 @@ public abstract class DestinationPathManager {
      * @throws MarshalException
      * @throws ValidationException
      */
+    @Deprecated
     protected void parseXML(Reader reader) throws MarshalException, ValidationException {
         allPaths = CastorUtils.unmarshal(DestinationPaths.class, reader);
         oldHeader = allPaths.getHeader();
-    
+        initializeDestinationPaths();
+    }
+
+    protected void parseXML(InputStream stream) throws MarshalException, ValidationException {
+        allPaths = CastorUtils.unmarshal(DestinationPaths.class, stream);
+        oldHeader = allPaths.getHeader();
+        initializeDestinationPaths();
+    }
+
+    private void initializeDestinationPaths() {
         m_destinationPaths = new TreeMap<String, Path>();
-    
-        Iterator i = allPaths.getPathCollection().iterator();
-        while (i.hasNext()) {
-            Path curPath = (Path) i.next();
+        for (Path curPath : allPaths.getPathCollection()) {
             m_destinationPaths.put(curPath.getName(), curPath);
         }
     }
@@ -121,7 +127,6 @@ public abstract class DestinationPathManager {
      * 
      */
     
-    @SuppressWarnings("unchecked")
     public Collection<String> getTargetCommands(Path path, int index, String target) throws IOException, MarshalException, ValidationException {
         update();
     
@@ -160,12 +165,8 @@ public abstract class DestinationPathManager {
      */
     public boolean pathHasTarget(Path path, String target) throws IOException, MarshalException, ValidationException {
         update();
-    
-        Collection targets = path.getTargetCollection();
-    
-        Iterator i = targets.iterator();
-        while (i.hasNext()) {
-            Target curTarget = (Target) i.next();
+
+        for (Target curTarget : path.getTargetCollection()) {
             if (curTarget.getName().equals(target))
                 return true;
         }
@@ -228,16 +229,15 @@ public abstract class DestinationPathManager {
      */
     public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
         allPaths.removeAllPath();
-        Iterator i = m_destinationPaths.keySet().iterator();
-        while (i.hasNext()) {
-            allPaths.addPath((Path) m_destinationPaths.get(i.next()));
+        for (Path path : m_destinationPaths.values()) {
+            allPaths.addPath(path);
         }
     
         allPaths.setHeader(rebuildHeader());
     
-        // marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(allPaths, stringWriter);
         String writerString = stringWriter.toString();

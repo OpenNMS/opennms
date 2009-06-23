@@ -405,6 +405,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             return m_pageSequence;
         }
 
+        @SuppressWarnings("deprecation")
         PageSequence parsePageSequence(String sequenceString) {
             try {
                 return CastorUtils.unmarshal(PageSequence.class, new StringReader(sequenceString));
@@ -451,9 +452,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
     }
 
-
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(MonitoredService svc, Map parameterMap) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameterMap) {
         HttpClient client = null;
         
         try {

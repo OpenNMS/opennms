@@ -229,7 +229,7 @@ public final class CategoryFactory implements CatFactory{
     public synchronized boolean deleteCategoryGroup(String groupname) {
         boolean deleted = false;
 
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
             if (cg.getName().equals(groupname)) {
@@ -257,7 +257,7 @@ public final class CategoryFactory implements CatFactory{
     public synchronized boolean addCategory(String groupname, Category cat) {
         boolean added = false;
 
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
             if (cg.getName().equals(groupname)) {
@@ -287,7 +287,7 @@ public final class CategoryFactory implements CatFactory{
     public synchronized boolean replaceCategory(String groupname, Category cat) {
         boolean replaced = false;
 
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
             if (cg.getName().equals(groupname)) {
@@ -326,7 +326,7 @@ public final class CategoryFactory implements CatFactory{
     public synchronized boolean deleteCategory(String groupname, Category cat) {
         boolean deleted = false;
 
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
             if (cg.getName().equals(groupname)) {
@@ -356,14 +356,14 @@ public final class CategoryFactory implements CatFactory{
     public synchronized boolean deleteCategory(String groupname, String catlabel) {
         boolean deleted = false;
 
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
             if (cg.getName().equals(groupname)) {
                 // get categories and delete
                 Categories cats = cg.getCategories();
 
-                Enumeration enumCat = cats.enumerateCategory();
+                Enumeration<Category> enumCat = cats.enumerateCategory();
                 while (enumCat.hasMoreElements()) {
                     Category cat = (Category) enumCat.nextElement();
                     if (cat.getLabel().equals(catlabel)) {
@@ -387,14 +387,14 @@ public final class CategoryFactory implements CatFactory{
      * @return the category specified by name, null if not found
      */
     public synchronized Category getCategory(String name) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(name)) {
@@ -416,14 +416,14 @@ public final class CategoryFactory implements CatFactory{
      *         not found
      */
     public synchronized double getNormal(String catlabel) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(catlabel)) {
@@ -445,14 +445,14 @@ public final class CategoryFactory implements CatFactory{
      *         not found
      */
     public synchronized double getWarning(String catlabel) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(catlabel)) {
@@ -474,14 +474,14 @@ public final class CategoryFactory implements CatFactory{
      *         not found
      */
     public synchronized String[] getServices(String catlabel) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(catlabel)) {
@@ -503,14 +503,14 @@ public final class CategoryFactory implements CatFactory{
      *         found
      */
     public synchronized String getRule(String catlabel) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(catlabel)) {
@@ -533,14 +533,14 @@ public final class CategoryFactory implements CatFactory{
      *         category is not found
      */
     public synchronized String getEffectiveRule(String catlabel) {
-        Enumeration enumCG = m_config.enumerateCategorygroup();
+        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
             Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
             // go through the categories
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
                 Category cat = (Category) enumCat.nextElement();
                 if (cat.getLabel().equals(catlabel)) {

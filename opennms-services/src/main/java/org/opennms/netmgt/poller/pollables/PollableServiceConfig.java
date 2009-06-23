@@ -36,8 +36,6 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -63,7 +61,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private PollerConfig m_pollerConfig;
     private PollOutagesConfig m_pollOutagesConfig;
     private PollableService m_service;
-    private Map m_parameters = null;
+    private Map<String,Object> m_parameters = null;
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
@@ -86,9 +84,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @return
      */
     private Service findService(Package pkg) {
-        Enumeration esvc = m_pkg.enumerateService();
-        while (esvc.hasMoreElements()) {
-            Service s = (Service) esvc.nextElement();
+        for (Service s : m_pkg.getServiceCollection()) {
             if (s.getName().equalsIgnoreCase(m_service.getSvcName())) {
                 return s;
             }
@@ -149,7 +145,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     /**
      * @return
      */
-    private synchronized Map getParameters() {
+    private synchronized Map<String,Object> getParameters() {
         if (m_parameters == null) {
             
             m_parameters = createPropertyMap(m_configService);
@@ -157,11 +153,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         return m_parameters;
     }
 
-    private Map createPropertyMap(Service svc) {
-        Map m = Collections.synchronizedMap(new TreeMap());
-        Enumeration ep = svc.enumerateParameter();
-        while (ep.hasMoreElements()) {
-            Parameter p = (Parameter) ep.nextElement();
+    private Map<String,Object> createPropertyMap(Service svc) {
+        Map<String,Object> m = Collections.synchronizedMap(new TreeMap<String,Object>());
+        for (Parameter p : svc.getParameterCollection()) {
             String val = p.getValue();
             if (val == null) {
             	val = (p.getAnyObject() == null ? "" : p.getAnyObject().toString());
@@ -187,9 +181,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         if (m_service.getStatus().isDown()) {
             long downSince = m_timer.getCurrentTime() - m_service.getStatusChangeTime();
             boolean matched = false;
-            Enumeration edowntime = m_pkg.enumerateDowntime();
-            while (edowntime.hasMoreElements()) {
-                Downtime dt = (Downtime) edowntime.nextElement();
+            for (Downtime dt : m_pkg.getDowntimeCollection()) {
                 if (dt.getBegin() <= downSince) {
                     if (dt.getDelete() != null && (dt.getDelete().equals("yes") || dt.getDelete().equals("true"))) {
                         when = -1;
@@ -223,11 +215,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
 
     public boolean scheduledSuspension() {
-        Iterator iter = m_pkg.getOutageCalendarCollection().iterator();
         long nodeId=m_service.getNodeId();
-        while (iter.hasNext()) {
-            String outageName = (String) iter.next();
-    
+        for (String outageName : m_pkg.getOutageCalendarCollection()) {
             // Does the outage apply to the current time?
             if (m_pollOutagesConfig.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?

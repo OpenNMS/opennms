@@ -39,7 +39,6 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -73,12 +72,11 @@ public class Jsr160DetectorTest {
     public Jsr160Detector m_detector;
     
     public static MBeanServer m_beanServer;
-    private static Registry m_registry;
     private JMXConnectorServer m_connectorServer;
     
     @BeforeClass
     public static void beforeTest() throws RemoteException{
-        m_registry = LocateRegistry.createRegistry(9999);
+        LocateRegistry.createRegistry(9999);
         m_beanServer = ManagementFactory.getPlatformMBeanServer();
     }
     

@@ -35,10 +35,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -74,19 +75,33 @@ public class WmiDataCollectionConfigFactory {
      private static WmiDatacollectionConfig m_config;
 
      public WmiDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
-         InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
+         InputStream is = null;
 
          try {
-             initialize(rdr);
+             is = new FileInputStream(configFile);
+             initialize(is);
          } finally {
-             rdr.close();
+             if (is != null) {
+                 IOUtils.closeQuietly(is);
+             }
          }
      }
 
+     public WmiDataCollectionConfigFactory(InputStream is) throws MarshalException, ValidationException {
+         initialize(is);
+     }
+
+     @Deprecated
      public WmiDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
          initialize(rdr);
      }
 
+     private void initialize(InputStream stream) throws MarshalException, ValidationException {
+         log().debug("initialize: initializing WMI collection config factory.");
+         m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, stream);
+     }
+     
+     @Deprecated
      private void initialize(Reader rdr) throws MarshalException, ValidationException {
          log().debug("initialize: initializing WMI collection config factory.");
          m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, rdr);
@@ -154,7 +169,6 @@ public class WmiDataCollectionConfigFactory {
          return ThreadCategory.getInstance();
      }
 
-      @SuppressWarnings("unchecked")
      public WmiCollection getWmiCollection(String collectionName) {
         WmiCollection[] collections = m_config.getWmiCollection();
          WmiCollection collection = null;
@@ -186,10 +200,10 @@ public class WmiDataCollectionConfigFactory {
              return -1;
      }
 
-     public List getRRAList(String cName) {
-         WmiCollection collection = (WmiCollection) getWmiCollection(cName);
+     public List<String> getRRAList(String cName) {
+         WmiCollection collection = getWmiCollection(cName);
          if (collection != null)
-             return (List) collection.getRrd().getRraCollection();
+             return collection.getRrd().getRraCollection();
          else
              return null;
 

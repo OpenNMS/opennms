@@ -33,8 +33,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import junit.framework.TestCase;
 
@@ -58,10 +56,7 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 		
 		DataSourceFactory.setInstance(db);
 
-		Reader rdr = new InputStreamReader(getClass().getResourceAsStream("/org/opennms/netmgt/config/site-status-views.testdata.xml"));
-		m_factory = new SiteStatusViewsFactory(rdr);
-		rdr.close();
-		
+		m_factory = new SiteStatusViewsFactory(getClass().getResourceAsStream("/org/opennms/netmgt/config/site-status-views.testdata.xml"));
 	}
 
 	protected void tearDown() throws Exception {

@@ -80,9 +80,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr)) {
-		    String msg = String.format("Found interface on node %s with an empty ipaddr! Ignoring!", m_node.getLabel());
-            log().error(msg);
-            System.err.println(msg);
+		    log().error(String.format("Found interface on node %s with an empty ipaddr! Ignoring!", m_node.getLabel()));
 			return;
 		}
 

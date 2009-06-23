@@ -9,6 +9,10 @@
   <name>Mock SNMP Agent</name>
   <dependencies>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
     </dependency>

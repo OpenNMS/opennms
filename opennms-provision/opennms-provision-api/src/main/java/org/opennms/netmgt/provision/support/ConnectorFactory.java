@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.opennms.core.utils.ThreadCategory;
 
 public class ConnectorFactory {
     
@@ -36,7 +37,7 @@ public class ConnectorFactory {
        Runnable r = new Runnable(){
 
         public void run() {
-            System.err.println("Disposing the connector");
+            ThreadCategory.getInstance(ConnectorFactory.class).debug("Disposing the connector");
             try{
                 connector.dispose();
             }finally{

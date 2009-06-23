@@ -49,6 +49,7 @@ public class JBossMonitor extends JMXMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.JMXMonitor#getMBeanServer(java.util.Map)
      */
+    @SuppressWarnings("unchecked")
     public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }

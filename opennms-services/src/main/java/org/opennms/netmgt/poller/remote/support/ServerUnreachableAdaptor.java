@@ -145,7 +145,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
         } catch (RemoteLookupFailureException e) {
             m_serverUnresponsive = true;
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

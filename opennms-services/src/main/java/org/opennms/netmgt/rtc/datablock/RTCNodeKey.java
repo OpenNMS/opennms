@@ -40,7 +40,7 @@ package org.opennms.netmgt.rtc.datablock;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class RTCNodeKey extends Object implements Comparable {
+public class RTCNodeKey implements Comparable<RTCNodeKey> {
     /**
      * The node ID
      */
@@ -161,15 +161,9 @@ public class RTCNodeKey extends Object implements Comparable {
     }
 
     /**
-     * Implements java.jang.Comparable since this is a key to a treemap
+     * Implements java.jang.Comparable since this is a key to a tree map
      */
-    public int compareTo(Object o) {
-        if (!(o instanceof RTCNodeKey)) {
-            return 0;
-        }
-
-        RTCNodeKey obj = (RTCNodeKey) o;
-
+    public int compareTo(RTCNodeKey obj) {
         int rc = (int) (m_nodeID - obj.getNodeID());
         if (rc != 0)
             return rc;

@@ -116,9 +116,9 @@ public class EuiLevelMapper extends Object {
             levelCat.setCatvalue(rtcDataMgr.getValue(rtcCat.getLabel(), curTime, rWindow));
 
             // nodes in this category
-            Iterator nodeIter = rtcCat.getNodes().iterator();
+            Iterator<Long> nodeIter = rtcCat.getNodes().iterator();
             while (nodeIter.hasNext()) {
-                Long rtcNodeid = (Long) nodeIter.next();
+                Long rtcNodeid = nodeIter.next();
                 long nodeID = rtcNodeid.longValue();
 
                 Node levelNode = new Node();

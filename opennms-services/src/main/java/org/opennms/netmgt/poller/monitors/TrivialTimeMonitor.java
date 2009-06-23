@@ -132,7 +132,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
@@ -201,7 +201,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
         serviceStatus.setProperties(skewProps);
     }
 
-    public PollStatus pollTimeTcp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
+    public PollStatus pollTimeTcp(MonitoredService svc, Map<String, Object> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;
@@ -266,7 +266,7 @@ final public class TrivialTimeMonitor extends IPv4Monitor {
     }
 
 
-    public PollStatus pollTimeUdp(MonitoredService svc, Map parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
+    public PollStatus pollTimeUdp(MonitoredService svc, Map<String, Object> parameters, PollStatus serviceStatus, TimeoutTracker tracker, InetAddress ipv4Addr, int port, int allowedSkew, boolean persistSkew) {
         int localTime = 0;
         int remoteTime = 0;
         boolean gotTime = false;

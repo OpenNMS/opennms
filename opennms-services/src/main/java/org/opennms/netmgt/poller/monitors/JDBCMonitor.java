@@ -104,7 +104,7 @@ public class JDBCMonitor extends IPv4Monitor {
 	 * @throws RuntimeException
 	 *             If there is any error that prevents the plugin from running
 	 */
-	public void initialize(Map parameters) {
+	public void initialize(Map<String, Object> parameters) {
 		super.initialize(parameters);
 		log().debug("Calling init");
 	}
@@ -179,7 +179,7 @@ public class JDBCMonitor extends IPv4Monitor {
 	 *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
 	 *      codes for JConnect </a>
 	 */
-	public PollStatus poll(MonitoredService svc, Map parameters) {
+	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 		NetworkInterface iface = svc.getNetInterface();
 
 		// Assume that the service is down
@@ -287,7 +287,7 @@ public class JDBCMonitor extends IPv4Monitor {
 		}
 	}
 
-	public PollStatus checkDatabaseStatus( Connection con, Map parameters )
+	public PollStatus checkDatabaseStatus( Connection con, Map<String,Object> parameters )
 	{
 		PollStatus status = PollStatus.unavailable("Unable to retrieve database catalogs");
 		ResultSet resultset = null;

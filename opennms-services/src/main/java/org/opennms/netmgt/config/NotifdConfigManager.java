@@ -34,6 +34,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -73,8 +74,13 @@ public abstract class NotifdConfigManager {
      * @throws ValidationException
      * @throws IOException
      */
+    @Deprecated
     public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
         configuration = CastorUtils.unmarshal(NotifdConfiguration.class, reader);
+    }
+
+    public synchronized void parseXml(InputStream stream) throws MarshalException, ValidationException, IOException {
+        configuration = CastorUtils.unmarshal(NotifdConfiguration.class, stream);
     }
 
     /**

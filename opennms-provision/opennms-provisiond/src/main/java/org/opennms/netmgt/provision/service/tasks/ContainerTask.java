@@ -145,5 +145,4 @@ public class ContainerTask extends Task {
     protected void addChildDependencies(Task child) {
         child.addPrerequisite(m_triggerTask);
     }
-
 }

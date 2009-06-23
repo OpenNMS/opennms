@@ -41,7 +41,7 @@ import static org.easymock.EasyMock.expect;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -127,9 +127,9 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
     private void setUpCollectdConfigFactory() throws MarshalException, ValidationException, IOException {
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/collectdconfiguration-testdata.xml");
-        m_collectdConfig = new CollectdConfigFactory(rdr, "localhost", false);
-        rdr.close();
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
+        m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
+        stream.close();
     }
 
     public void testLoadResourceByIdNewEmpty() {

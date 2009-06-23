@@ -39,7 +39,7 @@
  */
 package org.opennms.netmgt.vacuumd;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -76,11 +76,11 @@ public class VacuumdTest extends OpenNMSTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/vacuumd/vacuumd-configuration.xml");
+        InputStream is = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/vacuumd/vacuumd-configuration.xml");
         try {
-            VacuumdConfigFactory.setInstance(new VacuumdConfigFactory(rdr));
+            VacuumdConfigFactory.setInstance(new VacuumdConfigFactory(is));
         } finally {
-            IOUtils.closeQuietly(rdr);
+            IOUtils.closeQuietly(is);
         }
 
         m_vacuumd = Vacuumd.getSingleton();

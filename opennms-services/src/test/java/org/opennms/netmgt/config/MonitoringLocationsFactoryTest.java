@@ -41,7 +41,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -74,25 +74,19 @@ public class MonitoringLocationsFactoryTest extends TestCase {
 
         DataSourceFactory.setInstance(db);
 
-        Reader rdr = new InputStreamReader(
-                                           getClass().getResourceAsStream(
-                                                                          "/org/opennms/netmgt/config/monitoring-locations.testdata.xml"));
-        m_locationFactory = new MonitoringLocationsFactory(rdr);
-        rdr.close();
+        InputStream stream = getClass().getResourceAsStream("/org/opennms/netmgt/config/monitoring-locations.testdata.xml");
+        m_locationFactory = new MonitoringLocationsFactory(stream);
+        stream.close();
 
-        rdr = new InputStreamReader(
-                                    getClass().getResourceAsStream(
-                                                                   "/org/opennms/netmgt/config/poller-configuration.testdata.xml"));
-        m_pollerConfigManager = new TestPollerConfigManager(rdr, "localhost",
-                                                            false);
-        rdr.close();
+        stream = getClass().getResourceAsStream("/org/opennms/netmgt/config/poller-configuration.testdata.xml");
+        m_pollerConfigManager = new TestPollerConfigManager(stream, "localhost", false);
+        stream.close();
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetName() throws MarshalException, ValidationException,
             IOException {
         final String locationName = "RDU";
@@ -108,15 +102,18 @@ public class MonitoringLocationsFactoryTest extends TestCase {
     static class TestPollerConfigManager extends PollerConfigManager {
         String m_xml;
 
-        public TestPollerConfigManager(Reader rdr, String localServer,
-                boolean verifyServer) throws MarshalException,
-                ValidationException, IOException {
+        @Deprecated
+        public TestPollerConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(rdr, localServer, verifyServer);
             save();
         }
 
-        public void update() throws IOException, MarshalException,
-                ValidationException {
+        public TestPollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+            super(stream, localServer, verifyServer);
+        }
+
+        @SuppressWarnings("deprecation")
+        public void update() throws IOException, MarshalException, ValidationException {
             m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
             setUpInternalData();
         }

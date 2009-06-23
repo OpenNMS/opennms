@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -75,10 +76,17 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @throws ValidationException
      * @throws IOException
      */
+    @Deprecated
     public SnmpInterfacePollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         reloadXML(reader);
+    }
+
+    public SnmpInterfacePollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+        m_localServer = localServer;
+        m_verifyServer = verifyServer;
+        reloadXML(stream);
     }
 
     public abstract void update() throws IOException, MarshalException, ValidationException;
@@ -97,7 +105,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     private Map<String, List<String>> m_urlIPMap;
     /**
      * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
+     * rules, so as to avoid repetitive database access.
      */
     private Map<Package, List<String>> m_pkgIpMap;
 
@@ -133,6 +141,13 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         }
     }
 
+    protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, stream);
+        createUrlIpMap();
+        createPackageIpListMap();
+    }
+
+    @Deprecated
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, reader);
         createUrlIpMap();
@@ -144,9 +159,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     public synchronized void save() throws MarshalException, IOException, ValidationException {
     
-        // marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         saveXml(stringWriter.toString());
@@ -178,7 +193,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     
     /**
      * This method is used to determine if the named interface is included in
-     * the passed package's url includes. If the interface is found in any of
+     * the passed package's URL includes. If the interface is found in any of
      * the URL files, then a value of true is returned, else a false value is
      * returned.
      * 
@@ -200,9 +215,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @param addr
      *            The interface to test against the package's URL
      * @param url
-     *            The url file to read
+     *            The URL file to read
      * 
-     * @return True if the interface is included in the url, false otherwise.
+     * @return True if the interface is included in the URL, false otherwise.
      */
     private boolean interfaceInUrl(String addr, String url) {
         boolean bRet = false;
@@ -232,8 +247,8 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
    }
 
      /**
-     * This method is used to establish package agaist iplist mapping, with
-     * which, the iplist is selected per package via the configured filter rules
+     * This method is used to establish package against IP list mapping, with
+     * which, the IP list is selected per package via the configured filter rules
      * from the database.
      */
     private void createPackageIpListMap() {
@@ -241,7 +256,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         
         for(Package pkg : packages()) {
     
-            // Get a list of ipaddress per package agaist the filter rules from
+            // Get a list of IP addresses per package against the filter rules from
             // database and populate the package, IP list map.
             //
             try {
@@ -281,11 +296,11 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     /**
-     * This method is used to rebuild the package agaist iplist mapping when
+     * This method is used to rebuild the package against IP list mapping when
      * needed. When a node gained service event occurs, poller has to determine
-     * which package the ip/service combination is in, but if the interface is a
-     * newly added one, the package iplist should be rebuilt so that poller
-     * could know which package this ip/service pair is in.
+     * which package the IP/service combination is in, but if the interface is a
+     * newly added one, the package IP list should be rebuilt so that poller
+     * could know which package this IP/service pair is in.
      */
     public synchronized void rebuildPackageIpListMap() {
         createPackageIpListMap();
@@ -391,7 +406,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @param ipaddr
      *            the interface to check
      * 
-     * @return the first package that the ip belongs to, null if none
+     * @return the first package that the IP belongs to, null if none
      */
     public synchronized Package getPackageForAddress(String ipaddr) {
         
@@ -406,15 +421,15 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     /**
-     * Returns a list of package names that the ip belongs to, null if none.
+     * Returns a list of package names that the IP belongs to, null if none.
      *                
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      *
      * @param ipaddr
      *            the interface to check
      *
-     * @return a list of package names that the ip belongs to, null if none
+     * @return a list of package names that the IP belongs to, null if none
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     

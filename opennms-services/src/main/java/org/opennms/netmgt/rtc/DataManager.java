@@ -108,7 +108,7 @@ public class DataManager extends Object {
     private class RTCNodeProcessor implements RowCallbackHandler {
 		RTCNodeKey m_currentKey = null;
 
-		Map m_categoryIpLists = new HashMap();
+		Map<String,Set<String>> m_categoryIpLists = new HashMap<String,Set<String>>();
 
 		public void processRow(ResultSet rs) throws SQLException {
 			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
@@ -127,10 +127,9 @@ public class DataManager extends Object {
 			return (m_currentKey != null && m_currentKey.equals(key));
 		}
 
-		// This is called exactly once for each unique (nodeid, ipaddr, svcname) tuple
+		// This is called exactly once for each unique (node ID, IP address, service name) tuple
 		public void processIfService(RTCNodeKey key) {
-			for (Iterator it = m_categories.values().iterator(); it.hasNext();) {
-				RTCCategory cat = (RTCCategory) it.next();
+		    for (RTCCategory cat : m_categories.values()) {
 				if (catContainsIfService(cat, key)) {
 					RTCNode rtcN = getRTCNode(key);
 					addNodeToCategory(cat, rtcN);
@@ -153,12 +152,12 @@ public class DataManager extends Object {
 		}
 
 		private boolean catContainsIp(RTCCategory cat, String ip) {
-			Set ips = catGetIpAddrs(cat);
+			Set<String> ips = catGetIpAddrs(cat);
 			return ips.contains(ip);
 		}
 
-		private Set catGetIpAddrs(RTCCategory cat) {
-			Set ips = (Set)m_categoryIpLists.get(cat.getLabel());
+		private Set<String> catGetIpAddrs(RTCCategory cat) {
+			Set<String> ips = m_categoryIpLists.get(cat.getLabel());
 			if (ips == null) {
 				ips = catConstructIpAddrs(cat);
 				m_categoryIpLists.put(cat.getLabel(), ips);
@@ -166,22 +165,22 @@ public class DataManager extends Object {
 			return ips;
 		}
 
-		private Set catConstructIpAddrs(RTCCategory cat) {
+		private Set<String> catConstructIpAddrs(RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
 				if (log().isDebugEnabled())
 					log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
 		
-				List ips = FilterDaoFactory.getInstance().getIPList(filterRule);
+				List<String> ips = FilterDaoFactory.getInstance().getIPList(filterRule);
 				
 		        if (log().isDebugEnabled())
 		            log().debug("Number of IPs satisfying rule: " + ips.size());
 		
-		        return new HashSet(ips);
+		        return new HashSet<String>(ips);
 		        
 			} catch (FilterParseException e) {
 				log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);
-				return Collections.EMPTY_SET;
+				return Collections.emptySet();
 			}
 		}
 
@@ -202,21 +201,21 @@ public class DataManager extends Object {
     private Map<String, RTCCategory> m_categories;
 
     /**
-     * map keyed using the RTCNodeKey or nodeid or nodeid/ip
+     * map keyed using the RTCNodeKey or node ID or node ID/IP address
      */
     private RTCHashMap m_map;
 
     /**
-     * Get the 'ismanaged' status for the nodeid, ipaddr combination
+     * Get the 'ismanaged' status for the node ID, IP address combination
      * 
      * @param nodeid
-     *            the nodeid of the interface
+     *            the node ID of the interface
      * @param ip
      *            the interface for which the status is required
      * @param svc
      *            the service for which status is required
      * 
-     * @return the 'status' from the ifservices table
+     * @return the 'status' from the ifServices table
      */
     private char getServiceStatus(long nodeid, String ip, String svc) {
     	
@@ -283,17 +282,14 @@ public class DataManager extends Object {
 
         m_categories = new HashMap<String, RTCCategory>();
 
-        Enumeration enumCG = cFactory.getConfig().enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = (Categorygroup) enumCG.nextElement();
-
+        for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
             String commonRule = cg.getCommon().getRule();
 
             Categories cats = cg.getCategories();
 
-            Enumeration enumCat = cats.enumerateCategory();
+            Enumeration<org.opennms.netmgt.config.categories.Category> enumCat = cats.enumerateCategory();
             while (enumCat.hasMoreElements()) {
-                org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) enumCat.nextElement();
+                org.opennms.netmgt.config.categories.Category cat = enumCat.nextElement();
 
                 RTCCategory rtcCat = new RTCCategory(cat, commonRule);
                 m_categories.put(rtcCat.getLabel(), rtcCat);
@@ -362,7 +358,7 @@ public class DataManager extends Object {
     }
 
 	private Object[] createArgs(Object arg1, Object arg2, Object[] remaining) {
-		LinkedList args = new LinkedList();
+		LinkedList<Object> args = new LinkedList<Object>();
 		args.add(arg1);
 		args.add(arg2);
 		if (remaining != null)
@@ -536,12 +532,7 @@ public class DataManager extends Object {
      *            the time at which service was lost
      */
     public synchronized void interfaceDown(long nodeid, String ip, long t) {
-        List nodesList = m_map.getRTCNodes(nodeid, ip);
-        ListIterator listIter = nodesList.listIterator();
-        while (listIter.hasNext()) {
-            RTCNode rtcN = (RTCNode) listIter.next();
-
-            // inform node
+        for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeLostService(t);
         }
     }
@@ -555,12 +546,7 @@ public class DataManager extends Object {
      *            the time at which service was lost
      */
     public synchronized void nodeDown(long nodeid, long t) {
-    	List nodesList = m_map.getRTCNodes(nodeid);
-        ListIterator listIter = nodesList.listIterator();
-        while (listIter.hasNext()) {
-            RTCNode rtcN = (RTCNode) listIter.next();
-
-            // inform node
+    	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
             rtcN.nodeLostService(t);
         }
     }
@@ -574,12 +560,7 @@ public class DataManager extends Object {
      *            the time at which service was regained
      */
     public synchronized void nodeUp(long nodeid, long t) {
-    	List nodesList = m_map.getRTCNodes(nodeid);
-        ListIterator listIter = nodesList.listIterator();
-        while (listIter.hasNext()) {
-            RTCNode rtcN = (RTCNode) listIter.next();
-
-            // inform node
+    	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
             rtcN.nodeRegainedService(t);
         }
     }
@@ -595,12 +576,7 @@ public class DataManager extends Object {
      *            the time at which service was regained
      */
     public synchronized void interfaceUp(long nodeid, String ip, long t) {
-        List nodesList = m_map.getRTCNodes(nodeid, ip);
-        ListIterator listIter = nodesList.listIterator();
-        while (listIter.hasNext()) {
-            RTCNode rtcN = (RTCNode) listIter.next();
-
-            // inform node
+        for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeRegainedService(t);
         }
     }
@@ -656,15 +632,15 @@ public class DataManager extends Object {
         // Go through from all the categories this node belongs to
         // and delete the service
         //
-        List categories = rtcN.getCategories();
-        ListIterator catIter = categories.listIterator();
+        List<String> categories = rtcN.getCategories();
+        ListIterator<String> catIter = categories.listIterator();
         while (catIter.hasNext()) {
             String catlabel = (String) catIter.next();
 
             RTCCategory cat = (RTCCategory) m_categories.get(catlabel);
 
             // get nodes in this category
-            List catNodes = cat.getNodes();
+            List<Long> catNodes = cat.getNodes();
 
             // check if the category contains this node
             Long tmpNodeid = new Long(rtcN.getNodeID());
@@ -737,8 +713,8 @@ public class DataManager extends Object {
      */
     public synchronized void rtcNodeRescan(long nodeid) throws SQLException, FilterParseException, RTCException {
     	
-    	for (Iterator it = m_categories.values().iterator(); it.hasNext();) {
-			RTCCategory cat = (RTCCategory) it.next();
+    	for (Iterator<RTCCategory> it = m_categories.values().iterator(); it.hasNext();) {
+			RTCCategory cat = it.next();
 			cat.deleteNode(nodeid);
 		}
     	
@@ -764,31 +740,31 @@ public class DataManager extends Object {
      * @param ip
      *            the interface to reparent
      * @param oldNodeId
-     *            the node that the ip belonged to earlier
+     *            the node that the IP belonged to earlier
      * @param newNodeId
-     *            the node that the ip now belongs to
+     *            the node that the IP now belongs to
      */
     public synchronized void interfaceReparented(String ip, long oldNodeId, long newNodeId) {
-        // get all RTCNodes with the ip/oldNodeId
+        // get all RTCNodes with the IP/old node ID
     	List<RTCNode> nodesList = m_map.getRTCNodes(oldNodeId, ip);
         ListIterator<RTCNode> listIter = new LinkedList<RTCNode>(nodesList).listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = listIter.next();
 
-            // remove the node with the oldnode id from the map
+            // remove the node with the old node id from the map
             m_map.delete(rtcN);
 
-            // change the nodeid on the RTCNode
+            // change the node ID on the RTCNode
             rtcN.setNodeID(newNodeId);
 
-            // now add the node with the new nodeid
+            // now add the node with the new node ID
             m_map.add(rtcN);
 
-            // remove old nodeid from the categories it belonged to
-            // and the new nodeid
-            Iterator catIter = rtcN.getCategories().listIterator();
+            // remove old node ID from the categories it belonged to
+            // and the new node ID
+            Iterator<String> catIter = rtcN.getCategories().listIterator();
             while (catIter.hasNext()) {
-                String catlabel = (String) catIter.next();
+                String catlabel = catIter.next();
 
                 RTCCategory rtcCat = m_categories.get(catlabel);
                 rtcCat.deleteNode(oldNodeId);

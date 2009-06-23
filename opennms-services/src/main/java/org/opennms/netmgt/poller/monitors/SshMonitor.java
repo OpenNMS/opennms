@@ -154,8 +154,7 @@ final public class SshMonitor extends IPv4Monitor {
      * @return the availability of the interface
      */
     
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");

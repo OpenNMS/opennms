@@ -35,7 +35,6 @@
 //
 package org.opennms.report.availability;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;

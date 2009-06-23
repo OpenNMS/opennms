@@ -41,17 +41,18 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.rws.StandbyUrl;
-import org.opennms.rancid.ConnectionProperties;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -96,8 +97,14 @@ public final class RWSConfigFactory extends RWSConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
 
+    @Deprecated
     public RWSConfigFactory(long currentVersion, FileReader reader) throws MarshalException, ValidationException, IOException {
         super(reader);
+        m_currentVersion = currentVersion;
+    }
+
+    public RWSConfigFactory(long currentVersion, InputStream stream) throws MarshalException, ValidationException, IOException {
+        super(stream);
         m_currentVersion = currentVersion;
     }
 
@@ -119,17 +126,21 @@ public final class RWSConfigFactory extends RWSConfigManager {
             return;
         }
         OpennmsServerConfigFactory.init();
-        OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader reader = new FileReader(cfgFile);
-        RWSConfigFactory config = new RWSConfigFactory(cfgFile.lastModified(), reader);
-        reader.close();
-
-        setInstance(config);
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            RWSConfigFactory config = new RWSConfigFactory(cfgFile.lastModified(), stream);
+            setInstance(config);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
 
     private static Category logStatic() {
@@ -190,7 +201,15 @@ public final class RWSConfigFactory extends RWSConfigManager {
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileReader(cfgFile));
+            InputStream stream = null;
+            try {
+                stream = new FileInputStream(cfgFile);
+                reloadXML(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

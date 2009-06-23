@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 
 public class NodeScanSchedule {
@@ -83,5 +85,23 @@ public class NodeScanSchedule {
         return m_scanInterval;
     }
 
-    
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("foreign source", m_foreignSource)
+            .append("foreign id", m_foreignId)
+            .append("node id", m_nodeId)
+            .append("initial delay", m_initialDelay)
+            .append("scan interval", m_scanInterval)
+            .toString();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder()
+            .append(m_foreignSource)
+            .append(m_foreignId)
+            .append(m_nodeId)
+            .append(m_initialDelay)
+            .append(m_scanInterval)
+            .toHashCode();
+    }
 }

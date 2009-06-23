@@ -47,9 +47,9 @@ public class PollConfiguration {
 	
 	private OnmsMonitoredService m_monitoredService;
 	private OnmsPollModel m_pollModel;
-	private Map m_monitorConfiguration;
+	private Map<String,Object> m_monitorConfiguration;
 	
-	public PollConfiguration(OnmsMonitoredService monitoredService, Map monitorConfiguration, long pollInterval) {
+	public PollConfiguration(OnmsMonitoredService monitoredService, Map<String,Object> monitorConfiguration, long pollInterval) {
 		m_monitoredService = monitoredService;
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = new OnmsPollModel();
@@ -64,7 +64,7 @@ public class PollConfiguration {
 		m_monitoredService = monitoredService;
 	}
 	
-	public Map getMonitorConfiguration() {
+	public Map<String,Object> getMonitorConfiguration() {
 		return m_monitorConfiguration;
 	}
 
