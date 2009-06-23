@@ -2148,4 +2148,232 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
 </event>
 <!-- End of auto generated data from MIB: Juniper-ADDRESS-POOL-MIB -->        
+<!-- Start of auto generated data from MIB: Juniper-REDUNDANCY-MIB -->
+<event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>1</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyColdSwitchoverNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyColdSwitchoverNotification</event-label>
+  <descr>
+&lt;p&gt;This notification is generated in a dual SRP system when control transfers from one to SRP to the other in file system synchronization mode or when high availability is not operational.  This notification is sent by the newly active SRP immediately following the switchover in which configuration is preserved but volatile state is lost.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyLastResetReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		notKnown(2)
+		userInitiated(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyColdSwitchoverNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyLastResetReason=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+  <severity>Warning</severity>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="none" varbindvalue="1"/>
+      <decode varbinddecodedstring="notKnown" varbindvalue="2"/>
+      <decode varbinddecodedstring="userInitiated" varbindvalue="3"/>
+    </varbindsdecode>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>2</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyWarmSwitchoverNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyWarmSwitchoverNotification</event-label>
+  <descr>
+&lt;p&gt;This notification is generated in a dual SRP system when control transfers from one SRP to the other and high availability is operational.  This notification is sent by the newly active SRP immediately following the switchover in which configuration and volatile state are preserved.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyLastResetReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		notKnown(2)
+		userInitiated(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyWarmSwitchoverNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyLastResetReason=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+  <severity>Warning</severity>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="none" varbindvalue="1"/>
+      <decode varbinddecodedstring="notKnown" varbindvalue="2"/>
+      <decode varbinddecodedstring="userInitiated" varbindvalue="3"/>
+    </varbindsdecode>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>3</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateEnabledNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStateEnabledNotification</event-label>
+  <descr>
+&lt;p&gt;A state change notification sent by active SRP whenever system enters 'active' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyStateEnabledNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+  <severity>Normal</severity>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification:%dpname%:%nodeid%:%parm[#1]%"/>
+</event>
+<event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>4</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStateDisabledNotification</event-label>
+  <descr>
+&lt;p&gt;A state change notification sent by active SRP whenever system enters 'disabled' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyStateDisabledNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+  <severity>Warning</severity>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false" /> </event> <event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>5</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStatePendingNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStatePendingNotification</event-label>
+  <descr>
+&lt;p&gt;A state change notification sent by active SRP whenever system enters 'pending' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyStatePendingNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+  <severity>Warning</severity>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false" /> </event> <event>
+  <mask>
+    <maskelement>
+      <mename>id</mename>
+      <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>generic</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+    <maskelement>
+      <mename>specific</mename>
+      <mevalue>6</mevalue>
+    </maskelement>
+  </mask>
+  <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyModeNotification</uei>
+  <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyModeNotification</event-label>
+  <descr>
+&lt;p&gt;A mode change notification sent by active SRP whenever redundancy mode of the system is changed from 'fileSystemSynchronization' to 'highAvailability'
+and vice versa.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	juniRedundancyCfgRedundancyMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		fileSystemSynchronization(1)
+		highAvailability(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+  <logmsg dest='logndisplay'>&lt;p&gt;
+	juniRedundancyModeNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyCfgRedundancyMode=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+  <severity>Minor</severity>
+    <varbindsdecode>
+      <parmid>parm[#2]</parmid>
+      <decode varbinddecodedstring="fileSystemSynchronization" varbindvalue="1"/>
+      <decode varbinddecodedstring="highAvailability" varbindvalue="2"/>
+    </varbindsdecode>
+  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+</event>
+<!-- End of auto generated data from MIB: Juniper-REDUNDANCY-MIB -->
 </events>
