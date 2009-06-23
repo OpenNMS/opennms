@@ -39,7 +39,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.util.List;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
@@ -121,7 +120,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -194,7 +193,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.unavailable();

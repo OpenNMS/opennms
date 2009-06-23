@@ -54,7 +54,8 @@ public class UpdateOperationTest extends TestCase {
 	/*
 	 * Test method for 'org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation.scanForSnmpData(Node)'
 	 */
-	public final void testScanForSnmpData() throws MarshalException, ValidationException, IOException {
+	@SuppressWarnings("deprecation")
+    public final void testScanForSnmpData() throws MarshalException, ValidationException, IOException {
 		
 		Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
 				"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\"\n" + 

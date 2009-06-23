@@ -78,7 +78,7 @@ public class SnmpMonitorStrategyTest {
 
     private SnmpMonitorStrategy monitor = new SnmpMonitorStrategy() {
         @Override
-        public PollStatus poll(MonitoredService svc, Map parameters) {
+        public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
             throw new UnsupportedOperationException("method not implemented; go away, punk!");
         }
     };

@@ -35,6 +35,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -123,8 +124,14 @@ public abstract class NotificationManager {
         m_dataSource = dcf;
     }
 
+    @Deprecated
     public synchronized void parseXML(final Reader reader) throws MarshalException, ValidationException {
         m_notifications = CastorUtils.unmarshal(Notifications.class, reader);
+        oldHeader = m_notifications.getHeader();
+    }
+
+    public synchronized void parseXML(final InputStream stream) throws MarshalException, ValidationException {
+        m_notifications = CastorUtils.unmarshal(Notifications.class, stream);
         oldHeader = m_notifications.getHeader();
     }
 

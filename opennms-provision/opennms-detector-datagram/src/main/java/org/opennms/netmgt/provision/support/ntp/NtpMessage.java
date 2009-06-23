@@ -93,6 +93,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 public class NtpMessage {
     
     /**
@@ -426,4 +429,5 @@ public class NtpMessage {
 
         return "";
     }
+
 }

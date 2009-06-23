@@ -113,7 +113,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -186,7 +186,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         int matchType = MATCH_TYPE_EXACT;
         
         NetworkInterface iface = svc.getNetInterface();

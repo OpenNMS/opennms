@@ -35,11 +35,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -83,8 +85,14 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
     // Changed scope to public to simplify tests
+    @Deprecated
     public ThreshdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
         super(rdr, localServer, verifyServer);
+
+    }
+
+    public ThreshdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
+        super(stream, localServer, verifyServer);
 
     }
 
@@ -115,12 +123,15 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
         ThreadCategory.getInstance(ThreshdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader rdr = new FileReader(cfgFile);
+        InputStream stream = null;
         try {
-            m_singleton = new ThreshdConfigFactory(rdr, localServer, verifyServer);
+            stream = new FileInputStream(cfgFile);
+            m_singleton = new ThreshdConfigFactory(stream, localServer, verifyServer);
             m_loaded = true;
         } finally {
-            rdr.close();
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
         }
     }
 

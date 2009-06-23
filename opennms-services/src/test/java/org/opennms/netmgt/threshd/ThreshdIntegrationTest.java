@@ -38,8 +38,6 @@
 //
 package org.opennms.netmgt.threshd;
 
-import java.io.InputStreamReader;
-
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
@@ -63,9 +61,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         setupDatabase();
 
         Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
-        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
-        r.close();
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(dbConfig.getInputStream());
         DatabaseSchemaConfigFactory.setInstance(dscf);
 
         RrdTestUtils.initializeNullStrategy();
@@ -82,10 +78,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         setupThresholdConfig(dirName, fileName, nodeId, ipAddress, serviceName, groupName);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
-        pollOutagesRdr.close();
-
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
     }
 
     @Override
@@ -96,7 +89,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
 
     public void testThreshd() throws Exception {
         Threshd threshd = new Threshd();
-        ThreshdConfigManager config = new MockThreshdConfigManager(ConfigurationTestUtils.getReaderForResource(this, "threshd-configuration.xml"), "localhost", false);
+        ThreshdConfigManager config = new MockThreshdConfigManager(ConfigurationTestUtils.getInputStreamForResource(this, "threshd-configuration.xml"), "localhost", false);
         threshd.setThreshdConfig(config);
         threshd.init();
         threshd.start();

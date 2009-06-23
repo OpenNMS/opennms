@@ -54,13 +54,13 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 @Distributable
 public abstract class JMXMonitor extends IPv4Monitor {
 
-    public abstract ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address);
+    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
-    public PollStatus poll(MonitoredService svc, Map map) {
-        
+    public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
+
         NetworkInterface iface = svc.getNetInterface();
 
         PollStatus     serviceStatus = PollStatus.unavailable();
@@ -72,35 +72,27 @@ public abstract class JMXMonitor extends IPv4Monitor {
 
         try {
             
-            int    retry     = ParameterMap.getKeyedInteger(map, "retry",            3);
+            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
 
             long t0 = 0;
-            for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++)    {
-
+            for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
                 try {
-                    
-                     t0 = System.nanoTime();
-                    
-                     connection = getMBeanServerConnection(map, ipv4Addr);
-                     if (connection != null) {
-
-                         connection.getMBeanServer().getMBeanCount();
-                       
-                         long nanoResponseTime = System.nanoTime() - t0;
-
-                         serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
-                    
-                         break;
-
-                     }
-                }      
+                    t0 = System.nanoTime();
+                    connection = getMBeanServerConnection(map, ipv4Addr);
+                    if (connection != null) {
+                        connection.getMBeanServer().getMBeanCount();
+                        long nanoResponseTime = System.nanoTime() - t0;
+                        serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
+                        break;
+                    }
+                }
                 catch(IOException e) {
-                	serviceStatus = logDown(Level.DEBUG, dsName+": IOException while polling address: " + ipv4Addr);
+                    serviceStatus = logDown(Level.DEBUG, dsName+": IOException while polling address: " + ipv4Addr);
                     break;
                 }
-            }  // of for
-         } catch (Exception e) {
-         	serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + ipv4Addr.getHostAddress());
+            }
+        } catch (Exception e) {
+            serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + ipv4Addr.getHostAddress());
         } finally {
             if (connection != null) {
                 connection.close();

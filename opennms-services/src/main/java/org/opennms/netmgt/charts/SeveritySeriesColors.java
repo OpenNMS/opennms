@@ -54,7 +54,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.charts.CustomSeriesColors#getPaint(java.lang.Comparable)
      */
-    public Paint getPaint(Comparable cat) {
+    public Paint getPaint(Comparable<?> cat) {
         
         int sev = 0;
         String severity = cat.toString();

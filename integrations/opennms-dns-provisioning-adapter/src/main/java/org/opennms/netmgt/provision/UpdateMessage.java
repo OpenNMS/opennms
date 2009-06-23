@@ -175,13 +175,21 @@ public class UpdateMessage {
 
          */
         
+        @SuppressWarnings("unused")
         private int m_id;
+        @SuppressWarnings("unused")
         private int m_flag;
+        @SuppressWarnings("unused")
         private int m_optCode;
+        @SuppressWarnings("unused")
         private static final int Z = 0;
+        @SuppressWarnings("unused")
         private int m_rCode;
+        @SuppressWarnings("unused")
         private int m_zOCount;
+        @SuppressWarnings("unused")
         private int m_upCount;
+        @SuppressWarnings("unused")
         private int m_adCount;
         
     }

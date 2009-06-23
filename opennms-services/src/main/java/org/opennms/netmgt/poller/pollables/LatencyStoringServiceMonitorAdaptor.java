@@ -89,7 +89,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         m_pkg = pkg;
     }
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
         try {
             RrdUtils.initialize();
             m_serviceMonitor.initialize(parameters);
@@ -107,7 +107,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         }
     }
 
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         PollStatus status = m_serviceMonitor.poll(svc, parameters);
 
         if (!status.getProperties().isEmpty()) {
@@ -124,7 +124,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         return status;
     }
 
-    private void storeResponseTime(MonitoredService svc, LinkedHashMap<String, Number> entries, Map parameters) {
+    private void storeResponseTime(MonitoredService svc, LinkedHashMap<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);

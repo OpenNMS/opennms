@@ -62,6 +62,7 @@ public class CheckNsc {
     	CommandLineParser parser = new PosixParser();
     	CommandLine cmd = parser.parse(options, args);
 
+        @SuppressWarnings("unchecked")
     	List<String> arguments = cmd.getArgList();
     	if (arguments.size() < 2) {
     		usage(options, cmd);

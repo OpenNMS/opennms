@@ -38,59 +38,31 @@ package org.opennms.report.availability;
 
 import static org.junit.Assert.fail;
 
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 import junit.framework.Assert;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.jfree.util.Log;
-import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.opennms.netmgt.config.CategoryFactory;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.mock.MockCategoryFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.report.availability.svclayer.LegacyAvailabilityDataService;
-import org.opennms.report.datablock.Node;
-import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({

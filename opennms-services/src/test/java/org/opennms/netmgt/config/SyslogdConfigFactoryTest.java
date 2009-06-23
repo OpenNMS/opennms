@@ -35,7 +35,6 @@
 //
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -65,9 +64,7 @@ public class SyslogdConfigFactoryTest extends TestCase {
 
         DataSourceFactory.setInstance(db);
 
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/etc/syslogd-configuration.xml");
-        m_factory = new SyslogdConfigFactory(rdr);
-        rdr.close();
+        m_factory = new SyslogdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml"));
     }
 
     protected void tearDown() throws Exception {

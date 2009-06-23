@@ -41,6 +41,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -82,18 +83,6 @@ import org.springframework.core.io.FileSystemResource;
  */
 public final class VulnscandConfigFactory {
     /**
-     * The string indicating the start of the comments in a line containing the
-     * IP address in a file URL
-     */
-    private final static String COMMENT_STR = " #";
-
-    /**
-     * This character at the start of a line indicates a comment line in a URL
-     * file
-     */
-    private final static char COMMENT_CHAR = '#';
-
-    /**
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
@@ -121,7 +110,7 @@ public final class VulnscandConfigFactory {
     /**
      * Cached set of the excluded IP addresses
      */
-    private static Set m_excludes = null;
+    private static Set<Serializable> m_excludes = null;
 
     /**
      * Whitespace regex
@@ -216,9 +205,9 @@ public final class VulnscandConfigFactory {
      * Saves the current settings to disk
      */
     public static synchronized void saveCurrent() throws Exception {
-        // Marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the XML from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
@@ -256,7 +245,7 @@ public final class VulnscandConfigFactory {
     /**
      * This method is used to convert the passed IP address to a
      * <code>long</code> value. The address is converted in network byte order
-     * (big endin). This is compatable with the number format of the JVM, and
+     * (big endian). This is compatible with the number format of the JVM, and
      * thus the return longs can be compared with other converted IP Addresses
      * to determine inclusion.
      * 
@@ -353,7 +342,7 @@ public final class VulnscandConfigFactory {
     }
 
     private static ScanLevel getScanLevel(int level) {
-        Enumeration scanLevels = m_config.enumerateScanLevel();
+        Enumeration<?> scanLevels = m_config.enumerateScanLevel();
 
         while (scanLevels.hasMoreElements()) {
             ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
@@ -407,14 +396,14 @@ public final class VulnscandConfigFactory {
     /**
      * 
      */
-    public Set getAllIpAddresses(int level) {
+    public Set<InetAddress> getAllIpAddresses(int level) {
         return getAllIpAddresses(getScanLevel(level));
     }
 
-    public Set getAllIpAddresses(ScanLevel level) {
-        Set retval = new TreeSet();
+    public Set<InetAddress> getAllIpAddresses(ScanLevel level) {
+        Set<InetAddress> retval = new TreeSet<InetAddress>();
 
-        Enumeration e = level.enumerateRange();
+        Enumeration<?> e = level.enumerateRange();
         while (e.hasMoreElements()) {
             Range ir = (Range) e.nextElement();
 
@@ -443,16 +432,16 @@ public final class VulnscandConfigFactory {
         return retval;
     }
 
-    public Set getAllExcludes() {
+    public Set<Serializable> getAllExcludes() {
 	Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
         if (m_excludes == null) {
-            m_excludes = new TreeSet();
+            m_excludes = new TreeSet<Serializable>();
 
             Excludes excludes = m_config.getExcludes();
 
             if (excludes != null) {
                 if (excludes.getRangeCount() > 0) {
-                    Enumeration e = excludes.enumerateRange();
+                    Enumeration<?> e = excludes.enumerateRange();
                     while (e.hasMoreElements()) {
                         Range ir = (Range) e.nextElement();
 
@@ -472,7 +461,7 @@ public final class VulnscandConfigFactory {
 		*/
 
                 if (excludes.getSpecificCount() > 0) {
-                    Enumeration e = excludes.enumerateSpecific();
+                    Enumeration<?> e = excludes.enumerateSpecific();
                     while (e.hasMoreElements()) {
                         String current = (String) e.nextElement();
         		log.debug("excludes: Specific  " + current + " Converted:" + new IPv4Address(current).getAddress());
@@ -559,7 +548,7 @@ public final class VulnscandConfigFactory {
             m_pluginLists[0] = "";
 
             try {
-                Enumeration scanLevels = m_config.enumerateScanLevel();
+                Enumeration<?> scanLevels = m_config.enumerateScanLevel();
                 while (scanLevels.hasMoreElements()) {
                     ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
 
@@ -590,7 +579,7 @@ public final class VulnscandConfigFactory {
             m_safeChecks[0] = true;
 
             try {
-                Enumeration scanLevels = m_config.enumerateScanLevel();
+                Enumeration<?> scanLevels = m_config.enumerateScanLevel();
                 while (scanLevels.hasMoreElements()) {
                     ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
 

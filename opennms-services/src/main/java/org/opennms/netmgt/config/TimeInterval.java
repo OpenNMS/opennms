@@ -33,7 +33,7 @@ package org.opennms.netmgt.config;
 
 import java.util.Date;
 
-public class TimeInterval implements Comparable {
+public class TimeInterval implements Comparable<TimeInterval> {
     
     private Date m_start;
     private Date m_end;
@@ -92,8 +92,7 @@ public class TimeInterval implements Comparable {
     }
 
     // I don't implement Comparable because this relation is not consistent with equals
-    public int compareTo(Object o) {
-        TimeInterval t = (TimeInterval)o;
+    public int compareTo(TimeInterval t) {
         if (t.m_end.before(m_start) || t.m_end.equals(m_start))
             return 1;
         if (t.m_start.after(m_end) || t.m_start.equals(m_end))

@@ -96,7 +96,6 @@ public class PipedMarshaller {
     }
 
     public Reader getReader() throws IOException {
-        Reader inr = null;
         try {
             MarshalThread m = new MarshalThread(m_objToMarshall);
             Thread t = new Thread(m, "PipedMarshaller");

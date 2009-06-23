@@ -63,9 +63,9 @@ final class Receiver2 implements Runnable, Fiber {
 
     private Thread m_worker;
 
-    private List m_clients;
+    private List<Client> m_clients;
 
-    Receiver2(List clients) throws IOException {
+    Receiver2(List<Client> clients) throws IOException {
         m_name = "DHCPReceiver2";
         m_worker = null;
         m_status = START_PENDING;
@@ -125,7 +125,7 @@ final class Receiver2 implements Runnable, Fiber {
                 Message msg = new Message(pkt.getAddress(), new DHCPMessage(pkt.getData()));
 
                 synchronized (m_clients) {
-                    Iterator iter = m_clients.iterator();
+                    Iterator<Client> iter = m_clients.iterator();
                     if(!iter.hasNext()) {
                         log.debug("No client waiting for response.");
                     }

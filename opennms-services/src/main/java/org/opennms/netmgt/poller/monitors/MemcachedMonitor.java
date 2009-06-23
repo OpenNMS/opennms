@@ -102,7 +102,7 @@ final public class MemcachedMonitor extends IPv4Monitor {
      * @return The availability of the interface and if a transition event should be suppressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         

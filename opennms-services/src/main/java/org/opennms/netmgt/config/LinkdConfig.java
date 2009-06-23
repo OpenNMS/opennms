@@ -62,7 +62,7 @@ public interface LinkdConfig {
      * @param pkg
      * @return
      */
-    public abstract List getIpList(Package pkg);
+    public abstract List<String> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
@@ -125,9 +125,9 @@ public interface LinkdConfig {
      * 
      * @return true if the ip is part of atleast one package, false otherwise
      */
-    public abstract List getAllPackageMatches(String ipAddr);
+    public abstract List<String> getAllPackageMatches(String ipAddr);
     
-    public Enumeration enumeratePackage();
+    public Enumeration<Package> enumeratePackage();
     
     public Package getPackage(String pkgName);
     

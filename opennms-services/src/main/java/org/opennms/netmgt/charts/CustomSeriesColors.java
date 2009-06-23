@@ -40,6 +40,6 @@ import java.awt.Paint;
  */
 public interface CustomSeriesColors {
 
-    Paint getPaint(Comparable cat);
+    Paint getPaint(Comparable<?> cat);
 
 }

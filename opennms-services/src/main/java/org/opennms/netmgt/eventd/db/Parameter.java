@@ -34,8 +34,6 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.util.Enumeration;
-
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
@@ -49,7 +47,7 @@ import org.opennms.netmgt.xml.event.Value;
  */
 public final class Parameter {
     /**
-     * Format the list of event paramaters
+     * Format the list of event parameters
      * 
      * @param parms
      *            the list
@@ -58,12 +56,9 @@ public final class Parameter {
      */
     public static String format(Parms parms) {
         boolean first = true;
-
-        Enumeration en = parms.enumerateParm();
-
         StringBuffer parmbuf = new StringBuffer();
-        while (en.hasMoreElements()) {
-            Parm parm = (Parm) en.nextElement();
+
+        for (Parm parm : parms.getParmCollection()) {
             if (!first)
                 parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
             parmbuf.append(format(parm));

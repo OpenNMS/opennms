@@ -57,10 +57,10 @@ public class MockMonitor implements ServiceMonitor {
     public void initialize(MonitoredService svc) {
     }
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
     }
 
-    public PollStatus poll(MonitoredService monSvc, Map parameters) {
+    public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         synchronized(m_network) {
             int nodeId = monSvc.getNodeId();
             String ipAddr = monSvc.getIpAddr();

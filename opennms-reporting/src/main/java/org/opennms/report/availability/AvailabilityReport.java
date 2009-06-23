@@ -196,7 +196,6 @@ public class AvailabilityReport extends Object {
         org.opennms.report.availability.Categories categories = new org.opennms.report.availability.Categories();
         m_report.setCategories(categories);
         try {
-            Calendar calendar = new GregorianCalendar();
             AvailabilityData reportSource = new AvailabilityData();
             
             reportSource.fillReport(categoryName, m_report, reportFormat,
@@ -208,7 +207,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked marshalls the report XML from the castor classes.
+     * This when invoked marshals the report XML from the castor classes.
      */
 
     public void marshalReport() throws ValidationException, MarshalException,

@@ -59,7 +59,7 @@ import org.opennms.netmgt.rtc.RTCConstants;
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTime
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
  */
-public class RTCNode extends Object {
+public class RTCNode {
     /**
      * The node ID.
      */
@@ -83,7 +83,7 @@ public class RTCNode extends Object {
     /**
      * List of the categories this node belongs to
      */
-    private List m_categories;
+    private List<String> m_categories;
 
     /**
      * Default constructor. Initializes all values
@@ -114,7 +114,7 @@ public class RTCNode extends Object {
         m_svcName = svcName;
 
         m_svcTimesList = new RTCNodeSvcTimesList();
-        m_categories = new ArrayList();
+        m_categories = new ArrayList<String>();
     }
 
     /**
@@ -269,7 +269,7 @@ public class RTCNode extends Object {
      * 
      * @return the list of service times for this node
      */
-    public List getServiceTimes() {
+    public List<RTCNodeSvcTime> getServiceTimes() {
         return m_svcTimesList;
     }
 
@@ -294,7 +294,7 @@ public class RTCNode extends Object {
      * 
      * @return list of categories for the node.
      */
-    public List getCategories() {
+    public List<String> getCategories() {
         return m_categories;
     }
 

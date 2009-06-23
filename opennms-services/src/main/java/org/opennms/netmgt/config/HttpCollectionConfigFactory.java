@@ -44,10 +44,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -78,19 +79,32 @@ public class HttpCollectionConfigFactory {
     private static HttpDatacollectionConfig m_config;
 
     public HttpCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
-        InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
-        
+        InputStream is = null;
         try {
-            initialize(rdr);
+            is = new FileInputStream(configFile);
+            initialize(is);
         } finally {
-            rdr.close();
+            if (is != null) {
+                IOUtils.closeQuietly(is);
+            }
         }
     }
 
+    @Deprecated
     public HttpCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         initialize(rdr);
     }
 
+    public HttpCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        initialize(stream);
+    }
+
+    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+        log().debug("initialize: initializing http collection config factory.");
+        m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, stream);
+    }
+
+    @Deprecated
     private void initialize(Reader rdr) throws MarshalException, ValidationException {
         log().debug("initialize: initializing http collection config factory.");
         m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, rdr);
@@ -158,7 +172,6 @@ public class HttpCollectionConfigFactory {
         return ThreadCategory.getInstance();
     }
 
-    @SuppressWarnings("unchecked")
     public HttpCollection getHttpCollection(String collectionName) {
         List<HttpCollection> collections = m_config.getHttpCollectionCollection();
         HttpCollection collection = null;
@@ -192,10 +205,10 @@ public class HttpCollectionConfigFactory {
             return -1;
     }
     
-    public List getRRAList(String cName) {
-       HttpCollection collection = (HttpCollection) getHttpCollection(cName);
+    public List<String> getRRAList(String cName) {
+       HttpCollection collection = getHttpCollection(cName);
         if (collection != null)
-            return (List) collection.getRrd().getRraCollection();
+            return collection.getRrd().getRraCollection();
         else
             return null;
 

@@ -91,6 +91,7 @@ public class LdapDetectorTest implements ApplicationContextAware{
         m_applicationContext = applicationContext;
     }
     
+    @SuppressWarnings("unused")
     private LdapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);

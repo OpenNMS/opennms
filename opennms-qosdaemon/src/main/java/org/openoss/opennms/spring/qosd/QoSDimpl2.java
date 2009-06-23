@@ -686,6 +686,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 						}
 
 						//TODO - THIS CODE NEVER RUN
+						/*
 						else try {
 							// no alarms which are ACKNOWLEDGED and CLEARED are included in this current alarm list
 							if (ossjAlarm.getAlarmAckState() == javax.oss.fm.monitor.AlarmAckState.UNACKNOWLEDGED ) {
@@ -696,7 +697,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 							}
 						} catch (Exception e) {
 							log.error("sendAlarms() error in alarmACKState or PercievedSeverity - check alarm definitons", e);
-						}
+						}*/
 					} catch (Exception ex) {
 						log.error("sendAlarms() error trying to populate alarm - alarm disguarded - check alarm definitons", ex);
 					}

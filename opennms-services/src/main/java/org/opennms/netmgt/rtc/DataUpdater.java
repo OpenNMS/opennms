@@ -192,7 +192,7 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * If it is a serviceDeleted, remove corresponding rtcnodes from the map
+     * If it is a serviceDeleted, remove corresponding RTC nodes from the map
      */
     private void handleServiceDeleted(long nodeid, String ip, String svcName) {
         Category log = ThreadCategory.getInstance(DataUpdater.class);
@@ -221,19 +221,19 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        // old nodeid
+        // old node ID
         long oldNodeId = -1;
 
-        // new nodeid
+        // new node ID
         long newNodeId = -1;
 
         String parmName = null;
         Value parmValue = null;
         String parmContent = null;
 
-        Enumeration parmEnum = eventParms.enumerateParm();
+        Enumeration<Parm> parmEnum = eventParms.enumerateParm();
         while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+            Parm parm = parmEnum.nextElement();
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -241,7 +241,7 @@ final class DataUpdater implements Runnable {
             else
                 parmContent = parmValue.getContent();
 
-            // old nodeid
+            // old node ID
             if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
                 String temp = parmContent;
                 try {
@@ -252,7 +252,7 @@ final class DataUpdater implements Runnable {
                 }
             }
 
-            // new nodeid
+            // new node ID
             else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
                 String temp = parmContent;
                 try {
@@ -297,9 +297,7 @@ final class DataUpdater implements Runnable {
         Value parmValue = null;
         String parmContent = null;
 
-        Enumeration parmEnum = eventParms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+        for (Parm parm : eventParms.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -353,9 +351,7 @@ final class DataUpdater implements Runnable {
         Value parmValue = null;
         String parmContent = null;
 
-        Enumeration parmEnum = eventParms.enumerateParm();
-        while (parmEnum.hasMoreElements()) {
-            Parm parm = (Parm) parmEnum.nextElement();
+        for (Parm parm : eventParms.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -368,7 +364,7 @@ final class DataUpdater implements Runnable {
             }
         }
 
-        // check that we got the required parm
+        // check that we got the required parameter
         if (url == null) {
             log.warn(m_event.getUei() + " did not have required information.  Value of url:  " + url);
         } else {
@@ -410,7 +406,7 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * Read the event UEI, nodeid, interface and service - depending on the UEI,
+     * Read the event UEI, node ID, interface and service - depending on the UEI,
      * read event parms, if necessary, and call appropriate methods on the data
      * manager to update data
      */
@@ -423,7 +419,6 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        // uei
         String eventUEI = m_event.getUei();
         if (eventUEI == null) {
             // huh? should only get registered events
@@ -432,19 +427,15 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        // node id
         long nodeid = -1;
         if (m_event.hasNodeid()) {
             nodeid = m_event.getNodeid();
         }
 
-        // ip
         String ip = m_event.getInterface();
 
-        // service name
         String svcName = m_event.getService();
 
-        // event time
         long eventTime = -1;
         String eventTimeStr = m_event.getTime();
         try {
@@ -508,7 +499,6 @@ final class DataUpdater implements Runnable {
                 log.debug("Event subscribed for not handled?!: " + eventUEI);
         }
 
-        // increment the counter on the rtcvcm
         RTCManager.getInstance().incrementCounter();
     }
 

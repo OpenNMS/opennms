@@ -44,9 +44,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -124,12 +123,16 @@ public class GroupFactory extends GroupManager {
      */
     private void reloadFromFile(File confFile) throws FileNotFoundException, MarshalException, ValidationException {
         m_groupsConfFile = confFile;
-        InputStream configIn = new FileInputStream(m_groupsConfFile);
-        m_lastModified = m_groupsConfFile.lastModified();
-
-        Reader reader = new InputStreamReader(configIn);
-
-        parseXml(reader);
+        InputStream configIn = null;
+        try {
+            configIn = new FileInputStream(m_groupsConfFile);
+            m_lastModified = m_groupsConfFile.lastModified();
+            parseXml(configIn);
+        } finally {
+            if (configIn != null) {
+                IOUtils.closeQuietly(configIn);
+            }
+        }
     }
 
     /**

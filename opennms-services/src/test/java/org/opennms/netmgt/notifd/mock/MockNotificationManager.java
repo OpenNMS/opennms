@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.NotificationManager;
  */
 public class MockNotificationManager extends NotificationManager {
 
+    @SuppressWarnings("deprecation")
     public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) throws MarshalException, ValidationException {
         super(configManager, db);
         Reader reader = new StringReader(mgrString);

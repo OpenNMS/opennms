@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class holds the interface whaich has service information and list of
+ * This class holds the interface which has service information and list of
  * outages for the service.
  * 
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
@@ -47,7 +47,7 @@ import java.util.List;
  */
 public class Node extends StandardNamedObject {
     /**
-     * The log4j category used to log debug messsages and statements.
+     * The log4j category used to log debug messages and statements.
      */
     //private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -62,6 +62,7 @@ public class Node extends StandardNamedObject {
             return new InterfaceComparator(name);
         }
 
+        @SuppressWarnings("unused")
         static InterfaceComparator make(Service svc) {
             return new InterfaceComparator(svc.getName());
         }

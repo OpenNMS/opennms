@@ -127,11 +127,11 @@ final public class FtpMonitor extends IPv4Monitor {
      *            this poll.
      * @param iface
      *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
+     * @return The availability of the interface and if a transition event
+     *         should be suppressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Check the interface type

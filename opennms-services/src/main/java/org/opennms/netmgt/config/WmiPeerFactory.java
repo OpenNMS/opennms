@@ -34,11 +34,12 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -60,7 +61,7 @@ import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This class is the main respository for WMI configuration information used by
+ * This class is the main repository for WMI configuration information used by
  * the capabilities daemon. When this class is loaded it reads the WMI
  * configuration into memory, and uses the configuration to find the
  * {@link org.opennms.protocols.wmi.WmiAgentConfig WmiAgentConfig} objects for specific
@@ -110,6 +111,11 @@ public class WmiPeerFactory extends PeerFactory {
         m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
     }
 
+    public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
+    }
+    
+    @Deprecated
     public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
     }
@@ -170,9 +176,9 @@ public class WmiPeerFactory extends PeerFactory {
     public static synchronized void saveCurrent() throws Exception {
         optimize();
 
-        // Marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the XML from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
@@ -197,13 +203,10 @@ public class WmiPeerFactory extends PeerFactory {
         Category log = log();
 
         // First pass: Remove empty definition elements
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
+        for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator();
              definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-            if (definition.getSpecificCount() == 0
-                && definition.getRangeCount() == 0) {
+            Definition definition = definitionsIterator.next();
+            if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
                 if (log.isDebugEnabled())
                     log.debug("optimize: Removing empty definition element");
                 definitionsIterator.remove();
@@ -211,58 +214,40 @@ public class WmiPeerFactory extends PeerFactory {
         }
 
         // Second pass: Replace single IP range elements with specific elements
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
-            for (Iterator rangesIterator =
-                     definition.getRangeCollection().iterator();
-                 rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
-                if (range.getBegin().equals(range.getEnd())) {
-                    definition.addSpecific(range.getBegin());
-                    rangesIterator.remove();
+        for (Definition definition : m_config.getDefinitionCollection()) {
+            synchronized(definition) {
+                for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+                    Range range = rangesIterator.next();
+                    if (range.getBegin().equals(range.getEnd())) {
+                        definition.addSpecific(range.getBegin());
+                        rangesIterator.remove();
+                    }
                 }
             }
         }
 
         // Third pass: Sort specific and range elements for improved XML
         // readability and then combine them into fewer elements where possible
-        for (Iterator definitionsIterator =
-                 m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
-            Definition definition =
-                (Definition) definitionsIterator.next();
+        for (Iterator<Definition> defIterator = m_config.getDefinitionCollection().iterator(); defIterator.hasNext(); ) {
+            Definition definition = defIterator.next();
 
             // Sort specifics
-            TreeMap specificsMap = new TreeMap();
-            for (Iterator specificsIterator =
-                     definition.getSpecificCollection().iterator();
-                 specificsIterator.hasNext();) {
-                String specific = ((String) specificsIterator.next()).trim();
-                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()),
-                                 specific);
+            TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
+            for (String specific : definition.getSpecificCollection()) {
+                specific = specific.trim();
+                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific);
             }
 
             // Sort ranges
-            TreeMap rangesMap = new TreeMap();
-            for (Iterator rangesIterator =
-                     definition.getRangeCollection().iterator();
-                 rangesIterator.hasNext();) {
-                Range range = (Range) rangesIterator.next();
-                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()),
-                              range);
+            TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
+            for (Range range : definition.getRangeCollection()) {
+                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()), range);
             }
 
             // Combine consecutive specifics into ranges
             Integer priorSpecific = null;
             Range addedRange = null;
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
-
+            for (Integer specific : specificsMap.keySet()) {
                 if (priorSpecific == null) {
                     priorSpecific = specific;
                     continue;
@@ -274,8 +259,7 @@ public class WmiPeerFactory extends PeerFactory {
                 if (specificInt == priorSpecificInt + 1) {
                     if (addedRange == null) {
                         addedRange = new Range();
-                        addedRange.setBegin
-                             (IPv4Address.addressToString(priorSpecificInt));
+                        addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
                         rangesMap.put(priorSpecific, addedRange);
                         specificsMap.remove(priorSpecific);
                     }
@@ -291,21 +275,17 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // Move specifics to ranges
-            for (Iterator specificsIterator =
-                     new ArrayList(specificsMap.keySet()).iterator();
-                 specificsIterator.hasNext();) {
-                Integer specific = (Integer) specificsIterator.next();
+            for (Iterator<Integer> specIterator = specificsMap.keySet().iterator(); specIterator.hasNext(); ) {
+                Integer specific = specIterator.next();
                 int specificInt = specific.intValue();
-                for (Iterator rangesIterator =
-                         new ArrayList(rangesMap.keySet()).iterator();
-                     rangesIterator.hasNext();) {
-                    Integer begin = (Integer) rangesIterator.next();
+                for (Iterator<Integer> rangeIterator = rangesMap.keySet().iterator(); rangeIterator.hasNext();) {
+                    Integer begin = rangeIterator.next();
                     int beginInt = begin.intValue();
 
                     if (specificInt < beginInt - 1)
                         continue;
 
-                    Range range = (Range) rangesMap.get(begin);
+                    Range range = rangesMap.get(begin);
 
                     int endInt = new IPv4Address(range.getEnd()).getAddress();
 
@@ -337,22 +317,18 @@ public class WmiPeerFactory extends PeerFactory {
             Range priorRange = null;
             int priorBegin = 0;
             int priorEnd = 0;
-            for (Iterator rangesIterator =
-                     rangesMap.keySet().iterator();
-                 rangesIterator.hasNext();) {
-                Integer rangeKey = (Integer) rangesIterator.next();
+            for (Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                Integer rangeKey = rangesIterator.next();
 
-                Range range = (Range) rangesMap.get(rangeKey);
+                Range range = rangesMap.get(rangeKey);
 
                 int begin = rangeKey.intValue();
                 int end = new IPv4Address(range.getEnd()).getAddress();
 
                 if (priorRange != null) {
                     if (begin - priorEnd <= 1) {
-                        priorRange.setBegin(IPv4Address.addressToString
-                                             (Math.min(priorBegin, begin)));
-                        priorRange.setEnd(IPv4Address.addressToString
-                                           (Math.max(priorEnd, end)));
+                        priorRange.setBegin(IPv4Address.addressToString(Math.min(priorBegin, begin)));
+                        priorRange.setEnd(IPv4Address.addressToString(Math.max(priorEnd, end)));
 
                         rangesIterator.remove();
                         continue;
@@ -365,8 +341,8 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // Update changes made to sorted maps
-            definition.setSpecificCollection(new ArrayList(specificsMap.values()));
-            definition.setRangeCollection(new ArrayList(rangesMap.values()));
+            definition.setSpecific(specificsMap.values().toArray(new String[0]));
+            definition.setRange(rangesMap.values().toArray(new Range[0]));
         }
     }
 
@@ -392,9 +368,9 @@ public class WmiPeerFactory extends PeerFactory {
 
     /**
      * Puts a specific IP address with associated password into
-     * the currently loaded wmi-config.xml.
+     * the currently loaded WMI-config.xml.
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
-     * @param ip the ip address of a definition
+     * @param ip the IP address of a definition
      * @param password the password for a definition
      * @throws UnknownHostException
      */
@@ -406,25 +382,18 @@ public class WmiPeerFactory extends PeerFactory {
 
         // Copy the current definitions so that elements can be added and
         // removed
-        ArrayList definitions =
-            new ArrayList(m_config.getDefinitionCollection());
+        Collection<Definition> definitions = m_config.getDefinitionCollection();
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Iterator definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator(); definitionsIterator.hasNext();) {
+            Definition currentDefinition = definitionsIterator.next();
 
-            if ((currentDefinition.getPassword() != null
-                 && currentDefinition.getPassword().equals(password))
-                || (currentDefinition.getPassword() == null
-                    && m_config.getPassword() != null
-                    && m_config.getPassword().equals(password))) {
+            if ((currentDefinition.getPassword() != null && currentDefinition.getPassword().equals(password))
+                || (currentDefinition.getPassword() == null && m_config.getPassword() != null && m_config.getPassword().equals(password))) {
                 if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition "
-                              + "with read-community " + password);
+                    log.debug("define: Found existing definition with read-community " + password);
                 definition = currentDefinition;
                 break;
             }
@@ -444,41 +413,31 @@ public class WmiPeerFactory extends PeerFactory {
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Iterator definitionsIterator = definitions.iterator();
-             definitionsIterator.hasNext();) {
-            Definition currentDefinition =
-                (Definition) definitionsIterator.next();
+        for (Iterator<Definition> definitionsIterator = definitions.iterator(); definitionsIterator.hasNext();) {
+            Definition currentDefinition = definitionsIterator.next();
 
-            // Ignore this definition if it was the one identified by the first
-            // step
+            // Ignore this definition if it was the one identified by the first step
             if (currentDefinition == definition)
                 continue;
 
             // Remove any specific elements that match IP
             while (currentDefinition.removeSpecific(ip.getHostAddress())) {
                 if (log.isDebugEnabled())
-                    log.debug("define: Removed an existing specific "
-                              + "element with IP " + ip);
+                    log.debug("define: Removed an existing specific element with IP " + ip);
             }
 
             // Split and replace any range elements that contain IP
-            ArrayList ranges =
-                new ArrayList(currentDefinition.getRangeCollection());
-            Range[] rangesArray = currentDefinition.getRange();
-            for (int rangesArrayIndex = 0;
-                 rangesArrayIndex < rangesArray.length;
-                 rangesArrayIndex++) {
-                Range range = rangesArray[rangesArrayIndex];
+            Collection<Range> ranges = currentDefinition.getRangeCollection();
+            for (Iterator<Range> rangeIterator = ranges.iterator(); rangeIterator.hasNext();) {
+                Range range = rangeIterator.next();
                 int begin = new IPv4Address(range.getBegin()).getAddress();
                 int end = new IPv4Address(range.getEnd()).getAddress();
                 if (address >= begin && address <= end) {
                     if (log.isDebugEnabled())
-                        log.debug("define: Splitting range element "
-                                  + "with begin " + range.getBegin() + " and "
-                                  + "end " + range.getEnd());
+                        log.debug("define: Splitting range element with begin " + range.getBegin() + " and end " + range.getEnd());
 
                     if (begin == end) {
-                        ranges.remove(range);
+                        rangeIterator.remove();
                         continue;
                     }
 
@@ -500,16 +459,16 @@ public class WmiPeerFactory extends PeerFactory {
                     tail.setBegin(IPv4Address.addressToString(address + 1));
                     tail.setEnd(range.getEnd());
 
-                    ranges.remove(range);
+                    rangeIterator.remove();
                     ranges.add(head);
                     ranges.add(tail);
                 }
             }
-            currentDefinition.setRangeCollection(ranges);
+            currentDefinition.setRange(ranges.toArray(new Range[0]));
         }
 
         // Store the altered list of definitions
-        m_config.setDefinitionCollection(definitions);
+        m_config.setDefinition(definitions.toArray(new Definition[0]));
     }
     
     public synchronized WmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
@@ -525,15 +484,12 @@ public class WmiPeerFactory extends PeerFactory {
 
         // Attempt to locate the node
         //
-        Enumeration edef = m_config.enumerateDefinition();
+        Enumeration<Definition> edef = m_config.enumerateDefinition();
         DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
+            Definition def = edef.nextElement();
 
             // check the specifics first
-            //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = ((String) espec.nextElement()).trim();
+            for (String saddr : def.getSpecificCollection()) {
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -547,11 +503,8 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // check the ranges
-            //
             long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
+            for (Range rng : def.getRangeCollection()) {
                 try {
                     InetAddress begin = InetAddress.getByName(rng.getBegin());
                     InetAddress end = InetAddress.getByName(rng.getEnd());
@@ -569,11 +522,9 @@ public class WmiPeerFactory extends PeerFactory {
                 }
             }
             
-            // check the matching ip expressions
+            // check the matching IP expressions
             //
-            Enumeration eMatch = def.enumerateIpMatch();
-            while (eMatch.hasMoreElements()) {
-                String ipMatch = (String)eMatch.nextElement();
+            for (String ipMatch : def.getIpMatchCollection()) {
                 if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
                     setWmiAgentConfig(agentConfig, def);
                     break DEFLOOP;

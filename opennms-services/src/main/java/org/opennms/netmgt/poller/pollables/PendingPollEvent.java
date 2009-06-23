@@ -37,7 +37,6 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class PendingPollEvent extends PollEvent {
     
     private Event m_event;
     private boolean m_pending = true;
-    private List m_pendingOutages = new LinkedList();
+    private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
     public PendingPollEvent(Event event) {
         super(Scope.fromUei(event.getUei()));
@@ -94,8 +93,7 @@ public class PendingPollEvent extends PollEvent {
     }
     
     public void processPending() {
-        for (Iterator it = m_pendingOutages.iterator(); it.hasNext();) {
-            Runnable r = (Runnable) it.next();
+        for (Runnable r : m_pendingOutages) {
             r.run();
         }
         m_pendingOutages.clear();

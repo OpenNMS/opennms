@@ -36,7 +36,7 @@
 package org.opennms.netmgt.rtc;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,16 +59,16 @@ public class DataSenderTest extends OpenNMSTestCase {
      * This doesn't work unless we have a receiver on the other end.... more of an integration test
      */
     public void XXXtestSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
-        Reader reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
-        RTCConfigFactory.setInstance(new RTCConfigFactory(reader));
-        reader.close();
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
+        RTCConfigFactory.setInstance(new RTCConfigFactory(stream));
+        stream.close();
         
         Resource categoryResource = ConfigurationTestUtils.getSpringResourceForResource(this, "/org/opennms/netmgt/config/categories.xml");
         CategoryFactory.setInstance(new CategoryFactory(categoryResource));
         
-        reader = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(reader));
-        reader.close();
+        stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
+        stream.close();
 
         
         DataManager dataManager = new DataManager();

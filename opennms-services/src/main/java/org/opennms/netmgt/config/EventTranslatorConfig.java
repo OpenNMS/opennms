@@ -43,12 +43,12 @@ public interface EventTranslatorConfig {
      * Get the list of UEIs that are registered in the passive status configuration.
      * @return list of UEIs
      */
-    public abstract List getUEIList();
+    public abstract List<String> getUEIList();
     
     /**
      * Determine if the @param e is a translation event
      * @param e Event
-     * @return true iff e is a translation event
+     * @return true if e is a translation event
      */
     public abstract boolean isTranslationEvent(Event e);
 
@@ -57,7 +57,7 @@ public interface EventTranslatorConfig {
      * @param e Event
      * @return a translated event
      */
-	public abstract List translateEvent(Event e);
+	public abstract List<Event> translateEvent(Event e);
     
 
 }

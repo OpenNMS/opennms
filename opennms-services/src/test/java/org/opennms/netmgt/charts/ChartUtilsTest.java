@@ -171,6 +171,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
         assertEquals(300, bi.getHeight());
     }
 
+    @SuppressWarnings("deprecation")
     private void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
         ChartConfigFactory.setInstance(new ChartConfigFactory());
         Reader rdr = new StringReader(CHART_CONFIG);

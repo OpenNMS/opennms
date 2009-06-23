@@ -38,6 +38,7 @@
  */
 package org.opennms.netmgt.dao.support;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,9 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         m_dao = new JdbcFilterDao();
         // Don't set the NodeDao because it isn't required for most methods
         m_dao.setDataSource(getDataSource());
-        m_dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        m_dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
+        is.close();
         m_dao.afterPropertiesSet();
     }
 
@@ -101,14 +104,18 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
         dao.setNodeDao(m_nodeDao);
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
+        is.close();
         dao.afterPropertiesSet();
     }
 
     public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         // The nodeDao isn't required because this ends up getting used outside of a Spring context quite a bit
         dao.afterPropertiesSet();
@@ -118,8 +125,9 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
-
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         ta.anticipate(new IllegalStateException("property dataSource cannot be null"));
         try {
@@ -133,7 +141,9 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         dao.afterPropertiesSet();
 

@@ -276,8 +276,8 @@ public class CoreScanActivities {
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
         walker.start();
         walker.waitFor();
-        
-        System.err.println("detectPhysicalInterfaces");
+
+        debug("Finished phase " + currentPhase);
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
@@ -341,8 +341,7 @@ public class CoreScanActivities {
             
         }
         
-        
-        System.err.println("detectIpInterfaces");
+        debug("Finished phase " + currentPhase);
     }
     
     @Activity( lifecycle = "agentScan", phase = "deleteObsoleteResources", schedulingHint="write")
@@ -353,7 +352,7 @@ public class CoreScanActivities {
         
         m_provisionService.deleteObsoleteInterfaces(agentScan.getNodeId(), agentScan.getScanStamp());
         
-        System.err.println("agentScan.deleteObsoleteResources");
+        debug("Finished phase " + currentPhase);
     }
     
     @Activity( lifecycle = "agentScan", phase = "agentScanCompleted", schedulingHint="write")
@@ -389,7 +388,7 @@ public class CoreScanActivities {
         
         m_provisionService.deleteObsoleteInterfaces(scan.getNodeId(), scan.getScanStamp());
         
-        System.err.println("noAgentScan.deleteObsoleteResources");
+        debug("Finished phase " + currentPhase);
     }
     
     
@@ -402,7 +401,7 @@ public class CoreScanActivities {
         Integer nodeId = ifaceScan.getNodeId();
         InetAddress ipAddress = ifaceScan.getAddress();
 
-        System.err.println(String.format("detectServices for %d : %s: found %d detectors", nodeId, ipAddress.getHostAddress(), detectors.size()));
+        debug("detectServices for %d : %s: found %d detectors", nodeId, ipAddress.getHostAddress(), detectors.size());
         for(ServiceDetector detector : detectors) {
             addServiceDetectorTask(currentPhase, detector, nodeId, ipAddress);
         }
@@ -526,7 +525,6 @@ public class CoreScanActivities {
         log.error(String.format(format, args), t);
     }
 
-    @SuppressWarnings("unused")
     private void debug(String format, Object... args) {
         Logger log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {

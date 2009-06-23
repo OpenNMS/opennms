@@ -181,7 +181,7 @@ public class Phase extends BatchTask {
                     args[i] = lifeCycle.getAttribute(annot.value());
                 } else {
                     Type type = types[i];
-                    if (type instanceof Class) {
+                    if (type instanceof Class<?>) {
                         Class<?> clazz = (Class<?>)type;
                         args[i] = lifeCycle.findAttributeByType(clazz);
                     } else {
@@ -215,6 +215,6 @@ public class Phase extends BatchTask {
     
     
     public String toString() {
-        return String.format("Phase %s of %s", getName(), m_lifecycle);
+        return String.format("Phase %s of lifecycle %s", getName(), m_lifecycle.getName());
     }
 }

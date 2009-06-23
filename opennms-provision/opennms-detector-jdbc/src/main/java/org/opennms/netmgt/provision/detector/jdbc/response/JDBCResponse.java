@@ -35,6 +35,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * @author thedesloge
  *
@@ -47,7 +50,7 @@ public class JDBCResponse {
     public void receive(Connection conn) throws SQLException {
         
         DatabaseMetaData metadata = conn.getMetaData();
-        System.out.println("Got database metadata");
+        log().debug("got database metadata");
 
         m_result = metadata.getCatalogs();
         
@@ -58,13 +61,15 @@ public class JDBCResponse {
             while (m_result.next())
             {
                 m_result.getString(1);
-                System.out.println("Metadata catalog: '" + m_result.getString(1) + "'");
+                if (log().isDebugEnabled()) {
+                    log().debug("Metadata catalog: '" + m_result.getString(1) + "'");
+                }
             }
             
             m_result.close();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log().info("Unable to get result set", e);
         }
 
         return false;
@@ -82,4 +87,8 @@ public class JDBCResponse {
         return m_isValidProcedureCall;
     }
 
+
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

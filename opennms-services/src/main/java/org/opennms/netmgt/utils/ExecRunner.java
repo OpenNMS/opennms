@@ -92,9 +92,11 @@ public class ExecRunner {
     private boolean maxRunTimeExceeded = false;
 
     /** The name of this class for logging * */
+    @SuppressWarnings("unused")
     private static final String CLASS_NAME = "ExecRunner";
 
     /** The version of this class (filled in by CVS) * */
+    @SuppressWarnings("unused")
     private static final String VERSION = "CVS $Revision$";
 
     /** Number of miliseconds to wait between polling watched thread * */

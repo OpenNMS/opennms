@@ -93,7 +93,7 @@ public interface ServiceMonitor {
      *                plug-in from functioning.
      * 
      */
-    public void initialize(Map parameters);
+    public void initialize(Map<String, Object> parameters);
 
     /**
      * <P>
@@ -191,5 +191,5 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_AVAILABLE
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
-    public PollStatus poll(MonitoredService svc, Map parameters);
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 }

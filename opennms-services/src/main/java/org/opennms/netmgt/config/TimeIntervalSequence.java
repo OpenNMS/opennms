@@ -84,7 +84,7 @@ public class TimeIntervalSequence {
         m_tail = tail;
     }
     
-    public Iterator<TimeInterval> iterator() {
+    public Iterator<? extends TimeInterval> iterator() {
         return new TimeIntervalSeqIter(this);
     }
     
@@ -111,7 +111,7 @@ public class TimeIntervalSequence {
 
     private void addOverlappingInterval(TimeInterval newInterval) {
         // overlapping intervals
-        Collection newIntervals = combineIntervals(m_interval, newInterval);
+        Collection<? extends TimeInterval> newIntervals = combineIntervals(m_interval, newInterval);
         
         // remove the current interval since we are replacing it with the new ones
         removeCurrent();
@@ -122,7 +122,7 @@ public class TimeIntervalSequence {
         
     }
 
-    protected Collection combineIntervals(TimeInterval currentInterval, TimeInterval newInterval) {
+    protected Collection<? extends TimeInterval> combineIntervals(TimeInterval currentInterval, TimeInterval newInterval) {
         List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(3);
         
         // overlapping intervals get divided into three non-overlapping segments
@@ -132,10 +132,10 @@ public class TimeIntervalSequence {
         Date third = min(currentInterval.getEnd(), newInterval.getEnd());
         Date fourth = max(currentInterval.getEnd(), newInterval.getEnd());
         
-        // contruct up to three non-overlapping intervals that can be added to the list
+        // Construct up to three non-overlapping intervals that can be added to the list
         if (first.equals(second)) { 
             // if the first segment is empty then the second segment because head of the list
-            // the second segment is not empty becuase intervals can't be empty
+            // the second segment is not empty because intervals can't be empty
             newIntervals.add(createInterval(first, third));
         } else {
             // first segment is not empty make it head of the list and add the 
@@ -213,14 +213,14 @@ public class TimeIntervalSequence {
             removeCurrent();
             
             
-            // add back any part of the original interval that followd the remove interval
-            Collection newIntervals = separateIntervals(origInterval, removedInterval);
+            // add back any part of the original interval that follows the remove interval
+            Collection<? extends TimeInterval> newIntervals = separateIntervals(origInterval, removedInterval);
             
             addAll(newIntervals);
         }
     }
 
-    protected Collection separateIntervals(TimeInterval origInterval, TimeInterval removedInterval) {
+    protected Collection<? extends TimeInterval> separateIntervals(TimeInterval origInterval, TimeInterval removedInterval) {
         List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(2);
         if (removedInterval.getEnd().before(origInterval.getEnd())) {
             newIntervals.add(createInterval(removedInterval.getEnd(), origInterval.getEnd()));
@@ -271,22 +271,22 @@ public class TimeIntervalSequence {
     }
 
     public void addAll(TimeIntervalSequence intervals) {
-        for (Iterator it = intervals.iterator(); it.hasNext();) {
-            TimeInterval interval = (TimeInterval) it.next();
+        for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
+            TimeInterval interval = it.next();
             addInterval(interval);
         }
     }
     
-    public void addAll(Collection intervals) {
-        for (Iterator it = intervals.iterator(); it.hasNext();) {
-            TimeInterval interval = (TimeInterval) it.next();
+    public void addAll(Collection<? extends TimeInterval> intervals) {
+        for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
+            TimeInterval interval = it.next();
             addInterval(interval);
         }
     }
     
     public void removeAll(TimeIntervalSequence intervals) {
-        for (Iterator it = intervals.iterator(); it.hasNext();) {
-            TimeInterval interval = (TimeInterval) it.next();
+        for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
+            TimeInterval interval = it.next();
             removeInterval(interval);
         }
     }
@@ -294,7 +294,7 @@ public class TimeIntervalSequence {
     public String toString() {
         StringBuffer buf = new StringBuffer("[");
         boolean first = true;
-        for (Iterator it = this.iterator(); it.hasNext();) {
+        for (Iterator<? extends TimeInterval> it = this.iterator(); it.hasNext();) {
             TimeInterval interval = (TimeInterval) it.next();
             if (first) {
                 first = false;

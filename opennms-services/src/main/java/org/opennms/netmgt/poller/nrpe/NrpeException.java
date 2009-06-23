@@ -32,7 +32,9 @@
 package org.opennms.netmgt.poller.nrpe;
 
 public class NrpeException extends Exception {
-	public NrpeException() {
+    private static final long serialVersionUID = 1L;
+
+    public NrpeException() {
 		super();
 	}
 	

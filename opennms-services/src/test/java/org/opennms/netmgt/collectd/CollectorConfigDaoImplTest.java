@@ -85,39 +85,43 @@ public class CollectorConfigDaoImplTest extends TestCase {
 	}
 	
 	public Reader getReaderForFile(String fileName) {
-		InputStream is = getClass().getResourceAsStream(fileName);
+		InputStream is = getInputStreamForFile(fileName);
 		assertNotNull("could not get file resource '" + fileName + "'", is);
 		return new InputStreamReader(is);
 	}
+
+    private InputStream getInputStreamForFile(String fileName) {
+        return getClass().getResourceAsStream(fileName);
+    }
 	
 	public void testInstantiate() throws MarshalException, ValidationException, IOException, RrdException {
 		initialize();
 	}
 	
 	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, RrdException {
-		Reader rdr;
+        RrdTestUtils.initialize();
+
+        InputStream stream = null;
+
+		stream = getInputStreamForFile("/org/opennms/netmgt/config/test-database-schema.xml");
+		DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
+		stream.close();
 		
-                RrdTestUtils.initialize();
+		stream = getInputStreamForFile("/org/opennms/netmgt/config/jmx-datacollection-testdata.xml");
+		JMXDataCollectionConfigFactory.setInstance(new JMXDataCollectionConfigFactory(stream));
+		stream.close();
 
-		rdr = getReaderForFile("/org/opennms/netmgt/config/test-database-schema.xml");
-		DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-		rdr.close();
-		
-		rdr = getReaderForFile("/org/opennms/netmgt/config/jmx-datacollection-testdata.xml");
-		JMXDataCollectionConfigFactory.setInstance(new JMXDataCollectionConfigFactory(rdr));
-		rdr.close();
+		stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
+		SnmpPeerFactory.setInstance(new SnmpPeerFactory(stream));
+		stream.close();
 
-		rdr = getReaderForFile("/org/opennms/netmgt/config/snmp-config.xml");
-		SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-		rdr.close();
+		stream = getInputStreamForFile("/org/opennms/netmgt/config/datacollection-config.xml");
+		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(stream));
+		stream.close();
 
-		rdr = getReaderForFile("/org/opennms/netmgt/config/datacollection-config.xml");
-		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(rdr));
-		rdr.close();
-
-		rdr = getReaderForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
-		CollectdConfigFactory.setInstance(new CollectdConfigFactory(rdr, "localhost", false));
-		rdr.close();
+		stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
+		CollectdConfigFactory.setInstance(new CollectdConfigFactory(stream, "localhost", false));
+		stream.close();
 
 		return new CollectorConfigDaoImpl();
 	}

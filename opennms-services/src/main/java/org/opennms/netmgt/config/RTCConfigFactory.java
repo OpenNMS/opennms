@@ -40,10 +40,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -158,16 +160,31 @@ public final class RTCConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private RTCConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        FileReader reader = new FileReader(configFile);
-        marshal(reader);
-        reader.close();
-
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(configFile);
+            marshal(stream);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
     
+    public RTCConfigFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
+        marshal(stream);
+    }
+
+    @Deprecated
     public RTCConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
         marshal(reader);
     }
 
+    private void marshal(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(RTCConfiguration.class, stream);
+    }
+    
+    @Deprecated
     private void marshal(Reader reader) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(RTCConfiguration.class, reader);
     }

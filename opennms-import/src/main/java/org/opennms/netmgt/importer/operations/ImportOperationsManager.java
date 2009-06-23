@@ -115,7 +115,7 @@ public class ImportOperationsManager {
      * @return a nodeId
      */
     private Integer processForeignId(String foreignId) {
-        return (Integer)m_foreignIdToNodeMap.remove(foreignId);
+        return m_foreignIdToNodeMap.remove(foreignId);
     }
     
     public int getOperationCount() {
@@ -200,7 +200,7 @@ public class ImportOperationsManager {
         }
     }
  
-    public void persistOperations(TransactionTemplate template, OnmsDao dao) {
+    public void persistOperations(TransactionTemplate template, OnmsDao<?, ?> dao) {
     	m_stats.beginProcessingOps();
     	m_stats.setDeleteCount(getDeleteCount());
     	m_stats.setInsertCount(getInsertCount());
@@ -215,7 +215,7 @@ public class ImportOperationsManager {
     	
     }
     
-	private void preprocessOperations(final TransactionTemplate template, final OnmsDao dao, OperationIterator iterator, final ExecutorService dbPool) {
+	private void preprocessOperations(final TransactionTemplate template, final OnmsDao<?, ?> dao, OperationIterator iterator, final ExecutorService dbPool) {
 		
 		m_stats.beginPreprocessingOps();
 		
@@ -236,7 +236,7 @@ public class ImportOperationsManager {
 		m_stats.finishPreprocessingOps();
 	}
 
-	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao dao, final ExecutorService dbPool) {
+	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao<?, ?> dao, final ExecutorService dbPool) {
 		m_stats.beginPreprocessing(oper);
 		log().info("Preprocess: "+oper);
 		oper.gatherAdditionalData();
@@ -251,7 +251,7 @@ public class ImportOperationsManager {
 		m_stats.finishPreprocessing(oper);
 	}
 
-	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, final OnmsDao dao) {
+	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, final OnmsDao<?, ?> dao) {
 		m_stats.beginPersisting(oper);
 		log().info("Persist: "+oper);
 

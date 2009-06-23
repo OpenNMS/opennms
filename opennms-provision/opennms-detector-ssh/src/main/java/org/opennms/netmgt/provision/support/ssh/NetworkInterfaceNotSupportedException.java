@@ -45,6 +45,8 @@ package org.opennms.netmgt.provision.support.ssh;
  * 
  */
 public class NetworkInterfaceNotSupportedException extends UnsupportedOperationException {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new exception instance.
      */

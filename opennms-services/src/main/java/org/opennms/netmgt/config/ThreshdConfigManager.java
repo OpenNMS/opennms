@@ -35,6 +35,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Enumeration;
@@ -88,8 +89,22 @@ public abstract class ThreshdConfigManager {
      */
     protected String m_localServer;
     
+    @Deprecated
     public ThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, rdr);
+
+        createUrlIpMap();
+
+        m_verifyServer = verifyServer;
+        m_localServer = localServer;
+
+        createPackageIpListMap();
+
+
+    }
+
+    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, stream);
 
         createUrlIpMap();
 

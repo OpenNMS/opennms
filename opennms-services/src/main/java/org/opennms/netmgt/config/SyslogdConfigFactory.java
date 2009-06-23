@@ -44,6 +44,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -96,9 +97,13 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
     }
 
-    public SyslogdConfigFactory(Reader rdr) throws MarshalException,
-            ValidationException {
+    @Deprecated
+    public SyslogdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
+    }
+
+    public SyslogdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, stream);
     }
 
     /**

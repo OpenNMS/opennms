@@ -374,6 +374,7 @@ public class NsclientManager {
     /**
      * Constructor. Made private to prevent construction without parameters.
      */
+    @SuppressWarnings("unused")
     private NsclientManager() {
         // nothing to do, don't allow it.
     }
@@ -1033,11 +1034,10 @@ public class NsclientManager {
      */
     private NsclientPacket checkInstances(NsclientCheckParams param) throws NsclientException {
     	NsclientPacket pack = null;
-    	String responseValue = "";
+    	// String responseValue = "";
     	try {
     		// send/receive the request
-    		pack = sendCheckRequest(m_Password + "&" + CHECK_INSTANCES + "&"
-    				+ param.getParamString());
+    		pack = sendCheckRequest(m_Password + "&" + CHECK_INSTANCES + "&" + param.getParamString());
     		pack.setResultCode(NsclientPacket.RES_STATE_OK);
     		// Check for "ERROR" string.
     		if (pack.getResponse().matches(".*ERROR.*")) {

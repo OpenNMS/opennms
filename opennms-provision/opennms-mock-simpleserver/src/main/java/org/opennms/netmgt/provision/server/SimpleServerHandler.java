@@ -69,7 +69,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
             if(m_conversation.getExpectedCloseResponse() != null) {
                 session.write(m_conversation.getExpectedCloseResponse());
             }
-            session.close();
+            session.close(false);
             return;
         }
         

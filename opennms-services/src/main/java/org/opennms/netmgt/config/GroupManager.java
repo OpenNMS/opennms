@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -92,8 +93,18 @@ public abstract class GroupManager {
      * @throws MarshalException
      * @throws ValidationException
      */
+    @Deprecated
     protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
         Groupinfo groupinfo = CastorUtils.unmarshal(Groupinfo.class, reader);
+        initializeGroupsAndRoles(groupinfo);
+    }
+
+    protected synchronized void parseXml(InputStream stream) throws MarshalException, ValidationException {
+        Groupinfo groupinfo = CastorUtils.unmarshal(Groupinfo.class, stream);
+        initializeGroupsAndRoles(groupinfo);
+    }
+
+    private void initializeGroupsAndRoles(Groupinfo groupinfo) {
         Groups groups = groupinfo.getGroups();
         m_groups = new LinkedHashMap<String, Group>();
         m_oldHeader = groupinfo.getHeader();
@@ -491,6 +502,7 @@ public abstract class GroupManager {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws MarshalException, ValidationException, IOException {
         update();
 

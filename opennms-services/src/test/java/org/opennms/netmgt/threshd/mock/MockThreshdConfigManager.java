@@ -36,6 +36,7 @@
 package org.opennms.netmgt.threshd.mock;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -45,12 +46,18 @@ import org.opennms.netmgt.config.ThreshdConfigManager;
 
 public class MockThreshdConfigManager extends ThreshdConfigManager {
 
+    @SuppressWarnings("deprecation")
     public MockThreshdConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         super(new StringReader(xml), localServer, verifyServer);
     }
 
+    @SuppressWarnings("deprecation")
     public MockThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         super(rdr, localServer, verifyServer);
+    }
+
+    public MockThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+        super(stream, localServer, verifyServer);
     }
 
     public void reloadXML() throws IOException, MarshalException, ValidationException {

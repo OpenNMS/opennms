@@ -31,7 +31,6 @@
 //
 package org.opennms.mock.snmp;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
@@ -82,7 +82,9 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 			ex.printStackTrace();
 			return null;
 		} finally {
-		    try { if (inStream != null) inStream.close(); } catch (IOException e) {}
+		    if (inStream != null) {
+		        IOUtils.closeQuietly(inStream);
+		    }
 		}
         return moProps;
     }

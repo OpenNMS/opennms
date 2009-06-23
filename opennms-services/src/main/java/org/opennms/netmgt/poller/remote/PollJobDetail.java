@@ -47,7 +47,7 @@ public class PollJobDetail extends JobDetail {
 
 	private static final long serialVersionUID = -6499411861193543030L;
 	
-	public PollJobDetail(String name, Class jobClass) {
+	public PollJobDetail(String name, Class<?> jobClass) {
 		super(name, GROUP, jobClass);
 	}
 	

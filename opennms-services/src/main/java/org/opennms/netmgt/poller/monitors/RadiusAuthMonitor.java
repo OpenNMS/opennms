@@ -159,7 +159,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      *
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         Category log = ThreadCategory.getInstance(getClass());

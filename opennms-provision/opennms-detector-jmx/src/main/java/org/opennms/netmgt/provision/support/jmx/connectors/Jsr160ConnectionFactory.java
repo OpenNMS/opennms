@@ -59,15 +59,22 @@ public class Jsr160ConnectionFactory {
     
     static Category log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
+    @SuppressWarnings("unchecked")
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
+        String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
+        int    port     = ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
+        String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
+        String urlPath  = ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
+        String username = ParameterMap.getKeyedString(propertiesMap, "username", null);
+        String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
+        
+        return getWrapper(address, factory, port, protocol, urlPath, username, password);
+    }
+
+    private static Jsr160ConnectionWrapper getWrapper(InetAddress address, String factory, int port,
+            String protocol, String urlPath, String username, String password) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
-        
-        
-        String factory =  ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
-        int    port =     ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
-        String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
-        String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         
         log.debug("JMX: " + factory + " - service:" + protocol + "//" + address.getHostAddress() + ":" + port + urlPath);
 
@@ -89,9 +96,6 @@ public class Jsr160ConnectionFactory {
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
             try {
-                
-                String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
-                String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
                 HashMap<String, String[]> env = new HashMap<String, String[]>();
                 
@@ -133,9 +137,6 @@ public class Jsr160ConnectionFactory {
         else if (factory.equals("PASSWORD-OBFUSCATED")) {
             try {
                 
-                String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
-                String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
-                
                 HashMap env = new HashMap();
                 
                 // Provide the credentials required by the server to successfully
@@ -176,9 +177,6 @@ public class Jsr160ConnectionFactory {
         
         else if (factory.equals("SSL")) {
             try {
-                
-                String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
-                String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
                 HashMap env = new HashMap();
                 

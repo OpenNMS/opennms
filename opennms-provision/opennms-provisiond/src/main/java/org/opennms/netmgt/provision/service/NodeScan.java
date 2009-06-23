@@ -39,6 +39,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
@@ -90,34 +94,33 @@ public class NodeScan implements Runnable {
     public void run() {
         try {
             doNodeScan();
-            System.err.println(String.format("Finished Scanning Node %s / %s", m_foreignSource, m_foreignId));
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log().warn("The node scan was interrupted", e);
         } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log().warn(String.format("An error occurred while scanning node (%s/%s)", m_foreignSource, m_foreignId), e);
         }
     }
     
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
         ScheduledFuture<?> future = executor.scheduleWithFixedDelay(this, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
-        System.err.println(String.format("SCHEDULE: Created schedule for node %d : %s", schedule.getNodeId(), future));
         return future;
     }
 
     private void doNodeScan() throws InterruptedException, ExecutionException {
+        log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
+
         LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
         doNodeScan.setAttribute("nodeScan", this);
-        
         doNodeScan.trigger();
-        
         doNodeScan.waitFor();
+
+        log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
     }
 
     public void doLoadNode(Phase loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
+            log().warn(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
             m_aborted = true;
         }
     }
@@ -149,6 +152,11 @@ public class NodeScan implements Runnable {
     private BaseAgentScan createNoAgentScan() {
         return new NoAgentScan(m_nodeId, m_node);
     }
+ 
+    private Category log() {
+        return ThreadCategory.getInstance(NodeScan.class);
+    }
+
     /**
      * AgentScan
      *
@@ -184,7 +192,19 @@ public class NodeScan implements Runnable {
             m_node = node;
         }
             
-
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("address", m_agentAddress)
+                .append("type", m_agentType)
+                .toString();
+        }
+        
+        public int hashCode() {
+            return new HashCodeBuilder()
+                .append(m_agentAddress)
+                .append(m_agentType)
+                .toHashCode();
+        }
     }
     
     public class NoAgentScan extends BaseAgentScan {
@@ -240,7 +260,6 @@ public class NodeScan implements Runnable {
         }
 
         public void doUpdateIPInterface(Phase currentPhase, OnmsIpInterface iface) {
-            System.out.println("Saving OnmsIpInterface "+iface);
             m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
         }
 
@@ -255,6 +274,22 @@ public class NodeScan implements Runnable {
 
         private IpInterfaceScan createIpInterfaceScan(Integer nodeId, InetAddress ipAddress) {
             return new IpInterfaceScan(nodeId, ipAddress);
+        }
+        
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("foreign source", getForeignSource())
+                .append("foreign id", getForeignId())
+                .append("node id", m_nodeId)
+                .append("scan stamp", m_scanStamp)
+                .toString();
+        }
+        
+        public int hashCode() {
+            return new HashCodeBuilder()
+                .append(m_nodeId)
+                .append(m_scanStamp)
+                .toHashCode();
         }
         
     }
@@ -281,6 +316,45 @@ public class NodeScan implements Runnable {
             return m_address;
         }
         
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("address", m_address)
+                .append("foreign source", m_foreignSource)
+                .append("node ID", m_nodeId)
+                .toString();
+        }
+        
+        public int hashCode() {
+            return new HashCodeBuilder()
+                .append(m_address)
+                .append(m_foreignSource)
+                .append(m_nodeId)
+                .toHashCode();
+        }
+        
     }
 
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("foreign source", m_foreignSource)
+            .append("foreign id", m_foreignId)
+            .append("node id", m_nodeId)
+            .append("aborted", m_aborted)
+            .append("providers", m_providers)
+            .append("provision service", m_provisionService)
+            .append("lifecycle repository", m_lifeCycleRepository)
+            .toString();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder()
+            .append(m_foreignSource)
+            .append(m_foreignId)
+            .append(m_nodeId)
+            .append(m_aborted)
+            .append(m_providers)
+            .append(m_provisionService)
+            .append(m_lifeCycleRepository)
+            .toHashCode();
+    }
 }

@@ -103,7 +103,7 @@ final public class StrafePingMonitor extends IPv4Monitor {
      *         should be suppressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface

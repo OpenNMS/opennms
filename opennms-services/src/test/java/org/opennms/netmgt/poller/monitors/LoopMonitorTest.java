@@ -63,7 +63,7 @@ public class LoopMonitorTest extends TestCase {
         
         ServiceMonitor sm = new LoopMonitor();
         MonitoredService svc = new MockMonitoredService(1, "Router", "127.0.0.1", "LOOP");
-        Map<String, String> parms = new HashMap<String, String>();
+        Map<String, Object> parms = new HashMap<String, Object>();
 
         parms.put("ip-match", "127.0.0.1-2");
         parms.put("is-supported", "true");

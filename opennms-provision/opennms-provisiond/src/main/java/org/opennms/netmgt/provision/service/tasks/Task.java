@@ -40,6 +40,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * BaseTask
  *
@@ -315,5 +318,18 @@ public abstract class Task {
         return String.format("Task[%s]", super.toString());
     }
 
+    protected void info(String format, Object... args) {
+        log().info(String.format(format, args));
+    }
+
+    protected void debug(String format, Object... args) {
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
+        }
+    }
+
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
 }

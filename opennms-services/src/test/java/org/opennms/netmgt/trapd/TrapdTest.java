@@ -37,7 +37,7 @@
 //
 package org.opennms.netmgt.trapd;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.TrapdConfigFactory;
@@ -60,8 +60,8 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
         daoTestConfig.afterPropertiesSet();
         
-        Reader rdr = ConfigurationTestUtils.getReaderForResourceWithReplacements(this, "trapd-configuration.xml", new String[] { "@snmp-trap-port@", Integer.toString(m_port) });
-        TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(this, "trapd-configuration.xml", new String[] { "@snmp-trap-port@", Integer.toString(m_port) });
+        TrapdConfigFactory.setInstance(new TrapdConfigFactory(stream));
     }
 
 

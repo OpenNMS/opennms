@@ -77,9 +77,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PageSequenceMonitorTest {
 	
 	PageSequenceMonitor m_monitor;
-	Map<String, String> m_params;
+	Map<String, Object> m_params;
 	
 
+    @SuppressWarnings("unchecked")
     @Before
 	public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -87,7 +88,7 @@ public class PageSequenceMonitorTest {
     	m_monitor = new PageSequenceMonitor();
     	m_monitor.initialize(Collections.EMPTY_MAP);
     	
-		m_params = new HashMap<String, String>();
+		m_params = new HashMap<String, Object>();
 		m_params.put("timeout", "8000");
 		m_params.put("retries", "1");
 		

@@ -64,12 +64,12 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      */
     //private Category log = ThreadCategory.getInstance(getClass());
 
-    abstract public PollStatus poll(MonitoredService svc, Map parameters) ;
+    abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) ;
     
     
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
-     * by the operator and the operand from the configuartion file.
+     * by the operator and the operand from the configuration file.
      * 
      * @param result
      * @param operator

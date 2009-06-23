@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Mar 20: Remove System.err.println. - dj@opennms.org
+// 2008 Mar 20: Remove println. - dj@opennms.org
 // 2007 Jun 24: Organize imports, use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -129,12 +129,14 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
+        log().warn("createNodeScan called");
         return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_lifeCycleRepository, m_providers);
     }
 
     //Helper functions for the schedule
     protected void addToScheduleQueue(NodeScanSchedule schedule) {
         ScheduledFuture<?> future = scheduleNodeScan(schedule);
+        log().warn("addToScheduleQueue future = " + future);
         m_scheduledNodes.put(schedule.getNodeId(), future);
     }
     
@@ -151,6 +153,7 @@ public class Provisioner implements SpringServiceDaemon {
 
     private ScheduledFuture<?> scheduleNodeScan(NodeScanSchedule schedule) {
         NodeScan nodeScan = createNodeScan(schedule.getNodeId(), schedule.getForeignSource(), schedule.getForeignId());
+        log().warn("nodeScan = " + nodeScan);
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
 
@@ -291,7 +294,14 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAddedEvent(Event e) {
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+        NodeScanSchedule scheduleForNode = null;
+        log().warn("node added event (" + System.currentTimeMillis() + ")");
+        try {
+            scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+        } catch (Throwable t) {
+            log().error("getScheduleForNode fails", t);
+        }
+        log().warn("scheduleForNode is " + scheduleForNode);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }

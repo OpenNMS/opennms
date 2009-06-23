@@ -35,8 +35,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,11 +126,8 @@ public class ThresholdingVisitorTest {
     }
 
     private void initFactories(String threshd, String thresholds) throws Exception {
-        Reader reader;
-        reader = new InputStreamReader(getClass().getResourceAsStream(thresholds));
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(reader));
-        reader = new InputStreamReader(getClass().getResourceAsStream(threshd));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(reader,"127.0.0.1", false));
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
+        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
     
     @After

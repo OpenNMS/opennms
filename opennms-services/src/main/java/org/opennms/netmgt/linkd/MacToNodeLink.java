@@ -47,9 +47,9 @@ public class MacToNodeLink {
 	int parentifindex;
 
 
-	private MacToNodeLink() {
-		throw new UnsupportedOperationException(
-		"default constructor not supported");
+	@SuppressWarnings("unused")
+    private MacToNodeLink() {
+		throw new UnsupportedOperationException("default constructor not supported");
 	}
 
 	public MacToNodeLink(String macAddress) {

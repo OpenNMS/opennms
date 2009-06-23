@@ -10,7 +10,7 @@
 //
 // Modifications:
 //
-// 2008 Mar 20: System.err.println -> log().info. - dj@opennms.org
+// 2008 Mar 20: println -> log().info. - dj@opennms.org
 // 2007 Jun 24: Use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.

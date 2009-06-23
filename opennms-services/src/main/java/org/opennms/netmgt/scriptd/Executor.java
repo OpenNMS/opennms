@@ -69,7 +69,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of events.
      */
-    private FifoQueue<Runnable> m_execQ;
+    private FifoQueue<Event> m_execQ;
 
     /**
      * The worker thread that executes the <code>run</code> method.
@@ -116,7 +116,7 @@ final class Executor implements Runnable, PausableFiber {
      * @param config
      *            The <em>Scriptd</em> configuration.
      */
-    Executor(FifoQueue<Runnable> execQ, ScriptdConfigFactory config) {
+    Executor(FifoQueue<Event> execQ, ScriptdConfigFactory config) {
         m_execQ = execQ;
         m_config = config;
 
@@ -210,7 +210,7 @@ final class Executor implements Runnable, PausableFiber {
 
             Event event = null;
             try {
-                event = (Event) m_execQ.remove(1000);
+                event = m_execQ.remove(1000);
                 if (event == null) // status check time
                 {
                     continue; // goto top of loop

@@ -42,6 +42,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -127,6 +128,10 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
     }
     
+    public SnmpPeerFactory(InputStream stream) {
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream);
+    }
+
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.

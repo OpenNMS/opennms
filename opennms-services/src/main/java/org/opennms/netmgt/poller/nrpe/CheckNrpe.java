@@ -83,9 +83,10 @@ public class CheckNrpe {
 		String host = null;
 		int port = DEFAULT_PORT;
 		int padding = NrpePacket.DEFAULT_PADDING;
-		int timeout = DEFAULT_TIMEOUT;
+		@SuppressWarnings("unused")
+        int timeout = DEFAULT_TIMEOUT;
 		String command = NrpePacket.HELLO_COMMAND;
-		LinkedList arglist = new LinkedList();
+		LinkedList<String> arglist = new LinkedList<String>();
 		
 		for (int i = 0; i < argv.length; i++) {
 			if (argv[i].equals("-h")) {
@@ -119,9 +120,9 @@ public class CheckNrpe {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(command);
-		for (Iterator i = arglist.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = arglist.iterator(); i.hasNext(); ) {
 			buffer.append(" ");
-			buffer.append((String) i.next());
+			buffer.append(i.next());
 		}
 		
 		// XXX still need to do something with the timeout
