@@ -27,7 +27,7 @@
       </descr>
       <logmsg dest='logndisplay'>Agent Interface Down (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[#5]%; ifName:%parm[#6]%; IfAlias:%parm[#7]%</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[1]%" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
   </event>
 
   <event>
