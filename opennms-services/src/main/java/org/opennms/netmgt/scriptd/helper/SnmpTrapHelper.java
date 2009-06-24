@@ -48,7 +48,6 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
@@ -105,7 +104,7 @@ public class SnmpTrapHelper {
      * Map of factories for generating different types of SNMP variable binding
      * content
      */
-    private HashMap m_factoryMap;
+    private HashMap<String, Object> m_factoryMap;
 
     /**
      * Constructs a new SNMPTrapHelper.
@@ -116,7 +115,7 @@ public class SnmpTrapHelper {
 
         // create and populate the factory map
 
-        m_factoryMap = new HashMap();
+        m_factoryMap = new HashMap<String, Object>();
 
         m_factoryMap.put(EventConstants.TYPE_SNMP_OCTET_STRING, new SnmpOctetStringFactory());
         m_factoryMap.put(EventConstants.TYPE_SNMP_INT32, new SnmpInt32Factory());

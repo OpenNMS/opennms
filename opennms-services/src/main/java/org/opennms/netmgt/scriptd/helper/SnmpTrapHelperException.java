@@ -46,6 +46,8 @@ package org.opennms.netmgt.scriptd.helper;
  * 
  */
 public class SnmpTrapHelperException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Construct an SnmpTrapHelperException with the specified message.
      * 

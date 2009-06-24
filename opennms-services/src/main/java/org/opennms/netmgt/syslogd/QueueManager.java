@@ -53,7 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */public class QueueManager {
 
-    FifoQueue m_backlogQ = new FifoQueueImpl();
+    FifoQueue<ConvertToEvent> m_backlogQ = new FifoQueueImpl<ConvertToEvent>();
 
     ConvertToEvent ret;
 
@@ -92,7 +92,7 @@ import org.opennms.core.utils.ThreadCategory;
         // get the byte from the queue
 
         try {
-            ret = (ConvertToEvent) m_backlogQ.remove();
+            ret = m_backlogQ.remove();
         } catch (FifoQueueException e) {
             log.debug("FifoQueue exception " + e);
         } catch (InterruptedException e) {
