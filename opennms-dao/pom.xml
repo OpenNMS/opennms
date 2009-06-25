@@ -12,13 +12,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -63,6 +56,10 @@
   </build>
   <dependencies>
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
@@ -113,10 +110,6 @@
     </dependency>
 
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
-    </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils-core</artifactId>

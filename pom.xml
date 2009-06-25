@@ -127,6 +127,73 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>castor-maven-plugin</artifactId>
+        <version>2.0-alpha1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <staleMillis>1000</staleMillis>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-castor</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>xerces</groupId>
+                <artifactId>xerces</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4jVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>com.sun.jdmk</groupId>
+                <artifactId>jmxtools</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>com.sun.jmx</groupId>
+                <artifactId>jmxri</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+            <version>${oroVersion}</version>
+            <scope>runtime</scope>
+          </dependency>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xercesVersion}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.1</version>
@@ -140,11 +207,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-        <version>2.0-alpha1</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
@@ -515,7 +577,11 @@
 
    <updatePolicy>daily</updatePolicy>
 
+   <!-- dependency versions -->
+   <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.0-M6</minaVersion>
+   <oroVersion>2.0.8</oroVersion>
+   <xercesVersion>2.6.2</xercesVersion>
   </properties>
 
   <profiles>
@@ -835,6 +901,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-castor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1149,17 +1220,6 @@
         <version>0.9.1.2</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.castor</groupId>
-        <artifactId>castor</artifactId>
-        <version>1.1.2.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils-core</artifactId>
         <version>1.8.0</version>
@@ -1218,7 +1278,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.0.4</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.dbunit</groupId>
@@ -1426,11 +1486,15 @@
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.15</version>
+        <version>${log4jVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.jms</groupId>
             <artifactId>jms</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
           </exclusion>
           <exclusion>
             <groupId>com.sun.jdmk</groupId>
@@ -1496,7 +1560,7 @@
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
-        <version>2.0.8</version>
+        <version>${oroVersion}</version>
       </dependency>
       <dependency>
         <groupId>poi</groupId>
@@ -1538,7 +1602,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.6.2</version>
+        <version>${xercesVersion}</version>
       </dependency>
       <dependency>
         <groupId>xmlrpc</groupId>
@@ -1621,6 +1685,18 @@
       <name>Public online Restlet repository</name>
       <url>http://maven.restlet.org</url>
     </repository>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -1669,21 +1745,18 @@
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.repository.codehaus.org</url>
     </pluginRepository>
-<!--
     <pluginRepository>
-      <releases />
-      <snapshots />
-      <id>codehaus-snapshots-old</id>
-      <name>Maven/Codehaus Snapshot Repository</name>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2</url>
     </pluginRepository>
-    <pluginRepository>
-      <snapshots />
-      <id>apache.snapshots</id>
-      <name>Apache Snapshot Repository</name>
-      <url>http://people.apache.org/maven-snapshot-repository</url>
-    </pluginRepository>
--->
   </pluginRepositories>
   <distributionManagement>
     <site>

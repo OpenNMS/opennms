@@ -53,6 +53,10 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -200,11 +204,6 @@
     <dependency>
       <groupId>jakarta-regexp</groupId>
       <artifactId>jakarta-regexp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

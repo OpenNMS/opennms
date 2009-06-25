@@ -9,6 +9,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS Complex Dependencies</name>
   <modules>
+    <module>opennms-castor</module>
     <module>opennms-drools</module>
     <module>opennms-hibernate</module>
     <module>opennms-spring</module>

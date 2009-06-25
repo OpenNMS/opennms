@@ -9,7 +9,7 @@
   <packaging>jar</packaging>
   <name>OpenNMS Jersey Dependencies</name>
   <properties>
-    <jerseyVersion>1.0.2</jerseyVersion>
+    <jerseyVersion>1.0.3</jerseyVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -74,11 +74,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>java-net-maven1-repo</id>
-      <url>http://download.java.net/maven/1</url>
-      <layout>legacy</layout>
-    </repository>
-  </repositories>
 </project>
