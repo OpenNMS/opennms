@@ -20,7 +20,7 @@
       <name>Craig Gallen</name>
       <email>cgallen at sourceforge.net</email>
       <roles>
-	<role>Project Lead</role>
+        <role>Project Lead</role>
       </roles>
       <organization>University Of Southampton</organization>
       <timezone>-0</timezone>
@@ -30,7 +30,7 @@
       <name>David Hustace</name>
       <email>dhustace at opennms.org</email>
       <roles>
-	<role>Developer- OpenNMS Alarm Handling</role>
+        <role>Developer- OpenNMS Alarm Handling</role>
       </roles>
       <organization>OpenNMS Inc</organization>
     </developer>
@@ -40,14 +40,14 @@
       <name>Tim Griffith</name>
       <organization>University Of Southampton</organization>
       <roles>
-	<role>Developer</role>
+        <role>Developer</role>
       </roles>
     </contributor>
     <contributor>
       <name>Gavin Willingham</name>
       <organization>University Of Southampton</organization>
       <roles>
-	<role>Developer</role>
+        <role>Developer</role>
       </roles>
     </contributor>
     <contributor>
@@ -58,7 +58,7 @@
       <name>Paul Hickman</name>
       <organization>University Of Southampton</organization>
       <roles>
-	<role>Developer</role>
+        <role>Developer</role>
       </roles>
     </contributor>
     <contributor>
@@ -119,47 +119,39 @@
   <build>
     <plugins>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>castor-maven-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <phase>generate-sources</phase>
-	    <goals>
-	      <goal>generate</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<configuration>
-	  <source>1.5</source>
-	  <target>1.5</target>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
       </plugin>
       
       <plugin>
-	<artifactId>maven-source-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       
       <plugin>
-	<artifactId>maven-jar-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>test-jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       
       <plugin>
@@ -185,36 +177,36 @@
   <reporting>
     <plugins>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>jxr-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>
-	  maven-project-info-reports-plugin
-	</artifactId>
-	<reportSets>
-	  <reportSet>
-	    <reports>
-	      <report>dependencies</report>
-	      <report>project-team</report>
-	      <report>mailing-list</report>
-	      <!--
-		  Continuous Integration report will be omitted
-		  <report>cim</report>
-		  
-		  Issue tracking report will be omitted
-		  <report>issue-tracking</report>
-		  -->
-	      <report>license</report>
-	      <report>scm</report>
-	    </reports>
-	  </reportSet>
-	</reportSets>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>
+          maven-project-info-reports-plugin
+        </artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <!--
+        	  Continuous Integration report will be omitted
+        	  <report>cim</report>
+        	  
+        	  Issue tracking report will be omitted
+        	  <report>issue-tracking</report>
+        	  -->
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       
     </plugins>
@@ -224,12 +216,6 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
       <scope>compile</scope>
     </dependency>
     
@@ -256,6 +242,11 @@
       <scope>compile</scope>
     </dependency>
     
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
@@ -311,19 +302,19 @@
     </dependency>
     
     <!-- 
-	 <dependency>
-	   <groupId>xmlbeans</groupId>
-	   <artifactId>xmlbeans-jsr173-api</artifactId>
-	   <scope>compile</scope>
-	 </dependency>
-	 -->
+         <dependency>
+           <groupId>xmlbeans</groupId>
+           <artifactId>xmlbeans-jsr173-api</artifactId>
+           <scope>compile</scope>
+         </dependency>
+         -->
     <!-- alternative download from BEA site
-	 <dependency>
-	   <groupId>javax.xml</groupId>
-	   <artifactId>jsr173</artifactId>
-	   <scope>compile</scope>
-	 </dependency>
-	 -->
+         <dependency>
+           <groupId>javax.xml</groupId>
+           <artifactId>jsr173</artifactId>
+           <scope>compile</scope>
+         </dependency>
+         -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -339,67 +330,67 @@
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       
       <dependency>
-	<groupId>jboss</groupId>
-	<artifactId>jbossmq-client</artifactId>
-	<version>4.0.2</version>
+        <groupId>jboss</groupId>
+        <artifactId>jbossmq-client</artifactId>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
-	<groupId>jboss</groupId>
-	<artifactId>jboss-j2ee</artifactId>
-	<version>4.0.2</version>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-j2ee</artifactId>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
-	<groupId>jboss</groupId>
-	<artifactId>jboss-client</artifactId>
-	<version>4.0.2</version>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-client</artifactId>
+        <version>4.0.2</version>
       </dependency>
       <dependency>
-	<groupId>jboss</groupId>
-	<artifactId>jboss-common</artifactId>
-	<version>4.0.2</version>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-common</artifactId>
+        <version>4.0.2</version>
       </dependency>
       
       <dependency>
-	<groupId>org.openoss</groupId>
-	<artifactId>OSSbeans-qos-ejb</artifactId>
-	<version>2.1.0</version>
+        <groupId>org.openoss</groupId>
+        <artifactId>OSSbeans-qos-ejb</artifactId>
+        <version>2.1.0</version>
       </dependency>
       <dependency>
-	<groupId>org.openoss</groupId>
-	<artifactId>OSSbeans-xml</artifactId>
-	<version>2.1.0</version>
+        <groupId>org.openoss</groupId>
+        <artifactId>OSSbeans-xml</artifactId>
+        <version>2.1.0</version>
       </dependency>
       
       <!-- recommended to try stax api instead of jsr173 
-	   see: http://www.mail-archive.com/dev@xmlbeans.apache.org/msg00926.html -->
+           see: http://www.mail-archive.com/dev@xmlbeans.apache.org/msg00926.html -->
       <dependency>
-	<groupId>stax</groupId>
-	<artifactId>stax-api</artifactId>
-	<version>1.0.1</version>
+        <groupId>stax</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0.1</version>
       </dependency>
       
       <dependency>
-	<groupId>xmlbeans</groupId>
-	<artifactId>xbean</artifactId>
-	<version>2.1.0</version>
+        <groupId>xmlbeans</groupId>
+        <artifactId>xbean</artifactId>
+        <version>2.1.0</version>
       </dependency>
       
       
       <!-- needs downloaded manually from bea site 
-	   <dependency>
-	     <groupId>javax.xml</groupId>
-	     <artifactId>jsr173</artifactId>
-	     <version>1.0</version>
-	   </dependency>
-	   -->
+           <dependency>
+             <groupId>javax.xml</groupId>
+             <artifactId>jsr173</artifactId>
+             <version>1.0</version>
+           </dependency>
+           -->
       
       <!-- needs downloaded manually from xmlbeans site 
-	   <dependency>
-	     <groupId>xmlbeans</groupId>
-	     <artifactId>xmlbeans-jsr173-api</artifactId>
-	     <version>1.0</version>
-	   </dependency>
-	   -->
+           <dependency>
+             <groupId>xmlbeans</groupId>
+             <artifactId>xmlbeans-jsr173-api</artifactId>
+             <version>1.0</version>
+           </dependency>
+           -->
       
     </dependencies>
     
@@ -416,25 +407,25 @@
     </repository>
     
     <!--
-	<repository>
-	  <snapshots />
-	  <id>sourceforge-snapshots</id>
-	  <name>Sourceforge Release Repository</name>
-	  <url>http://openoss.sourceforge.net/m2repo-snapshots</url>
-	</repository>
-	-->
+        <repository>
+          <snapshots />
+          <id>sourceforge-snapshots</id>
+          <name>Sourceforge Release Repository</name>
+          <url>http://openoss.sourceforge.net/m2repo-snapshots</url>
+        </repository>
+        -->
     
   </repositories>
   
   <!-- 
        <pluginRepositories>
-	 <pluginRepository>
-	   <releases />
-	   <snapshots />
-	   <id>codehaus-snapshots</id>
-	   <name>Maven/Codehaus Snapshot Repository</name>
-	   <url>http://snapshots.repository.codehaus.org</url>
-	 </pluginRepository>
+         <pluginRepository>
+           <releases />
+           <snapshots />
+           <id>codehaus-snapshots</id>
+           <name>Maven/Codehaus Snapshot Repository</name>
+           <url>http://snapshots.repository.codehaus.org</url>
+         </pluginRepository>
        </pluginRepositories>
        
        -->

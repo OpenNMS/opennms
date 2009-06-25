@@ -45,11 +45,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals><goal>generate</goal></goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -85,6 +80,11 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
@@ -135,12 +135,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

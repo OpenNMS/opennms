@@ -12,16 +12,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <staleMillis>1000</staleMillis>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo.groovy</groupId>
@@ -71,14 +61,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
     </dependency>
   </dependencies>
 </project>

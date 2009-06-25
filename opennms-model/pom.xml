@@ -12,13 +12,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -39,6 +32,10 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-castor</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-hibernate</artifactId>
@@ -64,10 +61,6 @@
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
       <version>2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
