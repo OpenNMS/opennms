@@ -214,13 +214,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
             rNode.setStateUp(true);
 
+            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), rNode);
+
             RWSClientApi.createRWSRancidNode(cp, rNode);
             RWSClientApi.createOrUpdateRWSAuthNode(cp, rNode.getAuth());
-            
-            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), rNode);
-            
-        } catch (ProvisioningAdapterException ae) {
-                sendAndThrow(nodeId, ae);
+                        
+        } catch (ProvisioningAdapterException ae) {    
+            sendAndThrow(nodeId, ae);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
@@ -255,6 +255,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 }
             } else {
                 rNewNode.setStateUp(true);
+                m_onmsNodeRancidNodeMap.put(node.getId(), rNewNode);
             }
             
             
