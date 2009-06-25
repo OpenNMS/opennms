@@ -56,11 +56,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>java-net-maven2-repo</id>
-      <url>http://download.java.net/maven/2</url>
-    </repository>
-  </repositories>
 </project>
 
