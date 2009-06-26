@@ -52,6 +52,13 @@
   		<version>${project.version}</version>
   	</dependency>
   	
+  	<dependency>
+  		<groupId>org.opennms.features.webapp</groupId>
+  		<artifactId>org.opennms.features.webapp.nodes</artifactId>
+  		<type>war</type>
+  		<version>${project.version}</version>
+  	</dependency>
+  	
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

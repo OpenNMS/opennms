@@ -166,12 +166,12 @@
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
   
-  <bean name="/element/nodeList.htm" class="org.opennms.web.controller.node.NodeListController">
-    <property name="commandName"><value>command</value></property>
-    <property name="commandClass"><value>org.opennms.web.command.NodeListCommand</value></property>
-    <property name="successView"><value>element/nodeList</value></property>
-    <property name="nodeListService" ref="nodeListService" />
-  </bean>
+<!--  <bean name="/element/nodeList.htm" class="org.opennms.web.controller.node.NodeListController">-->
+<!--    <property name="commandName"><value>command</value></property>-->
+<!--    <property name="commandClass"><value>org.opennms.web.command.NodeListCommand</value></property>-->
+<!--    <property name="successView"><value>element/nodeList</value></property>-->
+<!--    <property name="nodeListService" ref="nodeListService" />-->
+<!--  </bean>-->
 
   <bean name="/admin/node/add.htm" class="org.opennms.web.controller.node.NodeProvisioningController">
     <property name="redirectView"><value>add.htm</value></property>

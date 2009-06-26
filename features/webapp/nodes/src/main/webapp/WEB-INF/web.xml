@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app id="opennms" version="2.4"
+		 xmlns="http://java.sun.com/xml/ns/j2ee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/node.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/linkednode.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/interface.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/service.jsp</url-pattern>
+  </filter-mapping>
+	
+  <servlet>
+     <servlet-name>elementDispatcher</servlet-name>
+	 <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	 <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>elementDispatcher</servlet-name>
+  	<url-pattern>/element/nodeList.htm</url-pattern>
+  </servlet-mapping>
+	
+</web-app>

@@ -33,6 +33,54 @@
       <version>4.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring-web</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-services</artifactId>
+    	<exclusions>
+    		<exclusion>
+    			<artifactId>jetty</artifactId>
+    			<groupId>org.mortbay.jetty</groupId>
+    		</exclusion>
+    		<exclusion>
+    			<artifactId>jetty-util</artifactId>
+    			<groupId>org.mortbay.jetty</groupId>
+    		</exclusion>
+    		<exclusion>
+    			<artifactId>servlet-api</artifactId>
+    			<groupId>org.mortbay.jetty</groupId>
+    		</exclusion>
+    	</exclusions>
+    </dependency>
+    <dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>jstl</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-dao</artifactId>
+    	<type>test-jar</type>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-test</artifactId>
+    </dependency>
 
     <!-- test -->
   </dependencies>

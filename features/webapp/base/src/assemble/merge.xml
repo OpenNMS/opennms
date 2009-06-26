@@ -3,6 +3,7 @@
   <wars>
   	<war>org.opennms.features.webapp:org.opennms.features.webapp.webapp-old</war>
   	<war>org.opennms.features.webapp:org.opennms.features.webapp.home</war>
+  	<war>org.opennms.features.webapp:org.opennms.features.webapp.nodes</war>
   </wars>
 
 <!--  <merges>-->
