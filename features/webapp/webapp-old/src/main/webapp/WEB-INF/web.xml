@@ -1064,14 +1064,6 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/outage/detail.jsp</url-pattern>
   </servlet-mapping>
-
-  <!-- Although this will be matched by the above *.htm url-pattern,
-       this servlet-mapping needs to be here because wildcard url-pattern
-       elements don't seem to work as a welcome-page entry. -->
-  <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/frontPage.htm</url-pattern>
-  </servlet-mapping>
     
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
@@ -1133,9 +1125,7 @@
   
   <!-- the welcome-file elements need to point at a file that exists or
        a non-wildcard url-pattern in a servlet-mapping element. -->
-  <welcome-file-list>
-    <welcome-file>frontPage.jsp</welcome-file>
-  </welcome-file-list>
+
   
 </web-app>
 

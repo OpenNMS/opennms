@@ -6,7 +6,8 @@
     <version>1.7.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-webapp</artifactId>
+  <groupId>org.opennms.features.webapp</groupId>
+  <artifactId>org.opennms.features.webapp.webapp-old</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
