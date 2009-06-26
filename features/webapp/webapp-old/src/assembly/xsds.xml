@@ -1,0 +1,16 @@
+<assembly>
+  <id>xsds</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/xsds</directory>
+      <outputDirectory>xsds</outputDirectory>
+      <excludes>
+        <exclude>schema*.xsd</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

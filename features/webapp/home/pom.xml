@@ -48,6 +48,25 @@
       <version>4.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring-web</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-spring-security</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms.features.webapp</groupId>
+    	<artifactId>org.opennms.features.webapp.api</artifactId>
+    	<version>1.7.5-SNAPSHOT</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -56,7 +75,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
@@ -73,16 +92,12 @@
       <!--
           If you want to use the target/web.xml file mergewebxml produces,
           tell the war plugin to use it.
-          Also, exclude what you want from the final artifact here.
+          Also, exclude what you want from the final artifact here.-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webXml>target/web.xml</webXml>
-                    <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
-                </configuration>
             </plugin>
-            -->
+            
 
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>

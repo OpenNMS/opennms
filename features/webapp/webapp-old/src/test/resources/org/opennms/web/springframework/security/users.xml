@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+  <header>
+    <rev>.9</rev>
+    <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+    <mstation>master.nmanage.com</mstation>
+  </header>
+  <users>
+    <user>
+      <user-id>admin</user-id>
+      <full-name>Administrator</full-name>
+      <user-comments>
+        Default administrator, do not delete
+      </user-comments>
+      <password>21232F297A57A5A743894A0E4A801FC3</password>
+    </user>
+    <user>
+      <user-id>tempuser</user-id>
+      <full-name>Temporary User</full-name>
+      <user-comments></user-comments>
+      <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>
+      <contact type="email" info="temp.user@opennms.org" />
+      <contact type="numericPage" info="6789" serviceProvider="ATT" />
+      <contact type="textPage" info="9876" serviceProvider="Sprint" />
+      <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>
+    </user>
+    <user>
+      <user-id>dashboard</user-id>
+      <full-name>Dashboard-only user</full-name>
+      <user-comments></user-comments>
+      <password>DC7161BE3DBF2250C8954E560CC35060</password>
+    </user>
+  </users>
+</userinfo>

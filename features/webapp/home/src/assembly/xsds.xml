@@ -1,7 +1,7 @@
 <assembly>
   <id>xsds</id>
   <formats>
-    <format>jar</format>
+    <format>war</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>

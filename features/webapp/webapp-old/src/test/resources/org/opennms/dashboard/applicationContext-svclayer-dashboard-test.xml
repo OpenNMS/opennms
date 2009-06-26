@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+  <tx:annotation-driven />
+  
+  <bean name="gwtSurveillanceService" class="org.opennms.dashboard.server.DefaultSurveillanceService">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="resourceDao" ref="resourceDao" />
+    <property name="graphDao" ref="graphDao" />
+    <property name="webSurveillanceService" ref="surveillanceService" />
+    <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="alarmDao" ref="alarmDao" />
+    <property name="notificationDao" ref="notificationDao" />
+    <property name="groupDao" ref="groupDao" />
+    <property name="rtcService" ref="rtcService" />
+    <property name="outageDao" ref="outageDao" />
+  </bean>
+  
+  <!-- Override the configResource location in applicationContext-dao.xml -->
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+    <property name="configResource" value="classpath:/org/opennms/web/svclayer/surveillance-views-gwtSurveillanceService.xml" />
+  </bean>
+  
+</beans>

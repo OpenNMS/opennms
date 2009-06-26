@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uberwar>
   <wars>
-  	<war>org.opennms:opennms-webapp</war>
-    <war>org.opennms.features.webapp:org.opennms.features.webapp.home</war>
+  	<war>org.opennms.features.webapp:org.opennms.features.webapp.webapp-old</war>
+  	<war>org.opennms.features.webapp:org.opennms.features.webapp.home</war>
   </wars>
 
 <!--  <merges>-->
@@ -24,6 +24,11 @@
               <param-name>$left:param-name</param-name>
               <param-value>$left:param-value $right:param-value</param-value>
             </context-param>
+          </strategy>
+        </choice>
+        <choice name="filterMapping">
+        	<strategy name="Overwrite">
+            
           </strategy>
         </choice>
       </strategy>

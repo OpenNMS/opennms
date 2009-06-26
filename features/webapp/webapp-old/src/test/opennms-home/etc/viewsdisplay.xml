@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<viewinfo>
+	<view>
+		<view-name>WebConsoleView</view-name>
+		<section>
+			<section-name><![CDATA[Categories]]></section-name>
+			<category><![CDATA[Network Interfaces]]></category>
+			<category><![CDATA[Web Servers]]></category>
+			<category><![CDATA[Email Servers]]></category>
+			<category><![CDATA[DNS & DHCP Servers]]></category>                    
+			<category><![CDATA[Database Servers]]></category>
+			<category><![CDATA[JMX Servers]]></category>
+			<category><![CDATA[Other Servers]]></category>
+		</section>
+		<section>
+			<section-name><![CDATA[Total]]></section-name>
+			<category><![CDATA[Overall Service Availability]]></category>
+		</section>            
+	</view>
+</viewinfo>
+

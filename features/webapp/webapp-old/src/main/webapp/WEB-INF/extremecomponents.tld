@@ -1,0 +1,1258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+   <tlib-version>1.0</tlib-version>
+   <jsp-version>1.2</jsp-version>
+   <short-name>eXtremeComponents</short-name>
+
+   <uri>http://www.extremecomponents.org</uri>
+
+   <display-name>eXtremeComponents</display-name>
+   <description><![CDATA[Display eXtremeComponents information.]]></description>
+
+   <tag>
+
+      <name>column</name>
+      <tag-class>org.extremecomponents.table.tag.ColumnTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ColumnTag</display-name>
+      <description><![CDATA[The container which holds all the column specific information. A copy of each column will be fed to the Model.]]></description>
+
+      <attribute>
+         <name>alias</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Used to uniquely identify the column when the same property is used for more than one column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>calc</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom Calc implementation. Could also be a named type in the preferences. Used to do math on a column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>calcTitle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The title of the calc.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>cell</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Display for the column. The valid values are display, currency, rowCount, and date. The default value is display. The cell can also be a fully qualified class name to a custom Cell. Be sure to implement the Cell interface or extend AbstractCell if making a custom cell.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>escapeAutoFormat</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether auto format of value will be skipped. False by default, and is only effective if autoformatting is implement in the view.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the column should be filterable. Acceptable values are true or false. The default is to use the value for the table filterable attribute.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterCell</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Displays the filter column. The valid values are filter and droplist. The default is filter. The cell can also be a fully qualified class name to a custom cell.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet used to define what the table filter column looks like.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterOptions</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The object that contains the collection of elements that implement the Option interface.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterStyle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet to use for the filter column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>format</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The format to use for the cell. For instance if used with a date cell then the format can be MM/dd/yyyy.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>headerCell</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Display for the header column. The default is header. The cell can also be a fully qualified class name to a custom cell.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>headerClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet used to define what the table header column looks like.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>headerStyle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet to use for the header column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptColumn implementation. Could also be a named type in the preferences. Used to add or modify column attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>parse</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Used if the format needs to be interpreted. For instance, a date needs to be parsed in the specific format, such as MM-dd-yyyy.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>property</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The bean attribute to use for the column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>sortable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the column should be sortable. The acceptable values are true or false. The default is to use the value for the table sortable attribute.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css inline style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The display for the table column header. If the title is not specified then it will default to the name of the property, changing the camelcase syntax to separate words.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The value for the column. If the value attribute is not specifed then it will be retrieved automatically using the property attribute. The value can also be defined within the column body.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewsAllowed</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The comma separated list of views that this column will be used in.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewsDenied</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The comma separated list of views that this column will not be used in.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>width</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify the column width.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>exportXls</name>
+      <tag-class>org.extremecomponents.table.tag.ExportXlsTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ExportXlsTag</display-name>
+      <description><![CDATA[Export data for a xls view.]]></description>
+
+      <attribute>
+         <name>encoding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The encoding that set is support UTF-8.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>fileName</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the export file.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imageName</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The image name.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptExport implementation. Could also be a named type in the preferences. Used to add or modify export attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom View implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewResolver</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom ViewResolver implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>text</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The text for the export view.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tooltip</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The tooltip that shows up when you mouseover the export image.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>row</name>
+      <tag-class>org.extremecomponents.table.tag.RowTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>RowTag</display-name>
+      <description><![CDATA[The container which holds all the row specific information.]]></description>
+
+      <attribute>
+         <name>highlightClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet when highlighting rows.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>highlightRow</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Used to turn the highlight feature on and off. Acceptable values are true or false. The default is false.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptRow implementation. Could also be a named type in the preferences. Used to add or modify row attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>onclick</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The javascript onclick action]]></description>
+
+      </attribute>
+      <attribute>
+         <name>onmouseout</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The javascript onmouseout action]]></description>
+
+      </attribute>
+      <attribute>
+         <name>onmouseover</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The javascript onmouseover action]]></description>
+
+      </attribute>
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css inline style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>exportCsv</name>
+      <tag-class>org.extremecomponents.table.tag.ExportCsvTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ExportCsvTag</display-name>
+      <description><![CDATA[Export data for a csv view.]]></description>
+
+      <attribute>
+         <name>delimiter</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[What to use as the file delimiter. The default is a comma.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>encoding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The encoding that set is support UTF-8.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>fileName</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the export file.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imageName</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The image name.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptExport implementation. Could also be a named type in the preferences. Used to add or modify export attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom View implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewResolver</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom ViewResolver implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>text</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The text for the export view.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tooltip</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The tooltip that shows up when you mouseover the export image.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>table</name>
+      <tag-class>org.extremecomponents.table.tag.TableTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>TableTag</display-name>
+      <description><![CDATA[The container which holds all the main table information. Will also hold global information if needed. The table tag is copied into the Table and encapsulated in the Model.]]></description>
+
+      <attribute>
+         <name>action</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The URI that will be called when the filter, sort and pagination is used.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>autoIncludeParameters</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to automatically include the parameters, as hidden inputs, passed into the JSP.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>border</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table border attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>bufferView</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Whether of not to buffer the view. Boolean value with the default being false.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>cellpadding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table cellpadding attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>cellspacing</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table cellspacing attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table is filterable. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom FilterRowsCallback implementation. Could also be a named type in the preferences. Used to filter the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>form</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The reference to a surrounding form element.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imagePath</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The path to find the images. For example imagePath=/extremesite/images/*.png is saying look in the image directory for the .png images.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptTable implementation. Could also be a named type in the preferences. Used to add table attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>items</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Reference the collection that will be retrieved.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>locale</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The locale for this table. For example fr_FR is used for the French translation.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>method</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Used to invoke the table action using a POST or GET.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>onInvokeAction</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The javascript that will be invoked when a table action enabled.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>retrieveRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom RetrieveRowsCallback implementation. Could also be a named type in the preferences. Used to retrieve the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>rowsDisplayed</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The number of rows to display in the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>scope</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The scope (page, request, session, or application) to find the Collection of beans or Collection of Maps defined by the collection attribute.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showPagination</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use pagination. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showExports</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use the exports. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showStatusBar</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use the status bar. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showTitle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to show the title. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showTooltips</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to show the tooltips. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>sortRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom SortRowsCallback implementation. Could also be a named type in the preferences. Used to sort the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>sortable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table is sortable. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>state</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table state to use when returning to a table. Acceptable values are default, notifyToDefault, persist, notifyToPersist.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>stateAttr</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table attribute used to invoke the state change of the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css inline style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tableId</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The unique identifier for the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>theme</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The theme to style the table. The default is eXtremeTable.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The title of the table. The title will display above the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>var</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the variable to hold the current row bean.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Generates the output. The default is the HtmlView to generate the HTML. Also used by the exports to generate XLS-FO, POI, and CSV.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>width</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Width of the table.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>exportPdf</name>
+      <tag-class>org.extremecomponents.table.tag.ExportPdfTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ExportPdfTag</display-name>
+      <description><![CDATA[Export data for a pdf view.]]></description>
+
+      <attribute>
+         <name>headerBackgroundColor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The background color on the header column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>headerColor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The font color for the header column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>headerTitle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The title displayed at the top of the page.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>encoding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The encoding that set is support UTF-8.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>fileName</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the export file.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imageName</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The image name.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptExport implementation. Could also be a named type in the preferences. Used to add or modify export attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom View implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewResolver</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom ViewResolver implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>text</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The text for the export view.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tooltip</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The tooltip that shows up when you mouseover the export image.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>tree</name>
+      <tag-class>org.extremecomponents.tree.TreeTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>TreeTag</display-name>
+      <description><![CDATA[Defines everything related to tree.]]></description>
+
+      <attribute>
+         <name>parentAttribute</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The field of the bean holding the relationship to the parent.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>identifier</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The attribute of the bean used to identify this column.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>action</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The URI that will be called when the filter, sort and pagination is used.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>autoIncludeParameters</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to automatically include the parameters, as hidden inputs, passed into the JSP.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>border</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table border attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>bufferView</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Whether of not to buffer the view. Boolean value with the default being false.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>cellpadding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table cellpadding attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>cellspacing</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table cellspacing attribute. The default is 0.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table is filterable. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>filterRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom FilterRowsCallback implementation. Could also be a named type in the preferences. Used to filter the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>form</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The reference to a surrounding form element.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imagePath</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The path to find the images. For example imagePath=/extremesite/images/*.png is saying look in the image directory for the .png images.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptTable implementation. Could also be a named type in the preferences. Used to add table attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>items</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Reference the collection that will be retrieved.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>locale</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The locale for this table. For example fr_FR is used for the French translation.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>method</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Used to invoke the table action using a POST or GET.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>onInvokeAction</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The javascript that will be invoked when a table action enabled.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>retrieveRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom RetrieveRowsCallback implementation. Could also be a named type in the preferences. Used to retrieve the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>rowsDisplayed</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The number of rows to display in the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>scope</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The scope (page, request, session, or application) to find the Collection of beans or Collection of Maps defined by the collection attribute.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showPagination</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use pagination. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showExports</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use the exports. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showStatusBar</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table should use the status bar. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showTitle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to show the title. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>showTooltips</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not to show the tooltips. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>sortRowsCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom SortRowsCallback implementation. Could also be a named type in the preferences. Used to sort the Collection of Beans or Collection of Maps.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>sortable</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Specify whether or not the table is sortable. Boolean value with the default being true.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>state</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table state to use when returning to a table. Acceptable values are default, notifyToDefault, persist, notifyToPersist.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>stateAttr</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The table attribute used to invoke the state change of the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css inline style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The css class style sheet.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tableId</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The unique identifier for the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>theme</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The theme to style the table. The default is eXtremeTable.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The title of the table. The title will display above the table.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>var</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the variable to hold the current row bean.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Generates the output. The default is the HtmlView to generate the HTML. Also used by the exports to generate XLS-FO, POI, and CSV.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>width</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[Width of the table.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>columns</name>
+      <tag-class>org.extremecomponents.table.tag.ColumnsTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ColumnsTag</display-name>
+      <description><![CDATA[Auto generate the columns.]]></description>
+
+      <attribute>
+         <name>autoGenerateColumns</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom AutoGenerateColumns implementation. Could also be a named type in the preferences. Used to generate columns on the fly.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>export</name>
+      <tag-class>org.extremecomponents.table.tag.ExportTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ExportTag</display-name>
+      <description><![CDATA[Export data to a given view. For example pdf or xls.]]></description>
+
+      <attribute>
+         <name>encoding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The encoding that set is support UTF-8.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>fileName</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the export file.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>imageName</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The image name.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>interceptor</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom InterceptExport implementation. Could also be a named type in the preferences. Used to add or modify export attributes.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>view</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom View implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>viewResolver</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[A fully qualified class name to a custom ViewResolver implementation. Could also be a named type in the preferences. Default types are pdf, xls, or csv.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>text</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The text for the export view.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>tooltip</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The tooltip that shows up when you mouseover the export image.]]></description>
+
+      </attribute>
+   </tag>
+   <tag>
+
+      <name>parameter</name>
+      <tag-class>org.extremecomponents.table.tag.ParameterTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>ParameterTag</display-name>
+      <description><![CDATA[Append any attributes to the Sorting, Filtering, Pagination, and Form Submission. On the URL's will resolve to &name=value. On the <form>attribute will be added as hidden fields <input type=hidden name= value=>]]></description>
+
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The name of the parameter.]]></description>
+
+      </attribute>
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+
+           <description><![CDATA[The value of the parameter.]]></description>
+
+      </attribute>
+   </tag>
+
+</taglib>

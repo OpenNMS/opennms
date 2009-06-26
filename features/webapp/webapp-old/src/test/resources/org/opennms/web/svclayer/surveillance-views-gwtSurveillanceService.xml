@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<surveillance-view-configuration 
+  xmlns:this="http://www.opennms.org/xsd/config/surveillance-views" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd "
+  default-view="default">
+  <views>
+    <view name="default" refresh-seconds="300" >
+      <rows>
+        <row-def label="High Priority" >
+          <category name="IMP_high"/>
+        </row-def>
+        <row-def label="Mid Priority" >
+          <category name="IMP_mid" />
+        </row-def>
+        <row-def label="Low Priority" >
+          <category name="IMP_low" />
+        </row-def>
+      </rows>
+      <columns>
+        <column-def label="Routers" >
+          <category name="DEV_ROUTER" />
+        </column-def>
+        <column-def label="AC" >
+          <category name="DEV_AC" />
+        </column-def>
+        <column-def label="Switches" >
+          <category name="DEV_SWITCH" />
+        </column-def>
+      </columns>
+    </view>
+  </views>
+</surveillance-view-configuration>

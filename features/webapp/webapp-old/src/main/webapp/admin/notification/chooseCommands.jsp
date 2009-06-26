@@ -1,0 +1,236 @@
+<%--
+
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2003 Feb 07: Fixed URLEncoder issues.
+// 2002 Nov 26: Fixed breadcrumbs issue.
+// 
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+
+--%>
+
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.WebSecurityUtils,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*,
+        org.opennms.netmgt.config.notificationCommands.Command
+	"
+%>
+
+<%!
+    public void init() throws ServletException {
+        try {
+            UserFactory.init();
+            GroupFactory.init();
+            DestinationPathFactory.init();
+            NotificationCommandFactory.init();
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Cannot load configuration file", e );
+        }
+    }
+%>
+
+<%
+    HttpSession user = request.getSession(true);
+    Path newPath = (Path)user.getAttribute("newPath");
+%>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Choose Commands" />
+  <jsp:param name="headTitle" value="Choose Commands" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
+  <jsp:param name="breadcrumb" value="Choose Commands" />
+</jsp:include>
+
+<script language="Javascript" type="text/javascript" >
+
+    function next() 
+    {
+        var missingCommands=false;
+        for (i=0; i<document.commands.length; i++)
+        {
+            if (document.commands.elements[i].type=="select-multiple" && 
+                document.commands.elements[i].selectedIndex==-1)
+            {
+                missingCommands=true;
+            }
+        }
+        
+        if (missingCommands)
+        {
+            alert("Please choose at least command for each user and group.");
+        }
+        else
+        {
+            document.commands.submit();
+        }
+    }
+
+</script>
+
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+
+<h3>Choose the commands to use for each user and group. More than one
+command can be choosen for each (except for email addresses). Also
+choose the desired behavior for automatic notification on "UP" events.</h3>
+
+<form method="post" name="commands"
+      action="admin/notification/destinationWizard">
+  <%=Util.makeHiddenTags(request)%>
+
+  <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
+
+  <br/>
+
+  <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
+
+  <div class="spacer"><!-- --></div>
+
+  <br/>
+
+  <input type="reset"/>
+
+  <br/>
+
+  <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+</form>
+
+<jsp:include page="/includes/footer.jsp" flush="false" />
+
+<%!
+    public String buildCommands(Path path, int index)
+      throws ServletException
+    {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
+        
+        Target targets[] = null;
+        
+        try {
+          targets = DestinationPathFactory.getInstance().getTargetList(index, path);
+        
+        for (int i = 0; i < targets.length; i++)
+        {
+            buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
+            // don't let user pick commands for email addresses
+            if (targets[i].getName().indexOf("@")==-1)
+            {
+                buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
+            }
+            else
+            {
+                buffer.append("<td>").append("email adddress").append("</td>");
+            }
+            buffer.append("<td>").append(buildAutoNotifySelect(targets[i].getName(), targets[i].getAutoNotify())).append("<td>");
+            buffer.append("</tr>");
+        }
+        } catch (Exception e)
+        {
+            throw new ServletException("couldn't get list of targets for path " + path.getName(), e);
+        }
+        
+        buffer.append("</table>");
+        return buffer.toString();
+    }
+    
+    public String buildCommandSelect(Path path, int index, String name)
+      throws ServletException
+    {
+        StringBuffer buffer = new StringBuffer("<select multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        
+        TreeMap<String, Command> commands = null;
+        Collection<String> selectedOptions = null;
+        
+        try {
+          selectedOptions = DestinationPathFactory.getInstance().getTargetCommands(path, index, name);
+          commands = new TreeMap<String, Command>(NotificationCommandFactory.getInstance().getCommands());
+        
+        if (selectedOptions==null || selectedOptions.size()==0)
+        {
+            selectedOptions = new ArrayList<String>();
+            selectedOptions.add("javaEmail");
+        }
+
+        for(String curCommand : commands.keySet()) {
+            if (selectedOptions.contains(curCommand))
+            {
+                buffer.append("<option selected VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+            }
+            else
+            {
+                buffer.append("<option VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+            }
+        }
+        } catch (Exception e)
+        {
+            throw new ServletException("couldn't get list of commands for path/target " + path.getName()+"/"+name, e);
+        }
+        
+        buffer.append("</select>");
+        
+        return buffer.toString();
+    }
+
+    public String buildAutoNotifySelect(String name, String currValue)
+    {
+          String values[] = {"off", "auto", "on"};
+          StringBuffer buffer = new StringBuffer("<select size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          String defaultOption = "on";
+ 
+          if(currValue == null || currValue.equals("")) {
+              currValue = defaultOption;
+          }
+          for (int i = 0; i < values.length; i++)
+          {
+             if (values[i].equalsIgnoreCase(currValue))
+             {
+                 buffer.append("<option selected VALUE=\"" + values[i] + "\">").append(values[i]).append("</option>");
+             }
+             else
+             {
+                  buffer.append("<option VALUE=\"" + values[i] + "\">").append(values[i]).append("</option>");
+             }
+          }
+          buffer.append("</select>");
+          
+          return buffer.toString();
+    }
+%>

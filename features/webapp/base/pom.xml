@@ -15,6 +15,7 @@
 		  <plugin>
 	      	<groupId>org.codehaus.cargo</groupId>
 	      	<artifactId>cargo-maven2-plugin</artifactId>
+	      	<version>1.0</version>
 	      	<extensions>true</extensions>
 	      	<executions>
 	      		<execution>
@@ -31,15 +32,6 @@
 	      		</container>
 	      	</configuration>
 	      </plugin>
-	      
-<!--	      <plugin>-->
-<!--        	<groupId>org.mortbay.jetty</groupId>-->
-<!--        	<artifactId>maven-jetty-plugin</artifactId>-->
-<!--        	<configuration>-->
-<!--          		<webApp>${basedir}/target/org.opennms.features.webapp.base-${project.version}.war</webApp>-->
-<!--       		</configuration>-->
-<!--      	  </plugin>-->
-	      
       </plugins>
       
   </build>
@@ -47,8 +39,8 @@
   <dependencies>
   	
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-webapp</artifactId>
+  		<groupId>org.opennms.features.webapp</groupId>
+  		<artifactId>org.opennms.features.webapp.webapp-old</artifactId>
   		<type>war</type>
   		<version>${project.version}</version>
   	</dependency>

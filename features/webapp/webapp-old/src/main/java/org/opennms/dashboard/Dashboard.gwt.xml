@@ -1,0 +1,5 @@
+<module>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.http.HTTP'/>
+  <entry-point class='org.opennms.dashboard.client.Dashboard' />
+</module>

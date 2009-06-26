@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site-status-view-configuration 
+    xmlns:this="http://www.opennms.org/xsd/config/site-status-views" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.opennms.org/xsd/config/site-status-views http://www.opennms.org/xsd/config/site-status-views.xsd " 
+    default-view="default">
+  <views>
+    <view name="default" >
+      <rows>
+      	<!--<row-def label="LB/Router">
+          <category name="DEV_ROUTER"/>
+          <category name="DEV_LOADBAL"/>
+        </row-def>
+        <row-def label="Access Controller">
+          <category name="DEV_AC"/>
+        </row-def>
+        <row-def label="Switches">
+          <category name="DEV_AC"/>
+        </row-def>
+        <row-def label="BCPC">
+          <category name="DEV_BCPC"/>
+        </row-def>
+        <row-def label="Access Points">
+          <category name="DEV_AC"/>
+        </row-def>-->
+        <row-def label="Routers">
+          <category name="Routers"/>
+        </row-def>
+        <row-def label="Switches">
+          <category name="Switches"/>
+        </row-def>
+        <row-def label="Servers">
+          <category name="Servers"/>
+        </row-def>        
+      </rows>
+    </view>
+  </views>
+</site-status-view-configuration>

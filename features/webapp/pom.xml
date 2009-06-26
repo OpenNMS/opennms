@@ -17,5 +17,6 @@
     <module>base</module>
     <module>api</module>
     <module>home</module>
+    <module>webapp-old</module>
   </modules>
 </project>
