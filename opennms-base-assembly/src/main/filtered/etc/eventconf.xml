@@ -1651,7 +1651,7 @@
       The discovery configuration has been changed and should be reloaded
     </logmsg>
     <severity>Normal</severity>
-  </event> 
+  </event>
   
   <event>
     <uei>uei.opennms.org/troubleTicket/create</uei>
@@ -1760,18 +1760,6 @@
     <severity>Normal</severity>
   </event> 
   
-  <event>
-    <uei>uei.opennms.org/internal/discoveryConfigChange</uei>
-    <event-label>OpenNMS-defined internal event: discovery configuration changed</event-label>
-    <descr>
-      This event is sent by the WebUI or the user when discovery configuration has changed and should be reloaded
-    </descr>
-    <logmsg dest='logndisplay'>
-      The discovery configuration has been changed and should be reloaded
-    </logmsg>
-    <severity>Normal</severity>
-  </event> 
-
   <event> 
     <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
     <event-label>OpenNMS-defined internal event: a user has successfully authentication to the WebUI</event-label>
