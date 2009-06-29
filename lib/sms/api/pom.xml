@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>opennms</artifactId>
-    <groupId>org.opennms</groupId>
-    <version>1.7.4-SNAPSHOT</version>
+    <groupId>org.opennms.lib</groupId>
+    <artifactId>org.opennms.lib.sms</artifactId>
+    <version>1.7.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-sms-api</artifactId>
-  <name>OpenNMS SMS Interface</name>
+  <groupId>org.opennms.lib.sms</groupId>
+  <artifactId>org.opennms.lib.sms.api</artifactId>
+  <name>OpenNMS SMS API</name>
   <dependencies>
     <dependency>
       <groupId>org.smslib</groupId>

@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.lib</artifactId>
-  <version>1.7.2-SNAPSHOT</version>
+  <version>1.7.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS Libraries</name>
   <build>
@@ -24,6 +24,7 @@
   <modules>
     <module>joesnmp</module>
     <module>service-registration</module>
+    <module>sms</module>
     <module>snmp</module>
   </modules>
 

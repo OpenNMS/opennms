@@ -104,7 +104,6 @@
     <module>opennms-config-utils</module>
     <module>opennms-dao</module>
     <module>opennms-daemon</module>
-    <module>opennms-sms-api</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
