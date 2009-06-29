@@ -194,26 +194,8 @@
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/rtc/category.jsp</url-pattern>
   </filter-mapping>
-<!--  <filter-mapping>-->
-<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
-<!--    <url-pattern>/element/node.jsp</url-pattern>-->
-<!--  </filter-mapping>-->
-<!--  <filter-mapping>-->
-<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
-<!--    <url-pattern>/element/linkednode.jsp</url-pattern>-->
-<!--  </filter-mapping>-->
-<!--  <filter-mapping>-->
-<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
-<!--    <url-pattern>/element/interface.jsp</url-pattern>-->
-<!--  </filter-mapping>-->
-<!--  <filter-mapping>-->
-<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
-<!--    <url-pattern>/element/service.jsp</url-pattern>-->
-<!--  </filter-mapping>-->
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/outage/list.htm</url-pattern>
-  </filter-mapping>
+
+  
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/graph/results.htm</url-pattern>

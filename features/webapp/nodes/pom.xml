@@ -13,7 +13,7 @@
   <artifactId>org.opennms.features.webapp.nodes</artifactId>
   <packaging>war</packaging>
   <version>1.7.5-SNAPSHOT</version>
-  <name>gwt-maven-archetype-project</name>
+  <name>Opennms Webapp Elements Module</name>
 
   <properties>
 
@@ -53,6 +53,7 @@
     	<groupId>org.opennms.features.webapp</groupId>
     	<artifactId>org.opennms.features.webapp.api</artifactId>
     	<version>1.7.5-SNAPSHOT</version>
+    	<type>jar</type>
     </dependency>
   </dependencies>
 
@@ -89,7 +90,6 @@
                 </configuration>
             </plugin>
             -->
-
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -99,6 +99,18 @@
             <target>${maven.compiler.target}</target>
           </configuration>
       </plugin>
+      
+      <plugin>
+	      	<groupId>org.codehaus.cargo</groupId>
+	      	<artifactId>cargo-maven2-plugin</artifactId>
+	      	<version>1.0</version>
+	      	<configuration>
+	      		<container>
+	      			<containerId>jetty6x</containerId>
+	      			<type>embedded</type>
+	      		</container>
+	      	</configuration>
+	      </plugin>
     </plugins>
   </build>
 

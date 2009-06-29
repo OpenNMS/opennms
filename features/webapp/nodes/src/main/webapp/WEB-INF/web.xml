@@ -4,22 +4,22 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/node.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/linkednode.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/interface.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/service.jsp</url-pattern>
-  </filter-mapping>
+<!--  <filter-mapping>-->
+<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
+<!--    <url-pattern>/element/node.jsp</url-pattern>-->
+<!--  </filter-mapping>-->
+<!--  <filter-mapping>-->
+<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
+<!--    <url-pattern>/element/linkednode.jsp</url-pattern>-->
+<!--  </filter-mapping>-->
+<!--  <filter-mapping>-->
+<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
+<!--    <url-pattern>/element/interface.jsp</url-pattern>-->
+<!--  </filter-mapping>-->
+<!--  <filter-mapping>-->
+<!--    <filter-name>AddRefreshHeader-300</filter-name>-->
+<!--    <url-pattern>/element/service.jsp</url-pattern>-->
+<!--  </filter-mapping>-->
 	
   <servlet>
      <servlet-name>elementDispatcher</servlet-name>

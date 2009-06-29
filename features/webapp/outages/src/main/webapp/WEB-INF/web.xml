@@ -1,0 +1,22 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/outage/list.htm</url-pattern>
+  </filter-mapping>
+  
+  <servlet>
+  	<servlet-name>outageDispatcher</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>outageDispatcher</servlet-name>
+    <url-pattern>/outage/list</url-pattern>
+  </servlet-mapping>
+</web-app>

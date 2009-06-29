@@ -19,5 +19,6 @@
     <module>home</module>
     <module>webapp-old</module>
     <module>nodes</module>
+    <module>outages</module>
   </modules>
 </project>

@@ -10,9 +10,9 @@
         <version>1.7.5-SNAPSHOT</version>
     </parent>
   <groupId>org.opennms.features.webapp</groupId>
-  <artifactId>org.opennms.features.webapp.home</artifactId>
+  <artifactId>org.opennms.features.webapp.outages</artifactId>
   <packaging>war</packaging>
-  <name>Opennms Webapp Home Module</name>
+  <name>Opennms Webapp Outages Module</name>
 
   <properties>
 
@@ -51,7 +51,7 @@
     <dependency>
     	<groupId>org.opennms.features.webapp</groupId>
     	<artifactId>org.opennms.features.webapp.api</artifactId>
-    	<version>1.7.5-SNAPSHOT</version>
+    	<version>${project.version}</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
@@ -63,7 +63,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -73,19 +73,20 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-        	<runTarget>home/index.html</runTarget>
-        </configuration>
       </plugin>
       <!--
           If you want to use the target/web.xml file mergewebxml produces,
           tell the war plugin to use it.
-          Also, exclude what you want from the final artifact here.-->
+          Also, exclude what you want from the final artifact here.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webXml>target/web.xml</webXml>
+                    <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
+                </configuration>
             </plugin>
-            
+            -->
 
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -96,24 +97,6 @@
             <target>${maven.compiler.target}</target>
           </configuration>
       </plugin>
-      
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/xsds.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      
     </plugins>
   </build>
 
