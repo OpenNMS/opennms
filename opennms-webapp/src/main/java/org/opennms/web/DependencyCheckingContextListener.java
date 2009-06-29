@@ -63,7 +63,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
 
     private void checkJvmName(ServletContext context) {
         final String systemProperty = "java.vm.name";
-        final String[] acceptableProperties = { "HotSpot(TM)", "BEA JRockit", "OpenJDK Core VM" };
+        final String[] acceptableProperties = { "HotSpot(TM)", "BEA JRockit", "OpenJDK Core VM", "OpenJDK Client VM" };
         
         String vmName = System.getProperty(systemProperty);
         if (vmName == null) {

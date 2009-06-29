@@ -98,6 +98,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         initSnmpPeerFactory();
     }
 
+    @SuppressWarnings("deprecation")
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
         Reader rdr = new StringReader("<?xml version=\"1.0\"?>" +
         		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +

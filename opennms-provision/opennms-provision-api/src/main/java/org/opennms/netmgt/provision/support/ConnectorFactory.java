@@ -2,15 +2,34 @@ package org.opennms.netmgt.provision.support;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.opennms.core.utils.ThreadCategory;
 
 public class ConnectorFactory {
     
-    Executor m_executor = Executors.newSingleThreadExecutor();
     
-    public SocketConnector getConnector() {
+    private static Semaphore s_available;
+    
+    static{
+        if(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors") != null){
+            
+            if(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors")) == 0){
+                s_available = null;
+            }else{
+                s_available = new Semaphore(Integer.parseInt(System.getProperty("org.opennms.netmgt.provision.maxConcurrentConnectors", "2000")));
+            }
+        }
+    }
+    
+    private static Executor s_executor = Executors.newSingleThreadExecutor();
+    
+    public SocketConnector getConnector() throws InterruptedException {
+        if(s_available != null){
+            s_available.acquire();
+        }
         return createConnector(); 
     }
 
@@ -18,17 +37,24 @@ public class ConnectorFactory {
        Runnable r = new Runnable(){
 
         public void run() {
-            System.err.println("Disposing the connector");
-            connector.dispose();
+            ThreadCategory.getInstance(ConnectorFactory.class).debug("Disposing the connector");
+            try{
+                connector.dispose();
+            }finally{
+                if(s_available != null){
+                    s_available.release();
+                } 
+            }
+            
         }
            
        };
        
-       m_executor.execute(r);
+       s_executor.execute(r);
     }
     
-    private SocketConnector createConnector(){
-        return new NioSocketConnector();
+    private SocketConnector createConnector() throws InterruptedException{
+        return new NioSocketConnector(); //m_socketPool.getItem();
     }
 
 }

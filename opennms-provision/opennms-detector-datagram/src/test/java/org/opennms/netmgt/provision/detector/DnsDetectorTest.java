@@ -33,9 +33,6 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -46,7 +43,6 @@ import org.junit.Test;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
-
 /**
  * @author Donald Desloge
  *
@@ -54,9 +50,6 @@ import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 public class DnsDetectorTest {
     
     private DnsDetector m_detector;
-    
-    private DatagramSocket m_socket = null;
-    private Thread m_serverThread = null;
     
     @Before
     public void setUp() throws SocketException {
@@ -101,44 +94,4 @@ public class DnsDetectorTest {
         assertFalse(m_detector.isServiceDetected(InetAddress.getByName("208.67.222.222"), new NullDetectorMonitor()));
 
     }
-    
-    private Thread createThread() {
-        return new Thread(getRunnable());
-    }
-    
-    private Runnable getRunnable() {
-        return new Runnable() {
-
-            public void run() {
-                while (true) {
-                    try {
-                        byte[] buf = new byte[512];
-
-                            // receive request
-                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                        m_socket.receive(packet);
-                        
-                            // figure out response
-                       String dString = "www.google.com";
-                        
-                        buf = dString.getBytes();
-                       
-                    // send the response to the client at "address" and "port"
-                        InetAddress address = packet.getAddress();
-                        
-                        int port = packet.getPort();
-                        packet = new DatagramPacket(buf, buf.length, address, port);
-                        m_socket.send(packet);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                }
-                m_socket.close();
-                
-            }
-            
-        };
-    }
-    
 }

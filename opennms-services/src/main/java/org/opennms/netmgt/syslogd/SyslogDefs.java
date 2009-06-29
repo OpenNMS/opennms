@@ -164,14 +164,12 @@ public class SyslogDefs {
 
     public static final int DEFAULT_PORT = 514;
 
-    static private Hashtable facHash;
+    static private Hashtable<String, Integer> facHash;
 
-    static private Hashtable lvlHash;
-
-    static private Hashtable priHash;
+    static private Hashtable<String, Integer> priHash;
 
     static {
-        facHash = new Hashtable(20);
+        facHash = new Hashtable<String, Integer>(20);
 
         facHash.put("KERN", SyslogDefs.LOG_KERN);
         facHash.put("KERNEL", SyslogDefs.LOG_KERN);
@@ -193,7 +191,7 @@ public class SyslogDefs {
         facHash.put("LOCAL6", new Integer(SyslogDefs.LOG_LOCAL6));
         facHash.put("LOCAL7", new Integer(SyslogDefs.LOG_LOCAL7));
 
-        priHash = new Hashtable(20);
+        priHash = new Hashtable<String, Integer>(20);
 
         priHash.put("EMERG", new Integer(SyslogDefs.LOG_EMERG));
         priHash.put("EMERGENCY", new Integer(SyslogDefs.LOG_EMERG));
@@ -324,7 +322,7 @@ public class SyslogDefs {
 
     static public String getPriority(String priority) throws ParseException {
         String priKey = priority.toUpperCase();
-        String result = (String) SyslogDefs.priHash.get(priKey);
+        String result = SyslogDefs.priHash.get(priKey).toString();
 
         if (result == null) {
             throw new ParseException("unknown priority '" + priority + "'", 0);
@@ -335,7 +333,7 @@ public class SyslogDefs {
 
     static public int getFacility(String facility) throws ParseException {
         String facKey = facility.toUpperCase();
-        Integer result = (Integer) SyslogDefs.facHash.get(facKey);
+        Integer result = SyslogDefs.facHash.get(facKey);
 
         if (result == null) {
             throw new ParseException("unknown facility '" + facility + "'", 0);

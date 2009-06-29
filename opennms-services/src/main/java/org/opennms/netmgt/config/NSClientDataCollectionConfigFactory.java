@@ -50,10 +50,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -82,12 +83,15 @@ public class NSClientDataCollectionConfigFactory {
      private static NsclientDatacollectionConfig m_config;
 
      public NSClientDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
-         InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
+         InputStream is = null;
          
          try {
-             initialize(rdr);
+             is = new FileInputStream(configFile);
+             initialize(is);
          } finally {
-             rdr.close();
+             if (is != null) {
+                 IOUtils.closeQuietly(is);
+             }
          }
      }
 
@@ -95,6 +99,12 @@ public class NSClientDataCollectionConfigFactory {
          initialize(rdr);
      }
 
+     private void initialize(InputStream stream) throws MarshalException, ValidationException {
+         log().debug("initialize: initializing NSCLient collection config factory.");
+         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
+     }
+
+     @Deprecated
      private void initialize(Reader rdr) throws MarshalException, ValidationException {
          log().debug("initialize: initializing NSCLient collection config factory.");
          m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr);
@@ -162,7 +172,6 @@ public class NSClientDataCollectionConfigFactory {
          return ThreadCategory.getInstance();
      }
 
-      @SuppressWarnings("unchecked")
      public NsclientCollection getNSClientCollection(String collectionName) {
         NsclientCollection[] collections = m_config.getNsclientCollection();
          NsclientCollection collection = null;
@@ -194,10 +203,10 @@ public class NSClientDataCollectionConfigFactory {
              return -1;
      }
      
-     public List getRRAList(String cName) {
-         NsclientCollection collection = (NsclientCollection) getNSClientCollection(cName);
+     public List<String> getRRAList(String cName) {
+         NsclientCollection collection = getNSClientCollection(cName);
          if (collection != null)
-             return (List) collection.getRrd().getRraCollection();
+             return collection.getRrd().getRraCollection();
          else
              return null;
 

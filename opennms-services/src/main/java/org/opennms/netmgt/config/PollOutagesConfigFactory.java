@@ -42,6 +42,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -87,6 +88,11 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
         setConfig(CastorUtils.unmarshal(Outages.class, new FileSystemResource(configFile)));
     }
     
+    public PollOutagesConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        setConfig(CastorUtils.unmarshal(Outages.class, stream));
+    }
+
+    @Deprecated
     public PollOutagesConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         setConfig(CastorUtils.unmarshal(Outages.class, rdr));
     }

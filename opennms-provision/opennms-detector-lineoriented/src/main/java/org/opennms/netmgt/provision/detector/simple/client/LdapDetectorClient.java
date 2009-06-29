@@ -62,10 +62,6 @@ public class LdapDetectorClient extends LineOrientedClient {
             m_socket.setSoTimeout(m_timeout);
             return m_socket;
         }
-        
-        public void closeSocket() throws IOException {
-            m_socket.close();
-        }
     }
     
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {

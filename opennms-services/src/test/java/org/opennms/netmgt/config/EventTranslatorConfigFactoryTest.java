@@ -69,6 +69,7 @@ public class EventTranslatorConfigFactoryTest extends OpenNMSTestCase {
     /*
      * @see TestCase#setUp()
      */
+    @SuppressWarnings("deprecation")
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();

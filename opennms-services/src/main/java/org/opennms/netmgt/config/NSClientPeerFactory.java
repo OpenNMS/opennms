@@ -16,6 +16,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -88,6 +89,11 @@ public final class NSClientPeerFactory extends PeerFactory {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile));
     }
     
+    public NSClientPeerFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, stream);
+    }
+    
+    @Deprecated
     public NSClientPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
     }

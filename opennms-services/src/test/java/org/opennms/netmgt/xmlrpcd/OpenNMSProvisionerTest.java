@@ -44,6 +44,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,9 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -168,12 +171,19 @@ public class OpenNMSProvisionerTest {
         
         m_provisioner.setCapsdConfig(m_capsdConfig);
         m_provisioner.setPollerConfig(m_pollerConfig);
-        
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
+
+        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
+        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
+        configStream.close();
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
-        
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
-        CollectdConfigFactory.setInstance(new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+
+        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
+        configStream.close();
+
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
+        CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        configStream.close();
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(db);
 
@@ -206,13 +216,16 @@ public class OpenNMSProvisionerTest {
     static class TestPollerConfigManager extends PollerConfigManager {
         String m_xml;
 
+        @SuppressWarnings("deprecation")
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(new StringReader(xml), localServer, verifyServer);
             save();
         }
 
+        @SuppressWarnings("deprecation")
         public void update() throws IOException, MarshalException, ValidationException {
-            reloadXML(new StringReader(m_xml));
+            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+            setUpInternalData();
         }
 
         protected void saveXml(String xml) throws IOException {

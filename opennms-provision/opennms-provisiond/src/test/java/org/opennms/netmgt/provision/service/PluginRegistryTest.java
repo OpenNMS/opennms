@@ -76,6 +76,7 @@ public class PluginRegistryTest {
         
     }
     
+    @SuppressWarnings("unchecked")
     public <T> Map<String, T> getBeansOfType(Class<T> clazz) {
         return (Map<String, T>)m_appContext.getBeansOfType(clazz, true, true);
     }

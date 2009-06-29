@@ -171,11 +171,13 @@ public abstract class ThresholdingSet {
         boolean ok = false;
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
-            for(String key : entityMap.keySet()) {
-                for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
-                    Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
-                    if (requiredDatasources.contains(attributeName))
-                        ok = true;
+            if (entityMap != null) {
+                for(String key : entityMap.keySet()) {
+                    for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
+                        Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                        if (requiredDatasources.contains(attributeName))
+                            ok = true;
+                    }
                 }
             }
         }
@@ -193,29 +195,31 @@ public abstract class ThresholdingSet {
         List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
-            for(String key : entityMap.keySet()) {
-                for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
-                    if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
-                        log().info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity);
-                        Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
-                        Map<String, Double> values = new HashMap<String,Double>();
-                        boolean valueMissing = false;
-                        for(String ds: requiredDatasources) {
-                            Double dsValue = resourceWrapper.getAttributeValue(ds);
-                            if(dsValue == null) {
-                                log().info("applyThresholds: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
-                                valueMissing = true;
+            if (entityMap != null) {
+                for(String key : entityMap.keySet()) {
+                    for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
+                        if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
+                            log().info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity);
+                            Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                            Map<String, Double> values = new HashMap<String,Double>();
+                            boolean valueMissing = false;
+                            for(String ds: requiredDatasources) {
+                                Double dsValue = resourceWrapper.getAttributeValue(ds);
+                                if(dsValue == null) {
+                                    log().info("applyThresholds: Could not get data source value for '" + ds + "'.  Not evaluating threshold.");
+                                    valueMissing = true;
+                                }
+                                values.put(ds,dsValue);
                             }
-                            values.put(ds,dsValue);
+                            if(!valueMissing) {
+                                log().info("applyThresholds: All values found, evaluating");
+                                resourceWrapper.setLabel(thresholdEntity.getDatasourceLabel());
+                                List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
+                                eventsList.addAll(thresholdEvents);
+                            }
+                        } else {
+                            log().info("applyThresholds: Not processing threshold " + key + " : " + thresholdEntity + " because no filters matched");
                         }
-                        if(!valueMissing) {
-                            log().info("applyThresholds: All values found, evaluating");
-                            resourceWrapper.setLabel(thresholdEntity.getDatasourceLabel());
-                            List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
-                            eventsList.addAll(thresholdEvents);
-                        }
-                    } else {
-                        log().info("applyThresholds: Not processing threshold " + key + " : " + thresholdEntity + " because no filters matched");
                     }
                 }
             }
@@ -344,7 +348,7 @@ public abstract class ThresholdingSet {
         return groupNameList;
     }
 
-    protected Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+    private Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -353,12 +357,12 @@ public abstract class ThresholdingSet {
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
             if (typeMap == null) {
-                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen)");
+                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen).");
                 return null;
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ".  Not processing this collection ");
+                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();

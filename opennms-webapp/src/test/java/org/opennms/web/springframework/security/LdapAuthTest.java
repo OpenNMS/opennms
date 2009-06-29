@@ -49,6 +49,7 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +65,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author brozow
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+/*@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/applicationContext-ldapTest.xml"
-})
+})*/
 public class LdapAuthTest {
     
     /**
@@ -105,6 +106,7 @@ public class LdapAuthTest {
     }
     
     @Test
+    @Ignore
     public void testNoAuth() throws IOException, ServletException {
         
         MockHttpServletRequest request = createRequest("GET", "/index.htm");
@@ -114,6 +116,7 @@ public class LdapAuthTest {
     
 
     @Test
+    @Ignore
     public void testBasicAuth() throws IOException, ServletException {
         
         MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "bobspassword");
@@ -123,6 +126,7 @@ public class LdapAuthTest {
     }
 
     @Test
+    @Ignore
     public void testBasicAuthInvalidPassword() throws IOException, ServletException {
         
         MockHttpServletRequest request = createRequest("GET", "/index.htm", "bob", "invalid");

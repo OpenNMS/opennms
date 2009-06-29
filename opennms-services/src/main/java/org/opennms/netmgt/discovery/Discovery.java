@@ -120,6 +120,8 @@ public class Discovery extends AbstractServiceDaemon {
         initializeConfiguration();
         EventIpcManagerFactory.init();
         
+        @SuppressWarnings("unused")
+        // TODO: Is this doing some kind of wacky initialization?  Or is it ignored?
         AnnotationBasedEventListenerAdapter listener = new AnnotationBasedEventListenerAdapter(this, EventIpcManagerFactory.getIpcManager());
 
     }

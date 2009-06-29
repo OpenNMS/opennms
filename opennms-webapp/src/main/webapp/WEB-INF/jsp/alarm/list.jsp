@@ -430,7 +430,7 @@
               &nbsp;
             <% } %>
           <br />
-            <% if(alarms[i].getServiceName() != null) { %>
+            <% if(alarms[i].getServiceName() != null && alarms[i].getServiceName() != "") { %>
               <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
               <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
                 <a href="element/service.jsp?node=<%=alarms[i].getNodeId()%>&intf=<%=alarms[i].getIpAddress()%>&service=<%=alarms[i].getServiceId()%>" title="More info on this service"><%=alarms[i].getServiceName()%></a>

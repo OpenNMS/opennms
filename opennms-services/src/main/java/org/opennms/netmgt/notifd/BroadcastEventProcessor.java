@@ -374,7 +374,12 @@ public final class BroadcastEventProcessor implements EventListener {
 
     protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map<String, String> params) throws Exception {
         int noticeId = -1;
-        NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
+        NoticeQueue noticeQueue = null;
+        if (m_noticeQueues != null) {
+            synchronized (m_noticeQueues) {
+                noticeQueue = m_noticeQueues.get(queueID);
+            }
+        }
         long now = System.currentTimeMillis();
 
         if (getUserManager().hasUser(targetName)) {
@@ -387,12 +392,13 @@ public final class BroadcastEventProcessor implements EventListener {
             NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
-                noticeQueue.putItem(now, newTask);
+                synchronized (noticeQueue) {
+                    noticeQueue.putItem(now, newTask);
+                }
             }
         } else {
             log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
         }
-
     }
 
     /**
@@ -578,9 +584,11 @@ public final class BroadcastEventProcessor implements EventListener {
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
 
                         try {
-                            NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
-                            processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
-                            processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
+                            synchronized(m_noticeQueues) {
+                                NoticeQueue noticeQueue = m_noticeQueues.get(queueID);
+                                processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
+                                processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
+                            }
                         } catch (Exception e) {
                             log().error("notice not scheduled due to error: ", e);
                         }
@@ -788,7 +796,9 @@ public final class BroadcastEventProcessor implements EventListener {
                 for (int index = 0; index < tasks.length; index++) {
                     NotificationTask task = tasks[index];
                     if (task != null) {
-                        noticeQueue.putItem(task.getSendTime(), task);
+                        synchronized(noticeQueue) {
+                            noticeQueue.putItem(task.getSendTime(), task);
+                        }
                         targetSiblings.add(task);
                     }
                 }
@@ -1139,7 +1149,7 @@ public final class BroadcastEventProcessor implements EventListener {
         m_userManager = userManager;
     }
 
-    public Map<String, NoticeQueue> getNoticeQueues() {
+    public synchronized Map<String, NoticeQueue> getNoticeQueues() {
         return m_noticeQueues;
     }
 

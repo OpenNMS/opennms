@@ -881,4 +881,6 @@ public final class ConfigFileConstants {
     public static final String getTimezoneFileDir() {
         return File.separator + "usr" + File.separator + "share" + File.separator + "zoneinfo" + File.separator + "US";
     }
+
+    public static final int RRD_DS_MAX_SIZE = 19;
 }

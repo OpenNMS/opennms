@@ -256,7 +256,7 @@ public class PassiveStatusKeeperTest {
         MockMonitoredService svc = new MockMonitoredService(1, "Router", "192.168.1.1", "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
-        m.initialize((Map<String,String>)null);
+        m.initialize((Map<String,Object>)null);
         m.initialize(svc);
         PollStatus ps2 = m.poll(svc, null);
         m.release(svc);

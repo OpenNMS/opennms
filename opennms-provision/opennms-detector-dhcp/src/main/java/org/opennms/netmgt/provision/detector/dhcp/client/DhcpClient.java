@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.detector.dhcp.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.detector.dhcp.request.DhcpRequest;
 import org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse;
@@ -59,7 +60,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
 
     public DhcpResponse receiveBanner() throws IOException, Exception {
         m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
-        System.err.println("got a response from server: " + m_responseTime);
+        ThreadCategory.getInstance(DhcpClient.class).debug("got a response from the server: " + m_responseTime);
         DhcpResponse response = new DhcpResponse(m_responseTime);
         return response;
     }

@@ -55,13 +55,13 @@ public class AvailabilityMonitor extends IPv4Monitor {
     private static final int DEFAULT_RETRY = 3;
     private static final int DEFAULT_TIMEOUT = 3000;
 
-    public void initialize(Map parameters) {
+    public void initialize(Map<String, Object> parameters) {
     }
 
     public void initialize(MonitoredService svc) {
     }
 
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         

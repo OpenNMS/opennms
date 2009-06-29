@@ -98,9 +98,7 @@
   	<!--property name="validator"><ref bean="******"/></property-->
     <property name="manager"><ref bean="manager"/></property>
   </bean>
-
-  
-  
+ 
   <bean id="OpenMap" class="org.opennms.web.map.OpenMapController">
   	<!--property name="validator"><ref bean="openMapValidator"/></property-->
     <property name="manager"><ref bean="manager"/></property>
@@ -131,6 +129,11 @@
     <property name="manager"><ref bean="manager"/></property>
   </bean>
   
+  <bean id="LoadDefaultMap" class="org.opennms.web.map.LoadDefaultMapController">
+    <property name="manager"><ref bean="manager"/></property>
+  </bean>
+
+
   <bean id="LoadMaps" class="org.opennms.web.map.LoadMapsController">
     <property name="manager"><ref bean="manager"/></property>
   </bean>
@@ -174,6 +177,7 @@
         <prop key="/DeleteMap.map">DeleteMap</prop>   
         <prop key="/ClearMap.map">ClearMap</prop>                
         <prop key="/SaveMap.map">SaveMap</prop>
+        <prop key="/LoadDefaultMap.map">LoadDefaultMap</prop>        
         <prop key="/LoadMaps.map">LoadMaps</prop>        
         <prop key="/LoadNodes.map">LoadNodes</prop>
         <prop key="/AddNodes.map">AddNodes</prop>

@@ -84,6 +84,14 @@ final public class MemcachedMonitor extends IPv4Monitor {
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
 
+    private static final String[] m_keys = new String[] {
+        "uptime", "rusageuser", "rusage_system",
+        "curr_items", "totalitems", "bytes",
+        "currconnections", "totalconnections", "connectionstructure",
+        "cmdget", "cmdset", "gethits", "getmisses", "evictions",
+        "bytesread", "byteswritten", "threads"
+    };
+    
     /**
      * Poll the specified address for Memcached service availability.
      * 
@@ -94,7 +102,7 @@ final public class MemcachedMonitor extends IPv4Monitor {
      * @return The availability of the interface and if a transition event should be suppressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         
@@ -131,6 +139,9 @@ final public class MemcachedMonitor extends IPv4Monitor {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 Map<String, Number> statProps = new LinkedHashMap<String,Number>();
+                for (String key : m_keys) {
+                    statProps.put(key, null);
+                }
 
                 String line = null;
                 if (reader != null) {
@@ -147,10 +158,12 @@ final public class MemcachedMonitor extends IPv4Monitor {
                                 }
                                 String key = statEntry[1].toLowerCase();
                                 key = key.replaceAll("_", "");
-                                if (key.length() > 20) {
-                                    key = key.substring(0, 20);
+                                if (key.length() > 19) {
+                                    key = key.substring(0, 19);
                                 }
-                                statProps.put(key, value);
+                                if (statProps.containsKey(key)) {
+                                    statProps.put(key, value);
+                                }
                             } catch (Exception e) {
                                 // ignore errors parsing
                             }

@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.7.4-SNAPSHOT</version>
+    <version>1.7.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-mina</artifactId>
@@ -12,10 +12,6 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use the apache mina library
   </description>
-
-  <properties>
-    <minaVersion>2.0.0-M4</minaVersion>
-  </properties>
 
   <dependencies>
 

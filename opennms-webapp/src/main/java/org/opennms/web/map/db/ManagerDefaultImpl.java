@@ -626,6 +626,44 @@ public class ManagerDefaultImpl implements Manager {
         return retVMap;
     }
     
+    public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
+        
+        Iterator<Group> ite = getGroupDao().findGroupsForUser(user).iterator();
+
+        while (ite.hasNext()) {
+            Group group = ite.next();
+            log.debug("getDefaultMapsMenu: found group: " + group.getName() + " for user:" + user);
+            if (group.getDefaultMap() != null) {
+                log.debug("getDefaultMapsMenu: found default map: " + group.getDefaultMap() + " for group: " + group.getName());
+                VMapInfo[] vmapsinfo = dbManager.getMapsMenuByName(group.getDefaultMap());
+                if (vmapsinfo != null ) {
+                    log.debug("getDefaultMapsMenu: found " + vmapsinfo.length +" maps. Verify access ");                    
+                    for (int i=0; i<vmapsinfo.length;i++) {
+                        if (vmapsinfo[i].getOwner().equals(user)) {
+                            log.info("getDefaultMapsMenu: found! user: " + user + " owns the map");
+                            return vmapsinfo[i];
+                        } else {
+                            Map map = dbManager.getMap(vmapsinfo[i].getId());
+                            log.debug("getDefaultMapsMenu: map: " + map.getId()+ " mapName: " +map.getName() + " Access: " + map.getAccessMode() + " Group: " + map.getGroup());
+                            if (map.getAccessMode().trim().toUpperCase().equals(Map.ACCESS_MODE_ADMIN.toUpperCase()) 
+                                    || map.getAccessMode().trim().toUpperCase().equals(Map.ACCESS_MODE_USER.toUpperCase()) 
+                                    || (map.getAccessMode().trim().toUpperCase().equals(Map.ACCESS_MODE_GROUP.toUpperCase()) 
+                                        && map.getGroup().equals(group.getName())) ) {
+                                log.info("getDefaultMapsMenu: found! user: " + user + " has access to map: " + map.getName() + " with id: " + map.getId());
+                                return vmapsinfo[i];
+                            } else {
+                                log.info("getDefaultMapsMenu: access is denied for default map: " + group.getDefaultMap() + " to group: " + group.getName());                                
+                            }
+                        }
+                    }
+                } else {
+                    log.info("getDefaultMapsMenu: no maps found for default map: " + group.getDefaultMap() + " for group: " + group.getName());
+                }
+            }
+        }
+        return new VMapInfo(MapsConstants.NEW_MAP,"no default map found",user);
+    }
+
     /**
      * gets all visible maps for user and userRole in input
      * @param user

@@ -307,6 +307,7 @@ public class LifeCycleInstanceTest {
     public static class InjectionTestActivities {
         
         // this should be called first
+        @SuppressWarnings("unchecked")
         @Activity(phase="phase1", lifecycle="injection")
         @Attribute("one")
         public Integer doPhaseOne(Phase phase1, Vector dataAccumulator) {
@@ -318,6 +319,7 @@ public class LifeCycleInstanceTest {
         }
 
         // this should be called in the middle
+        @SuppressWarnings("unchecked")
         @Activity(phase="phase2", lifecycle = "injection")
         @Attribute("two")
         public Integer doPhaseTwo(Phase phase2, Vector dataAccumulator) {
@@ -329,6 +331,7 @@ public class LifeCycleInstanceTest {
         }
 
         // this should be called last
+        @SuppressWarnings("unchecked")
         @Activity(phase="phase3", lifecycle = "injection")
         public void doPhaseThree(@Attribute("one") Integer one, Phase phase3, Vector dataAccumulator, @Attribute("two") Integer two) {
 
@@ -342,6 +345,7 @@ public class LifeCycleInstanceTest {
     }
     
     
+    @SuppressWarnings("unchecked")
     @Test
     public void testInjectionLifeCycle() throws Exception {
         LifeCycleInstance lifecycle = m_lifeCycleFactory.createLifeCycleInstance("injection", new InjectionTestActivities());
@@ -369,6 +373,7 @@ public class LifeCycleInstanceTest {
     @ActivityProvider
     public static class NestedLifeCycleActivites extends ActivityProviderSupport {
         
+        @SuppressWarnings("unused")
         private final LifeCycleRepository m_lifeCycleRepository;
         
         public NestedLifeCycleActivites(LifeCycleRepository lifeCycleRepository) {

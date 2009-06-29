@@ -122,6 +122,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     return getSuitableIpForRancid(nodeId);
                 }
             });
+            log().debug("Found Suitable ip address: " + ipaddress);
             long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
             int retries = m_rancidAdapterConfig.getRetries(ipaddress);
             log().debug("Setting initialDelay(sec): " + initialDelay);
@@ -213,13 +214,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
             rNode.setStateUp(true);
 
+            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), rNode);
+
             RWSClientApi.createRWSRancidNode(cp, rNode);
             RWSClientApi.createOrUpdateRWSAuthNode(cp, rNode.getAuth());
-            
-            m_onmsNodeRancidNodeMap.put(Integer.valueOf(nodeId), rNode);
-            
-        } catch (ProvisioningAdapterException ae) {
-                sendAndThrow(nodeId, ae);
+                        
+        } catch (ProvisioningAdapterException ae) {    
+            sendAndThrow(nodeId, ae);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
@@ -254,6 +255,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 }
             } else {
                 rNewNode.setStateUp(true);
+                m_onmsNodeRancidNodeMap.put(node.getId(), rNewNode);
             }
             
             
@@ -409,15 +411,17 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
         String ipaddress = getSuitableIpForRancid(node);
+        log().debug("Found Suitable ip address: " + ipaddress + " for node: " + node.getLabel() );
         if (m_rancidAdapterConfig.useCategories(ipaddress)) {
            r_node.setDeviceType(getTypeFromCategories(node)); 
         } else {
             r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId()));
         }
-        r_node.setStateUp(true);
+        r_node.setStateUp(false);
         r_node.setComment(RANCID_COMMENT);
         r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
+        
 
     }
     
@@ -557,7 +561,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Iterator<Parm> ite = e.getParms().iterateParm();
             while (ite.hasNext()) {
                 Parm parm = ite.next();
-                if (parm.getParmName().equals("rancidGroupName")) {
+                log().debug("parm name: " + parm.getParmName());
+                if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
                     updateGroupConfiguration(parm.getValue().getContent());
                     break;
                 }
@@ -611,6 +616,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         List<String> ueiList = new ArrayList<String>();
         ueiList.add(EventConstants.RANCID_DOWNLOAD_FAILURE_UEI);
         ueiList.add(EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI);
+        ueiList.add(EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI);
         
         getEventSubscriptionService().addEventListener(this, ueiList);
     }

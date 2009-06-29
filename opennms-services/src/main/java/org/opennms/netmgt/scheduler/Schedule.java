@@ -49,7 +49,6 @@ public class Schedule {
     private final ScheduleInterval m_interval;
     private final ScheduleTimer m_timer;
     private volatile int m_currentExpirationCode;
-    private volatile long m_currentInterval;
     private volatile boolean m_scheduled = false;
 	
     

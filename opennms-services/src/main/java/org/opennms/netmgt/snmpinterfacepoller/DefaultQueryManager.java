@@ -72,6 +72,7 @@ public class DefaultQueryManager implements QueryManager {
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
+        @SuppressWarnings("unchecked")
         List<OnmsSnmpInterface> iface = (List<OnmsSnmpInterface>) transTemplate.execute(
                    new TransactionCallback() {
                         public Object doInTransaction(final TransactionStatus status) {

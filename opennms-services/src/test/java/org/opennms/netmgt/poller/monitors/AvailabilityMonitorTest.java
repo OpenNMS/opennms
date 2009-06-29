@@ -64,11 +64,11 @@ public class AvailabilityMonitorTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.opennms.netmgt.poller.monitors.AvailabilityMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map)}.
+     * Test method for {@link org.opennms.netmgt.poller.monitors.AvailabilityMonitor#poll(org.opennms.netmgt.poller.MonitoredService, Map)}.
      */
     public final void testPoll() {
         ServiceMonitor sm = new AvailabilityMonitor();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("timeout", "3000");
         MonitoredService svc = new MonitoredService() {
             protected InetAddress getNetworkAddress() {

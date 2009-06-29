@@ -38,6 +38,8 @@ package org.opennms.netmgt.poller.nsclient;
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  */
 public class NsclientException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      */

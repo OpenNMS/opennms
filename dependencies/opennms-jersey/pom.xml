@@ -2,14 +2,14 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.4-SNAPSHOT</version>
+    <version>1.7.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-jersey</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Jersey Dependencies</name>
   <properties>
-    <jerseyVersion>1.0.2</jerseyVersion>
+    <jerseyVersion>1.0.3</jerseyVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -74,11 +74,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>java-net-maven1-repo</id>
-      <url>http://download.java.net/maven/1</url>
-      <layout>legacy</layout>
-    </repository>
-  </repositories>
 </project>

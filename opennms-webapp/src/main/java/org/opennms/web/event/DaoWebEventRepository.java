@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.EventCriteria;
+import org.opennms.web.event.filter.EventDisplayFilter;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,8 @@ public class DaoWebEventRepository implements WebEventRepository {
         criteria.createAlias("alarm", "alarm", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
+        
+        criteria.add(new EventDisplayFilter("Y").getCriterion());
         
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
 

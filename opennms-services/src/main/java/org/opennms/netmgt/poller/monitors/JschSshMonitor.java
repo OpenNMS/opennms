@@ -63,13 +63,11 @@ final public class JschSshMonitor extends IPv4Monitor {
         m_monitor = new SshMonitor();
     }
     
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(InetAddress address, Map parameters) {
+    public PollStatus poll(InetAddress address, Map<String, Object> parameters) {
         return m_monitor.poll(address, parameters);
     }
 
-    @SuppressWarnings("unchecked")
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         return m_monitor.poll(svc, parameters);
     }
 

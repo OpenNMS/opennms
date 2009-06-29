@@ -96,6 +96,7 @@ public class EventTranslatorTest {
     private OutageAnticipator m_outageAnticipator;
     private EventTranslatorConfigFactory m_config;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
 //        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
@@ -278,6 +279,7 @@ public class EventTranslatorTest {
         assertTrue(m_config.translateEvent(te3).isEmpty());
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException {
         Reader rdr = new StringReader(getLinkDownTranslation());

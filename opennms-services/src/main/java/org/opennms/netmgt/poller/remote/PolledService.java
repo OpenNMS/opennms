@@ -50,17 +50,17 @@ import org.opennms.netmgt.poller.NetworkInterface;
  */
 public class PolledService implements MonitoredService, Serializable {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private IPv4NetworkInterface m_netInterface;
-    private Map m_monitorConfiguration;
+    private Map<String,Object> m_monitorConfiguration;
     private OnmsPollModel m_pollModel;
     private Integer m_serviceId;
     private Integer m_nodeId;
     private String m_nodeLabel;
     private String m_svcName;
 	
-	public PolledService(OnmsMonitoredService monitoredService, Map monitorConfiguration, OnmsPollModel pollModel) {
+	public PolledService(OnmsMonitoredService monitoredService, Map<String,Object> monitorConfiguration, OnmsPollModel pollModel) {
         m_serviceId = monitoredService.getId();
         m_nodeId = monitoredService.getNodeId();
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
@@ -98,7 +98,7 @@ public class PolledService implements MonitoredService, Serializable {
         return m_svcName;
     }
 	
-	public Map getMonitorConfiguration() {
+	public Map<String,Object> getMonitorConfiguration() {
         return m_monitorConfiguration;
     }
     

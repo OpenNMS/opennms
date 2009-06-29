@@ -34,7 +34,7 @@
 //
 package org.opennms.report.availability;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -62,7 +62,7 @@ public class AvailabilityReportTest extends TestCase {
         super.setUp();
         Locale.setDefault(Locale.US);
         calendar = new GregorianCalendar();
-        //date fror report run is 18th May 2005
+        //date for report run is 18th May 2005
         calendar.set(2005, 4, 18);
         MockLogAppender.setupLogging();
         m_categories = new Categories();
@@ -70,9 +70,9 @@ public class AvailabilityReportTest extends TestCase {
         m_db = new MockDatabase();
         DataSourceFactory.setInstance(m_db);
 
-        Reader rdr = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
+        is.close();
 
         m_catFactory = new MockCategoryFactory();
         CategoryFactory.setInstance(m_catFactory);

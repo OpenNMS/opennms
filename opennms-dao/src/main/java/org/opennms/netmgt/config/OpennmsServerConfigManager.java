@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -49,8 +50,13 @@ public class OpennmsServerConfigManager {
      */
     private LocalServer m_config;
     
+    @Deprecated
     protected OpennmsServerConfigManager(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(LocalServer.class, rdr);
+    }
+    
+    protected OpennmsServerConfigManager(InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(LocalServer.class, is);
     }
 
     /**

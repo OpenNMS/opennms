@@ -40,6 +40,7 @@ package org.opennms.netmgt.poller.pollables;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class ThreadInterrupted extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     /**
      * 

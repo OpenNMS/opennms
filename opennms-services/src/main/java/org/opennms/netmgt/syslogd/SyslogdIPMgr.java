@@ -69,7 +69,7 @@ final class SyslogdIPMgr {
     /**
      * A Map of IP addresses and node IDs
      */
-    private static Map m_knownips = new HashMap();
+    private static Map<String,Long> m_knownips = new HashMap<String,Long>();
 
     /**
      * Default construct for the instance. This constructor always throws an
@@ -108,7 +108,6 @@ final class SyslogdIPMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-    @SuppressWarnings({"EmptyCatchBlock"})
     static synchronized void dataSourceSync() throws SQLException {
         java.sql.Connection c = null;
         try {

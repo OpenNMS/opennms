@@ -119,7 +119,7 @@ public class IntervalTestCase extends TestCase {
 
     protected void assertTimeIntervalSequence(TimeInterval[] intervals, TimeIntervalSequence seq) {
         int count  = 0;
-        for (Iterator<TimeInterval> iter = seq.iterator(); iter.hasNext();) {
+        for (Iterator<? extends TimeInterval> iter = seq.iterator(); iter.hasNext();) {
             TimeInterval interval = iter.next();
             assertInterval(intervals[count], interval);
             count++;

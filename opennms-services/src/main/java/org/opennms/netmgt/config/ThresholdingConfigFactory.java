@@ -39,17 +39,17 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -62,7 +62,7 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
- * This class is the main respository for thresholding configuration information
+ * This class is the main repository for thresholding configuration information
  * used by the thresholding daemon.. When this class is loaded it reads the
  * thresholding configuration into memory.
  * 
@@ -107,26 +107,25 @@ public final class ThresholdingConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ThresholdingConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        FileReader cfgIn = new FileReader(configFile);
+        InputStream stream = null;
 
         try {
-            parseXML(cfgIn);
+            stream = new FileInputStream(configFile);
+            parseXML(stream);
         } finally {
-            try {
-                cfgIn.close();
-            } catch (IOException e) {
-                // do nothing
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
             }
         }
 
     }
     
-    public ThresholdingConfigFactory(Reader reader) throws MarshalException, ValidationException {
-        parseXML(reader);
+    public ThresholdingConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+        parseXML(stream);
     }
 
-    private void parseXML(Reader cfgIn) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ThresholdingConfig.class, cfgIn);
+    private void parseXML(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(ThresholdingConfig.class, stream);
         initGroupMap();
     }
     
@@ -139,11 +138,9 @@ public final class ThresholdingConfigFactory {
      */ 
     private void initGroupMap() {
         Map<String, Group> groupMap = new HashMap<String, Group>();
-        
-        Iterator iter = m_config.getGroupCollection().iterator();
-        while (iter.hasNext()) {
-            Group group = (Group) iter.next();
-            groupMap.put(group.getName(), group);
+
+        for (Group g : m_config.getGroupCollection()) {
+            groupMap.put(g.getName(), g);
         }
         
         m_groupMap = groupMap;
@@ -173,8 +170,20 @@ public final class ThresholdingConfigFactory {
             log().debug("init: config file path: " + cfgFile.getPath());
         }
 
-        m_singleton = new ThresholdingConfigFactory(cfgFile.getPath());
+        ThresholdingConfigFactory tcf = new ThresholdingConfigFactory(cfgFile.getPath());
 
+        for (String groupName : tcf.getGroupNames()) {
+            Group g = tcf.getGroup(groupName);
+            for (org.opennms.netmgt.config.threshd.Threshold threshold :  g.getThresholdCollection()) {
+                if (threshold.getDsName().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
+                    throw new ValidationException(
+                        String.format("ds-name '%s' in group '%s' is greater than %d characters",
+                            threshold.getDsName(), groupName, ConfigFileConstants.RRD_DS_MAX_SIZE)
+                    );
+                }
+            }
+        }
+        m_singleton = tcf;
         m_loaded = true;
     }
 
@@ -254,7 +263,6 @@ public final class ThresholdingConfigFactory {
      * @throws IllegalArgumentException
      *             if group name does not exist in the group map.
      */
-    @SuppressWarnings("unchecked")
     public Collection<Basethresholddef> getThresholds(String groupName) {
         Group group=getGroup(groupName);
         Collection<Basethresholddef> result=new ArrayList<Basethresholddef>();
@@ -271,9 +279,9 @@ public final class ThresholdingConfigFactory {
      * Saves the current in-memory configuration to disk and reloads
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-        // marshall to a string first, then write the string to the file. This
+        // Marshal to a string first, then write the string to the file. This
         // way the original config
-        // isn't lost if the xml from the marshall is hosed.
+        // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
 
@@ -293,10 +301,15 @@ public final class ThresholdingConfigFactory {
     public void update() throws IOException, MarshalException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-        Reader r = new FileReader(cfgFile);
-        parseXML(r);
-
-        r.close();
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(cfgFile);
+            parseXML(stream);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
     
     private static Category log() {

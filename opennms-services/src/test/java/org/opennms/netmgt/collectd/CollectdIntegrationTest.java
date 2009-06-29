@@ -32,7 +32,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,15 +110,13 @@ public class CollectdIntegrationTest extends TestCase {
         FilterDaoFactory.setInstance(m_filterDao);
         
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
 
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
 
-        resource = new ClassPathResource("/test-thresholds.xml"); 
-        InputStreamReader thresholdsRdr = new InputStreamReader(resource.getInputStream());
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(thresholdsRdr));
+        resource = new ClassPathResource("/test-thresholds.xml");
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(resource.getInputStream()));
 
         // set up test using a string key
         m_key = getName()+System.nanoTime();

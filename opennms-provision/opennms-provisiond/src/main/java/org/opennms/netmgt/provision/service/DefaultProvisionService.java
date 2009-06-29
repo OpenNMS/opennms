@@ -312,12 +312,12 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsNode getRequisitionedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
         if (nodeReq == null) {
-            log().warn("nodeReq for node "+foreignSource+":"+foreignId+" cannot be null!");
+            warn("nodeReq for node %s:%s cannot be null!", foreignSource, foreignId);
             return null;
         }
         OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
         
-        // fill in real db categories
+        // fill in real database categories
         HashSet<OnmsCategory> dbCategories = new HashSet<OnmsCategory>();
         for(OnmsCategory category : node.getCategories()) {
             OnmsCategory dbCategory = createCategoryIfNecessary(category.getName());
@@ -326,7 +326,7 @@ public class DefaultProvisionService implements ProvisionService {
         
         node.setCategories(dbCategories);
         
-        // fill in reall service types
+        // fill in real service types
         node.visit(new ServiceTypeFulfiller());
         
         return node;
@@ -438,7 +438,7 @@ public class DefaultProvisionService implements ProvisionService {
             return nodes.iterator().next();
         }
     	
-    	log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
+    	error("Unable to locate a unique node using label %s: %d nodes found.  Ignoring relationship.", label, nodes.size());
     	return null;
     }
     
@@ -471,7 +471,7 @@ public class DefaultProvisionService implements ProvisionService {
     		critIface = parent.getCriticalInterface();
     	}
     	
-        log().info("Setting criticalInterface of node: "+node+" to: "+critIface);
+        info("Setting criticalInterface of node: %s to: %s", node, critIface);
     	node.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddress(), "ICMP"));
 
     }
@@ -482,7 +482,7 @@ public class DefaultProvisionService implements ProvisionService {
             return;
         }
 
-        log().info("Setting parent of node: "+node+" to: "+parent);
+        info("Setting parent of node: %s to: %s", node, parent);
         node.setParent(parent);
 
         m_nodeDao.update(node);
@@ -512,7 +512,7 @@ public class DefaultProvisionService implements ProvisionService {
     private NodeScanSchedule createScheduleForNode(OnmsNode node, boolean force) {
         Assert.notNull(node, "Node may not be null");
         if (node.getForeignSource() == null) {
-            log().info("Not scheduling node "+node+" to be scanned since it has a null foreignSource");
+            info("Not scheduling node %s to be scanned since it has a null foreignSource", node);
             return null;
         }
 
@@ -708,7 +708,14 @@ public class DefaultProvisionService implements ProvisionService {
         log().info(String.format(format, args));
     }
 
+    private void warn(String format, Object... args) {
+        log().warn(String.format(format, args));
+    }
+
+    @SuppressWarnings("unused")
     private void debug(String format, Object... args) {
-        log().debug(String.format(format, args));
+        if (log().isDebugEnabled()) {
+            log().debug(String.format(format, args));
+        }
     }
 }

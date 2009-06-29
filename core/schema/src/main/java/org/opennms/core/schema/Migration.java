@@ -1,5 +1,7 @@
 package org.opennms.core.schema;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 public class Migration {
     private String m_jdbcUrl;
@@ -7,6 +9,7 @@ public class Migration {
     private String m_databaseHost;
     private String m_databaseName;
     private String m_databaseUser;
+    private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
     private String m_changeLog;
@@ -57,6 +60,13 @@ public class Migration {
         m_databaseUser = databaseUser;
     }
 
+    public String getDatabasePassword() {
+        return m_databasePassword;
+    }
+    public void setDatabasePassword(String databasePassword) {
+        m_databasePassword = databasePassword;
+    }
+
     public String getAdminUser() {
         return m_adminUser;
     }
@@ -76,5 +86,17 @@ public class Migration {
     }
     public void setChangeLog(String changeLog) {
         m_changeLog = changeLog;
+    }
+    
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("database", getDatabaseName())
+            .append("host", getDatabaseHost())
+            .append("driver", getJdbcDriver())
+            .append("url", getJdbcUrl())
+            .append("admin-user", getAdminUser())
+            .append("user", getDatabaseUser())
+            .append("changelog", getChangeLog())
+            .toString();
     }
 }

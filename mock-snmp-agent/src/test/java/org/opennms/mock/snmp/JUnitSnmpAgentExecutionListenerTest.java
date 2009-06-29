@@ -68,7 +68,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
 @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", port=9161)
-public class JUnitSnmpAgentExecutionListenerTest {
+public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
     
     OID m_oid = new OID(".1.3.5.1.1.1.0");
 

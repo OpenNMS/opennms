@@ -36,6 +36,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
@@ -45,7 +46,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -72,7 +72,7 @@ import org.opennms.protocols.snmp.SnmpObjectId;
 abstract public class LinkdConfigManager implements LinkdConfig {
 
 	/**
-	 * Object containing all Linkd-configuration objects parsed from the xml
+	 * Object containing all Linkd-configuration objects parsed from the XML
 	 * file
 	 */
 	protected static LinkdConfiguration m_config;
@@ -103,8 +103,13 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @throws ValidationException
      * @throws IOException
      */
+	@Deprecated
     public LinkdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
+    }
+
+    public LinkdConfigManager(InputStream stream) throws MarshalException, ValidationException, IOException {
+        reloadXML(stream);
     }
 
     public abstract void update() throws IOException, MarshalException, ValidationException;
@@ -115,12 +120,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return ThreadCategory.getInstance(this.getClass());
     }
 
-	public synchronized org.opennms.netmgt.config.linkd.Package getPackage(String name) 
-		{
-        
-		Enumeration packageEnum = m_config.enumeratePackage();
-        while (packageEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.linkd.Package thisPackage = (org.opennms.netmgt.config.linkd.Package) packageEnum.nextElement();
+	public synchronized org.opennms.netmgt.config.linkd.Package getPackage(String name) {
+        for (org.opennms.netmgt.config.linkd.Package thisPackage : m_config.getPackageCollection()) {
             if (thisPackage.getName().equals(name)) {
                 return thisPackage;
             }
@@ -131,15 +132,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     private void createUrlIpMap() {
 
         m_urlIPMap = new HashMap<String, List<String>>();
-    
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.linkd.Package pkg = (org.opennms.netmgt.config.linkd.Package) pkgEnum.nextElement();
-    
-            Enumeration urlEnum = pkg.enumerateIncludeUrl();
-            while (urlEnum.hasMoreElements()) {
-                String urlname = (String) urlEnum.nextElement();
-    
+
+        for (org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
+            for (String urlname : pkg.getIncludeUrlCollection()) {
                 java.util.List<String> iplist = IpListFromUrl.parse(urlname);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(urlname, iplist);
@@ -149,20 +144,16 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
-     * This method is used to establish package agaist iplist mapping, with
-     * which, the iplist is selected per package via the configured filter rules
+     * This method is used to establish package against IP list mapping, with
+     * which, the IP list is selected per package via the configured filter rules
      * from the database.
      */
     public void createPackageIpListMap() {
-
         m_pkgIpMap = new HashMap<org.opennms.netmgt.config.linkd.Package, List<String>>();
-    
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.linkd.Package pkg = (org.opennms.netmgt.config.linkd.Package) pkgEnum.nextElement();
-    
+
+        for (org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
             //
-            // Get a list of ipaddress per package agaist the filter rules from
+            // Get a list of IP addresses per package against the filter rules from
             // database and populate the package, IP list map.
             //
             try {
@@ -432,12 +423,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	public String getClassName(String sysoid) {
 
 		String defaultClassName = null;
-		Set ks = m_oidMask2className.keySet();
-		Iterator ite = ks.iterator();
-		while (ite.hasNext()) {
-			String oidMask = (String) ite.next();
+		for (String oidMask : m_oidMask2className.keySet()) {
 			if (sysoid.startsWith(oidMask)) {
-				return (String) m_oidMask2className.get(oidMask);
+				return m_oidMask2className.get(oidMask);
 			}
 		}
 
@@ -447,10 +435,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 	public boolean hasClassName(String sysoid) {
 
-		Set ks = m_oidMask2className.keySet();
-		Iterator ite = ks.iterator();
-		while (ite.hasNext()) {
-			String oidMask = (String) ite.next();
+	    for (String oidMask : m_oidMask2className.keySet()) {
 			if (sysoid.startsWith(oidMask)) {
 				return true;
 			}
@@ -492,7 +477,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
+        java.util.List<String> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
         }
@@ -515,14 +500,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         boolean has_range_include = false;
         boolean has_range_exclude = false;
  
-        // if there are NO include rances then treat act as if the user include
+        // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
+        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
+            IncludeRange rng = eincs.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -534,21 +519,21 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             }
         }
     
-        Enumeration espec = pkg.enumerateSpecific();
+        Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
+            long speca = IPSorter.convertToLong(espec.nextElement());
             if (speca == addr)
                 has_specific = true;
         }
     
-        Enumeration eurl = pkg.enumerateIncludeUrl();
+        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
+            has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
-        Enumeration eex = pkg.enumerateExcludeRange();
+        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
+            ExcludeRange rng = eex.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -565,7 +550,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
     /**
      * This method is used to determine if the named interface is included in
-     * the passed package's url includes. If the interface is found in any of
+     * the passed package's URL includes. If the interface is found in any of
      * the URL files, then a value of true is returned, else a false value is
      * returned.
      * 
@@ -587,15 +572,15 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @param addr
      *            The interface to test against the package's URL
      * @param url
-     *            The url file to read
+     *            The URL file to read
      * 
-     * @return True if the interface is included in the url, false otherwise.
+     * @return True if the interface is included in the URL, false otherwise.
      */
     private boolean interfaceInUrl(String addr, String url) {
         boolean bRet = false;
     
         // get list of IPs in this URL
-        java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
+        java.util.List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
@@ -603,6 +588,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return bRet;
     }
     
+    @Deprecated
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(LinkdConfiguration.class, reader);
         createUrlIpMap();
@@ -611,6 +597,13 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         
     }
 
+    protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(LinkdConfiguration.class, stream);
+        createUrlIpMap();
+        createPackageIpListMap();
+        getClassNames();
+        
+    }
     /**
      * Saves the current in-memory configuration to disk and reloads
      */
@@ -729,10 +722,10 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
     
     /**
-     * Returns the first package that the ip belongs to, null if none.
+     * Returns the first package that the IP belongs to, null if none.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      * 
      * @param ipaddr
      *            the interface to check
@@ -740,10 +733,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @return the first package that the ip belongs to, null if none
      */
     public synchronized org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(String ipaddr) {
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.linkd.Package pkg = (org.opennms.netmgt.config.linkd.Package) pkgEnum.nextElement();
-    
+        for (org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg)
                 return pkg;
@@ -753,10 +743,10 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
-     * Returns a list of package names that the ip belongs to, null if none.
+     * Returns a list of package names that the IP belongs to, null if none.
      *                
      * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
+     * filter will only work if the IP is already in the database.
      *
      * @param ipaddr
      *            the interface to check
@@ -764,11 +754,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @return a list of package names that the ip belongs to, null if none
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
-    
-        Enumeration pkgEnum = m_config.enumeratePackage();
         List<String> matchingPkgs = new ArrayList<String>();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.linkd.Package pkg = (org.opennms.netmgt.config.linkd.Package) pkgEnum.nextElement();
+        
+        for (org.opennms.netmgt.config.linkd.Package pkg : m_config.getPackageCollection()) {
             String pkgName = pkg.getName();
             boolean inPkg = interfaceInPackage(ipaddr, pkg);
             if (inPkg) {
@@ -779,7 +767,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return matchingPkgs;
     }
 
-    public Enumeration enumeratePackage() {
+    public Enumeration<Package> enumeratePackage() {
         return getConfiguration().enumeratePackage();
     }
     

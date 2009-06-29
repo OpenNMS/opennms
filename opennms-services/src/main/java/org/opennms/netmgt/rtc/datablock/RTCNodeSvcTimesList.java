@@ -39,6 +39,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**
@@ -55,7 +56,9 @@ import org.opennms.netmgt.config.RTCConfigFactory;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class RTCNodeSvcTimesList extends LinkedList {
+public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The time from which the current outtime 'm_outTime' is calculated
      */
@@ -90,7 +93,7 @@ public class RTCNodeSvcTimesList extends LinkedList {
         // the start of the rolling window
         long startTime = curTime - rollingWindow;
 
-        ListIterator iter = listIterator();
+        ListIterator<RTCNodeSvcTime> iter = listIterator();
         while (iter.hasNext()) {
             RTCNodeSvcTime svcTime = (RTCNodeSvcTime) iter.next();
 
@@ -131,7 +134,7 @@ public class RTCNodeSvcTimesList extends LinkedList {
         removeExpiredOutages();
 
         if (regainedtime > 0 && regainedtime < losttime) {
-            Category log = Category.getInstance(getClass());
+            Category log = ThreadCategory.getInstance(getClass());
             log.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time " + "less than lost time -> losttime in milliseconds: " + losttime + "\tregainedtime in milliseconds: " + regainedtime);
 
             return;
@@ -178,7 +181,7 @@ public class RTCNodeSvcTimesList extends LinkedList {
         // remove expired outages
         removeExpiredOutages(curTime, rollingWindow);
 
-        Iterator iter = iterator();
+        Iterator<RTCNodeSvcTime> iter = iterator();
         while (iter.hasNext()) {
             RTCNodeSvcTime svcTime = (RTCNodeSvcTime) iter.next();
 

@@ -110,7 +110,6 @@ public class LineDecoderTest {
     
     private TestServer m_server;
     private TestDetector m_detector;
-    private String m_notAServerResponse = "NOT A SERVER";
     
     @Before
     public void setUp() throws Exception {

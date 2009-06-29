@@ -319,4 +319,9 @@ public class ManagerMapdImpl implements Manager {
         
     }
 
+    public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

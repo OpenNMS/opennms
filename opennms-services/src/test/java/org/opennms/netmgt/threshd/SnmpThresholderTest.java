@@ -40,8 +40,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -124,9 +122,7 @@ public class SnmpThresholderTest {
     
     private void setUpThresholdingConfig() throws Exception {
         Resource config = new ClassPathResource("/test-thresholds.xml");
-        Reader r = new InputStreamReader(config.getInputStream());
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
-        r.close();
+        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(config.getInputStream()));
     }
 
     @SuppressWarnings("deprecation")

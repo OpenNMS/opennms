@@ -112,7 +112,7 @@ final public class CitrixMonitor extends IPv4Monitor {
      *         should be supressed.
      * 
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
         // Get the category logger
         //
