@@ -32,6 +32,11 @@
     <dependencies>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>jicmp-api</artifactId>
+        <version>[1.0.0,2.0.0)</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-hibernate</artifactId>
         <version>[1.7.0,2.0.0)</version>
       </dependency>

@@ -15,8 +15,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>jicmp-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <version>[1.7.0,2.0.0)</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
