@@ -607,10 +607,8 @@
     <uei>uei.opennms.org/nodes/duplicateNodeDeleted</uei>
     <event-label>OpenNMS-defined node event: duplicateNodeDeleted</event-label>
     <descr>
-      &lt;p&gt;Node #&lt;a
-      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
-      was determined to be a duplicate node and is being flagged
-      for deletion.&lt;/p&gt;
+      &lt;p&gt;Node :%nodeid% labled: %nodelabel%; was determined to be a 
+      duplicate node and is has been deleted.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;Node #&lt;a
