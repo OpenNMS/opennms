@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms.lib</groupId>
     <artifactId>org.opennms.lib.sms</artifactId>
-    <version>1.7.2-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.lib.sms</groupId>
@@ -12,12 +12,11 @@
     <dependency>
       <groupId>org.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
+      <version>[1.7.0,2.0.0)</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

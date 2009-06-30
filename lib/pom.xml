@@ -2,9 +2,10 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.1</version>
+    <version>1.7.5-SMS-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms</groupId>
   <artifactId>org.opennms.lib</artifactId>
   <version>1.7.5-SMS-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -27,6 +28,25 @@
     <module>sms</module>
     <module>snmp</module>
   </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-hibernate</artifactId>
+        <version>[1.7.0,2.0.0)</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-spring</artifactId>
+        <version>[1.7.0,2.0.0)</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-util</artifactId>
+        <version>[1.7.0,2.0.0)</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <repositories>
     <repository>
