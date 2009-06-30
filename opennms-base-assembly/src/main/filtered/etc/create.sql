@@ -976,7 +976,7 @@ create table alarms (
 	alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
 	eventUei                VARCHAR(256) NOT NULL,
 	dpName                  VARCHAR(12) NOT NULL,
-	nodeID                  INTEGER,
+	nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
 	ipaddr                  VARCHAR(16),
 	serviceID               INTEGER,
 	reductionKey            VARCHAR(256),
