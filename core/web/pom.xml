@@ -8,4 +8,40 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.web</artifactId>
   <name>OpenNMS Core Web</name>
+  <packaging>war</packaging>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+	      	<groupId>org.codehaus.cargo</groupId>
+	      	<artifactId>cargo-maven2-plugin</artifactId>
+	      	<version>1.0</version>
+	      	<extensions>true</extensions>
+	      	<executions>
+	      		<execution>
+	      			<goals>
+	      				<goal>uberwar</goal>
+	      			</goals>
+	      		</execution>
+	      	</executions>
+	      	<configuration>
+	      		<descriptor>src/assemble/merge.xml</descriptor>
+	      		<container>
+	      			<containerId>jetty6x</containerId>
+	      			<type>embedded</type>
+	      		</container>
+	      	</configuration>
+	      </plugin>
+  	</plugins>
+  </build>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.opennms</groupId>
+  		<artifactId>opennms-webapp</artifactId>
+  		<version>${project.version}</version>
+  		<type>war</type>
+  	</dependency>
+  </dependencies>
+  
 </project>
