@@ -11,6 +11,12 @@
  * Modifications:
  *
  * 2009 Mar 24: Created file. - r.trommer@open-factory.org
+ * 2009 Jun 28: Added: Display admin state human readable
+ *              Added: Display peer state in service down human readable
+ *              Refactor: Cleanup debug messages 
+ *              Refactor: Implement peer states and admin states as enum
+ *              Fix: Prevent NullPointExceptions during SNMP requests
+ *              - r.trommer@open-factory.org 
  *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
@@ -106,16 +112,39 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
      */
     private static final String BGP_PEER_FSM_EST_TIME_OID = ".1.3.6.1.2.1.15.3.1.16";
     
-    /*
-     * "1" => "Idle",
-     * "2" => "Connect",
-     * "3" => "Active",
-     * "4" => "OpenSent",
-     * "5" => "OpenConfirm",
-     * "6" => "Established"
+    /**
+     * Implement the BGP Peer states
      */
-    private static final int BGP_STATE_ESTABLISHED = 6;
+    private enum BGP_PEER_STATE {
+        IDLE(1), CONNECT(2), ACTIVE(3), OPEN_SENT(4), OPEN_CONFIRM(5), ESTABLISHED(
+                6);
 
+        private final int state; // state code
+
+        BGP_PEER_STATE(int s) {
+            this.state = s;
+        }
+
+        private int value() {
+            return this.state;
+        }
+    };
+    
+    /**
+     * Implement the BGP Peer admin states
+     */
+    private static enum BGP_PEER_ADMIN_STATE {
+        STOP(1), START(2);
+        private final int state; // state code
+
+        BGP_PEER_ADMIN_STATE(int s) {
+            this.state = s;
+        }
+
+        private int value() {
+            return this.state;
+        }
+    };
     
     /**
      * <P>
@@ -222,6 +251,13 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         
+        // Initialize the messages if the session is down
+        String adminStateMsg = "N/A";
+        String peerStateMsg = "N/A";
+        String remoteAsMsg = "N/A";
+        String lastErrorMsg = "N/A";
+        String estTimeMsg = "N/A";
+        
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
@@ -231,6 +267,10 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         //
         // This should never need to be overridden, but it can be in order to be used with similar tables.
         String bgpPeerIp = ParameterMap.getKeyedString(parameters, "bgpPeerIp", null);
+        if (bgpPeerIp == null) {
+            log().warn("poll: No BGP-Peer IP Defined! ");
+            return status;
+        }
 
         // set timeout and retries on SNMP peer object
         //
@@ -242,69 +282,102 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         //
         try {
             if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
-
-            if (bgpPeerIp == null) {
-                log().warn("BgpSessionMonitor.poll: No BGP-Peer IP Defined! ");
-                return status;
+                log().debug("poll: SnmpAgentConfig address: " +agentConfig);
             }
     
-            // This returns two maps: one of instance and service name, and one of instance and status.
+            // Get the BGP peer state
             SnmpObjId bgpPeerStateSnmpObject = SnmpObjId.get(BGP_PEER_STATE_OID + "." + bgpPeerIp);
             SnmpValue bgpPeerState = SnmpUtils.get(agentConfig, bgpPeerStateSnmpObject);
-            if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: bgpPeerState: " + bgpPeerState);
+            
+            // If no peer state is received or SNMP is not possible, service is down
+            if (bgpPeerState == null) {
+                log().warn("No BGP peer state received!");
+                return status;
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerState: " + bgpPeerState);
+                }
+                peerStateMsg = resolvePeerState(bgpPeerState.toInt());
             }
             
+            /*
+             *  Do no unnecessary SNMP requests, if peer state is up, return with 
+             *  service available and go away.
+             */
+            if (bgpPeerState.toInt() == BGP_PEER_STATE.ESTABLISHED.value()) {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerState: " + BGP_PEER_STATE.ESTABLISHED.name());
+                }
+                return PollStatus.available();
+            }
+            
+            // Peer state is not established gather some information
             SnmpObjId bgpPeerAdminStateSnmpObject = SnmpObjId.get(BGP_PEER_ADMIN_STATE_OID + "." + bgpPeerIp);
             SnmpValue bgpPeerAdminState = SnmpUtils.get(agentConfig, bgpPeerAdminStateSnmpObject);
-            if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: bgpPeerAdminState: " + bgpPeerAdminState);
+            // Check correct MIB-Support
+            if (bgpPeerAdminState == null)
+            {
+                log().warn("Cannot receive bgpAdminState");
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
+                }
+                adminStateMsg = resolveAdminState(bgpPeerAdminState.toInt());
             }
             
             SnmpObjId bgpPeerRemoteAsSnmpObject = SnmpObjId.get(BGP_PEER_REMOTEAS_OID + "." + bgpPeerIp);
             SnmpValue bgpPeerRemoteAs = SnmpUtils.get(agentConfig, bgpPeerRemoteAsSnmpObject);
-            if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
+            // Check correct MIB-Support
+            if (bgpPeerRemoteAs == null)
+            {
+                log().warn("Cannot receive bgpPeerRemoteAs");
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
+                }
+                remoteAsMsg = bgpPeerRemoteAs.toString();
             }
 
             SnmpObjId bgpPeerLastErrorSnmpObject = SnmpObjId.get(BGP_PEER_LAST_ERROR_OID + "." + bgpPeerIp);
             SnmpValue bgpPeerLastError = SnmpUtils.get(agentConfig, bgpPeerLastErrorSnmpObject);
-            if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: bgpPeerLastError: " + bgpPeerLastError.toHexString() + 
-                    " - decoded: " + resolveBgpErrorCode(bgpPeerLastError.toHexString()));
+            // Check correct MIB-Support
+            if (bgpPeerLastError == null)
+            {
+                log().warn("Cannot receive bgpPeerLastError");
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerLastError: " + bgpPeerLastError);
+                }
+                lastErrorMsg = resolveBgpErrorCode(bgpPeerLastError.toHexString());
             }
             
             SnmpObjId bgpPeerFsmEstTimeSnmpObject = SnmpObjId.get(BGP_PEER_FSM_EST_TIME_OID + "." + bgpPeerIp);
             SnmpValue bgpPeerFsmEstTime = SnmpUtils.get(agentConfig, bgpPeerFsmEstTimeSnmpObject);
-            if (log().isDebugEnabled()) {
-                log().debug("BgpSessionMonitor.poll: bgpPeerFsmEstTime: " + bgpPeerFsmEstTime);
+            // Check correct MIB-Support
+            if (bgpPeerFsmEstTime == null)
+            {
+                log().warn("Cannot receive bgpPeerFsmEstTime");
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: bgpPeerFsmEsmTime: " + bgpPeerFsmEstTime);
+                }
+                estTimeMsg = bgpPeerFsmEstTime.toString();
             }
             
-            if (bgpPeerState == null || bgpPeerState.isNull()) {
-                log().debug("BgpSessionMonitor poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + bgpPeerStateSnmpObject);
-                returnValue = "No result for " + bgpPeerIp;
-                status = PollStatus.unavailable(returnValue);
-            }
-            
-            if (bgpPeerState.toInt() != BGP_STATE_ESTABLISHED) {
-                returnValue = "BGP Session to AS" + bgpPeerRemoteAs + 
-                " via " + bgpPeerIp + " is not established! Last peer " +
-                "error message is " + resolveBgpErrorCode(bgpPeerLastError.toHexString()) + 
-                ". BGP admin state is " + bgpPeerAdminState + ". BGP Session established time: "
-                + bgpPeerFsmEstTime;
-                status = PollStatus.unavailable(returnValue);
-            }
-            
-            if (bgpPeerState.toInt() == BGP_STATE_ESTABLISHED) {
-                status = PollStatus.available();
-            }
-            
+            returnValue = "BGP Session state to AS-" + remoteAsMsg
+                + " via " + bgpPeerIp + " is " + peerStateMsg + "! Last peer "
+                +"error message is " + lastErrorMsg + ". BGP admin state is "
+                + adminStateMsg + ". BGP Session established time: " 
+                + estTimeMsg;
+            // Set service down and return gathered information            
+            status = PollStatus.unavailable(returnValue);
+                
+        } catch (NullPointerException e) {
+            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + ipaddr.getHostAddress(), e);
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
@@ -314,7 +387,14 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         return status;
     }
     
-    public String resolveBgpErrorCode (String bgpCode) {
+    /**
+     * Method to convert BGP Error codes in plain text messages.
+     * 
+     * @param bgpCode
+     *            BGP Hex code
+     * @return Plain text error message
+     */
+    private String resolveBgpErrorCode (String bgpCode) {
         String clearCode = "unknown error";
         HashMap<String, String> codeMap = new HashMap<String, String> ();
         codeMap.put("0100", "Message Header Error");
@@ -356,7 +436,48 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         {
             clearCode = codeMap.get(bgpCode);
         }
-        
         return clearCode;
+    }
+    
+    /**
+     * Method to resolve a given peer state to human readable string. TODO:
+     * Check if there is a better way to resolve the states backward
+     * 
+     * @param sc
+     *            BGP-Peer admin state code
+     * @return Human readable BGP peer admin state
+     */
+    private String resolveAdminState(int sc) {
+        String name = "UNKNOWN";
+        if (BGP_PEER_ADMIN_STATE.STOP.value() == sc)
+            name = BGP_PEER_ADMIN_STATE.STOP.name();
+        if (BGP_PEER_ADMIN_STATE.START.value() == sc)
+            name = BGP_PEER_ADMIN_STATE.START.name();
+        return name;
+    }
+    
+    /**
+     * Method to resolve a given peer state to human readable string. TODO:
+     * Check if there is a better way to resolve the states backward
+     * 
+     * @param sc
+     *            BGP-Peer state code
+     * @return Human readable BGP peer state
+     */
+    private String resolvePeerState(int sc) {
+        String name = "UNKNOWN";
+        if (BGP_PEER_STATE.IDLE.value() == sc)
+            name = BGP_PEER_STATE.IDLE.name();
+        if (BGP_PEER_STATE.CONNECT.value() == sc)
+            name = BGP_PEER_STATE.CONNECT.name();
+        if (BGP_PEER_STATE.ACTIVE.value() == sc)
+            name = BGP_PEER_STATE.ACTIVE.name();
+        if (BGP_PEER_STATE.OPEN_SENT.value() == sc)
+            name = BGP_PEER_STATE.OPEN_SENT.name();
+        if (BGP_PEER_STATE.OPEN_CONFIRM.value() == sc)
+            name = BGP_PEER_STATE.OPEN_CONFIRM.name();
+        if (BGP_PEER_STATE.ESTABLISHED.value() == sc)
+            name = BGP_PEER_STATE.ESTABLISHED.name();
+        return name;
     }
 }
