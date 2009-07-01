@@ -79,6 +79,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
+@Deprecated
 public final class JdbcAlarmWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
     /**
      * The method that inserts the event into the database

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
@@ -60,6 +61,8 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.StringUtils;
 
+@Deprecated
+@Ignore
 public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
     private JdbcAlarmWriter m_jdbcAlarmWriter;
     private JdbcEventWriter m_jdbcEventWriter;
