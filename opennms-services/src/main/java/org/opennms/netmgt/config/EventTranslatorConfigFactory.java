@@ -498,6 +498,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 				parms = new Parms();
 				targetEvent.setParms(parms);
 			}
+			
+			if (value == null) {
+			    log().debug("Value of parameter is null setting to blank");
+			    value="";
+			}
 
 			for (Parm parm : parms.getParmCollection()) {
 				if (parm.getParmName().equals(getAttributeName())) {
