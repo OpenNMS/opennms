@@ -5,5 +5,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    
+    <changeSet author="dhustace" id="1.7.5-addAlarmFkConstraint">
+            <addForeignKeyConstraint constraintName="fk_alarms_nodeid" onDelete="CASCADE"
+            baseTableName="alarms" baseColumnNames="nodeid"
+            referencedTableName="node" referencedColumnNames="nodeid" />
+            
+            <rollback>
+              <dropForeignKeyConstraint baseTableName="alarms" constraintName="alarm_nodeid"/>
+            </rollback>
+    </changeSet>
 
 </databaseChangeLog>

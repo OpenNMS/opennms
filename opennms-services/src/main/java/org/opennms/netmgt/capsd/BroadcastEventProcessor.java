@@ -747,6 +747,11 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<Event> eventsToSend = new LinkedList<Event>();
         eventsToSend.addAll(markInterfacesAndServicesDeleted(dbConn, source, nodeid, txNo));
         eventsToSend.addAll(markNodeDeleted(dbConn, source, nodeid, txNo));
+        
+        //Note: left this call to deleteAlarmsForNode because I wanted to indicate that alarms are now 
+        //deleted by the DB with a delete cascade fk constraint on the alarm table
+        //when the node is actually deleted.  We have to leave this in here for Capsd because
+        //it only flags the node as deleted whereas the provisioner actually deletes the node.
         deleteAlarmsForNode(dbConn, nodeid);
         return eventsToSend;
     }
