@@ -221,10 +221,6 @@ public class DiskUsageDetector extends SnmpDetector {
         return matches;
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     public void setMatchType(String matchType) {
         m_matchType = matchType;
     }

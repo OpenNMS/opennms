@@ -98,10 +98,6 @@ public class BgpSessionDetector extends SnmpDetector {
         return false;
     }
 
-    public static Category log() {
-        return ThreadCategory.getInstance(BgpSessionPlugin.class);
-    }
-
     public void setBgpPeerIp(String bgpPeerIp) {
         m_bgpPeerIp = bgpPeerIp;
     }
