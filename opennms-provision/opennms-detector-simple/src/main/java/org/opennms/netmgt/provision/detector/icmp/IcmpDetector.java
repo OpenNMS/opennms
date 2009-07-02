@@ -30,6 +30,7 @@
  */
 package org.opennms.netmgt.provision.detector.icmp;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.ping.Pinger;
@@ -53,20 +54,65 @@ public class IcmpDetector extends AbstractDetector {
     }
     
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.delete(0, sb.length());
+        sb.append("isServiceDetected: Testing ICMP based service for address: ");
+        sb.append(address);
+        sb.append("...");
+        log().info(sb.toString());
         
         try {
             for(int i = 0; i < getRetries(); i++) {
                 Long retval = Pinger.ping(address, getTimeout(), getRetries());
                 
-                System.out.println("the long is: " + retval);
+                sb.delete(0, sb.length());
+                sb.append("isServiceDetected: Response time for address: ");
+                sb.append(address);
+                sb.append(" is: ");
+                sb.append(retval);
+                sb.append('.');
+                log().debug(retval);
+                
                 if (retval != null) {
+                    sb.delete(0, sb.length());
+                    sb.append("isServiceDetected: ICMP based service for address: ");
+                    sb.append(address);
+                    sb.append(" is detected: ");
+                    sb.append(true);
+                    sb.append('.');
+                    log().debug(sb.toString());
                     return true;
-                } 
+                }
             }
             
-        } catch (Exception e) {
-            e.printStackTrace();
-            detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
+//        } catch (Exception e) {
+//            sb.delete(0, sb.length());
+//            sb.append("isServiceDetected: ICMP based protocol for address: ");
+//            sb.append(address);
+//            sb.append(" is detected: ");
+//            sb.append(false);
+//            sb.append('.');
+//            log().debug(sb.toString());
+//            detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
+        } catch (InterruptedException e) {
+          sb.delete(0, sb.length());
+          sb.append("isServiceDetected: ICMP based protocol for address: ");
+          sb.append(address);
+          sb.append(" is detected: ");
+          sb.append(false);
+          sb.append(". Received an Interrupted exception.");
+          log().debug(sb.toString());
+        } catch (IOException e) {
+            sb.delete(0, sb.length());
+            sb.append("isServiceDetected: ICMP based protocol for address: ");
+            sb.append(address);
+            sb.append(" is detected: ");
+            sb.append(false);
+            sb.append(". Received an IO Exception.");
+            log().debug(sb.toString());
+        } finally {
+            
         }
         
         return false;

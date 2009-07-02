@@ -2,6 +2,8 @@ package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
@@ -75,6 +77,10 @@ public abstract class AbstractDetector implements SyncServiceDetector {
 
     public String getServiceName() {
         return m_serviceName;
+    }
+    
+    protected Logger log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

@@ -157,10 +157,6 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         return retString;
     }
 
-    public static Category log() {
-        return ThreadCategory.getInstance(Win32ServiceDetector.class);
-    }
-
     public void setServiceNameOid(String serviceNameOid) {
         m_serviceNameOid = serviceNameOid;
     }
