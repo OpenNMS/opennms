@@ -57,40 +57,45 @@
 
 	XssRequestWrapper req = new XssRequestWrapper(request);
 	Event[] events = (Event[])req.getAttribute("events");
-	Assert.isTrue(events.length == 1, "event detail filter should match only one event");
-
-    Event event = events[0];
-
-    String action = null;
+	Event event = null;
+	String action = null;
     String buttonName=null;
-    
-    if (event.getAcknowledgeTime()==null)
-    {
-        buttonName = "Acknowledge";
-        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    }
-    else
-    {
-        buttonName = "Unacknowledge";
-        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
-    }
-    
-    Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
-    
     HashMap<String, String> parms = new HashMap<String, String>();
-    if (event.getParms() != null) {
-		String[] parmStrings = event.getParms().split(";");
-		for (String parmString : parmStrings) {
-			Matcher m = p.matcher(parmString);
-			if (!m.matches()) {
-				log("Could not match event parameter string element '"
-					+ parmString + "' in event ID " + event.getId());
-				continue;
+	if ( events.length == 0 ) {
+	    
+	} else {
+		Assert.isTrue(events.length == 1, "event detail filter should match only one event: event found:" + events.length);
+
+    	event = events[0];
+    
+	    if (event.getAcknowledgeTime()==null)
+	    {
+	        buttonName = "Acknowledge";
+	        action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+	    }
+	    else
+	    {
+	        buttonName = "Unacknowledge";
+	        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+	    }
+
+		Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
+	    
+	    if (event.getParms() != null) {
+			String[] parmStrings = event.getParms().split(";");
+			for (String parmString : parmStrings) {
+				Matcher m = p.matcher(parmString);
+				if (!m.matches()) {
+					log("Could not match event parameter string element '"
+						+ parmString + "' in event ID " + event.getId());
+					continue;
+				}
+				
+				parms.put(m.group(1), m.group(2));
 			}
-			
-			parms.put(m.group(1), m.group(2));
-		}
-    }
+	    }
+	}    
+
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -100,7 +105,9 @@
   <jsp:param name="breadcrumb" value="<a href='event/index.jsp'>Events</a>" />
   <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
-
+	 <% if (event == null ) { %>
+      <h3>Event Not Found in Database</h3>
+	<% } else { %>
       <h3>Event <%=event.getId()%></h3>
 
       <table>
@@ -214,5 +221,5 @@
           <input type="submit" value="<%=buttonName%>"/>
         </form>
       <% } %>
-      
+   <% } %>   
 <jsp:include page="/includes/footer.jsp" flush="false" />
