@@ -61,9 +61,7 @@
 	String action = null;
     String buttonName=null;
     HashMap<String, String> parms = new HashMap<String, String>();
-	if ( events.length == 0 ) {
-	    
-	} else {
+	if ( events.length > 0 ) {
 		Assert.isTrue(events.length == 1, "event detail filter should match only one event: event found:" + events.length);
 
     	event = events[0];
