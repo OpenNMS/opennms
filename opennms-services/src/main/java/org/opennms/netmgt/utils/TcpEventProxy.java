@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -159,8 +160,9 @@ public final class TcpEventProxy implements EventProxy {
             m_sock = new Socket();
             m_sock.connect(m_address, m_timeout);
             m_sock.setSoTimeout(500);
-
-            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()));
+// Removed for fix
+//            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()));
+            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.defaultCharset());
             m_input = m_sock.getInputStream();
             m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
                 public void run() {
