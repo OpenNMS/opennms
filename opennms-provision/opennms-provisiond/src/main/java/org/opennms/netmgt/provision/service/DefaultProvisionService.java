@@ -47,6 +47,7 @@ import org.apache.log4j.Category;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -107,6 +108,17 @@ public class DefaultProvisionService implements ProvisionService {
             }
             monSvc.setServiceType(dbType);
         }
+    }
+
+    @Autowired
+    private PollerConfig m_pollerConfig;
+    
+    public PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
     }
 
     @Autowired
@@ -240,56 +252,48 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
-    public OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName) {
-        OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
-        assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
+    private OnmsMonitoredService addMonitoredService(OnmsIpInterface iface, String svcName) {
         OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
+        
         if (svcType == null) {
             svcType = new OnmsServiceType(svcName);
             m_serviceTypeDao.save(svcType);
         }
         
+
         OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
+
         if (svc != null) {
+            svc.setSource(OnmsMonitoredService.SOURCE_DETECTOR);
+            if (getPollerConfig().isPolled(iface.getIpAddress(), svcName)) svc.setStatus(OnmsMonitoredService.STATUS_ACTIVE);
+            else svc.setStatus(OnmsMonitoredService.STATUS_NOT_POLLED);
             m_monitoredServiceDao.saveOrUpdate(svc);
         } else {
-        
+
             // this adds the service to the interface as a side effect
             svc = new OnmsMonitoredService(iface, svcType);
-            svc.setStatus("A");
+            svc.setSource(OnmsMonitoredService.SOURCE_DETECTOR);
+            if (getPollerConfig().isPolled(iface.getIpAddress(), svcName)) svc.setStatus(OnmsMonitoredService.STATUS_ACTIVE);
+            else svc.setStatus(OnmsMonitoredService.STATUS_NOT_POLLED);
             m_ipInterfaceDao.saveOrUpdate(iface);
             AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
             svc.visit(visitor);
         }
-
         
         return svc;
+        
+    }
+    
+    public OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName) {
+        OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
+        assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
+        return addMonitoredService(iface, svcName);
     }
 
     public OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String svcName) {
         OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
-        OnmsServiceType svcType = m_serviceTypeDao.findByName(svcName);
-        if (svcType == null) {
-            svcType = new OnmsServiceType(svcName);
-            m_serviceTypeDao.save(svcType);
-        }
-        
-        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
-        if (svc != null) {
-            m_monitoredServiceDao.saveOrUpdate(svc);
-        } else {
-        
-            // this adds the service to the interface as a side effect
-            svc = new OnmsMonitoredService(iface, svcType);
-            svc.setStatus("A");
-            m_ipInterfaceDao.saveOrUpdate(iface);
-            AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
-            svc.visit(visitor);
-        }
-
-        
-        return svc;
+        return addMonitoredService(iface, svcName);
     }
 
     public void clearCache() {

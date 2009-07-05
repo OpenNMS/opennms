@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -43,6 +44,17 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     private CategoryDao m_categoryDao;
     private NodeDao m_nodeDao;
     
+    @Autowired
+    private PollerConfig m_pollerConfig;
+    
+    public PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
+    }
+
     @Autowired
     private DistPollerDao m_distPollerDao;
     
@@ -159,7 +171,9 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
 
         for(String svcType : new String[] { "ICMP", "SNMP" }) {
             OnmsMonitoredService svc = new OnmsMonitoredService(iface, getServiceType(svcType));
-            svc.setStatus("A");
+            svc.setSource(OnmsMonitoredService.SOURCE_DETECTOR);
+            if (getPollerConfig().isPolled(iface.getIpAddress(), svcType)) svc.setStatus(OnmsMonitoredService.STATUS_ACTIVE);
+            else svc.setStatus(OnmsMonitoredService.STATUS_NOT_POLLED);
             iface.getMonitoredServices().add(svc);
         }
         
