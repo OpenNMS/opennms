@@ -9,18 +9,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
-import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -35,18 +24,21 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 public class DefaultNodeProvisionService implements NodeProvisionService {
 
     private EventForwarder m_eventForwarder;
+    
+    @Autowired
     private CategoryDao m_categoryDao;
-    private NodeDao m_nodeDao;
     
     @Autowired
     private PollerConfig m_pollerConfig;
-    
+
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
+
     public PollerConfig getPollerConfig() {
         return m_pollerConfig;
     }
@@ -55,12 +47,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_pollerConfig = pollerConfig;
     }
 
-    @Autowired
-    private DistPollerDao m_distPollerDao;
-    
-    private ServiceTypeDao m_serviceTypeDao;
     private ForeignSourceRepository m_foreignSourceRepository;
-    private SnmpPeerFactory m_snmpPeerFactory;
 
     public ModelAndView getModelAndView(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
@@ -140,95 +127,20 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         } catch (ForeignSourceRepositoryException e) {
             throw new RuntimeException("unable to retrieve foreign source '" + foreignSource + "'", e);
         }
-        
-        log().debug("creating database node");
-        // Create the basic node
-        
-        OnmsDistPoller dp = m_distPollerDao.get("localhost");
-        OnmsNode node = new OnmsNode(dp);
-        node.setType("A");
-        node.setForeignSource(foreignSource);
-        node.setForeignId(foreignId);
-        node.setLabel(nodeLabel);
-        node.setLabelSource("U");
 
-        node.getAssetRecord().setBuilding(foreignSource);
-        node.getAssetRecord().setAutoenable(autoEnable);
-        node.getAssetRecord().setConnection(accessMethod);
-        node.getAssetRecord().setEnable(enablePassword);
-        node.getAssetRecord().setUsername(deviceUsername);
-        node.getAssetRecord().setPassword(devicePassword);
-        
-        for(String category : categories) {
-            node.addCategory(getCategory(category));
-        }
-        
-        OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
-        iface.setIsManaged("M");
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        
-        node.addIpInterface(iface);
-
-        for(String svcType : new String[] { "ICMP", "SNMP" }) {
-            OnmsMonitoredService svc = new OnmsMonitoredService(iface, getServiceType(svcType));
-            svc.setSource(OnmsMonitoredService.SOURCE_DETECTOR);
-            if (getPollerConfig().isPolled(iface.getIpAddress(), svcType)) svc.setStatus(OnmsMonitoredService.STATUS_ACTIVE);
-            else svc.setStatus(OnmsMonitoredService.STATUS_NOT_POLLED);
-            iface.getMonitoredServices().add(svc);
-        }
-        
-        log().debug("saving database node");
-        m_nodeDao.save(node);
-        
-        OnmsNode savedNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
-        
-        Assert.notNull(savedNode, "Failed to save node to database");
-        
-        log().debug("sending events for new node ID " + savedNode.getId());
-        savedNode.visit(new AddEventVisitor(m_eventForwarder) {
-
-            /* (non-Javadoc)
-             * @see org.opennms.netmgt.model.events.AddEventVisitor#createNodeAddedEvent(org.opennms.netmgt.model.OnmsNode)
-             */
-            @Override
-            protected Event createNodeAddedEvent(OnmsNode node) {
-                Event e = super.createNodeAddedEvent(node);
-                return new EventBuilder(e).addParam(EventConstants.PARM_USER, user).getEvent();
-            }
-        });
+        Event e = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "NodeProvisionService")
+            .addParam("url", m_foreignSourceRepository.getRequisitionURL(foreignSource).toString())
+            .getEvent();
+        m_eventForwarder.sendNow(e);
 
         log().warn("about to return (" + System.currentTimeMillis() + ")");
         return true;
     }
     
-    private OnmsServiceType getServiceType(String string) {
-        return m_serviceTypeDao.findByName(string);
-    }
-
-    private OnmsCategory getCategory(String string) {
-        return m_categoryDao.findByName(string);
-    }
-
     public void setForeignSourceRepository(ForeignSourceRepository repository) {
         m_foreignSourceRepository = repository;
     }
 
-    public void setCategoryDao(CategoryDao dao) {
-        m_categoryDao = dao;
-    }
-    public void setSnmpPeerFactory(SnmpPeerFactory pf) {
-        m_snmpPeerFactory = pf;
-    }
-    
-
-    public void setNodeDao(NodeDao dao) {
-        m_nodeDao = dao;
-    }
-
-    public void setServiceTypeDao(ServiceTypeDao dao) {
-        m_serviceTypeDao = dao;
-    }
-    
     public void setEventProxy(final EventProxy proxy) throws Exception {
         EventForwarder proxyForwarder = new EventForwarder() {
             public void sendNow(Event event) {
