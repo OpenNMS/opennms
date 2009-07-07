@@ -87,7 +87,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
     }
     
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
-        String strippedLbl = AlphaNumeric.parseAndReplaceExcept(childResource.getLabel(), '\'', "._-!*");
+        String strippedLbl = AlphaNumeric.parseAndReplaceExcept(childResource.getLabel(), '\'', "._-!*@#$%^&();:,/?");
         return new OnmsResource(childResource.getName(), strippedLbl, childResource.getResourceType(), childResource.getAttributes());
     }
 
