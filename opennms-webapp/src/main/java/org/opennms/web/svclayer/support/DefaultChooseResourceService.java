@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -76,12 +77,18 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            resourceTypeMap.get(childResource.getResourceType()).add(childResource);
+            
+            resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }
         
         model.setResourceTypes(resourceTypeMap);
 
         return model;
+    }
+    
+    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+        String strippedLbl = AlphaNumeric.parseAndReplaceExcept(childResource.getLabel(), '\'', "._-!*");
+        return new OnmsResource(childResource.getName(), strippedLbl, childResource.getResourceType(), childResource.getAttributes());
     }
 
     public void afterPropertiesSet() {
