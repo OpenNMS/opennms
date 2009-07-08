@@ -1,5 +1,6 @@
 /*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Copyright (C) 2009 Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * Copyright (C) 2009 The OpenNMS Group, Inc.

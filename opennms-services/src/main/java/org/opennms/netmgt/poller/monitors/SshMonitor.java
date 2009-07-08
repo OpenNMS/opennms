@@ -1,8 +1,10 @@
 
 //This file is part of the OpenNMS(R) Application.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
 /*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Copyright (C) 2004-2009 The OpenNMS Group, Inc.  All rights reserved.
  *

@@ -1,5 +1,6 @@
 /*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Copyright (C) 2007-2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -35,6 +36,7 @@ package org.opennms.netmgt.config;
 
 //
 //  This file is part of the OpenNMS(R) Application.
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 //  OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 //  OpenNMS(R) is a derivative work, containing both original code, included code and modified
