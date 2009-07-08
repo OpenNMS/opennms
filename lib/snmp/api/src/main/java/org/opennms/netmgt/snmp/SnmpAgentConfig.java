@@ -42,9 +42,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 
 /**
- * @author (various previous authors not documented)
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
  */
 @XmlRootElement(name="snmpAgentConfig")
 public class SnmpAgentConfig extends SnmpConfiguration {

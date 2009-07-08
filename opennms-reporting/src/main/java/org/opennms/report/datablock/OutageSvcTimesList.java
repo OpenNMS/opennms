@@ -46,9 +46,7 @@ import java.util.List;
  *  a window is calculated, the same calculations are not done on the node multiple
  *  times
  * 
- *  @author 	&lt;A HREF=&quot;mailto:jacinta@oculan.com&quot;&gt;Jacinta Remedios&lt;/A&gt;
- *  @author	&lt;A HREF=&quot;http://www.oculan.com&quot;&gt;oculan.org&lt;/A&gt;
- * 
+ *  @author <a href="mailto:jacinta@oculan.com">Jacinta Remedios</a>
  * 
  */
 public class OutageSvcTimesList extends ArrayList<Outage> {

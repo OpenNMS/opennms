@@ -52,10 +52,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * the failed response.
  * </P>
  * 
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HERF="http://www.opennms.org">OpenNMS </A>
- * 
- * @version 1.1.1.1
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * 
  */
 class SnmpRequest implements Runnable {

@@ -96,8 +96,7 @@ import org.opennms.netmgt.config.EventsArchiverConfigFactory;
  *  for the archive file with the defaults for this being to roll when the
  *  size is 100KB with the number of backups set to 4.
  * 
- *  @author &lt;A HREF=&quot;mailto:sowmya@opennms.org&quot;&gt;Sowmya Nataraj&lt;/A&gt;
- *  @author &lt;A HREF=&quot;http://www.opennms.org&quot;&gt;OpenNMS&lt;/A&gt;
+ *  @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * 
  */
 public class EventsArchiver {
