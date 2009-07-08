@@ -41,10 +41,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -87,8 +87,10 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
     }
     
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
-        String strippedLbl = AlphaNumeric.parseAndReplaceExcept(childResource.getLabel(), ' ', "._-!*@#$%^&();:,/?`~><=+");
-        return new OnmsResource(childResource.getName(), strippedLbl, childResource.getResourceType(), childResource.getAttributes());
+        
+        String lbl  = Util.convertToJsSafeString(childResource.getLabel());
+            
+        return new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
     }
 
     public void afterPropertiesSet() {

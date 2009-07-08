@@ -575,5 +575,18 @@ public abstract class Util extends Object {
     public static final String formatDateToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
+    
+    public static String convertToJsSafeString(String str){
+        
+        String retStr  = str
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\t", "\\t")
+        .replace("\r", "\\r")
+        .replace("\n", "\\n")
+        .replace("\b", "\\b");
+        
+        return retStr;
+    }
 
 }
