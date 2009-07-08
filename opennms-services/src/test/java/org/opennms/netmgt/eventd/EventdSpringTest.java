@@ -1,27 +1,7 @@
-/*
+/*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
- *
- * 2008 Mar 10: Need to autowire by name now that we have two EventIpcManagers
- *              (the real one and the proxy). - dj@opennms.org
- * 2008 Feb 16: Move testSendEventWithService to JdbcEventWriterTest and make
- *              this test case just about starting up the daemon with default
- *              bean wiring and configs so we can catch problems like bug #2273
- *              in the future. - dj@opennms.org
- * 2008 Feb 10: Fix failing test testSendEventWithService. - dj@opennms.org
- * 2008 Feb 05: Load up a smaller EventConfDao and run one more test. - dj@opennms.org
- * 2008 Jan 27: Enable the service test and make it do something for real. - dj@opennms.org
- * 2008 Jan 26: Created this file. - dj@opennms.org
- *
- * Copyright (C) 2008 Daniel J. Gregor, Jr..  All rights reserved.
+ * Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +15,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc.:
+ *
+ *      51 Franklin Street
+ *      5th Floor
+ *      Boston, MA 02110-1301
+ *      USA
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
+ *
+ *      OpenNMS Licensing <license@opennms.org>
  *      http://www.opennms.org/
  *      http://www.opennms.com/
- */
+ *
+ *******************************************************************************/
+
 package org.opennms.netmgt.eventd;
 
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
