@@ -1,16 +1,5 @@
-/*
+/*******************************************************************************
  * This file is part of the OpenNMS(R) Application.
- *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
- * OpenNMS(R) is a derivative work, containing both original code, included code and modified
- * code that was published under the GNU General Public License. Copyrights for modified
- * and included code are below.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
- * 
- * Created August 1, 2008
  *
  * Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -26,13 +15,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * Foundation, Inc.:
+ *
+ *      51 Franklin Street
+ *      5th Floor
+ *      Boston, MA 02110-1301
+ *      USA
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
+ *
+ *      OpenNMS Licensing <license@opennms.org>
  *      http://www.opennms.org/
  *      http://www.opennms.com/
- */
+ *
+ *******************************************************************************/
+
 package org.opennms.netmgt.tl1d;
 
 /**
