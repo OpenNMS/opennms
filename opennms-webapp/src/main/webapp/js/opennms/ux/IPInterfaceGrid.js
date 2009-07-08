@@ -35,7 +35,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			dataIndex:'ifIndex',
 			width:75,
 			sortable: true,
-			searchable: true,
+			searchable: false,
 			align:'left',
 			hidden:true
 		},{

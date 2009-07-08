@@ -48,7 +48,13 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 				if (!firstColumn) {
 					firstColumn = col.dataIndex;
 				}
-				comboData.push([ col.dataIndex, col.header ]);
+				
+				if(col.type){
+					comboData.push([ col.dataIndex, col.header ]);
+				}else{
+					comboData.push([ col.dataIndex, col.header ]);
+				}
+				
 			}
 		}
 		
@@ -136,9 +142,13 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
    search:function(event){
 	   var dataIndex = this.searchColumn.getValue();
 	   var searchVal = this.searchText.getValue();
+	   var type = this.searchColumn.getRawValue();
 	   var searchParams = {};
 	   searchParams[dataIndex] = searchVal;
-	   searchParams.comparator = "contains";
+	   
+	   if(dataIndex != "ifIndex"){
+		   searchParams.comparator = "contains";   
+	   }
 	   
 	   if(searchVal != ""){
 	   		Ext.getCmp(this.searchBtnId).setIconClass('search-criteria-star');
