@@ -44,6 +44,7 @@ import java.util.Map;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -76,12 +77,20 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            resourceTypeMap.get(childResource.getResourceType()).add(childResource);
+            
+            resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }
         
         model.setResourceTypes(resourceTypeMap);
 
         return model;
+    }
+    
+    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+        
+        String lbl  = Util.convertToJsSafeString(childResource.getLabel());
+            
+        return new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
     }
 
     public void afterPropertiesSet() {
