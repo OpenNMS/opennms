@@ -90,7 +90,7 @@ public class AclUtils {
         private Set<Integer> m_nodeIds;
         
         public SetBasedNodeAccessChecker(Collection<Integer> nodeIds) {
-            m_nodeIds = nodeIds == null ? Collections.<Integer>emptySet() : new HashSet<Integer>(m_nodeIds);
+            m_nodeIds = nodeIds == null ? Collections.<Integer>emptySet() : new HashSet<Integer>(nodeIds);
         }
         
         public boolean isNodeAccessible(int nodeId) {
