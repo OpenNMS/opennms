@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -24,6 +25,10 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterfaceList;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +49,9 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+    
+    @Autowired
+    private EventProxy m_eventProxy;
     
     @Context 
     UriInfo m_uriInfo;
@@ -142,8 +150,26 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                 wrapper.setPropertyValue(key, value);
             }
         }
+        
+        
+        Event e = null;
+        if (params.containsKey("collect")) {
+            // we've updated the collection flag so we need to send an event to redo collection
+            EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "OpenNMS.Webapp");
+            bldr.setNode(node);
+            bldr.setInterface(node.getPrimaryInterface().getIpAddress());
+            e = bldr.getEvent();
+        }
         log().debug("updateSnmpInterface: snmp interface " + snmpInterface + " updated");
         m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
+        
+        if (e != null) {
+            try {
+                m_eventProxy.send(e);
+            } catch (EventProxyException ex) {
+                return throwException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+            }
+        }
         return Response.ok().build();
     }
 
