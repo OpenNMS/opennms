@@ -31,7 +31,19 @@
  */
 package org.opennms.web;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.ServletContext;
+
+import org.opennms.netmgt.dao.NodeDao;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.util.AuthorityUtils;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+
 
 /**
  * AclUtils
@@ -44,5 +56,49 @@ public class AclUtils {
         return System.getProperty("org.opennms.web.aclsEnabled", "false").equalsIgnoreCase("true") 
             && !AuthorityUtils.userHasAuthority("ROLE_ADMIN");
     }
+    
+    public static interface NodeAccessChecker {
+        public boolean isNodeAccessible(int nodeId);
+    }
+    
+    public static NodeAccessChecker getNodeAccessChecker(ServletContext sc) {
+        
+        if (!shouldFilter()) return new NonFilteringNodeAccessChecker();
+        
+        ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
+        
+        NodeDao dao = (NodeDao) ctx.getBean("nodeDao", NodeDao.class);
+        
+        return new SetBasedNodeAccessChecker(dao.getNodeIds());
+        
+    }
+    
+    /**
+     * NonFilteringNodeAccessChecker
+     *
+     * @author brozow
+     */
+    private static class NonFilteringNodeAccessChecker implements NodeAccessChecker {
+
+        public boolean isNodeAccessible(int nodeId) {
+            return true;
+        }
+
+    }
+    
+    private static class SetBasedNodeAccessChecker implements NodeAccessChecker {
+        private Set<Integer> m_nodeIds;
+        
+        public SetBasedNodeAccessChecker(Collection<Integer> nodeIds) {
+            m_nodeIds = nodeIds == null ? Collections.<Integer>emptySet() : new HashSet<Integer>(m_nodeIds);
+        }
+        
+        public boolean isNodeAccessible(int nodeId) {
+            return m_nodeIds.contains(nodeId);
+        }
+            
+    }
+
+
 
 }
