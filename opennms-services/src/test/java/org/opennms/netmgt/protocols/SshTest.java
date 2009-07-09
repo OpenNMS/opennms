@@ -47,7 +47,7 @@ import junit.framework.TestCase;
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public class SshTest extends TestCase {
     private static final String GOOD_HOST = "www.opennms.org";

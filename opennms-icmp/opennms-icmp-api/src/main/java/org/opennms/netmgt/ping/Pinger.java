@@ -116,7 +116,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  */
 
 /**
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Pinger {

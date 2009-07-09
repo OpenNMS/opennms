@@ -47,7 +47,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * This class is used to encapsulate a ping request. A request consist of
  * the pingable address and a signaled state.
  * 
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 final public class PingRequest implements Delayed {

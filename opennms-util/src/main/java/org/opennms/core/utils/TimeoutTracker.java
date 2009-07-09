@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Helper class used for tracking retires and timeouts for ServiceMonitors.
  * 
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */

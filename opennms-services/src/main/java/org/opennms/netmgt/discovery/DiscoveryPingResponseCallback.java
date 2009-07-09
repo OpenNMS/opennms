@@ -46,7 +46,7 @@ import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 
 public class DiscoveryPingResponseCallback implements PingResponseCallback {

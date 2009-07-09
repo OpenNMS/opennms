@@ -42,7 +42,7 @@ import org.opennms.core.utils.CollectionMath;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org>Benjamin Reed</a>
  */
 public class PingTest extends TestCase {
     private InetAddress m_goodHost = null;

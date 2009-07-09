@@ -42,7 +42,7 @@ import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
  * 
- * @author <a href="ranger@opennms.org">Ben Reed</a>
+ * @author <a href="ranger@opennms.org">Benjamin Reed</a>
  */
 public class ParallelPingResponseCallback implements PingResponseCallback {
     BarrierSignaler bs;

@@ -54,7 +54,7 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  */
 public class AlarmFeed extends AbstractFeed {
