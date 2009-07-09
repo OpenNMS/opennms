@@ -75,6 +75,7 @@
 %>
 
 <%
+
    HttpServletRequest req = new XssRequestWrapper(request);
    String categoryName = req.getParameter("category");
 
@@ -87,6 +88,8 @@
     if (category == null) {
         throw new CategoryNotFoundException(categoryName);
     }
+    
+    AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 
     //put the nodes in a tree map to sort by name
     TreeMap nodeMap = new TreeMap();    
@@ -94,16 +97,19 @@
     
     while (nodeEnum.hasMoreElements()) {
         Node node = (Node) nodeEnum.nextElement();
+        int nodeId = (int)node.getNodeid();
         String nodeLabel =
-		NetworkElementFactory.getNodeLabel((int)node.getNodeid());
+		NetworkElementFactory.getNodeLabel(nodeId);
         // nodeMap.put( nodeLabel, node );
 
-        if (nodeLabel != null && !nodeMap.containsKey(nodeLabel)) {
-            nodeMap.put(nodeLabel, node);
-        } else if (nodeLabel != null) {
-            nodeMap.put(nodeLabel+" (nodeid="+node.getNodeid()+")", node);
-        } else {
-           nodeMap.put("nodeId=" + node.getNodeid(), node);
+        if (accessChecker.isNodeAccessible(nodeId)) {
+            if (nodeLabel != null && !nodeMap.containsKey(nodeLabel)) {
+                nodeMap.put(nodeLabel, node);
+            } else if (nodeLabel != null) {
+                nodeMap.put(nodeLabel+" (nodeid="+node.getNodeid()+")", node);
+            } else {
+                nodeMap.put("nodeId=" + node.getNodeid(), node);
+            }
         }
     }
     
@@ -111,7 +117,9 @@
     Iterator nameIterator = keySet.iterator();
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+
+<%@page import="org.opennms.web.AclUtils"%>
+<%@page import="org.opennms.web.AclUtils.NodeAccessChecker"%><jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="headTitle" value="<%=category.getName()%>" />
   <jsp:param name="headTitle" value="Category" />
@@ -153,7 +161,9 @@
       <% if( category.getComment() != null ) { %>      
         <p><%=Util.htmlify(category.getComment())%></p>
       <% } %>
-
+      <% if( AclUtils.shouldFilter() ) { %>
+        <p style="color: red"> This list has been filtered to accessible nodes only based on your user group. </p>
+      <% } %>
       <!-- Last updated <%=Util.htmlify(category.getLastUpdated().toString())%> -->
 
       <table>
