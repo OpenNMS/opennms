@@ -10,8 +10,10 @@
   <name>OpenNMS SMS API</name>
   <dependencies>
     <dependency>
-      <groupId>org.smslib</groupId>
+      <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
+      <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
+      <version>3.4.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
