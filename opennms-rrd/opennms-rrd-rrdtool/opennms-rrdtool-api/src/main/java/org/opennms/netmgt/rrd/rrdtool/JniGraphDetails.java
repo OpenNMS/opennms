@@ -40,7 +40,7 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
 
 /**
  * 
- * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class JniGraphDetails implements RrdGraphDetails {
 
