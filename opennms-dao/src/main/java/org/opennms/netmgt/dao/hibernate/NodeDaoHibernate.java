@@ -216,7 +216,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     }
 
     public Collection<Integer> getNodeIds() {
-        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n and n.type != 'D'");
+        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }
     
     
