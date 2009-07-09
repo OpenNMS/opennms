@@ -37,7 +37,6 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.MibObject;
@@ -51,21 +50,10 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * The SNMPCollectorEntry class is designed to hold all SNMP collected data
  * pertaining to a particular interface.
  * </P>
- * 
- * <P>
- * An instance of this class is created by calling the constructor and passing a
- * list of SnmpVarBind objects from an SNMP PDU response. This class extends
- * java.util.TreeMap which is used to store each of the collected data points
- * indexed by object identifier.
- * </P>
- * 
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  */
 public final class SNMPCollectorEntry extends AbstractSnmpStore {
     /**
-     * The list of MIBObjects that will used for associating the the data within
-     * the map.
+     * The list of MIBObjects that will used for associating the the data within the map.
      */
     private Collection<SnmpAttributeType> m_attrList;
     private SnmpCollectionSet m_collectionSet;

@@ -31,7 +31,6 @@
  *
  *******************************************************************************/
 
-
 package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
@@ -49,12 +48,6 @@ import java.net.InetAddress;
  * This object is used by the IpAddrTable to hold information single entries in
  * the table. See the IpAddrTable documentation form more information.
  * </P>
- * 
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
  * 
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>

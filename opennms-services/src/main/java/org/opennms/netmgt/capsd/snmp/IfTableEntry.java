@@ -58,11 +58,6 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * respective object identifiers see RFC1213 from the IETF.
  * </P>
  * 
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public final class IfTableEntry extends SnmpTableEntry {
@@ -168,9 +163,7 @@ public final class IfTableEntry extends SnmpTableEntry {
      * interface table in the MIB forest.
      * </P>
      */
-    public static final String TABLE_OID = ".1.3.6.1.2.1.2.2.1"; // start of
-                                                                    // table
-                                                                    // (GETNEXT)
+    public static final String TABLE_OID = ".1.3.6.1.2.1.2.2.1"; // start of table (GETNEXT)
 
     /**
      * <P>

@@ -31,7 +31,6 @@
  *
  *******************************************************************************/
 
-
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
@@ -39,31 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 
-/**
- * The SnmpIfCollector class is responsible for performing the actual SNMP data
- * collection for a node over a specified network interface. The SnmpIfCollector
- * implements the SnmpHandler class in order to receive notifications when an
- * SNMP reply is received or error occurs.
- * 
- * The SnmpIfCollector is provided a list of MIB objects to collect and an
- * interface over which to collect the data. Data collection can be via SNMPv1
- * GetNext requests or SNMPv2 GetBulk requests depending upon the parms used to
- * construct the collector.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
- * @version 1.1.1.1
- * 
- */
 public class SnmpIfCollector extends AggregateTracker {
     private Map<SnmpInstId, SNMPCollectorEntry> m_results = new TreeMap<SnmpInstId, SNMPCollectorEntry>();
     

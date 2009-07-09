@@ -35,7 +35,6 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
-
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -52,11 +51,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
  *
  * @see CdpCacheTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>

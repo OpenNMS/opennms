@@ -35,51 +35,13 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
-/**
- * <P>
- * The IfTable uses a SnmpSession to collect the entries in the remote agent's
- * interface table. It implements the SnmpHandler to receive notifications and
- * handle errors associated with the data collection. Data is collected using a
- * series of GETNEXT PDU request to walk multiple parts of the interface table
- * at once. The number of SNMP packets should not exceed the number of interface +
- * 1, assuming no lost packets or error conditions occur.
- * </P>
- * 
- * <p>
- * <em>Addition by Jon Whetzel</em>
- * </p>
- * <p>
- * IfTable has an extra class variable for the SNMP version setting. If this is
- * set for SNMPv2, then a GETBULK command will be used for retrieving the
- * necessary data. Otherwise, the method will resort to its previous
- * implementation with GETNEXT commands.
- * </p>
- * 
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
- * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- */
 public final class IfTable extends SnmpTable<IfTableEntry> {
     
-
-    /**
-     * <P>
-     * Constructs an IfTable object that is used to collect the interface
-     * elements from the remote agent. Once all the interfaces are collected, or
-     * there is an error in the collection the signaler object is <EM>notified
-     * </EM> to inform other threads.
-     * </P>
-     * @param address TODO
-     * @see IfTableEntry
-     */
     public IfTable(InetAddress address) {
         super(address, "ifTable", IfTableEntry.ms_elemList);
     }
