@@ -214,6 +214,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         n.setLastCapsdPoll(scanStamp);
         update(n);
     }
+
+    public Collection<Integer> getNodeIds() {
+        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n and n.type != 'D'");
+    }
     
     
 
