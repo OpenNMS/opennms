@@ -89,4 +89,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
     public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
+
+    public abstract Collection<Integer> getNodeIds();
 }
