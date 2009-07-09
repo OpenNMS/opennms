@@ -82,7 +82,7 @@
  * inspired by http://www.pps.jussieu.fr/~jch/enseignement/reseaux/
  * NTPMessage.java which is copyright (c) 2003 by Juliusz Chroboczek
  * 
- * @author Adam Buckley
+ * @author <a href="mailto:web01@adambuckley.net">Adam Buckley</a> (<a href="http://www.adambuckley.net/">www.adambuckley.net</a>)
  */
 
 package org.opennms.protocols.ntp;

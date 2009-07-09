@@ -60,29 +60,7 @@
  * socket.receive(packet);
  * System.out.println(msg.toString());
  * 
- *  
- * This code is copyright (c) Adam Buckley 2004
- *
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License as published by the Free 
- * Software Foundation; either version 2 of the License, or (at your option) 
- * any later version.  A HTML version of the GNU General Public License can be
- * seen at http://www.gnu.org/licenses/gpl.html
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
- * more details.
- * 
- * 
- * Comments for member variables are taken from RFC2030 by David Mills,
- * University of Delaware.
- * 
- * Number format conversion code in NtpMessage(byte[] array) and toByteArray()
- * inspired by http://www.pps.jussieu.fr/~jch/enseignement/reseaux/
- * NTPMessage.java which is copyright (c) 2003 by Juliusz Chroboczek
- * 
- * @author Adam Buckley
+ * @author <a href="mailto:web01@adambuckley.net">Adam Buckley</a> (<a href="http://www.adambuckley.net/">www.adambuckley.net</a>)
  */
 
 package org.opennms.netmgt.provision.support.ntp;
