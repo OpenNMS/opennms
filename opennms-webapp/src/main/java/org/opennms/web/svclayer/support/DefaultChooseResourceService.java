@@ -77,7 +77,9 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            
+            System.out.println("getId(): " + childResource.getId());
+            System.out.println("getName(): " + childResource.getName());
+            //checkLabelForQuotes(
             resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }
         
@@ -89,8 +91,12 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         
         String lbl  = Util.convertToJsSafeString(childResource.getLabel());
-            
-        return new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        resource.setParent(childResource.getParent());
+        resource.setEntity(childResource.getEntity());
+        resource.setLink(childResource.getLink());
+        return resource;
     }
 
     public void afterPropertiesSet() {
