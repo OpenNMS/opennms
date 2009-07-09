@@ -50,7 +50,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * single entries in the table. See the CiscoVlanPortTable documentation
  * form more information.</P>
  *
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  *

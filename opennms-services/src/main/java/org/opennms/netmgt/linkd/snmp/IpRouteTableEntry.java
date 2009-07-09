@@ -60,7 +60,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * single entries in the table. See the IpRouteTable documentation
  * form more information.</P>
  *
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
  *
  * @see IpRouteTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
