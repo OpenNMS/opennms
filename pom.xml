@@ -125,7 +125,7 @@
   </modules>
   <build>
   <pluginManagement>
-    <plugins>
+    <plugins>    
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
@@ -208,7 +208,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2-beta-4</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -434,6 +434,30 @@
           <outputDirectory>${dist.dir}</outputDirectory>
           <finalName>${dist.name}</finalName>
         </configuration>
+      </plugin>
+      <plugin>
+        <inherited>false</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.opennms</groupId>
+              <artifactId>opennms-webapp</artifactId>
+                  <version>${project.version}</version>
+              <type>war</type>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+          </execution>
+        </executions>
       </plugin>
    </plugins>
   </build>
