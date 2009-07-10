@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -34,18 +33,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     private CategoryDao m_categoryDao;
     
     @Autowired
-    private PollerConfig m_pollerConfig;
-
-    @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
-
-    public PollerConfig getPollerConfig() {
-        return m_pollerConfig;
-    }
-
-    public void setPollerConfig(PollerConfig pollerConfig) {
-        m_pollerConfig = pollerConfig;
-    }
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
