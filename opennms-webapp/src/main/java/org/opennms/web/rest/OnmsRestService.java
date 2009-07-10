@@ -103,7 +103,7 @@ public class OnmsRestService {
 		
 		paramsCopy.remove("_dc");
 
-		//By default, just do equals comparision
+		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
 		if(paramsCopy.containsKey("comparator")) {
 			String comparatorLabel=paramsCopy.getFirst("comparator");
