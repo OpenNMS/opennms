@@ -127,6 +127,12 @@
     </dependency>
 
     <!-- runtime only dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
 
     <!-- test dependencies -->
     <dependency>
