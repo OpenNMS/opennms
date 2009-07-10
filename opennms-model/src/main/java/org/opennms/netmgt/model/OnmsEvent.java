@@ -52,6 +52,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -266,6 +267,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
     @Id
+    @XmlAttribute(name="id")
     @Column(name="eventId")
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
     @GeneratedValue(generator="eventSequence")    
