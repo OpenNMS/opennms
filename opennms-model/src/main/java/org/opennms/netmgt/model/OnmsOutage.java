@@ -117,7 +117,7 @@ public class OnmsOutage implements Serializable {
     }
 
     @Id
-    @XmlAttribute
+    @XmlAttribute(name="id")
     @Column(name="outageId")
     @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId")
     @GeneratedValue(generator="outageSequence")
