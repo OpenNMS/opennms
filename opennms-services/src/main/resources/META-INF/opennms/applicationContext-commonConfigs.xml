@@ -23,7 +23,13 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.getInstance</value></property>
 	</bean>
 	
-	<!--  poller config factory is now init'd in the dao context -->
+	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
+	</bean>
+
+	<bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-pollerConfig-factory">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.getInstance</value></property>
+	</bean>
 
 	<!--  collectd config factory is now init'd in the dao context -->
 
