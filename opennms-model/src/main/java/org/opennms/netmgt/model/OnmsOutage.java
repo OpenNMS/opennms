@@ -46,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -116,6 +117,7 @@ public class OnmsOutage implements Serializable {
     }
 
     @Id
+    @XmlAttribute
     @Column(name="outageId")
     @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId")
     @GeneratedValue(generator="outageSequence")
@@ -127,7 +129,7 @@ public class OnmsOutage implements Serializable {
         m_id = outageId;
     }
 
-	@XmlTransient
+    // @XmlTransient
     @ManyToOne
     @JoinColumn(name="ifserviceId")
     public OnmsMonitoredService getMonitoredService() {
@@ -149,7 +151,7 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-	@XmlTransient
+    // @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcLostEventId")
     public OnmsEvent getServiceLostEvent() {
@@ -171,7 +173,7 @@ public class OnmsOutage implements Serializable {
         m_ifRegainedService = ifRegainedService;
     }
 
-	@XmlTransient
+    // @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcRegainedEventId")
     public OnmsEvent getServiceRegainedEvent() {
