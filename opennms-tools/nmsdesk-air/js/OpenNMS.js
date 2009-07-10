@@ -106,7 +106,7 @@ function notificationsCompleteHandler(event){
 		position.appendChild(table);
 		
 		for (Index = 0; Index < entries.length; Index++) {
-			var id = entries[Index].getElementsByTagName("notifyId")[0].textContent;
+			var id = entries[Index].getAttribute("id");
 			var eventUei = entries[Index].getElementsByTagName("eventUei")[0].textContent;
 			var textMsg = entries[Index].getElementsByTagName("textMsg")[0].textContent;
 			var subject = entries[Index].getElementsByTagName("subject")[0].textContent;
@@ -146,7 +146,7 @@ function restoutagesCompleteHandler(event){
 		position.appendChild(table);
 		
 		for (Index = 0; Index < entries.length; Index++) {
-			var id = entries[Index].getElementsByTagName("id")[0].textContent;
+			var id = entries[Index].getAttribute("id");
 			var LostService = entries[Index].getElementsByTagName("ifLostService")[0].textContent;
 			RegainedServiceElement = entries[Index].getElementsByTagName("ifRegainedService")[0];
 			if (RegainedServiceElement) {
