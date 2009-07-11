@@ -569,6 +569,21 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         }
         return csubmaps;
     }
+    
+    public Map<String,List<Celement>> getCelements() {
+        Map<String,List<Celement>> celements = new HashMap<String, List<Celement>>();
+        if (hasCmaps()) {
+            Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
+            while (ite.hasNext()) {
+                Cmap cmap = ite.next();
+                if (cmap.getCelementCount() > 0) {
+                    celements.put(cmap.getMapName(), cmap.getCelementCollection());
+                }
+            }
+        }
+     
+        return celements;
+    }
 
     /**
      * This method is used to rebuild the package agaist iplist mapping when
