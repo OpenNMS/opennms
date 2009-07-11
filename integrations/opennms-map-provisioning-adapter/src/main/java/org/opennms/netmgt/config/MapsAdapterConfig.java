@@ -19,6 +19,7 @@ public interface MapsAdapterConfig {
     public Map<String,Csubmap> getContainerMaps(String submapName);
     public Map<String, List<Csubmap>> getsubMaps();
     public Map<String, Celement> getElementByAddress(String ipaddr);
+    public Map<String, List<Celement>> getCelements();
     public void rebuildPackageIpListMap();
     public void update() throws IOException, MarshalException, ValidationException;
 }
