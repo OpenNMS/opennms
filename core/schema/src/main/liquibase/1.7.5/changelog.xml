@@ -20,7 +20,7 @@
     
   </changeSet>
 
- <changeSet author="rssntn67" id="fixMapPkConstraint">
+ <changeSet author="rssntn67" id="1.7.5-fixMapPkConstraint">
 	<preConditions onFail="MARK_RAN">
 			<and>
 				<not><primaryKeyExists tableName="map" primaryKeyName="pk_mapid" /></not>
@@ -39,7 +39,7 @@
  
   </changeSet>
   
-   <changeSet author="rssntn67" id="fixElementFkConstraint">
+   <changeSet author="rssntn67" id="1.7.5-fixElementFkConstraint">
 	<preConditions onFail="MARK_RAN">
 			<and>
 				<not><foreignKeyConstraintExists foreignKeyName="pk_mapid" /></not>
