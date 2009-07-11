@@ -20,4 +20,36 @@
     
   </changeSet>
 
+ <changeSet author="rssntn67" id="fixMapPkConstraint">
+	<preConditions onFail="MARK_RAN">
+			<and>
+				<not><primaryKeyExists tableName="map" primaryKeyName="pk_mapid" /></not>
+			</and>
+	</preConditions>
+    
+	<addPrimaryKey tableName="map" columnNames="mapid" constraintName="pk_mapid"/>        
+	<rollback>
+		<dropPrimaryKey tableName="map" constraintName="pk_mapid" />
+		<modifyColumn tableName="map">
+			<column name="mapid" type="integer">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</rollback>
+ 
+  </changeSet>
+  
+   <changeSet author="rssntn67" id="fixElementFkConstraint">
+	<preConditions onFail="MARK_RAN">
+			<and>
+				<not><foreignKeyConstraintExists foreignKeyName="pk_mapid" /></not>
+			</and>
+	</preConditions>
+    
+	<addForeignKeyConstraint constraintName="fk_mapid" onDelete="CASCADE"
+			baseTableName="element" baseColumnNames="mapid"
+			referencedTableName="map" referencedColumnNames="mapid" />
+		        
+  </changeSet>
+  
 </databaseChangeLog>

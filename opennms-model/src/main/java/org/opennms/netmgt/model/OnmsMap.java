@@ -73,8 +73,8 @@ public class OnmsMap implements Serializable {
     @XmlTransient
     @Id
     @Column(name="mapId")
-    @SequenceGenerator(name="mapSequence", sequenceName="mapNxtId")
-    @GeneratedValue(generator="mapSequence")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     private int id;
 
     @Column(name = "mapName")
