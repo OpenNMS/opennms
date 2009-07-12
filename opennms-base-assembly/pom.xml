@@ -82,15 +82,15 @@
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-webapp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
+                   <version>${project.version}</version>
+                   <classifier>xsds</classifier>
 	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-webapp</artifactId>
-                  <version>${project.version}</version>
-	               <type>war</type>
-	             </artifactItem>
+<!--	            <artifactItem>-->
+<!--	               <groupId>org.opennms</groupId>-->
+<!--	               <artifactId>opennms-webapp</artifactId>-->
+<!--                  <version>${project.version}</version>-->
+<!--	               <type>war</type>-->
+<!--	             </artifactItem>-->
 	           </artifactItems>
 	         </configuration>
           </execution>

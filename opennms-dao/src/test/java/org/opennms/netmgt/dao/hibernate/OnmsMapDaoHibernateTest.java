@@ -135,7 +135,7 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
 
 
     public void testFindById() {
-        OnmsMap map = getOnmsMapDao().findMapById(1);
+        OnmsMap map = getOnmsMapDao().findMapById(58);
         assertEquals("DB_Pop_Test_Map", map.getName());
         assertEquals("fake_background.jpg", map.getBackground());
         assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
@@ -214,10 +214,10 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
     }
 
     public void testDeleteOnmsMap() {
-        OnmsMap map = getOnmsMapDao().findMapById(1);
+        OnmsMap map = getOnmsMapDao().findMapById(58);
         getOnmsMapDao().delete(map);
 
-        assertNull(getOnmsMapDao().findMapById(1));
+        assertNull(getOnmsMapDao().findMapById(58));
     }
     
     public void testFindMapByOwner() {

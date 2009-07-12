@@ -41,6 +41,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
@@ -73,6 +74,7 @@ public class OnmsServiceType implements Serializable {
     }
 
     @Id
+    @XmlAttribute(name="id")
     @Column(name="serviceId")
     @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId")
     @GeneratedValue(generator="serviceTypeSequence")

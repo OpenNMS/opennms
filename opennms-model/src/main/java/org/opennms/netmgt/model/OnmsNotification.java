@@ -52,6 +52,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
@@ -142,6 +143,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
 
     
     @Id
+    @XmlAttribute(name="id")
     @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
     @GeneratedValue(generator="notifySequence")
     public Integer getNotifyId() {

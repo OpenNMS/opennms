@@ -115,10 +115,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
@@ -131,6 +127,12 @@
     </dependency>
 
     <!-- runtime only dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
 
     <!-- test dependencies -->
     <dependency>

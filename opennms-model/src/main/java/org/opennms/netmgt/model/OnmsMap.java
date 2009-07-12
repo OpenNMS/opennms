@@ -35,8 +35,9 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Id;
@@ -47,8 +48,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlID;
@@ -57,6 +56,8 @@ import javax.xml.bind.annotation.XmlID;
 @Entity
 @Table(name = "map")
 public class OnmsMap implements Serializable {
+
+    private static final long serialVersionUID = 3885485728813867167L;
 
     public static final String USER_GENERATED_MAP = "U";
 
@@ -68,67 +69,39 @@ public class OnmsMap implements Serializable {
     public static final String ACCESS_MODE_USER = "RO";
     public static final String ACCESS_MODE_GROUP = "RWRO";
     
-    @XmlTransient
-    @Id
-    @Column(name="mapId")
-    @SequenceGenerator(name="mapSequence", sequenceName="mapNxtId")
-    @GeneratedValue(generator="mapSequence")
     private int id;
 
-    @Column(name = "mapName")
     private String name;
 
-    @Column(name = "mapGroup")
     private String mapGroup;
 
-    @Column(name = "mapBackGround")
     private String background;
 
-    @Column(name = "mapOwner")
     private String owner;
 
-    @Column(name = "mapAccess")
     private String accessMode;
 
-    @Column(name = "userLastModifies")
     private String userLastModifies;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "mapCreateTime")
     private Date createTime;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "lastModifiedTime")
     private Date lastModifiedTime;
 
-    @Column(name = "mapScale")
     private float scale;
 
-    @Column(name = "mapXOffset")
     private int offsetX;
 
-    @Column(name = "mapYOffset")
     private int offsetY;
 
-    @Column(name = "mapType")
     private String type;
 
-    @Column(name = "mapWidth")
     private int width;
 
-    @Column(name = "mapHeight")
     private int height;
 
-    @XmlTransient
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "mapId")
-    private List<OnmsMapElement> mapElements = new ArrayList<OnmsMapElement>();
+    private Set<OnmsMapElement> mapElements = new LinkedHashSet<OnmsMapElement>();
 
-    @XmlTransient
-    @Transient
     private boolean isNew = false;
-
-    private static final long serialVersionUID = 3885485728813867167L;
 
     public OnmsMap() {
         this.isNew = true;
@@ -185,6 +158,11 @@ public class OnmsMap implements Serializable {
         this.height = height;
     }
 
+    @XmlTransient
+    @Id
+    @Column(name="mapId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     public int getId() {
         return id;
     }
@@ -192,13 +170,14 @@ public class OnmsMap implements Serializable {
     @XmlID
     @Transient
     public String getMapId() {
-        return Integer.toString(id);
+        return Integer.toString(getId());
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
+    @Column(name = "mapName")
     public String getName() {
         return name;
     }
@@ -207,6 +186,7 @@ public class OnmsMap implements Serializable {
         this.name = name;
     }
 
+    @Column(name = "mapGroup")
     public String getMapGroup() {
         return mapGroup;
     }
@@ -215,6 +195,7 @@ public class OnmsMap implements Serializable {
         this.mapGroup = mapGroup;
     }
 
+    @Column(name = "mapBackGround")
     public String getBackground() {
         return background;
     }
@@ -223,6 +204,7 @@ public class OnmsMap implements Serializable {
         this.background = background;
     }
 
+    @Column(name = "mapOwner")
     public String getOwner() {
         return owner;
     }
@@ -231,17 +213,19 @@ public class OnmsMap implements Serializable {
         this.owner = owner;
     }
 
+    @Column(name = "mapAccess")
     public String getAccessMode() {
         return accessMode;
     }
 
     public void setAccessMode(String accessMode) {
-        if(accessMode.equals(ACCESS_MODE_GROUP) || accessMode.equals(ACCESS_MODE_ADMIN))
-            this.accessMode = accessMode;
+        if(accessMode.trim().equalsIgnoreCase(ACCESS_MODE_GROUP))
+            this.accessMode = ACCESS_MODE_GROUP;
         else
-            this.accessMode = ACCESS_MODE_USER;
+            this.accessMode = ACCESS_MODE_ADMIN;
     }
 
+    @Column(name = "userLastModifies")
     public String getUserLastModifies() {
         return userLastModifies;
     }
@@ -250,6 +234,8 @@ public class OnmsMap implements Serializable {
         this.userLastModifies = userLastModifies;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "mapCreateTime")
     public Date getCreateTime() {
         return createTime;
     }
@@ -258,6 +244,8 @@ public class OnmsMap implements Serializable {
         this.createTime = createTime;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastModifiedTime")
     public Date getLastModifiedTime() {
         return lastModifiedTime;
     }
@@ -266,6 +254,7 @@ public class OnmsMap implements Serializable {
         this.lastModifiedTime = lastModifiedTime;
     }
 
+    @Column(name = "mapScale")
     public float getScale() {
         return scale;
     }
@@ -274,6 +263,7 @@ public class OnmsMap implements Serializable {
         this.scale = scale;
     }
 
+    @Column(name = "mapXOffset")
     public int getOffsetX() {
         return offsetX;
     }
@@ -282,6 +272,7 @@ public class OnmsMap implements Serializable {
         this.offsetX = offsetX;
     }
 
+    @Column(name = "mapYOffset")
     public int getOffsetY() {
         return offsetY;
     }
@@ -290,6 +281,7 @@ public class OnmsMap implements Serializable {
         this.offsetY = offsetY;
     }
 
+    @Column(name = "mapType")
     public String getType() {
         return type;
     }
@@ -298,6 +290,7 @@ public class OnmsMap implements Serializable {
         this.type = type;
     }
 
+    @Column(name = "mapWidth")
     public int getWidth() {
         return width;
     }
@@ -307,6 +300,7 @@ public class OnmsMap implements Serializable {
     }
 
 
+    @Column(name = "mapHeight")
     public int getHeight() {
         return height;
     }
@@ -315,6 +309,8 @@ public class OnmsMap implements Serializable {
         this.height = height;
     }
 
+    @XmlTransient
+    @Transient
     public boolean isNew() {
         return isNew;
     }
@@ -323,11 +319,23 @@ public class OnmsMap implements Serializable {
         isNew = aNew;
     }
 
-    public List<OnmsMapElement> getMapElements() {
+    @XmlTransient
+    @OneToMany(mappedBy="map")
+    @org.hibernate.annotations.Cascade( {
+        org.hibernate.annotations.CascadeType.ALL,
+        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<OnmsMapElement> getMapElements() {
         return this.mapElements;
     }
 
-    public void setMapElements(List<OnmsMapElement> mapElements) {
+    public void setMapElements(Set<OnmsMapElement> mapElements) {
         this.mapElements = mapElements;
     }
+    
+    public void addMapElement(OnmsMapElement element) {
+        element.setMap(this);
+        getMapElements().add(element);
+    }
+
+    
 }
