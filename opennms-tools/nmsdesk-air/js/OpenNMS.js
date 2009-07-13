@@ -107,7 +107,7 @@ function notificationsCompleteHandler(event){
 		
 		for (Index = 0; Index < entries.length; Index++) {
 			var id = entries[Index].getAttribute("id");
-			var eventUei = entries[Index].getElementsByTagName("eventUei")[0].textContent;
+			var eventUei = entries[Index].getElementsByTagName("uei")[0].textContent;
 			var textMsg = entries[Index].getElementsByTagName("textMsg")[0].textContent;
 			var subject = entries[Index].getElementsByTagName("subject")[0].textContent;
 
@@ -136,7 +136,7 @@ function restoutagesCompleteHandler(event){
 		// <ifLostService>2008-03-22T15:03:09+01:00</ifLostService>
 		// <ifRegainedService>2008-03-22T15:03:40+01:00</ifRegainedService>
 
-		var entries = xmldoc.getElementsByTagName("onmsOutage");
+		var entries = xmldoc.getElementsByTagName("outage");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");

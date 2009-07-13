@@ -53,6 +53,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -170,6 +171,7 @@ Comparable<OnmsMonitoredService> {
         m_qualifier = qualifier;
     }
 
+    @XmlAttribute
     @Column(name="status", length=1)
     public String getStatus() {
         return m_status;
@@ -179,6 +181,7 @@ Comparable<OnmsMonitoredService> {
         m_status = status;
     }
 
+    @XmlAttribute
     @Column(name="source", length=1)
     public String getSource() {
         return m_source;
@@ -198,6 +201,7 @@ Comparable<OnmsMonitoredService> {
     }
 
     @XmlIDREF
+    @XmlElement(name="ipInterfaceId")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
