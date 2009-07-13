@@ -2,7 +2,6 @@
 <uberwar>
   <wars>
   	<war>org.opennms:opennms-webapp</war>
-<!--  	<war>org.opennms.core:org.opennms.core.web.element</war>-->
   </wars>
 
 <!--  <merges>-->
