@@ -64,6 +64,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -185,6 +187,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
     
     @XmlID
+    @XmlAttribute(name="id")
     @Transient
     public String getNodeId() {
         return getId().toString();
@@ -200,6 +203,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @hibernate.property column="nodecreatetime" length="8" not-null="true"
      *         
      */
+    @XmlElement(name="createTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="nodeCreateTime", nullable=false)
     public Date getCreateTime() {
@@ -238,6 +242,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * TODO: Eventually this will be deprecated and deleted nodes will actually be deleted.
      * 
      */
+    @XmlAttribute(name="type")
     @Column(name="nodeType", length=1)
     public String getType() {
         return m_type;
@@ -250,6 +255,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * SNMP MIB-2 system.sysObjectID.0
      */
+    @XmlElement(name="sysObjectId")
     @Column(name="nodeSysOID", length=256)
     public String getSysObjectId() {
         return m_sysObjectId;
@@ -263,6 +269,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * SNMP MIB-2 system.sysName.0
      * 
      */
+    @XmlElement(name="sysName")
     @Column(name="nodeSysName", length=256)
     public String getSysName() {
         return m_sysName;
@@ -275,6 +282,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * SNMP MIB-2 system.sysDescr.0
      */
+    @XmlElement(name="sysDescription")
     @Column(name="nodeSysDescription", length=256)
     public String getSysDescription() {
         return m_sysDescription;
@@ -287,6 +295,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * SNMP MIB-2 system.sysLocation.0
      */
+    @XmlElement(name="sysLocation")
     @Column(name="nodeSysLocation", length=256)
     public String getSysLocation() {
         return m_sysLocation;
@@ -299,6 +308,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * SNMP MIB-2 system.sysContact.0
      */
+    @XmlElement(name="sysContact")
     @Column(name="nodeSysContact", length=256)
     public String getSysContact() {
         return m_sysContact;
@@ -311,6 +321,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * User-friendly name associated with the node.
      */
+    @XmlAttribute(name="label")
     @Column(name="nodeLabel", length=256)
     public String getLabel() {
         return m_label;
@@ -329,6 +340,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * 
      * TODO: change this to an enum
      */
+    @XmlElement(name="labelSource")
     @Column(name="nodeLabelSource", length=1)
     public String getLabelSource() {
         return m_labelSource;
@@ -341,6 +353,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * NetBIOS workstation name associated with the node.
      */
+    @XmlElement(name="netBIOSName")
     @Column(name="nodeNetBIOSName", length=16)
     public String getNetBiosName() {
         return m_netBiosName;
@@ -351,8 +364,9 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
 
     /**
-     * NetBIOS damain name associated with the node.
+     * NetBIOS domain name associated with the node.
      */
+    @XmlElement(name="netBIOSDomainName")
     @Column(name="nodeDomainName", length=16)
     public String getNetBiosDomain() {
         return m_netBiosDomain;
@@ -365,6 +379,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * Operating system running on the node.
      */
+    @XmlElement(name="operatingSystem")
     @Column(name="operatingSystem", length=64)
     public String getOperatingSystem() {
         return m_operatingSystem;
@@ -377,6 +392,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** 
      * Date and time of last Capsd scan.
      */
+    @XmlElement(name="lastCapsdPoll")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastCapsdPoll")
     public Date getLastCapsdPoll() {
@@ -387,7 +403,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         m_lastCapsdPoll = lastcapsdpoll;
     }
     
-    
+    @XmlAttribute(name="foreignId")
     @Column(name="foreignId")
     public String getForeignId() {
         return m_foreignId;
@@ -397,6 +413,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         m_foreignId = foreignId;
     }
 
+    @XmlAttribute(name="foreignSource")
     @Column(name="foreignSource")
     public String getForeignSource() {
         return m_foreignSource;
@@ -509,7 +526,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         getArpInterfaces().add(iface);
     }
 
-    @XmlTransient
+    @XmlElement(name="categories")
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
     		name="category_node",

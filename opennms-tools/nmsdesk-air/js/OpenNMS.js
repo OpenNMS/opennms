@@ -96,7 +96,7 @@ function notificationsCompleteHandler(event){
 		// <ifLostService>2008-03-22T15:03:09+01:00</ifLostService>
 		// <ifRegainedService>2008-03-22T15:03:40+01:00</ifRegainedService>
 
-		var entries = xmldoc.getElementsByTagName("onmsNotification");
+		var entries = xmldoc.getElementsByTagName("notification");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");
@@ -108,7 +108,7 @@ function notificationsCompleteHandler(event){
 		for (Index = 0; Index < entries.length; Index++) {
 			var id = entries[Index].getAttribute("id");
 			var eventUei = entries[Index].getElementsByTagName("uei")[0].textContent;
-			var textMsg = entries[Index].getElementsByTagName("textMsg")[0].textContent;
+			var textMsg = entries[Index].getElementsByTagName("textMessage")[0].textContent;
 			var subject = entries[Index].getElementsByTagName("subject")[0].textContent;
 
 			RegainedServiceElement = entries[Index].getElementsByTagName("ifRegainedService")[0];
