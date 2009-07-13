@@ -126,7 +126,7 @@ public class SnmpDetector extends AbstractDetector {
             String retrievedValue = getValue(agentConfig, getOid());
             
             if (retrievedValue != null && expectedValue != null) {
-                return (Pattern.compile(expectedValue).matcher(retrievedValue).find());
+                return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
             } else {
                 return (retrievedValue != null);
             }
