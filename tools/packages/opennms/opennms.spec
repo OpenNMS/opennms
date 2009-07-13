@@ -32,6 +32,8 @@
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
 %define __os_install_post %{nil}
+%define __find_requires %{nil}
+%define __perl_requires %{nil}
 
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
@@ -47,8 +49,6 @@ BuildArch:		noarch
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
-
-AutoReqProv:		no
 
 Requires:		opennms-webui     >= %{version}-%{release}
 Requires:		opennms-core      = %{version}-%{release}
