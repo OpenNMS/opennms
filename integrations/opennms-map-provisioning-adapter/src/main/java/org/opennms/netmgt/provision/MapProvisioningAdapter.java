@@ -569,26 +569,34 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
      private XY getXY(OnmsMap map, int mapElementSize) {
-        int delta = m_mapsAdapterConfig.getMapElementDimension();
-        int maxNumberofelementsonX=map.getWidth()/(2*delta);
+        int deltaX = m_mapsAdapterConfig.getMapElementDimension();
+        int deltaY = deltaX/2;
+        int maxNumberofelementsonX=map.getWidth()/(2*deltaX);
+        log().debug("getXY: max number of elements on a row: " +maxNumberofelementsonX);
         int numberofexistingelement = mapElementSize;
+        log().debug("getXY: number of existing elements on map: " + mapElementSize);
         int positiononX = 1;
         int positiononY = 1;
-        int numberofremelement = numberofexistingelement;
-        boolean addoffset = false;
-        while (maxNumberofelementsonX < numberofexistingelement){
-            numberofremelement = numberofremelement - maxNumberofelementsonX;
+        boolean addoffset = true;
+        while (maxNumberofelementsonX <= numberofexistingelement){
+            numberofexistingelement = numberofexistingelement - maxNumberofelementsonX;
+            log().debug("getXY: entering the loop: element found on the row: " + numberofexistingelement);
             positiononY++;
+            if (addoffset) {
+                maxNumberofelementsonX--;
+            } else {
+                maxNumberofelementsonX++;                
+            }
             addoffset = !addoffset;
         }
-        positiononX = positiononX + numberofremelement;
+        positiononX = positiononX + numberofexistingelement;
         XY xy = new XY();
         if (addoffset) {
-            xy.setX(delta+2*delta*positiononX);
+            xy.setX(2*deltaX*positiononX-deltaX);
         } else {
-            xy.setX(2*delta*positiononX);
+            xy.setX(2*deltaX*positiononX);
         }
-        xy.setY(delta*positiononY);
+        xy.setY(deltaY*positiononY);
         return xy;
     }
        
