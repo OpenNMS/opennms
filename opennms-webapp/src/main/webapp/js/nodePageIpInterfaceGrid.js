@@ -188,12 +188,12 @@ function nodePageGridInit(){
 };
 
 var record = new Ext.data.Record.create([
-	{name:"interfaceId", mapping:"interfaceId"},
+	{name:"interfaceId", mapping:"@id"},
 	{name:"ipAddress", mapping:"ipAddress"},
-	{name:'hostName', mapping:'ipHostName'},
-	{name:'ifIndex', mapping:'ifIndex'},
-	{name:"isManaged", mapping:"isManaged"},
-	{name:'capsdPoll', mapping:'ipLastCapsdPoll'},
+	{name:'ipHostName', mapping:'hostName'},
+	{name:'ifIndex', mapping:'@ifIndex'},
+	{name:"isManaged", mapping:"@isManaged"},
+	{name:'capsdPoll', mapping:'lastCapsdPoll'},
 	{name:"snmpInterface", mapping:"snmpInterface"}
 ]);
 	
@@ -226,7 +226,7 @@ var colModel = new Ext.grid.ColumnModel([
 		align :'left'
 	},{
 		header:'ip Host Name',
-		name:'hostName',
+		name:'ipHostName',
 		width:200,
 		align:'left',
 	},{

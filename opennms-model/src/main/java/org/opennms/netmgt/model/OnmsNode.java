@@ -621,8 +621,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     @Transient
 	public OnmsIpInterface getPrimaryInterface() {
 		for(OnmsIpInterface iface : getIpInterfaces()) {
-		    PrimaryType type = iface.getIsSnmpPrimary();
-//		    if (iface.getIsSnmpPrimary() == PrimaryType.PRIMARY) {
 			if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
 				return iface;
 			}
