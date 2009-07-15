@@ -220,7 +220,6 @@ public class DaoWebOutageRepository implements WebOutageRepository {
             Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
             while(outageIt.hasNext()){
                 OnmsOutage outage = outageIt.next();
-                System.err.println("outage id: " + outage.getId());
                 if(outage.getIfRegainedService() == null){
                     outages.add(mapOnmsOutageToOutageSummary(outage));
                 }
