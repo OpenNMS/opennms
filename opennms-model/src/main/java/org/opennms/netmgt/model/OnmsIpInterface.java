@@ -56,6 +56,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -227,6 +228,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
     
     @XmlID
+    @XmlAttribute(name="id")
     @Transient
     public String getInterfaceId() {
         return getId().toString();
@@ -239,6 +241,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
 
     @Column(name="ipAddr", length=16)
+    @XmlElement(name="ipAddress")
     public String getIpAddress() {
         return m_ipAddress;
     }
@@ -249,6 +252,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     //@Column(name="ifIndex")
     @Transient
+    @XmlAttribute(name="ifIndex")
     public Integer getIfIndex() {
         if (m_snmpInterface == null) {
             return null;
@@ -266,6 +270,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Column(name="ipHostName", length=256)
+    @XmlElement(name="hostName")
     public String getIpHostName() {
         return m_ipHostName;
     }
@@ -275,6 +280,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Column(name="isManaged", length=1)
+    @XmlAttribute(name="isManaged")
     public String getIsManaged() {
         return m_isManaged;
     }
@@ -290,6 +296,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ipLastCapsdPoll")
+    @XmlElement(name="lastCapsdPoll")
     public Date getIpLastCapsdPoll() {
         return m_ipLastCapsdPoll;
     }
@@ -298,7 +305,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_ipLastCapsdPoll = iplastcapsdpoll;
     }
 
+    @Transient
+    @XmlAttribute(name="snmpPrimary")
+    public String getPrimaryString() {
+        return m_isSnmpPrimary.toString();
+    }
+    public void setPrimaryString(String primaryType) {
+        m_isSnmpPrimary = new PrimaryType(primaryType.charAt(0));
+    }
+    
     @Column(name="isSnmpPrimary", length=1)
+    @XmlTransient
     public PrimaryType getIsSnmpPrimary() {
         return m_isSnmpPrimary;
     }
@@ -390,7 +407,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Transient
-    @XmlElement(name="isDown")
+    @XmlAttribute(name="isDown")
     public boolean isDown() {
         boolean down = true;
         for (OnmsMonitoredService svc : m_monitoredServices) {

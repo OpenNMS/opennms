@@ -47,6 +47,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Filter;
@@ -210,6 +211,7 @@ public class OnmsOutage implements Serializable {
     }
 
     @Transient
+    @XmlElement(name="ipAddress")
     public String getIpAddress() {
     	return getMonitoredService().getIpAddress();
     }

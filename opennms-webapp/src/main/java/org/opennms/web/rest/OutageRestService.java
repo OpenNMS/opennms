@@ -35,6 +35,8 @@
  */
 package org.opennms.web.rest;
 
+import java.util.Date;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -49,6 +51,8 @@ import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.web.outage.filter.NodeFilter;
+import org.opennms.web.outage.filter.RecentOutagesFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -115,5 +119,31 @@ public class OutageRestService extends OnmsRestService {
     	return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
     }
 
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Transactional
+    @Path("forNode/{nodeId}")
+    public OnmsOutageCollection forNodeId(@PathParam("nodeId") int nodeId) {
+        MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
+        OnmsCriteria criteria=new OnmsCriteria(OnmsOutage.class);
+
+        setLimitOffset(params, criteria);
+        addOrdering(params, criteria);
+        addFiltersToCriteria(params, criteria, OnmsOutage.class);
+
+        criteria.createAlias("monitoredService", "monitoredService");
+        criteria.createAlias("monitoredService.ipInterface", "ipInterface");
+        criteria.createAlias("monitoredService.ipInterface.node", "node");
+        criteria.createAlias("monitoredService.serviceType", "serviceType");
+
+        NodeFilter node = new NodeFilter(nodeId);
+        criteria.add(node.getCriterion());
+
+        Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
+        RecentOutagesFilter recent = new RecentOutagesFilter(d);
+        criteria.add(recent.getCriterion());
+
+        return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
+    }
 }
 

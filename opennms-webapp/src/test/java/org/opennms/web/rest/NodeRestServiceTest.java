@@ -41,7 +41,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         url += "/10.10.10.10";
         sendPut(url, "isManaged=U");
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<isManaged>U</isManaged>"));
+        assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
     }
@@ -117,14 +117,10 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     
     private void createIpInterface() throws Exception {
         createNode();
-        String ipInterface = "<ipInterface>" +
+        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
         "<ipAddress>10.10.10.10</ipAddress>" +
-        "<ipHostName>TestMachine</ipHostName>" +
+        "<hostName>TestMachine</hostName>" +
         "<ipStatus>1</ipStatus>" +
-        "<isManaged>M</isManaged>" +
-        "<isSnmpPrimary>" +
-        "<charCode>80</charCode>" +
-        "</isSnmpPrimary>" +
         "</ipInterface>";
         sendPost("/nodes/1/ipinterfaces", ipInterface);
     }
