@@ -427,7 +427,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assembly/dist.xml</descriptor>
+    	    <descriptor>src/assembly/dist.xml</descriptor>
           </descriptors>
           <appendAssemblyId>false</appendAssemblyId>
           <tarLongFileMode>gnu</tarLongFileMode>
@@ -435,7 +435,7 @@
           <finalName>${dist.name}</finalName>
         </configuration>
       </plugin>
-      <plugin>
+      <!--<plugin>
         <inherited>false</inherited>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -458,7 +458,7 @@
         </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
    </plugins>
   </build>
 

@@ -7,12 +7,22 @@
   <moduleSets>
     <moduleSet>
       <includes>
+        <include>org.opennms:opennms-webapp</include>
+      </includes>
+      <binaries>
+        <outputDirectory>webapps/opennms</outputDirectory>
+        <unpack>true</unpack>
+ 	<includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+    <moduleSet>
+      <includes>
         <include>org.opennms:opennms-doc</include>
       </includes>
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
-        <includeDependencies>false</includeDependencies>
+ 	<includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
     <moduleSet>
@@ -22,33 +32,8 @@
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
-        <includeDependencies>false</includeDependencies>
+ 	<includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
   </moduleSets>
-  <fileSets>
-  	<fileSet>
-		<directory>${dist.dir}/dependency</directory>
-		<outputDirectory>webapps/opennms</outputDirectory>
-	</fileSet>
-  	<fileSet>
-		<directory>${dist.dir}/dependency</directory>
-		<outputDirectory>jetty-webapps/opennms</outputDirectory>
-		<includes>
-                	<include>%regex[^(?!WEB-INF/lib).*$]</include>
-                	<include>WEB-INF/lib/opennms-webapp-*.jar</include>
-                	<include>WEB-INF/lib/gwt-*.jar</include>
-                	<include>WEB-INF/lib/extremecomponents-*.jar</include>
-		</includes>
-	</fileSet>
-	<fileSet>
-		<directory>${dist.dir}/dependency/WEB-INF/lib</directory>
-		<outputDirectory>lib</outputDirectory>
-		<excludes>
-			<exclude>opennms-webapp-*.jar</exclude>
-			<exclude>gwt-*.jar</exclude>
-			<exclude>extremecomponents-*.jar</exclude>
-            	</excludes>
-	</fileSet>
-  </fileSets>
 </assembly>
