@@ -116,10 +116,13 @@ public abstract class InsAbstractSession extends Thread {
         );
         log.debug("interfaces found: " + iface.size());
 
+        if (iface.size() > 0 ) {
         String ifAlias = iface.get(0).getIfAlias();
         log.debug("ifalias found: " + ifAlias);
         
         return iface.get(0);
+        }
+        return null;
     }
 
 }
