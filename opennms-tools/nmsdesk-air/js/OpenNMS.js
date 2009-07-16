@@ -190,7 +190,7 @@ function restoutagesCompleteHandler(event){
 		
 	
 
-		var entries = xmldoc.getElementsByTagName("onmsAlarm");
+		var entries = xmldoc.getElementsByTagName("alarm");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");
@@ -202,7 +202,7 @@ function restoutagesCompleteHandler(event){
 		for (Index = 0; Index < entries.length; Index++) {
 			var id = entries[Index].getElementsByTagName("id")[0].textContent;
 			var description = entries[Index].getElementsByTagName("description")[0].textContent;
-			var logMsg = entries[Index].getElementsByTagName("logMsg")[0].textContent;
+			var logMsg = entries[Index].getElementsByTagName("logMessage")[0].textContent;
 
 			RegainedServiceElement = entries[Index].getElementsByTagName("ifRegainedService")[0];
 
