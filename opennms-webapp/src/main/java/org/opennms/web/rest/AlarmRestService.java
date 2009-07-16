@@ -65,6 +65,7 @@ public class AlarmRestService extends OnmsRestService {
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
 
     	setLimitOffset(params, criteria);
+        addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsAlarm.class);
 
         return new OnmsAlarmCollection(m_alarmDao.findMatching(criteria));
