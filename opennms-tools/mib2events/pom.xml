@@ -2,14 +2,22 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
+<<<<<<< .working
     <version>1.7.5-SMS-SNAPSHOT</version>
+=======
+    <version>1.7.6-SNAPSHOT</version>
+>>>>>>> .merge-right.r14042
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.netmgt.mib2events</groupId>
   <artifactId>mib2events</artifactId>
   <packaging>jar</packaging>
   <name>mib2events</name>
+<<<<<<< .working
   <version>1.7.5-SMS-SNAPSHOT</version>
+=======
+  <version>1.7.6-SNAPSHOT</version>
+>>>>>>> .merge-right.r14042
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -22,7 +30,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
+<<<<<<< .working
       <version>1.7.5-SMS-SNAPSHOT</version>
+=======
+      <version>1.7.6-SNAPSHOT</version>
+>>>>>>> .merge-right.r14042
     </dependency>
     <dependency>
       <groupId>net.percederberg.grammatica</groupId>

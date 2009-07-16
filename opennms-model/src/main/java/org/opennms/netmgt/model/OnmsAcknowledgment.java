@@ -56,6 +56,11 @@ import org.opennms.netmgt.xml.event.Parm;
 @XmlRootElement(name="ack")  //hmmm
 @Entity
 @Table(name = "acks")
+
+/**
+ * Persistable object used in acknowledgment activities  
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 public class OnmsAcknowledgment {
 
     private Integer m_id; 

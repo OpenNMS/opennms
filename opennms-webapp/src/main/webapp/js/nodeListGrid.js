@@ -144,8 +144,8 @@ function initNodePageGrid(){
 var record = new Ext.data.Record.create([
 	{name:"", mapping:""},
 	{name:"ipAddress", mapping:"ipAddress"},
-	{name:"interfaceId", mapping:"interfaceId"},
-	{name:"isManaged", mapping:"isManaged"},
+	{name:"interfaceId", mapping:"@id"},
+	{name:"isManaged", mapping:"@isManaged"},
 	{name:"snmpInterface", mapping:"snmpInterface"}
 	
 ]);
