@@ -28,7 +28,7 @@ import org.springframework.core.io.ResourceLoader;
 
 public class Migrator {
     public static final float POSTGRES_MIN_VERSION = 7.3f;
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.4f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
