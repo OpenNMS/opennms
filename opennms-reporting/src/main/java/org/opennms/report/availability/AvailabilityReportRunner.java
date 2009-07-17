@@ -149,7 +149,7 @@ public class AvailabilityReportRunner implements Runnable {
             ReportMailer mailer = new ReportMailer(
                                                    m_email,
                                                    renderer.getBaseDir()
-                                                           + renderer.getOutputFileName());
+                                                           + renderer.getOutputFileName(), "OpenNMS Availability Report");
             mailer.send();
         } catch (AvailabilityCalculationException ce) {
             log.fatal("Unable to calculate report data ", ce);

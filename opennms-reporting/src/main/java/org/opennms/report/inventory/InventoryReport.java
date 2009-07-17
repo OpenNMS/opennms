@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.inventory;
+package org.opennms.report.inventory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +41,7 @@ import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.Tuple;
 import org.opennms.report.availability.ReportMailer;
 import org.opennms.report.datablock.PDFWriter;
+import org.opennms.report.inventory.NodeBaseInventory;
 
 public class InventoryReport implements Runnable {
     
@@ -285,7 +286,7 @@ public class InventoryReport implements Runnable {
 
                     log().debug("runNodeBaseInventoryReport generating pdf is still not supported :( sending xml");
                     log().debug("runNodeBaseInventoryReport xml sending email");
-                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName);
+                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName,"OpenNMS Inventory Report");
                     mailer.send();
 
 
@@ -302,7 +303,7 @@ public class InventoryReport implements Runnable {
                     FileReader fileReader = new FileReader(fileR);
                     htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                     log().debug("runNodeBaseInventoryReport html sending email");
-                    ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName);
+                    ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Inventory Report");
                     mailer.send();
 
                 }
@@ -437,7 +438,7 @@ public class InventoryReport implements Runnable {
                     log().debug("runRancidListReport generating pdf is still not supported :( sending xml");
                     
                     log().debug("runRancidListReport xml sending email");
-                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName);
+                    ReportMailer mailer = new ReportMailer(reportEmail,xmlFileName, "OpenNMS Configuration Report");
                     mailer.send();
                     
 
@@ -455,7 +456,7 @@ public class InventoryReport implements Runnable {
                     FileReader fileReader = new FileReader(fileR);
                     htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                     log().debug("runRancidListReport html sending email");
-                    ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName);
+                    ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Configuration Report");
                     mailer.send();
 
                 }
