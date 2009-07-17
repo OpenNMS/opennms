@@ -120,20 +120,21 @@ public class EventBuilder {
     }
 
     public EventBuilder addParam(String parmName, String val) {
-        Value value = new Value();
-        value.setContent(val);
+        if (parmName != null) {
+            Value value = new Value();
+            value.setContent(val);
+
+            Parm parm = new Parm();
+            parm.setParmName(parmName);
+            parm.setValue(value);
         
+            if (m_event.getParms() == null) {
+                Parms parms = new Parms();
+                m_event.setParms(parms);
+            }
         
-        Parm parm = new Parm();
-        parm.setParmName(parmName);
-        parm.setValue(value);
-        
-        if (m_event.getParms() == null) {
-            Parms parms = new Parms();
-            m_event.setParms(parms);
+            m_event.getParms().addParm(parm);
         }
-        
-        m_event.getParms().addParm(parm);
         
         return this;
     }
@@ -175,20 +176,28 @@ public class EventBuilder {
     }
 
     public EventBuilder setNode(OnmsNode node) {
-        m_event.setNodeid(node.getId().longValue());
+        if (node != null) {
+            m_event.setNodeid(node.getId().longValue());
+        }
         return this;
     }
     
     public EventBuilder setIpInterface(OnmsIpInterface iface) {
-        m_event.setNodeid(iface.getNode().getId().longValue());
-        m_event.setInterface(iface.getIpAddress());
+        if (iface != null) {
+            if (iface.getNode() != null) {
+                m_event.setNodeid(iface.getNode().getId().longValue());
+            }
+            m_event.setInterface(iface.getIpAddress());
+        }
         return this;
     }
     
     public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService) {
-        m_event.setNodeid(monitoredService.getNodeId().longValue());
-        m_event.setInterface(monitoredService.getIpAddress());
-        m_event.setService(monitoredService.getServiceName());
+        if (monitoredService != null) {
+            m_event.setNodeid(monitoredService.getNodeId().longValue());
+            m_event.setInterface(monitoredService.getIpAddress());
+            m_event.setService(monitoredService.getServiceName());
+        }
         return this;
     }
 
