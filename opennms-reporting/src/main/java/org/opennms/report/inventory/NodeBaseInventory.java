@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.inventory;
+package org.opennms.report.inventory;
 
 import java.util.ArrayList;
 import java.util.Date;
