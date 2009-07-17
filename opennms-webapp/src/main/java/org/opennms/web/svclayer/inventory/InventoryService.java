@@ -22,6 +22,7 @@ import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
 import org.opennms.rancid.RWSBucket.BucketItem;
+import org.opennms.report.inventory.InventoryReport;
 
 import org.opennms.web.element.ElementUtil;
 import org.opennms.web.inventory.*;
