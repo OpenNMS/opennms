@@ -845,49 +845,93 @@ li.pagination {
 }
 </STYLE>
   <body>
-  				<table border="1" width="1000" bgcolor="#dddddd">
+				<h3>OpenNMS/RWS Configuration Report on Request Date <xsl:value-of select="rws-rancidlistreport/reportDate"/></h3>
+  				<table border="1" width="1000" bgcolor="#0000ff">
 					<tr>
-						<th>
-							<h1>Rancid List</h1>
+						<th align="left">
+								Request By User:
+								<xsl:value-of select="rws-rancidlistreport/user"/> 
+								on 
+								<xsl:value-of select="rws-rancidlistreport/reportRequestDate"/>
 						</th>
 					</tr>
 					<tr>
 						<th align="left">
-								Total groups:
-								<xsl:value-of select="rws-rancidlistreport/totalGroups"/>
-						</th>
+								Groups in repository:
+						<xsl:value-of select="rws-rancidlistreport/totalGroups"/></th>	
 					</tr>
-					
-
+					<tr>
+						<th align="left">
+								Groups With Matching Configurations :
+						<xsl:value-of select="rws-rancidlistreport/groupsMatching"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups without Nodes:
+						<xsl:value-of select="rws-rancidlistreport/groupWithoutNodes"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups with Nodes without Configuration at all:
+						<xsl:value-of select="rws-rancidlistreport/groupsWithNodesWithoutconfigurationAtAll"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups with Nodes without Configuration at Report Date:
+						<xsl:value-of select="rws-rancidlistreport/groupsWithNodesWithoutconfigurationAtReportDate"/></th>
+					</tr>
 				</table>
-
+<p></p>
   <xsl:for-each select="rws-rancidlistreport/groupXSet">
-  					<h3> Total Nodes:  <xsl:value-of select="totalNodes"/></h3>
-  
-  <table border="1">
-
+  					<h3> Group:  <xsl:value-of select="groupXSetName"/></h3>
+   	<table border="1" width="1000" bgcolor="#dddddd">
+		<tr>
+			<th align="left" colspan="4">
+					Total number of Nodes:
+			<xsl:value-of select="totalNodes"/></th>	
+		</tr>
+		<tr>
+			<th align="left" colspan="4">
+					Nodes With Matching Configurations :
+			<xsl:value-of select="nodesMatching"/></th>
+		</tr>
+		<tr>
+			<th align="left" colspan="4">
+					Nodes without Configuration at all:
+			<xsl:value-of select="nodesWithoutconfigurationAtAll"/></th>
+		</tr>
+		<tr>
+			<th align="left" colspan="4">
+					Nodes without Configuration at request Date:
+			<xsl:value-of select="nodesWithoutconfigurationAtReportDate"/></th>
+		</tr>
     <tr>
-      <th>Group Name</th>
       <th>Device Name</th>
-      <th>Status</th>
+      <th>Current Status</th>
       <th>Version</th>
-      <th>Configuration</th>
+      <th>Date</th>
     </tr>
-    <tr/>
+   <tr/>
     
-        <xsl:for-each select="nodeSet">
+    <xsl:for-each select="nodeSet">
         <tr>
-          <td><xsl:value-of select="groupname"/></td>
           <td><xsl:value-of select="devicename"/></td>
           <td><xsl:value-of select="status"/></td>
           <td><xsl:value-of select="version"/></td>
-          <td><xsl:value-of select="configurationurl"/></td>
+          <td><xsl:value-of select="creationdate"/></td>
         </tr>
-        </xsl:for-each>
+    </xsl:for-each>
   </table>
 
-
+<p></p>
     </xsl:for-each>
+    
+        <p><center>
+        OpenNMS <a href="help/about.jsp">Copyright</a> 2002-2009
+            <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+            OpenNMS is a registered trademark of
+        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+          </center></p>
   </body>
   </html>
 </xsl:template>

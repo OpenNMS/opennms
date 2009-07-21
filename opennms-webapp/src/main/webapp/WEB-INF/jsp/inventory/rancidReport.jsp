@@ -98,7 +98,7 @@
           If you leave it blank the report data is today. 
       </p>
 
-          <p><b>Matching</b> provide a string to match on. The report will only contain
+          <p><b>Matching</b> provide a regular expression to match on. The report will only contain
           the items that match the specified string.
           If you leave it blank the report data contains all items. This matching applies
           only to inventory report, it will be ignored in case of rancid list report.

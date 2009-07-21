@@ -29,20 +29,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.report.availability;
+package org.opennms.report;
 
-import java.util.List;
+import java.util.Date;
 
-import org.opennms.netmgt.model.AvailabilityReportLocator;
+public interface ReportSchedulerService {
 
-public interface ReportLocatorService {
-	
-	List<?> locateReports();
-
-	List<?> locateReports(String categoryName);
-	
-	void deleteReport(int id);
-	
-	void addReport(AvailabilityReportLocator locator);
+	void Schedule(String category, String type, String format, Date date);
 	
 }

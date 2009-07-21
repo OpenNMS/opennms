@@ -46,8 +46,8 @@
 		</property>
 	</bean>
 
-	<bean id="pdfReportRenderer"
-		class="org.opennms.report.availability.render.PDFReportRenderer">
+	<bean id="pdfAvailReportRenderer"
+		class="org.opennms.report.render.PDFReportRenderer">
 		<property name="inputFileName">
 			<value>AvailReport.xml</value>
 		</property>
@@ -61,8 +61,8 @@
 			value="file:${opennms.home}/etc/PDFAvailReport.xsl" />
 	</bean>
 
-	<bean id="svgReportRenderer"
-		class="org.opennms.report.availability.render.PDFReportRenderer">
+	<bean id="svgAvailReportRenderer"
+		class="org.opennms.report.render.PDFReportRenderer">
 		<property name="inputFileName">
 			<value>AvailReport.xml</value>
 		</property>
@@ -76,8 +76,8 @@
 			value="file:${opennms.home}/etc/SVGAvailReport.xsl" />
 	</bean>
 
-	<bean id="htmlReportRenderer"
-		class="org.opennms.report.availability.render.HTMLReportRenderer">
+	<bean id="htmlAvailReportRenderer"
+		class="org.opennms.report.render.HTMLReportRenderer">
 		<property name="inputFileName">
 			<value>AvailReport.xml</value>
 		</property>
@@ -91,6 +91,62 @@
 			value="file:${opennms.home}/etc/AvailabilityReports.xsl" />
 	</bean>
 
+	<bean id="htmlConfigurationReportRenderer"
+		class="org.opennms.report.render.HTMLReportRenderer">
+		<property name="inputFileName">
+			<value>ConfigurationReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>ConfigurationReport.html</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="xsltResource"
+			value="file:${opennms.home}/etc/rws-rancidlistreport.xsl" />
+	</bean>
+
+	<bean id="nullConfigurationReportRenderer"
+		class="org.opennms.report.render.NullReportRenderer">
+		<property name="inputFileName">
+			<value>ConfigurationReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>ConfigurationReport.xml</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+	</bean>
+
+	<bean id="htmlInventoryReportRenderer"
+		class="org.opennms.report.render.HTMLReportRenderer">
+		<property name="inputFileName">
+			<value>InventoryReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>InventoryReport.html</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="xsltResource"
+			value="file:${opennms.home}/etc/rws-nbinventoryreport.xsl" />
+	</bean>
+
+	<bean id="nullInventoryReportRenderer"
+		class="org.opennms.report.render.NullReportRenderer">
+		<property name="inputFileName">
+			<value>InventoryReport.xml</value>
+		</property>
+		<property name="outputFileName">
+			<value>InventoryReport.xml</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+	</bean>
+
 	<bean id="availabilityReportRunner"
 		class="org.opennms.report.availability.AvailabilityReportRunner">
 		<property name="calendarCalculator">
@@ -100,13 +156,13 @@
 			<ref local="classicAvailabilityCalculator" />
 		</property>
 		<property name="svgReportRenderer">
-			<ref local="svgReportRenderer" />
+			<ref local="svgAvailReportRenderer" />
 		</property>
 		<property name="pdfReportRenderer">
-			<ref local="pdfReportRenderer" />
+			<ref local="pdfAvailReportRenderer" />
 		</property>
 		<property name="htmlReportRenderer">
-			<ref local="htmlReportRenderer" />
+			<ref local="htmlAvailReportRenderer" />
 		</property>
 	</bean>
 
@@ -134,5 +190,63 @@
     	<property name="availabilityDataService"> <ref local="legacyAvailabilityDataService" />
     	</property>
     </bean>
+    
+    <bean id="rwsConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>
+    </bean>
+  
+    <bean id="rwsConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rwsConfig-init">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.getInstance</value></property>
+    </bean>
+         
+    
+	<bean id="configurationReportCalculator"
+		class="org.opennms.report.configuration.ConfigurationReportCalculator">
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="rwsConfig" ref="rwsConfig" />
+	</bean>
+
+	<bean id="configurationReportRunner"
+		class="org.opennms.report.configuration.ConfigurationReportRunner">
+		<property name="configurationReportCalculator" ref="configurationReportCalculator" />
+		<property name="htmlReportRenderer">
+			<ref local="htmlConfigurationReportRenderer" />
+		</property>		
+		<property name="nullReportRenderer">
+			<ref local="nullConfigurationReportRenderer" />
+		</property>		
+	</bean>
+
+	<bean id="configurationReportService"
+		class="org.opennms.report.configuration.svclayer.DefaultConfigurationReportService">
+		<property name="reportRunner" ref="configurationReportRunner" />
+	</bean>
+
+	<bean id="inventoryReportCalculator"
+		class="org.opennms.report.inventory.InventoryReportCalculator">
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="rwsConfig" ref="rwsConfig" />
+	</bean>
+
+	<bean id="inventoryReportRunner"
+		class="org.opennms.report.inventory.InventoryReportRunner">
+		<property name="inventoryReportCalculator" ref="inventoryReportCalculator" />
+		<property name="htmlReportRenderer">
+			<ref local="htmlInventoryReportRenderer" />
+		</property>		
+		<property name="nullReportRenderer">
+			<ref local="nullInventoryReportRenderer" />
+		</property>		
+	</bean>
+
+	<bean id="inventoryReportService"
+		class="org.opennms.report.inventory.svclayer.DefaultInventoryReportService">
+		<property name="reportRunner" ref="inventoryReportRunner" />
+	</bean>
+
 
 </beans>

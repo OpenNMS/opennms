@@ -33,7 +33,7 @@
 // http://www.opennms.org/
 // http://www.opennms.com/
 //
-package org.opennms.report.availability.render;
+package org.opennms.report.render;
 
 import org.springframework.core.io.Resource;
 

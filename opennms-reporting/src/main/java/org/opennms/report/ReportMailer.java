@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.report.availability;
+package org.opennms.report;
 
 import java.io.IOException;
 
@@ -42,6 +42,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
+import org.opennms.report.availability.AvailabilityReport;
 
 /**
  * 

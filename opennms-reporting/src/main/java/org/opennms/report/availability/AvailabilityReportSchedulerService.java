@@ -39,6 +39,7 @@ import java.util.Date;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
+import org.opennms.report.ReportSchedulerService;
 
 public class AvailabilityReportSchedulerService implements
         ReportSchedulerService {
