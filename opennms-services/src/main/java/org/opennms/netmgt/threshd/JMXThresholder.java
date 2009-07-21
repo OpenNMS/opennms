@@ -57,6 +57,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -295,11 +296,13 @@ public abstract class JMXThresholder implements ServiceThresholder {
         // by datasource name.
         iface.setAttribute(ALL_IF_THRESHOLD_MAP_KEY, new HashMap());
 
+        final DBUtils d = new DBUtils(getClass());
         // Get database connection in order to retrieve the nodeid and
         // ifIndex from the database for this interface.
         Connection dbConn = null;
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
+            d.watch(dbConn);
         } catch (SQLException e) {
             log().error("initialize: Failed getting connection to the database: " + e, e);
             throw new UndeclaredThrowableException(e);
@@ -316,26 +319,21 @@ public abstract class JMXThresholder implements ServiceThresholder {
             PreparedStatement stmt = null;
             try {
                 stmt = dbConn.prepareStatement(SQL_GET_NODEID);
+                d.watch(stmt);
                 stmt.setString(1, ipAddr.getHostAddress()); // interface address
                 ResultSet rs = stmt.executeQuery();
+                d.watch(rs);
                 if (rs.next()) {
                     nodeId = rs.getInt(1);
                     if (rs.wasNull()) {
                         nodeId = -1;
                     }
                 }
-                rs.close();
             } catch (SQLException e) {
                 if (log().isDebugEnabled()) {
                     log().debug("initialize: SQL exception!!: " + e, e);
                 }
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress() + ": " + e, e);
-            } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
             }
 
             // RuntimeException is thrown if any of the following are true:
@@ -347,12 +345,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             }
 
         } finally {
-            // Done with the database so close the connection
-            try {
-                dbConn.close();
-            } catch (SQLException e) {
-                log().info("initialize: SQLException while closing database connection: " + e, e);
-            }
+            d.cleanUp();
         }
 
         // Add nodeId as an attribute of the interface for retrieval

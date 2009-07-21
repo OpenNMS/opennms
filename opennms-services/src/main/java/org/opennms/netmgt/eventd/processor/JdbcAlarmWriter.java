@@ -55,6 +55,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.Parameter;
@@ -190,10 +191,12 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
         if (log().isDebugEnabled()) {
             log().debug("AlarmWriter: DBID: " + alarmID);
         }
-    
-        PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
+            d.watch(insStmt);
+
             //Column 1, alarmId
             insStmt.setInt(1, alarmID);
 
@@ -332,11 +335,7 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
         } catch (SQLException e) {
             throw new SQLErrorCodeSQLExceptionTranslator().translate("foo", "bar", e);
         } finally {
-            try {
-                insStmt.close();
-            } catch (SQLException e) {
-                log().warn("SQLException while closing prepared statement: " + e, e);
-            }
+            d.cleanUp();
         }
         
         updateEventForAlarm(event, alarmID, connection);
@@ -348,9 +347,11 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
     }
 
     private void updateAlarm(Header eventHeader, Event event, int alarmId, Connection connection) throws SQLException {
-        PreparedStatement upDateStmt = connection.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            PreparedStatement upDateStmt = connection.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
+            d.watch(upDateStmt);
+            
             upDateStmt.setInt(1, event.getDbid());
             upDateStmt.setTimestamp(2, getEventTime(event));
             set(upDateStmt, 3, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
@@ -362,20 +363,18 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
 
             upDateStmt.executeUpdate();
         } finally {
-            try {
-                upDateStmt.close();
-            } catch (SQLException e) {
-                log().warn("SQLException while closing prepared statement: " + e, e);
-            }
+            d.cleanUp();
         }
 
         updateEventForAlarm(event, alarmId, connection);
     }
 
     private void updateEventForAlarm(Event event, int alarmID, Connection connection) throws SQLException {
-        PreparedStatement updateEventStmt = connection.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            PreparedStatement updateEventStmt = connection.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
+            d.watch(updateEventStmt);
+            
             updateEventStmt.setInt(1, alarmID);
             updateEventStmt.setInt(2, event.getDbid());
             updateEventStmt.executeUpdate();
@@ -383,11 +382,7 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
             log().warn("Failed to update event " + event.getDbid() + " for alarm " + alarmID + ": " + e, e);
             throw e;
         } finally {
-            try {
-                updateEventStmt.close();
-            } catch (SQLException e) {
-                log().warn("SQLException while closing prepared statement: " + e, e);
-            }
+            d.cleanUp();
         }
     }
 
@@ -412,21 +407,17 @@ public final class JdbcAlarmWriter extends AbstractJdbcPersister implements Even
 
     private void cleanPreviousEvents(int alarmId, int eventId, Connection connection) throws SQLException {
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = connection.prepareStatement("DELETE FROM events WHERE alarmId = ? AND eventId != ?");
+            d.watch(stmt);
             stmt.setInt(1, alarmId);
             stmt.setInt(2, eventId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             log().error("cleanPreviousEvents: Couldn't remove old events: " + e, e);
-        }
-
-        try {
-            if (stmt != null) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            log().error("cleanPreviousEvents: Couldn't close statement: " + e, e);
+        } finally {
+            d.cleanUp();
         }
     }
 }

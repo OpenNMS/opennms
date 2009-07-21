@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -312,55 +313,58 @@ public class DbStpNodeEntry
 			if (log.isDebugEnabled())
 			log.debug("DbStpNodeEntry.insert: SQL insert statment = " + names.toString());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = c.prepareStatement(names.toString());
-
-			int ndx = 1;
-			stmt.setInt(ndx++, m_nodeId);
-			stmt.setInt(ndx++, m_basevlan);
-
-			if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
-				stmt.setString(ndx++, m_basebridgeaddress);
-
-			if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
-				stmt.setInt(ndx++, m_basenumports);
-
-			if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
-				stmt.setInt(ndx++, m_basetype);
+			final DBUtils d = new DBUtils(getClass());
 			
-			if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) 
-				stmt.setInt(ndx++, m_stpprotocolspecification);
+			try {
+                PreparedStatement stmt = c.prepareStatement(names.toString());
+                d.watch(stmt);
 
-			if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) 
-				stmt.setInt(ndx++, m_stppriority);
+                int ndx = 1;
+                stmt.setInt(ndx++, m_nodeId);
+                stmt.setInt(ndx++, m_basevlan);
 
-			if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
-				stmt.setString(ndx++, m_stpdesignatedroot);
+                if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
+                	stmt.setString(ndx++, m_basebridgeaddress);
 
-			if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
-				stmt.setInt(ndx++, m_stprootcost);
+                if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
+                	stmt.setInt(ndx++, m_basenumports);
 
-			if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) 
-				stmt.setInt(ndx++, m_stprootport);
-			
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) 
-				stmt.setString(ndx++, m_basevlanname);
+                if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
+                	stmt.setInt(ndx++, m_basetype);
+                
+                if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) 
+                	stmt.setInt(ndx++, m_stpprotocolspecification);
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-				stmt.setString(ndx++, new String(new char[] { m_status }));
+                if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) 
+                	stmt.setInt(ndx++, m_stppriority);
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				stmt.setTimestamp(ndx++, m_lastPollTime);
-			}
+                if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
+                	stmt.setString(ndx++, m_stpdesignatedroot);
 
-			// Run the insert
-			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.insert: row " + rc);
-			stmt.close();
+                if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
+                	stmt.setInt(ndx++, m_stprootcost);
+
+                if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) 
+                	stmt.setInt(ndx++, m_stprootport);
+                
+                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) 
+                	stmt.setString(ndx++, m_basevlanname);
+
+                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                	stmt.setString(ndx++, new String(new char[] { m_status }));
+
+                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                	stmt.setTimestamp(ndx++, m_lastPollTime);
+                }
+
+                // Run the insert
+                //
+                int rc = stmt.executeUpdate();
+                if (log.isDebugEnabled())
+                	log.debug("StpNodeEntry.insert: row " + rc);
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
@@ -451,56 +455,59 @@ public class DbStpNodeEntry
 			if (log.isDebugEnabled())
 				log.debug("DbStpNodeEntry.update: SQL insert statment = " + sqlText.toString());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+			final DBUtils d = new DBUtils(getClass());
+			try {
+                PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+                d.watch(stmt);
 
-			int ndx = 1;
+                int ndx = 1;
 
-			if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
-				stmt.setString(ndx++, m_basebridgeaddress);
+                if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
+                	stmt.setString(ndx++, m_basebridgeaddress);
 
-			if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
-				stmt.setInt(ndx++, m_basenumports);
+                if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
+                	stmt.setInt(ndx++, m_basenumports);
 
-			if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
-				stmt.setInt(ndx++, m_basetype);
-			
-			if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) 
-				stmt.setInt(ndx++, m_stpprotocolspecification);
+                if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
+                	stmt.setInt(ndx++, m_basetype);
+                
+                if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) 
+                	stmt.setInt(ndx++, m_stpprotocolspecification);
 
-			if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) 
-				stmt.setInt(ndx++, m_stppriority);
+                if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) 
+                	stmt.setInt(ndx++, m_stppriority);
 
-			if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
-				stmt.setString(ndx++, m_stpdesignatedroot);
+                if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
+                	stmt.setString(ndx++, m_stpdesignatedroot);
 
-			if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
-				stmt.setInt(ndx++, m_stprootcost);
+                if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
+                	stmt.setInt(ndx++, m_stprootcost);
 
-			if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) 
-				stmt.setInt(ndx++, m_stprootport);
-			
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) 
-				stmt.setString(ndx++, m_basevlanname);
+                if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) 
+                	stmt.setInt(ndx++, m_stprootport);
+                
+                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) 
+                	stmt.setString(ndx++, m_basevlanname);
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-				stmt.setString(ndx++, new String(new char[] { m_status }));
+                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				stmt.setTimestamp(ndx++, m_lastPollTime);
-			}
+                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                	stmt.setTimestamp(ndx++, m_lastPollTime);
+                }
 
-			stmt.setInt(ndx++, m_nodeId);
-			stmt.setInt(ndx++, m_basevlan);
+                stmt.setInt(ndx++, m_nodeId);
+                stmt.setInt(ndx++, m_basevlan);
 
-			// Run the insert
-			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.update: row " + rc);
-			stmt.close();
+                // Run the insert
+                //
+                int rc = stmt.executeUpdate();
+                if (log.isDebugEnabled())
+                	log.debug("StpNodeEntry.update: row " + rc);
+                stmt.close();
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
@@ -520,86 +527,85 @@ public class DbStpNodeEntry
 		 */
 		private boolean load(Connection c) throws SQLException {
 			if (!m_fromDb)
-				throw new IllegalStateException(
-						"The record does not exists in the database");
+				throw new IllegalStateException("The record does not exists in the database");
 
 			Category log = ThreadCategory.getInstance(getClass());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = null;
-			stmt = c.prepareStatement(SQL_LOAD_STPNODE);
-			stmt.setInt(1, m_nodeId);
-			stmt.setInt(2, m_basevlan);
+			final DBUtils d = new DBUtils(getClass());
+			try {
+                PreparedStatement stmt = null;
+                stmt = c.prepareStatement(SQL_LOAD_STPNODE);
+                d.watch(stmt);
+                stmt.setInt(1, m_nodeId);
+                stmt.setInt(2, m_basevlan);
 
-			// Run the select
-			//
-			ResultSet rset = stmt.executeQuery();
-			if (!rset.next()) {
-				rset.close();
-				stmt.close();
-				if (log.isDebugEnabled())
-					log.debug("StpNodeEntry.load: no result found");
-				return false;
-			}
+                // Run the select
+                //
+                ResultSet rset = stmt.executeQuery();
+                d.watch(rset);
+                if (!rset.next()) {
+                	if (log.isDebugEnabled())
+                		log.debug("StpNodeEntry.load: no result found");
+                	return false;
+                }
 
-			// extract the values.
-			//
-			int ndx = 1;
+                // extract the values.
+                //
+                int ndx = 1;
 
-			// get the base bridge address
-			//
-			m_basebridgeaddress = rset.getString(ndx++);
-			if (rset.wasNull())
-				m_basebridgeaddress = null;
+                // get the base bridge address
+                //
+                m_basebridgeaddress = rset.getString(ndx++);
+                if (rset.wasNull())
+                	m_basebridgeaddress = null;
 
-			// get base bridge port numbers
-			//
-			m_basenumports = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_basenumports = -1;
+                // get base bridge port numbers
+                //
+                m_basenumports = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_basenumports = -1;
 
-			// get the base type
-			//
-			m_basetype = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_basetype = -1;
+                // get the base type
+                //
+                m_basetype = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_basetype = -1;
 
-			m_stpprotocolspecification = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_stpprotocolspecification = -1;
-			
-			m_stppriority = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_stppriority = -1;
-			
-			m_stpdesignatedroot = rset.getString(ndx++);
-			if (rset.wasNull())
-				m_stpdesignatedroot= null;
-			
-			m_stprootcost = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_stprootcost = -1;
+                m_stpprotocolspecification = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_stpprotocolspecification = -1;
+                
+                m_stppriority = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_stppriority = -1;
+                
+                m_stpdesignatedroot = rset.getString(ndx++);
+                if (rset.wasNull())
+                	m_stpdesignatedroot= null;
+                
+                m_stprootcost = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_stprootcost = -1;
 
-			m_stprootport = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_stprootport = -1;
+                m_stprootport = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_stprootport = -1;
 
-			m_basevlanname = rset.getString(ndx++);
-			if (rset.wasNull())
-				m_basevlanname = null;
+                m_basevlanname = rset.getString(ndx++);
+                if (rset.wasNull())
+                	m_basevlanname = null;
 
-			String str = rset.getString(ndx++);
-			if (str != null && !rset.wasNull())
-				m_status = str.charAt(0);
-			else
-				m_status = STATUS_UNKNOWN;
+                String str = rset.getString(ndx++);
+                if (str != null && !rset.wasNull())
+                	m_status = str.charAt(0);
+                else
+                	m_status = STATUS_UNKNOWN;
 
-			m_lastPollTime = rset.getTimestamp(ndx++);
-
-			rset.close();
-			stmt.close();
+                m_lastPollTime = rset.getTimestamp(ndx++);
+                stmt.close();
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database

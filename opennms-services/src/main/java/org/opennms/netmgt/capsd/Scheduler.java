@@ -54,6 +54,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -258,16 +259,24 @@ final class Scheduler implements Runnable, PausableFiber {
 
         PreparedStatement nodeStmt = null;
         PreparedStatement ifStmt = null;
+        ResultSet rs = null;
+        ResultSet rset = null;
+        
+        final DBUtils d = new DBUtils(getClass());
         try {
             db = DataSourceFactory.getInstance().getConnection();
+            d.watch(db);
             // Prepare SQL statements in advance
             //
             nodeStmt = db.prepareStatement(SQL_RETRIEVE_NODES);
+            d.watch(nodeStmt);
             ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
+            d.watch(ifStmt);
 
             // Retrieve non-deleted nodes from the node table in the database
             //
-            ResultSet rs = nodeStmt.executeQuery();
+            rs = nodeStmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 // Retrieve an interface from the ipInterface table in
@@ -278,38 +287,28 @@ final class Scheduler implements Runnable, PausableFiber {
                 if (log().isDebugEnabled())
                     log().debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
 
-                ResultSet rset = ifStmt.executeQuery();
-                if (rset.next()) {
-                    Timestamp lastPolled = rset.getTimestamp(1);
-                    if (lastPolled != null && rset.wasNull() == false) {
+                final DBUtils dbu = new DBUtils(getClass());
+                try {
+                    rset = ifStmt.executeQuery();
+                    dbu.watch(rs);
+                    if (rset.next()) {
+                        Timestamp lastPolled = rset.getTimestamp(1);
+                        if (lastPolled != null && rset.wasNull() == false) {
+                            if (log().isDebugEnabled())
+                                log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                            NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
+                            m_knownNodes.add(nodeInfo);
+                        }
+                    } else {
                         if (log().isDebugEnabled())
-                            log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
-                        NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
-                        m_knownNodes.add(nodeInfo);
+                            log().debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
                     }
-                } else {
-                    if (log().isDebugEnabled())
-                        log().debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
+                } finally {
+                    dbu.cleanUp();
                 }
             }
         } finally {
-            try {
-                if (nodeStmt != null)
-                    nodeStmt.close();
-            } catch (Exception e) {
-            }
-
-            try {
-                if (ifStmt != null)
-                    ifStmt.close();
-            } catch (Exception e) {
-            }
-
-            try {
-                if (db != null)
-                    db.close();
-            } catch (Exception e) {
-            }
+            d.cleanUp();
         }
 
     }
@@ -328,11 +327,15 @@ final class Scheduler implements Runnable, PausableFiber {
         // Retrieve last poll time for the node from the ipInterface
         // table.
         Connection db = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             db = DataSourceFactory.getInstance().getConnection();
+            d.watch(db);
             PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
+            d.watch(ifStmt);
             ifStmt.setInt(1, nodeId);
             ResultSet rset = ifStmt.executeQuery();
+            d.watch(rset);
             if (rset.next()) {
                 Timestamp lastPolled = rset.getTimestamp(1);
                 if (lastPolled != null && rset.wasNull() == false) {
@@ -343,12 +346,7 @@ final class Scheduler implements Runnable, PausableFiber {
             } else
                 log().warn("scheduleNode: Failed to retrieve last polled time from database for nodeid " + nodeId);
         } finally {
-            if (db != null) {
-                try {
-                    db.close();
-                } catch (Exception e) {
-                }
-            }
+            d.cleanUp();
         }
     }
 

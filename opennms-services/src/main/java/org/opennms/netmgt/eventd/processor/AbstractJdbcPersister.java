@@ -279,32 +279,6 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     }
     
     protected int getNextId() throws SQLException {
-//        PreparedStatement getNextIdStmt = m_connection.prepareStatement(getGetNextIdString());
-//        
-//        try {
-//            int id;
-//            // Get the next id from sequence specified in
-//            ResultSet rs = null;
-//            try {
-//                rs = getNextIdStmt.executeQuery();
-//                rs.next();
-//                id = rs.getInt(1);
-//            } catch (SQLException e) {
-//                throw e;
-//            } finally {
-//                if (rs != null) {
-//                    rs.close();
-//                }
-//            }
-//            rs = null;
-//            return id;
-//        } finally {
-//            try {
-//                getNextIdStmt.close();
-//            } catch (SQLException e) {
-//                log().warn("SQLException while closing prepared statement: " + e, e);
-//            }
-//        }
         return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
     }
 

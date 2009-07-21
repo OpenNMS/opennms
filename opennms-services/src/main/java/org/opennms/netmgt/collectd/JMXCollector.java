@@ -43,7 +43,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -60,6 +59,7 @@ import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -287,19 +287,18 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         // Retrieve the name of the JMX data collector
-        String collectionName = ParameterMap.getKeyedString(parameters,
-                                                            "collection",
-                                                            serviceName);
+        String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
 
         if (log.isDebugEnabled()) {
             log.debug("initialize: collectionName=" + collectionName);
         }
         java.sql.Connection dbConn = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
+            d.watch(dbConn);
         } catch (SQLException e) {
-            log.error("initialize: Failed getting connection to the database.",
-                      e);
+            log.error("initialize: Failed getting connection to the database.", e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -316,8 +315,10 @@ public abstract class JMXCollector implements ServiceCollector {
 
         try {
             stmt = dbConn.prepareStatement(SQL_GET_NODEID);
+            d.watch(stmt);
             stmt.setString(1, ipAddr.getHostAddress()); // interface address
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 nodeID = rs.getInt(1);
@@ -327,20 +328,11 @@ public abstract class JMXCollector implements ServiceCollector {
             } else {
                 nodeID = -1;
             }
-            rs.close();
         } catch (SQLException e) {
             log.error("initialize: SQL exception!!", e);
-            throw new RuntimeException("SQL exception while attempting to "
-                                       + "retrieve node id for interface "
-                                       + ipAddr.getHostAddress());
+            throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress());
         } finally {
-            try {
-                stmt.close();
-            } catch (Exception e) {
-                // Ignore
-            } finally {
-                 try { dbConn.close(); } catch(Exception e) {}
-            }
+            d.cleanUp();
         }
 
         JMXNodeInfo nodeInfo = new JMXNodeInfo(nodeID);

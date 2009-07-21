@@ -58,6 +58,7 @@ import org.apache.regexp.RE;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vulnscand.Excludes;
@@ -297,17 +298,19 @@ public final class VulnscandConfigFactory {
 
         log.debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 
-        PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
-        s.setString(1, ifAddress.getHostAddress());
-
-        ResultSet rs = s.executeQuery();
-        if (rs.next())
-            result = true;
-
-        // Close result set and statement
-        //
-        rs.close();
-        s.close();
+        DBUtils d = new DBUtils(VulnscandConfigFactory.class);
+        try {
+            PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
+            d.watch(s);
+            s.setString(1, ifAddress.getHostAddress());
+    
+            ResultSet rs = s.executeQuery();
+            d.watch(rs);
+            if (rs.next())
+                result = true;
+        } finally {
+            d.cleanUp();
+        }
 
         return result;
     }
@@ -324,19 +327,21 @@ public final class VulnscandConfigFactory {
         //
         // dbConn.setReadOnly(true);
 
-        PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_NODEID_SQL);
-        s.setString(1, ifAddress.getHostAddress());
-
-        ResultSet rs = s.executeQuery();
         int nodeid = -1;
-        if (rs.next()) {
-            nodeid = rs.getInt(1);
+        DBUtils d = new DBUtils(VulnscandConfigFactory.class);
+        try {
+            PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_NODEID_SQL);
+            d.watch(s);
+            s.setString(1, ifAddress.getHostAddress());
+    
+            ResultSet rs = s.executeQuery();
+            d.watch(rs);
+            if (rs.next()) {
+                nodeid = rs.getInt(1);
+            }
+        } finally {
+            d.cleanUp();
         }
-
-        // Close result set and statement
-        //
-        rs.close();
-        s.close();
 
         return nodeid;
     }

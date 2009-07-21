@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -299,57 +300,62 @@ final class DbIpRouteInterfaceEntry {
 
 		// create the Prepared statment and then
 		// start setting the result values
-		//
-		PreparedStatement stmt = c.prepareStatement(names.toString());
-
-		int ndx = 1;
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setString(ndx++, m_routedest);
-
+		DBUtils d = new DBUtils(getClass());
 		
-		if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
-			stmt.setString(ndx++, m_routemask);
+		try {
+            PreparedStatement stmt = c.prepareStatement(names.toString());
+            d.watch(stmt);
 
-		if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
-			stmt.setString(ndx++, m_routenexthop);
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_routedest);
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_routeifindex);
+            
+            if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
+            	stmt.setString(ndx++, m_routemask);
 
-		if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
-			stmt.setInt(ndx++, m_routemetric1);
+            if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
+            	stmt.setString(ndx++, m_routenexthop);
 
-		if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
-			stmt.setInt(ndx++, m_routemetric2);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_routeifindex);
 
-		if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
-			stmt.setInt(ndx++, m_routemetric3);
+            if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
+            	stmt.setInt(ndx++, m_routemetric1);
 
-		if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
-			stmt.setInt(ndx++, m_routemetric4);
+            if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
+            	stmt.setInt(ndx++, m_routemetric2);
 
-		if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
-			stmt.setInt(ndx++, m_routemetric5);
+            if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
+            	stmt.setInt(ndx++, m_routemetric3);
 
-		if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-			stmt.setInt(ndx++, m_routetype);
+            if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
+            	stmt.setInt(ndx++, m_routemetric4);
 
-		if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
-			stmt.setInt(ndx++, m_routeproto);
+            if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
+            	stmt.setInt(ndx++, m_routemetric5);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
+            	stmt.setInt(ndx++, m_routetype);
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
-		
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.insert: row " + rc);
-		stmt.close();
+            if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
+            	stmt.setInt(ndx++, m_routeproto);
+
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
+
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
+            
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            	log.debug("IpRouteInterfaceEntry.insert: row " + rc);
+		} finally {
+		    d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -447,56 +453,62 @@ final class DbIpRouteInterfaceEntry {
 		// create the Prepared statment and then
 		// start setting the result values
 		//
-		PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+		DBUtils d = new DBUtils(getClass());
+		
+		try {
+            PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+            d.watch(stmt);
 
-		int ndx = 1;
+            int ndx = 1;
 
-		if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
-			stmt.setString(ndx++, m_routemask);
+            if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
+            	stmt.setString(ndx++, m_routemask);
 
-		if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
-			stmt.setString(ndx++, m_routenexthop);
+            if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
+            	stmt.setString(ndx++, m_routenexthop);
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_routeifindex);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_routeifindex);
 
-		if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
-			stmt.setInt(ndx++, m_routemetric1);
+            if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
+            	stmt.setInt(ndx++, m_routemetric1);
 
-		if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
-			stmt.setInt(ndx++, m_routemetric2);
+            if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
+            	stmt.setInt(ndx++, m_routemetric2);
 
-		if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
-			stmt.setInt(ndx++, m_routemetric3);
+            if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
+            	stmt.setInt(ndx++, m_routemetric3);
 
-		if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
-			stmt.setInt(ndx++, m_routemetric4);
+            if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
+            	stmt.setInt(ndx++, m_routemetric4);
 
-		if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
-			stmt.setInt(ndx++, m_routemetric5);
+            if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
+            	stmt.setInt(ndx++, m_routemetric5);
 
-		if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-			stmt.setInt(ndx++, m_routetype);
+            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
+            	stmt.setInt(ndx++, m_routetype);
 
-		if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
-			stmt.setInt(ndx++, m_routeproto);
+            if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
+            	stmt.setInt(ndx++, m_routeproto);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
 
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setString(ndx++, m_routedest);
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_routedest);
 
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.update: row " + rc);
-		stmt.close();
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            	log.debug("IpRouteInterfaceEntry.update: row " + rc);
+		} finally {
+		    d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -516,8 +528,7 @@ final class DbIpRouteInterfaceEntry {
 	 */
 	private boolean load(Connection c) throws SQLException {
 		if (!m_fromDb)
-			throw new IllegalStateException(
-					"The record does not exists in the database");
+			throw new IllegalStateException("The record does not exists in the database");
 
 		Category log = ThreadCategory.getInstance(getClass());
 
@@ -525,83 +536,87 @@ final class DbIpRouteInterfaceEntry {
 		// start setting the result values
 		//
 		PreparedStatement stmt = null;
-		stmt = c.prepareStatement(SQL_LOAD_IPROUTEINTERFACE);
-		stmt.setInt(1, m_nodeId);
-		stmt.setString(2, m_routedest);
-
+		DBUtils d = new DBUtils(getClass());
+		
 		// Run the select
-		//
-		ResultSet rset = stmt.executeQuery();
-		if (!rset.next()) {
-			rset.close();
-			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("IpRouteInterfaceEntry.load: no result found");
-			return false;
-		}
+        		//
+        ResultSet rset;
+        try {
+            stmt = c.prepareStatement(SQL_LOAD_IPROUTEINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setString(2, m_routedest);
 
-		// extract the values.
-		//
-		int ndx = 1;
+            rset = stmt.executeQuery();
+            d.watch(rset);
+            if (!rset.next()) {
+            	if (log.isDebugEnabled())
+            		log.debug("IpRouteInterfaceEntry.load: no result found");
+            	return false;
+            }
 
-		// get the route netmask
-		//
-		m_routemask = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_routemask = null;
+            // extract the values.
+            //
+            int ndx = 1;
 
-		// get the next hop ip address
-		//
-		m_routenexthop = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_routenexthop = null;
+            // get the route netmask
+            //
+            m_routemask = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_routemask = null;
 
-		// get the interface ifindex for routing info
-		//
-		m_routeifindex = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routeifindex = -1;
-		// get the metrics
-		m_routemetric1 = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routemetric1 = -1;
+            // get the next hop ip address
+            //
+            m_routenexthop = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_routenexthop = null;
 
-		m_routemetric2 = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routemetric2 = -1;
+            // get the interface ifindex for routing info
+            //
+            m_routeifindex = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routeifindex = -1;
+            // get the metrics
+            m_routemetric1 = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routemetric1 = -1;
 
-		m_routemetric3 = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routemetric3 = -1;
-		
-		m_routemetric4 = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routemetric4 = -1;
+            m_routemetric2 = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routemetric2 = -1;
 
-		m_routemetric5 = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routemetric5 = -1;
-		
-		m_routetype = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routetype = -1;
-		
-		m_routeproto = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_routeproto = -1;
-		
-		// the entry status
-		//
-		String str = rset.getString(ndx++);
-		if (str != null && !rset.wasNull())
-			m_status = str.charAt(0);
-		else
-			m_status = STATUS_UNKNOWN;
+            m_routemetric3 = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routemetric3 = -1;
+            
+            m_routemetric4 = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routemetric4 = -1;
 
-		m_lastPollTime = rset.getTimestamp(ndx++);
+            m_routemetric5 = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routemetric5 = -1;
+            
+            m_routetype = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routetype = -1;
+            
+            m_routeproto = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_routeproto = -1;
+            
+            // the entry status
+            //
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+            	m_status = str.charAt(0);
+            else
+            	m_status = STATUS_UNKNOWN;
 
-		rset.close();
-		stmt.close();
+            m_lastPollTime = rset.getTimestamp(ndx++);
+        } finally {
+            d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -613,8 +628,7 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	DbIpRouteInterfaceEntry() {
-		throw new UnsupportedOperationException(
-				"Default constructor not supported!");
+		throw new UnsupportedOperationException("Default constructor not supported!");
 	}
 
 	DbIpRouteInterfaceEntry(int nodeId, String routedest, boolean exists) {
