@@ -57,6 +57,7 @@ import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -178,6 +179,8 @@ public class BroadcastEventProcessor implements InitializingBean {
     
     private SuspectEventProcessorFactory m_suspectEventProcessorFactory;
 
+    private DBUtils m_dbUtils = new DBUtils(BroadcastEventProcessor.class);
+
     /**
      * Counts the number of interfaces on the node other than a given interface
      * 
@@ -196,11 +199,14 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
+
         try {
             stmt = dbConn.prepareStatement(DB_COUNT_OTHER_INTERFACES_ON_NODE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             int count = 0;
             while (rs.next()) {
                 count = rs.getInt(1);
@@ -211,11 +217,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return count;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -241,10 +243,12 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(DB_COUNT_OTHER_SERVICES_ON_IFACE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setString(3, service);
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             int count = 0;
             while (rs.next()) {
                 count = rs.getInt(1);
@@ -255,11 +259,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return count;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -282,9 +282,11 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(DB_COUNT_SERVICES_ON_OTHER_INTERFACES);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
 
             int count = 0;
             while (rs.next()) {
@@ -296,11 +298,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return count;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -325,9 +323,12 @@ public class BroadcastEventProcessor implements InitializingBean {
             // the database. If the node with the nodeLabel exists in the node
             // table, just add the ip address to the database.
             stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
+            m_dbUtils.watch(stmt);
+
             stmt.setString(1, nodeLabel);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             List<Event> eventsToSend = new LinkedList<Event>();
             while (rs.next()) {
 
@@ -356,16 +357,8 @@ public class BroadcastEventProcessor implements InitializingBean {
         } catch (UnknownHostException e) {
             throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
-    }
-
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -502,9 +495,9 @@ public class BroadcastEventProcessor implements InitializingBean {
      */
     private List<Event> doAddServiceMapping(Connection dbConn, String ipaddr, String serviceName, long txNo) throws SQLException, FailedOperationException {
         PreparedStatement stmt = null;
-        
         try {
             stmt = dbConn.prepareStatement(SQL_ADD_SERVICE_TO_MAPPING);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, ipaddr);
             stmt.setString(2, serviceName);
@@ -516,7 +509,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return doChangeService(dbConn, ipaddr, serviceName, "ADD", txNo);
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -538,10 +531,11 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(SQL_QUERY_IPADDRESS_EXIST);
-
+            m_dbUtils.watch(stmt);
             stmt.setString(1, ipaddr);
             rs = stmt.executeQuery();
-
+            m_dbUtils.watch(rs);
+            
             List<Event> eventsToSend = new LinkedList<Event>();
             while (rs.next()) {
                 if (log().isDebugEnabled()) {
@@ -565,11 +559,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         } catch (UnknownHostException e) {
             throw new FailedOperationException("Unable to resolve host: " + e.getMessage(), e);
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -622,6 +612,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         PreparedStatement stmt = null;
         try {
             stmt = dbConn.prepareStatement(SQL_ADD_INTERFACE_TO_SERVER);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, ipaddr);
             stmt.setString(2, hostName);
@@ -636,7 +627,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             Event newEvent = EventUtils.createAddInterfaceEvent("OpenNMS.Capsd", nodeLabel, ipaddr, hostName, txNo);
             return Collections.singletonList(newEvent);
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -701,6 +692,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 log().debug("updateServer: delete all services on the interface: " + ipaddr + " in the interface/service mapping.");
             }
             stmt = dbConn.prepareStatement(SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING);
+            m_dbUtils.watch(stmt);
             stmt.setString(1, ipaddr);
             stmt.executeUpdate();
 
@@ -721,7 +713,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             }
             return eventsToSend;
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -753,27 +745,24 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     private void deleteAlarmsForNode(Connection dbConn, long nodeId) throws SQLException {
         PreparedStatement stmt = null;
-
         try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
-            		                        "WHERE nodeid = ?");
+            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ?");
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             int count = stmt.executeUpdate();
 
             log().debug("deleteAlarmsForNode: deleted: "+count+" alarms for node: "+nodeId);
 
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
 
     private void deleteAlarmsForInterface(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
         PreparedStatement stmt = null;
-
         try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
-                                            "WHERE nodeid = ? " +
-                                              "AND ipaddr = ?");
+            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ? AND ipaddr = ?");
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             int count = stmt.executeUpdate();
@@ -781,7 +770,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             log().debug("deleteAlarmsForInterace: deleted: "+count+" alarms for interface: "+ipAddr);
 
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
     
@@ -796,6 +785,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                                              "  IN (SELECT serviceid " +
                                              "FROM service " +
                                             "WHERE servicename = ?)");
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setString(3, service);
@@ -804,7 +794,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             log().debug("deleteAlarmsForService: deleted: "+count+" alarms for service: "+service);
 
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
     
@@ -885,6 +875,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 log().debug("handleUpdateService: delete service: " + serviceName + " on IPAddress: " + ipaddr);
             }
             stmt = dbConn.prepareStatement(SQL_DELETE_SERVICE_INTERFACE_MAPPING);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, ipaddr);
             stmt.setString(2, serviceName);
@@ -893,7 +884,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return doChangeService(dbConn, ipaddr, serviceName, "DELETE", txNo);
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
 
@@ -970,6 +961,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             // Verify if the interface already exists on the NMS server
             stmt = dbConn.prepareStatement(SQL_QUERY_INTERFACE_ON_SERVER);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, ipaddr);
             stmt.setString(2, hostName);
@@ -982,7 +974,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return count > 0;
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1004,11 +996,13 @@ public class BroadcastEventProcessor implements InitializingBean {
         try {
             // Verify if the specified service already exist.
             stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, ipaddr);
             stmt.setString(2, serviceName);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             List<Integer> nodeIdList = new LinkedList<Integer>();
             while (rs.next()) {
                 if (log().isDebugEnabled()) {
@@ -1024,11 +1018,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             }
             return nodeIds;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1046,10 +1036,12 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement("SELECT node.nodeid FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'");
+            m_dbUtils.watch(stmt);
             stmt.setString(1, nodeLabel);
             stmt.setString(2, ipAddr);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             List<Long> nodeIdList = new LinkedList<Long>();
             while (rs.next()) {
                 nodeIdList.add(new Long(rs.getLong(1)));
@@ -1062,11 +1054,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             }
             return nodeIds;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1500,35 +1488,21 @@ public class BroadcastEventProcessor implements InitializingBean {
             ResultSet rs = null;
             try {
                 dbc = getConnection();
+                m_dbUtils.watch(dbc);
 
                 // Retrieve node id
                 stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
+                m_dbUtils.watch(stmt);
                 stmt.setString(1, event.getInterface());
                 rs = stmt.executeQuery();
+                m_dbUtils.watch(rs);
                 if (rs.next()) {
                     nodeid = rs.getInt(1);
                 }
             } catch (SQLException sqlE) {
                 log().error("handleForceRescan: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
             } finally {
-                try {
-                    if (rs != null) rs.close();
-                } catch (SQLException e) {
-                    log().error("handleForceRescan: Exception thrown closing resultset: ", e);
-                } finally {
-                    try {
-                        if (stmt != null) stmt.close();                        
-                    } catch (SQLException e) {
-                        log().error("handleForceRescan: Exception thrown closing statement: ", e);
-                    } finally {
-                        try {
-                            if (dbc != null) dbc.close();
-                        } catch (SQLException e) {
-                            log().error("handleForceRescan: Exception thrown closing connection: ", e);
-                        }
-                    }
-
-                }
+                m_dbUtils.cleanUp();
             }
 
         }
@@ -1752,18 +1726,16 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(SQL_QUERY_IPINTERFACE_EXIST);
+            m_dbUtils.watch(stmt);
 
             stmt.setString(1, nodeLabel);
             stmt.setString(2, ipaddr);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             return rs.next();
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }
     }
 
@@ -1791,9 +1763,11 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT DISTINCT service.serviceName FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
             stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
 
             Set<String> services = new HashSet<String>();
             while (rs.next()) {
@@ -1802,17 +1776,13 @@ public class BroadcastEventProcessor implements InitializingBean {
                 services.add(serviceName);
             }
 
-            rs.close();
-            rs = null;
-            stmt.close();
-            stmt = null;
-
             final String DB_MARK_SERVICES_FOR_INTERFACE = "UPDATE ifservices SET status = 'D' where ifservices.nodeID = ? and ifservices.ipAddr = ?";
             stmt = dbConn.prepareStatement(DB_MARK_SERVICES_FOR_INTERFACE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
 
-            stmt.executeUpdate(); //TODO: why is this line not in stable version
+            stmt.executeUpdate();
 
             for(String serviceName : services) {
                 log().debug("creating event for service " + serviceName + " for ipAddr " + ipAddr + " node " + nodeId);
@@ -1824,11 +1794,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return eventsToSend;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1856,6 +1822,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         try {
 
             stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             int count = stmt.executeUpdate();
@@ -1868,7 +1835,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             else
                 return Collections.emptyList();
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1900,8 +1867,10 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(DB_FIND_IFS_FOR_NODE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
 
             Set<String> ipAddrs = new HashSet<String>();
             while (rs.next()) {
@@ -1918,11 +1887,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return eventsToSend;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -1947,6 +1912,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         try {
             stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             int count = stmt.executeUpdate();
 
@@ -1957,7 +1923,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             else
                 return Collections.emptyList();
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
 
@@ -1992,6 +1958,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         try {
             stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
+            m_dbUtils.watch(stmt);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setString(3, service);
@@ -2005,7 +1972,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             else
                 return Collections.emptyList();
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -2025,23 +1992,20 @@ public class BroadcastEventProcessor implements InitializingBean {
         ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
-
+            m_dbUtils.watch(stmt);
             stmt.setString(1, nodeLabel);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             return rs.next();
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
 
     }
 
      /**
-     * JDBC Query to servicemap table.  This will soon be cleaned up with Hibernate/DAO code.
+     * JDBC Query to service map table.  This will soon be cleaned up with Hibernate/DAO code.
      * 
      * @param dbConn
      * @param ipaddr
@@ -2057,15 +2021,18 @@ public class BroadcastEventProcessor implements InitializingBean {
         // mapping.
         try {
             stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_MAPPING_EXIST);
-
+            m_dbUtils.watch(stmt);
+            
             stmt.setString(1, ipaddr);
             stmt.setString(2, serviceName);
 
             ResultSet rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
+            
             mapExists = rs.next();
             return mapExists;
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }        
    }
 
@@ -2091,10 +2058,11 @@ public class BroadcastEventProcessor implements InitializingBean {
         try {
             // Retrieve the serviceId
             stmt = dbConn.prepareStatement(SQL_RETRIEVE_SERVICE_ID);
-
+            m_dbUtils.watch(stmt);
             stmt.setString(1, serviceName);
 
             rs = stmt.executeQuery();
+            m_dbUtils.watch(rs);
             int serviceId = -1;
             while (rs.next()) {
                 log().debug("verifyServiceExists: retrieve serviceid for service " + serviceName);
@@ -2109,11 +2077,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             return serviceId;
         } finally {
-            try {
-                if (rs != null) rs.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
     
@@ -2145,7 +2109,9 @@ public class BroadcastEventProcessor implements InitializingBean {
         Assert.state(m_localServer != null, "The localServer must be set");
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
 
-} // end class
-
+}

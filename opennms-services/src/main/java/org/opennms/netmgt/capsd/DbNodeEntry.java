@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -264,6 +265,8 @@ final class DbNodeEntry {
      */
     private int m_changed;
 
+    private DBUtils m_dbUtils = new DBUtils(DbNodeEntry.class);
+
     // Mask fields
     //
     private static final int CHANGED_CREATE_TIME = 1 << 0;
@@ -313,21 +316,16 @@ final class DbNodeEntry {
         if (m_fromDb)
             throw new IllegalStateException("The record already exists in the database");
 
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Get the next node identifier
-        //
         PreparedStatement stmt = null;
         ResultSet rset = null;
         try {
             stmt = c.prepareStatement(SQL_NEXT_NID);
+            m_dbUtils.watch(stmt);
             rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
             rset.next();
             m_nodeId = rset.getInt(1);
-            rset.close();
-            rset = null;
-            stmt.close();
-            stmt = null;
 
             // first extract the next node identifier
             //
@@ -424,15 +422,14 @@ final class DbNodeEntry {
                 names.append(",foreignId");
             }
 
-            
-
             names.append(") VALUES (").append(values).append(')');
-            log.debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
+            log().debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
 
             // create the Prepared statment and then
             // start setting the result values
             //
             stmt = c.prepareStatement(names.toString());
+            m_dbUtils.watch(stmt);
             names = null;
 
             int ndx = 1;
@@ -493,14 +490,14 @@ final class DbNodeEntry {
             if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
                 stmt.setString(ndx++, m_foreignId);
 
-            if (log.isDebugEnabled()) {
-                log.debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
+            if (log().isDebugEnabled()) {
+                log().debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
             }
 
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            log.debug("DbNodeEntry.insert: SQL update result = " + rc);
+            log().debug("DbNodeEntry.insert: SQL update result = " + rc);
 
             // Insert a null entry into the asset table
 
@@ -512,11 +509,7 @@ final class DbNodeEntry {
             m_fromDb = true;
             m_changed = 0;
         } finally {
-            try {
-                if (rset != null) rset.close();
-            } finally {
-                if (stmt != null) stmt.close();
-            }
+            m_dbUtils.cleanUp();
         }        
     }
 
@@ -532,8 +525,6 @@ final class DbNodeEntry {
     private void update(Connection c) throws SQLException {
         if (!m_fromDb)
             throw new IllegalStateException("The record does not exists in the database");
-
-        Category log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         //
@@ -622,7 +613,7 @@ final class DbNodeEntry {
 
         sqlText.append(" WHERE nodeID = ? AND dpName = ?");
 
-        log.debug("DbNodeEntry.update: SQL update statment = " + sqlText.toString());
+        log().debug("DbNodeEntry.update: SQL update statment = " + sqlText.toString());
 
         // create the Prepared statment and then
         // start setting the result values
@@ -630,6 +621,8 @@ final class DbNodeEntry {
         PreparedStatement stmt = null;
         try {
             stmt = c.prepareStatement(sqlText.toString());
+            m_dbUtils.watch(stmt);
+            
             sqlText = null;
 
             int ndx = 1;
@@ -744,14 +737,14 @@ final class DbNodeEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            log.debug("DbNodeEntry.update: update result = " + rc);
+            log().debug("DbNodeEntry.update: update result = " + rc);
 
             // clear the mask and mark as backed
             // by the database
             //
             m_changed = 0;
         } finally {
-            if (stmt != null) stmt.close();
+            m_dbUtils.cleanUp();
         }
     }
 
@@ -770,120 +763,119 @@ final class DbNodeEntry {
         if (!m_fromDb)
             throw new IllegalStateException("The record does not exists in the database");
 
-        // create the Prepared statment and then
+        // create the Prepared statement and then
         // start setting the result values
         //
-        PreparedStatement stmt = c.prepareStatement(SQL_LOAD_REC);
-        stmt.setInt(1, m_nodeId);
-        stmt.setString(2, m_dpName);
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        try {
+            stmt = c.prepareStatement(SQL_LOAD_REC);
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setString(2, m_dpName);
 
-        // Run the insert
-        //
-        ResultSet rset = stmt.executeQuery();
-        if (!rset.next()) {
-            rset.close();
-            stmt.close();
-            return false;
+            rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
+            if (!rset.next()) {
+                return false;
+            }
+
+            // extract the values.
+            //
+            int ndx = 1;
+
+            // get the time
+            //
+            m_createTime = rset.getTimestamp(ndx++);
+
+            // the parent id
+            //
+            m_parentId = rset.getInt(ndx++);
+            if (rset.wasNull())
+                m_parentId = -1;
+
+            // the node type
+            //
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+                m_type = str.charAt(0);
+            else
+                m_type = NODE_TYPE_UNKNOWN;
+
+            // the sysoid
+            //
+            m_sysoid = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_sysoid = null;
+
+            // the sysname
+            //
+            m_sysname = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_sysname = null;
+
+            // the sys description
+            //
+            m_sysdescr = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_sysdescr = null;
+
+            // the system location
+            //
+            m_syslocation = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_syslocation = null;
+
+            // the system contact
+            //
+            m_syscontact = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_syscontact = null;
+
+            // the node label
+            //
+            m_label = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_label = null;
+
+            // the label type
+            //
+            str = rset.getString(ndx++);
+            if (rset.wasNull() || str == null)
+                m_labelSource = LABEL_SOURCE_UNKNOWN;
+            else
+                m_labelSource = str.charAt(0);
+
+            // the netbios name
+            //
+            m_nbName = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_nbName = null;
+
+            // the domain name
+            //
+            m_nbDomainName = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_nbDomainName = null;
+
+            // the operating system
+            //
+            m_os = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_os = null;
+
+            // get the last poll time
+            //
+            m_lastPoll = rset.getTimestamp(ndx++);
+            
+            m_foreignSource = rset.getString(ndx++);
+            
+            m_foreignId = rset.getString(ndx++);
+        } finally {
+            m_dbUtils.cleanUp();
         }
 
-        // extract the values.
-        //
-        int ndx = 1;
-
-        // get the time
-        //
-        m_createTime = rset.getTimestamp(ndx++);
-
-        // the parent id
-        //
-        m_parentId = rset.getInt(ndx++);
-        if (rset.wasNull())
-            m_parentId = -1;
-
-        // the node type
-        //
-        String str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull())
-            m_type = str.charAt(0);
-        else
-            m_type = NODE_TYPE_UNKNOWN;
-
-        // the sysoid
-        //
-        m_sysoid = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_sysoid = null;
-
-        // the sysname
-        //
-        m_sysname = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_sysname = null;
-
-        // the sys description
-        //
-        m_sysdescr = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_sysdescr = null;
-
-        // the system location
-        //
-        m_syslocation = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_syslocation = null;
-
-        // the system contact
-        //
-        m_syscontact = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_syscontact = null;
-
-        // the node label
-        //
-        m_label = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_label = null;
-
-        // the label type
-        //
-        str = rset.getString(ndx++);
-        if (rset.wasNull() || str == null)
-            m_labelSource = LABEL_SOURCE_UNKNOWN;
-        else
-            m_labelSource = str.charAt(0);
-
-        // the netbios name
-        //
-        m_nbName = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_nbName = null;
-
-        // the domain name
-        //
-        m_nbDomainName = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_nbDomainName = null;
-
-        // the operating system
-        //
-        m_os = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_os = null;
-
-        // get the last poll time
-        //
-        m_lastPoll = rset.getTimestamp(ndx++);
-        
-        m_foreignSource = rset.getString(ndx++);
-        
-        m_foreignId = rset.getString(ndx++);
-
-        rset.close();
-        stmt.close();
-
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_changed = 0;
         return true;
     }
@@ -1662,7 +1654,7 @@ final class DbNodeEntry {
                     if (db != null)
                         db.close();
                 } catch (SQLException e) {
-                    ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
+                    log().warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -1679,7 +1671,7 @@ final class DbNodeEntry {
      *            The database connection used to write the record.
      */
     void store(Connection db) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
         log.debug("DbNodeEntry: changed map = 0x" + Integer.toHexString(m_changed));
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb)
@@ -1701,7 +1693,7 @@ final class DbNodeEntry {
                 if (db != null)
                     db.close();
             } catch (SQLException e) {
-                ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
+                log().warn("Exception closing JDBC connection", e);
             }
         }
 
@@ -1709,38 +1701,45 @@ final class DbNodeEntry {
     }
 
     DbIpInterfaceEntry[] getInterfaces(Connection db) throws SQLException {
-        PreparedStatement stmt = db.prepareStatement(SQL_LOAD_IF_LIST);
-        stmt.setInt(1, m_nodeId);
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        
+        List<DbIpInterfaceEntry> l;
+        try {
+            stmt = db.prepareStatement(SQL_LOAD_IF_LIST);
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, m_nodeId);
 
-        ResultSet rset = stmt.executeQuery();
-        List<DbIpInterfaceEntry> l = new ArrayList<DbIpInterfaceEntry>();
+            rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
+            l = new ArrayList<DbIpInterfaceEntry>();
 
-        while (rset.next()) {
-            String saddr = rset.getString(1);
-            int ifIndex = rset.getInt(2);
-            if (rset.wasNull())
-                ifIndex = -1;
+            while (rset.next()) {
+                String saddr = rset.getString(1);
+                int ifIndex = rset.getInt(2);
+                if (rset.wasNull())
+                    ifIndex = -1;
 
-            InetAddress addr = null;
-            try {
-                addr = InetAddress.getByName(saddr);
-            } catch (UnknownHostException e) {
-                ThreadCategory.getInstance(getClass()).warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                continue;
+                InetAddress addr = null;
+                try {
+                    addr = InetAddress.getByName(saddr);
+                } catch (UnknownHostException e) {
+                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
+                    continue;
+                }
+
+                DbIpInterfaceEntry entry = null;
+                if (ifIndex == -1)
+                    entry = DbIpInterfaceEntry.get(db, m_nodeId, addr);
+                else
+                    entry = DbIpInterfaceEntry.get(db, m_nodeId, addr, ifIndex);
+
+                if (entry != null)
+                    l.add(entry);
             }
-
-            DbIpInterfaceEntry entry = null;
-            if (ifIndex == -1)
-                entry = DbIpInterfaceEntry.get(db, m_nodeId, addr);
-            else
-                entry = DbIpInterfaceEntry.get(db, m_nodeId, addr, ifIndex);
-
-            if (entry != null)
-                l.add(entry);
+        } finally {
+            m_dbUtils.cleanUp();
         }
-
-        rset.close();
-        stmt.close();
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
         return l.toArray(entries);
@@ -1752,52 +1751,55 @@ final class DbNodeEntry {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
+            m_dbUtils.watch(db);
             entries = getManagedInterfaces(db);
         } finally {
-            try {
-                if (db != null)
-                    db.close();
-            } catch (SQLException e) {
-                ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
-            }
+            m_dbUtils.cleanUp();
         }
 
         return entries;
     }
 
     DbIpInterfaceEntry[] getManagedInterfaces(Connection db) throws SQLException {
-        PreparedStatement stmt = db.prepareStatement(SQL_LOAD_MANAGED_IF_LIST);
-        stmt.setInt(1, m_nodeId);
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        
+        List<DbIpInterfaceEntry> l;
+        try {
+            stmt = db.prepareStatement(SQL_LOAD_MANAGED_IF_LIST);
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, m_nodeId);
 
-        ResultSet rset = stmt.executeQuery();
-        List<DbIpInterfaceEntry> l = new ArrayList<DbIpInterfaceEntry>();
+            rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
+            l = new ArrayList<DbIpInterfaceEntry>();
 
-        while (rset.next()) {
-            String saddr = rset.getString(1);
-            int ifIndex = rset.getInt(2);
-            if (rset.wasNull())
-                ifIndex = -1;
+            while (rset.next()) {
+                String saddr = rset.getString(1);
+                int ifIndex = rset.getInt(2);
+                if (rset.wasNull())
+                    ifIndex = -1;
 
-            InetAddress addr = null;
-            try {
-                addr = InetAddress.getByName(saddr);
-            } catch (UnknownHostException e) {
-                ThreadCategory.getInstance(getClass()).warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                continue;
+                InetAddress addr = null;
+                try {
+                    addr = InetAddress.getByName(saddr);
+                } catch (UnknownHostException e) {
+                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
+                    continue;
+                }
+
+                DbIpInterfaceEntry entry = null;
+                if (ifIndex == -1)
+                    entry = DbIpInterfaceEntry.get(db, m_nodeId, addr);
+                else
+                    entry = DbIpInterfaceEntry.get(db, m_nodeId, addr, ifIndex);
+
+                if (entry != null)
+                    l.add(entry);
             }
-
-            DbIpInterfaceEntry entry = null;
-            if (ifIndex == -1)
-                entry = DbIpInterfaceEntry.get(db, m_nodeId, addr);
-            else
-                entry = DbIpInterfaceEntry.get(db, m_nodeId, addr, ifIndex);
-
-            if (entry != null)
-                l.add(entry);
+        } finally {
+            m_dbUtils.cleanUp();
         }
-
-        rset.close();
-        stmt.close();
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
         return l.toArray(entries);
@@ -1826,7 +1828,7 @@ final class DbNodeEntry {
                 if (db != null)
                     db.close();
             } catch (SQLException e) {
-                ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
+                log().warn("Exception closing JDBC connection", e);
             }
         }
 
@@ -1834,36 +1836,43 @@ final class DbNodeEntry {
     }
 
     DbSnmpInterfaceEntry[] getSnmpInterfaces(Connection db) throws SQLException {
-        PreparedStatement stmt = db.prepareStatement(SQL_LOAD_SNMP_LIST);
-        stmt.setInt(1, m_nodeId);
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        
+        List<DbSnmpInterfaceEntry> l;
+        try {
+            stmt = db.prepareStatement(SQL_LOAD_SNMP_LIST);
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, m_nodeId);
 
-        ResultSet rset = stmt.executeQuery();
-        List<DbSnmpInterfaceEntry> l = new ArrayList<DbSnmpInterfaceEntry>();
+            rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
+            l = new ArrayList<DbSnmpInterfaceEntry>();
 
-        while (rset.next()) {
-            String saddr = rset.getString(1);
-            int ifIndex = rset.getInt(2);
-            if (rset.wasNull())
-                ifIndex = -1;
+            while (rset.next()) {
+                String saddr = rset.getString(1);
+                int ifIndex = rset.getInt(2);
+                if (rset.wasNull())
+                    ifIndex = -1;
 
-            try {
-                InetAddress.getByName(saddr);
-            } catch (UnknownHostException e) {
-                ThreadCategory.getInstance(getClass()).warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                continue;
+                try {
+                    InetAddress.getByName(saddr);
+                } catch (UnknownHostException e) {
+                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
+                    continue;
+                }
+
+                DbSnmpInterfaceEntry entry = null;
+                if (ifIndex != -1) {
+                    entry = DbSnmpInterfaceEntry.get(db, m_nodeId, ifIndex);
+
+                    if (entry != null)
+                        l.add(entry);
+                }
             }
-
-            DbSnmpInterfaceEntry entry = null;
-            if (ifIndex != -1) {
-                entry = DbSnmpInterfaceEntry.get(db, m_nodeId, ifIndex);
-
-                if (entry != null)
-                    l.add(entry);
-            }
+        } finally {
+            m_dbUtils.cleanUp();
         }
-
-        rset.close();
-        stmt.close();
 
         DbSnmpInterfaceEntry[] entries = new DbSnmpInterfaceEntry[l.size()];
         return l.toArray(entries);
@@ -2039,18 +2048,28 @@ final class DbNodeEntry {
      */
     public void createAssetNodeEntry(Connection conn, int nodeid) throws SQLException {
 
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate,displayCategory,notifyCategory,pollerCategory,thresholdCategory) values(?,?,?,?,?,?,?,?)");
-        stmt.setInt(1, nodeid);
-        stmt.setString(2, "Unspecified");
-        stmt.setString(3, "");
-        stmt.setTimestamp(4, new Timestamp((new Date()).getTime()));
-        stmt.setString(5, "");
-        stmt.setString(6, "");
-        stmt.setString(7, "");
-        stmt.setString(8, "");
+        PreparedStatement stmt = null;
+        
+        try {
+            stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate,displayCategory,notifyCategory,pollerCategory,thresholdCategory) values(?,?,?,?,?,?,?,?)");
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setString(2, "Unspecified");
+            stmt.setString(3, "");
+            stmt.setTimestamp(4, new Timestamp((new Date()).getTime()));
+            stmt.setString(5, "");
+            stmt.setString(6, "");
+            stmt.setString(7, "");
+            stmt.setString(8, "");
 
-        stmt.execute();
-        stmt.close();
+            stmt.execute();
+        } finally {
+            m_dbUtils.cleanUp();
+        }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -123,6 +124,8 @@ public final class DbSnmpInterfaceEntry {
      */
     private int m_changed;
 
+    private DBUtils m_dbUtils = new DBUtils(DbSnmpInterfaceEntry.class);
+    
     // Mask fields
     private static final int CHANGED_IFADDRESS = 1 << 0;
 
@@ -156,22 +159,14 @@ public final class DbSnmpInterfaceEntry {
      */
     private void insert(Connection c) throws SQLException {
         if (m_fromDb) {
-            throw new IllegalStateException("The record already exists in the "
-                                            + "database");
+            throw new IllegalStateException("The record already exists in the database");
         }
 
         Category log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
-        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface "
-                                              + "(nodeID,snmpIfIndex,ipaddr");
+        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex,ipaddr");
         StringBuffer values = new StringBuffer("?,?,?");
-
-        // We *must* have an IP address that is not null in the snmpinterface table
-	// if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-        //    values.append(",?");
-        //    names.append(",ipAddr");
-        //}
 
         if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
             values.append(",?");
@@ -222,60 +217,66 @@ public final class DbSnmpInterfaceEntry {
         log.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = "
                   + names.toString());
 
-        // create the Prepared statment and then start setting the result values
-        PreparedStatement stmt = c.prepareStatement(names.toString());
-        names = null;
-
-        int ndx = 1;
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setInt(ndx++, m_ifIndex);
-
-        if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-            stmt.setString(ndx++, m_ipAddr.getHostAddress());
-        } else {
-            stmt.setString(ndx++, "0.0.0.0"); 
-        }
-
-        if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
-            stmt.setString(ndx++, m_netmask.getHostAddress());
-        }
-
-        if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR) {
-            stmt.setString(ndx++, m_physAddr);
-        }
-
-        if ((m_changed & CHANGED_DESCRIPTION) == CHANGED_DESCRIPTION) {
-            stmt.setString(ndx++, m_ifDescription);
-        }
-
-        if ((m_changed & CHANGED_IFTYPE) == CHANGED_IFTYPE) {
-            stmt.setInt(ndx++, m_ifType);
-        }
-
-        if ((m_changed & CHANGED_IFNAME) == CHANGED_IFNAME) {
-            stmt.setString(ndx++, m_ifName);
-        }
-
-        if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED) {
-            stmt.setLong(ndx++, m_ifSpeed);
-        }
-
-        if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS) {
-            stmt.setInt(ndx++, m_ifAdminStatus);
-        }
-
-        if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS) {
-            stmt.setInt(ndx++, m_ifOperStatus);
-        }
+        // create the Prepared statement and then start setting the result values
+        PreparedStatement stmt = null;
         
-        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
-            stmt.setString(ndx++, m_ifAlias);
-        }
+        try {
+            stmt = c.prepareStatement(names.toString());
+            m_dbUtils.watch(stmt);
+            names = null;
 
-        // Run the insert
-        int rc = stmt.executeUpdate();
-        log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
-        stmt.close();
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setInt(ndx++, m_ifIndex);
+
+            if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
+                stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            } else {
+                stmt.setString(ndx++, "0.0.0.0"); 
+            }
+
+            if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
+                stmt.setString(ndx++, m_netmask.getHostAddress());
+            }
+
+            if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR) {
+                stmt.setString(ndx++, m_physAddr);
+            }
+
+            if ((m_changed & CHANGED_DESCRIPTION) == CHANGED_DESCRIPTION) {
+                stmt.setString(ndx++, m_ifDescription);
+            }
+
+            if ((m_changed & CHANGED_IFTYPE) == CHANGED_IFTYPE) {
+                stmt.setInt(ndx++, m_ifType);
+            }
+
+            if ((m_changed & CHANGED_IFNAME) == CHANGED_IFNAME) {
+                stmt.setString(ndx++, m_ifName);
+            }
+
+            if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED) {
+                stmt.setLong(ndx++, m_ifSpeed);
+            }
+
+            if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS) {
+                stmt.setInt(ndx++, m_ifAdminStatus);
+            }
+
+            if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS) {
+                stmt.setInt(ndx++, m_ifOperStatus);
+            }
+            
+            if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
+                stmt.setString(ndx++, m_ifAlias);
+            }
+
+            // Run the insert
+            int rc = stmt.executeUpdate();
+            log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
+        } finally {
+            m_dbUtils.cleanUp();
+        }
 
         // clear the mask and mark as backed by the database
         m_fromDb = true;
@@ -293,8 +294,7 @@ public final class DbSnmpInterfaceEntry {
      */
     private void update(Connection c) throws SQLException {
         if (!m_fromDb) {
-            throw new IllegalStateException("The record does not exists in the "
-                                            + "database");
+            throw new IllegalStateException("The record does not exists in the database");
         }
 
         Category log = ThreadCategory.getInstance(getClass());
@@ -359,104 +359,111 @@ public final class DbSnmpInterfaceEntry {
         log.debug("DbSnmpInterfaceEntry.update: SQL update statment = "
                   + sqlText.toString());
 
-        // create the Prepared statment and then start setting the result values
-        PreparedStatement stmt = c.prepareStatement(sqlText.toString());
-        sqlText = null;
+        // create the Prepared statement and then start setting the result values
+        PreparedStatement stmt = null;
+        
+        try {
+            stmt = c.prepareStatement(sqlText.toString());
+            m_dbUtils.watch(stmt);
+            sqlText = null;
 
-        int ndx = 1;
+            int ndx = 1;
 
-        if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-            // FIXME: What's this about? shouldn't it be m_ipAddr == null ?
+            if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
+                // FIXME: What's this about? shouldn't it be m_ipAddr == null ?
+                if (m_ifIndex == -1) {
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                } else {
+                    stmt.setString(ndx++, m_ipAddr.getHostAddress());
+                }
+            }
+
+            if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
+                if (m_netmask == null) {
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                } else {
+                    stmt.setString(ndx++, m_netmask.getHostAddress());
+                }
+            }
+
+            if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR) {
+                if (m_physAddr == null) {
+                    stmt.setNull(ndx++, Types.CHAR);
+                } else {
+                    stmt.setString(ndx++, m_physAddr);
+                }
+            }
+
+            if ((m_changed & CHANGED_DESCRIPTION) == CHANGED_DESCRIPTION) {
+                if (m_ifDescription == null) {
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                } else {
+                    stmt.setString(ndx++, m_ifDescription);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFTYPE) == CHANGED_IFTYPE) {
+                if (m_ifType == -1) {
+                    stmt.setNull(ndx++, Types.INTEGER);
+                } else {
+                    stmt.setInt(ndx++, m_ifType);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFNAME) == CHANGED_IFNAME) {
+                if (m_ifName == null) {
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                } else {
+                    stmt.setString(ndx++, m_ifName);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED) {
+                if (m_ifSpeed == -1L) {
+                    stmt.setNull(ndx++, Types.INTEGER);
+                } else {
+                    stmt.setLong(ndx++, m_ifSpeed);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS) {
+                if (m_ifAdminStatus == -1) {
+                    stmt.setNull(ndx++, Types.INTEGER);
+                } else {
+                    stmt.setInt(ndx++, m_ifAdminStatus);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS) {
+                if (m_ifOperStatus == -1) {
+                    stmt.setNull(ndx++, Types.INTEGER);
+                } else {
+                    stmt.setInt(ndx++, m_ifOperStatus);
+                }
+            }
+
+            if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
+                if (m_ifAlias == null) {
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                } else {
+                    stmt.setString(ndx++, m_ifAlias);
+                }
+            }
+
+            stmt.setInt(ndx++, m_nodeId);
+
             if (m_ifIndex == -1) {
-                stmt.setNull(ndx++, Types.VARCHAR);
-            } else {
-                stmt.setString(ndx++, m_ipAddr.getHostAddress());
-            }
-        }
-
-        if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
-            if (m_netmask == null) {
-                stmt.setNull(ndx++, Types.VARCHAR);
-            } else {
-                stmt.setString(ndx++, m_netmask.getHostAddress());
-            }
-        }
-
-        if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR) {
-            if (m_physAddr == null) {
-                stmt.setNull(ndx++, Types.CHAR);
-            } else {
-                stmt.setString(ndx++, m_physAddr);
-            }
-        }
-
-        if ((m_changed & CHANGED_DESCRIPTION) == CHANGED_DESCRIPTION) {
-            if (m_ifDescription == null) {
-                stmt.setNull(ndx++, Types.VARCHAR);
-            } else {
-                stmt.setString(ndx++, m_ifDescription);
-            }
-        }
-
-        if ((m_changed & CHANGED_IFTYPE) == CHANGED_IFTYPE) {
-            if (m_ifType == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
             } else {
-                stmt.setInt(ndx++, m_ifType);
+                stmt.setInt(ndx++, m_ifIndex);
             }
+
+            // Run the update
+            int rc = stmt.executeUpdate();
+            log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
+        } finally {
+            m_dbUtils.cleanUp();
         }
-
-        if ((m_changed & CHANGED_IFNAME) == CHANGED_IFNAME) {
-            if (m_ifName == null) {
-                stmt.setNull(ndx++, Types.VARCHAR);
-            } else {
-                stmt.setString(ndx++, m_ifName);
-            }
-        }
-
-        if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED) {
-            if (m_ifSpeed == -1L) {
-                stmt.setNull(ndx++, Types.INTEGER);
-            } else {
-                stmt.setLong(ndx++, m_ifSpeed);
-            }
-        }
-
-        if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS) {
-            if (m_ifAdminStatus == -1) {
-                stmt.setNull(ndx++, Types.INTEGER);
-            } else {
-                stmt.setInt(ndx++, m_ifAdminStatus);
-            }
-        }
-
-        if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS) {
-            if (m_ifOperStatus == -1) {
-                stmt.setNull(ndx++, Types.INTEGER);
-            } else {
-                stmt.setInt(ndx++, m_ifOperStatus);
-            }
-        }
-
-        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
-            if (m_ifAlias == null) {
-                stmt.setNull(ndx++, Types.VARCHAR);
-            } else {
-                stmt.setString(ndx++, m_ifAlias);
-            }
-        }
-
-        stmt.setInt(ndx++, m_nodeId);
-
-        if (m_ifIndex == -1) {
-            stmt.setNull(ndx++, Types.INTEGER);
-        } else {
-            stmt.setInt(ndx++, m_ifIndex);
-        }
-
-        // Run the update
-        int rc = stmt.executeUpdate();
-        log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
         stmt.close();
 
         // clear the mask and mark as backed by the database
@@ -476,104 +483,106 @@ public final class DbSnmpInterfaceEntry {
      */
     private boolean load(Connection c) throws SQLException {
         if (!m_fromDb) {
-            throw new IllegalStateException("The record does not exists in the "
-                                            + "database");
+            throw new IllegalStateException("The record does not exists in the database");
         }
 
         Category log = ThreadCategory.getInstance(getClass());
 
-        // create the Prepared statment and then start setting the query values
+        // create the Prepared statement and then start setting the query values
         PreparedStatement stmt = null;
-        stmt = c.prepareStatement(SQL_LOAD_REC);
-        stmt.setInt(1, m_nodeId);
-        stmt.setInt(2, m_ifIndex);
+        ResultSet rset = null;
+        
+        try {
+            stmt = c.prepareStatement(SQL_LOAD_REC);
+            m_dbUtils.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setInt(2, m_ifIndex);
 
-        // Run the query
-        ResultSet rset = stmt.executeQuery();
-        if (!rset.next()) {
-            rset.close();
-            stmt.close();
-            return false;
-        }
-
-        // extract the values
-        int ndx = 1;
-
-        // get the IP address
-        String str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull()) {
-            try {
-                m_ipAddr = InetAddress.getByName(str);
-            } catch (UnknownHostException e) {
-                log.warn("DbSnmpInterface.load: the ipAddr field was "
-                         + "malformed: nodeid = " + m_nodeId + ", ifIndex = " 
-                         + m_ifIndex, e);
+            // Run the query
+            rset = stmt.executeQuery();
+            m_dbUtils.watch(rset);
+            if (!rset.next()) {
+                return false;
             }
-        }
 
-        // get the netmask
-        str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull()) {
-            try {
-                m_netmask = InetAddress.getByName(str);
-            } catch (UnknownHostException e) {
-                log.warn("DbSnmpInterface.load: the netmask field was "
-                         + "malformed: nodeid = " + m_nodeId + ", ipAddr = "
-                         + m_ipAddr.getHostAddress(), e);
+            // extract the values
+            int ndx = 1;
+
+            // get the IP address
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull()) {
+                try {
+                    m_ipAddr = InetAddress.getByName(str);
+                } catch (UnknownHostException e) {
+                    log.warn("DbSnmpInterface.load: the ipAddr field was "
+                             + "malformed: nodeid = " + m_nodeId + ", ifIndex = " 
+                             + m_ifIndex, e);
+                }
             }
-        }
 
-        // get the physical address
-        m_physAddr = rset.getString(ndx++);
-        if (rset.wasNull()) {
-            m_physAddr = null;
-        }
+            // get the netmask
+            str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull()) {
+                try {
+                    m_netmask = InetAddress.getByName(str);
+                } catch (UnknownHostException e) {
+                    log.warn("DbSnmpInterface.load: the netmask field was "
+                             + "malformed: nodeid = " + m_nodeId + ", ipAddr = "
+                             + m_ipAddr.getHostAddress(), e);
+                }
+            }
 
-        // get the description
-        m_ifDescription = rset.getString(ndx++);
-        if (rset.wasNull()) {
-            m_ifDescription = null;
-        }
+            // get the physical address
+            m_physAddr = rset.getString(ndx++);
+            if (rset.wasNull()) {
+                m_physAddr = null;
+            }
 
-        // get the type
-        m_ifType = rset.getInt(ndx++);
-        if (rset.wasNull()) {
-            m_ifIndex = -1;
-        }
+            // get the description
+            m_ifDescription = rset.getString(ndx++);
+            if (rset.wasNull()) {
+                m_ifDescription = null;
+            }
 
-        // get the name
-        m_ifName = rset.getString(ndx++);
-        if (rset.wasNull()) {
-            m_ifName = null;
-        }
+            // get the type
+            m_ifType = rset.getInt(ndx++);
+            if (rset.wasNull()) {
+                m_ifIndex = -1;
+            }
 
-        // get the speed
-        m_ifSpeed = rset.getLong(ndx++);
-        if (rset.wasNull()) { 
-            m_ifSpeed = -1L;
-        }
+            // get the name
+            m_ifName = rset.getString(ndx++);
+            if (rset.wasNull()) {
+                m_ifName = null;
+            }
 
-        // get the admin status
-        m_ifAdminStatus = rset.getInt(ndx++);
-        if (rset.wasNull()) {
-            m_ifAdminStatus = -1;
-        }
+            // get the speed
+            m_ifSpeed = rset.getLong(ndx++);
+            if (rset.wasNull()) { 
+                m_ifSpeed = -1L;
+            }
 
-        // get the operational status
-        m_ifOperStatus = rset.getInt(ndx++);
-        if (rset.wasNull()) {
-            m_ifOperStatus = -1;
+            // get the admin status
+            m_ifAdminStatus = rset.getInt(ndx++);
+            if (rset.wasNull()) {
+                m_ifAdminStatus = -1;
+            }
+
+            // get the operational status
+            m_ifOperStatus = rset.getInt(ndx++);
+            if (rset.wasNull()) {
+                m_ifOperStatus = -1;
+            }
+            
+            // get the alias
+            m_ifAlias = rset.getString(ndx++);
+            if (rset.wasNull()) {
+                m_ifAlias = null;
+            }
+        } finally {
+            m_dbUtils.cleanUp();
         }
         
-        // get the alias
-        m_ifAlias = rset.getString(ndx++);
-        if (rset.wasNull()) {
-            m_ifAlias = null;
-        }
-        
-        rset.close();
-        stmt.close();
-
         // clear the mask and mark as backed by the database
         m_changed = 0;
         return true;
@@ -584,8 +593,7 @@ public final class DbSnmpInterfaceEntry {
      * 
      */
     private DbSnmpInterfaceEntry() {
-        throw new UnsupportedOperationException("Default constructor not "
-                                                + "supported!");
+        throw new UnsupportedOperationException("Default constructor not supported!");
     }
 
     /**
@@ -963,7 +971,7 @@ public final class DbSnmpInterfaceEntry {
 
     /**
      * Updates the interface information in the configured database. If the
-     * interfaca does not exist the a new row in the table is created. If the
+     * interface does not exist the a new row in the table is created. If the
      * element already exists then it's current row is updated as needed based
      * upon the current changes to the node.
      * 
@@ -996,7 +1004,7 @@ public final class DbSnmpInterfaceEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>ifindex</em>. If the record cannot be found
      * then a null reference is returned.
      * 
@@ -1025,12 +1033,12 @@ public final class DbSnmpInterfaceEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>ifIndex</em>. If the record cannot be found
      * then a null reference is returned.
      * 
      * @param db
-     *            The databse connection used to load the entry.
+     *            The database connection used to load the entry.
      * @param nid
      *            The node id key
      * @param ifIndex

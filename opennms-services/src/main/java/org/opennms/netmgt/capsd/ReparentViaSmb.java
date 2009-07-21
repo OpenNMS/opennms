@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -115,6 +116,8 @@ public final class ReparentViaSmb {
      */
     private Map<LightWeightNodeEntry, List<LightWeightNodeEntry>> m_reparentNodeMap;
 
+    private DBUtils m_dbUtils = new DBUtils(ReparentViaSmb.class);
+    
     /**
      * Contains hard-coded list of NetBIOS names which are not subject to
      * reparenting via SMB.
@@ -354,11 +357,11 @@ public final class ReparentViaSmb {
         Category log = ThreadCategory.getInstance(getClass());
         m_existingNodeList = new ArrayList<LightWeightNodeEntry>();
 
-        PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_NODES);
         try {
-            // Issue database query
+            PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_NODES);
+            m_dbUtils.watch(stmt);
             ResultSet rs = stmt.executeQuery();
-
+            m_dbUtils.watch(rs);
             // Process result set
             // Build list of LightWeightNodeEntry objects representing each of
             // the
@@ -368,11 +371,8 @@ public final class ReparentViaSmb {
             }
 
             rs.close();
-
-        } catch (SQLException sqlE) {
-            throw sqlE;
         } finally {
-            stmt.close();
+            m_dbUtils.cleanUp();
         }
 
         // 
@@ -491,51 +491,56 @@ public final class ReparentViaSmb {
         List<LightWeightIfEntry> reparentedIfList = null;
         m_reparentedIfMap = null;
 
-        PreparedStatement ipInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
-        PreparedStatement snmpInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
-        PreparedStatement ifServicesStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
+        try {
+            PreparedStatement ipInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
+            m_dbUtils.watch(ipInterfaceStmt);
+            PreparedStatement snmpInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
+            m_dbUtils.watch(snmpInterfaceStmt);
+            PreparedStatement ifServicesStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
+            m_dbUtils.watch(ifServicesStmt);
 
-        Set<LightWeightNodeEntry> keys = m_reparentNodeMap.keySet();
-        Iterator<LightWeightNodeEntry> iter = keys.iterator();
+            Set<LightWeightNodeEntry> keys = m_reparentNodeMap.keySet();
+            Iterator<LightWeightNodeEntry> iter = keys.iterator();
 
-        while (iter.hasNext()) {
-            LightWeightNodeEntry reparentNode = iter.next();
-            int reparentNodeID = reparentNode.getNodeId();
+            while (iter.hasNext()) {
+                LightWeightNodeEntry reparentNode = iter.next();
+                int reparentNodeID = reparentNode.getNodeId();
 
-            // Now construct a "heavier weight" DbNodeEntry object for this
-            // node...sysName, sysDescription and other fields from the node
-            // table will be necessary later when the reparentInterface
-            // event is generated.
-            reparentNode.setHeavyWeightNodeEntry(DbNodeEntry.get(reparentNodeID));
+                // Now construct a "heavier weight" DbNodeEntry object for this
+                // node...sysName, sysDescription and other fields from the node
+                // table will be necessary later when the reparentInterface
+                // event is generated.
+                reparentNode.setHeavyWeightNodeEntry(DbNodeEntry.get(reparentNodeID));
 
-            // Retrieve duplicate node list for this reparent node key
-            List<LightWeightNodeEntry> dupList = m_reparentNodeMap.get(reparentNode);
-            log.debug("ReparentViaSmb.retrieveNodeData: duplicate node list retrieved, list size=" + dupList.size());
+                // Retrieve duplicate node list for this reparent node key
+                List<LightWeightNodeEntry> dupList = m_reparentNodeMap.get(reparentNode);
+                log.debug("ReparentViaSmb.retrieveNodeData: duplicate node list retrieved, list size=" + dupList.size());
 
-            Iterator<LightWeightNodeEntry> dupIter = dupList.iterator();
-            while (dupIter.hasNext()) {
-                LightWeightNodeEntry dupNode = dupIter.next();
-                int dupNodeID = dupNode.getNodeId();
-
-                try {
-                    if (log.isDebugEnabled())
-                        log.debug("reparentInterfaces: reparenting all interfaces/services for nodeID " + dupNodeID + " under reparent nodeID " + reparentNodeID);
-
-                    //
-                    // Prior to reparenting the interfaces associated with the
-                    // duplicate node retrieve a list of the node's interface
-                    // IP addresses and add them to the m_reparentedIfMap. This
-                    // list will allow us to generate 'interfaceReparented'
-                    // events for each one
-                    //
-                    PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_INTERFACES);
-                    stmt.setInt(1, dupNodeID);
+                Iterator<LightWeightNodeEntry> dupIter = dupList.iterator();
+                while (dupIter.hasNext()) {
+                    LightWeightNodeEntry dupNode = dupIter.next();
+                    int dupNodeID = dupNode.getNodeId();
 
                     try {
+                        if (log.isDebugEnabled())
+                            log.debug("reparentInterfaces: reparenting all interfaces/services for nodeID " + dupNodeID + " under reparent nodeID " + reparentNodeID);
+
+                        //
+                        // Prior to reparenting the interfaces associated with the
+                        // duplicate node retrieve a list of the node's interface
+                        // IP addresses and add them to the m_reparentedIfMap. This
+                        // list will allow us to generate 'interfaceReparented'
+                        // events for each one
+                        //
+                        PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_INTERFACES);
+                        m_dbUtils.watch(stmt);
+                        stmt.setInt(1, dupNodeID);
+
                         // Issue database query
                         if (log.isDebugEnabled())
                             log.debug("reparentInterfaces: issuing db query...");
                         ResultSet rs = stmt.executeQuery();
+                        m_dbUtils.watch(rs);
 
                         // Process result set
                         // Build list of LightWeightIfEntry objects representing
@@ -547,85 +552,73 @@ public final class ReparentViaSmb {
 
                             LightWeightIfEntry lwIfEntry = new LightWeightIfEntry(ifAddress, hostName, reparentNodeID, dupNodeID);
 
-                            if (reparentedIfList == null)
+                            if (reparentedIfList == null) {
                                 reparentedIfList = new ArrayList<LightWeightIfEntry>();
+                            }
                             reparentedIfList.add(lwIfEntry);
 
                             if (log.isDebugEnabled())
                                 log.debug("reparentInterfaces: will reparent " + lwIfEntry.getAddress() + " : oldNodeId: " + lwIfEntry.getOldParentNodeId() + " newNodeId: " + lwIfEntry.getParentNodeId());
                         }
 
-                        rs.close();
 
+                        // Update the 'ipInterface' table so that all interfaces
+                        // associated with the duplicate node are reparented.
+                        ipInterfaceStmt.setInt(1, reparentNodeID);
+                        ipInterfaceStmt.setInt(2, dupNodeID);
+
+                        // execute and log
+                        ipInterfaceStmt.executeUpdate();
+
+                        // Update the 'snmpinterface' table so that all interfaces
+                        // associated with the duplicate node are reparented
+                        snmpInterfaceStmt.setInt(1, reparentNodeID);
+                        snmpInterfaceStmt.setInt(2, dupNodeID);
+
+                        // execute and log
+                        snmpInterfaceStmt.executeUpdate();
+
+                        // Update the 'ifservices' table so that all services
+                        // associated
+                        // with the duplicate node are reparented
+                        ifServicesStmt.setInt(1, reparentNodeID);
+                        ifServicesStmt.setInt(2, dupNodeID);
+
+                        // execute and log
+                        ifServicesStmt.executeUpdate();
                     } catch (SQLException sqlE) {
+                        log.error("SQLException while reparenting duplicate node w/ nodeID " + dupNodeID);
                         throw sqlE;
-                    } finally {
-                        stmt.close();
                     }
 
-                    // Update the 'ipInterface' table so that all interfaces
-                    // associated with the duplicate node are reparented.
-                    ipInterfaceStmt.setInt(1, reparentNodeID);
-                    ipInterfaceStmt.setInt(2, dupNodeID);
-
-                    // execute and log
-                    ipInterfaceStmt.executeUpdate();
-
-                    // Update the 'snmpinterface' table so that all interfaces
-                    // associated with the duplicate node are reparented
-                    snmpInterfaceStmt.setInt(1, reparentNodeID);
-                    snmpInterfaceStmt.setInt(2, dupNodeID);
-
-                    // execute and log
-                    snmpInterfaceStmt.executeUpdate();
-
-                    // Update the 'ifservices' table so that all services
-                    // associated
-                    // with the duplicate node are reparented
-                    ifServicesStmt.setInt(1, reparentNodeID);
-                    ifServicesStmt.setInt(2, dupNodeID);
-
-                    // execute and log
-                    ifServicesStmt.executeUpdate();
-                } catch (SQLException sqlE) {
-                    log.error("SQLException while reparenting duplicate node w/ nodeID " + dupNodeID);
-                    throw sqlE;
-                } finally {
-                    ipInterfaceStmt.close();
-                    snmpInterfaceStmt.close();
-                    ifServicesStmt.close();
-                }
-
-                // 
-                // Now that all the interfaces have been reparented...lets
-                // delete this duplicate node from the 'node' table
-                //
-                if (log.isDebugEnabled())
-                    log.debug("reparentInterfaces: deleting duplicate node id: " + dupNodeID);
-                PreparedStatement deleteNodeStmt = null;
-                try {
-                    deleteNodeStmt = m_connection.prepareStatement(SQL_DB_DELETE_NODE);
+                    // 
+                    // Now that all the interfaces have been reparented...lets
+                    // delete this duplicate node from the 'node' table
+                    //
+                    if (log.isDebugEnabled())
+                        log.debug("reparentInterfaces: deleting duplicate node id: " + dupNodeID);
+                    PreparedStatement deleteNodeStmt = m_connection.prepareStatement(SQL_DB_DELETE_NODE);
+                    m_dbUtils.watch(deleteNodeStmt);
                     deleteNodeStmt.setInt(1, dupNodeID);
 
                     // execute update
                     deleteNodeStmt.executeUpdate();
-                } catch (SQLException sqlE) {
-                    throw sqlE;
-                } finally {
-                    deleteNodeStmt.close();
+
+                } // end while(dupIter.hasNext())
+
+                // Should have a reparented interface list now...add it to
+                // the reparented interface map with the reparent node as the key
+                if (reparentedIfList != null && !reparentedIfList.isEmpty()) {
+                    if (m_reparentedIfMap == null) {
+                        m_reparentedIfMap = new HashMap<LightWeightNodeEntry, List<LightWeightIfEntry>>();
+                    }
+
+                    m_reparentedIfMap.put(reparentNode, reparentedIfList);
                 }
-
-            } // end while(dupIter.hasNext())
-
-            // Should have a reparented interface list now...add it to
-            // the reparented interface map with the reparent node as the key
-            if (reparentedIfList != null && !reparentedIfList.isEmpty()) {
-                if (m_reparentedIfMap == null)
-                    m_reparentedIfMap = new HashMap<LightWeightNodeEntry, List<LightWeightIfEntry>>();
-
-                m_reparentedIfMap.put(reparentNode, reparentedIfList);
-            }
-        } // end while(iter.hasNext())
+            } // end while(iter.hasNext())
+        } finally {
+            m_dbUtils.cleanUp();
+        }
     }
 
     /**
