@@ -841,109 +841,119 @@ li.pagination {
 }
 		</STYLE>
 			<body>
-				<table border="1" width="1000" bgcolor="#dddddd">
+				<h3>OpenNMS/RWS Inventory Report on Request Date <xsl:value-of select="rws-nbinventoryreport/reportDate"/></h3>
+  				<table border="1" width="1000" bgcolor="#0000ff">
 					<tr>
-						<th>
-							<h1>RWS Inventory</h1>
+						<th align="left">
+								Request By User:
+								<xsl:value-of select="rws-nbinventoryreport/user"/> 
+								on 
+								<xsl:value-of select="rws-nbinventoryreport/reportRequestDate"/>
 						</th>
 					</tr>
 					<tr>
 						<th align="left">
-								Date:
-								<xsl:value-of select="rws-nbinventoryreport/dateInventory" />
-						</th>
+								Inventory Match Regular Expression:
+						<xsl:value-of select="rws-nbinventoryreport/theField"/></th>	
 					</tr>
 					<tr>
 						<th align="left">
-								Total groups:
-								<xsl:value-of select="rws-nbinventoryreport/totalGroups" />
-						</th>
+								Groups in repository:
+						<xsl:value-of select="rws-nbinventoryreport/totalGroups"/></th>	
+					</tr>
+					<tr>
+						<th align="left">
+								Groups With Matching Inventory :
+						<xsl:value-of select="rws-nbinventoryreport/groupsMatching"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups without Nodes:
+						<xsl:value-of select="rws-nbinventoryreport/groupWithoutNodes"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups with Nodes without Inventory at all:
+						<xsl:value-of select="rws-nbinventoryreport/groupsWithNodesWithoutinventoryAtAll"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Groups with Nodes without Inventory at Report Date:
+						<xsl:value-of select="rws-nbinventoryreport/groupsWithNodesWithoutinventoryAtReportDate"/></th>
 					</tr>
 				</table>
+<p></p>
 				<xsl:for-each select="rws-nbinventoryreport/groupSet">
-					<table class="o-box" >
-						<tr>
-							<th align="left">
-									Group:
-									<xsl:value-of select="nbisinglenode/groupname" />
-							</th>
-						</tr>
-						<tr>
-							<th align="left">
-									Total nodes:
-									<xsl:value-of select="totalNodes" />
-							</th>
-						</tr>
-					</table>
+  					<h3> Group:  <xsl:value-of select="groupSetName"/></h3>
+			   	<table border="1" width="1000" bgcolor="#dddddd">
+					<tr>
+						<th align="left">
+								Total number of Nodes:
+						<xsl:value-of select="totalNodes"/></th>	
+					</tr>
+					<tr>
+						<th align="left">
+								Nodes With Matching Inventory :
+						<xsl:value-of select="nodesMatching"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Nodes without Inventory at all:
+						<xsl:value-of select="nodesWithoutinventoryAtAll"/></th>
+					</tr>
+					<tr>
+						<th align="left">
+								Nodes without Inventory at request Date:
+						<xsl:value-of select="nodesWithoutinventoryAtReportDate"/></th>
+					</tr>
+				</table>
 					<xsl:for-each select="nbisinglenode">
-					<h3> Device Information </h3>
-						<table class="o-box">
-							<tr>
-								<th>Device Name</th>
-								<td>
-									<xsl:value-of select="devicename" />
-								</td>
-							</tr>
-							<tr>
-								<th>Group</th>
-								<td>
-									<xsl:value-of select="groupname" />
-								</td>
-							</tr>
-							<tr>
-								<th>Configuration</th>
-								<td>
-									<xsl:value-of select="configurationurl" />
-								</td>
-							</tr>
-							<tr>
-								<th>Creation Date</th>
-								<td>
-									<xsl:value-of select="creationdate" />
-								</td>
-							</tr>
-							<tr>
-								<th>Status</th>
-								<td>
-									<xsl:value-of select="status" />
-								</td>
-							</tr>
-							<tr>
-								<th>Software configuration</th>
-								<td>
-									<xsl:value-of select="swconfigurationurl" />
-								</td>
-							</tr>
-							<tr>
-								<th>Version</th>
-								<td>
-									<xsl:value-of select="version" />
-								</td>
-							</tr>
-							<tr>
-								<th>Comment</th>
-								<td>
-									<xsl:value-of select="comment" />
-								</td>
-							</tr>
-						</table>
-						<table border="1" width="1000">
+					<h3>Device Name: <xsl:value-of select="devicename" /> </h3>
+					<table border="1" width="1000">
+						<tr>
+							<th width="20%">Creation Date</th>
+							<td>
+								<xsl:value-of select="creationdate" />
+							</td>
+						</tr>
+						<tr>
+							<th width="20%">Current Status</th>
+							<td>
+								<xsl:value-of select="status" />
+							</td>
+						</tr>
+							<th width="20%">Version</th>
+							<td>
+								<xsl:value-of select="version" />
+							</td>
+						<tr>
+						</tr>						
+					</table>
 							<xsl:for-each select="inventoryElement2RP">
-								<tr>
-									<th> Inventory Element </th>
-									<th> ... </th>
-								</tr>
+							<h3> Inventory Element: <xsl:value-of select="name" /></h3>
+							<table border="1" width="1000">
+								<xsl:for-each select="tupleRP">
+									<tr>
+										<th width="20%">
+											<xsl:value-of select="name" />
+										</th>
+										<td>
+											<xsl:value-of select="description" />
+										</td>
+									</tr>
+								</xsl:for-each>
+								
 								<xsl:choose>
 									<xsl:when test="inventoryMemoryRP/type">
 										<tr>
-											<th>Memory Type</th>
+											<th width="20%">Memory Type</th>
 											<th>Size</th>
 										</tr>
 										<xsl:for-each select="inventoryMemoryRP">
 											<tr>
-												<td>
+												<th width="20%">
 													<xsl:value-of select="type" />
-												</td>
+												</th>
 												<td>
 													<xsl:value-of select="size" />
 												</td>
@@ -951,17 +961,18 @@ li.pagination {
 										</xsl:for-each>
 									</xsl:when>
 								</xsl:choose>
+								
 								<xsl:choose>
 									<xsl:when test="inventorySoftwareRP/type">
 										<tr>
-											<th>Software </th>
+											<th width="20%">Software </th>
 											<th>Type</th>
 										</tr>
 										<xsl:for-each select="inventorySoftwareRP">
 											<tr>
-												<td>
+												<th width="20%">
 													<xsl:value-of select="type" />
-												</td>
+												</th>
 												<td>
 													<xsl:value-of select="version" />
 												</td>
@@ -969,25 +980,17 @@ li.pagination {
 										</xsl:for-each>
 									</xsl:when>
 								</xsl:choose>
-								<tr>
-									<th>Item Name </th>
-									<th>Description </th>
-								</tr>
-								<xsl:for-each select="tupleRP">
-									<tr>
-										<td>
-											<xsl:value-of select="name" />
-										</td>
-										<td>
-											<xsl:value-of select="description" />
-										</td>
-									</tr>
-								</xsl:for-each>
-
-							</xsl:for-each>
 						</table>
+						</xsl:for-each>
 					</xsl:for-each>
 				</xsl:for-each>
+				        <p><center>
+        OpenNMS <a href="help/about.jsp">Copyright</a> 2002-2009
+            <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+            OpenNMS is a registered trademark of
+        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+          </center></p>
+				
 			</body>
 		</html>
 	</xsl:template>

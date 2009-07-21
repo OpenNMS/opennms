@@ -51,19 +51,19 @@
     <h3>Report in progress</h3>
     <table class="o-box">
 		<tr> 
-		<td>Report Type</td>
+		<th>Report Type</th>
         <td>${type}</td>
 		</tr>
 		<tr> 
-		<td>Report Date</td>
+		<th>Report Date</th>
         <td>${date}</td>
 		</tr>
 		<tr> 
-		<td>Search field</td>
+		<th>Search field</th>
         <td>${searchfield}</td>
 		</tr>
 		<tr> 
-		<td>File format</td>
+		<th>File format</th>
         <td>${reportformat}</td>
 		</tr>
 		

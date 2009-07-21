@@ -29,25 +29,24 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.report.availability.render;
+package org.opennms.report.inventory;
 
-public class ReportRenderException extends Exception {
+public class InventoryCalculationException extends Exception {
 
-    private static final long serialVersionUID = 3345608823051705228L;
+    private static final long serialVersionUID = -8290071295128513350L;
 
-    public ReportRenderException(String message, Throwable cause) {
+    public InventoryCalculationException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReportRenderException(String message) {
+	public InventoryCalculationException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReportRenderException(Throwable cause) {
+	public InventoryCalculationException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
-
 }

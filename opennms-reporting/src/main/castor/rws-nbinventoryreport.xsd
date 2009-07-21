@@ -1,21 +1,28 @@
- <schema targetNamespace="http://xmlns.opennms.org/xsd/config/rws"
+ <schema targetNamespace="http://xmlns.opennms.org/xsd/report/inventory"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/rws"
+        xmlns:this="http://xmlns.opennms.org/xsd/report/inventory"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>XML Schema for the rws-nbinventoryreport.xml configuration file. Version: $Id$</documentation>
+    <documentation>XML Schema for the nodeinventory.xml report file. Version: $Id$</documentation>
   </annotation>
 
     <element name="rws-nbinventoryreport">
     <annotation>
-      <documentation>Top-level element for the rws-nbinventory.xml configuration file.</documentation>
+      <documentation>Top-level element for the nodeinventoryinventory.xml configuration file.</documentation>
     </annotation>
     <complexType>
       <sequence>
          <element name="totalGroups" type="int" minOccurs="0"/>
-         <element name="dateInventory" type="string" minOccurs="0"/>
+         <element name="groupsMatching" type="int" minOccurs="0"/>
+         <element name="groupWithoutNodes" type="int" minOccurs="0"/>
+         <element name="groupsWithNodesWithoutinventoryAtAll" type="int" minOccurs="0"/>
+         <element name="groupsWithNodesWithoutinventoryAtReportDate" type="int" minOccurs="0"/>
+         <element name="user" type="string" minOccurs="0"/>
+         <element name="theField" type="string" minOccurs="0"/>
+         <element name="reportDate" type="string" minOccurs="0"/>
+         <element name="reportRequestDate" type="string" minOccurs="0"/>
          <element ref="this:groupSet" minOccurs="0" maxOccurs="unbounded"/>
       </sequence>
       </complexType>
@@ -24,8 +31,12 @@
     <element name = "groupSet">
     <complexType>
     <sequence>
+      <element name="groupSetName" type="string" minOccurs="1" maxOccurs="1"/>
       <element name="totalNodes" type="int" minOccurs="0"/>
-      <element ref="this:nbisinglenode" minOccurs="0" maxOccurs="unbounded"/>    
+      <element name="nodesMatching" type="int" minOccurs="0"/>
+      <element name="nodesWithoutinventoryAtAll" type="int" minOccurs="0"/>
+      <element name="nodesWithoutinventoryAtReportDate" type="int" minOccurs="0"/>
+      <element ref="this:nbisinglenode" minOccurs="0" maxOccurs="unbounded"/>
     </sequence>
     </complexType>
     </element>
@@ -49,6 +60,7 @@
   <element name ="inventoryElement2RP">
   <complexType>
     <sequence>
+      <element name="name" type="string" minOccurs="0"/>
       <element ref="this:inventoryMemoryRP" minOccurs="0" maxOccurs="unbounded"/>
       <element ref="this:inventorySoftwareRP"  minOccurs="0" maxOccurs="unbounded"/>
       <element ref="this:tupleRP"  minOccurs="0" maxOccurs="unbounded"/>
