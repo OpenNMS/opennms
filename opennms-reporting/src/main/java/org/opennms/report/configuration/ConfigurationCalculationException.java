@@ -3,7 +3,7 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
+// code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,16 +25,28 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
 //
-package org.opennms.report.availability;
+package org.opennms.report.configuration;
 
-import java.util.Date;
+public class ConfigurationCalculationException extends Exception {
 
-public interface ReportSchedulerService {
+    private static final long serialVersionUID = -8290071295128513350L;
 
-	void Schedule(String category, String type, String format, Date date);
-	
+    public ConfigurationCalculationException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ConfigurationCalculationException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ConfigurationCalculationException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
 }

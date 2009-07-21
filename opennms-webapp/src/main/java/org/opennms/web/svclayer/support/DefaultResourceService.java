@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -144,11 +145,22 @@ public class DefaultResourceService implements ResourceService, InitializingBean
             }
         
             if (addGraph) {
-                matchingChildResources.add(childResource);
+                matchingChildResources.add(checkLabelForQuotes(childResource));
             }
         }
 
         return matchingChildResources;
+    }
+    
+    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+        
+        String lbl  = Util.convertToJsSafeString(childResource.getLabel());
+        
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        resource.setParent(childResource.getParent());
+        resource.setEntity(childResource.getEntity());
+        resource.setLink(childResource.getLink());
+        return resource;
     }
 
     public OnmsResource getResourceById(String id) {

@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.report.availability;
+package org.opennms.report;
 
 import java.io.IOException;
 
@@ -42,6 +42,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
+import org.opennms.report.availability.AvailabilityReport;
 
 /**
  * 
@@ -56,7 +57,8 @@ public class ReportMailer {
 	private String m_filename;
 	
 	private String m_address;
-	
+
+	private String m_subject;
 	
 	public ReportMailer() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -64,9 +66,10 @@ public class ReportMailer {
 	}
 	
 	
-	public ReportMailer(String address, String filename) {
+	public ReportMailer(String address, String filename, String subject) {
 		this.m_address = address;
 		this.m_filename = filename;
+		this.m_subject = subject;
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(AvailabilityReport.class);
 	}
@@ -79,9 +82,9 @@ public class ReportMailer {
         try {
             JavaMailer jm = new JavaMailer();
             jm.setTo(m_address);
-            jm.setSubject("OpenNMS Availability Report");
+            jm.setSubject(m_subject);
             jm.setFileName(m_filename);
-            jm.setMessageText("Availability Report Mailed from JavaMailer class.");
+            jm.setMessageText(m_subject + " Mailed from JavaMailer class.");
             jm.mailSend();
         } catch (JavaMailerException e) {
             log.error("Caught JavaMailer exception sending file: " + m_filename, e);
