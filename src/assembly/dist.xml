@@ -12,7 +12,6 @@
       <binaries>
         <outputDirectory>webapps/opennms</outputDirectory>
         <unpack>true</unpack>
- 	<includeDependencies>false</includeDependencies>
       </binaries>
     </moduleSet>
     <moduleSet>
@@ -22,7 +21,6 @@
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
- 	<includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
     <moduleSet>
@@ -32,7 +30,6 @@
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
- 	<includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
   </moduleSets>

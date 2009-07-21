@@ -21,7 +21,7 @@ public class OnmsAlarmCollection extends LinkedList<OnmsAlarm> {
         super(c);
     }
 
-    @XmlElement(name="alarm")
+    @XmlElement(name="onmsAlarm")
     public List<OnmsAlarm> getNotifications() {
         return this;
     }

@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.model;
 
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.SequenceGenerator;
@@ -41,7 +40,6 @@ import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlID;
@@ -58,8 +56,14 @@ public class OnmsMapElement implements Serializable {
     public static final String defaultNodeIcon = "unspecified";
     public static final String defaultMapIcon = "map";
 
+    @XmlTransient
+    @Id
+    @Column(name="id")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     private int id;
 
+    @Column(name = "elementId")
     private int elementId;
 
     @XmlTransient
@@ -67,14 +71,19 @@ public class OnmsMapElement implements Serializable {
     @JoinColumn(name = "mapId")
     private OnmsMap map;
 
+    @Column(name = "elementType")
     protected String type;
 
+    @Column(name = "elementLabel")
     private String label;
 
+    @Column(name = "elementIcon")
     private String iconName;
 
+    @Column(name = "elementX")
     private int x;
 
+    @Column(name = "elementY")
     private int y;
 
     protected OnmsMapElement() {
@@ -95,7 +104,6 @@ public class OnmsMapElement implements Serializable {
         setIconName(iconName);
         this.x = x;
         this.y = y;
-        
     }
 
     public OnmsMapElement(OnmsMap map, int elementId, String type, String label,
@@ -109,17 +117,8 @@ public class OnmsMapElement implements Serializable {
         this.y = y;
     }
 
-    @XmlTransient
-    @Id
-    @Column(name="id")
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
-    @GeneratedValue(generator = "opennmsSequence")
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     @XmlID
@@ -128,8 +127,10 @@ public class OnmsMapElement implements Serializable {
         return Integer.toString(id);
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    @Column(name = "elementId")
     public int getElementId() {
         return elementId;
     }
@@ -138,17 +139,24 @@ public class OnmsMapElement implements Serializable {
         this.elementId = elementId;
     }
 
-    @Column(name = "elementType")
+    public int getMapId() {
+        return map.getId();
+    }
+
+    //public void setMapId(int mapId) {
+    //    this.mapId = mapId;
+    //}
+
     public String getType() {
         return type;
     }
 
+    // TODO the original code throws an exception. I just don't set a value if its invalid.
     public void setType(String type) {
         if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE))
             this.type = type;
     }
 
-    @Column(name = "elementLabel")
     public String getLabel() {
         return label;
     }
@@ -157,7 +165,6 @@ public class OnmsMapElement implements Serializable {
         this.label = label;
     }
 
-    @Column(name = "elementIcon")
     public String getIconName() {
         return iconName;
     }
@@ -169,7 +176,6 @@ public class OnmsMapElement implements Serializable {
         this.iconName = iconName;
     }
 
-    @Column(name = "elementX")
     public int getX() {
         return x;
     }
@@ -178,7 +184,6 @@ public class OnmsMapElement implements Serializable {
         this.x = x;
     }
 
-    @Column(name = "elementY")
     public int getY() {
         return y;
     }
@@ -187,9 +192,7 @@ public class OnmsMapElement implements Serializable {
         this.y = y;
     }
 
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="mapId")
-    @XmlIDREF
+    @XmlTransient
     public OnmsMap getMap() {
         return map;
     }

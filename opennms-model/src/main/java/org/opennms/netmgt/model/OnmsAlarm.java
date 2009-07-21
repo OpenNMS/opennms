@@ -55,8 +55,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -233,7 +231,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
     @GeneratedValue(generator="alarmSequence")    
     @Column(name="alarmId")
-    @XmlAttribute(name="id")
     public Integer getId() {
         return this.m_id;
     }
@@ -243,7 +240,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="eventUEI", length=256, nullable=false)
-    @XmlElement(name="uei")
     public String getUei() {
         return this.m_uei;
     }
@@ -283,7 +279,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="ipaddr", length=16)
-    @XmlElement(name="ipAddress")
     public String getIpAddr() {
         return this.m_ipAddr;
     }
@@ -304,7 +299,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="reductionKey", unique=true, length=256)
-    @XmlElement(name="reductionKey")
     public String getReductionKey() {
         return this.m_reductionKey;
     }
@@ -314,7 +308,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="alarmType")
-    @XmlAttribute(name="type")
     public Integer getAlarmType() {
         return this.m_alarmType;
     }
@@ -323,7 +316,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_alarmType = alarmtype;
     }
 
-    @XmlAttribute(name="count")
     @Column(name="counter", nullable=false)
     public Integer getCounter() {
         return this.m_counter;
@@ -334,17 +326,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Transient
-    @XmlAttribute(name="severity")
-    public String getSeverityLabel() {
-        return this.m_severity.name();
-    }
-
-    public void setSeverityLabel(String label) {
-        m_severity = OnmsSeverity.get(label);
-    }
-    
-    @Transient
-    @XmlTransient
     public OnmsSeverity getSeverity() {
         return this.m_severity;
     }
@@ -355,7 +336,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
     
     @Column(name="severity", nullable=false)
-    @XmlTransient
     public Integer getSeverityId() {
         return this.m_severity.getId();
     }
@@ -384,7 +364,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="logmsg", length=256)
-    @XmlElement(name="logMessage")
     public String getLogMsg() {
         return this.m_logMsg;
     }
@@ -393,7 +372,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_logMsg = logmsg;
     }
 
-    @XmlElement(name="operatorInstructions")
     @Column(name="operinstruct", length=1024)
     public String getOperInstruct() {
         return this.m_operInstruct;
@@ -403,7 +381,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_operInstruct = operinstruct;
     }
 
-    @XmlElement(name="troubleTicket")
     @Column(name="tticketId", length=128)
     public String getTTicketId() {
         return this.m_tTicketId;
@@ -413,7 +390,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_tTicketId = tticketid;
     }
 
-    @XmlElement(name="troubleTicketState")
     @Column(name="tticketState")
     public TroubleTicketState getTTicketState() {
         return this.m_tTicketState;
@@ -423,7 +399,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_tTicketState = tticketstate;
     }
 
-    @XmlElement(name="mouseOverText")
     @Column(name="mouseOverText", length=64)
     public String getMouseOverText() {
         return this.m_mouseOverText;
@@ -434,7 +409,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @XmlElement(name="suppressedUntil")
     @Column(name="suppressedUntil")
     public Date getSuppressedUntil() {
         return this.m_suppressedUntil;
@@ -444,7 +418,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_suppressedUntil = suppresseduntil;
     }
 
-    @XmlElement(name="suppressedBy")
     @Column(name="suppressedUser", length=256)
     public String getSuppressedUser() {
         return this.m_suppressedUser;
@@ -456,7 +429,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="suppressedTime")
-    @XmlElement(name="suppressedTime")
     public Date getSuppressedTime() {
         return this.m_suppressedTime;
     }
@@ -466,7 +438,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="alarmAckUser", length=256)
-    @XmlElement(name="ackUser")
     public String getAlarmAckUser() {
         return this.m_alarmAckUser;
     }
@@ -477,7 +448,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="alarmAckTime")
-    @XmlElement(name="ackTime")
     public Date getAlarmAckTime() {
         return this.m_alarmAckTime;
     }
@@ -486,7 +456,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_alarmAckTime = alarmacktime;
     }
 
-    @XmlElement(name="clearUei")
     @Column(name="clearUEI", length=256)
     public String getClearUei() {
         return this.m_clearUei;
@@ -496,7 +465,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_clearUei = clearuei;
     }
 
-    @XmlElement(name="clearKey")
     @Column(name="clearKey", length=256)
     public String getClearKey() {
         return this.m_clearKey;
@@ -506,9 +474,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_clearKey = clearKey;
     }
 
+    @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY, optional=true)
     @JoinColumn(name="lastEventId")
-    @XmlElement(name="lastEvent")
     public OnmsEvent getLastEvent() {
         return this.m_lastEvent;
     }
@@ -517,8 +485,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_lastEvent = event;
         if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
     }
-
-    @XmlElement(name="parms")
+    
     @Column(name="eventParms", length=1024)
     public String getEventParms() {
         return this.m_eventParms;
@@ -536,7 +503,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastEventTime")
-    @XmlElement(name="lastEventTime")
     public Date getLastEventTime() {
         return m_lastEventTime;
     }
@@ -545,7 +511,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         m_lastEventTime = lastEventTime;
     }
     
-    @XmlElement(name="applicationDN")
+
     @Column(name="applicationDN", length=512)
     public String getApplicationDN() {
         return m_applicationDN;
@@ -611,7 +577,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="firstAutomationTime")
-    @XmlElement(name="firstAutomationTime")
     public Date getFirstAutomationTime() {
         return m_firstAutomationTime;
     }
@@ -622,7 +587,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastAutomationTime")
-    @XmlElement(name="lastAutomationTime")
     public Date getLastAutomationTime() {
         return m_lastAutomationTime;
     }
@@ -645,7 +609,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     @Column(name="ifIndex")
-    @XmlAttribute(name="ifIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }

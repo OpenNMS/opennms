@@ -21,7 +21,7 @@ public class OnmsOutageCollection extends LinkedList<OnmsOutage> {
         super(c);
     }
 
-    @XmlElement(name="outage")
+    @XmlElement(name="onmsOutage")
     public List<OnmsOutage> getNotifications() {
         return this;
     }

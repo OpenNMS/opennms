@@ -66,7 +66,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
 
         OnmsMapElement mapElement2 = getOnmsMapElementDao().findMapElementById(mapElement.getId());
     	assertNotSame(mapElement, mapElement2);
-        assertEquals(mapElement.getMap().getId(), mapElement2.getMap().getId());
+        assertEquals(mapElement.getMapId(), mapElement2.getMapId());
         assertEquals(mapElement.getElementId(), mapElement2.getElementId());
         assertEquals(mapElement.getType(), mapElement2.getType());
         assertEquals(mapElement.getLabel(), mapElement2.getLabel());
@@ -80,8 +80,8 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of the map element object then this ID may change and this test
         // will fail.
-        OnmsMapElement mapElement = getOnmsMapElementDao().findMapElementById(59);
-        assertEquals(58, mapElement.getMap().getId());
+        OnmsMapElement mapElement = getOnmsMapElementDao().findMapElementById(58);
+        assertEquals(1, mapElement.getMapId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -91,9 +91,9 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
     }
     
     public void testFind() {
-        OnmsMap map = getOnmsMapDao().findMapById(58);
+        OnmsMap map = getOnmsMapDao().findMapById(1);
         OnmsMapElement mapElement = getOnmsMapElementDao().findMapElement(1, OnmsMapElement.NODE_TYPE, map);
-        assertEquals(58, mapElement.getMap().getId());
+        assertEquals(1, mapElement.getMapId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -103,11 +103,11 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
     }
     
     public void testFindMapElementsByMapId() {
-        OnmsMap map = getOnmsMapDao().findMapById(58);
+        OnmsMap map = getOnmsMapDao().findMapById(1);
         Collection<OnmsMapElement> elems = getOnmsMapElementDao().findMapElementsByMapId(map);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(58, mapElement.getMap().getId());
+        assertEquals(1, mapElement.getMapId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -120,7 +120,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(58, mapElement.getMap().getId());
+        assertEquals(1, mapElement.getMapId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -148,7 +148,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByType(OnmsMapElement.NODE_TYPE);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
-        assertEquals(58, mapElement.getMap().getId());
+        assertEquals(1, mapElement.getMapId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
         assertEquals("Test Node", mapElement.getLabel());
@@ -162,16 +162,8 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         assertEquals(0,elems.size());
     }
 
-    public void testDeleteElement() {
-        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByType(OnmsMapElement.NODE_TYPE);
-        assertEquals(1,elems.size());
-        OnmsMapElement element = elems.iterator().next();
-        getOnmsMapElementDao().delete(element);
-        assertNull(getOnmsMapElementDao().findMapElementById(59));
-    }
-    
     public void testDeleteElementsByElementIdAndType() {
         getOnmsMapElementDao().deleteElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
-        assertNull(getOnmsMapElementDao().findMapElementById(59));
+        assertNull(getOnmsMapElementDao().findMapElementById(58));
     }
 }

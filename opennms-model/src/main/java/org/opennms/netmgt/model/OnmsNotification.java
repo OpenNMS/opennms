@@ -51,7 +51,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
@@ -153,8 +152,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_notifyId = notifyid;
     }
 
-
-    @XmlElement(name="textMessage")
+    
     @Column(name="textMsg", length=4000, nullable=false)
     public String getTextMsg() {
         return m_textMsg;
@@ -164,7 +162,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_textMsg = textmsg;
     }
     
-    @XmlElement(name="subject")
+
     @Column(name="subject", length=256)
     public String getSubject() {
         return m_subject;
@@ -174,7 +172,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_subject = subject;
     }
     
-    @XmlElement(name="numericMessage")
+
     @Column(name="numericMsg", length=256)
     public String getNumericMsg() {
         return m_numericMsg;
@@ -184,7 +182,6 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_numericMsg = numericmsg;
     }
 
-    @XmlElement(name="pageTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="pageTime")
     public Date getPageTime() {
@@ -195,7 +192,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_pageTime = pagetime;
     }
 
-    @XmlElement(name="respondTime")
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="respondTime")
     public Date getRespondTime() {
@@ -206,7 +203,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_respondTime = respondtime;
     }
 
-    @XmlElement(name="answeredBy")
+    
     @Column(name="answeredBy", length=256)
     public String getAnsweredBy() {
         return m_answeredBy;
@@ -216,7 +213,6 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_answeredBy = answeredby;
     }
     
-    @XmlElement(name="ipAddress")
     @Column(name="interfaceId", length=16)
     public String getIpAddress() {
     	return m_ipAddress;
@@ -237,6 +233,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_serviceType = serviceType;
     }
 
+
     @Column(name="queueId", length=256)
     public String getQueueId() {
         return m_queueId;
@@ -245,6 +242,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     public void setQueueId(String queueid) {
         m_queueId = queueid;
     }
+
 
     @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
@@ -258,10 +256,9 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     }
     
     /*
-     * FIXME: HACK for some reason we put the eventUEI in the notifications table along with the eventId
+     * FIXME: HACK for some reason we put the eventUEI in the notificatinos table along with the eventId
      * so we have to HACK this so we can properly write the table
      */
-    @XmlElement(name="uei")
     @Column(name="eventUEI")
     public String getEventUei() {
         return m_event.getEventUei();
@@ -302,7 +299,6 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_notifConfigName;
     }
 
-    @XmlElement(name="notificationCommand")
     @Column(name="notifConfigName", length=63 )
     public void setNotifConfigName(String notifConfigName) {
         m_notifConfigName = notifConfigName;

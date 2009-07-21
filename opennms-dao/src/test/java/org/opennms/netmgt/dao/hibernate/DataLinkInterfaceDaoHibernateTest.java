@@ -37,7 +37,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import java.util.Date;
 
 public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoTestCase {
-    
     public void testInitialize() {
         // do nothing, just test that setUp() / tearDown() works
     }
@@ -65,7 +64,7 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
     }
 
     public void testFindById() {
-        DataLinkInterface dli = getDataLinkInterfaceDao().findById(60);
+        DataLinkInterface dli = getDataLinkInterfaceDao().findById(59);
         assertEquals(new Integer(1), dli.getNodeId());
         assertEquals(new Integer(1), dli.getIfIndex());
     }

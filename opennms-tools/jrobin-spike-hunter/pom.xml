@@ -2,21 +2,13 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-<<<<<<< .working
     <version>1.7.5-SMS-SNAPSHOT</version>
-=======
-    <version>1.7.6-SNAPSHOT</version>
->>>>>>> .merge-right.r14042
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>spike-hunter</artifactId>
   <packaging>jar</packaging>
   <name>spike-hunter</name>
-<<<<<<< .working
   <version>1.7.5-SMS-SNAPSHOT</version>
-=======
-  <version>1.7.6-SNAPSHOT</version>
->>>>>>> .merge-right.r14042
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -29,11 +21,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
-<<<<<<< .working
       <version>1.7.5-SMS-SNAPSHOT</version>
-=======
-      <version>1.7.6-SNAPSHOT</version>
->>>>>>> .merge-right.r14042
     </dependency>
     <dependency>
       <groupId>org.jrobin</groupId>

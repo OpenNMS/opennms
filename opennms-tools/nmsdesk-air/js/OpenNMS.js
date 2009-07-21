@@ -96,7 +96,7 @@ function notificationsCompleteHandler(event){
 		// <ifLostService>2008-03-22T15:03:09+01:00</ifLostService>
 		// <ifRegainedService>2008-03-22T15:03:40+01:00</ifRegainedService>
 
-		var entries = xmldoc.getElementsByTagName("notification");
+		var entries = xmldoc.getElementsByTagName("onmsNotification");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");
@@ -107,8 +107,8 @@ function notificationsCompleteHandler(event){
 		
 		for (Index = 0; Index < entries.length; Index++) {
 			var id = entries[Index].getAttribute("id");
-			var eventUei = entries[Index].getElementsByTagName("uei")[0].textContent;
-			var textMsg = entries[Index].getElementsByTagName("textMessage")[0].textContent;
+			var eventUei = entries[Index].getElementsByTagName("eventUei")[0].textContent;
+			var textMsg = entries[Index].getElementsByTagName("textMsg")[0].textContent;
 			var subject = entries[Index].getElementsByTagName("subject")[0].textContent;
 
 			RegainedServiceElement = entries[Index].getElementsByTagName("ifRegainedService")[0];
@@ -136,7 +136,7 @@ function restoutagesCompleteHandler(event){
 		// <ifLostService>2008-03-22T15:03:09+01:00</ifLostService>
 		// <ifRegainedService>2008-03-22T15:03:40+01:00</ifRegainedService>
 
-		var entries = xmldoc.getElementsByTagName("outage");
+		var entries = xmldoc.getElementsByTagName("onmsOutage");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");
@@ -190,7 +190,7 @@ function restoutagesCompleteHandler(event){
 		
 	
 
-		var entries = xmldoc.getElementsByTagName("alarm");
+		var entries = xmldoc.getElementsByTagName("onmsAlarm");
 		air.trace("found " + entries.length + " entries.");
 		var position = document.getElementById("results");
 		var oldtable = document.getElementById("resultstable");
@@ -202,7 +202,7 @@ function restoutagesCompleteHandler(event){
 		for (Index = 0; Index < entries.length; Index++) {
 			var id = entries[Index].getElementsByTagName("id")[0].textContent;
 			var description = entries[Index].getElementsByTagName("description")[0].textContent;
-			var logMsg = entries[Index].getElementsByTagName("logMessage")[0].textContent;
+			var logMsg = entries[Index].getElementsByTagName("logMsg")[0].textContent;
 
 			RegainedServiceElement = entries[Index].getElementsByTagName("ifRegainedService")[0];
 

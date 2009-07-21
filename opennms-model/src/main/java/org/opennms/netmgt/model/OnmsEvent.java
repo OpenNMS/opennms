@@ -53,7 +53,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -280,7 +279,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventId = eventid;
 	}
 
-	@XmlElement(name="uei")
 	@Column(name="eventUei", length=256, nullable=false)
 	public String getEventUei() {
 		return m_eventUei;
@@ -290,7 +288,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventUei = eventuei;
 	}
 
-	@XmlElement(name="time")
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="eventTime", nullable=false)
 	public Date getEventTime() {
@@ -301,7 +298,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTime = eventtime;
 	}
 
-	@XmlElement(name="host")
 	@Column(name="eventHost", length=256)
 	public String getEventHost() {
 		return m_eventHost;
@@ -311,7 +307,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventHost = eventhost;
 	}
 
-	@XmlElement(name="source")
 	@Column(name="eventSource", length=128, nullable=false)
 	public String getEventSource() {
 		return m_eventSource;
@@ -321,7 +316,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSource = eventsource;
 	}
 
-	@XmlElement(name="ipAddress")
 	@Column(name="ipAddr", length=16)
 	public String getIpAddr() {
 		return m_ipAddr;
@@ -342,7 +336,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_distPoller = distPoller;
 	}
 
-	@XmlElement(name="snmpHost")
 	@Column(name="eventSnmpHost", length=256)
 	public String getEventSnmpHost() {
 		return m_eventSnmpHost;
@@ -363,7 +356,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_serviceType = serviceType;
 	}
 
-	@XmlElement(name="snmp")
 	@Column(name="eventSnmp", length=256)
 	public String getEventSnmp() {
 		return m_eventSnmp;
@@ -373,7 +365,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSnmp = eventsnmp;
 	}
 
-	@XmlElement(name="parms")
 	@Column(name="eventParms", length=1024)
 	public String getEventParms() {
 		return m_eventParms;
@@ -383,7 +374,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventParms = eventparms;
 	}
 
-	@XmlElement(name="createTime")
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="eventCreateTime", nullable=false)
 	public Date getEventCreateTime() {
@@ -394,7 +384,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventCreateTime = eventcreatetime;
 	}
 
-	@XmlElement(name="description")
 	@Column(name="eventDescr", length=4000)
 	public String getEventDescr() {
 		return m_eventDescr;
@@ -404,7 +393,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventDescr = eventdescr;
 	}
 
-	@XmlElement(name="logGroup")
 	@Column(name="eventLogGroup", length=32)
 	public String getEventLogGroup() {
 		return m_eventLogGroup;
@@ -414,7 +402,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLogGroup = eventloggroup;
 	}
 
-	@XmlElement(name="logMessage")
 	@Column(name="eventLogMsg", length=256)
 	public String getEventLogMsg() {
 		return m_eventLogMsg;
@@ -424,7 +411,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLogMsg = eventlogmsg;
 	}
 
-	@XmlAttribute(name="severity")
 	@Column(name="eventSeverity", nullable=false)
 	public Integer getEventSeverity() {
 		return m_eventSeverity;
@@ -434,7 +420,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSeverity = severity;
 	}
 
-	@XmlElement(name="pathOutage")
 	@Column(name="eventPathOutage", length=1024)
 	public String getEventPathOutage() {
 		return m_eventPathOutage;
@@ -444,7 +429,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventPathOutage = eventpathoutage;
 	}
 
-	@XmlElement(name="correlation")
 	@Column(name="eventCorrelation", length=1024)
 	public String getEventCorrelation() {
 		return m_eventCorrelation;
@@ -454,7 +438,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventCorrelation = eventcorrelation;
 	}
 
-	@XmlElement(name="suppressedCount")
 	@Column(name="eventSuppressedCount")
 	public Integer getEventSuppressedCount() {
 		return m_eventSuppressedCount;
@@ -464,7 +447,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSuppressedCount = eventsuppressedcount;
 	}
 
-	@XmlElement(name="operatorInstructions")
 	@Column(name="eventOperInstruct", length=1024)
 	public String getEventOperInstruct() {
 		return m_eventOperInstruct;
@@ -474,7 +456,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperInstruct = eventoperinstruct;
 	}
 
-	@XmlElement(name="autoAction")
 	@Column(name="eventAutoAction", length=256)
 	public String getEventAutoAction() {
 		return m_eventAutoAction;
@@ -484,7 +465,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAutoAction = eventautoaction;
 	}
 
-	@XmlElement(name="operatorAction")
 	@Column(name="eventOperAction", length=256)
 	public String getEventOperAction() {
 		return m_eventOperAction;
@@ -494,7 +474,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperAction = eventoperaction;
 	}
 
-	@XmlElement(name="operationActionMenuText")
 	@Column(name="eventOperActionMenuText", length=64)
 	public String getEventOperActionMenuText() {
 		return m_eventOperActionMenuText;
@@ -504,7 +483,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperActionMenuText = eventOperActionMenuText;
 	}
 
-	@XmlElement(name="notification")
 	@Column(name="eventNotification", length=128)
 	public String getEventNotification() {
 		return m_eventNotification;
@@ -514,7 +492,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventNotification = eventnotification;
 	}
 
-	@XmlElement(name="troubleTicket")
 	@Column(name="eventTTicket", length=128)
 	public String getEventTTicket() {
 		return m_eventTTicket;
@@ -524,7 +501,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTTicket = eventtticket;
 	}
 
-	@XmlElement(name="troubleTicketState")
 	@Column(name="eventTTicketState")
 	public Integer getEventTTicketState() {
 		return m_eventTTicketState;
@@ -534,7 +510,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTTicketState = eventtticketstate;
 	}
 
-	@XmlTransient
 	@Column(name="eventForward", length=256)
 	public String getEventForward() {
 		return m_eventForward;
@@ -544,7 +519,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventForward = eventforward;
 	}
 
-	@XmlElement(name="mouseOverText")
 	@Column(name="eventMouseOverText", length=64)
 	public String getEventMouseOverText() {
 		return m_eventMouseOverText;
@@ -557,7 +531,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/**
 	 * TODO: Make this an Enum
 	 */
-	@XmlAttribute(name="log")
 	@Column(name="eventLog", length=1, nullable=false)
 	public String getEventLog() {
 		return m_eventLog;
@@ -571,7 +544,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * TODO: make this an Enum
 	 * 
 	 */
-	@XmlAttribute(name="display")
 	@Column(name="eventDisplay", length=1, nullable=false)
 	public String getEventDisplay() {
 		return m_eventDisplay;
@@ -581,7 +553,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventDisplay = eventdisplay;
 	}
 
-	@XmlElement(name="ackUser")
 	@Column(name="eventAckUser", length=256)
 	public String getEventAckUser() {
 		return m_eventAckUser;
@@ -590,8 +561,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public void setEventAckUser(String eventackuser) {
 		m_eventAckUser = eventackuser;
 	}
-	
-	@XmlElement(name="ackTime")
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="eventAckTime")
 	public Date getEventAckTime() {
@@ -614,7 +584,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	@XmlIDREF
-	@XmlElement(name="nodeId")
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="nodeId")
 	public OnmsNode getNode() {

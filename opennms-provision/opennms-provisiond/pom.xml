@@ -3,11 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-provision</artifactId>
-<<<<<<< .working
     <version>1.7.5-SMS-SNAPSHOT</version>
-=======
-    <version>1.7.6-SNAPSHOT</version>
->>>>>>> .merge-right.r14042
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provisiond</artifactId>
@@ -35,6 +31,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
@@ -47,12 +47,6 @@
     </dependency>
 
     <!-- runtime only dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
 
     <!-- test dependencies -->
     <dependency>

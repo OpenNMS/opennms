@@ -79,7 +79,7 @@ eventStore = new Ext.data.Store({
 		}
 	}),
 	reader:new Ext.data.XmlReader({
-		record:"event",
+		record:"onmsEvent",
 		totalRecords:"@totalCount"
 	}, eventRecord)
 })

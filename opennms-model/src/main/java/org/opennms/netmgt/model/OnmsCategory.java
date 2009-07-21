@@ -47,8 +47,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.CollectionOfElements;
@@ -89,7 +87,6 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     }
 
     @Id
-    @XmlAttribute(name="id")
     @Column(name="categoryid")
     @SequenceGenerator(name="categorySequence", sequenceName="catNxtId")
     @GeneratedValue(generator="categorySequence")
@@ -101,7 +98,6 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
         m_id = id;
     }
 
-    @XmlAttribute(name="name")
     @Column(name="categoryName", unique=true, nullable=false)
     public String getName() {
         return m_name;
@@ -110,7 +106,6 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
         m_name = name;
     }
 
-    @XmlElement(name="description")
     @Column(name="categoryDescription")
 	public String getDescription() {
 		return m_description;

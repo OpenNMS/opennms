@@ -3,8 +3,8 @@ OpenNMS.ux.NodePageableComboBox=Ext.extend(OpenNMS.ux.ComboFilterBox,{
 	
 	url:"rest/nodes",
 	recordMap:[
-		{name:"name", mapping:"@label"},
-		{name:"id", mapping:"@id"}
+		{name:"name", mapping:"label"},
+		{name:"id", mapping:"nodeId"}
 	],
 	hideTrigger:false,
 	queryParam:"label",

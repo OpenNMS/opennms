@@ -3,11 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-<<<<<<< .working
     <version>1.7.5-SMS-SNAPSHOT</version>
-=======
-    <version>1.7.6-SNAPSHOT</version>
->>>>>>> .merge-right.r14042
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-map-provisioning-adapter</artifactId>

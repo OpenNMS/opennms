@@ -22,7 +22,7 @@ public class OnmsEventCollection extends LinkedList<OnmsEvent> {
         super(c);
     }
 
-    @XmlElement(name="event")
+    @XmlElement(name="onmsEvent")
     public List<OnmsEvent> getEvents() {
         return this;
     }
@@ -38,7 +38,7 @@ public class OnmsEventCollection extends LinkedList<OnmsEvent> {
     }
     
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
+    public Integer getTotalCount() {
         return m_totalCount;
     }
     
