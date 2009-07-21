@@ -37,6 +37,7 @@
 //
 package org.opennms.netmgt.poller.remote;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -61,8 +62,10 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         daoTestConfig.afterPropertiesSet();
         
         m_fileAnticipator = new FileAnticipator();
-        
-        System.setProperty("opennms.poller.configuration.resource", m_fileAnticipator.expecting("remote-poller.configuration").toURL().toString());
+
+        String filename = m_fileAnticipator.expecting("remote-poller.configuration").getCanonicalPath();
+        filename = filename.replace("+", "%2B");
+        System.setProperty("opennms.poller.configuration.resource", "file://" + filename);
     }
 
 
