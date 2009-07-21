@@ -55,7 +55,7 @@ function customResourceViewInit(elementId, dataArray, destURL){
 					handler:viewChildResource
 				},{
 					xtype:"button",
-					text:"Chose Child Resource",
+					text:"Choose Child Resource",
 					handler:chooseChildResource
 				}
 				
