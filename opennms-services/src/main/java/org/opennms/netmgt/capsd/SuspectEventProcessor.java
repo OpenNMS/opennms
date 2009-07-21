@@ -75,6 +75,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -273,14 +274,17 @@ final class SuspectEventProcessor implements Runnable {
             log().debug("getExistingNodeEntry: issuing SQL command: "
                     + sqlBuffer.toString());
 
-        PreparedStatement stmt = dbc.prepareStatement(sqlBuffer.toString());
-
-        // Do any of the IP addrs already exist in the database under another
-        // node?
-        //
         int nodeID = -1;
+        PreparedStatement stmt;
+        final DBUtils d = new DBUtils(getClass());
+
         try {
+            stmt = dbc.prepareStatement(sqlBuffer.toString());
+            d.watch(stmt);
+
+            // Do any of the IP addrs already exist in the database under another node?
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             if (rs.next()) {
                 nodeID = rs.getInt(1);
                 if (log().isDebugEnabled())
@@ -288,14 +292,8 @@ final class SuspectEventProcessor implements Runnable {
                             + collector.getTarget().getHostAddress() + nodeID);
                 rs = null;
             }
-        } catch (SQLException sqlE) {
-            throw sqlE;
         } finally {
-            try {
-                stmt.close(); // automatically closes the result set as well
-            } catch (Exception e) {
-                // Ignore
-            }
+            d.cleanUp();
         }
 
         if (nodeID == -1)
@@ -303,32 +301,26 @@ final class SuspectEventProcessor implements Runnable {
 
         try {
             stmt = dbc.prepareStatement(SQL_RETRIEVE_IPINTERFACES_ON_NODEID);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             while (rs.next()) {
                 String ipaddr = rs.getString(1);
                 if (!ipaddr.equals("0.0.0.0"))
                     ipaddrsOfOldNode.add(ipaddr);
             }
-        } catch (SQLException sqlE) {
-            throw sqlE;
         } finally {
-            try {
-                stmt.close(); // automatically closes the result set as well
-            } catch (Exception e) {
-                // Ignore
-            }
+            d.cleanUp();
         }
 
         if (ipaddrsOfNewNode.containsAll(ipaddrsOfOldNode)) {
             if (log().isDebugEnabled())
-                log().debug("getExistingNodeEntry: found one of the addrs under existing node: "
-                        + nodeID);
+                log().debug("getExistingNodeEntry: found one of the addrs under existing node: " + nodeID);
             return DbNodeEntry.get(nodeID);
         } else {
-            String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode,
-                                                     ipaddrsOfNewNode);
+            String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode, ipaddrsOfNewNode);
             createAndSendDuplicateIpaddressEvent(nodeID, dupIpaddr);
             return null;
         }
@@ -1459,61 +1451,40 @@ final class SuspectEventProcessor implements Runnable {
                         Iterator<InetAddress> iter = addressList.iterator();
                         while (iter.hasNext()) {
                             InetAddress addr = iter.next();
-                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(
-                                                                                               addr.getHostAddress(),
-                                                                                               "SNMP")) {
-                                PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
-                                stmt.setInt(1, entryNode.getNodeId());
-                                stmt.setString(2, addr.getHostAddress());
-
-                                // Execute statement
+                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addr.getHostAddress(), "SNMP")) {
+                                final DBUtils d = new DBUtils(getClass());
                                 try {
+                                    PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
+                                    d.watch(stmt);
+                                    stmt.setInt(1, entryNode.getNodeId());
+                                    stmt.setString(2, addr.getHostAddress());
+
                                     stmt.executeUpdate();
-                                    log().debug("updated "
-                                            + addr.getHostAddress()
-                                            + " to secondary.");
-                                } catch (SQLException sqlE) {
-                                    throw sqlE;
+                                    log().debug("updated " + addr.getHostAddress() + " to secondary.");
                                 } finally {
-                                    try {
-                                        stmt.close();
-                                    } catch (Exception e) {
-                                        // Ignore
-                                    }
+                                    d.cleanUp();
                                 }
                             }
                         }
                         String psiType = null;
                         if (lbAddressList != null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
-                                                                                                              lbAddressList,
-                                                                                                              strict);
-                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME)
-                                    + " loopback addresses";
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
                         }
                         if (newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
-                                                                                                              addressList,
-                                                                                                              strict);
-                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME)
-                                    + " addresses";
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
                         }
                         strict = false;
-                        if ((newSnmpPrimaryIf == null)
-                                && (lbAddressList != null)) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
-                                                                                                              lbAddressList,
-                                                                                                              strict);
+                        if ((newSnmpPrimaryIf == null) && (lbAddressList != null)) {
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
                             psiType = "DB loopback addresses";
                         }
                         if (newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
-                                                                                                              addressList,
-                                                                                                              strict);
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
                             psiType = "DB addresses";
                         }
-                        if (collector.hasSnmpCollection()
-                                && newSnmpPrimaryIf == null) {
+                        if (collector.hasSnmpCollection() && newSnmpPrimaryIf == null) {
                             newSnmpPrimaryIf = ifaddr;
                             psiType = "New suspect ip address";
                         }
@@ -1623,26 +1594,23 @@ final class SuspectEventProcessor implements Runnable {
                 + node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
-        // Prepare SQL statement
-        PreparedStatement stmt = dbc.prepareStatement("SELECT ipAddr FROM ipInterface WHERE nodeId=? AND isSnmpPrimary='P' AND isManaged!='D'");
-        stmt.setInt(1, node.getNodeId());
-
-        // Execute statement
-        ResultSet rs = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
-            rs = stmt.executeQuery();
+            PreparedStatement stmt = dbc.prepareStatement("SELECT ipAddr FROM ipInterface WHERE nodeId=? AND isSnmpPrimary='P' AND isManaged!='D'");
+            d.watch(stmt);
+            stmt.setInt(1, node.getNodeId());
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             while (rs.next()) {
                 String oldPrimaryAddr = rs.getString(1);
-                log().debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = "
-                        + oldPrimaryAddr);
+                log().debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     try {
                         oldPrimarySnmpIf = InetAddress.getByName(oldPrimaryAddr);
-                        log().debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is "
-                                + oldPrimarySnmpIf.getHostAddress());
+                        log().debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is " + oldPrimarySnmpIf.getHostAddress());
                     } catch (UnknownHostException e) {
-                        log().warn("Failed converting IP address "
-                                + oldPrimaryAddr);
+                        log().warn("Failed converting IP address " + oldPrimaryAddr);
                     }
                     priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
@@ -1651,11 +1619,7 @@ final class SuspectEventProcessor implements Runnable {
             log().warn("getPrimarySnmpInterfaceFromDb: Exception: " + sqlE);
             throw sqlE;
         } finally {
-            try {
-                stmt.close(); // automatically closes the result set as well
-            } catch (Exception e) {
-                // Ignore
-            }
+            d.cleanUp();
         }
 
         return priSnmpAddrs;
@@ -1710,24 +1674,18 @@ final class SuspectEventProcessor implements Runnable {
             // Update the appropriate entry in the 'ipInterface' table
             //
 
-            // Prepare SQL statement
-            PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
-            stmt.setInt(1, node.getNodeId());
-            stmt.setString(2, newPrimarySnmpIf.getHostAddress());
-
-            // Execute statement
+            final DBUtils d = new DBUtils(SuspectEventProcessor.class);
             try {
+                PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
+                d.watch(stmt);
+                stmt.setInt(1, node.getNodeId());
+                stmt.setString(2, newPrimarySnmpIf.getHostAddress());
+
                 stmt.executeUpdate();
                 if (log().isDebugEnabled())
                     log().debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
-            } catch (SQLException sqlE) {
-                throw sqlE;
             } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
+                d.cleanUp();
             }
         }
     }

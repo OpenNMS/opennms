@@ -54,6 +54,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.Constants;
@@ -170,12 +171,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         synchronized (event) {
             event.setDbid(eventID);
         }
-        
-        // prepare the SQL statement
-        PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+        final DBUtils d = new DBUtils(getClass());
 
         try {
-            // Set up the sql information now
+            PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+            d.watch(insStmt);
 
             // eventID
             insStmt.setInt(1, eventID);
@@ -361,11 +361,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // execute
             insStmt.executeUpdate();
         } finally {
-            try {
-                insStmt.close();
-            } catch (SQLException e) {
-                log().warn("SQLException while closing prepared statement: " + e, e);
-            }
+            d.cleanUp();
         }
 
         if (log().isDebugEnabled()) {
@@ -393,35 +389,6 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      */
     // FIXME: This uses JdbcTemplate and not the passed in connection
     String getHostName(int nodeId, String hostip, Connection connection) throws SQLException {
-//        PreparedStatement getHostNameStmt = getConnection().prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-//
-//        try {
-//            // talk to the database and get the identifer
-//            String hostname = hostip;
-//
-//            getHostNameStmt.setString(1, hostip);
-//            ResultSet rset = null;
-//
-//            try {
-//                rset = getHostNameStmt.executeQuery();
-//                if (rset.next()) {
-//                    hostname = rset.getString(1);
-//                }
-//            } catch (SQLException e) {
-//                throw e;
-//            } finally {
-//                rset.close();
-//            }
-//
-//            // hostname can be null - if it is, return the ip
-//            if (hostname == null) {
-//                hostname = hostip;
-//            }
-//
-//            return hostname;
-//        } finally {
-//            getHostNameStmt.close();
-//        }
         try {
             String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
             return (hostname != null) ? hostname : hostip;

@@ -464,15 +464,23 @@ public class EventsArchiver {
      */
     @SuppressWarnings("deprecation")
     private void close() {
-        // database related
+
         try {
             m_eventsGetStmt.close();
+        } catch (SQLException e) {
+            m_logCat.warn("Unable to close get statement", e);
+        }
+        
+        try {
             m_eventDeleteStmt.close();
-
+        } catch (SQLException e) {
+            m_logCat.warn("Unable to close delete statement", e);
+        }
+        
+        try {
             m_conn.close();
         } catch (SQLException e) {
-            m_logCat.warn("Error while closing database statements and "
-                          + "connection: message -> " + e.getMessage());
+            m_logCat.warn("Unable to close connection", e);
         }
 
         /*

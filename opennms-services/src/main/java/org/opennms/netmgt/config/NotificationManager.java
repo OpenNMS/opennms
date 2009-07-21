@@ -59,6 +59,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.common.Header;
@@ -112,7 +113,6 @@ public abstract class NotificationManager {
     
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
-    
     
     /**
      * @param configIn
@@ -336,13 +336,17 @@ public abstract class NotificationManager {
         boolean outstanding = false;
     
         Connection connection = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement(getConfigManager().getConfiguration().getOutstandingNoticesSql());
+            d.watch(connection);
+            final PreparedStatement statement = connection.prepareStatement(getConfigManager().getConfiguration().getOutstandingNoticesSql());
+            d.watch(statement);
     
             statement.setInt(1, noticeId);
     
             ResultSet results = statement.executeQuery();
+            d.watch(results);
     
             // count how many rows were returned, if there is even one then the
             // page
@@ -355,18 +359,10 @@ public abstract class NotificationManager {
             if (count == 0) {
                 outstanding = true;
             }
-    
-            statement.close();
-            results.close();
         } catch (SQLException e) {
             log().error("Error getting notice status: " + e.getMessage(), e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     
         return outstanding;
@@ -377,12 +373,14 @@ public abstract class NotificationManager {
     public Collection<Integer> acknowledgeNotice(final Event event, final String uei, final String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
         Connection connection = null;
         List<Integer> notifIDs = new LinkedList<Integer>();
+        final DBUtils d = new DBUtils(getClass());
 
         try {
             // First get most recent event ID from notifications 
             // that match the matchList, then get all notifications
             // with this event ID
             connection = getConnection();
+            d.watch(connection);
             int eventID = 0;
             boolean wasAcked = false;
             StringBuffer sql = new StringBuffer("SELECT eventid FROM notifications WHERE eventuei=? ");
@@ -391,6 +389,7 @@ public abstract class NotificationManager {
             }
             sql.append("ORDER BY eventid desc limit 1");
             PreparedStatement statement = connection.prepareStatement(sql.toString());
+            d.watch(statement);
             statement.setString(1, uei);
     
             for (int i = 0; i < matchList.length; i++) {
@@ -408,6 +407,7 @@ public abstract class NotificationManager {
             }
     
             ResultSet results = statement.executeQuery();
+            d.watch(results);
             if (results != null && results.next()) {
                 eventID = results.getInt(1);
                 log().debug("EventID for notice(s) to be acked: " + eventID);
@@ -436,7 +436,8 @@ public abstract class NotificationManager {
                             ansBy = ansBy + "/auto-acknowledged";
                         }
                         log().debug("Matching DOWN notifyID = " + notifID + ", was acked by user = " + wasAcked + ", ansBy = " +ansBy);
-                        PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
+                        final PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
+                        d.watch(update);
     
                         update.setString(1, ansBy);
                         update.setTimestamp(2, ts);
@@ -454,16 +455,8 @@ public abstract class NotificationManager {
             } else {
                 log().debug("No matching DOWN eventID found");
             }
-    
-            statement.close();
-            results.close();
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
         return notifIDs;
     }
@@ -473,13 +466,17 @@ public abstract class NotificationManager {
         String NODE_QUERY = "SELECT   n.nodeid " + "FROM     node n " + "WHERE    n.nodetype != 'D' " + "ORDER BY n.nodelabel";
     
         java.sql.Connection connection = null;
-        List<Integer> allNodes = new ArrayList<Integer>();
-    
+        final List<Integer> allNodes = new ArrayList<Integer>();
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             connection = getConnection();
+            d.watch(connection);
     
-            Statement stmt = connection.createStatement();
-            ResultSet rset = stmt.executeQuery(NODE_QUERY);
+            final Statement stmt = connection.createStatement();
+            d.watch(stmt);
+            final ResultSet rset = stmt.executeQuery(NODE_QUERY);
+            d.watch(rset);
     
             if (rset != null) {
                 // Iterate through the result and build the array list
@@ -491,12 +488,7 @@ public abstract class NotificationManager {
             }
             return allNodes;
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     }
     /**
@@ -505,18 +497,22 @@ public abstract class NotificationManager {
     public String getServiceNoticeStatus(final String nodeID, final String ipaddr, final String service) throws SQLException {
         String notify = "Y";
     
-        String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
+        final String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
         java.sql.Connection connection = null;
-    
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             connection = getConnection();
+            d.watch(connection);
     
-            PreparedStatement statement = connection.prepareStatement(query);
+            final PreparedStatement statement = connection.prepareStatement(query);
+            d.watch(statement);
             statement.setInt(1, Integer.parseInt(nodeID));
             statement.setString(2, ipaddr);
             statement.setString(3, service);
     
-            ResultSet rs = statement.executeQuery();
+            final ResultSet rs = statement.executeQuery();
+            d.watch(rs);
     
             if (rs.next() && rs.getString("notify") != null) {
                 notify = rs.getString("notify");
@@ -525,12 +521,7 @@ public abstract class NotificationManager {
             }
             return notify;
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     }
     /**
@@ -540,16 +531,18 @@ public abstract class NotificationManager {
      * 
      */
     public void updateNoticeWithUserInfo(final String userId, final int noticeId, final String media, final String contactInfo, final String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
-        Category log = log();
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
-        if (log.isDebugEnabled()) {
-            log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", contactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
+        if (log().isDebugEnabled()) {
+            log().debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         }
         Connection connection = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = getConnection();
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (id, userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?,?)");
+            d.watch(connection);
+            final PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (id, userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?,?)");
+            d.watch(insert);
     
             insert.setInt(1, userNotifId);
             insert.setString(2, userId);
@@ -562,14 +555,8 @@ public abstract class NotificationManager {
             insert.setString(7, autoNotify);
     
             insert.executeUpdate();
-            insert.close();
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     }
     /**
@@ -580,11 +567,14 @@ public abstract class NotificationManager {
      */
     public void insertNotice(final int notifyId, final Map<String, String> params, final String queueID, final Notification notification) throws SQLException {
         Connection connection = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (" +
+            d.watch(connection);
+            final PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (" +
                     "textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, " +
                     "eventuei, subject, queueID, notifConfigName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            d.watch(statement);
     
             // notifications textMsg field
             String textMsg = (String) params.get(NotificationManager.PARAM_TEXT_MSG);
@@ -633,7 +623,7 @@ public abstract class NotificationManager {
             }
     
             // eventID field
-            String eventID = (String) params.get("eventID");
+            final String eventID = (String) params.get("eventID");
             statement.setInt(8, Integer.parseInt(eventID));
     
             statement.setString(9, (String) params.get("eventUEI"));
@@ -647,14 +637,8 @@ public abstract class NotificationManager {
             statement.setString(12, notification.getName());
     
             statement.executeUpdate();
-            statement.close();
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     }
     /**
@@ -669,28 +653,24 @@ public abstract class NotificationManager {
         int serviceID = 0;
     
         Connection connection = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = getConnection();
+            d.watch(connection);
     
-            PreparedStatement statement = connection.prepareStatement("SELECT serviceID from service where serviceName = ?");
+            final PreparedStatement statement = connection.prepareStatement("SELECT serviceID from service where serviceName = ?");
+            d.watch(statement);
             statement.setString(1, service);
     
-            ResultSet results = statement.executeQuery();
+            final ResultSet results = statement.executeQuery();
+            d.watch(results);
             results.next();
     
             serviceID = results.getInt(1);
     
-            results.close();
-            statement.close();
-    
             return serviceID;
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
     }
     /**
