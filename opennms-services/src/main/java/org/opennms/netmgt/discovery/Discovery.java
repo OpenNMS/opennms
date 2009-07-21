@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -246,31 +247,27 @@ public class Discovery extends AbstractServiceDaemon {
     	 */
     	Set<String> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
     	Connection conn = null;
+        final DBUtils d = new DBUtils(getClass());
 
     	try {
     		conn = DataSourceFactory.getInstance().getConnection();
+    		d.watch(conn);
     		PreparedStatement stmt = conn.prepareStatement(ALL_IP_ADDRS_SQL);
+    		d.watch(stmt);
     		ResultSet rs = stmt.executeQuery();
+    		d.watch(rs);
     		if (rs != null) {
     			while (rs.next()) {
     				newAlreadyDiscovered.add(rs.getString(1));
     			}
-    			rs.close();
     		} else {
     			log().warn("Got null ResultSet from query for all IP addresses");
     		}
-    		stmt.close();
     		m_alreadyDiscovered = newAlreadyDiscovered;
     	} catch (SQLException sqle) {
     		log().warn("Caught SQLException while trying to query for all IP addresses: " + sqle.getMessage());
     	} finally {
-    		if (conn != null) {
-    			try {
-    				conn.close();
-    			} catch (SQLException sqle) {
-    				log().warn("Caught SQLException while closing DB connection after querying for all IP addresses: " + sqle.getMessage());
-    			}
-    		}
+    	    d.cleanUp();
     	}
     	log().info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
     }

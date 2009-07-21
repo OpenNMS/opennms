@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -222,8 +223,7 @@ public class DbStpInterfaceEntry {
 	 */
 	private void insert(Connection c) throws SQLException {
 		if (m_fromDb)
-			throw new IllegalStateException(
-					"The record already exists in the database");
+			throw new IllegalStateException("The record already exists in the database");
 
 		Category log = ThreadCategory.getInstance(getClass());
 
@@ -283,50 +283,54 @@ public class DbStpInterfaceEntry {
 		if (log.isDebugEnabled())
 			log.debug("StpInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
-		// create the Prepared statment and then
-		// start setting the result values
-		//
-		PreparedStatement stmt = c.prepareStatement(names.toString());
 
-		int ndx = 1;
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setInt(ndx++, m_bridgeport);
-		stmt.setInt(ndx++, m_stpportvlan);
+		DBUtils d = new DBUtils(getClass());
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_ifindex);
+		try {
+            PreparedStatement stmt = c.prepareStatement(names.toString());
+            d.watch(stmt);
 
-		if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
-			stmt.setInt(ndx++, m_stpportstate);
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setInt(ndx++, m_bridgeport);
+            stmt.setInt(ndx++, m_stpportvlan);
 
-		if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
-			stmt.setInt(ndx++, m_stpportpathcost);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_ifindex);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
-			stmt.setString(ndx++, m_stpportdesignatedroot);
+            if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
+            	stmt.setInt(ndx++, m_stpportstate);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
-			stmt.setInt(ndx++, m_stpportdesignatedcost);
+            if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
+            	stmt.setInt(ndx++, m_stpportpathcost);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
-			stmt.setString(ndx++, m_stpportdesignatedbridge);
+            if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
+            	stmt.setString(ndx++, m_stpportdesignatedroot);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
-			stmt.setString(ndx++, m_stpportdesignatedport);
+            if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
+            	stmt.setInt(ndx++, m_stpportdesignatedcost);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
+            	stmt.setString(ndx++, m_stpportdesignatedbridge);
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
+            if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
+            	stmt.setString(ndx++, m_stpportdesignatedport);
 
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.insert: row " + rc);
-		stmt.close();
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
+
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
+
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            	log.debug("StpInterfaceEntry.insert: row " + rc);
+		} finally {
+		    d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -408,51 +412,55 @@ public class DbStpInterfaceEntry {
 		if (log.isDebugEnabled())
 			log.debug("StpInterfaceEntry.update: SQL statement " + sqlText.toString());
 
-		// create the Prepared statment and then
-		// start setting the result values
-		//
-		PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+		DBUtils d = new DBUtils(getClass());
 
-		int ndx = 1;
+		try {
+            PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+            d.watch(stmt);
+            
+            int ndx = 1;
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_ifindex);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_ifindex);
 
-		if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
-			stmt.setInt(ndx++, m_stpportstate);
+            if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
+            	stmt.setInt(ndx++, m_stpportstate);
 
-		if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
-			stmt.setInt(ndx++, m_stpportpathcost);
+            if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
+            	stmt.setInt(ndx++, m_stpportpathcost);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
-			stmt.setString(ndx++, m_stpportdesignatedroot);
+            if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
+            	stmt.setString(ndx++, m_stpportdesignatedroot);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
-			stmt.setInt(ndx++, m_stpportdesignatedcost);
+            if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
+            	stmt.setInt(ndx++, m_stpportdesignatedcost);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
-			stmt.setString(ndx++, m_stpportdesignatedbridge);
+            if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
+            	stmt.setString(ndx++, m_stpportdesignatedbridge);
 
-		if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
-			stmt.setString(ndx++, m_stpportdesignatedport);
+            if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
+            	stmt.setString(ndx++, m_stpportdesignatedport);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
 
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setInt(ndx++, m_bridgeport);
-		stmt.setInt(ndx++, m_stpportvlan);
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setInt(ndx++, m_bridgeport);
+            stmt.setInt(ndx++, m_stpportvlan);
 
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.update: row " + rc);
-		stmt.close();
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            	log.debug("StpInterfaceEntry.update: row " + rc);
+            stmt.close();
+		} finally {
+		    d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -473,8 +481,7 @@ public class DbStpInterfaceEntry {
 	 */
 	private boolean load(Connection c) throws SQLException {
 		if (!m_fromDb)
-			throw new IllegalStateException(
-					"The record does not exists in the database");
+			throw new IllegalStateException("The record does not exists in the database");
 
 		Category log = ThreadCategory.getInstance(getClass());
 
@@ -482,66 +489,68 @@ public class DbStpInterfaceEntry {
 		// start setting the result values
 		//
 		PreparedStatement stmt = null;
-		stmt = c.prepareStatement(SQL_LOAD_STPINTERFACE);
-		stmt.setInt(1, m_nodeId);
-		stmt.setInt(2, m_bridgeport);
-		stmt.setInt(3, m_stpportvlan);
+		DBUtils d = new DBUtils(getClass());
+		
+		try {
+            stmt = c.prepareStatement(SQL_LOAD_STPINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setInt(2, m_bridgeport);
+            stmt.setInt(3, m_stpportvlan);
 
-		// Run the select
-		//
-		ResultSet rset = stmt.executeQuery();
-		if (!rset.next()) {
-			rset.close();
-			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("StpInterfaceEntry.load: no result found");
-			return false;
-		}
+            // Run the select
+            ResultSet rset = stmt.executeQuery();
+            d.watch(rset);
+            if (!rset.next()) {
+            	if (log.isDebugEnabled())
+            		log.debug("StpInterfaceEntry.load: no result found");
+            	return false;
+            }
 
-		// extract the values.
-		//
-		int ndx = 1;
+            // extract the values.
+            //
+            int ndx = 1;
 
-		// get the base bridge address
-		//
-		m_ifindex = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_ifindex = -1;
+            // get the base bridge address
+            //
+            m_ifindex = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_ifindex = -1;
 
-		m_stpportstate = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_stpportstate = -1;
+            m_stpportstate = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_stpportstate = -1;
 
-		m_stpportpathcost = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_stpportpathcost = -1;
+            m_stpportpathcost = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_stpportpathcost = -1;
 
-		m_stpportdesignatedroot = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_stpportdesignatedroot = null;
+            m_stpportdesignatedroot = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_stpportdesignatedroot = null;
 
-		m_stpportdesignatedcost = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_stpportdesignatedcost = -1;
+            m_stpportdesignatedcost = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_stpportdesignatedcost = -1;
 
-		m_stpportdesignatedbridge = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_stpportdesignatedbridge = null;
+            m_stpportdesignatedbridge = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_stpportdesignatedbridge = null;
 
-		m_stpportdesignatedport = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_stpportdesignatedport = null;
+            m_stpportdesignatedport = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_stpportdesignatedport = null;
 
-		String str = rset.getString(ndx++);
-		if (str != null && !rset.wasNull())
-			m_status = str.charAt(0);
-		else
-			m_status = STATUS_UNKNOWN;
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+            	m_status = str.charAt(0);
+            else
+            	m_status = STATUS_UNKNOWN;
 
-		m_lastPollTime = rset.getTimestamp(ndx++);
-
-		rset.close();
-		stmt.close();
+            m_lastPollTime = rset.getTimestamp(ndx++);
+		} finally {
+		    d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database

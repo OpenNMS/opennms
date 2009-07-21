@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -141,7 +142,7 @@ final class DbAtInterfaceEntry {
 	 * changed since the record was created.
 	 */
 	private int m_changed;
-
+	
 	// Mask fields
 	//
 	private static final int CHANGED_PHYSADDR = 1 << 0;
@@ -210,37 +211,42 @@ final class DbAtInterfaceEntry {
 		// start setting the result values
 		//
 
-		PreparedStatement stmt = c.prepareStatement(names.toString());
+		PreparedStatement stmt;
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = c.prepareStatement(names.toString());
+            d.watch(stmt);
 
-		int ndx = 1;
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setString(ndx++, m_ipaddr);
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipaddr);
 
-		if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
-			stmt.setString(ndx++, m_physaddr);
+            if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
+            	stmt.setString(ndx++, m_physaddr);
 
-		if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
-			stmt.setInt(ndx++, m_sourcenodeid);
+            if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
+            	stmt.setInt(ndx++, m_sourcenodeid);
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_ifindex);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_ifindex);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
 
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            
+            if (log.isDebugEnabled())
+            	log.debug("AtInterfaceEntry.insert: row " + rc);
+        } finally {
+            d.cleanUp();
+        }
 		
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.insert: row " + rc);
-		
-		stmt.close();
-
 		// clear the mask and mark as backed
 		// by the database
 		//
@@ -299,38 +305,41 @@ final class DbAtInterfaceEntry {
 		if (log.isDebugEnabled())
 			log.debug("AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
 
-		// create the Prepared statment and then
-		// start setting the result values
-		//
-		PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+		PreparedStatement stmt;
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = c.prepareStatement(sqlText.toString());
+            d.watch(stmt);
 
-		int ndx = 1;
+            int ndx = 1;
 
-		if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
-			stmt.setString(ndx++, m_physaddr);
+            if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
+            	stmt.setString(ndx++, m_physaddr);
 
-		if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
-			stmt.setInt(ndx++, m_sourcenodeid);
+            if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
+            	stmt.setInt(ndx++, m_sourcenodeid);
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-			stmt.setInt(ndx++, m_ifindex);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+            	stmt.setInt(ndx++, m_ifindex);
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			stmt.setTimestamp(ndx++, m_lastPollTime);
-		}
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
+            }
 
-		stmt.setInt(ndx++, m_nodeId);
-		stmt.setString(ndx++, m_ipaddr);
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipaddr);
 
-		// Run the insert
-		//
-		int rc = stmt.executeUpdate();
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.update: row " + rc);
-		stmt.close();
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            	log.debug("AtInterfaceEntry.update: row " + rc);
+        } finally {
+            d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
@@ -359,55 +368,58 @@ final class DbAtInterfaceEntry {
 		// start setting the result values
 		//
 		PreparedStatement stmt = null;
-		stmt = c.prepareStatement(SQL_LOAD_ATINTERFACE);
-		stmt.setInt(1, m_nodeId);
-		stmt.setString(2, m_ipaddr);
-
 		// Run the select
-		//
-		ResultSet rset = stmt.executeQuery();
-		if (!rset.next()) {
-			rset.close();
-			stmt.close();
-			if (log.isDebugEnabled())
-				log.debug("AtInterfaceEntry.load: no result found");
-			return false;
-		}
+        		//
+        ResultSet rset;
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = c.prepareStatement(SQL_LOAD_ATINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setString(2, m_ipaddr);
 
-		// extract the values.
-		//
-		int ndx = 1;
+            rset = stmt.executeQuery();
+            d.watch(rset);
+            if (!rset.next()) {
+            	if (log.isDebugEnabled())
+            		log.debug("AtInterfaceEntry.load: no result found");
+            	return false;
+            }
 
-		// get the mac address
-		//
-		m_physaddr = rset.getString(ndx++);
-		if (rset.wasNull())
-			m_physaddr = null;
+            // extract the values.
+            //
+            int ndx = 1;
 
-		// get the source node id
-		//
-		m_sourcenodeid = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_sourcenodeid = -1;
+            // get the mac address
+            //
+            m_physaddr = rset.getString(ndx++);
+            if (rset.wasNull())
+            	m_physaddr = null;
 
-		// get the source node ifindex
-		//
-		m_ifindex = rset.getInt(ndx++);
-		if (rset.wasNull())
-			m_ifindex = -1;
+            // get the source node id
+            //
+            m_sourcenodeid = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_sourcenodeid = -1;
 
-		// the entry status
-		//
-		String str = rset.getString(ndx++);
-		if (str != null && !rset.wasNull())
-			m_status = str.charAt(0);
-		else
-			m_status = STATUS_UNKNOWN;
+            // get the source node ifindex
+            //
+            m_ifindex = rset.getInt(ndx++);
+            if (rset.wasNull())
+            	m_ifindex = -1;
 
-		m_lastPollTime = rset.getTimestamp(ndx++);
+            // the entry status
+            //
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+            	m_status = str.charAt(0);
+            else
+            	m_status = STATUS_UNKNOWN;
 
-		rset.close();
-		stmt.close();
+            m_lastPollTime = rset.getTimestamp(ndx++);
+        } finally {
+            d.cleanUp();
+        }
 
 		// clear the mask and mark as backed
 		// by the database
