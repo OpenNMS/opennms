@@ -43,8 +43,9 @@ import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
-import org.opennms.report.availability.render.ReportRenderException;
-import org.opennms.report.availability.render.ReportRenderer;
+import org.opennms.report.ReportMailer;
+import org.opennms.report.render.ReportRenderException;
+import org.opennms.report.render.ReportRenderer;
 
 /**
  * Send an availability report to the intended recipient.

@@ -3,6 +3,7 @@ package org.opennms.web.controller.inventory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.text.ParseException;
 
 import javax.servlet.ServletException;
@@ -11,7 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.web.svclayer.inventory.InventoryService;
+import org.opennms.report.configuration.svclayer.ConfigurationReportCriteria;
+import org.opennms.report.configuration.svclayer.ConfigurationReportService;
+import org.opennms.report.inventory.svclayer.InventoryReportCriteria;
+import org.opennms.report.inventory.svclayer.InventoryReportService;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +23,26 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class RancidReportExecController extends SimpleFormController {
     
-    InventoryService m_inventoryService;
+//    InventoryService m_inventoryService;
+    ConfigurationReportService m_configurationReportService;
+    InventoryReportService m_inventoryReportService;
+    
+    
+    
+    public ConfigurationReportService getConfigurationReportService() {
+        return m_configurationReportService;
+    }
+    public void setConfigurationReportService(
+            ConfigurationReportService configurationReportService) {
+        m_configurationReportService = configurationReportService;
+    }
+    public InventoryReportService getInventoryReportService() {
+        return m_inventoryReportService;
+    }
+    public void setInventoryReportService(
+            InventoryReportService inventoryReportService) {
+        m_inventoryReportService = inventoryReportService;
+    }
     
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
@@ -30,19 +53,26 @@ public class RancidReportExecController extends SimpleFormController {
         
         log().debug("RancidReportExecController ModelAndView type" + bean.getReporttype());
         log().debug("RancidReportExecController ModelAndView type" + bean.getFieldhas());
+        
+        String user = request.getRemoteUser();
+        Date reportRequestDate = new Date();
 
+        
         ModelAndView mav = new ModelAndView(getSuccessView());
 
         if (bean.getReporttype().compareTo("rancidlist") == 0){
             log().debug("RancidReportExecController rancidlist report ");
-            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail());
+            ConfigurationReportCriteria criteria = new ConfigurationReportCriteria(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
+//            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
+            boolean done = m_configurationReportService.runReport(criteria);
             mav.addObject("type", "Rancid List");
             if (!done){
                 log().debug("RancidReportExecController error ");
             }
         } else if (bean.getReporttype().compareTo("inventory") == 0){
             log().debug("RancidReportExecController inventory report ");
-            boolean done = m_inventoryService.runNodeBaseInventoryReport(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype(),bean.getReportemail());
+            InventoryReportCriteria criteria = new InventoryReportCriteria(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype(),bean.getReportemail(), user, reportRequestDate);
+            boolean done = m_inventoryReportService.runReport(criteria);
             mav.addObject("type", "Inventory Report");
             if (!done){
                 log().debug("RancidReportExecController error ");
@@ -73,15 +103,7 @@ public class RancidReportExecController extends SimpleFormController {
         log().debug("RancidReportExecController initBinder");
     }
     
-    public InventoryService getInventoryService() {
-        return m_inventoryService;
-    }
-
-    public void setInventoryService(InventoryService inventoryService) {
-        m_inventoryService = inventoryService;
-    }
-
-    
+   
     private static Category log() {
         return Logger.getLogger("Rancid");
     }

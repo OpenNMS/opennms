@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
+import org.opennms.report.ReportLocatorService;
 
 /**
  * AvailibilityReportLocatorService is used to store, retrieve and delete

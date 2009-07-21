@@ -242,14 +242,6 @@
   
   <!--Rancid Integration and Inventory -->
   
-    <bean id="rwsConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>
-    </bean>
-  
-    <bean id="rwsConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rwsConfig-init">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.getInstance</value></property>
-    </bean>
-         
    <bean id="inventoryService" class="org.opennms.web.svclayer.inventory.InventoryService">
    	<property name="rwsConfig" ref="rwsConfig"/>
    	<property name="nodeDao" ref="nodeDao"/>

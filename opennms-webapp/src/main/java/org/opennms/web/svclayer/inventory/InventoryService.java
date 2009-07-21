@@ -22,7 +22,6 @@ import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
 import org.opennms.rancid.RWSBucket.BucketItem;
-import org.opennms.report.inventory.InventoryReport;
 
 import org.opennms.web.element.ElementUtil;
 import org.opennms.web.inventory.*;
@@ -706,24 +705,6 @@ public class InventoryService implements InitializingBean {
 
 
     }
-    public boolean runRancidListReport(String _date, String _format, String _reportemail){
-        
-        InventoryReport iR = new InventoryReport(m_cp, _date, _format, _reportemail);
-        
-        new Thread(iR).start();                    
-
-        return true;
-    }
-
-    public boolean runNodeBaseInventoryReport(String _date, String _field, String _format, String _reportemail){
-        
-        InventoryReport iR = new InventoryReport(m_cp, _date, _field, _format, _reportemail);
-        
-        new Thread(iR).start();    
-        
-        return true;
-    }
-   
 
     public boolean deleteBucketItem(String bucket, String filename ){
         log().debug("InventoryService deleteBucketItem for bucket/filename [" + bucket + "]/ " + "[" + filename + "]"); 
