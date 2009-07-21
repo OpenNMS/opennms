@@ -375,8 +375,6 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     
     private JdbcTemplate m_jdbcTemplate;
 
-    private DBUtils m_dbUtils = new DBUtils(JdbcCapsdDbSyncer.class);
-    
     public JdbcCapsdDbSyncer() {
         
     }
@@ -428,6 +426,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         List<String> serviceNames = syncServicesTable(conn);
     
         PreparedStatement delFromIfServicesStmt = null;
+        final DBUtils d = new DBUtils(getClass());
         try { 
             
             List<String> protocols = getCapsdConfig().getConfiguredProtocols();
@@ -451,14 +450,14 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                         log().debug("syncServices: deleting all references to service id " + id + " from the IfServices table.");
                     }
                     delFromIfServicesStmt = conn.prepareStatement(DELETE_IFSERVICES_SQL);
-                    m_dbUtils.watch(delFromIfServicesStmt);
+                    d.watch(delFromIfServicesStmt);
                     delFromIfServicesStmt.setInt(1, id.intValue());
                     delFromIfServicesStmt.executeUpdate();
                     log().info("syncServices: deleted service id " + id + " for service '" + service + "' from the IfServices table.");
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
         
     }
@@ -485,19 +484,20 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         log().debug("syncServicesTable: synchronizing services list with the database");
         
         List<String> serviceNames;
-    
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             PreparedStatement insStmt = conn.prepareStatement(SVCTBL_ADD_SQL);
-            m_dbUtils.watch(insStmt);
+            d.watch(insStmt);
             PreparedStatement nxtStmt = conn.prepareStatement(getNextSvcIdSql());
-            m_dbUtils.watch(nxtStmt);
+            d.watch(nxtStmt);
             PreparedStatement loadStmt = conn.prepareStatement(SVCTBL_LOAD_SQL);
-            m_dbUtils.watch(loadStmt);
+            d.watch(loadStmt);
 
             // go ahead and load the table first if it can be loaded
             serviceNames = new ArrayList<String>();
             ResultSet rs = loadStmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             while (rs.next()) {
                 Integer id = new Integer(rs.getInt(1));
                 String name = rs.getString(2);
@@ -518,7 +518,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     
                     // get the next identifier
                     rs = nxtStmt.executeQuery();
-                    m_dbUtils.watch(rs);
+                    d.watch(rs);
                     rs.next();
                     int id = rs.getInt(1);
                     rs.close();
@@ -539,7 +539,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
         return serviceNames;
     }
@@ -591,22 +591,24 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     
         // prepare the SQL statement to query the database
         PreparedStatement ipRetStmt = null;
-    
-        if (verifyServer) {
-            ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
-            m_dbUtils.watch(ipRetStmt);
-            ipRetStmt.setString(1, localServer);
-        } else {
-            ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
-            m_dbUtils.watch(ipRetStmt);
-        }
-    
+        final DBUtils d = new DBUtils(getClass());
         List<LightWeightIfEntry> ifList = new ArrayList<LightWeightIfEntry>();
-        ResultSet result = null;
+
         try {
+            if (verifyServer) {
+                ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
+                d.watch(ipRetStmt);
+                ipRetStmt.setString(1, localServer);
+            } else {
+                ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
+                d.watch(ipRetStmt);
+            }
+        
+            ResultSet result = null;
+            
             // run the statement
             result = ipRetStmt.executeQuery();
-            m_dbUtils.watch(result);
+            d.watch(result);
     
             // Build array list of CapsdInterface objects representing each
             // of the interfaces retrieved from the database
@@ -631,19 +633,19 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 ifList.add(new LightWeightIfEntry(nodeId, LightWeightIfEntry.NULL_IFINDEX, address, managedState, DbIpInterfaceEntry.SNMP_UNKNOWN, LightWeightIfEntry.NULL_IFTYPE));
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         try {
             // For efficiency, prepare the SQL statements in advance
             PreparedStatement ifUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_IP_INTERFACE);
-            m_dbUtils.watch(ifUpdateStmt);
+            d.watch(ifUpdateStmt);
             PreparedStatement allSvcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_ALL_SERVICES_FOR_NIP);
-            m_dbUtils.watch(allSvcUpdateStmt);
+            d.watch(allSvcUpdateStmt);
             PreparedStatement svcRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IF_SERVICES);
-            m_dbUtils.watch(svcRetStmt);
+            d.watch(svcRetStmt);
             PreparedStatement svcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_SERVICE_FOR_NIP);
-            m_dbUtils.watch(svcUpdateStmt);
+            d.watch(svcUpdateStmt);
     
             /*
              * Loop through interface list and determine if there has been a
@@ -738,7 +740,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     svcRetStmt.setString(2, ipaddress);
     
                     ResultSet svcRS = svcRetStmt.executeQuery();
-                    m_dbUtils.watch(svcRS);
+                    d.watch(svcRS);
                     while (svcRS.next()) {
                         int svcId = svcRS.getInt(1);
     
@@ -796,7 +798,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 } // interface managed
             } // end while
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     }
     
@@ -849,12 +851,13 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     
         Map<Integer, List<LightWeightIfEntry>> nodes = new HashMap<Integer, List<LightWeightIfEntry>>();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             // prepare the SQL statement to query the database
             PreparedStatement ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_SNMP_IP_INTERFACES);
-            m_dbUtils.watch(ipRetStmt);
+            d.watch(ipRetStmt);
             ResultSet result = ipRetStmt.executeQuery();
-            m_dbUtils.watch(result);
+            d.watch(result);
     
             // Iterate over result set and build map of interface
             // entries keyed by node id.
@@ -922,7 +925,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         /*
@@ -1038,14 +1041,14 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     try {
                         // prepare the SQL statement to query the database
                         PreparedStatement updateStmt = conn.prepareStatement(SQL_DB_UPDATE_SNMP_PRIMARY_STATE);
-                        m_dbUtils.watch(updateStmt);
+                        d.watch(updateStmt);
                         updateStmt.setString(1, new String(new char[] { lwIf.getSnmpPrimaryState() }));
                         updateStmt.setInt(2, lwIf.getNodeId());
                         updateStmt.setString(3, lwIf.getAddress());
     
                         updateStmt.executeUpdate();
                     } finally {
-                        m_dbUtils.cleanUp();
+                        d.cleanUp();
                     }
                 }
             }
@@ -1114,9 +1117,10 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         
         int nodeid = -1;
     
+        final DBUtils d = new DBUtils(getClass());
         try {
             PreparedStatement s = dbConn.prepareStatement(qs.toString());
-            m_dbUtils.watch(s);
+            d.watch(s);
             s.setString(1, ifAddress.getHostAddress());
     
             if (ifIndex != -1) {
@@ -1124,12 +1128,12 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
             }
     
             ResultSet rs = s.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             if (rs.next()) {
                 nodeid = rs.getInt(1);
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     
         return nodeid;
@@ -1161,17 +1165,18 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         // dbConn.setReadOnly(true);
     
         ResultSet rs = null;
+        final DBUtils d = new DBUtils(getClass());
         
         try {
             PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
-            m_dbUtils.watch(s);
+            d.watch(s);
             s.setString(1, ifAddress.getHostAddress());
     
             rs = s.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             result = rs.next();
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     
         return result;

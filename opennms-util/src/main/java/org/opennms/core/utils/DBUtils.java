@@ -10,9 +10,9 @@ import java.util.Set;
 import org.apache.log4j.Category;
 
 public class DBUtils {
-    private Set<Statement> m_statements;
-    private Set<ResultSet> m_resultSets;
-    private Set<Connection> m_connections;
+    private final Set<Statement> m_statements;
+    private final Set<ResultSet> m_resultSets;
+    private final Set<Connection> m_connections;
     private Class<?> m_loggingClass;
 
     public DBUtils() {

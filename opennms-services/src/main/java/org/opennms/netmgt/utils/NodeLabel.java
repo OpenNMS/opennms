@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.PropertyConstants;
 import org.opennms.protocols.ip.IPv4Address;
@@ -267,6 +268,7 @@ public class NodeLabel {
         String nodeLabelSource = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        final DBUtils d = new DBUtils(NodeLabel.class);
 
         if (log().isDebugEnabled()) {
             log().debug("NodeLabel.retrieveLabel: sql: " + SQL_DB_RETRIEVE_NODELABEL + " node id: " + nodeID);
@@ -274,19 +276,20 @@ public class NodeLabel {
 
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_NODELABEL);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
 
             // Issue database query
             rs = stmt.executeQuery();
+            d.watch(rs);
 
             // Process result set, retrieve node's sysname
             if (rs.next()) {
                 nodeLabel = rs.getString(1);
                 nodeLabelSource = rs.getString(2);
             }
-            rs.close();
         } finally {
-            cleanUpStatement(stmt, rs);
+            d.cleanUp();
         }
 
         if (nodeLabelSource != null) {
@@ -340,10 +343,12 @@ public class NodeLabel {
         }
 
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(NodeLabel.class);
 
         try {
             // Issue SQL update to assign the 'nodelabel' && 'nodelabelsource' fields of the 'node' table
             stmt = dbConnection.prepareStatement(SQL_DB_UPDATE_NODE_LABEL);
+            d.watch(stmt);
             int column = 1;
 
             // Node Label
@@ -370,7 +375,7 @@ public class NodeLabel {
 
             stmt.executeUpdate();
         } finally {
-            cleanUpStatement(stmt, null);
+            d.cleanUp();
         }
     }
 
@@ -430,12 +435,15 @@ public class NodeLabel {
         String netbiosName = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        final DBUtils d = new DBUtils(NodeLabel.class);
 
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_NETBIOS_NAME);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
 
             rs = stmt.executeQuery();
+            d.watch(rs);
 
             // Process result set, retrieve node's sysname
             while (rs.next()) {
@@ -456,7 +464,7 @@ public class NodeLabel {
                 return nodeLabel;
             }
         } finally {
-            cleanUpStatement(stmt, rs);
+            d.cleanUp();
         }
 
         // OK, if we get this far the node has no NetBIOS name associated with it so,
@@ -480,13 +488,15 @@ public class NodeLabel {
         // Issue SQL query to retrieve all managed interface IP addresses from 'ipinterface' table
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_MANAGED_INTERFACES);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             rs = stmt.executeQuery();
+            d.watch(rs);
 
             // Process result set, store retrieved addresses/host names in lists
             loadAddressList(rs, ipv4AddrList, ipHostNameList);
         } finally {
-            cleanUpStatement(stmt, rs);
+            d.cleanUp();
         }
 
         IPv4Address primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
@@ -506,11 +516,13 @@ public class NodeLabel {
             try {
                 // retrieve all non-managed interface IP addresses from 'ipinterface' table
                 stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_NON_MANAGED_INTERFACES);
+                d.watch(stmt);
                 stmt.setInt(1, nodeID);
                 rs = stmt.executeQuery();
+                d.watch(rs);
                 loadAddressList(rs, ipv4AddrList, ipHostNameList);
             } finally {
-                cleanUpStatement(stmt, rs);
+                d.cleanUp();
             }
 
             primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
@@ -539,13 +551,15 @@ public class NodeLabel {
         String primarySysName = null;
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_SYSNAME);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             rs = stmt.executeQuery();
+            d.watch(rs);
             while (rs.next()) {
                 primarySysName = rs.getString(1);
             }
         } finally {
-            cleanUpStatement(stmt, rs);
+            d.cleanUp();
         }
 
         if (primarySysName != null && primarySysName.length() > 0) {
@@ -675,23 +689,6 @@ public class NodeLabel {
         buffer.append(m_nodeLabelSource);
 
         return buffer.toString();
-    }
-
-    private static void cleanUpStatement(PreparedStatement stmt, ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException rse) {
-                log().warn("unable to close result set", rse);
-            }
-        }
-        if (stmt != null) {
-            try {
-                stmt.close();
-            } catch (SQLException ste) {
-                log().warn("unable to close statement", ste);
-            }
-        }
     }
 
     private static Category log() {

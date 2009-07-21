@@ -116,8 +116,6 @@ public final class ReparentViaSmb {
      */
     private Map<LightWeightNodeEntry, List<LightWeightNodeEntry>> m_reparentNodeMap;
 
-    private DBUtils m_dbUtils = new DBUtils(ReparentViaSmb.class);
-    
     /**
      * Contains hard-coded list of NetBIOS names which are not subject to
      * reparenting via SMB.
@@ -356,12 +354,13 @@ public final class ReparentViaSmb {
     private void buildNodeLists() throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
         m_existingNodeList = new ArrayList<LightWeightNodeEntry>();
+        final DBUtils d = new DBUtils(getClass());
 
         try {
             PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_NODES);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             // Process result set
             // Build list of LightWeightNodeEntry objects representing each of
             // the
@@ -369,10 +368,8 @@ public final class ReparentViaSmb {
             while (rs.next()) {
                 m_existingNodeList.add(new LightWeightNodeEntry(rs.getInt(1), rs.getString(2)));
             }
-
-            rs.close();
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // 
@@ -490,14 +487,15 @@ public final class ReparentViaSmb {
         Category log = ThreadCategory.getInstance(getClass());
         List<LightWeightIfEntry> reparentedIfList = null;
         m_reparentedIfMap = null;
+        final DBUtils d = new DBUtils(getClass());
 
         try {
             PreparedStatement ipInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
-            m_dbUtils.watch(ipInterfaceStmt);
+            d.watch(ipInterfaceStmt);
             PreparedStatement snmpInterfaceStmt = m_connection.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
-            m_dbUtils.watch(snmpInterfaceStmt);
+            d.watch(snmpInterfaceStmt);
             PreparedStatement ifServicesStmt = m_connection.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
-            m_dbUtils.watch(ifServicesStmt);
+            d.watch(ifServicesStmt);
 
             Set<LightWeightNodeEntry> keys = m_reparentNodeMap.keySet();
             Iterator<LightWeightNodeEntry> iter = keys.iterator();
@@ -533,14 +531,14 @@ public final class ReparentViaSmb {
                         // events for each one
                         //
                         PreparedStatement stmt = m_connection.prepareStatement(SQL_DB_RETRIEVE_INTERFACES);
-                        m_dbUtils.watch(stmt);
+                        d.watch(stmt);
                         stmt.setInt(1, dupNodeID);
 
                         // Issue database query
                         if (log.isDebugEnabled())
                             log.debug("reparentInterfaces: issuing db query...");
                         ResultSet rs = stmt.executeQuery();
-                        m_dbUtils.watch(rs);
+                        d.watch(rs);
 
                         // Process result set
                         // Build list of LightWeightIfEntry objects representing
@@ -598,7 +596,7 @@ public final class ReparentViaSmb {
                     if (log.isDebugEnabled())
                         log.debug("reparentInterfaces: deleting duplicate node id: " + dupNodeID);
                     PreparedStatement deleteNodeStmt = m_connection.prepareStatement(SQL_DB_DELETE_NODE);
-                    m_dbUtils.watch(deleteNodeStmt);
+                    d.watch(deleteNodeStmt);
                     deleteNodeStmt.setInt(1, dupNodeID);
 
                     // execute update
@@ -617,7 +615,7 @@ public final class ReparentViaSmb {
                 }
             } // end while(iter.hasNext())
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     }
 

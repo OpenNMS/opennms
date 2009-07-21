@@ -124,8 +124,6 @@ public final class DbSnmpInterfaceEntry {
      */
     private int m_changed;
 
-    private DBUtils m_dbUtils = new DBUtils(DbSnmpInterfaceEntry.class);
-    
     // Mask fields
     private static final int CHANGED_IFADDRESS = 1 << 0;
 
@@ -219,10 +217,11 @@ public final class DbSnmpInterfaceEntry {
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             stmt = c.prepareStatement(names.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             names = null;
 
             int ndx = 1;
@@ -275,7 +274,7 @@ public final class DbSnmpInterfaceEntry {
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -361,10 +360,11 @@ public final class DbSnmpInterfaceEntry {
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             stmt = c.prepareStatement(sqlText.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             sqlText = null;
 
             int ndx = 1;
@@ -462,7 +462,7 @@ public final class DbSnmpInterfaceEntry {
             int rc = stmt.executeUpdate();
             log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
         stmt.close();
 
@@ -491,16 +491,17 @@ public final class DbSnmpInterfaceEntry {
         // create the Prepared statement and then start setting the query values
         PreparedStatement stmt = null;
         ResultSet rset = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             stmt = c.prepareStatement(SQL_LOAD_REC);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
             stmt.setInt(2, m_ifIndex);
 
             // Run the query
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             if (!rset.next()) {
                 return false;
             }
@@ -580,7 +581,7 @@ public final class DbSnmpInterfaceEntry {
                 m_ifAlias = null;
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
         
         // clear the mask and mark as backed by the database

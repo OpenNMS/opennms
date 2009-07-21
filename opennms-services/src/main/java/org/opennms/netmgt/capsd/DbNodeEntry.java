@@ -265,8 +265,6 @@ final class DbNodeEntry {
      */
     private int m_changed;
 
-    private DBUtils m_dbUtils = new DBUtils(DbNodeEntry.class);
-
     // Mask fields
     //
     private static final int CHANGED_CREATE_TIME = 1 << 0;
@@ -319,11 +317,12 @@ final class DbNodeEntry {
         // Get the next node identifier
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = c.prepareStatement(SQL_NEXT_NID);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             rset.next();
             m_nodeId = rset.getInt(1);
 
@@ -429,7 +428,7 @@ final class DbNodeEntry {
             // start setting the result values
             //
             stmt = c.prepareStatement(names.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             names = null;
 
             int ndx = 1;
@@ -509,7 +508,7 @@ final class DbNodeEntry {
             m_fromDb = true;
             m_changed = 0;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }        
     }
 
@@ -615,13 +614,11 @@ final class DbNodeEntry {
 
         log().debug("DbNodeEntry.update: SQL update statment = " + sqlText.toString());
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = c.prepareStatement(sqlText.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             
             sqlText = null;
 
@@ -744,7 +741,7 @@ final class DbNodeEntry {
             //
             m_changed = 0;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     }
 
@@ -768,14 +765,15 @@ final class DbNodeEntry {
         //
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = c.prepareStatement(SQL_LOAD_REC);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
             stmt.setString(2, m_dpName);
 
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             if (!rset.next()) {
                 return false;
             }
@@ -872,7 +870,7 @@ final class DbNodeEntry {
             
             m_foreignId = rset.getString(ndx++);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -1703,15 +1701,16 @@ final class DbNodeEntry {
     DbIpInterfaceEntry[] getInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         
         List<DbIpInterfaceEntry> l;
         try {
             stmt = db.prepareStatement(SQL_LOAD_IF_LIST);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
 
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             l = new ArrayList<DbIpInterfaceEntry>();
 
             while (rset.next()) {
@@ -1738,7 +1737,7 @@ final class DbNodeEntry {
                     l.add(entry);
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
@@ -1749,12 +1748,13 @@ final class DbNodeEntry {
         DbIpInterfaceEntry[] entries = null;
 
         Connection db = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             db = DataSourceFactory.getInstance().getConnection();
-            m_dbUtils.watch(db);
+            d.watch(db);
             entries = getManagedInterfaces(db);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         return entries;
@@ -1763,15 +1763,16 @@ final class DbNodeEntry {
     DbIpInterfaceEntry[] getManagedInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         
         List<DbIpInterfaceEntry> l;
         try {
             stmt = db.prepareStatement(SQL_LOAD_MANAGED_IF_LIST);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
 
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             l = new ArrayList<DbIpInterfaceEntry>();
 
             while (rset.next()) {
@@ -1798,7 +1799,7 @@ final class DbNodeEntry {
                     l.add(entry);
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         DbIpInterfaceEntry[] entries = new DbIpInterfaceEntry[l.size()];
@@ -1838,15 +1839,16 @@ final class DbNodeEntry {
     DbSnmpInterfaceEntry[] getSnmpInterfaces(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         List<DbSnmpInterfaceEntry> l;
         try {
             stmt = db.prepareStatement(SQL_LOAD_SNMP_LIST);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
 
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             l = new ArrayList<DbSnmpInterfaceEntry>();
 
             while (rset.next()) {
@@ -1871,7 +1873,7 @@ final class DbNodeEntry {
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         DbSnmpInterfaceEntry[] entries = new DbSnmpInterfaceEntry[l.size()];
@@ -1976,12 +1978,12 @@ final class DbNodeEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>dpName</em>. If the record cannot be found
-     * then a null reference is returnd.
+     * then a null reference is returned.
      * 
      * @param db
-     *            The databse connection used to load the entry.
+     *            The database connection used to load the entry.
      * @param nid
      *            The node id key
      * 
@@ -1993,12 +1995,12 @@ final class DbNodeEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>dpName</em>. If the record cannot be found
-     * then a null reference is returnd.
+     * then a null reference is returned.
      * 
      * @param db
-     *            The databse connection used to load the entry.
+     *            The database connection used to load the entry.
      * @param nid
      *            The node id key
      * @param dpName
@@ -2049,10 +2051,11 @@ final class DbNodeEntry {
     public void createAssetNodeEntry(Connection conn, int nodeid) throws SQLException {
 
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         
         try {
             stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate,displayCategory,notifyCategory,pollerCategory,thresholdCategory) values(?,?,?,?,?,?,?,?)");
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, nodeid);
             stmt.setString(2, "Unspecified");
             stmt.setString(3, "");
@@ -2064,7 +2067,7 @@ final class DbNodeEntry {
 
             stmt.execute();
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     }
 

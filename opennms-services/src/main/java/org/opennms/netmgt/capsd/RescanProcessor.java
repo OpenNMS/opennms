@@ -223,8 +223,6 @@ public final class RescanProcessor implements Runnable {
 
     private int m_nodeId;
 
-    private DBUtils m_dbUtils = new DBUtils(RescanProcessor.class);
-    
     /**
      * Constructor.
      * 
@@ -958,14 +956,15 @@ public final class RescanProcessor implements Runnable {
                     }
                     
                     PreparedStatement stmt = null;
+                    final DBUtils d = new DBUtils(getClass());
                     try {
                         stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_OTHER_NODES);
-                        m_dbUtils.watch(stmt);
+                        d.watch(stmt);
                         stmt.setString(1, ifaddr.getHostAddress());
                         stmt.setInt(2, node.getNodeId());
                         
                         ResultSet rs = stmt.executeQuery();
-                        m_dbUtils.watch(rs);
+                        d.watch(rs);
                         while (rs.next()) {
                             int existingNodeId = rs.getInt(1);
                             if (log().isDebugEnabled()) {
@@ -1043,7 +1042,7 @@ public final class RescanProcessor implements Runnable {
                         log().error("SQLException while updating interface: " + ifaddr.getHostAddress() + " on nodeid: " + node.getNodeId());
                         throw e;
                     } finally {
-                        m_dbUtils.cleanUp();
+                        d.cleanUp();
                     }
                 }
             }
@@ -1128,13 +1127,14 @@ public final class RescanProcessor implements Runnable {
      */
     private void deleteDuplicateNode(Connection dbc, DbNodeEntry duplicateNode) throws SQLException {
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             PreparedStatement ifStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_INTERFACE);
-            m_dbUtils.watch(ifStmt);
+            d.watch(ifStmt);
             PreparedStatement svcStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_SERVICES);
-            m_dbUtils.watch(svcStmt);
+            d.watch(svcStmt);
             PreparedStatement snmpStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_SNMPINTERFACE);
-            m_dbUtils.watch(snmpStmt);
+            d.watch(snmpStmt);
             ifStmt.setInt(1, duplicateNode.getNodeId());
             svcStmt.setInt(1, duplicateNode.getNodeId());
             snmpStmt.setInt(1, duplicateNode.getNodeId());
@@ -1149,7 +1149,7 @@ public final class RescanProcessor implements Runnable {
             log().error("deleteDuplicateNode  SQLException while deleting duplicate node: " + duplicateNode.getNodeId());
             throw sqlE;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
     }
@@ -1171,14 +1171,15 @@ public final class RescanProcessor implements Runnable {
         boolean duplicate = false;
 
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_DUPLICATE_NODEIDS);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setString(1, ifaddr.getHostAddress());
             stmt.setInt(2, nodeId);
 
             ResultSet rs = stmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             while (rs.next()) {
                 duplicate = true;
             }
@@ -1187,7 +1188,7 @@ public final class RescanProcessor implements Runnable {
             log().error("isDuplicateInterface: SQLException while updating interface: " + ifaddr.getHostAddress() + " on nodeid: " + nodeId);
             throw sqlE;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
     }
@@ -1318,9 +1319,10 @@ public final class RescanProcessor implements Runnable {
                           + ipToBePolled);
             }
             if (ipToBePolled) {
+                final DBUtils d = new DBUtils(getClass());
                 try {
                     PreparedStatement stmt = dbc.prepareStatement(SQL_DB_UPDATE_ISMANAGED);
-                    m_dbUtils.watch(stmt);
+                    d.watch(stmt);
                     stmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_MANAGED }));
                     stmt.setInt(2, dbIpIfEntry.getNodeId());
                     stmt.setString(3, ifaddr.getHostAddress());
@@ -1332,7 +1334,7 @@ public final class RescanProcessor implements Runnable {
                                   + dbIpIfEntry.getNodeId() + " to managed");
                     }
                 } finally {
-                    m_dbUtils.cleanUp();
+                    d.cleanUp();
                 }
             }
         }
@@ -1639,15 +1641,16 @@ public final class RescanProcessor implements Runnable {
         java.sql.Connection ctest = null;
         ResultSet rs = null;
         Map<Integer, String> serviceNames = new HashMap<Integer, String>();
+        final DBUtils d = new DBUtils(getClass());
         try {
             ctest = DataSourceFactory.getInstance().getConnection();
-            m_dbUtils.watch(ctest);
+            d.watch(ctest);
             PreparedStatement loadStmt = ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
-            m_dbUtils.watch(loadStmt);
+            d.watch(loadStmt);
 
             // go ahead and load the service table
             rs = loadStmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             while (rs.next()) {
                 Integer id = new Integer(rs.getInt(1));
                 String name = rs.getString(2);
@@ -1656,7 +1659,7 @@ public final class RescanProcessor implements Runnable {
         } catch (Throwable t) {
             log().error("Error reading services table", t);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         for (int i = 0; i < dbSupportedServices.length; i++) {
@@ -2082,26 +2085,27 @@ public final class RescanProcessor implements Runnable {
      */
     private void reparentInterface(Connection dbc, InetAddress ifAddr, int ifIndex, int newNodeId, int oldNodeId) throws SQLException {
         String ipaddr = ifAddr.getHostAddress();
+        final DBUtils d = new DBUtils(getClass());
 
         try {
             PreparedStatement ifLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE_LOOKUP);
-            m_dbUtils.watch(ifLookupStmt);
+            d.watch(ifLookupStmt);
             PreparedStatement ifDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE_DELETE);
-            m_dbUtils.watch(ifDeleteStmt);
+            d.watch(ifDeleteStmt);
             PreparedStatement ipInterfaceStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
-            m_dbUtils.watch(ipInterfaceStmt);
+            d.watch(ipInterfaceStmt);
             PreparedStatement snmpIfLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_IF_LOOKUP);
-            m_dbUtils.watch(snmpIfLookupStmt);
+            d.watch(snmpIfLookupStmt);
             PreparedStatement snmpIfDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_IF_DELETE);
-            m_dbUtils.watch(snmpIfDeleteStmt);
+            d.watch(snmpIfDeleteStmt);
             PreparedStatement snmpInterfaceStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
-            m_dbUtils.watch(snmpInterfaceStmt);
+            d.watch(snmpInterfaceStmt);
             PreparedStatement ifServicesLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES_LOOKUP);
-            m_dbUtils.watch(ifServicesLookupStmt);
+            d.watch(ifServicesLookupStmt);
             PreparedStatement ifServicesDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES_DELETE);
-            m_dbUtils.watch(ifServicesDeleteStmt);
+            d.watch(ifServicesDeleteStmt);
             PreparedStatement ifServicesStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
-            m_dbUtils.watch(ifServicesStmt);
+            d.watch(ifServicesStmt);
 
             if (log().isDebugEnabled()) {
                 log().debug("reparentInterface: reparenting address/ifIndex/nodeID: " + ipaddr + "/" + ifIndex + "/" + newNodeId);
@@ -2133,7 +2137,7 @@ public final class RescanProcessor implements Runnable {
                 snmpIfLookupStmt.setString(2, ipaddr);
                 snmpIfLookupStmt.setInt(3, ifIndex);
                 ResultSet rs = snmpIfLookupStmt.executeQuery();
-                m_dbUtils.watch(rs);
+                d.watch(rs);
                 if (rs.next()) {
                     /*
                      * Looks like we got a match so just delete
@@ -2175,7 +2179,7 @@ public final class RescanProcessor implements Runnable {
             ifLookupStmt.setInt(1, newNodeId);
             ifLookupStmt.setString(2, ipaddr);
             ResultSet rs = ifLookupStmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             if (rs.next()) {
                 /*
                  * Looks like we got a match so just delete
@@ -2215,7 +2219,7 @@ public final class RescanProcessor implements Runnable {
             ifServicesLookupStmt.setString(2, ipaddr);
             ifServicesLookupStmt.setInt(3, ifIndex);
             rs = ifServicesLookupStmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             if (rs.next()) {
                 /*
                  * Looks like we got a match so just delete
@@ -2260,7 +2264,7 @@ public final class RescanProcessor implements Runnable {
             log().error("SQLException while reparenting addr/ifindex/nodeid " + ipaddr + "/" + ifIndex + "/" + oldNodeId);
             throw sqlE;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
     }
 
@@ -2665,12 +2669,13 @@ public final class RescanProcessor implements Runnable {
          * from the node table for the specified nodeid.
          */
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_NODE_TYPE);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
-            m_dbUtils.watch(rs);
+            d.watch(rs);
             rs.next();
             String nodeTypeStr = rs.getString(1);
             if (!rs.wasNull()) {
@@ -2680,7 +2685,7 @@ public final class RescanProcessor implements Runnable {
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         return nodeDeleted;
@@ -3142,15 +3147,16 @@ public final class RescanProcessor implements Runnable {
         while(iter.hasNext()) {
             InetAddress addr = iter.next();
             if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addr.getHostAddress(), "SNMP")) {
+                final DBUtils d = new DBUtils(getClass());
                 try {
                     PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
-                    m_dbUtils.watch(stmt);
+                    d.watch(stmt);
                     stmt.setInt(1, dbNodeEntry.getNodeId());
                     stmt.setString(2, addr.getHostAddress());
                     stmt.executeUpdate();
                     log().debug("updatePrimarySnmpInterface: updated " + addr.getHostAddress() + " to secondary.");
                 } finally {
-                    m_dbUtils.cleanUp();
+                    d.cleanUp();
                 }
             }
         }

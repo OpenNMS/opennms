@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -159,8 +160,7 @@ final class DbDataLinkInterfaceEntry
 		 */
 		private void insert(Connection c) throws SQLException {
 			if (m_fromDb)
-				throw new IllegalStateException(
-						"The record already exists in the database");
+				throw new IllegalStateException("The record already exists in the database");
 
 			// first extract the next node identifier
 			//
@@ -170,28 +170,34 @@ final class DbDataLinkInterfaceEntry
 			// start setting the result values
 			//
 
-			PreparedStatement stmt = c.prepareStatement(queryString);
-			queryString = null;
+			PreparedStatement stmt;
+	        final DBUtils d = new DBUtils(getClass());
+            try {
+                stmt = c.prepareStatement(queryString);
+                d.watch(stmt);
+                queryString = null;
 
-			int ndx = 1;
-			
-			stmt.setInt(ndx++, m_nodeId);
+                int ndx = 1;
+                
+                stmt.setInt(ndx++, m_nodeId);
 
-			stmt.setInt(ndx++, m_ifindex);
+                stmt.setInt(ndx++, m_ifindex);
 
-			stmt.setInt(ndx++, m_nodeparentid);
+                stmt.setInt(ndx++, m_nodeparentid);
 
-			stmt.setInt(ndx++, m_parentifindex);
+                stmt.setInt(ndx++, m_parentifindex);
 
-			stmt.setString(ndx++, new String(new char[] { m_status }));
+                stmt.setString(ndx++, new String(new char[] { m_status }));
 
-			stmt.setTimestamp(ndx++, m_lastPollTime);
+                stmt.setTimestamp(ndx++, m_lastPollTime);
 
-			// Run the insert
-			//
-			//int rc = 
-			stmt.executeUpdate();
-			stmt.close();
+                // Run the insert
+                //
+                //int rc = 
+                stmt.executeUpdate();
+            } finally {
+                d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
@@ -244,33 +250,39 @@ final class DbDataLinkInterfaceEntry
 			// create the Prepared statment and then
 			// start setting the result values
 			//
-			PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+			PreparedStatement stmt;
+	        final DBUtils d = new DBUtils(getClass());
+            try {
+                stmt = c.prepareStatement(sqlText.toString());
+                d.watch(stmt);
 
-			int ndx = 1;
+                int ndx = 1;
 
-			if ((m_changed & CHANGED_PARENTNODEID) == CHANGED_PARENTNODEID)
-				stmt.setInt(ndx++, m_nodeparentid);
+                if ((m_changed & CHANGED_PARENTNODEID) == CHANGED_PARENTNODEID)
+                	stmt.setInt(ndx++, m_nodeparentid);
 
-			if ((m_changed & CHANGED_PARENTIFINDEX) == CHANGED_PARENTIFINDEX)
-				stmt.setInt(ndx++, m_parentifindex);
+                if ((m_changed & CHANGED_PARENTIFINDEX) == CHANGED_PARENTIFINDEX)
+                	stmt.setInt(ndx++, m_parentifindex);
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-				stmt.setString(ndx++, new String(new char[] { m_status }));
+                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				stmt.setTimestamp(ndx++, m_lastPollTime);
-			}
+                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                	stmt.setTimestamp(ndx++, m_lastPollTime);
+                }
 
-			stmt.setInt(ndx++, m_nodeId);
-			stmt.setInt(ndx++, m_ifindex);
+                stmt.setInt(ndx++, m_nodeId);
+                stmt.setInt(ndx++, m_ifindex);
 
-			// Run the insert
-			//
-			//int rc = 
-			stmt.executeUpdate();
-			stmt.close();
+                // Run the insert
+                //
+                //int rc = 
+                stmt.executeUpdate();
+            } finally {
+                d.cleanUp();
+            }
 
-			// clear the mask and mark as backed
+            // clear the mask and mark as backed
 			// by the database
 			//
 			m_changed = 0;
@@ -293,53 +305,51 @@ final class DbDataLinkInterfaceEntry
 
 			Category log = ThreadCategory.getInstance(getClass());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
 			PreparedStatement stmt = null;
-			stmt = c.prepareStatement(SQL_LOAD_DATALINKINTERFACE);
-			stmt.setInt(1, m_nodeId);
-			stmt.setInt(2, m_ifindex);
+            ResultSet rset;
+            final DBUtils d = new DBUtils(getClass());
+            try {
+                stmt = c.prepareStatement(SQL_LOAD_DATALINKINTERFACE);
+                d.watch(stmt);
+                stmt.setInt(1, m_nodeId);
+                stmt.setInt(2, m_ifindex);
 
-			// Run the select
-			//
-			ResultSet rset = stmt.executeQuery();
-			if (!rset.next()) {
-				rset.close();
-				stmt.close();
-				if (log.isDebugEnabled())
-					log.debug("DataLinkInterfaceEntry.load: no result found");
-				return false;
-			}
+                rset = stmt.executeQuery();
+                d.watch(rset);
+                if (!rset.next()) {
+                	if (log.isDebugEnabled())
+                		log.debug("DataLinkInterfaceEntry.load: no result found");
+                	return false;
+                }
 
-			// extract the values.
-			//
-			int ndx = 1;
+                // extract the values.
+                //
+                int ndx = 1;
 
-			// get the mac address
-			//
-			m_nodeparentid = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_nodeparentid = -1;
+                // get the mac address
+                //
+                m_nodeparentid = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_nodeparentid = -1;
 
-			// get the source node ifindex
-			//
-			m_parentifindex = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_ifindex = -1;
+                // get the source node ifindex
+                //
+                m_parentifindex = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_ifindex = -1;
 
-			// the entry status
-			//
-			String str = rset.getString(ndx++);
-			if (str != null && !rset.wasNull())
-				m_status = str.charAt(0);
-			else
-				m_status = STATUS_UNKNOWN;
+                // the entry status
+                //
+                String str = rset.getString(ndx++);
+                if (str != null && !rset.wasNull())
+                	m_status = str.charAt(0);
+                else
+                	m_status = STATUS_UNKNOWN;
 
-			m_lastPollTime = rset.getTimestamp(ndx++);
-
-			rset.close();
-			stmt.close();
+                m_lastPollTime = rset.getTimestamp(ndx++);
+            } finally {
+                d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database

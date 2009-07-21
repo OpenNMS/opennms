@@ -202,17 +202,17 @@ final class KnownIPMgr {
          *             Thrown if an error occurs updating the database entry.
          */
         void update(Connection db) throws SQLException {
-            DBUtils m_dbUtils = new DBUtils(getClass());
+            final DBUtils d = new DBUtils(getClass());
             try {
                 PreparedStatement stmt = db.prepareStatement(KnownIPMgr.IP_UPDATE_TIME_SQL);
-                m_dbUtils.watch(stmt);
+                d.watch(stmt);
                 stmt.setTimestamp(1, m_lastCheck);
                 stmt.setString(2, m_interface.getHostAddress());
                 stmt.setInt(3, m_nodeid);
 
                 stmt.executeUpdate();
             } finally {
-                m_dbUtils.cleanUp();
+                d.cleanUp();
             }
         }
     }

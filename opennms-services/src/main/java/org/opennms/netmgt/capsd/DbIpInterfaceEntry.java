@@ -175,8 +175,6 @@ public final class DbIpInterfaceEntry {
      */
     private int m_changed;
 
-    private DBUtils m_dbUtils = new DBUtils(DbIpInterfaceEntry.class);
-
     // Mask fields
     //
     private static final int CHANGED_IFINDEX = 1 << 0;
@@ -250,10 +248,11 @@ public final class DbIpInterfaceEntry {
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             stmt = c.prepareStatement(names.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             names = null;
             int ndx = 1;
             stmt.setInt(ndx++, m_nodeId);
@@ -282,7 +281,7 @@ public final class DbIpInterfaceEntry {
             int rc = stmt.executeUpdate();
             log().debug("DbIpInterfaceEntry.insert: SQL update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -354,10 +353,11 @@ public final class DbIpInterfaceEntry {
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             stmt = c.prepareStatement(sqlText.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             sqlText = null;
             int ndx = 1;
             if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
@@ -417,7 +417,7 @@ public final class DbIpInterfaceEntry {
             int rc = stmt.executeUpdate();
             log().debug("DbIpInterfaceEntry.update: update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -443,24 +443,25 @@ public final class DbIpInterfaceEntry {
         // create the Prepared statement and then start setting the query values
         PreparedStatement stmt = null;
         ResultSet rset = null;
-        
+        final DBUtils d = new DBUtils(getClass());
+  
         try {
             if (m_useIfIndexAsKey) {
                 stmt = c.prepareStatement(SQL_LOAD_REC_IFINDEX);
-                m_dbUtils.watch(stmt);
+                d.watch(stmt);
                 stmt.setInt(1, m_nodeId);
                 stmt.setString(2, m_ipAddr.getHostAddress());
                 stmt.setInt(3, m_ifIndex);
             } else {
                 stmt = c.prepareStatement(SQL_LOAD_REC);
-                m_dbUtils.watch(stmt);
+                d.watch(stmt);
                 stmt.setInt(1, m_nodeId);
                 stmt.setString(2, m_ipAddr.getHostAddress());
             }
 
             // Execute the query
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             if (!rset.next()) {
                 return false;
             }
@@ -505,7 +506,7 @@ public final class DbIpInterfaceEntry {
                 m_primaryState = STATE_UNKNOWN;
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -916,16 +917,17 @@ public final class DbIpInterfaceEntry {
     DbIfServiceEntry[] getServices(Connection db) throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         List<DbIfServiceEntry> l;
 
         try {
             stmt = db.prepareStatement(SQL_LOAD_IFSVC_LIST);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
             stmt.setString(2, m_ipAddr.getHostAddress());
 
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             l = new ArrayList<DbIfServiceEntry>();
 
             while (rset.next()) {
@@ -936,7 +938,7 @@ public final class DbIpInterfaceEntry {
                 }
             }
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         DbIfServiceEntry[] entries = new DbIfServiceEntry[l.size()];

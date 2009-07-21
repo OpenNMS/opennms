@@ -171,8 +171,6 @@ public final class DbIfServiceEntry {
      * record was created.
      */
     private int m_changed;
-
-    private DBUtils m_dbUtils = new DBUtils(DbIfServiceEntry.class);
     
     // Mask fields
     //
@@ -253,10 +251,11 @@ public final class DbIfServiceEntry {
         //
         PreparedStatement stmt = null;
         PreparedStatement delStmt = null;
+        final DBUtils d = new DBUtils(getClass());
         
         try {
             stmt = c.prepareStatement(names.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             names = null;
 
             int ndx = 1;
@@ -307,7 +306,7 @@ public final class DbIfServiceEntry {
                              + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
 
                 delStmt = c.prepareStatement(delCmd);
-                m_dbUtils.watch(delStmt);
+                d.watch(delStmt);
                 delStmt.setInt(1, m_nodeId);
                 delStmt.setString(2, m_ipAddr.getHostAddress());
                 delStmt.setInt(3, m_serviceId);
@@ -318,7 +317,7 @@ public final class DbIfServiceEntry {
             }
             log().debug("insert(): SQL update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database
@@ -384,10 +383,11 @@ public final class DbIfServiceEntry {
         // create the Prepared statement and then
         // start setting the result values
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
         
         try {
             stmt = c.prepareStatement(sqlText.toString());
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             sqlText = null;
 
             int ndx = 1;
@@ -441,7 +441,7 @@ public final class DbIfServiceEntry {
             int rc = stmt.executeUpdate();
             log().debug("DbIfServiceEntry.update: update result = " + rc);
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed
@@ -467,12 +467,13 @@ public final class DbIfServiceEntry {
 
         PreparedStatement stmt = null;
         ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
         
         try {
             // create the Prepared statement and then
             // start setting the result values
             stmt = c.prepareStatement(SQL_LOAD_REC);
-            m_dbUtils.watch(stmt);
+            d.watch(stmt);
             stmt.setInt(1, m_nodeId);
             stmt.setString(2, m_ipAddr.getHostAddress());
             stmt.setInt(3, m_serviceId);
@@ -480,7 +481,7 @@ public final class DbIfServiceEntry {
             // Run the insert
             //
             rset = stmt.executeQuery();
-            m_dbUtils.watch(rset);
+            d.watch(rset);
             if (!rset.next()) {
                 return false;
             }
@@ -533,7 +534,7 @@ public final class DbIfServiceEntry {
             else
                 m_notify = NOTIFY_UNKNOWN;
         } finally {
-            m_dbUtils.cleanUp();
+            d.cleanUp();
         }
 
         // clear the mask and mark as backed by the database

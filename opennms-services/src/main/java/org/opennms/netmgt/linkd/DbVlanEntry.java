@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -220,37 +221,40 @@ public class DbVlanEntry
 			if (log.isDebugEnabled())
 			log.debug("DbVlanEntry.insert: SQL insert statment = " + names.toString());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = c.prepareStatement(names.toString());
-
-			int ndx = 1;
-			stmt.setInt(ndx++, m_nodeId);
-			stmt.setInt(ndx++, m_vlanId);
-
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
-				stmt.setString(ndx++, m_vlanname);
-
-			if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
-				stmt.setInt(ndx++, m_vlantype);
-
-			if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS)
-				stmt.setInt(ndx++, m_vlanstatus);
+			final DBUtils d = new DBUtils(getClass());
 			
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-				stmt.setString(ndx++, new String(new char[] { m_status }));
+			try {
+                PreparedStatement stmt = c.prepareStatement(names.toString());
+                d.watch(stmt);
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				stmt.setTimestamp(ndx++, m_lastPollTime);
-			}
+                int ndx = 1;
+                stmt.setInt(ndx++, m_nodeId);
+                stmt.setInt(ndx++, m_vlanId);
 
-			// Run the insert
-			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("DbVlanEntry.insert: row " + rc);
-			stmt.close();
+                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
+                	stmt.setString(ndx++, m_vlanname);
+
+                if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
+                	stmt.setInt(ndx++, m_vlantype);
+
+                if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS)
+                	stmt.setInt(ndx++, m_vlanstatus);
+                
+                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                	stmt.setString(ndx++, new String(new char[] { m_status }));
+
+                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                	stmt.setTimestamp(ndx++, m_lastPollTime);
+                }
+
+                // Run the insert
+                //
+                int rc = stmt.executeUpdate();
+                if (log.isDebugEnabled())
+                	log.debug("DbVlanEntry.insert: row " + rc);
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
@@ -311,38 +315,41 @@ public class DbVlanEntry
 			if (log.isDebugEnabled())
 				log.debug("DbVlanEntry.update: SQL insert statment = " + sqlText.toString());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+			final DBUtils d = new DBUtils(getClass());
+			try {
+                PreparedStatement stmt = c.prepareStatement(sqlText.toString());
+                d.watch(stmt);
 
-			int ndx = 1;
+                int ndx = 1;
 
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
-				stmt.setString(ndx++, m_vlanname);
+                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
+                	stmt.setString(ndx++, m_vlanname);
 
-			if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
-				stmt.setInt(ndx++, m_vlantype);
-			
-			if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS) 
-				stmt.setInt(ndx++, m_vlanstatus);
+                if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
+                	stmt.setInt(ndx++, m_vlantype);
+                
+                if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS) 
+                	stmt.setInt(ndx++, m_vlanstatus);
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-				stmt.setString(ndx++, new String(new char[] { m_status }));
+                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                	stmt.setString(ndx++, new String(new char[] { m_status }));
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				stmt.setTimestamp(ndx++, m_lastPollTime);
-			}
+                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                	stmt.setTimestamp(ndx++, m_lastPollTime);
+                }
 
-			stmt.setInt(ndx++, m_nodeId);
-			stmt.setInt(ndx++, m_vlanId);
+                stmt.setInt(ndx++, m_nodeId);
+                stmt.setInt(ndx++, m_vlanId);
 
-			// Run the insert
-			//
-			int rc = stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("DbVlanEntry.update: row " + rc);
-			stmt.close();
+                // Run the insert
+                //
+                int rc = stmt.executeUpdate();
+                if (log.isDebugEnabled())
+                	log.debug("DbVlanEntry.update: row " + rc);
+                stmt.close();
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
@@ -367,55 +374,58 @@ public class DbVlanEntry
 
 			Category log = ThreadCategory.getInstance(getClass());
 
-			// create the Prepared statment and then
-			// start setting the result values
-			//
-			PreparedStatement stmt = null;
-			stmt = c.prepareStatement(SQL_LOAD_STPNODE);
-			stmt.setInt(1, m_nodeId);
-			stmt.setInt(2, m_vlanId);
-
-			// Run the select
-			//
-			ResultSet rset = stmt.executeQuery();
-			if (!rset.next()) {
-				rset.close();
-				stmt.close();
-				if (log.isDebugEnabled())
-					log.debug("DbVlanEntry.load: no result found");
-				return false;
-			}
-
-			// extract the values.
-			//
-			int ndx = 1;
-
-			// get the vlan name
-			//
-			m_vlanname = rset.getString(ndx++);
+			final DBUtils d = new DBUtils(getClass());
+            PreparedStatement stmt = null;
 			
-			// get the vlan type
-			//
-			m_vlantype = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_vlantype = -1;
+			try {
+                stmt = c.prepareStatement(SQL_LOAD_STPNODE);
+                d.watch(stmt);
+                stmt.setInt(1, m_nodeId);
+                stmt.setInt(2, m_vlanId);
 
-			// get the vlan status
-			//
-			m_vlanstatus = rset.getInt(ndx++);
-			if (rset.wasNull())
-				m_vlanstatus = -1;
+                // Run the select
+                //
+                ResultSet rset = stmt.executeQuery();
+                d.watch(rset);
+                if (!rset.next()) {
+                	if (log.isDebugEnabled())
+                		log.debug("DbVlanEntry.load: no result found");
+                	return false;
+                }
 
-			String str = rset.getString(ndx++);
-			if (str != null && !rset.wasNull())
-				m_status = str.charAt(0);
-			else
-				m_status = STATUS_UNKNOWN;
+                // extract the values.
+                //
+                int ndx = 1;
 
-			m_lastPollTime = rset.getTimestamp(ndx++);
+                // get the vlan name
+                //
+                m_vlanname = rset.getString(ndx++);
+                
+                // get the vlan type
+                //
+                m_vlantype = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_vlantype = -1;
 
-			rset.close();
-			stmt.close();
+                // get the vlan status
+                //
+                m_vlanstatus = rset.getInt(ndx++);
+                if (rset.wasNull())
+                	m_vlanstatus = -1;
+
+                String str = rset.getString(ndx++);
+                if (str != null && !rset.wasNull())
+                	m_status = str.charAt(0);
+                else
+                	m_status = STATUS_UNKNOWN;
+
+                m_lastPollTime = rset.getTimestamp(ndx++);
+
+                rset.close();
+                stmt.close();
+			} finally {
+			    d.cleanUp();
+            }
 
 			// clear the mask and mark as backed
 			// by the database
