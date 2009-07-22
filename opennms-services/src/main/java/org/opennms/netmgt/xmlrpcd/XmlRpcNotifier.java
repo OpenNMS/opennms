@@ -56,6 +56,7 @@ import org.apache.log4j.Category;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 /*import org.apache.xmlrpc.secure.SecureXmlRpcClient; */
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -530,32 +531,29 @@ public final class XmlRpcNotifier {
         Connection dbConn = null;
         String nodeLabel = null;
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
+            d.watch(dbConn);
 
             if (log().isDebugEnabled()) {
                 log().debug("getNodeLabel: retrieve node label for: " + nodeId);
             }
 
             PreparedStatement stmt = dbConn.prepareStatement("SELECT nodelabel FROM NODE WHERE nodeid = ?");
+            d.watch(stmt);
             stmt.setLong(1, nodeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 nodeLabel = rs.getString(1);
             }
-            stmt.close();
 
         } catch (SQLException sqle) {
             log().warn("SQL exception while retrieving nodeLabel for: " + nodeId, sqle);
         } finally {
-            try {
-                if (dbConn != null) {
-                    dbConn.close();
-                }
-            } catch (SQLException e) {
-                log().warn("Exception closing JDBC connection", e);
-            }
+            d.cleanUp();
         }
 
         if (log().isDebugEnabled()) {

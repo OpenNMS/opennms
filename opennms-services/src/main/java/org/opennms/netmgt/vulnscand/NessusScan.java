@@ -54,6 +54,7 @@ import org.apache.regexp.RE;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -240,17 +241,21 @@ class NessusScan implements Runnable {
          * We'll use this list to resolve vulnerabilities that are not
          * redetected.
          */
+        final DBUtils d = new DBUtils(getClass());
         try {
             conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
         } catch (SQLException ex) {
             log.error("Could not open DB connection", ex);
             return;
         }
         try {
             PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_VULNERABILITIES);
+            d.watch(stmt);
 
             stmt.setString(1, config.targetAddress.getHostAddress());
             ResultSet openVulnerabilitiesRS = stmt.executeQuery();
+            d.watch(openVulnerabilitiesRS);
 
             while (openVulnerabilitiesRS.next()) {
                 openVulnerabilities.add(new Integer(openVulnerabilitiesRS.getInt("vulnerabilityid")));
@@ -260,11 +265,7 @@ class NessusScan implements Runnable {
             log.error(ex.getLocalizedMessage(), ex);
             return;
         } finally {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                log.error("Could not close DB connection", ex);
-            }
+            d.cleanUp();
         }
 
         /*
@@ -467,12 +468,14 @@ class NessusScan implements Runnable {
             if (openVulnerabilities.size() > 0) {
                 try {
                     conn = DataSourceFactory.getInstance().getConnection();
+                    d.watch(conn);
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return;
                 }
                 try {
                     PreparedStatement stmt = conn.prepareStatement(RESOLVE_VULNERABILITY);
+                    d.watch(stmt);
 
                     Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
 
@@ -502,11 +505,7 @@ class NessusScan implements Runnable {
                     log.error(ex.getLocalizedMessage(), ex);
                     return;
                 } finally {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex) {
-                        log.error("Could not close DB connection", ex);
-                    }
+                    d.cleanUp();
                 }
             }
 
@@ -638,14 +637,17 @@ class NessusScan implements Runnable {
                  */
                 pluginSubId = 0;
 
+                final DBUtils d = new DBUtils(getClass());
                 try {
                     conn = DataSourceFactory.getInstance().getConnection();
+                    d.watch(conn);
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return SCAN_FATAL_ERROR;
                 }
                 try {
                     PreparedStatement stmt = conn.prepareStatement(SELECT_OPEN_VULNERABILITY);
+                    d.watch(stmt);
 
                     // ipaddr
                     stmt.setString(1, config.targetAddress.getHostAddress());
@@ -669,6 +671,7 @@ class NessusScan implements Runnable {
                     stmt.setInt(5, pluginSubId);
 
                     ResultSet openVuln = stmt.executeQuery();
+                    d.watch(openVuln);
 
                     // Update the timestamps on the existing events
                     if (openVuln.next()) {
@@ -693,13 +696,16 @@ class NessusScan implements Runnable {
                     // Insert a new vulnerability row into the database
                     else {
                         stmt = conn.prepareStatement(SELECT_NEXT_ID);
+                        d.watch(stmt);
                         ResultSet idRS = stmt.executeQuery();
+                        d.watch(idRS);
                         idRS.next();
                         int vulnId = idRS.getInt(1);
                         idRS.close();
                         idRS = null;
 
                         stmt = conn.prepareStatement(INSERT_NEW_VULNERABILITY);
+                        d.watch(stmt);
 
                         stmt.setInt(1, vulnId);
 
@@ -728,40 +734,35 @@ class NessusScan implements Runnable {
                         stmt.setInt(10, pluginSubId);
 
                         PreparedStatement pluginStmt = conn.prepareStatement(SELECT_PLUGIN_INFO);
+                        d.watch(pluginStmt);
                         pluginStmt.setInt(1, pluginId);
                         pluginStmt.setInt(2, pluginSubId);
                         ResultSet plugRS = pluginStmt.executeQuery();
+                        d.watch(plugRS);
                         if (plugRS.next()) {
                             if (plugRS.getString("name") != null && plugRS.getString("name").length() > 0) {
                                 pluginLogmsg = plugRS.getString("name");
                             }
-                            if (plugRS.getString("summary") != null
-				&& plugRS.getString("summary").length() > 0) {
+                            if (plugRS.getString("summary") != null && plugRS.getString("summary").length() > 0) {
                                 if (!pluginLogmsg.equals("")) {
                                     pluginLogmsg += ": ";
-				}
+                                }
                                 pluginLogmsg += plugRS.getString("summary");
                             }
                         }
-                        plugRS.close();
-                        plugRS = null;
 
-                        /*
-			 * If the logmsg could not be populated from the
-                         * database...
-			 */
                         if (pluginLogmsg.equals("")) {
-			    /*
-			     * XXX Add a method that will query the Nessus
-			     * XXX server for information directly if it
-			     * XXX cannot be located in the database.
-			     */
+            			    /*
+            			     * XXX Add a method that will query the Nessus
+            			     * XXX server for information directly if it
+            			     * XXX cannot be located in the database.
+            			     */
                             // Punt this for now; we will pre-populate the DB
                             if (portvals.port >= 0) {
                                 pluginLogmsg = "A vulnerability was detected on port " + portvals.port + ". See the description for more information.";
-			    } else {
+                            } else {
                                 pluginLogmsg = "A vulnerability was detected. See the description for " + "more information.";
-			    }
+                            }
                         }
 
                         stmt.setString(11, pluginLogmsg);
@@ -772,7 +773,7 @@ class NessusScan implements Runnable {
                             stmt.setInt(13, portvals.port);
                         } else {
                             stmt.setNull(13, Types.INTEGER);
-			}
+                        }
 
                         stmt.setString(14, portvals.protocol);
 
@@ -780,7 +781,7 @@ class NessusScan implements Runnable {
                             stmt.setString(15, descrvals.cveEntry);
                         } else {
                             stmt.setNull(15, Types.VARCHAR);
-			}
+                        }
 
                         if (stmt.executeUpdate() < 1) {
                             log.error("UNEXPECTED CONDITION: No rows inserted during last INSERT call.");
@@ -791,11 +792,7 @@ class NessusScan implements Runnable {
                     log.error(ex.getLocalizedMessage(), ex);
                     return SCAN_FATAL_ERROR;
                 } finally {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex) {
-                        log.error("Could not close DB connection", ex);
-                    }
+                    d.cleanUp();
                 }
                 return SCAN_SUCCESS;
             }
@@ -823,14 +820,17 @@ class NessusScan implements Runnable {
                     return SCAN_NON_FATAL_ERROR;
                 }
 
+                final DBUtils d = new DBUtils(getClass());
                 try {
                     conn = DataSourceFactory.getInstance().getConnection();
+                    d.watch(conn);
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return SCAN_FATAL_ERROR;
                 }
                 try {
                     PreparedStatement stmt = conn.prepareStatement(SELECT_OPEN_VULNERABILITY);
+                    d.watch(stmt);
 
                     // ipaddr
                     stmt.setString(1, config.targetAddress.getHostAddress());
@@ -854,10 +854,12 @@ class NessusScan implements Runnable {
                     stmt.setInt(5, 0);
 
                     ResultSet openVuln = stmt.executeQuery();
+                    d.watch(openVuln);
 
                     // Update the timestamps on the existing events
                     if (openVuln.next()) {
                         stmt = conn.prepareStatement(VULNERABILITY_SCANNED);
+                        d.watch(stmt);
 
                         Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
                         stmt.setTimestamp(1, currentTime);
@@ -878,13 +880,14 @@ class NessusScan implements Runnable {
                     // Insert a new vulnerability row into the database
                     else {
                         stmt = conn.prepareStatement(SELECT_NEXT_ID);
+                        d.watch(stmt);
                         ResultSet idRS = stmt.executeQuery();
+                        d.watch(idRS);
                         idRS.next();
                         int vulnId = idRS.getInt(1);
-                        idRS.close();
-                        idRS = null;
 
                         stmt = conn.prepareStatement(INSERT_NEW_VULNERABILITY);
+                        d.watch(stmt);
 
                         stmt.setInt(1, vulnId);
 
@@ -937,11 +940,7 @@ class NessusScan implements Runnable {
                     log.error(ex.getLocalizedMessage(), ex);
                     return SCAN_FATAL_ERROR;
                 } finally {
-                    try {
-                        conn.close();
-                    } catch (SQLException ex) {
-                        log.error("Could not close DB connection", ex);
-                    }
+                    d.cleanUp();
                 }
                 return SCAN_SUCCESS;
             } else if (next.equals("STATUS")) {

@@ -42,7 +42,13 @@ public class CollectionResourceWrapper {
      */
     private Map<String, String> m_ifInfo;
     
-    public CollectionResourceWrapper(int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
+    /*
+     * Holds collection interval step. Counter attributes values must be returned as rates.
+     */
+    private long m_interval;
+    
+    public CollectionResourceWrapper(long interval, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
+        m_interval = interval;
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
@@ -138,6 +144,9 @@ public class CollectionResourceWrapper {
         return true;
     }
 
+    /*
+     * FIXME What happend with numeric fields from strings.properties ?
+     */ 
     public Double getAttributeValue(String ds) {
         if (m_attributes == null || m_attributes.get(ds) == null) {
             log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
@@ -159,24 +168,27 @@ public class CollectionResourceWrapper {
         return getCounterValue(id, current);
     }
 
+    /*
+     * This will return the rate based on configured collection step
+     */
     private Double getCounterValue(String id, Double current) {
         if (m_localCache.containsKey(id) == false) {
             Double last = s_cache.get(id);
             if (log().isDebugEnabled()) {
-                log().debug("getAttributeValue: " + id + "(counter) last=" + last + ", current=" + current);
+                log().debug("getCounterValue: " + id + "(counter) last=" + last + ", current=" + current);
             }
             s_cache.put(id, current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
-                log().info("getAttributeValue: unknown last value, ignoring current");
+                log().info("getCounterValue: unknown last value, ignoring current");
             } else if (current < last) {
-                log().info("getAttributeValue: counter reset detected, ignoring value");
+                log().info("getCounterValue: counter reset detected, ignoring value");
                 m_localCache.put(id, Double.NaN);
             } else {
                 m_localCache.put(id, current - last);
             }
         }
-        return m_localCache.get(id);
+        return m_localCache.get(id) / m_interval;
     }
 
     public String getLabelValue(String ds) {

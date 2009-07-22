@@ -10,7 +10,7 @@ import org.opennms.netmgt.model.RrdRepository;
 public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
 
     public MockCollectionResourceWrapper(final String instance) {
-        super(0, null, null, null, new CollectionResource() {
+        super(0, 0, null, null, null, new CollectionResource() {
             public String getInstance() {
                 return instance;
             }
