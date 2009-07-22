@@ -53,6 +53,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
@@ -145,8 +146,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         // get the database connection
         Connection conn = null;
+        DBUtils d = new DBUtils(getClass());
         try {
             conn = getDataSource().getConnection();
+            d.watch(conn);
 
             // parse the rule and get the sql select statement
             sqlString = getNodeMappingStatement(rule);
@@ -156,23 +159,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // execute query
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
 
             if (rset != null) {
                 // Iterate through the result and build the map
                 while (rset.next()) {
                     resultMap.put(new Integer(rset.getInt(1)), rset.getString(2));
                 }
-            }
-
-            try {
-                rset.close();
-            } catch (SQLException e) {
-            }
-
-            try {
-                stmt.close();
-            } catch (SQLException e) {
             }
         } catch (FilterParseException e) {
             log().info("Filter Parse Exception occurred getting node map: " + e, e);
@@ -184,12 +179,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return resultMap;
@@ -205,8 +195,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         // get the database connection
         Connection conn = null;
+        DBUtils d = new DBUtils(getClass());
         try {
             conn = getDataSource().getConnection();
+            d.watch(conn);
 
             // parse the rule and get the sql select statement
             sqlString = getIPServiceMappingStatement(rule);
@@ -216,7 +208,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // execute query
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
 
             // fill up the array list if the result set has values
             if (rset != null) {
@@ -232,15 +226,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 }
             }
 
-            try {
-                rset.close();
-            } catch (SQLException e) {
-            }
-
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
         } catch (FilterParseException e) {
             log().info("Filter Parse Exception occurred getting IP Service List: " + e, e);
             throw new FilterParseException("Filter Parse Exception occurred getting IP Service List: " + e);
@@ -251,12 +236,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return ipServices;
@@ -285,8 +265,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         // get the database connection
         Connection conn = null;
+        DBUtils d = new DBUtils(getClass());
         try {
             conn = getDataSource().getConnection();
+            d.watch(conn);
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
@@ -296,7 +278,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // execute query and return the list of ip addresses
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
 
             // fill up the array list if the result set has values
             if (rset != null) {
@@ -306,15 +290,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 }
             }
 
-            try {
-                rset.close();
-            } catch (SQLException e) {
-            }
-
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
         } catch (FilterParseException e) {
             log().info("Filter Parse Exception occurred getting IP List: " + e, e);
             throw new FilterParseException("Filter Parse Exception occurred getting IP List: " + e);
@@ -325,12 +300,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return resultList;
@@ -370,10 +340,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             log().debug("Filter: rule: " + rule);
         }
 
+        DBUtils d = new DBUtils(getClass());
+
         // get the database connection
         Connection conn = null;
         try {
             conn = getDataSource().getConnection();
+            d.watch(conn);
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule) + " LIMIT 1";
@@ -383,22 +356,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // execute query and return the list of ip addresses
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
 
             // we only want to check if zero or one rows were fetched, so just
             // return the output from rset.next()
             matches = rset.next();
-
-            try {
-                rset.close();
-            } catch (SQLException e) {
-            }
-
-            try {
-                stmt.close();
-            } catch (SQLException e) {
-            }
-
             if (log().isDebugEnabled()) {
                 log().debug("isRuleMatching: rule \"" + rule + "\" " + (matches ? "matches" : "does not match") + " an entry in the database");
             }
@@ -412,12 +376,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return matches;
@@ -675,7 +634,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
-
+            System.err.println("sqlRule = " + sqlRule);
             return "WHERE " + sqlRule;
         }
         return "";

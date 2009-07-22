@@ -47,6 +47,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -113,26 +114,20 @@ public class Transaction {
     private List<Statement> m_statements = new LinkedList<Statement>();
     private List<ResultSet> m_resultSets = new LinkedList<ResultSet>();
     private boolean m_rollbackOnly = false;
-	
+    private DBUtils m_dbUtils = new DBUtils(Transaction.class);
 
     private void doRegister(Statement stmt) {
+        m_dbUtils.watch(stmt);
         m_statements.add(stmt);
     }
 
     private void doRegister(ResultSet rs) {
+        m_dbUtils.watch(rs);
         m_resultSets.add(rs);
     }
 
     private void doClose() throws SQLException {
-        for(ResultSet rs : m_resultSets) {
-            rs.close();
-        }
-        for(Statement stmt : m_statements) {
-            stmt.close();
-        }
-        for(Connection conn : m_connections.values()) {
-            conn.close();
-        }        
+        m_dbUtils.cleanUp();
     }
 
     private void doEnd() throws SQLException {
@@ -157,6 +152,7 @@ public class Transaction {
         if (!m_connections.containsKey(dsName)) {
             DataSource ds = DataSourceFactory.getDataSource(dsName);
             Connection conn = ds.getConnection();
+            m_dbUtils.watch(conn);
             m_connections.put(dsName, conn);
             conn.setAutoCommit(false);
         } 
@@ -164,7 +160,8 @@ public class Transaction {
         return m_connections.get(dsName);
     }
 
-
-
+    public void finalize() {
+        m_dbUtils.cleanUp();
+    }
 
 }

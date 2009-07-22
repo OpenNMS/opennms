@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.xml.event.Event;
@@ -134,30 +135,23 @@ public class AddNewInterfaceServlet extends HttpServlet {
 
         Connection conn = null;
         PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
 
         try {
             conn = DataSourceFactory.getInstance().getConnection();
+            d.watch(conn);
             stmt = conn.prepareStatement(SQL_INTERFACE_EXIST);
+            d.watch(stmt);
             stmt.setString(1, ipaddr);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             if (rs.next()) {
                 nodeId = rs.getInt(1);
             }
             return nodeId;
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e1) {
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e2) {
-                }
-            }
+            d.cleanUp();
         }
     }
 

@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
@@ -96,11 +97,15 @@ public class SnmpGetNodesServlet extends HttpServlet {
         List<SnmpManagedNode> allNodes = new ArrayList<SnmpManagedNode>();
         int lineCount = 0;
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = DataSourceFactory.getInstance().getConnection();
+            d.watch(connection);
             int snmpServNum = 0;
             Statement servstmt = connection.createStatement();
+            d.watch(servstmt);
             ResultSet snmpserv = servstmt.executeQuery(SNMP_SERVICE_QUERY);
+            d.watch(snmpserv);
             if (snmpserv != null) {
                 while (snmpserv.next()) {
                     snmpServNum = snmpserv.getInt(1);
@@ -109,8 +114,10 @@ public class SnmpGetNodesServlet extends HttpServlet {
             this.log("DEBUG: The SNMP service number is: " + snmpServNum);
 
             PreparedStatement stmt = connection.prepareStatement(NODE_QUERY);
+            d.watch(stmt);
             stmt.setInt(1, snmpServNum);
             ResultSet nodeSet = stmt.executeQuery();
+            d.watch(nodeSet);
 
             if (nodeSet != null) {
                 while (nodeSet.next()) {
@@ -122,15 +129,8 @@ public class SnmpGetNodesServlet extends HttpServlet {
                 }
             }
             userSession.setAttribute("lineNodeItems.snmpmanage.jsp", new Integer(lineCount));
-
-            nodeSet.close();
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return allNodes;

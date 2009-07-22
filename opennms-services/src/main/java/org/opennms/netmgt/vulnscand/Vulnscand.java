@@ -52,6 +52,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
@@ -306,11 +307,15 @@ public class Vulnscand extends AbstractServiceDaemon {
 	    // table.
 		
 	    Connection db = null;
+        final DBUtils d = new DBUtils(getClass());
 	    try {
 	        db = DataSourceFactory.getInstance().getConnection();
+	        d.watch(db);
 	        PreparedStatement ifStmt = db.prepareStatement(Vulnscand.SQL_GET_LAST_POLL_TIME);
+	        d.watch(ifStmt);
 	        ifStmt.setString(1, address.getHostAddress());
 	        ResultSet rset = ifStmt.executeQuery();
+	        d.watch(rset);
 	        Category log = log();
 			if (rset.next()) {
 	            Timestamp lastPolled = rset.getTimestamp(1);
@@ -329,12 +334,7 @@ public class Vulnscand extends AbstractServiceDaemon {
 				m_scheduler.schedule(address, new NessusScanConfiguration(address, scanLevel, new Timestamp(0), getInterval()));
 	        }
 	    } finally {
-	        if (db != null) {
-	            try {
-	                db.close();
-	            } catch (Exception e) {
-	            }
-	        }
+	        d.cleanUp();
 	    }
 	}
 

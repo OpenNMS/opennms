@@ -59,6 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -155,25 +156,25 @@ public class DeleteNodesServlet extends HttpServlet {
 
     private List<String> getIpAddrsForNode(Integer nodeId) throws ServletException {
         List<String> ipAddrs = new ArrayList<String>();
+        final DBUtils d = new DBUtils(getClass());
+
         try {
             Connection conn = Vault.getDbConnection();
+            d.watch(conn);
 
-            try {
-                PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=?");
-                stmt.setInt(1, nodeId);
-                ResultSet rs = stmt.executeQuery();
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=?");
+            d.watch(stmt);
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
-                while (rs.next()) {
-                    ipAddrs.add(rs.getString("ipaddr"));
-                }
-
-                rs.close();
-                stmt.close();
-            } finally {
-                Vault.releaseDbConnection(conn);
+            while (rs.next()) {
+                ipAddrs.add(rs.getString("ipaddr"));
             }
         } catch (SQLException e) {
             throw new ServletException("There was a problem with the database connection: " + e, e);
+        } finally {
+            d.cleanUp();
         }
         return ipAddrs;
     }
