@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.AlphaNumeric;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -188,11 +189,14 @@ public class IfLabel extends Object {
         ArrayList<String> list = new ArrayList<String>();
         Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(IfLabel.class);
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex = snmpifindex AND ipinterface.nodeid=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 String name = rs.getString("snmpifname");
@@ -201,10 +205,8 @@ public class IfLabel extends Object {
 
                 list.add(getIfLabel(name, descr, physAddr));
             }
-
-            rs.close();
-            stmt.close();
         } finally {
+            d.cleanUp();
             Vault.releaseDbConnection(conn);
         }
 
@@ -220,13 +222,16 @@ public class IfLabel extends Object {
 
         String label = null;
         Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(IfLabel.class);
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 String name = rs.getString("snmpifname");
@@ -244,10 +249,8 @@ public class IfLabel extends Object {
             if (rs.next()) {
                 log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
             }
-
-            rs.close();
-            stmt.close();
         } finally {
+            d.cleanUp();
             Vault.releaseDbConnection(conn);
         }
 
@@ -266,14 +269,17 @@ public class IfLabel extends Object {
         String label = null;
         Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(IfLabel.class);
         try {
         	Integer intIfIndex = Integer.valueOf(ifIndex);
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=? AND ipinterface.ifindex=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setInt(3, intIfIndex);
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 String name = rs.getString("snmpifname");
@@ -291,10 +297,8 @@ public class IfLabel extends Object {
             if (rs.next()) {
                 log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
             }
-
-            rs.close();
-            stmt.close();
         } finally {
+            d.cleanUp();
             Vault.releaseDbConnection(conn);
         }
 

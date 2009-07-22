@@ -58,6 +58,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -128,12 +129,16 @@ public class ManageNodesServlet extends HttpServlet {
         List<String> unmanageInterfacesList = new ArrayList<String>();
         List<String> manageInterfacesList = new ArrayList<String>();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             Connection connection = Vault.getDbConnection();
+            d.watch(connection);
             try {
                 connection.setAutoCommit(false);
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);
+                d.watch(stmt);
                 PreparedStatement outagesstmt = connection.prepareStatement(DELETE_SERVICE_OUTAGES);
+                d.watch(outagesstmt);
 
                 for (int j = 0; j < allNodes.size(); j++) {
                     ManagedInterface curInterface = allNodes.get(j);
@@ -169,10 +174,10 @@ public class ManageNodesServlet extends HttpServlet {
                         unmanageInterfacesList.add(curInterface.getAddress());
                     }
 
-                    List interfaceServices = curInterface.getServices();
+                    List<ManagedService> interfaceServices = curInterface.getServices();
 
                     for (int k = 0; k < interfaceServices.size(); k++) {
-                        ManagedService curService = (ManagedService) interfaceServices.get(k);
+                        ManagedService curService = interfaceServices.get(k);
                         String serviceKey = intKey + "-" + curService.getId();
 
                         if (serviceList.contains(serviceKey) && curService.getStatus().equals("unmanaged")) {
@@ -225,10 +230,11 @@ public class ManageNodesServlet extends HttpServlet {
                 connection.commit();
             } finally { // close off the db connection
                 connection.setAutoCommit(true);
-                Vault.releaseDbConnection(connection);
             }
         } catch (SQLException e) {
             throw new ServletException(e);
+        } finally {
+            d.cleanUp();
         }
 
         // send the event to restart SCM
@@ -250,12 +256,12 @@ public class ManageNodesServlet extends HttpServlet {
 
     /**
      */
-    private void manageInterfaces(List interfaces, Connection connection) throws SQLException {
+    private void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'M'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
-            query.append("'").append((String) interfaces.get(i)).append("'");
+            query.append("'").append(interfaces.get(i)).append("'");
 
             if (i < interfaces.size() - 1)
                 query.append(",");
@@ -270,12 +276,12 @@ public class ManageNodesServlet extends HttpServlet {
 
     /**
      */
-    private void unmanageInterfaces(List interfaces, Connection connection) throws SQLException {
+    private void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'F'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
-            query.append("'").append((String) interfaces.get(i)).append("'");
+            query.append("'").append(interfaces.get(i)).append("'");
 
             if (i < interfaces.size() - 1)
                 query.append(",");

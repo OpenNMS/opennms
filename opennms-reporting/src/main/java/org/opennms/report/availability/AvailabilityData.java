@@ -60,6 +60,7 @@ import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -529,14 +530,10 @@ public class AvailabilityData extends Object {
 
         log.debug("in populateNodesFromDB");
 
+        final DBUtils d = new DBUtils(getClass());
         initialiseConnection();
-        // Prepare the statement to get service entries for each IP
-        PreparedStatement servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
-        // Prepared statement to get node info for an IP
-        PreparedStatement ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
-        // Prepared statement to get outages entries
-        PreparedStatement outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
-
+        d.watch(m_availConn);
+            
         /*
          * Get the rule for this category, get the list of nodes that satisfy
          * this rule.
@@ -551,6 +548,16 @@ public class AvailabilityData extends Object {
         String ip = null;
         ResultSet ipRS = null;
         try {
+            // Prepare the statement to get service entries for each IP
+            PreparedStatement servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
+            d.watch(servicesGetStmt);
+            // Prepared statement to get node info for an IP
+            PreparedStatement ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
+            d.watch(ipInfoGetStmt);
+            // Prepared statement to get outages entries
+            PreparedStatement outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
+            d.watch(outagesGetStmt);
+
             List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(filterRule);
 
             if (log.isDebugEnabled()) {
@@ -569,6 +576,7 @@ public class AvailabilityData extends Object {
                 ipInfoGetStmt.setString(1, ip);
 
                 ipRS = ipInfoGetStmt.executeQuery();
+                d.watch(ipRS);
                 while (ipRS.next()) {
                     int nodeid = ipRS.getInt(1);
                     String nodeName = ipRS.getString(2);
@@ -580,7 +588,8 @@ public class AvailabilityData extends Object {
                     servicesGetStmt.setString(3, ip);
                     servicesGetStmt.setLong(4, nodeid);
                     svcRS = servicesGetStmt.executeQuery();
-
+                    d.watch(svcRS);
+                    
                     // create node objects for this nodeID/IP/service
                     while (svcRS.next()) {
                         // read data from the resultSet
@@ -608,18 +617,6 @@ public class AvailabilityData extends Object {
                              */
                         }
                     }
-
-                    // finally close the result set
-                    try {
-                        if (svcRS != null) {
-                            svcRS.close();
-                        }
-                    } catch (Exception e) {
-                        log.fatal(
-                                  "Exception while closing the services result "
-                                          + "set", e);
-                        throw e;
-                    }
                 }
             }
         } catch (SQLException e) {
@@ -642,36 +639,8 @@ public class AvailabilityData extends Object {
             throw new Exception("Unable to get node list for category \'"
                     + cat.getLabel() + "\': " + e.getMessage(), e);
         } finally {
-            try {
-                if (ipRS != null) {
-                    ipRS.close();
-                }
-                if (servicesGetStmt != null) {
-                    servicesGetStmt.close();
-                }
-
-                if (ipInfoGetStmt != null) {
-                    ipInfoGetStmt.close();
-                }
-
-                if (outagesGetStmt != null) {
-                    outagesGetStmt.close();
-                }
-
-                if (m_availConn != null) {
-                    closeConnection();
-                }
-            } catch (Exception e) {
-                log.fatal(
-                          "Exception while closing the ip get node info result "
-                                  + "set.  IP: " + ip, e);
-                throw e;
-            }
+            d.cleanUp();
         }
-        /*
-         * XXX why do we rethrow the original exception in a few cases and
-         * create a new exception in others?
-         */
 
     }
 
@@ -685,6 +654,7 @@ public class AvailabilityData extends Object {
             PreparedStatement outagesGetStmt) throws SQLException {
         org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
         // Get outages for this node/ip/svc pair
+        final DBUtils d = new DBUtils(getClass());
         try {
 
             outagesGetStmt.setInt(1, nodeid);
@@ -692,6 +662,7 @@ public class AvailabilityData extends Object {
             outagesGetStmt.setInt(3, serviceid);
 
             ResultSet rs = outagesGetStmt.executeQuery();
+            d.watch(rs);
 
             if (m_nodes != null && m_nodes.size() > 0) {
                 ListIterator<Node> lstIter = m_nodes.listIterator();
@@ -742,13 +713,12 @@ public class AvailabilityData extends Object {
                 addNode(nodeName, nodeid, ipaddr, serviceName, losttime,
                         regainedtime);
             }
-            if (rs != null) {
-                rs.close();
-            }
 
         } catch (SQLException e) {
             log.fatal("Error has occured while getting the outages ", e);
             throw e;
+        } finally {
+            d.cleanUp();
         }
     }
 
