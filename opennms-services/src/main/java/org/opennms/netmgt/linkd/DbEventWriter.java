@@ -291,10 +291,10 @@ public class DbEventWriter implements QueryManager {
             stmt.setTimestamp(1, now);
     
             int i = stmt.executeUpdate();
+            if (log().isDebugEnabled()) log().debug("storelink: datalinkinterface - updated to NOT ACTIVE status " + i + " rows ");
         } finally {
             d.cleanUp();
         }
-        if (log().isDebugEnabled()) log().debug("storelink: datalinkinterface - updated to NOT ACTIVE status " + i + " rows ");
     }
 
     public LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpcoll) throws SQLException {
