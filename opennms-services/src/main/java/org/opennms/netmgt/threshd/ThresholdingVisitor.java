@@ -74,7 +74,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Is static because successful creation depends on thresholding-enabled parameter.
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params, long interval) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
         String enabled = params.get("thresholding-enabled");
@@ -83,7 +83,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, interval);
         if (thresholdingSet.hasThresholds()) {
             return new ThresholdingVisitor(thresholdingSet);
         }

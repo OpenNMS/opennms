@@ -3,7 +3,7 @@
 <threshd-configuration 
    threads="5">
    
-   <package name="thresholding-visitor-test-a">
+   <package name="thresholding-visitor-test">
        <filter>IPADDR != '0.0.0.0'</filter>
        <service name="SNMP" interval="3000" user-defined="false" status="on">
            <parameter key="thresholding-group" value="generic-snmp"/>

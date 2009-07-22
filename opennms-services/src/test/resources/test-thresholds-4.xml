@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <thresholding-config>
 
-        <group name="generic-snmp"
-                rrdRepository = "${install.share.dir}/rrd/snmp/">
+        <group name="generic-snmp" rrdRepository = "${install.share.dir}/rrd/snmp/">
                 <threshold type="high" ds-name="freeMem"  ds-type="node" value="10000" rearm="5000" trigger="1"/>
                 <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
                 	<resource-filter field='snmpifalias'>wlan0</resource-filter>

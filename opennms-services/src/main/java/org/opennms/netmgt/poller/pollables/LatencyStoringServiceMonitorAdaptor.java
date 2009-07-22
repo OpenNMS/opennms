@@ -153,7 +153,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         if (m_thresholdingSet == null) {
             RrdRepository repository = new RrdRepository();
             repository.setRrdBaseDir(new File(rrdPath));
-            m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
+            // Interval does not make sense for Latency Thresholding, because all values are gauge.
+            m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository, 0);
         }
         if (m_thresholdingSet.hasThresholds(dsName)) {
             LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
