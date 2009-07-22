@@ -146,8 +146,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     //Set to true by the reinit code when a refresh is required (at init time, or when thresholds change)
     private boolean m_needsRefresh=false;
     
-    
-    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map params) {
+    //Holds collection interval step. Counter attributes values must be returned as rates.
+    private long m_interval;
+ 
+    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map params, long interval) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
         
         // Use the "thresholding-enable" to use Thresholds processing on Collectd
@@ -221,11 +223,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             log.warn("createThresholdingVisitor: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
             return null;
         }
-        return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList);
+        return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList, interval);
     }
     
-    protected ThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, RrdRepository repo, List<String> groupNameList) { 
-
+    protected ThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, RrdRepository repo, List<String> groupNameList, long interval) { 
+        m_interval=interval/1000; // Store interval in seconds
         m_groupNameList=groupNameList;
         m_nodeId=nodeId;
         m_hostAddress=hostAddress;
@@ -496,7 +498,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         if (last == null) {
             return Double.NaN;
         }
-        return current - last;
+        return (current - last)/m_interval; // Treat counter as rates
     }
 
     private void thresholdingFinished(boolean success) {
