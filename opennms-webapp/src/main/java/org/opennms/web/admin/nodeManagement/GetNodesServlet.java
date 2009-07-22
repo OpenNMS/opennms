@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
@@ -99,10 +100,14 @@ public class GetNodesServlet extends HttpServlet {
         List<ManagedInterface> allNodes = new ArrayList<ManagedInterface>();
         int lineCount = 0;
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = DataSourceFactory.getInstance().getConnection();
+            d.watch(connection);
             PreparedStatement ifaceStmt = connection.prepareStatement(INTERFACE_QUERY);
+            d.watch(ifaceStmt);
             ResultSet ifaceResults = ifaceStmt.executeQuery();
+            d.watch(ifaceResults);
 
             if (ifaceResults != null) {
                 while (ifaceResults.next()) {
@@ -115,10 +120,12 @@ public class GetNodesServlet extends HttpServlet {
                     newInterface.setStatus(ifaceResults.getString(3));
 
                     PreparedStatement svcStmt = connection.prepareStatement(SERVICE_QUERY);
+                    d.watch(svcStmt);
                     svcStmt.setInt(1, newInterface.getNodeid());
                     svcStmt.setString(2, newInterface.getAddress());
 
                     ResultSet svcResults = svcStmt.executeQuery();
+                    d.watch(svcResults);
 
                     if (svcResults != null) {
                         while (svcResults.next()) {
@@ -130,17 +137,11 @@ public class GetNodesServlet extends HttpServlet {
                             newInterface.addService(newService);
                         }
                     }
-                    svcResults.close();
-                    svcStmt.close();
                 }
             }
-            ifaceResults.close();
-            ifaceStmt.close();
             userSession.setAttribute("lineItems.manage.jsp", new Integer(lineCount));
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            d.cleanUp();
         }
 
         return allNodes;

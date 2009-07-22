@@ -41,36 +41,42 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.utils.DBUtils;
+
 
 public class Querier extends JDBCTemplate implements RowProcessor {
-     private int m_count;
+    private int m_count;
     private RowProcessor m_rowProcessor;
-     public Querier(DataSource db, String sql, RowProcessor rowProcessor) {
-         super(db, sql);
-         if (rowProcessor == null)
-             m_rowProcessor = this;
-         else 
-             m_rowProcessor = rowProcessor;
-         m_count = 0;
-     }
+    public Querier(DataSource db, String sql, RowProcessor rowProcessor) {
+        super(db, sql);
+        if (rowProcessor == null)
+            m_rowProcessor = this;
+        else 
+            m_rowProcessor = rowProcessor;
+        m_count = 0;
+    }
      
-     public Querier(DataSource db, String sql) {
-         this(db, sql, null);
-     }
+    public Querier(DataSource db, String sql) {
+        this(db, sql, null);
+    }
      
-     public int getCount() {
-         return m_count;
-     }
+    public int getCount() {
+        return m_count;
+    }
      
-     protected void executeStmt(PreparedStatement stmt) throws SQLException {
-        ResultSet rs = stmt.executeQuery();
-         m_count = 0;
-         while (rs.next()) {
-             m_rowProcessor.processRow(rs);
-             m_count++;
-         }
-         if (rs != null)
-             rs.close();
+    protected void executeStmt(PreparedStatement stmt) throws SQLException {
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            m_count = 0;
+            while (rs.next()) {
+                m_rowProcessor.processRow(rs);
+                m_count++;
+            }
+        } finally {
+            d.cleanUp();
+        }
     }
 
     public void processRow(ResultSet rs) throws SQLException {
