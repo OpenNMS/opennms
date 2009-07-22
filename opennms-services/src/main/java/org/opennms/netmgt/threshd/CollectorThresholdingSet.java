@@ -44,8 +44,8 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class CollectorThresholdingSet extends ThresholdingSet {
     
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
-        super(nodeId, hostAddress, serviceName, repository);
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
+        super(nodeId, hostAddress, serviceName, repository, interval);
     }
     
     /*
@@ -61,7 +61,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_interval, m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
     }
 
