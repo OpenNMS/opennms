@@ -53,6 +53,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -227,8 +228,10 @@ final class LatencyThresholder implements ServiceThresholder {
         // ifIndex from the database for this interface.
         //
         java.sql.Connection dbConn = null;
+        final DBUtils d = new DBUtils(getClass());
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
+            d.watch(dbConn);
         } catch (SQLException sqlE) {
             if (log().isEnabledFor(Priority.ERROR))
                 log().error("initialize: Failed getting connection to the database.", sqlE);
@@ -250,24 +253,19 @@ final class LatencyThresholder implements ServiceThresholder {
             PreparedStatement stmt = null;
             try {
                 stmt = dbConn.prepareStatement(SQL_GET_NODEID);
+                d.watch(stmt);
                 stmt.setString(1, ipAddr.getHostAddress()); // interface address
                 ResultSet rs = stmt.executeQuery();
+                d.watch(rs);
                 if (rs.next()) {
                     nodeId = rs.getInt(1);
                     if (rs.wasNull())
                         nodeId = -1;
                 }
-                rs.close();
             } catch (SQLException sqle) {
                 if (log().isDebugEnabled())
                     log().debug("initialize: SQL exception!!", sqle);
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress());
-            } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
             }
 
             if (log().isDebugEnabled())
@@ -276,13 +274,7 @@ final class LatencyThresholder implements ServiceThresholder {
             if (nodeId == -1)
                 throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
         } finally {
-            // Done with the database so close the connection
-            try {
-                dbConn.close();
-            } catch (SQLException sqle) {
-                if (log().isEnabledFor(Priority.INFO))
-                    log().info("initialize: SQLException while closing database connection", sqle);
-            }
+            d.cleanUp();
         }
 
         // Add nodeId as an attribute of the interface for retrieval

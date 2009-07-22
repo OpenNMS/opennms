@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.web.WebSecurityUtils;
 
 /**
@@ -98,17 +99,16 @@ public class SetCriticalPathServlet extends HttpServlet {
 
     private void deleteCriticalPath(int node) throws SQLException {
 
-        Connection conn = Vault.getDbConnection();
-        PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
 
         try {
-            stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
+            d.watch(stmt);
             stmt.setInt(1, node);
-	    stmt.execute();
-	    stmt.close();
-
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -116,19 +116,17 @@ public class SetCriticalPathServlet extends HttpServlet {
 
         deleteCriticalPath(node);
 
-        Connection conn = Vault.getDbConnection();
-        PreparedStatement stmt = null;
-
+        final DBUtils d = new DBUtils(getClass());
         try {
-            stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
+            d.watch(stmt);
             stmt.setInt(1, node);
             stmt.setString(2, criticalIp);
             stmt.setString(3, criticalSvc);
-	    stmt.execute();
-	    stmt.close();
-
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 }

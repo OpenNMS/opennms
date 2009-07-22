@@ -59,6 +59,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -130,12 +131,16 @@ public class ManageNodeServlet extends HttpServlet {
         List<String> unmanageInterfacesList = new ArrayList<String>();
         List<String> manageInterfacesList = new ArrayList<String>();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             Connection connection = Vault.getDbConnection();
+            d.watch(connection);
             try {
                 connection.setAutoCommit(false);
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);
+                d.watch(stmt);
                 PreparedStatement outagesstmt = connection.prepareStatement(DELETE_SERVICE_OUTAGES);
+                d.watch(outagesstmt);
 
                 for (ManagedInterface curInterface : allNodes) {
                     String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
@@ -226,10 +231,11 @@ public class ManageNodeServlet extends HttpServlet {
                 connection.commit();
             } finally { // close off the db connection
                 connection.setAutoCommit(true);
-                Vault.releaseDbConnection(connection);
             }
         } catch (SQLException e) {
             throw new ServletException(e);
+        } finally {
+            d.cleanUp();
         }
 
         // send the event to restart SCM

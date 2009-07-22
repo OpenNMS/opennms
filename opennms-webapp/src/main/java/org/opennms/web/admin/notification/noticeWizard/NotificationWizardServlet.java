@@ -64,6 +64,7 @@ import javax.servlet.http.HttpSession;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -611,20 +612,30 @@ public class NotificationWizardServlet extends HttpServlet {
 
     private void deleteCriticalPath(int node, Connection conn) throws SQLException {
         PreparedStatement stmt = null;
-        stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
-        stmt.setInt(1, node);
-        stmt.execute();
-        stmt.close();
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
+            d.watch(stmt);
+            stmt.setInt(1, node);
+            stmt.execute();
+        } finally {
+            d.cleanUp();
+        }
     }
 
     private void setCriticalPath(int node, String criticalIp, String criticalSvc, Connection conn) throws SQLException {
         PreparedStatement stmt = null;
-        stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
-        stmt.setInt(1, node);
-        stmt.setString(2, criticalIp);
-        stmt.setString(3, criticalSvc);
-        stmt.execute();
-        stmt.close();
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
+            d.watch(stmt);
+            stmt.setInt(1, node);
+            stmt.setString(2, criticalIp);
+            stmt.setString(3, criticalSvc);
+            stmt.execute();
+        } finally {
+            d.cleanUp();
+        }
     }
 
     private void updatePaths(String rule, String criticalIp, String criticalSvc)

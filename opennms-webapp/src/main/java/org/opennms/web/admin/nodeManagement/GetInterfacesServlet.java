@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.web.WebSecurityUtils;
 
@@ -126,13 +127,17 @@ public class GetInterfacesServlet extends HttpServlet {
         List<ManagedInterface> allInterfaces = new ArrayList<ManagedInterface>();
         int lineCount = 0;
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = DataSourceFactory.getInstance().getConnection();
+            d.watch(connection);
 
             PreparedStatement ifaceStmt = connection.prepareStatement(INTERFACE_QUERY);
+            d.watch(ifaceStmt);
             ifaceStmt.setInt(1, nodeId);
 
             ResultSet ifaceResults = ifaceStmt.executeQuery();
+            d.watch(ifaceResults);
             while (ifaceResults.next()) {
                 lineCount++;
                 ManagedInterface newInterface = new ManagedInterface();
@@ -142,10 +147,12 @@ public class GetInterfacesServlet extends HttpServlet {
                 allInterfaces.add(newInterface);
 
                 PreparedStatement svcStmt = connection.prepareStatement(SERVICE_QUERY);
+                d.watch(svcStmt);
                 svcStmt.setInt(1, nodeId);
                 svcStmt.setString(2, newInterface.getAddress());
 
                 ResultSet svcResults = svcStmt.executeQuery();
+                d.watch(svcResults);
                 while (svcResults.next()) {
                     lineCount++;
                     ManagedService newService = new ManagedService();
@@ -154,16 +161,10 @@ public class GetInterfacesServlet extends HttpServlet {
                     newService.setStatus(svcResults.getString(3));
                     newInterface.addService(newService);
                 }
-                svcResults.close();
-                svcStmt.close();
             }
-            ifaceResults.close();
-            ifaceStmt.close();
             userSession.setAttribute("lineItems.nodemanagement", new Integer(lineCount));
         } finally {
-            if (connection != null) {
-                    connection.close();
-            }
+            d.cleanUp();
         }
         return allInterfaces;
     }
