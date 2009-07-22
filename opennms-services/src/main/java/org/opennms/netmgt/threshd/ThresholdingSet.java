@@ -71,11 +71,17 @@ public abstract class ThresholdingSet {
     
     List<ThresholdGroup> m_thresholdGroups;
 
-    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
+    /*
+     * Holds collection interval step. Counter attributes values must be returned as rates.
+     */
+    long m_interval;
+
+    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
         m_serviceName = serviceName;
-        m_repository = repository;        
+        m_repository = repository;      
+        m_interval = interval / 1000; // Store interval in seconds
         initThresholdsDao();
         initialize();
     }

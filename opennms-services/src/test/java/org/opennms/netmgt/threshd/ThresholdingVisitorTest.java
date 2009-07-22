@@ -33,6 +33,7 @@ package org.opennms.netmgt.threshd;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -86,6 +87,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -144,7 +146,7 @@ public class ThresholdingVisitorTest {
     @Test
     public void testCreateVisitorWithoutProperEnabledIt() {
         Map<String,String> params = new HashMap<String,String>();
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNull(visitor);
     }
 
@@ -165,41 +167,44 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
-    public void testResourceCounterData() {
+    public void testResourceCounterData() throws Exception {
+        initFactories("/threshd-configuration.xml", "/test-thresholds-counters.xml");
         ThresholdingVisitor visitor = createVisitor();
 
         CollectionAgent agent = createCollectionAgent();
         NodeResourceType resourceType = createNodeResourceType(agent);
-        MibObject mibObject = createMibObject("counter", "freeMem", "0");
+        MibObject mibObject = createMibObject("counter", "myCounter", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 15000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
 
-        // Collect Step 1 : Initialize counter cache
+        // Collect Step 1 : Initialize counter cache.
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(15000));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
         resource.visit(visitor);
 
-        // Collect Step 2 : Trigger
+        // Collect Step 2 : Trigger. (last-current)/step => (5500-1000)/300=15
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(30000));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(5500));
         resource.visit(visitor);
 
-        // Collect Step 3 : Rearm
+        // Collect Step 3 : Rearm. (last-current)/step => (6100-5500)/300=2
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(4000));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
         resource.visit(visitor);
 
-        // Collect Step 3 : Reset counter (bad value)
+        // Collect Step 3 : Reset counter (bad value). last=6100, current=10
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(10));
         resource.visit(visitor);
 
-        // Collect Step 3 : Normal
+        // Collect Step 3 : Normal. last=10, current=1000 => (1000-10)/300=3.3
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1010));
         resource.visit(visitor);
@@ -212,13 +217,15 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
         setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "1");
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "1");
-        runInterfaceResource("127.0.0.1", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        runInterfaceResource("127.0.0.1", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -226,6 +233,8 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
@@ -240,7 +249,7 @@ public class ThresholdingVisitorTest {
         p.put("myMockParam", "myMockValue");
         ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
         
-        runInterfaceResource("127.0.0.1", "sis0", 100, 220); // real value = 220 - 100 = 120
+        runInterfaceResource("127.0.0.1", "sis0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
         deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
     }
@@ -296,29 +305,29 @@ public class ThresholdingVisitorTest {
         // Add Events
         addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
 
-        // Step 1 : Initialize counter cache
+        // Step 1 : Execute visitor
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(20));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getGauge32(20));
         resource.visit(visitor);
         
-        // Repeat a couple of times with the same value, to replicate a steady state
+        // Step 2 : Repeat a couple of times with the same value, to replicate a steady state
         resource.visit(visitor);
         resource.visit(visitor);
         resource.visit(visitor);
 
-        // Step 2 : Trigger
+        // Step 3 : Trigger
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(60));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getGauge32(60));
         resource.visit(visitor);
 
-        // Step 3 : Don't rearm, but do drop
+        // Step 4 : Don't rearm, but do drop
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(45));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getGauge32(45));
         resource.visit(visitor);
 
-        // Step 4 : Shouldn't trigger again
+        // Step 5 : Shouldn't trigger again
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(55));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getGauge32(55));
         resource.visit(visitor);
 
         EasyMock.verify(agent);
@@ -472,6 +481,8 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-bug3193.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testBug3193() throws Exception {
@@ -489,24 +500,24 @@ public class ThresholdingVisitorTest {
         addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
         addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
 
-        // Collect Step 1 : First Data (Last should be NaN)
+        // Collect Step 1 : First Data: Last should be NaN
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(50));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(2000));
         resource.visit(visitor);
 
-        // Collect Step 2 : First Value (last - current = 60)
+        // Collect Step 2 : First Value: (last-current)/step => (20000-2000)/300=60
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(110));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(20000));
         resource.visit(visitor);
 
-        // Collect Step 3 : Second Value (last - current = 110). Trigger
+        // Collect Step 3 : Second Value: (last-current)/step => (53000-20000)/300=110 => Trigger
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(220));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(53000));
         resource.visit(visitor);
 
-        // Collect Step 3 : Third Value (last - current = 40). Rearm
+        // Collect Step 3 : Third Value (last-current)/step => (65000-53000)/300=40 => Rearm
         resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(260));
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(65000));
         resource.visit(visitor);
 
         EasyMock.verify(agent);
@@ -517,6 +528,8 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-2.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testBug2711_noIpAddress() throws Exception {
@@ -524,7 +537,7 @@ public class ThresholdingVisitorTest {
         setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, false);
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("0.0.0.0", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        runInterfaceResource("0.0.0.0", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -532,6 +545,8 @@ public class ThresholdingVisitorTest {
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds-2.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testBug2711_noIP_noSnmpIfInfo() throws Exception {
@@ -539,22 +554,7 @@ public class ThresholdingVisitorTest {
         setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, true);
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("10.10.0.1", "wlan0", 100, 220); // real value = 220 - 100 = 120
-        verifyEvents(2);
-    }
-
-    /*
-     * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
-     * - test-thresholds-2.xml
-     */
-    @Test
-    public void testBug2711_noIP_badIfIndex() throws Exception {
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        setupSnmpInterfaceWithoutIpDatabase("wlan0", -100, false);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("0.0.0.0", "wlan0", 100, 220); // real value = 220 - 100 = 120
+        runInterfaceResource("10.10.0.1", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(2);
     }
 
@@ -563,8 +563,26 @@ public class ThresholdingVisitorTest {
      * - thresd-configuration.xml
      * - test-thresholds-2.xml
      * 
-     * There is no Frame Relay related thresholds definitions on test-thresholds-2.xml
-     * When visit resources, getEntityMap from ThresholdingSet must null
+     * Updated to reflect the fact that counter are treated as rates.
+     */
+    @Test
+    public void testBug2711_noIP_badIfIndex() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        setupSnmpInterfaceWithoutIpDatabase("wlan0", -100, false);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
+        runInterfaceResource("0.0.0.0", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        verifyEvents(2);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-2.xml
+     * 
+     * There is no Frame Relay related thresholds definitions on test-thresholds-2.xml.
+     * When visit resources, getEntityMap from ThresholdingSet must null.
+     * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
     public void testBug3227() throws Exception {
@@ -620,7 +638,7 @@ public class ThresholdingVisitorTest {
     public void testLatencyThresholdingSet() throws Exception {
         setupSnmpInterfaceDatabase("127.0.0.1", "lo0");
 
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
         assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
         Map<String, Double> attributes = new HashMap<String, Double>();        
@@ -692,7 +710,7 @@ public class ThresholdingVisitorTest {
     private ThresholdingVisitor createVisitor() {
         Map<String,String> params = new HashMap<String,String>();
         params.put("thresholding-enabled", "true");
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNotNull(visitor);
         return visitor;
     }
@@ -786,7 +804,8 @@ public class ThresholdingVisitorTest {
     private void addAttributeToCollectionResource(SnmpCollectionResource resource, ResourceType type, String attributeName, String attributeType, String attributeInstance, long value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
         SnmpAttributeType objectType = new NumericAttributeType(type, "default", object, new AttributeGroupType("mibGroup", "ignore"));
-        resource.setAttributeValue(objectType, SnmpUtils.getValueFactory().getCounter32(value));
+        SnmpValue snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(value) : SnmpUtils.getValueFactory().getGauge32(value);
+        resource.setAttributeValue(objectType, snmpValue);
     }
 
     private MibObject createMibObject(String type, String alias, String instance) {
@@ -898,6 +917,9 @@ public class ThresholdingVisitorTest {
         if (remainEvents == 0) {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
             log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
+            if (m_anticipatedEvents.size() != receivedList.size()) {
+                fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
+            }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
                 String anticipated = eventToString(m_anticipatedEvents.get(i));
                 String received = eventToString(receivedList.get(i));
