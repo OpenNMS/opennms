@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -201,17 +202,17 @@ final class KnownIPMgr {
          *             Thrown if an error occurs updating the database entry.
          */
         void update(Connection db) throws SQLException {
-            PreparedStatement stmt = null;
+            final DBUtils d = new DBUtils(getClass());
             try {
-                stmt = db.prepareStatement(KnownIPMgr.IP_UPDATE_TIME_SQL);
+                PreparedStatement stmt = db.prepareStatement(KnownIPMgr.IP_UPDATE_TIME_SQL);
+                d.watch(stmt);
                 stmt.setTimestamp(1, m_lastCheck);
                 stmt.setString(2, m_interface.getHostAddress());
                 stmt.setInt(3, m_nodeid);
 
                 stmt.executeUpdate();
             } finally {
-                if (stmt != null)
-                    stmt.close();
+                d.cleanUp();
             }
         }
     }

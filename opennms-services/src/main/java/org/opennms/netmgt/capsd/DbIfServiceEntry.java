@@ -51,6 +51,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -170,7 +171,7 @@ public final class DbIfServiceEntry {
      * record was created.
      */
     private int m_changed;
-
+    
     // Mask fields
     //
     private static final int CHANGED_IFINDEX = 1 << 0;
@@ -188,8 +189,7 @@ public final class DbIfServiceEntry {
     private static final int CHANGED_QUALIFIER = 1 << 6;
 
     /**
-     * Inserts the new interface into the ipInterface table of the OpenNMS
-     * databasee.
+     * Inserts the new interface into the ipInterface table of the OpenNMS database.
      * 
      * @param c
      *            The connection to the database.
@@ -200,8 +200,6 @@ public final class DbIfServiceEntry {
     private void insert(Connection c) throws SQLException {
         if (m_fromDb)
             throw new IllegalStateException("The record already exists in the database");
-
-        Category log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         //
@@ -245,80 +243,84 @@ public final class DbIfServiceEntry {
 
         names.append(") VALUES (").append(values).append(')');
 
-        if (log.isDebugEnabled())
-            log.debug("DbIfServiceEntry.insert: SQL insert statment = " + names.toString());
+        if (log().isDebugEnabled())
+            log().debug("DbIfServiceEntry.insert: SQL insert statment = " + names.toString());
 
-        // create the Prepared statment and then
+        // create the Prepared statement and then
         // start setting the result values
         //
-        PreparedStatement stmt = c.prepareStatement(names.toString());
-        names = null;
-
-        int ndx = 1;
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setString(ndx++, m_ipAddr.getHostAddress());
-        stmt.setInt(ndx++, m_serviceId);
-
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-            stmt.setInt(ndx++, m_ifIndex);
-
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-            stmt.setString(ndx++, new String(new char[] { m_status }));
-
-        if ((m_changed & CHANGED_LASTGOOD) == CHANGED_LASTGOOD) {
-            stmt.setTimestamp(ndx++, m_lastGood);
-        }
-
-        if ((m_changed & CHANGED_LASTFAIL) == CHANGED_LASTFAIL) {
-            stmt.setTimestamp(ndx++, m_lastFail);
-        }
-
-        if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
-            stmt.setString(ndx++, new String(new char[] { m_source }));
-
-        if ((m_changed & CHANGED_NOTIFY) == CHANGED_NOTIFY)
-            stmt.setString(ndx++, new String(new char[] { m_notify }));
-
-        if ((m_changed & CHANGED_QUALIFIER) == CHANGED_QUALIFIER)
-            stmt.setString(ndx++, m_qualifier);
-
-        // Run the insert
-        int rc;
+        PreparedStatement stmt = null;
+        PreparedStatement delStmt = null;
+        final DBUtils d = new DBUtils(getClass());
+        
         try {
-            rc = stmt.executeUpdate();
-        } catch (SQLException e) {
-            log.warn("ifServices DB insert got exception; will retry after "
-                     + "deletion of any existing records for this ifService "
-                     + "that are marked for deletion.  "
-                     + "Exception: " + e.getMessage(),
-                     e);
+            stmt = c.prepareStatement(names.toString());
+            d.watch(stmt);
+            names = null;
 
-            /*
-             * Maybe there's already an entry for this (service, node, ipaddr)
-             * in the table, but it's marked for deletion. Delete it and try
-             * the insertion again.
-             */
-            c.rollback();
-            String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
-                         + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setInt(ndx++, m_serviceId);
 
-            PreparedStatement delStmt = c.prepareStatement(delCmd);
-            delStmt.setInt(1, m_nodeId);
-            delStmt.setString(2, m_ipAddr.getHostAddress());
-            delStmt.setInt(3, m_serviceId);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+                stmt.setInt(ndx++, m_ifIndex);
 
-            rc = delStmt.executeUpdate();
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                stmt.setString(ndx++, new String(new char[] { m_status }));
 
-            delStmt.close();
+            if ((m_changed & CHANGED_LASTGOOD) == CHANGED_LASTGOOD) {
+                stmt.setTimestamp(ndx++, m_lastGood);
+            }
 
-            rc = stmt.executeUpdate();
+            if ((m_changed & CHANGED_LASTFAIL) == CHANGED_LASTFAIL) {
+                stmt.setTimestamp(ndx++, m_lastFail);
+            }
+
+            if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
+                stmt.setString(ndx++, new String(new char[] { m_source }));
+
+            if ((m_changed & CHANGED_NOTIFY) == CHANGED_NOTIFY)
+                stmt.setString(ndx++, new String(new char[] { m_notify }));
+
+            if ((m_changed & CHANGED_QUALIFIER) == CHANGED_QUALIFIER)
+                stmt.setString(ndx++, m_qualifier);
+
+            // Run the insert
+            int rc;
+            try {
+                rc = stmt.executeUpdate();
+            } catch (SQLException e) {
+                log().warn("ifServices DB insert got exception; will retry after "
+                         + "deletion of any existing records for this ifService "
+                         + "that are marked for deletion.",
+                         e);
+
+                /*
+                 * Maybe there's already an entry for this (service, node, IP address)
+                 * in the table, but it's marked for deletion. Delete it and try
+                 * the insertion again.
+                 */
+                c.rollback();
+                String delCmd = "DELETE FROM ifServices WHERE status = 'D' "
+                             + "AND nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+                delStmt = c.prepareStatement(delCmd);
+                d.watch(delStmt);
+                delStmt.setInt(1, m_nodeId);
+                delStmt.setString(2, m_ipAddr.getHostAddress());
+                delStmt.setInt(3, m_serviceId);
+
+                rc = delStmt.executeUpdate();
+
+                rc = stmt.executeUpdate();
+            }
+            log().debug("insert(): SQL update result = " + rc);
+        } finally {
+            d.cleanUp();
         }
-        log.debug("insert(): SQL update result = " + rc);
-        stmt.close();
 
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_fromDb = true;
         m_changed = 0;
     }
@@ -335,8 +337,6 @@ public final class DbIfServiceEntry {
     private void update(Connection c) throws SQLException {
         if (!m_fromDb)
             throw new IllegalStateException("The record does not exists in the database");
-
-        Category log = ThreadCategory.getInstance(getClass());
 
         StringBuffer sqlText = new StringBuffer("UPDATE ifServices SET ");
 
@@ -378,66 +378,71 @@ public final class DbIfServiceEntry {
 
         sqlText.append(" WHERE nodeID = ? AND ipAddr = ? AND serviceID = ? and status <> 'D'");
 
-        log.debug("DbIfServiceEntry.update: SQL update statment = " + sqlText.toString());
+        log().debug("DbIfServiceEntry.update: SQL update statment = " + sqlText.toString());
 
-        // create the Prepared statment and then
+        // create the Prepared statement and then
         // start setting the result values
-        //
-        PreparedStatement stmt = c.prepareStatement(sqlText.toString());
-        sqlText = null;
+        PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
+        
+        try {
+            stmt = c.prepareStatement(sqlText.toString());
+            d.watch(stmt);
+            sqlText = null;
 
-        int ndx = 1;
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
-            if (m_ifIndex == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_ifIndex);
+            int ndx = 1;
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
+                if (m_ifIndex == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_ifIndex);
+            }
+
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
+                if (m_status != STATUS_UNKNOWN)
+                    stmt.setString(ndx++, new String(new char[] { m_status }));
+                else
+                    stmt.setNull(ndx++, Types.CHAR);
+            }
+
+            if ((m_changed & CHANGED_LASTGOOD) == CHANGED_LASTGOOD) {
+                if (m_lastGood != null) {
+                    stmt.setTimestamp(ndx++, m_lastGood);
+                } else
+                    stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
+
+            if ((m_changed & CHANGED_LASTFAIL) == CHANGED_LASTFAIL) {
+                if (m_lastFail != null) {
+                    stmt.setTimestamp(ndx++, m_lastFail);
+                } else
+                    stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
+
+            if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE) {
+                if (m_source == SOURCE_UNKNOWN)
+                    stmt.setNull(ndx++, Types.CHAR);
+                else
+                    stmt.setString(ndx++, new String(new char[] { m_source }));
+            }
+
+            if ((m_changed & CHANGED_NOTIFY) == CHANGED_NOTIFY) {
+                if (m_notify == NOTIFY_UNKNOWN)
+                    stmt.setNull(ndx++, Types.CHAR);
+                else
+                    stmt.setString(ndx++, new String(new char[] { m_notify }));
+            }
+
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setInt(ndx++, m_serviceId);
+
+            // Run the insert
+            int rc = stmt.executeUpdate();
+            log().debug("DbIfServiceEntry.update: update result = " + rc);
+        } finally {
+            d.cleanUp();
         }
-
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-            if (m_status != STATUS_UNKNOWN)
-                stmt.setString(ndx++, new String(new char[] { m_status }));
-            else
-                stmt.setNull(ndx++, Types.CHAR);
-        }
-
-        if ((m_changed & CHANGED_LASTGOOD) == CHANGED_LASTGOOD) {
-            if (m_lastGood != null) {
-                stmt.setTimestamp(ndx++, m_lastGood);
-            } else
-                stmt.setNull(ndx++, Types.TIMESTAMP);
-        }
-
-        if ((m_changed & CHANGED_LASTFAIL) == CHANGED_LASTFAIL) {
-            if (m_lastFail != null) {
-                stmt.setTimestamp(ndx++, m_lastFail);
-            } else
-                stmt.setNull(ndx++, Types.TIMESTAMP);
-        }
-
-        if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE) {
-            if (m_source == SOURCE_UNKNOWN)
-                stmt.setNull(ndx++, Types.CHAR);
-            else
-                stmt.setString(ndx++, new String(new char[] { m_source }));
-        }
-
-        if ((m_changed & CHANGED_NOTIFY) == CHANGED_NOTIFY) {
-            if (m_notify == NOTIFY_UNKNOWN)
-                stmt.setNull(ndx++, Types.CHAR);
-            else
-                stmt.setString(ndx++, new String(new char[] { m_notify }));
-        }
-
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setString(ndx++, m_ipAddr.getHostAddress());
-        stmt.setInt(ndx++, m_serviceId);
-
-        // Run the insert
-        //
-        int rc = stmt.executeUpdate();
-        log.debug("DbIfServiceEntry.update: update result = " + rc);
-        stmt.close();
 
         // clear the mask and mark as backed
         // by the database
@@ -460,77 +465,79 @@ public final class DbIfServiceEntry {
         if (!m_fromDb)
             throw new IllegalStateException("The record does not exists in the database");
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
-        PreparedStatement stmt = c.prepareStatement(SQL_LOAD_REC);
-        stmt.setInt(1, m_nodeId);
-        stmt.setString(2, m_ipAddr.getHostAddress());
-        stmt.setInt(3, m_serviceId);
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        final DBUtils d = new DBUtils(getClass());
+        
+        try {
+            // create the Prepared statement and then
+            // start setting the result values
+            stmt = c.prepareStatement(SQL_LOAD_REC);
+            d.watch(stmt);
+            stmt.setInt(1, m_nodeId);
+            stmt.setString(2, m_ipAddr.getHostAddress());
+            stmt.setInt(3, m_serviceId);
 
-        // Run the insert
-        //
-        ResultSet rset = stmt.executeQuery();
-        if (!rset.next()) {
-            rset.close();
-            stmt.close();
-            return false;
+            // Run the insert
+            //
+            rset = stmt.executeQuery();
+            d.watch(rset);
+            if (!rset.next()) {
+                return false;
+            }
+
+            // extract the values.
+            //
+            int ndx = 1;
+
+            // get the ifIndex
+            //
+            m_ifIndex = rset.getInt(ndx++);
+            if (rset.wasNull())
+                m_ifIndex = -1;
+
+            // get the last good time
+            //
+            m_lastGood = rset.getTimestamp(ndx++);
+
+            // get the last fail time
+            //
+            m_lastFail = rset.getTimestamp(ndx++);
+
+            // get the qualifier
+            //
+            m_qualifier = rset.getString(ndx++);
+            if (rset.wasNull())
+                m_qualifier = null;
+
+            // get the status
+            //
+            String str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+                m_status = str.charAt(0);
+            else
+                m_status = STATUS_UNKNOWN;
+
+            // get the source
+            //
+            str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+                m_source = str.charAt(0);
+            else
+                m_source = SOURCE_UNKNOWN;
+
+            // get the notify
+            //
+            str = rset.getString(ndx++);
+            if (str != null && !rset.wasNull())
+                m_notify = str.charAt(0);
+            else
+                m_notify = NOTIFY_UNKNOWN;
+        } finally {
+            d.cleanUp();
         }
 
-        // extract the values.
-        //
-        int ndx = 1;
-
-        // get the ifIndex
-        //
-        m_ifIndex = rset.getInt(ndx++);
-        if (rset.wasNull())
-            m_ifIndex = -1;
-
-        // get the last good time
-        //
-        m_lastGood = rset.getTimestamp(ndx++);
-
-        // get the last fail time
-        //
-        m_lastFail = rset.getTimestamp(ndx++);
-
-        // get the qualifier
-        //
-        m_qualifier = rset.getString(ndx++);
-        if (rset.wasNull())
-            m_qualifier = null;
-
-        // get the status
-        //
-        String str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull())
-            m_status = str.charAt(0);
-        else
-            m_status = STATUS_UNKNOWN;
-
-        // get the source
-        //
-        str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull())
-            m_source = str.charAt(0);
-        else
-            m_source = SOURCE_UNKNOWN;
-
-        // get the notify
-        //
-        str = rset.getString(ndx++);
-        if (str != null && !rset.wasNull())
-            m_notify = str.charAt(0);
-        else
-            m_notify = NOTIFY_UNKNOWN;
-
-        rset.close();
-        stmt.close();
-
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_changed = 0;
         return true;
     }
@@ -902,7 +909,7 @@ public final class DbIfServiceEntry {
                     if (db != null)
                         db.close();
                 } catch (SQLException e) {
-                    ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
+                    log().warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -911,7 +918,7 @@ public final class DbIfServiceEntry {
 
     /**
      * Updates the interface information in the configured database. If the
-     * interfaca does not exist the a new row in the table is created. If the
+     * interface does not exist the a new row in the table is created. If the
      * element already exists then it's current row is updated as needed based
      * upon the current changes to the node.
      * 
@@ -946,7 +953,7 @@ public final class DbIfServiceEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>ipAddr</em>. If the record cannot be found
      * then a null reference is returned.
      * 
@@ -977,16 +984,16 @@ public final class DbIfServiceEntry {
     }
 
     /**
-     * Retreives a current record from the database based upon the key fields of
+     * Retrieves a current record from the database based upon the key fields of
      * <em>nodeID</em> and <em>ipAddr</em>. If the record cannot be found
-     * then a null reference is returnd.
+     * then a null reference is returned.
      * 
      * @param db
-     *            The databse connection used to load the entry.
+     *            The database connection used to load the entry.
      * @param nid
      *            The node id key
      * @param addr
-     *            The internet address.
+     *            The IP address.
      * 
      * @return The loaded entry or null if one could not be found.
      * 
@@ -1033,4 +1040,9 @@ public final class DbIfServiceEntry {
             t.printStackTrace();
         }
     }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
 }
