@@ -287,24 +287,19 @@ final class Scheduler implements Runnable, PausableFiber {
                 if (log().isDebugEnabled())
                     log().debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
 
-                final DBUtils dbu = new DBUtils(getClass());
-                try {
-                    rset = ifStmt.executeQuery();
-                    dbu.watch(rs);
-                    if (rset.next()) {
-                        Timestamp lastPolled = rset.getTimestamp(1);
-                        if (lastPolled != null && rset.wasNull() == false) {
-                            if (log().isDebugEnabled())
-                                log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
-                            NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
-                            m_knownNodes.add(nodeInfo);
-                        }
-                    } else {
+                rset = ifStmt.executeQuery();
+                d.watch(rs);
+                if (rset.next()) {
+                    Timestamp lastPolled = rset.getTimestamp(1);
+                    if (lastPolled != null && rset.wasNull() == false) {
                         if (log().isDebugEnabled())
-                            log().debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
+                            log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                        NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
+                        m_knownNodes.add(nodeInfo);
                     }
-                } finally {
-                    dbu.cleanUp();
+                } else {
+                    if (log().isDebugEnabled())
+                        log().debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
                 }
             }
         } finally {
