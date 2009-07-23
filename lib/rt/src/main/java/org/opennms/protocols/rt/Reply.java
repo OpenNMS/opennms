@@ -29,24 +29,20 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
-
-import java.util.concurrent.Delayed;
+package org.opennms.protocols.rt;
 
 /**
- * Request
- *
+ * A Reply represents a message that comes in from a Messenger service and is
+ * intended to be a response to a previous request.
+ * 
  * @author brozow
  */
-public interface Request<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, ReplyT> extends Delayed {
+public interface Reply<ReqIdT> {
     
-    ReqIdT getId();
     
-    void processError(Throwable t);
-    
-    ReqT processTimeout();
-    
-    void processResponse(ReplyT reply);
-    
+    /**
+     * The id of any request that this is intended to be a reply for.
+     */
+    ReqIdT getRequestId();
 
 }

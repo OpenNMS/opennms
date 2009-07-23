@@ -44,6 +44,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.protocols.rt.Reply;
 
 /**
  * <p>

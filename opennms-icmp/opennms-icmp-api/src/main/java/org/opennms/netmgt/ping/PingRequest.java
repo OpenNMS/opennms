@@ -44,6 +44,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.protocols.rt.Request;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of

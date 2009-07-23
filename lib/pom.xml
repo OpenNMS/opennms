@@ -25,6 +25,7 @@
   <modules>
     <module>joesnmp</module>
     <module>service-registration</module>
+    <module>rt</module>
     <module>sms</module>
     <module>snmp</module>
   </modules>

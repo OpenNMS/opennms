@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.protocols.rt.RequestTracker;
+
 /**
  * 
  * Pinger Design

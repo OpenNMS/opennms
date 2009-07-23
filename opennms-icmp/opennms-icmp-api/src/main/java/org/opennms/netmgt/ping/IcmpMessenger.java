@@ -38,6 +38,7 @@ import java.util.Queue;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.protocols.rt.Messenger;
 
 /**
  * IcmpMessenger

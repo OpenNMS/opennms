@@ -29,20 +29,29 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.protocols.rt;
 
 import java.util.Queue;
 
 
 /**
- * Messengar
+ * A class that represents a simple messaging interface.  This is possibly loss less and does not imply 
+ * guaranteed deliver.  The only real requirements are those implied by the Request and Reply interfaces
  *
  * @author brozow
  */
 public interface Messenger<ReqT, ReplyT> {
     
+    /**
+     * Send a message using the messenger service
+     */
+    public void sendRequest(ReqT request);
+    
+    /**
+     * Start listening for replies and enqueue any replies received to the passed in queue
+     * These replies will be pulled off by users of the service and processed.
+     */
     public void start(Queue<ReplyT> replyQueue);
     
-    public void sendRequest(ReqT request);
 
 }

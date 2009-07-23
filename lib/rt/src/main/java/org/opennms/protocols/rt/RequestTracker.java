@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.protocols.rt;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -49,18 +49,17 @@ import org.apache.log4j.Logger;
 
 /**
  * 
- * Pinger Design
+ * Request Tracker Design
  * 
- * The pinger has four components that are all static
+ * The request tracker has four components that are all static
  * 
- * an icmpSocket
+ * a messenger
  * a pendingRequest map
  * a pendingReply queue (LinkedBlockingQueue)
  * a timeout queue (DelayQueue)
  * 
- * It also has three threads:
+ * It also has two threads:
  * 
- * a thread to read from the icmpSocket - (icmp socket reader)
  * a thread to process the pendingReplyQueue - (icmp reply processor)
  * a thread to process the timeouts (icmp timeout processor)
  * 
@@ -70,18 +69,16 @@ import org.apache.log4j.Logger;
  * are implemented using asynchronous requests and blocking callbacks)
  * 
  * Making a request: (client thread)
- * - create a pingRequest 
+ * - create a request (client does this) 
  * - add it to a pendingRequestMap
- * - send the request
+ * - send the request (via the Messenger)
  * - add it to the timeout queue
  * 
- * Reading from the icmp socket: (icmp socket reader)
- * - read a packet from the socket
- * - construct a reply object 
- * - verify it is an opennms gen'd packet
- * - add it to the pendingReply queue
+ * Replies come from the messenger: 
+ * - the messenger is 'started' by passing in the pendingReplyQueue
+ * - as replies come in there are added to the pingingReplyQueue
  * 
- * Processing a reply: (icmp reply processor)
+ * Processing a reply: (reply processor)
  * - take a reply from the pendingReply queue
  * - look up and remove the matching request in the pendingRequest map
  * - call request.processReply(reply) - this will store the reply and
@@ -99,22 +96,25 @@ import org.apache.log4j.Logger;
  * 
  * Thread Details:
  * 
- * 1.  The icmp socket reader that will listen on the ICMP socket.  It
- *     will pull packets off the socket and construct replies and add
- *     them to a LinkedBlockingQueue
- * 
- * 2.  The icmp reply processor that will pull replies off the linked
+ * 1.  The reply processor that will pull replies off the linked
  *     blocking queue and process them.  This will result in calling the
  *     PingResponseCallback handleReply method.
  * 
- * 3.  The icmp timeout processor that will pull PingRequests off of a
+ * 2.  The timeout processor that will pull PingRequests off of a
  *     DelayQueue.  A DelayQueue does not allow things to be removed from
  *     them until the timeout has expired.
  * 
  */
 
 /**
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * A class for tracking sending and received of arbitrary messages. The
+ * transport mechanism is irrelevant and is encapsulated in the Messenger
+ * request. Timeouts and Retries are handled by this mechanism and provided to
+ * the request object so they can be processed. A request is guaranteed to
+ * have one of its process method called no matter what happens. This makes it
+ * easier to write code because some kind of indication is always provided and
+ * so timing out is not needed in the client.
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, ReplyT extends Reply<ReqIdT>> {
@@ -131,8 +131,10 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
     
 
 	/**
-	 * Initializes this singleton
-	 */
+     * Construct a RequestTracker that sends and received messages using the
+     * indicated messenger. The name is using to name the threads created by
+     * the tracker.
+     */
     public RequestTracker(String name, Messenger<ReqT, ReplyT> messenger) throws IOException {
         
 	    m_pendingRequests = Collections.synchronizedMap(new HashMap<ReqIdT, ReqT>());
@@ -167,6 +169,10 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
 
 	}
     
+    /**
+     * This method starts all the threads that are used to process the
+     * messages and also starts the messenger.
+     */
     public void start() {
         m_messenger.start(m_pendingReplyQueue);
         m_timeoutProcessor.start();
@@ -174,6 +180,11 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
         
     }
 
+    /**
+     * Send a tracked request via the messenger. The request is tracked for
+     * timeouts and retries. Retries are sent if the timeout processing
+     * indicates that they should be.
+     */
     public void sendRequest(ReqT request) throws IOException {
         synchronized(m_pendingRequests) {
             ReqT oldRequest = m_pendingRequests.get(request.getId());

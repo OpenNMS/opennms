@@ -825,6 +825,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
+        <artifactId>org.opennms.lib.rt</artifactId>
+        <version>0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib</groupId>
+        <artifactId>org.opennms.lib.sms</artifactId>
+        <version>0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.joesnmp</artifactId>
         <version>1.7.1</version>
       </dependency>
@@ -1105,12 +1115,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-sms-api</artifactId>
-        <scope>compile</scope>
         <version>${project.version}</version>
       </dependency>
       <dependency>
