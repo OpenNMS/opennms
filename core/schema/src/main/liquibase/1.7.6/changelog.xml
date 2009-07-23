@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+  <changeSet author="rangerrick" id="1.7.6-changePhysAddrColumns">
+    <modifyColumn tableName="snmpinterface">
+      <column name="snmpphysaddr" type="varchar(32)" />
+    </modifyColumn>
+    <modifyColumn tableName="atinterface">
+      <column name="atphysaddr" type="varchar(32)" />
+    </modifyColumn>
+
+    <rollback>
+      <modifyColumn tableName="snmpinterface">
+        <column name="snmpphysaddr" type="varchar(16)" />
+      </modifyColumn>
+      <modifyColumn tableName="atinterface">
+        <column name="atphysaddr" type="varchar(16)" />
+      </modifyColumn>
+    </rollback>
+    
+  </changeSet>
+
+</databaseChangeLog>
