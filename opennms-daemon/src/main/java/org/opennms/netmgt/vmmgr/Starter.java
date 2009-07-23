@@ -204,6 +204,12 @@ public class Starter {
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
         }
+        
+        if (props.containsKey("networkaddress.cache.ttl")) {
+            java.security.Security.setProperty("networkaddress.cache.ttl", props.getProperty("networkaddress.cache.ttl"));
+        } else {
+            java.security.Security.setProperty("networkaddress.cache.ttl", "120");
+        }
     }
 
     /**
