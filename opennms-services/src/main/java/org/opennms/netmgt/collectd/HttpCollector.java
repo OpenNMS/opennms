@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jul 23: Actually use URL parameters (bug 3266) - jeffg@opennms.org
 // 2008 Dec 25: Make HttpCollectionSet have many HttpCollectionResources
 //              so that all resources get properly persisted when a collection
 //              has many URIs, without re-breaking storeByGroup for this
@@ -18,8 +19,6 @@
 //              org.opennms.netmgt.config.datacollection to
 //              org.opennms.netmgt.config.httpdatacollection. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
