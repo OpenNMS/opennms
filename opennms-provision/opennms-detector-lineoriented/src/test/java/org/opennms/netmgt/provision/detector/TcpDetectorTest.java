@@ -34,7 +34,8 @@ public class TcpDetectorTest implements ApplicationContextAware {
     public void setUp() throws Exception {
         m_detector  = getDetector(TcpDetector.class);
         m_detector.setServiceName("TCP");
-        m_detector.setTimeout(1000);
+        m_detector.setTimeout(100000);
+        m_detector.setBanner("this is a Bogus Banner");
         m_detector.init();
     }
     
@@ -50,7 +51,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         m_server = new SimpleServer() {
             
             public void onInit() {
-               setBanner("Winner");
+               setBanner("this is a Bogus Banner");
             }
             
         };

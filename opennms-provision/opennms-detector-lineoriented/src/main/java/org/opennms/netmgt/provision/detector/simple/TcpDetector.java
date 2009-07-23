@@ -34,6 +34,8 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +45,9 @@ public class TcpDetector extends AsyncLineOrientedDetector {
 
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
-
+    
+    private String m_banner = null;
+    
     /**
      * Default constructor
      */
@@ -62,7 +66,36 @@ public class TcpDetector extends AsyncLineOrientedDetector {
     }
 
     public void onInit() {
-        expectBanner(find("\\w"));
+        expectBanner(matches(getBanner()));
+    }
+    
+    public ResponseValidator<LineOrientedResponse> matches(final String regex){
+        return new ResponseValidator<LineOrientedResponse>() {
+
+            public boolean validate(LineOrientedResponse response) {
+                
+                if(regex == null){
+                    return true;
+                }
+                
+                return response.matches(regex + addCRLF());
+            }
+
+            private String addCRLF() {
+                
+                return "\r\n";
+            }
+          
+            
+        };
+    }
+
+    public void setBanner(String banner) {
+        m_banner = banner;
+    }
+
+    public String getBanner() {
+        return m_banner;
     }
     
 }
