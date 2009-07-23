@@ -159,7 +159,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_netMask = snmpipadentnetmask;
     }
 
-    @Column(name = "snmpPhysAddr", length = 12)
+    @Column(name = "snmpPhysAddr", length = 32)
     public String getPhysAddr() {
         return m_physAddr;
     }
