@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-mina</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Mina</name>
+  <name>OpenNMS Mina Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the apache mina library
