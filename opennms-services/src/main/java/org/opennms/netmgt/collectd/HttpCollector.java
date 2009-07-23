@@ -67,6 +67,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpVersion;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -85,6 +86,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
+import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -526,13 +528,46 @@ public class HttpCollector implements ServiceCollector {
     private HttpMethod buildHttpMethod(final HttpCollectionSet collectionSet) throws URIException {
         HttpMethod method;
         if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
-            method = new GetMethod();
+            method = buildGetMethod(collectionSet);
         } else {
-            method = new PostMethod();
+            method = buildPostMethod(collectionSet);
         }
         method.setURI(buildUri(collectionSet));
 
         return method;
+    }
+    
+    private PostMethod buildPostMethod(final HttpCollectionSet collectionSet) {
+        PostMethod method = new PostMethod();
+        NameValuePair[] postParams = buildRequestParameters(collectionSet);
+        if (postParams.length > 0) {
+            method.setRequestBody(postParams);
+        }
+        return method;
+    }
+    
+    private GetMethod buildGetMethod(final HttpCollectionSet collectionSet) {
+        GetMethod method = new GetMethod();
+        NameValuePair[] queryParams = buildRequestParameters(collectionSet);
+        if (queryParams.length > 0) {
+            method.setQueryString(queryParams);
+        }
+        return method;
+    }
+    
+    private NameValuePair[] buildRequestParameters(final HttpCollectionSet collectionSet) {
+        NameValuePair[] nvpArray = {};
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        if (collectionSet.getUriDef().getUrl().getParameters() == null)
+            return nvpArray;
+        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
+        if (parameters.size() > 0) {
+            nvps = new ArrayList<NameValuePair>();
+            for (Parameter p : parameters) {
+                nvps.add(new NameValuePair(p.getKey(), p.getValue()));
+            }
+        }
+        return nvps.toArray(nvpArray);
     }
 
     private URI buildUri(final HttpCollectionSet collectionSet) throws URIException {
