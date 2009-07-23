@@ -54,8 +54,10 @@ import java.util.TreeMap;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.web.asset.AssetModel;
 
 public class CategoryModel extends Object {
     /** The name of the category that includes all services and nodes. */
@@ -204,10 +206,13 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             PreparedStatement stmt = conn.prepareStatement("select getManagePercentAvailNodeWindow(?, ?, ?) as avail");
+            d.watch(stmt);
 
             stmt.setInt(1, nodeId);
             // yes, these are supposed to be backwards, the end time first
@@ -215,12 +220,13 @@ public class CategoryModel extends Object {
             stmt.setTimestamp(3, new Timestamp(start.getTime()));
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return avail;
@@ -263,9 +269,11 @@ public class CategoryModel extends Object {
         double avail = -1;
         int nodeid = 0;
         Map<Integer, Double> retMap = new TreeMap<Integer, Double>();
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
         	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
         	Iterator it = nodeIds.iterator();
         	while (it.hasNext()){
@@ -276,12 +284,14 @@ public class CategoryModel extends Object {
         	}
         	sb.append(")");
             PreparedStatement stmt = conn.prepareStatement(sb.toString());
+            d.watch(stmt);
             
             // yes, these are supposed to be backwards, the end time first
             stmt.setTimestamp(1, new Timestamp(end.getTime()));
             stmt.setTimestamp(2, new Timestamp(start.getTime()));
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
             	nodeid = rs.getInt(1);
@@ -289,7 +299,7 @@ public class CategoryModel extends Object {
                 retMap.put(new Integer(nodeid), new Double(avail));
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return retMap;
@@ -334,10 +344,13 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("select getManagePercentAvailIntfWindow(?, ?, ?, ?) as avail");
+            d.watch(stmt);
 
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
@@ -346,12 +359,13 @@ public class CategoryModel extends Object {
             stmt.setTimestamp(4, new Timestamp(start.getTime()));
 
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return avail;
@@ -394,11 +408,14 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ipinterface.ismanaged='M' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
-
+            d.watch(stmt);
+            
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setInt(3, serviceId);
@@ -410,12 +427,13 @@ public class CategoryModel extends Object {
             stmt.setInt(8, serviceId);
 
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return avail;

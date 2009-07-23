@@ -198,7 +198,7 @@ public class OnmsArpInterface implements Serializable {
         m_ipAddress = ipaddr;
     }
     
-    @Column(name="atPhysAddr", length=12)
+    @Column(name="atPhysAddr", length=32)
     public String getPhysAddr() {
         return m_physAddr;
     }
