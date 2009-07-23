@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-spring-security</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Spring Security</name>
+  <name>OpenNMS Spring Security Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the Spring Security library.

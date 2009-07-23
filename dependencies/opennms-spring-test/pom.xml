@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-spring-test</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Spring Test Jars</name>
+  <name>OpenNMS Spring Test Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the spring library.
