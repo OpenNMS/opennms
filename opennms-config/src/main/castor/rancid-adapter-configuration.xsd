@@ -10,8 +10,8 @@
     <documentation>XML Schema for the rancid-configuration.xml configuration file. Version: $Id$</documentation>
   </annotation>
    
- <import namespace="http://xmlns.opennms.org/xsd/types"
-          schemaLocation="types.xsd"/>
+  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
+
   <element name="rancid-configuration">
 	    <annotation>
 	        <documentation>Top-level element for the rancid-configuration.xml configuration file.</documentation>
