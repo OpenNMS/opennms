@@ -11,8 +11,7 @@
 			file
 		</documentation>
 	</annotation>
-	<import namespace="http://xmlns.opennms.org/xsd/types"
-		schemaLocation="types.xsd" />
+	<import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd" />
 
 	<element name="nsclient-datacollection-config">
 		<complexType>

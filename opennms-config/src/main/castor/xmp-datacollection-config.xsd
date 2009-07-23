@@ -13,8 +13,7 @@
     configuration file. Version: $Id: xmp-datacollection-config.xsd 21 2008-07-22 20:21:56Z rdk $</documentation>
   </annotation>
 
-  <import namespace="http://xmlns.opennms.org/xsd/types"
-          schemaLocation="types.xsd"/>
+  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
           
   <element name="xmp-datacollection-config">
     <annotation>
