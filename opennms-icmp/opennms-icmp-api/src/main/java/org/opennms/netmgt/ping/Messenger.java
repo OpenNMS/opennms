@@ -31,13 +31,18 @@
  */
 package org.opennms.netmgt.ping;
 
+import java.util.Queue;
+
+
 /**
- * Reply
+ * Messengar
  *
  * @author brozow
  */
-public interface Reply<ReqIdT> {
+public interface Messenger<ReqT, ReplyT> {
     
-    ReqIdT getRequestId();
+    public void start(Queue<ReplyT> replyQueue);
+    
+    public void sendRequest(ReqT request);
 
 }

@@ -32,12 +32,13 @@
 package org.opennms.netmgt.ping;
 
 /**
- * Reply
+ * PingConstants
  *
  * @author brozow
  */
-public interface Reply<ReqIdT> {
+public interface PingConstants {
     
-    ReqIdT getRequestId();
+    public static final int DEFAULT_RETRIES = 2;
+    public static final int DEFAULT_TIMEOUT = 800;
 
 }

@@ -31,13 +31,22 @@
  */
 package org.opennms.netmgt.ping;
 
+import java.util.concurrent.Delayed;
+
 /**
- * Reply
+ * Request
  *
  * @author brozow
  */
-public interface Reply<ReqIdT> {
+public interface Request<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, ReplyT> extends Delayed {
     
-    ReqIdT getRequestId();
+    ReqIdT getId();
+    
+    void processError(Throwable t);
+    
+    ReqT processTimeout();
+    
+    void processResponse(ReplyT reply);
+    
 
 }
