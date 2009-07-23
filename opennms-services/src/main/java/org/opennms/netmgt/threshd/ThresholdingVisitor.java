@@ -125,9 +125,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     //The name of the service being thresholded (SNMP, NSClient etc)
     private String m_serviceName;
     
-    //Fetched from the db and stored here, if this Visitor is in use on an interface
-    private String m_snmpIfIndex;
-    
     //The last success status of thresholding; used to know if status has changed and events should be generated
     private boolean m_success = true; //Default to true at the start (we assume thresholding was working when OpenNMS starts up) 
 
@@ -321,7 +318,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     private String getIfInfo(int nodeid, String ifLabel, String attributeName) {
-        return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel).get(attributeName);
+        return getIfInfoMap(nodeid,ifLabel).get(attributeName);
+    }
+    
+    private Map<String,String> getIfInfoMap(int nodeid, String ifLabel) {
+    	return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel);
     }
     
     public void completeResource(CollectionResource resource) {
@@ -336,17 +337,15 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         for (ThresholdGroup thresholdGroup : m_thresholdGroupList) {
             // Find the appropriate ThresholdEntity map to use based on the type of
             // CollectionResource we're looking at
+        	final String ifLabel = resource.getResourceDir(m_repository).getName();
+        	final String resourceType = resource.getResourceTypeName();
             Map<String, Set<ThresholdEntity>> entityMap;
-            String resourceType = resource.getResourceTypeName();
-            String ifLabel = null;
+            boolean typeInterface = false;
             if ("node".equals(resourceType)) {
                 entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
             } else if ("if".equals(resourceType)) {
                 entityMap = thresholdGroup.getIfResourceType().getThresholdMap();
-                ifLabel = resource.getResourceDir(m_repository).getName();
-                if (m_snmpIfIndex == null) {
-                    m_snmpIfIndex = this.getIfInfo(m_nodeId, ifLabel, "snmpifindex");
-                }
+                typeInterface = true;
             } else {
                 Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
                 if (typeMap == null) {
@@ -364,7 +363,35 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             // Now look at each
             for(String key : entityMap.keySet()) {
             	for (ThresholdEntity threshold : entityMap.get(key)) {
-            	    
+           	    
+                   // Match up the threshold to the working RRD repo for the given snmp interface. (The 
+                   // interface may be un-numbered, so this value cannot be cached.)
+                   String snmpIfIndex;
+                   String interfaceAddr;
+                   if(typeInterface) {
+                           Map<String,String> ifiMap = this.getIfInfoMap(m_nodeId, ifLabel);
+                           if(null == ifiMap) {
+                                   log().info("Could not get data interface information for '" + ifLabel + "'.  Not evaluating threshold.");
+                                   continue;
+                           }
+ 
+                           snmpIfIndex = ifiMap.get("snmpifindex");
+                           interfaceAddr = ifiMap.get("ipaddr");
+                           
+                           // Don't threshold the loopback interface on the router, or on invalid interfaces!
+                           try {
+                                   if(null == snmpIfIndex)
+                                           continue;
+                                   if(Integer.parseInt(snmpIfIndex) < 0)
+                                           continue;
+                           } catch(Exception e) {
+                                   continue;
+                           }
+                   } else {
+                           snmpIfIndex = this.getIfInfo(m_nodeId, ifLabel, "snmpifindex");
+                           interfaceAddr = m_hostAddress;
+                   }
+
 	                if (passedThresholdFilters(resourceDir, thresholdGroup.getName(), threshold.getDatasourceType(), threshold)) {
 	                    log().info("Processing threshold "+key+ " : " +threshold);
 	                    
@@ -394,7 +421,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 	                            log().info("No datasource label found in CollectionSet, fetching from storage");
 	                            dsLabelValue= getDataSourceLabelFromFile(resourceDir, threshold);
 	                        }
-	                        completeEventList(thresholdEvents, ifLabel, m_snmpIfIndex, dsLabelValue); //Finishes off events with details that a ThresholdEntity shouldn't know
+	                        completeEventList(thresholdEvents, ifLabel, snmpIfIndex, dsLabelValue, interfaceAddr); //Finishes off events with details that a ThresholdEntity shouldn't know
 	                        eventsList.addAll(thresholdEvents);
 	                    }
 	                } else {
@@ -504,13 +531,17 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             log.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_hostAddress + "/" + m_serviceName);
     }
      
-    private void completeEventList(List<Event> eventList, String ifLabel, String snmpifIndex, String dsLabelValue) {
+    private void completeEventList(List<Event> eventList, String ifLabel, String snmpifIndex, String dsLabelValue, String ifAddress) {
         for (Event event : eventList) {
             // create the event to be sent
             event.setNodeid(m_nodeId);
             event.setService(m_serviceName);
+            
             // Set event interface
-            event.setInterface(m_hostAddress);
+            if(null != ifAddress)
+            	event.setInterface(ifAddress);
+            else
+            	event.setInterface(m_hostAddress);
 
             // Add appropriate parms
             Parms eventParms = event.getParms();
@@ -540,12 +571,12 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             }
     
             
-            if (m_snmpIfIndex != null) {
+            if (snmpifIndex != null) {
                 // Add ifIndex
                 eventParm = new Parm();
                 eventParm.setParmName("ifIndex");
                 parmValue = new Value();
-                parmValue.setContent(m_snmpIfIndex);
+                parmValue.setContent(snmpifIndex);
                 eventParm.setValue(parmValue);
                 eventParms.addParm(eventParm);
             }
