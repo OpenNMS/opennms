@@ -8,9 +8,7 @@
 	xmlns:ns2="http://www.w3.org/1999/xhtml"
 	xmlns:ns="http://www.w3.org/2001/XMLSchema"
 	xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-	<import namespace="http://xmlns.opennms.org/xsd/types"
-		schemaLocation="http://xmlns.opennms.org/xsd/types">
-	</import>
+	<import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
 	<annotation>
 		<documentation>
 			XML Schema for the wmi-config.xml configuration file.
@@ -31,7 +29,7 @@
             				(retries, timeouts...)</documentation>
           			</annotation>
         		</element>
-      		</sequence>		
+      		</sequence>		
 			<attribute name="timeout" type="int" use="optional">
 				<annotation>
 					<documentation>

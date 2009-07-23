@@ -10,8 +10,7 @@
     Version: $Id$.</documentation>
   </annotation>
 
-  <import namespace="http://xmlns.opennms.org/xsd/types"
-          schemaLocation="types.xsd"/>
+  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
           
   <complexType name="configuration">
     <attribute name="port" use="optional">
