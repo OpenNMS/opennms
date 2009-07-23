@@ -57,10 +57,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.IPSorter;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -115,21 +114,22 @@ public class NetworkElementFactory {
      */
     public static String getNodeLabel(int nodeId) throws SQLException {
         String label = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT NODELABEL FROM NODE WHERE NODEID = ?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 label = rs.getString("NODELABEL");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return (label);
@@ -137,12 +137,16 @@ public class NetworkElementFactory {
 
     public static Node getNode(int nodeId) throws SQLException {
         Node node = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID = ?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Node[] nodes = rs2Nodes(rs);
 
@@ -150,11 +154,8 @@ public class NetworkElementFactory {
             if (nodes.length > 0) {
                 node = nodes[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return node;
@@ -165,18 +166,20 @@ public class NetworkElementFactory {
      */
     public static Node[] getAllNodes() throws SQLException {
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
+            
             ResultSet rs = stmt.executeQuery("SELECT * FROM NODE WHERE NODETYPE != 'D' ORDER BY NODELABEL");
+            d.watch(rs);
 
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -193,23 +196,24 @@ public class NetworkElementFactory {
 
         Node[] nodes = null;
         nodeLabel = nodeLabel.toLowerCase();
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(nodeLabel);
             buffer.append("%");
 
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE LOWER(NODELABEL) LIKE ? AND NODETYPE != 'D' ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setString(1, buffer.toString());
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -224,19 +228,21 @@ public class NetworkElementFactory {
         }
 
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT node.* FROM NODE, IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND IPINTERFACE.ISMANAGED != 'D' AND node.NODETYPE != 'D' ORDER BY node.NODELABEL");
+            d.watch(stmt);
             stmt.setString(1, iplike);
+
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -247,19 +253,21 @@ public class NetworkElementFactory {
      */
     public static Node[] getNodesWithService(int serviceId) throws SQLException {
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT NODEID FROM IFSERVICES WHERE SERVICEID=?) AND NODETYPE != 'D' ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setInt(1, serviceId);
+
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -270,9 +278,11 @@ public class NetworkElementFactory {
      */
     public static Node[] getNodesWithPhysAddr(String macAddr) throws SQLException {
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(macAddr);
             buffer.append("%");
@@ -282,16 +292,16 @@ public class NetworkElementFactory {
             		"(nodeid IN (SELECT nodeid FROM snmpinterface WHERE snmpphysaddr LIKE ? ) OR " +
 					" nodeid IN (SELECT nodeid FROM atinterface WHERE atphysaddr LIKE ? )) " +
             		"ORDER BY nodelabel");
+        	d.watch(stmt);
             stmt.setString(1, buffer.toString());
             stmt.setString(2, buffer.toString());
+
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -309,9 +319,11 @@ public class NetworkElementFactory {
 		}
 
 		Node[] nodes = null;
-		Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
 		try {
+	        Connection conn = Vault.getDbConnection();
+	        d.watch(conn);
+	        
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(macAddr);
             buffer.append("%");
@@ -319,16 +331,15 @@ public class NetworkElementFactory {
             PreparedStatement stmt = conn
 					.prepareStatement("SELECT DISTINCT * FROM node WHERE nodetype != 'D' " +
 							"AND nodeid IN (SELECT nodeid FROM atinterface WHERE atphysaddr LIKE '% ? %') ORDER BY nodelabel");
-
+            d.watch(stmt);
+            
 			stmt.setString(1, buffer.toString());
 			ResultSet rs = stmt.executeQuery();
-
+			d.watch(rs);
+			
 			nodes = rs2Nodes(rs);
-
-			rs.close();
-			stmt.close();
 		} finally {
-			Vault.releaseDbConnection(conn);
+		    d.cleanUp();
 		}
 
 		return nodes;
@@ -345,9 +356,11 @@ public class NetworkElementFactory {
 		}
 
 		Node[] nodes = null;
-		Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
 		try {
+	        Connection conn = Vault.getDbConnection();
+	        d.watch(conn);
+	        
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(macAddr);
             buffer.append("%");
@@ -355,16 +368,15 @@ public class NetworkElementFactory {
 			PreparedStatement stmt = conn
 					.prepareStatement("SELECT DISTINCT * FROM node WHERE nodetype != 'D' AND " +
 							"nodeid IN (SELECT nodeid FROM snmpinterface WHERE snmpphysaddr LIKE '% ? %') ORDER BY nodelabel");
-
+			d.watch(stmt);
 			stmt.setString(1, buffer.toString());
+
 			ResultSet rs = stmt.executeQuery();
-
+			d.watch(rs);
+			
 			nodes = rs2Nodes(rs);
-
-			rs.close();
-			stmt.close();
 		} finally {
-			Vault.releaseDbConnection(conn);
+		    d.cleanUp();
 		}
 
 		return nodes;
@@ -379,24 +391,25 @@ public class NetworkElementFactory {
      */
     public static Node[] getNodesWithIfAlias(String ifAlias) throws SQLException {
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(ifAlias);
             buffer.append("%");
 
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT SNMPINTERFACE.NODEID FROM SNMPINTERFACE,IPINTERFACE WHERE SNMPINTERFACE.SNMPIFALIAS ILIKE ? AND SNMPINTERFACE.SNMPIFINDEX=IPINTERFACE.IFINDEX AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID AND IPINTERFACE.ISMANAGED != 'D') AND NODETYPE != 'D' ORDER BY NODELABEL");
+            d.watch(stmt);
+            stmt.setString(1, buffer.toString());
 
-	    stmt.setString(1, buffer.toString());
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -412,21 +425,21 @@ public class NetworkElementFactory {
         }
 
         String hostname = ipAddress;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT IPADDR, IPHOSTNAME FROM IPINTERFACE WHERE IPADDR=? AND IPHOSTNAME IS NOT NULL");
+            d.watch(stmt);
             stmt.setString(1, ipAddress);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             if (rs.next()) {
                 hostname = rs.getString("IPHOSTNAME");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return hostname;
@@ -434,17 +447,17 @@ public class NetworkElementFactory {
 
     public static Interface getInterface(int ipInterfaceId) throws SQLException {
         Interface intf = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE ID = ?");
+            d.watch(stmt);
             stmt.setInt(1, ipInterfaceId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Interface[] intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
@@ -453,7 +466,7 @@ public class NetworkElementFactory {
                 intf = intfs[0];
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intf;
@@ -465,18 +478,18 @@ public class NetworkElementFactory {
         }
 
         Interface intf = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND IPADDR=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             Interface[] intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
@@ -485,7 +498,7 @@ public class NetworkElementFactory {
                 intf = intfs[0];
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intf;
@@ -497,20 +510,20 @@ public class NetworkElementFactory {
         }
 
         Interface intf = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND IPADDR=? AND IFINDEX=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             stmt.setInt(3, ifindex);
 
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             Interface[] intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
@@ -519,7 +532,7 @@ public class NetworkElementFactory {
                 intf = intfs[0];
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intf;
@@ -531,22 +544,22 @@ public class NetworkElementFactory {
         }
 
         Interface[] intfs = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE IPADDR=?");
+            d.watch(stmt);
             stmt.setString(1, ipAddress);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intfs;
@@ -569,33 +582,34 @@ public class NetworkElementFactory {
         }
 
         Interface[] intfs = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(ifAlias);
             buffer.append("%");
 
-            PreparedStatement stmt = conn.prepareStatement("");
-	    if(nodeId > 0) {
-      		stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE ? AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
-            stmt.setInt(1, nodeId);
-	    stmt.setString(2, buffer.toString());
-	    } else {
+            PreparedStatement stmt = null;
+            if(nodeId > 0) {
+                stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE ? AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
+                d.watch(stmt);
+                stmt.setInt(1, nodeId);
+                stmt.setString(2, buffer.toString());
+            } else {
                 stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE IPINTERFACE.IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE ? AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND IPINTERFACE.ISMANAGED != 'D' ORDER BY IPINTERFACE.NODEID");
-	    stmt.setString(1, buffer.toString());
-	    }
+                d.watch(stmt);
+                stmt.setString(1, buffer.toString());
+            }
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intfs;
@@ -615,22 +629,21 @@ public class NetworkElementFactory {
         boolean hasAliases = false;
 
         if (nodeId > 0) {
-            Connection conn = Vault.getDbConnection();
-
+            final DBUtils d = new DBUtils(NetworkElementFactory.class);
             try {
-               PreparedStatement stmt = conn.prepareStatement("SELECT ID FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE '%_%' AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+                PreparedStatement stmt = conn.prepareStatement("SELECT ID FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE '%_%' AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
+                d.watch(stmt);
                 stmt.setInt(1, nodeId);
                 ResultSet rs = stmt.executeQuery();
-
+                d.watch(rs);
+                
                 if (rs.next()) {
                     hasAliases = true;
                 }
-
-                rs.close();
-                stmt.close();
-
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
 
@@ -639,21 +652,21 @@ public class NetworkElementFactory {
 
     public static Interface[] getAllInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intfs;
@@ -661,21 +674,21 @@ public class NetworkElementFactory {
 
     public static Interface[] getActiveInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D' ORDER BY IFINDEX");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             augmentInterfacesWithSnmpData(intfs, conn);
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intfs;
@@ -695,22 +708,22 @@ public class NetworkElementFactory {
      */
     public static Interface[] getAllInterfaces(boolean includeSNMP) throws SQLException {
         Interface[] intfs = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE ORDER BY IPHOSTNAME, NODEID, IPADDR");
-
+            d.watch(rs);
+            
             intfs = rs2Interfaces(rs);
-
-            rs.close();
-            stmt.close();
 
             if(includeSNMP) {
                 augmentInterfacesWithSnmpData(intfs, conn);
             }            
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return intfs;
@@ -733,19 +746,22 @@ public class NetworkElementFactory {
         }
 
         Service service = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             // big hack here, I'm relying on the fact that the ifservices.status
             // field uses 'A' as active, and thus should always turn up before
             // any
             // historically deleted services
             PreparedStatement stmt = conn.prepareStatement("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.NODEID=? AND IFSERVICES.IPADDR=? AND IFSERVICES.SERVICEID=? ORDER BY IFSERVICES.STATUS");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             stmt.setInt(3, serviceId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             Service[] services = rs2Services(rs);
 
             // only take the first service, which should be the active service,
@@ -757,11 +773,8 @@ public class NetworkElementFactory {
             if (services.length > 0) {
                 service = services[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return service;
@@ -779,16 +792,19 @@ public class NetworkElementFactory {
      */
     public static Service getService(int ifServiceId) throws SQLException {
         Service service = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             // big hack here, I'm relying on the fact that the ifservices.status
             // field uses 'A' as active, and thus should always turn up before
             // any
             // historically deleted services
             PreparedStatement stmt = conn.prepareStatement("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.ID=? ORDER BY IFSERVICES.STATUS");
+            d.watch(stmt);
             stmt.setInt(1, ifServiceId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Service[] services = rs2Services(rs);
 
@@ -801,11 +817,8 @@ public class NetworkElementFactory {
             if (services.length > 0) {
                 service = services[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return service;
@@ -813,18 +826,18 @@ public class NetworkElementFactory {
 
     public static Service[] getAllServices() throws SQLException {
         Service[] services = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID = SERVICE.SERVICEID ORDER BY SERVICE.SERVICEID, inet(IFSERVICES.IPADDR)");
-
+            d.watch(rs);
+            
             services = rs2Services(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return services;
@@ -840,9 +853,10 @@ public class NetworkElementFactory {
         }
 
         Service[] services = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer buffer = new StringBuffer("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.NODEID=? AND IFSERVICES.IPADDR=?");
 
             if (!includeDeletions) {
@@ -850,16 +864,15 @@ public class NetworkElementFactory {
             }
 
             PreparedStatement stmt = conn.prepareStatement(buffer.toString());
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddress);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             services = rs2Services(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return services;
@@ -870,19 +883,19 @@ public class NetworkElementFactory {
      */
     public static Service[] getServicesOnNode(int nodeId) throws SQLException {
         Service[] services = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.NODEID=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             services = rs2Services(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return services;
@@ -893,20 +906,20 @@ public class NetworkElementFactory {
      */
     public static Service[] getServicesOnNode(int nodeId, int serviceId) throws SQLException {
         Service[] services = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID=SERVICE.SERVICEID AND IFSERVICES.NODEID=? AND IFSERVICES.SERVICEID=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             stmt.setInt(2, serviceId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             services = rs2Services(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return services;
@@ -1002,43 +1015,48 @@ public class NetworkElementFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         for (int i = 0; i < intfs.length; i++) {
             if (intfs[i].getIfIndex() != 0) {
-                PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID=? AND SNMPIFINDEX=?");
-                pstmt.setInt(1, intfs[i].getNodeId());
-                pstmt.setInt(2, intfs[i].getIfIndex());
+                PreparedStatement pstmt;
+                ResultSet rs;
+                try {
+                    pstmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID=? AND SNMPIFINDEX=?");
+                    d.watch(pstmt);
+                    pstmt.setInt(1, intfs[i].getNodeId());
+                    pstmt.setInt(2, intfs[i].getIfIndex());
 
-                ResultSet rs = pstmt.executeQuery();
+                    rs = pstmt.executeQuery();
+                    d.watch(rs);
+                    
+                    if (rs.next()) {
+                        intfs[i].m_snmpIfIndex = rs.getInt("snmpifindex");
+                        intfs[i].m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
+                        intfs[i].m_snmpPhysAddr = rs.getString("snmpPhysAddr");
+                        intfs[i].m_snmpIfDescr = rs.getString("snmpIfDescr");
+                        intfs[i].m_snmpIfName = rs.getString("snmpIfName");
+                        intfs[i].m_snmpIfType = rs.getInt("snmpIfType");
+                        intfs[i].m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
+                        intfs[i].m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
+                        intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
+                        intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
+                    }
 
-                if (rs.next()) {
-                    intfs[i].m_snmpIfIndex = rs.getInt("snmpifindex");
-                    intfs[i].m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
-                    intfs[i].m_snmpPhysAddr = rs.getString("snmpPhysAddr");
-                    intfs[i].m_snmpIfDescr = rs.getString("snmpIfDescr");
-                    intfs[i].m_snmpIfName = rs.getString("snmpIfName");
-                    intfs[i].m_snmpIfType = rs.getInt("snmpIfType");
-                    intfs[i].m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
-                    intfs[i].m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
-                    intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
-                    intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
+                    pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=? AND ipaddr=?");
+                    d.watch(pstmt);
+                    pstmt.setInt(1, intfs[i].getNodeId());
+                    pstmt.setInt(2, intfs[i].getIfIndex());
+                    pstmt.setString(3, intfs[i].getIpAddress());
+
+                    rs = pstmt.executeQuery();
+                    d.watch(rs);
+
+                    if (rs.next()) {
+                        intfs[i].m_isSnmpPrimary = rs.getString("issnmpprimary");
+                    }
+                } finally {
+                    d.cleanUp();
                 }
-
-                rs.close();
-                pstmt.close();
-
-                pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=? AND ipaddr=?");
-                pstmt.setInt(1, intfs[i].getNodeId());
-                pstmt.setInt(2, intfs[i].getIfIndex());
-		pstmt.setString(3, intfs[i].getIpAddress());
-
-                rs = pstmt.executeQuery();
-
-                if (rs.next()) {
-                    intfs[i].m_isSnmpPrimary = rs.getString("issnmpprimary");
-                }
-
-                rs.close();
-                pstmt.close();
             }
         }
     }
@@ -1131,12 +1149,15 @@ public class NetworkElementFactory {
     protected static void createServiceIdNameMaps() throws SQLException {
         HashMap<Integer, String> idMap = new HashMap<Integer, String>();
         HashMap<String, Integer> nameMap = new HashMap<String, Integer>();
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery("SELECT SERVICEID, SERVICENAME FROM SERVICE");
-
+            d.watch(rs);
+            
             while (rs.next()) {
                 int id = rs.getInt("SERVICEID");
                 String name = rs.getString("SERVICENAME");
@@ -1144,11 +1165,8 @@ public class NetworkElementFactory {
                 idMap.put(new Integer(id), name);
                 nameMap.put(name, new Integer(id));
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         serviceId2NameMap = idMap;
@@ -1165,27 +1183,27 @@ public class NetworkElementFactory {
 
         Node[] nodes = null;
         nodeLabel = nodeLabel.toLowerCase();
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(nodeLabel);
             buffer.append("%");
 
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) AND NODETYPE != 'D' AND LOWER(NODELABEL) LIKE ? AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODE.NODEID=IPINTERFACE.NODEID ORDER BY NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) AND NODETYPE != 'D' AND LOWER(NODELABEL) LIKE ? AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODE.NODEID=IPINTERFACE.NODEID ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setInt(1, serviceId);
             stmt.setString(2, buffer.toString());
             stmt.setString(3, iplike);
 
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = NetworkElementFactory.rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1199,25 +1217,25 @@ public class NetworkElementFactory {
 
         Node[] nodes = null;
         nodeLabel = nodeLabel.toLowerCase();
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             StringBuffer buffer = new StringBuffer("%");
             buffer.append(nodeLabel);
             buffer.append("%");
 
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM NODE WHERE LOWER(NODELABEL) LIKE ? AND NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE LOWER(NODELABEL) LIKE ? AND NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setString(1, buffer.toString());
             stmt.setInt(2, serviceId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = NetworkElementFactory.rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1230,21 +1248,20 @@ public class NetworkElementFactory {
         }
 
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT DISTINCT * FROM NODE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT * FROM NODE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setString(1, iplike);
             stmt.setInt(2, serviceId);
             ResultSet rs = stmt.executeQuery();
-
+            d.watch(rs);
+            
             nodes = NetworkElementFactory.rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1252,19 +1269,19 @@ public class NetworkElementFactory {
 
     public static Node[] getAllNodes(int serviceId) throws SQLException {
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM NODE WHERE NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODETYPE != 'D' AND NODEID IN (SELECT DISTINCT NODEID FROM IFSERVICES WHERE SERVICEID = ?) ORDER BY NODELABEL");
+            d.watch(stmt);
             stmt.setInt(1, serviceId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = NetworkElementFactory.rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1278,19 +1295,19 @@ public class NetworkElementFactory {
         }
 
         AtInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM ATINTERFACE WHERE ATPHYSADDR LIKE '%"
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ATINTERFACE WHERE ATPHYSADDR LIKE '%"
                             + AtPhysAddr + "%' AND STATUS != 'D'");
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2AtInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1304,20 +1321,20 @@ public class NetworkElementFactory {
         }
 
         Node[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT DISTINCT(*) FROM IPINTERFACE WHERE NODEID IN "
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(*) FROM IPINTERFACE WHERE NODEID IN "
                             + "(SELECT NODEID FROM ATINTERFACE WHERE ATPHYSADDR LIKE '%"
                             + AtPhysAddr + "%' AND STATUS != 'D'");
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = NetworkElementFactory.rs2Nodes(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1332,20 +1349,20 @@ public class NetworkElementFactory {
 
         AtInterface[] nodes = null;
         AtInterface node = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM ATINTERFACE WHERE NODEID = ? AND IPADDR = ? AND STATUS != 'D'");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ATINTERFACE WHERE NODEID = ? AND IPADDR = ? AND STATUS != 'D'");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             stmt.setString(2, ipaddr);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2AtInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         if (nodes.length > 0) {
             return nodes[0];
@@ -1356,19 +1373,19 @@ public class NetworkElementFactory {
     public static IpRouteInterface[] getIpRoute(int nodeID) throws SQLException {
 
         IpRouteInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2IpRouteInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1378,20 +1395,20 @@ public class NetworkElementFactory {
             throws SQLException {
 
         IpRouteInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND ROUTEIFINDEX = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND ROUTEIFINDEX = ? AND STATUS != 'D' ORDER BY ROUTEDEST");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             stmt.setInt(2, ifindex);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2IpRouteInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1399,24 +1416,24 @@ public class NetworkElementFactory {
 
     public static boolean isParentNode(int nodeID) throws SQLException {
 
-        Connection conn = Vault.getDbConnection();
         boolean isPN = false;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT COUNT(*) FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D' ");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D' ");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             rs.next();
             int count = rs.getInt(1);
 
             if (count > 0) {
                 isPN = true;
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return isPN;
@@ -1424,24 +1441,24 @@ public class NetworkElementFactory {
 
     public static boolean isBridgeNode(int nodeID) throws SQLException {
 
-        Connection conn = Vault.getDbConnection();
         boolean isPN = false;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT COUNT(*) FROM STPNODE WHERE NODEID = ? AND STATUS != 'D' ");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM STPNODE WHERE NODEID = ? AND STATUS != 'D' ");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
             rs.next();
             int count = rs.getInt(1);
 
             if (count > 0) {
                 isPN = true;
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return isPN;
@@ -1449,24 +1466,25 @@ public class NetworkElementFactory {
 
     public static boolean isRouteInfoNode(int nodeID) throws SQLException {
 
-        Connection conn = Vault.getDbConnection();
         boolean isRI = false;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             rs.next();
             int count = rs.getInt(1);
 
             if (count > 0) {
                 isRI = true;
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return isRI;
@@ -1495,14 +1513,17 @@ public class NetworkElementFactory {
 
     public static Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
-        Connection conn = Vault.getDbConnection();
         Integer node = null;
         
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
     	    while (rs.next()) {
 	            Object element = new Integer(rs.getInt("parentid"));
 	            if (element != null) {
@@ -1510,11 +1531,12 @@ public class NetworkElementFactory {
 	            }
 	            nodes.add(node);
 	        }
-	        rs.close();
-            stmt.close();
+
             stmt = conn.prepareStatement("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'");
+            d.watch(stmt);
 		    stmt.setInt(1, nodeID);
 		    rs = stmt.executeQuery();
+		    d.watch(rs);
     	    while (rs.next()) {
 	            Object element = new Integer(rs.getInt("parentid"));
 	            if (element != null) {
@@ -1522,10 +1544,8 @@ public class NetworkElementFactory {
 	            }
 	            nodes.add(node);
 	        }
-		    rs.close();
-		    stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         return nodes;
         
@@ -1535,48 +1555,50 @@ public class NetworkElementFactory {
         Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
         
-   
-        PreparedStatement stmt = conn
-                .prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
-        stmt.setInt(1, nodeID);
-        ResultSet rs = stmt.executeQuery();
-	    while (rs.next()) {
-            Object element = new Integer(rs.getInt("parentid"));
-            if (element != null) {
-                node = ((Integer) element);
+        PreparedStatement stmt;
+        ResultSet rs;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
+        try {
+            stmt = conn.prepareStatement("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'");
+            d.watch(stmt);
+            stmt.setInt(1, nodeID);
+            rs = stmt.executeQuery();
+            d.watch(rs);
+            while (rs.next()) {
+                Object element = new Integer(rs.getInt("parentid"));
+                if (element != null) {
+                    node = ((Integer) element);
+                }
+                nodes.add(node);
             }
-            nodes.add(node);
-        }
-        rs.close();
-        stmt.close();
-        stmt = conn.prepareStatement("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'");
-	    stmt.setInt(1, nodeID);
-	    rs = stmt.executeQuery();
-	    while (rs.next()) {
-            Object element = new Integer(rs.getInt("parentid"));
-            if (element != null) {
-                node = ((Integer) element);
+
+            stmt = conn.prepareStatement("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'");
+            d.watch(stmt);
+            stmt.setInt(1, nodeID);
+            rs = stmt.executeQuery();
+            d.watch(rs);
+            while (rs.next()) {
+                Object element = new Integer(rs.getInt("parentid"));
+                if (element != null) {
+                    node = ((Integer) element);
+                }
+                nodes.add(node);
             }
-            nodes.add(node);
+        } finally {
+            d.cleanUp();
         }
-	    rs.close();
-	    stmt.close();
         return nodes;
         
     }    
 
     public static Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
-		String LOG4J_CATEGORY = "OpenNMS.Map";
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log= ThreadCategory.getInstance(NetworkElementFactory.class);
-		
         List<Integer> nodes = new ArrayList<Integer>();
         if(nodeIds==null || nodeIds.size()==0){
         	return new TreeSet<Integer>();
         }
         
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-        	log.debug("Before First select");
         	StringBuffer query = new StringBuffer("SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID IN (");
         	Iterator<Integer> it = nodeIds.iterator();
         	StringBuffer nodesStrBuff = new StringBuffer("");
@@ -1590,26 +1612,23 @@ public class NetworkElementFactory {
         	query.append(") AND STATUS != 'D'");
         	
             PreparedStatement stmt = conn.prepareStatement(query.toString());
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
     	    while (rs.next()) {
 	            nodes.add(new Integer(rs.getInt("parentid")));
 	        }
-	        rs.close();
-            stmt.close();
-            log.debug("After First select");
-            log.debug("Before Second select");
+
             query = new StringBuffer("SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEID IN (");
             query.append(nodesStrBuff);
         	query.append(") AND STATUS != 'D'");            
             rs = stmt.executeQuery();
+            d.watch(rs);
     	    while (rs.next()) {
 	            nodes.add(new Integer(rs.getInt("parentid")));
 	        }
-		    rs.close();
-		    stmt.close();
-		    log.debug("After Second select");
         } finally {
-            
+            d.cleanUp();
         }
         
         return new TreeSet<Integer>(nodes);
@@ -1620,19 +1639,19 @@ public class NetworkElementFactory {
             throws SQLException {
 
         DataLinkInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY IFINDEX");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY IFINDEX");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2DataLink(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1642,19 +1661,19 @@ public class NetworkElementFactory {
             throws SQLException {
 
         DataLinkInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D' ORDER BY PARENTIFINDEX");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D' ORDER BY PARENTIFINDEX");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2DataLink(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return invertDataLinkInterface(nodes);
@@ -1686,20 +1705,20 @@ public class NetworkElementFactory {
     throws SQLException {
 
     	DataLinkInterface[] nodes = null;
-    	Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
     	try {
-    		PreparedStatement stmt = conn
-            .prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D' AND IFINDEX = ?");
+    	    Connection conn = Vault.getDbConnection();
+    	    d.watch(conn);
+    		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D' AND IFINDEX = ?");
+    		d.watch(stmt);
     		stmt.setInt(1, nodeID);
     		stmt.setInt(2, ifindex);
     		ResultSet rs = stmt.executeQuery();
+    		d.watch(rs);
+    		
     		nodes = rs2DataLink(rs);
-
-    		rs.close();
-    		stmt.close();
     	} finally {
-    		Vault.releaseDbConnection(conn);
+    	    d.cleanUp();
     	}
 
     	return nodes;
@@ -1709,20 +1728,20 @@ public class NetworkElementFactory {
             int ifindex) throws SQLException {
 
         DataLinkInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND PARENTIFINDEX = ? AND STATUS != 'D' ");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND PARENTIFINDEX = ? AND STATUS != 'D' ");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             stmt.setInt(2, ifindex);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2DataLink(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         
         return invertDataLinkInterface(nodes);
@@ -1731,18 +1750,18 @@ public class NetworkElementFactory {
     public static DataLinkInterface[] getAllDataLinks() throws SQLException {
 
         DataLinkInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE STATUS != 'D' ORDER BY NODEID, IFINDEX");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM DATALINKINTERFACE WHERE STATUS != 'D' ORDER BY NODEID, IFINDEX");
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2DataLink(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1750,20 +1769,22 @@ public class NetworkElementFactory {
 
     public static Vlan[] getVlansOnNode(int nodeID) throws SQLException {
     	Vlan[] vlans = null;
-        Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
 
             PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
-            vlans = rs2Vlan(rs);
+            d.watch(rs);
 
-            rs.close();
-            stmt.close();
+            vlans = rs2Vlan(rs);
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return vlans;
@@ -1773,9 +1794,10 @@ public class NetworkElementFactory {
             throws SQLException {
 
         StpInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
 
             String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
                     + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
@@ -1785,14 +1807,14 @@ public class NetworkElementFactory {
                     + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
 
             PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2StpInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1802,9 +1824,11 @@ public class NetworkElementFactory {
             throws SQLException {
 
         StpInterface[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
                 + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
                 + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress "
@@ -1813,15 +1837,15 @@ public class NetworkElementFactory {
                 + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
 
             PreparedStatement stmt = conn.prepareStatement(sqlQuery);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             stmt.setInt(2, ifindex);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
             nodes = rs2StpInterface(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -1830,22 +1854,19 @@ public class NetworkElementFactory {
     public static StpNode[] getStpNode(int nodeID) throws SQLException {
 
         StpNode[] nodes = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
-            PreparedStatement stmt = conn
-                    .prepareStatement(
-                    //		"SELECT * FROM STPNODE WHERE NODEID = ? AND STATUS != 'D'
-                    // ORDER BY basevlan");
-                    "select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan");
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan");
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
             ResultSet rs = stmt.executeQuery();
-            nodes = rs2StpNode(rs);
+            d.watch(rs);
 
-            rs.close();
-            stmt.close();
+            nodes = rs2StpNode(rs);
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodes;
@@ -2289,22 +2310,22 @@ public class NetworkElementFactory {
     protected static String getIpAddress(int nodeid) throws SQLException {
 
         String ipaddr = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
 
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?");
+            d.watch(stmt);
             stmt.setInt(1, nodeid);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                  ipaddr = rs.getString("ipaddr");
             }
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return ipaddr;
@@ -2314,23 +2335,23 @@ public class NetworkElementFactory {
     protected static String getIpAddress(int nodeid, int ifindex)
             throws SQLException {
         String ipaddr = null;
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
 
-            PreparedStatement stmt = conn
-                    .prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX = ? ");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX = ? ");
+            d.watch(stmt);
             stmt.setInt(1, nodeid);
             stmt.setInt(2, ifindex);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 ipaddr = rs.getString("ipaddr");
             }
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return ipaddr;
@@ -2346,12 +2367,16 @@ public class NetworkElementFactory {
         }
 
         List<Integer> nodecont = new ArrayList<Integer>();
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            
             PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT(node.nodeid) FROM NODE,IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D'");
+            d.watch(stmt);
             stmt.setString(1, iplike);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Integer node = null;
     	    while (rs.next()) {
@@ -2361,11 +2386,9 @@ public class NetworkElementFactory {
 	            }
 	            nodecont.add(node);
 	        }
-	        rs.close();
-            stmt.close();
 
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nodecont;

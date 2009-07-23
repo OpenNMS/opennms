@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.util.Assert;
 
@@ -88,18 +89,19 @@ public class AssetModel extends Object {
 
     public Asset[] getAllAssets() throws SQLException {
         Asset[] assets = new Asset[0];
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             Statement stmt = conn.createStatement();
+            d.watch(stmt);
             ResultSet rs = stmt.executeQuery("SELECT * FROM ASSETS");
+            d.watch(rs);
 
             assets = rs2Assets(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return assets;
@@ -108,10 +110,13 @@ public class AssetModel extends Object {
     public void createAsset(Asset asset) throws SQLException {
         Assert.notNull(asset, "argument asset cannot be null");
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            d.watch(stmt);
             stmt.setInt(1, asset.nodeId);
             stmt.setString(2, asset.category);
             stmt.setString(3, asset.manufacturer);
@@ -159,19 +164,21 @@ public class AssetModel extends Object {
             stmt.setString(45, asset.autoenable);
 
             stmt.execute();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
     public void modifyAsset(Asset asset) throws SQLException {
         Assert.notNull(asset, "argument asset cannot be null");
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=? WHERE nodeid=?");
+            d.watch(stmt);
             stmt.setString(1, asset.category);
             stmt.setString(2, asset.manufacturer);
             stmt.setString(3, asset.vendor);
@@ -219,9 +226,8 @@ public class AssetModel extends Object {
             stmt.setInt(45, asset.nodeId);
 
             stmt.execute();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -246,16 +252,20 @@ public class AssetModel extends Object {
          */
         // Assert.isTrue(isColumnValid(columnName), "Column \"" + columnName + "\" is not a valid column name");
         
-        Connection conn = Vault.getDbConnection();
         List<MatchingAsset> list = new ArrayList<MatchingAsset>();
 
         columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
+        final DBUtils d = new DBUtils(AssetModel.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
+            d.watch(stmt);
             stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 MatchingAsset asset = new MatchingAsset();
@@ -267,11 +277,8 @@ public class AssetModel extends Object {
 
                 list.add(asset);
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         
         return list.toArray(new MatchingAsset[list.size()]);
