@@ -51,7 +51,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.core.utils.ParameterMap;
 
 /**
  * <p>
