@@ -54,9 +54,15 @@
             <specific>11.18</specific>
             <specific>11.19</specific>
             <specific>11.20</specific>
-            <specific>11.27</specific>
             <specific>11.23</specific>
+            <specific>11.27</specific>
             <specific>11.29</specific>
+            <specific>11.32</specific>
+		    <specific>11.45</specific>
+		    <specific>11.50</specific>
+	    	<specific>11.63</specific>
+	 	    <specific>11.66</specific>
+	    	<specific>11.81</specific>
             <include-range begin="11.6" end="11.11"/>
         </vendor>
 
