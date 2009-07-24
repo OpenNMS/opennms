@@ -164,9 +164,6 @@
         <li>
         	<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
         </li>
-        <!-- li>
-	        <a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-        </li -->
         <% if( telnetIp != null ) { %>
        	<li>
        		<a href="telnet://<%=telnetIp%>">Telnet</a>
