@@ -258,13 +258,10 @@
         <li>
 		<a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
 	</li>
-        <!-- li>
-		<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-	</li -->	
-        <li>
+    <li>
 		<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
 	</li>
-<% if( telnetIp != null ) { %>
+		<% if( telnetIp != null ) { %>
           <li>
           <a href="telnet://<%=telnetIp%>">Telnet</a>
           </li>
