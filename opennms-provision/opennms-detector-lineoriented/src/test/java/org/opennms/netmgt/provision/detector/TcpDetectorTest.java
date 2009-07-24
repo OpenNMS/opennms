@@ -34,8 +34,8 @@ public class TcpDetectorTest implements ApplicationContextAware {
     public void setUp() throws Exception {
         m_detector  = getDetector(TcpDetector.class);
         m_detector.setServiceName("TCP");
-        m_detector.setTimeout(100000);
-        m_detector.setBanner("this is a Bogus Banner");
+        m_detector.setTimeout(1000000);
+        //m_detector.setBanner(".*");
         m_detector.init();
     }
     
@@ -47,11 +47,20 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     @Test
+    public void testLocalTelnet() throws Exception{
+        m_detector.setPort(23);
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getByName("192.168.1.100"), new NullDetectorMonitor());
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertTrue(future.isServiceDetected());
+    }
+    
+    @Test
     public void testSucessServer() throws Exception {
         m_server = new SimpleServer() {
             
             public void onInit() {
-               setBanner("this is a Bogus Banner");
+               setBanner("Hello");
             }
             
         };

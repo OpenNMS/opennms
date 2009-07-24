@@ -34,8 +34,12 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.Charset;
+
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +57,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      */
     public TcpDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+        setProtocolCodecFilter(new ProtocolCodecFilter ( new TcpCodecFactory ( Charset.forName("UTF-8" ))));
     }
     
     /**
@@ -78,15 +83,8 @@ public class TcpDetector extends AsyncLineOrientedDetector {
                     return true;
                 }
                 
-                return response.matches(regex + addCRLF());
+                return response.matches(regex);
             }
-
-            private String addCRLF() {
-                
-                return "\r\n";
-            }
-          
-            
         };
     }
 
