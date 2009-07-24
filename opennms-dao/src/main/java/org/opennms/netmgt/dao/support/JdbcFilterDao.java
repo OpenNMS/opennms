@@ -633,7 +633,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 regex.appendReplacement(tempStringBuff, Matcher.quoteReplacement(extractedStrings.get(Integer.parseInt(regex.group(1)))));
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
-            System.err.println("sqlRule = " + sqlRule);
             return "WHERE " + sqlRule;
         }
         return "";
