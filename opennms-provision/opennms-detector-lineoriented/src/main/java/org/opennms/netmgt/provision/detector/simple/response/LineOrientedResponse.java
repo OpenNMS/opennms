@@ -33,7 +33,7 @@ public class LineOrientedResponse {
     }
     
     public boolean matches(String regex) {
-        return getResponse() != null && getResponse().matches(regex);
+        return getResponse() != null && getResponse().toString().trim().matches(regex);
     }
     
     public boolean find(String regex) {

@@ -60,7 +60,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     public void sessionOpened(IoSession session) throws Exception {
         if(!m_conversation.hasBanner()) {
             Object request = m_conversation.getRequest();
-           session.write(request);
+            session.write(request);
        }
     }
 
@@ -83,9 +83,10 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {    
-        System.out.printf("Client Receiving: %s\n", message.toString().trim());
+        System.err.printf("Client Receiving: %s\n", message.toString().trim());
             
             if(m_conversation.hasExchanges() && m_conversation.validate((Response)message)) {
+               
                Object request = m_conversation.getRequest();
                
                 if(request != null) {
