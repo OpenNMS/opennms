@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<http-datacollection-config  
+    xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+    rrdRepository="/opt/opennms/share/rrd/snmp/" >
+
+<!--
+    This collection is for gathering operational statistics from the web UI of
+    a Motorola CPEi 150 WiMAX gateway.  It assumes that the manufacturer default
+    password "motorola" is set.  If your gateway has a different password, you
+    must change the value of the "login:command/password" parameter.
+-->
+
+  <http-collection name="cpei25150-stats">
+    <rrd step="30">
+      <rra>RRA:AVERAGE:0.5:1:8928</rra>
+      <rra>RRA:AVERAGE:0.5:12:8784</rra>
+      <rra>RRA:MIN:0.5:12:8784</rra>
+      <rra>RRA:MAX:0.5:12:8784</rra>
+    </rrd>
+    <uris>
+      <uri name="clear-stats">
+        <url path="/cgi-bin/webcm" method="POST"
+             user-agent="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_7; en-us) AppleWebKit/530.18 (KHTML, like Gecko) Version/4.0.1 Safari/530.18" 
+             matches="(?s).*uphours\s*=\s*new\s+String.*?(\d+).*?upmins\s*=\s*new\s+String.*?(\d+).*?WiMAX\s+Radio\s+Temperature:.*?(\d+)\s+C.*?WiMAX\s+RSSI:.*?(-?[0-9]+)\s+dBm.*?WiMAX\s+CINR:.*?(-?[0-9]+)\s+dB.*?WiMAX\s+Downlink\s+Throughput:.*?([0-9]+)\s+kbps.*?WiMAX\s+Uplink\s+Throughput:.*?([0-9]+)\s+kbps.*?WiMAX\s+Packets\s+Received:.*?([0-9]+).*?WiMAX\s+Packets\s+Sent:.*?([0-9]+).*?WiMAX\s+Connection\s+Up\s+Time:.*?(\d+)\s*day\s+(\d+)\s*hr\s+(\d+)\s*min\s+(\d+)\s*sec.*" response-range="100-399" >
+          <parameters>
+            <parameter key="var:main" value="menu" />
+            <parameter key="var:style" value="style5" />
+            <parameter key="getpage"   value="/usr/www_safe/html/defs/style5/menus/menu.html" />
+            <parameter key="errorpage" value="/usr/www/index.html" />
+            <parameter key="var:pagename" value="status_network" />
+            <parameter key="var:errorpagename" value="status_network" />
+            <parameter key="var:menu" value="status" />
+            <parameter key="var:menutitle" value="Status" />
+            <parameter key="var:pagetitle" value="Network" />
+            <parameter key="var:pagemaster" value="status_network" />
+            <parameter key="login:command/username" value="router" />
+            <parameter key="login:command/password" value="motorola" />
+          </parameters>
+        </url>
+        <attributes>
+          <attrib alias="cpei150DevUpHr"    match-group="1"  type="gauge32"/>
+          <attrib alias="cpei150DevUpMin"   match-group="2"  type="gauge32"/>
+          <attrib alias="cpei150RadioTemp"  match-group="3"  type="gauge32"/>
+          <attrib alias="cpei150RSSI"       match-group="4"  type="gauge32"/>
+          <attrib alias="cpei150CINR"       match-group="5"  type="gauge32"/>
+          <attrib alias="cpei150ThrputDown" match-group="6"  type="gauge32"/>
+          <attrib alias="cpei150ThrputUp"   match-group="7"  type="gauge32"/>
+          <attrib alias="cpei150PktsRx"     match-group="8"  type="counter32"/>
+          <attrib alias="cpei150PktsTx"     match-group="9"  type="counter32"/>
+          <attrib alias="cpei150ConnUpDay"  match-group="10" type="gauge32"/>
+          <attrib alias="cpei150ConnUpHr"   match-group="11" type="gauge32"/>
+          <attrib alias="cpei150ConnUpMin"  match-group="12" type="gauge32"/>
+          <attrib alias="cpei150ConnUpSec"  match-group="13" type="gauge32"/>
+        </attributes>
+      </uri>
+    </uris>
+  </http-collection>
+</http-datacollection-config>
