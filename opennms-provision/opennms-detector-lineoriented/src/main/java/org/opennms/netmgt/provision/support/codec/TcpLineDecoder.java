@@ -1,13 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,23 +40,23 @@ import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 
-/**
- * @author Donald Desloge
- *
- */
-public class LineOrientedDecoder extends CumulativeProtocolDecoder {
-    
+public class TcpLineDecoder extends CumulativeProtocolDecoder {
+
     private Charset m_charset;
     
-    public LineOrientedDecoder(Charset charset) {
+    public TcpLineDecoder(Charset charset) {
         setCharset(charset);
-    }
+    }   
     
+    private void setCharset(Charset charset) {
+        m_charset = charset;
+    }
+
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-        // Remember the initial position.
+     // Remember the initial position.
         int start = in.position();
-        
+
         // Now find the first CRLF in the buffer.
         byte previous = 0;
         while (in.hasRemaining()) {
@@ -71,6 +72,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
                     in.limit(position);
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
+                    System.err.println("slice: " + in.slice());
                     out.write(parseCommand(in.slice()));
                 } finally {
                     // Set the position to point right after the
@@ -90,25 +92,40 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
             
             previous = current;
         }
+        
         // Could not find CRLF in the buffer. Reset the initial
         // position to the one we recorded above.
         in.position(start);
-
-        return false;
         
+        out.write(parseCommand(in.slice()));
+        
+        return false;
     }
     
-    protected Object parseCommand(IoBuffer in) throws CharacterCodingException {
-        return new LineOrientedResponse(in.getString(getCharset().newDecoder()));
+    protected Object parseCommand(IoBuffer in) {
+        String outputStr = null;
+        try{
+            outputStr = in.getString(getCharset().newDecoder());
+        }catch(CharacterCodingException e){
+            outputStr = convertToString(in);
+        }
+        
+        return new LineOrientedResponse(outputStr);
     }
-
-    public void setCharset(Charset charset) {
-        m_charset = charset;
+    
+    private String convertToString(IoBuffer in) {
+        String cumulativeStr = "";
+        while(in.hasRemaining()){
+            byte current = in.get();
+            char data[] = {(char) current};
+            String temp = new String(data);
+            cumulativeStr += temp;
+        }
+        return cumulativeStr;
     }
 
     public Charset getCharset() {
         return m_charset;
     }
 
-    
 }
