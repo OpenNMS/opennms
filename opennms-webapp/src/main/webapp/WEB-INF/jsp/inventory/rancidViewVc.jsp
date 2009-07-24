@@ -48,7 +48,7 @@
   <jsp:param name="breadcrumb" value="ViewVC Group ${model.group}" />
 </jsp:include>
 
-<iframe src="${model.iframelink}" width="100%" height="300">
+<iframe src="${model.iframelink}" width="100%" height="800">
   <p>Your browser does not support iframes.</p>
 </iframe>
 
