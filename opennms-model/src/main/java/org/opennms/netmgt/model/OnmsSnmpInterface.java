@@ -53,8 +53,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
@@ -137,6 +140,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
+    @XmlAttribute(name="id")
     public Integer getId() {
         return m_id;
     }
@@ -179,6 +183,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
 
     @Column(name = "snmpIfIndex")
+    @XmlAttribute(name="ifIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -261,6 +266,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
     
     @Column(name="snmpCollect")
+    @XmlAttribute(name="collect")
     public String getCollect() {
         return m_collect;
     }
@@ -275,6 +281,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
     
     @Transient
+    @XmlTransient
     public boolean isCollectionEnabled() {
         return "C".equals(m_collect) || "UC".equals(m_collect);
     }
@@ -294,6 +301,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
+    @XmlElement(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
