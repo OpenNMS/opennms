@@ -90,10 +90,10 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	    ],
 	    recordTag:'snmpInterface',
 	    recordMap:[
-					{name:"theId", mapping:"id"},
+					{name:"theId", mapping:"@id"},
 					{name:"ifAdminStatus", mapping:"ifAdminStatus"},
 					{name:"ifDescr", mapping:"ifDescr"},
-					{name:"ifIndex", mapping:"ifIndex"},
+					{name:"ifIndex", mapping:"@ifIndex"},
 					{name:"ifName", mapping:"ifName"},
 					{name:"ifAlias", mapping:"ifAlias"},
 					{name:"ifOperStatus", mapping:"ifOperStatus"},

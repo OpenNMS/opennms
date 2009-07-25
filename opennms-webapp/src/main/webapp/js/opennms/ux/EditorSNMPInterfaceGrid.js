@@ -125,10 +125,10 @@ OpenNMS.ux.EditorSNMPInterfaceGrid = Ext.extend(OpenNMS.ux.EditorPageableGrid, {
 	    ],
 	    recordTag:'snmpInterface',
 	    recordMap:[
-					{name:"theId", mapping:"id"},
+					{name:"theId", mapping:"@id"},
 					{name:"ifAdminStatus", mapping:"ifAdminStatus"},
 					{name:"ifDescr", mapping:"ifDescr"},
-					{name:"ifIndex", mapping:"ifIndex"},
+					{name:"ifIndex", mapping:"@ifIndex"},
 					{name:"ifName", mapping:"ifName"},
 					{name:"ifAlias", mapping:"ifAlias"},
 					{name:"ifOperStatus", mapping:"ifOperStatus"},
@@ -136,8 +136,8 @@ OpenNMS.ux.EditorSNMPInterfaceGrid = Ext.extend(OpenNMS.ux.EditorPageableGrid, {
 					{name:"ifType", mapping:"ifType"},
 					{name:"ipAddress", mapping:"ipAddress"},
 					{name:"physAddr", mapping:"physAddr"},
-					{name:"collect", mapping:"collect"},
-					{name:'collectionEnabled', mapping:'collectionEnabled', type:'bool'}
+					{name:"collect", mapping:"collectFlag"},
+					{name:'collectionEnabled', mapping:'@collect', type:'bool'}
 		],
 		
 	initComponent:function(){
