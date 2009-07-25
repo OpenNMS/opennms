@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -273,14 +272,10 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
 
         Map<String,List<Csubmap>> mapnameSubmapMap = m_mapsAdapterConfig.getsubMaps();
-        Iterator<String> ite = mapnameSubmapMap.keySet().iterator();
-        while (ite.hasNext()) {
-            String mapName = ite.next();
+        for (String mapName : mapnameSubmapMap.keySet()) {
             log().debug("syncMaps: adding automated submap: " + mapName);
             OnmsMap onmsMap = getSuitableMap(mapName);
-            Iterator<Csubmap> sub_ite = mapnameSubmapMap.get(mapName).iterator();
-            while (sub_ite.hasNext()) {
-                Csubmap csubmap = sub_ite.next();
+            for (Csubmap csubmap : mapnameSubmapMap.get(mapName)) {
                 OnmsMap onmsSubMap = getSuitableMap(csubmap.getName());
                 if (onmsSubMap.isNew()) {
                     log().error("syncMap: add SubMaps: the submap does not exist: " + csubmap.getName());
@@ -298,10 +293,14 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
     private void addSubMap(OnmsMap onmsMap, Csubmap csubmap, OnmsMap onmsSubMap) {
+        log().debug("addSubMap: adding automated submap: " + onmsSubMap.getName() + " to map: " + onmsMap.getName());
         OnmsMapElement  mapElement = null;
         if (!onmsMap.getMapElements().isEmpty()) {
+            log().debug("addSubMap: looping on elements of not empty map: " + onmsMap.getName());
             for (OnmsMapElement elem: onmsMap.getMapElements()) {
+                log().debug("addSubMap: checking element with id: " + elem.getElementId() + " and type" + elem.getType());
                 if (elem.getType().equals(OnmsMapElement.MAP_TYPE) && elem.getElementId() == onmsSubMap.getId()) {
+                    log().debug("addSubMap: still exists in map updating");
                     mapElement = elem;
                     mapElement.setLabel(csubmap.getLabel());
                     mapElement.setIconName(csubmap.getIcon());
@@ -318,6 +317,11 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         } else {
             m_onmsMapElementDao.update(mapElement);            
         }
+        log().debug("added map element with id: " + mapElement.getId());
+        log().debug("               with label: " + mapElement.getLabel());
+        log().debug("                with icon: " + mapElement.getIconName());
+        log().debug("                   with X: " + mapElement.getX());
+        log().debug("                   with Y: " + mapElement.getY());
         m_onmsMapElementDao.flush();        
         m_onmsMapElementDao.clear();
     }
@@ -502,9 +506,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     private void addAsSubMap(String submapName) {
         Map<String,Csubmap> csubmaps = m_mapsAdapterConfig.getContainerMaps(submapName);
-        Iterator<String> ite = csubmaps.keySet().iterator();
-        while (ite.hasNext()) {
-            String mapName = ite.next();
+        for(String mapName:csubmaps.keySet()) {
             OnmsMap onmsMap = getSuitableMap(mapName);
             Csubmap csubmap = csubmaps.get(mapName);
             OnmsMap onmsSubMap = getSuitableMap(csubmap.getName());
