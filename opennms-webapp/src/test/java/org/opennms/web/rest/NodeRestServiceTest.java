@@ -51,7 +51,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createSnmpInterface();
         String url = "/nodes/1/snmpinterfaces";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<ifIndex>6</ifIndex>"));
+        assertTrue(xml.contains("ifIndex=\"6\""));
         url += "/6";
         sendPut(url, "ifName=eth0");
         xml = sendRequest(GET, url, 200);
@@ -127,10 +127,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     private void createSnmpInterface() throws Exception {
         createIpInterface();
-        String snmpInterface = "<snmpInterface>" +
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
         "<ifAdminStatus>1</ifAdminStatus>" +
         "<ifDescr>en1</ifDescr>" +
-        "<ifIndex>6</ifIndex>" +
         "<ifName>en1</ifName>" +
         "<ifOperStatus>1</ifOperStatus>" +
         "<ifSpeed>10000000</ifSpeed>" +
