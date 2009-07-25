@@ -57,7 +57,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
@@ -266,7 +265,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
     
     @Column(name="snmpCollect")
-    @XmlAttribute(name="collect")
+    @XmlAttribute(name="collectFlag")
     public String getCollect() {
         return m_collect;
     }
@@ -281,7 +280,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
     
     @Transient
-    @XmlTransient
+    @XmlAttribute(name="collect")
     public boolean isCollectionEnabled() {
         return "C".equals(m_collect) || "UC".equals(m_collect);
     }
