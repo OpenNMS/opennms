@@ -1,5 +1,8 @@
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -8,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Category;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -21,7 +25,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class OnmsRestService {
 
-	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS}
+	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
 
 	public OnmsRestService() {
 		super();
@@ -103,6 +107,12 @@ public class OnmsRestService {
 		
 		paramsCopy.remove("_dc");
 
+		String matchType="all";
+		if (paramsCopy.containsKey("match")) {
+		    matchType = paramsCopy.getFirst("match");
+		    paramsCopy.remove("match");
+		}
+
 		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
 		if(paramsCopy.containsKey("comparator")) {
@@ -131,48 +141,68 @@ public class OnmsRestService {
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+		
+		List<Criterion> criteriaList = new ArrayList<Criterion>();
+		
 		for(String key: paramsCopy.keySet()) {
 		    
 		    String stringValue=paramsCopy.getFirst(key);
 		   
 			if("null".equals(stringValue)) {
-				criteria.add(Restrictions.isNull(key));
+				criteriaList.add(Restrictions.isNull(key));
 			} else if ("notnull".equals(stringValue)) {
-				criteria.add(Restrictions.isNotNull(key));
+				criteriaList.add(Restrictions.isNotNull(key));
 			} else {
 				Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
 				switch(op) {
 		   		case EQ:
-		    		criteria.add(Restrictions.eq(key, thisValue));
+		    		criteriaList.add(Restrictions.eq(key, thisValue));
 					break;
 		  		case NE:
-		    		criteria.add(Restrictions.ne(key,thisValue));
+		  		    criteriaList.add(Restrictions.ne(key,thisValue));
 					break;
 		   		case ILIKE:
-		    		criteria.add(Restrictions.ilike(key, thisValue));
+		   		    criteriaList.add(Restrictions.ilike(key, thisValue));
 					break;
 		   		case LIKE:
-		    		criteria.add(Restrictions.like(key, thisValue));
+		   		    criteriaList.add(Restrictions.like(key, thisValue));
 					break;
 		   		case GT:
-		    		criteria.add(Restrictions.gt(key, thisValue));
+		   		    criteriaList.add(Restrictions.gt(key, thisValue));
 					break;
 		   		case LT:
-		    		criteria.add(Restrictions.lt(key, thisValue));
+		    		criteriaList.add(Restrictions.lt(key, thisValue));
 					break;
 		   		case GE:
-		    		criteria.add(Restrictions.ge(key, thisValue));
+		    		criteriaList.add(Restrictions.ge(key, thisValue));
 					break;
 		   		case LE:
-		    		criteria.add(Restrictions.le(key, thisValue));
+		    		criteriaList.add(Restrictions.le(key, thisValue));
 					break;
 		   		case CONTAINS:
-		   		    criteria.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
-		   		    
+		   		    criteriaList.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
 				}
 			}
 		}
 
+		if (criteriaList.size() > 1) {
+		    if(matchType.equalsIgnoreCase("any")) {
+		        // OR everything
+	            Criterion lhs = criteriaList.remove(0);
+	            Criterion rhs = criteriaList.remove(0);
+	            
+	            Criterion or = Restrictions.or(lhs, rhs);
+	            while (criteriaList.size() > 0) {
+	                rhs = criteriaList.remove(0);
+	                or = Restrictions.or(or, rhs);
+	            }
+	            criteria.add(or);
+		    } else {
+		        for (Criterion c : criteriaList) {
+		            criteria.add(c);
+		        }
+		    }
+		}
 	}
 
 	/**
