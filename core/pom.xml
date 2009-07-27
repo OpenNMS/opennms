@@ -27,7 +27,7 @@
     <module>lib</module>
     <module>runtime</module>
     <module>schema</module>
-    <module>web</module>
+    <!--<module>web</module>-->
     <module>doc</module>
   </modules>
 

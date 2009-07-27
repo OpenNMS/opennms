@@ -151,23 +151,41 @@
     </p>
 	<script language="Javascript" type="text/javascript">
 		var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
-									<c:forEach var="resource" items="${topLevelResources}">
+									<c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
 									<c:choose>
 									  <c:when test="${match == null || match == ''}">
-									  {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+									  	<c:choose>
+											<c:when test="${resourceCount.index == 0}">
+												{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+											</c:when>
+											<c:otherwise>
+												,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+											</c:otherwise>
+									  	</c:choose>
 									  </c:when>
 									  <c:otherwise>
 									    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-									    	{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+									    	<c:choose>
+									    		<c:when test="${resourceCount.index == 0}">
+									    			{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+									    		</c:when>
+										    	<c:otherwise>
+										    		,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+										    	</c:otherwise>
+									    	</c:choose>
 									    </c:if>
 									  </c:otherwise>  
 									</c:choose>
 									  </c:forEach>
 
-			                                          		]}
+			                                          		]};
 
 		Ext.onReady(function(){
-			standardResourceViewInit("standard-resource", standardResourceData, "graph/chooseresource.htm?reports=all&parentResourceId={id}");
+			var urlTemplate = "graph/chooseresource.htm?reports=all&parentResourceId={id}";
+			if(Ext.isIE){
+				urlTemplate = "chooseresource.htm?reports=all&parentResourceId={id}";
+			}
+			standardResourceViewInit("standard-resource", standardResourceData, urlTemplate);
 	  	})
 	</script>
 	<div id="standard-resource"></div>
@@ -181,20 +199,35 @@
     </p>
 	<script language="Javascript" type="text/javascript">
 		var customResources = {total:"${fn:length(topLevelResources)}", records:[
-                                            <c:forEach var="resource" items="${topLevelResources}">
+                                            <c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
                                       	  <c:choose>
-                                                  <c:when test="${match == null || match == ''}">
-                                                    {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+                                            <c:when test="${match == null || match == ''}">
+                                            	<c:choose>
+													<c:when test="${resourceCount.index == 0}">
+														{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+													</c:when>
+													<c:otherwise>
+														,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+													</c:otherwise>
+									  			</c:choose>
                                       	    </c:when>
                                       	    <c:otherwise>
                                       	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-                                      	      {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
+                                      	    	<c:choose>
+									    			<c:when test="${resourceCount.index == 0}">
+									    				{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+									    			</c:when>
+										    		<c:otherwise>
+										    			,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+										    		</c:otherwise>
+									    		</c:choose>
+                                      	      
                                       	      </c:if>
                                       	    </c:otherwise>  
                                       	  </c:choose>
                                               </c:forEach>
 
-			                                                                 		]}
+			                                                                 		]};
 		Ext.onReady(function(){
 			customResourceViewInit("custom-resources", customResources, "graph/chooseresource.htm?reports=all&parentResourceId={id}");
 		})
