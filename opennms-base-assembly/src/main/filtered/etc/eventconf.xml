@@ -1939,6 +1939,7 @@
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
   <event-file>events/BGP4.events.xml</event-file>
+  <event-file>events/BlackBerryServer-SMIv2.events.xml</event-file>
   <event-file>events/BlackBerryServer.events.xml</event-file>
   <event-file>events/Bluecat.events.xml</event-file>
   <event-file>events/BlueCoat.events.xml</event-file>
