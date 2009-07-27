@@ -301,6 +301,10 @@ public class WillItUnmarshalTest {
         unmarshal("http-datacollection-config.xml", HttpDatacollectionConfig.class);
     }
     @Test
+    public void testExampleHttpDataCollectionConfiguration() throws Exception {
+        unmarshalExample("motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class);
+    }
+    @Test
     public void testJmxDataCollectionConfiguration() throws Exception {
         unmarshal("jmx-datacollection-config.xml", JmxDatacollectionConfig.class);
     }
