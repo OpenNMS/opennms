@@ -1214,7 +1214,7 @@ public class ManagerDefaultImpl implements Manager {
 						elementStatus = oi.getStatus();
 						elementSeverity= oi.getSeverity();
 					}
-	  				if (mapsPropertiesFactory.isAvailEnabled()) {
+	  				if (mapsPropertiesFactory.isAvailEnabled() && (new Integer(ve.getId()) != null) && (avails.get(new Integer(ve.getId())) != null)) {
 	   					elementAvail =avails.get(new Integer(ve.getId())).doubleValue();
 	   				}				
 					
@@ -1294,7 +1294,7 @@ public class ManagerDefaultImpl implements Manager {
 									}
 								} 	
 							}
-			  				if (mapsPropertiesFactory.isAvailEnabled()) {
+			  				if (mapsPropertiesFactory.isAvailEnabled() && (nextNodeId != null) && (avails.get(nextNodeId) != null)) {
 			   					elementAvail +=avails.get(nextNodeId).doubleValue();
 			   				}	
 							
