@@ -196,7 +196,12 @@ function testResponse(action, response){
 }
 
 function openLink( link, params){
-	   var uriObj = parseUri(document.URL);
-	   var appdomain = uriObj.protocol+"://"+uriObj.authority;
-       open(appdomain+appContext+unescape(link), '', params);	
+           var uriObj = parseUri(unescape(link));
+	   if ( uriObj.protocol =='' ) {
+	   	uriObj = parseUri(document.URL);
+	   	var appdomain = uriObj.protocol+"://"+uriObj.authority;
+       		open(appdomain+appContext+unescape(link), '', params);	
+           } else {
+       		open(unescape(link), '', params);	
+           }	
 }

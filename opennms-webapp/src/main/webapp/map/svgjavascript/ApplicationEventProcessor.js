@@ -23,8 +23,6 @@ function onClickMapElement(evt)
 	clearDownInfo();			
 	writeTopInfoText(mapElement.getInfo());
 
-	setContextMenuForElement(evt, mapElement);
-
 	if (evt.detail == 2)
 	{
 
@@ -63,7 +61,6 @@ function onMouseDownOnMapElement(evt)
 	if ((typeof map) == "object")
 	{ 
   		var mapElement = map.mapElements[evt.target.parentNode.getAttributeNS(null,"id")];		
-		setContextMenuForElement(evt, mapElement);
 
 		var matrix;
 		// track the origin
@@ -171,8 +168,6 @@ function onMouseDownOnMap(evt)
 	}
 	windowsClean();
 	
-	disableContextMenu(evt);
-	
 	// remove node information
 	clearTopInfo();
 	clearDownInfo();
@@ -214,7 +209,6 @@ function resetDraggableObject(){
 function onMouseDownOnLink(evt)
 {
 	
-	disableContextMenu(evt);
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
@@ -307,7 +301,6 @@ function onMouseUp(evt)
 	var mapsvgRoot = document.documentElement;
 	var zoom = mapsvgRoot.currentScale;
 	var pan = mapsvgRoot.currentTranslate;
-	disableContextMenu(evt);
 	removeSelectionRect();
 	//reset the selection rectangle
 
