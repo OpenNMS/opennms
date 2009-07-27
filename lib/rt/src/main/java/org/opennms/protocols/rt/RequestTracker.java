@@ -43,6 +43,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -129,6 +130,12 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
     private Thread m_replyProcessor;
     private Thread m_timeoutProcessor;
     
+    private static final int NEW = 0;
+    private static final int STARTING = 1;
+    private static final int STARTED = 2;
+    
+    private AtomicInteger m_state = new AtomicInteger(NEW);
+    
 
 	/**
      * Construct a RequestTracker that sends and received messages using the
@@ -173,11 +180,19 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
      * This method starts all the threads that are used to process the
      * messages and also starts the messenger.
      */
-    public void start() {
-        m_messenger.start(m_pendingReplyQueue);
-        m_timeoutProcessor.start();
-        m_replyProcessor.start();
-        
+    public synchronized void start() {
+        boolean startNeeded = m_state.compareAndSet(NEW, STARTING);
+        if (startNeeded) {
+            m_messenger.start(m_pendingReplyQueue);
+            m_timeoutProcessor.start();
+            m_replyProcessor.start();
+            m_state.set(STARTED);
+        }
+    }
+    
+    public void assertStarted() {
+        boolean started = m_state.get() == STARTED;
+        if (!started) throw new IllegalStateException("RequestTracker not started!");
     }
 
     /**
@@ -186,6 +201,7 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
      * indicates that they should be.
      */
     public void sendRequest(ReqT request) throws IOException {
+        assertStarted();
         synchronized(m_pendingRequests) {
             ReqT oldRequest = m_pendingRequests.get(request.getId());
             if (oldRequest != null) {
