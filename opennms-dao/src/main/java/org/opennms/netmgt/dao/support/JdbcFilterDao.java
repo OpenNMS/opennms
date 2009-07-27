@@ -634,7 +634,6 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
-            System.err.println("sqlRule = " + sqlRule);
             return "WHERE " + sqlRule;
         }
         return "";
