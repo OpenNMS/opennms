@@ -1,3 +1,31 @@
+// Here are defined all the global variables used in OpenNMS map application
+var suffix = "map";
+
+//ACTIONS
+var ADDNODES_ACTION = "AddNodes";
+var ADDRANGE_ACTION = "AddRange";
+var ADDMAPS_ACTION = "AddMaps";
+var REFRESH_ACTION = "Refresh";
+var RELOAD_ACTION = "Reload";
+var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
+var ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
+var ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
+var ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";
+var ADDNODES_NEIG_ACTION = "AddNodesNeig";
+var ADDMAPS_NEIG_ACTION = "AddMapsNeig";
+var DELETENODES_ACTION = "DeleteNodes";
+var DELETEMAPS_ACTION = "DeleteMaps";
+var CLEAR_ACTION = "Clear";
+var DELETEMAP_ACTION = "DeleteMap";
+var SWITCH_MODE_ACTION = "SwitchMode";
+var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
+var LOADMAPS_ACTION = "LoadMaps";
+var LOADNODES_ACTION = "LoadNodes";
+var NEWMAP_ACTION = "NewMap";
+var OPENMAP_ACTION = "OpenMap";
+var CLOSEMAP_ACTION = "CloseMap";
+var SAVEMAP_ACTION = "SaveMap";
+
 function loadDefaultMap(){
 	loading++;
 	assertLoading();
