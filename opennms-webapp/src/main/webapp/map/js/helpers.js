@@ -1,3 +1,5 @@
+var appContext = "/opennms/";
+
 function spaceTrans(stringIn) {
 	var result = ""
 	for (var i = 0; i < stringIn.length; i++) {
