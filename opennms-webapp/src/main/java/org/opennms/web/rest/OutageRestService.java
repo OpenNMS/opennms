@@ -116,7 +116,7 @@ public class OutageRestService extends OnmsRestService {
     	addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsOutage.class);
 
-    	return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
+    	return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(criteria)));
     }
 
     @GET
@@ -143,7 +143,7 @@ public class OutageRestService extends OnmsRestService {
         RecentOutagesFilter recent = new RecentOutagesFilter(d);
         criteria.add(recent.getCriterion());
 
-        return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
+        return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(criteria)));
     }
 }
 
