@@ -362,6 +362,10 @@
       <artifactId>opennms-reporting</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rws</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>
     </dependency>

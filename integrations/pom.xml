@@ -15,5 +15,6 @@
     <module>opennms-map-provisioning-adapter</module>
     <module>opennms-puppet-provisioning-adapter</module>
     <module>opennms-rancid</module>
+    <module>opennms-rws</module>
   </modules>
 </project>

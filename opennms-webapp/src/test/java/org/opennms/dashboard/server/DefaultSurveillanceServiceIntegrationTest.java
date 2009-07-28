@@ -64,7 +64,7 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
         return new String[] {
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-                "META-INF/opennms/component-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml"
         };
     }
