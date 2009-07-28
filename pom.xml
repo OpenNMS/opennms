@@ -623,6 +623,7 @@
    <minaVersion>2.0.0-M6</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.6.2</xercesVersion>
+   <gmavenVersion>1.0-rc-5</gmavenVersion>
   </properties>
 
   <profiles>
@@ -1698,12 +1699,12 @@
       <dependency>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-mojo</artifactId>
-        <version>${gmaven.version}</version>
+        <version>${gmavenVersion}</version>
 	  </dependency>
 	  <dependency>
         <groupId>org.codehaus.groovy.maven.runtime</groupId>
         <artifactId>gmaven-runtime-1.5</artifactId>
-        <version>${gmaven.version}</version>
+        <version>${gmavenVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
