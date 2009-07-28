@@ -58,7 +58,7 @@ public class DefaultPollServiceIntegrationTest extends AbstractTransactionalTemp
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
-                "META-INF/opennms/component-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
 				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
 		};
 	}

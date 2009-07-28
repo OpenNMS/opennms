@@ -70,7 +70,7 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
 				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
-				"META-INF/opennms/component-dao.xml",
+				"classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 		};
 	}

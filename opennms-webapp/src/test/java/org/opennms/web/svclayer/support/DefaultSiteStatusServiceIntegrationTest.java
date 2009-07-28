@@ -114,7 +114,7 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         return new String[] {
                 "META-INF/opennms/applicationContext-dao.xml",
                 "META-INF/opennms/applicationContext-databasePopulator.xml",
-                "META-INF/opennms/component-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml",
                 
         };

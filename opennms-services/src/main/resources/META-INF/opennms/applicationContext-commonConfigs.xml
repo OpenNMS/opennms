@@ -56,15 +56,7 @@
   
     <bean id="linkdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="linkdConfig-init">
       <property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.getInstance</value></property>
-     </bean>
-     
-    <bean id="rwsConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>
     </bean>
-  
-    <bean id="rwsConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rwsConfig-init">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.getInstance</value></property>
-     </bean>
      
 
 	<bean name="syncer" class="org.opennms.netmgt.capsd.JdbcCapsdDbSyncer">
