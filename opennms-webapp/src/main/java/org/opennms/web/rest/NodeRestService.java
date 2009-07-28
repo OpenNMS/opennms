@@ -183,11 +183,9 @@ public class NodeRestService extends OnmsRestService {
         addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsNode.class);
 
-        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+    	criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-
-        return criteria;
+        return getDistinctIdCriteria(criteria);
     }
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
