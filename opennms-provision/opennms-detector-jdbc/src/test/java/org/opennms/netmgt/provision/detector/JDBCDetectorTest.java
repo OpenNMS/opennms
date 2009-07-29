@@ -30,7 +30,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/detectors.xml", 
-                                   "classpath:/META-INF/opennms/applicationContext-dao.xml"})
+                                   "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                                   "classpath*:/META-INF/opennms/component-dao.xml"})
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
     TemporaryDatabaseExecutionListener.class,

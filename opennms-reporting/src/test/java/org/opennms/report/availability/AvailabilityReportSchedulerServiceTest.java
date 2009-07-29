@@ -71,6 +71,7 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
     protected String[] getConfigLocations() {
         return new String[] {
                 "META-INF/opennms/applicationContext-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
                 "org/opennms/report/svclayer/applicationContext-svclayer.xml" };
     }
 

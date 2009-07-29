@@ -69,6 +69,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",
         "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml"
 })

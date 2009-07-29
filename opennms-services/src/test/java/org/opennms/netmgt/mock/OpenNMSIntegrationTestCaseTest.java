@@ -48,6 +48,7 @@ public class OpenNMSIntegrationTestCaseTest extends OpenNMSIntegrationTestCase {
     protected String[] getConfigLocations() {
         return new String[] { 
                 "classpath:META-INF/opennms/applicationContext-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:META-INF/opennms/applicationContext-daemon.xml" 
         };
     }
