@@ -173,7 +173,7 @@ public class CoreScanActivities {
 
         if (!nodeScan.isAborted()) {
             OnmsIpInterface primaryIface = nodeScan.getNode().getPrimaryInterface();
-            if (primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
+            if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
                 nodeScan.doAgentScan(currentPhase, primaryIface.getInetAddress(), "SNMP");
                 foundAgent = true;
             }
