@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <!--
    | put company details here
@@ -49,6 +49,7 @@
     <module>provision</module>
     <module>org.rxtx</module>
     <module>org.opennms.smslib</module>
+    <module>bundle-tests</module>
   </modules>
 
   <build>
@@ -62,8 +63,7 @@
            | some example Pax-Runner settings
           -->
           <provision>
-            <param>--platform=equinox</param>
-            <param>--profiles=minimal</param>
+            <param>--platform=felix</param>
           </provision>
         </configuration>
         <executions>
@@ -74,6 +74,13 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>

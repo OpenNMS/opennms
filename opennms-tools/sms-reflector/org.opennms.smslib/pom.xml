@@ -18,7 +18,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.sms-reflector</groupId>
   <artifactId>org.opennms.smslib</artifactId>
-  <version>3.4.2-SNAPSHOT-001-SNAPSHOT</version>
+  <version>3.4.2-SNAPSHOT</version>
 
   <name>${bundle.symbolicName} ${wrapped.version} [osgi]</name>
 
