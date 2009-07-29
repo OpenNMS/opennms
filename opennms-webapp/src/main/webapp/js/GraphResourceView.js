@@ -1,7 +1,6 @@
 Ext.BLANK_IMAGE_URL = "extJS/resources/images/default/s.gif";
 
 function standardResourceViewInit(elementId, dataArray, urlTemplate){
-	alert("urlTemplate: " + urlTemplate);
 	var pagesize = 10;
 	var fields = [
 				  {name:'value', mapping:'value'},
