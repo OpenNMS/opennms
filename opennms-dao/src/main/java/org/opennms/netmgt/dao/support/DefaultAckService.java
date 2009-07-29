@@ -67,11 +67,10 @@ public class DefaultAckService implements AckService {
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         
         if (ackables == null || ackables.size() < 1) {
-            throw new IllegalStateException("No acknowlegables in the datbase for ack: "+ack);
+            throw new IllegalStateException("No acknowlegables in the database for ack: "+ack);
         }
         
         for (Acknowledgeable ackable : ackables) {
-            
             switch (ack.getAckAction()) {
             case ACKNOWLEDGE:
                 ackable.acknowledge(ack.getAckUser());
