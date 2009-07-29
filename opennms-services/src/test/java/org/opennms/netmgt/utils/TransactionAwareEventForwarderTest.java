@@ -64,6 +64,7 @@ public class TransactionAwareEventForwarderTest extends AbstractTransactionalTem
     protected String[] getConfigLocations() {
         return new String[] {
           "META-INF/opennms/applicationContext-dao.xml",
+          "classpath*:/META-INF/opennms/component-dao.xml",
           "META-INF/opennms/applicationContext-daemon.xml",
           "org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
           "META-INF/opennms/mockEventIpcManager.xml",
