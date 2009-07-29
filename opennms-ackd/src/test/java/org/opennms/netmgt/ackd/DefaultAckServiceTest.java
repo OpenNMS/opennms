@@ -49,6 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.dao.support.DefaultAckService;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -102,6 +104,8 @@ public class DefaultAckServiceTest {
 
     @Autowired NotificationDao m_notifDao;
     
+    @Autowired AlarmDao m_alarmDao;
+    
     @Autowired EventDao m_eventDao;
     
     @Autowired NodeDao m_nodeDao;
@@ -125,40 +129,51 @@ public class DefaultAckServiceTest {
         Assert.assertNotNull(m_populator);
     }
     
+    @Transactional @Test(expected=IllegalStateException.class)
+    public void notificationWithMissingAlarm() {
+        
+        OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
+        OnmsEvent event = getEvent(dbNode);
+        
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
+        alarm.setDescription(event.getEventDescr());
+        alarm.setDistPoller(event.getDistPoller());
+        alarm.setEventParms(event.getEventParms());
+        alarm.setFirstEventTime(event.getEventTime());
+        alarm.setIfIndex(event.getIfIndex());
+        alarm.setIpAddr(event.getIpAddr());
+        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setLogMsg(event.getEventLogMsg());
+        alarm.setMouseOverText(event.getEventMouseOverText());
+        alarm.setNode(dbNode);
+        alarm.setSeverityId(event.getEventSeverity());
+        alarm.setUei(event.getEventUei());
+        alarm.setCounter(1);
+        m_alarmDao.save(alarm);
+        m_alarmDao.flush();
+
+        getNotification(event);
+
+        OnmsAcknowledgment ack = new OnmsAcknowledgment();
+        ack.setRefId(alarm.getAckId());
+        ack.setAckType(alarm.getType());
+
+        m_alarmDao.delete(alarm);
+        m_alarmDao.flush();
+
+        m_ackService.processAck(ack);
+    }
+ 
     @Transactional @Test 
     public void proccessAck() {
         
         OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
-
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(dbNode.getDistPoller());
-        event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setNode(dbNode);
-        m_eventDao.save(event);
+        OnmsEvent event = getEvent(dbNode);
+        OnmsNotification notif = getNotification(event);
+        // OnmsUserNotification un = getUserNotification(notif);
         
-        OnmsNotification notif = new OnmsNotification();
-        notif.setEvent(event);
-        notif.setNode(dbNode);
-        notif.setNumericMsg("123456");
-        notif.setPageTime(Calendar.getInstance().getTime());
-        notif.setSubject("ackd notif test");
-        notif.setTextMsg("ackd notif test");
-        
-        OnmsUserNotification un = new OnmsUserNotification();
-        un.setUserId("admin");
-        un.setNotification(notif);
-        Set<OnmsUserNotification> usersNotified = new HashSet<OnmsUserNotification>();
-        usersNotified.add(un);
-        notif.setUsersNotified(usersNotified);
-        m_notifDao.save(notif);
-        m_notifDao.flush();
-
         Assert.assertTrue(m_notifDao.countAll() > 0);
         
         List<OnmsNotification> notifs = m_notifDao.findAll();
@@ -174,6 +189,50 @@ public class DefaultAckServiceTest {
         Acknowledgeable ackable = ackables.get(0);
         Assert.assertEquals("admin", ackable.getAckUser());
         
+    }
+
+    @SuppressWarnings("unused")
+    private OnmsUserNotification getUserNotification(OnmsNotification notif) {
+        OnmsUserNotification un = new OnmsUserNotification();
+        un.setUserId("admin");
+        un.setNotification(notif);
+        Set<OnmsUserNotification> usersNotified = new HashSet<OnmsUserNotification>();
+        usersNotified.add(un);
+        notif.setUsersNotified(usersNotified);
+        m_notifDao.save(notif);
+        m_notifDao.flush();
+        
+        return un;
+    }
+
+    private OnmsNotification getNotification(OnmsEvent event) {
+        OnmsNotification notif = new OnmsNotification();
+        notif.setEvent(event);
+        notif.setNode(event.getNode());
+        notif.setNumericMsg("123456");
+        notif.setPageTime(Calendar.getInstance().getTime());
+        notif.setSubject("ackd notif test");
+        notif.setTextMsg("ackd notif test");
+        m_notifDao.save(notif);
+        m_notifDao.flush();
+        
+        return notif;
+    }
+
+    private OnmsEvent getEvent(OnmsNode node) {
+        OnmsEvent event = new OnmsEvent();
+        event.setDistPoller(node.getDistPoller());
+        event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
+        event.setEventTime(new Date());
+        event.setEventSource("test");
+        event.setEventCreateTime(new Date());
+        event.setEventSeverity(1);
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setNode(node);
+        m_eventDao.save(event);
+        m_eventDao.flush();
+        return event;
     }
 
 }
