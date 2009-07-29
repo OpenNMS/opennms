@@ -37,6 +37,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -114,7 +115,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
 
     public String getNumericValue() {
         if (getValue() == null) {
-            log().info("No data collected for attribute "+this+". Skipping");
+            log().debug("No data collected for attribute "+this+". Skipping");
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());
@@ -122,7 +123,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
-                log().warn("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+                log().log(Level.TRACE, "Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
                 return null;
             }
         }

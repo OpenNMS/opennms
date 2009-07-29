@@ -11,6 +11,12 @@
  * Modifications:
  * 
  * Created: May 30, 2006
+ * This file is part of the OpenNMS(R) Application. OpenNMS(R) is Copyright
+ * (C) 2006-2009 The OpenNMS Group, Inc. All rights reserved. OpenNMS(R) is a
+ * derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights
+ * for modified and included code are below. OpenNMS(R) is a registered
+ * trademark of The OpenNMS Group, Inc. Modifications: Created: May 30, 2006
  * 2009 Mar 23: Add support for discarding messages. - jeffg@opennms.org
  *
  * Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -38,6 +44,8 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 import org.apache.log4j.Category;
@@ -46,7 +54,6 @@ import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
 /**
- * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
@@ -62,7 +69,7 @@ public class SyslogConnection implements Runnable {
     private int _hostGroup;
 
     private int _messageGroup;
-    
+
     private String _discardUei;
 
     private UeiList _ueiList;
@@ -71,9 +78,8 @@ public class SyslogConnection implements Runnable {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
-    public SyslogConnection(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup,
-                            UeiList ueiList, HideMessage hideMessages, String discardUei) {
-        _packet = packet;
+    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+        _packet = copyPacket(packet);
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
         _messageGroup = messageGroup;
@@ -85,38 +91,28 @@ public class SyslogConnection implements Runnable {
     }
 
     public void run() {
-        {
+        ThreadCategory.setPrefix(m_logPrefix);
+        Category log = ThreadCategory.getInstance(getClass());
 
-            ThreadCategory.setPrefix(m_logPrefix);
-            Category log = ThreadCategory.getInstance(getClass());
-
-            ConvertToEvent re = null;
-            try {
-                re = ConvertToEvent.make(_packet.getAddress(),
-                        _packet.getPort(),
-                        _packet.getData(),
-                        _packet.getLength(), _matchPattern, _hostGroup, _messageGroup,
-                        _ueiList, _hideMessages, _discardUei);
-            } catch (UnsupportedEncodingException e1) {
-                log.debug("Failure to convert package");
-            } catch (MessageDiscardedException e) {
-                log.debug("Message discarded, returning without enqueueing event.");
-                return;
-            }
-
-            log.debug("Sending received packet to the queue");
-
-            SyslogHandler.queueManager.putInQueue(re);
-            // delay a random period of time
-            try {
-                Thread.sleep((new Random()).nextInt(100));
-            } catch (InterruptedException e) {
-                log.debug("Syslogd: Interruption " + e);
-            }
-
+        ConvertToEvent re = null;
+        try {
+            re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
+        } catch (UnsupportedEncodingException e1) {
+            log.debug("Failure to convert package");
+        } catch (MessageDiscardedException e) {
+            log.debug("Message discarded, returning without enqueueing event.");
+            return;
         }
-        // We just add to the queue so we do not notify
-        // in the middle of stuff.
+
+        log.debug("Sending received packet to the queue");
+
+        SyslogHandler.queueManager.putInQueue(re);
+        // delay a random period of time
+        try {
+            Thread.sleep((new Random()).nextInt(100));
+        } catch (InterruptedException e) {
+            log.debug("Syslogd: Interruption " + e);
+        }
 
     }
 
@@ -124,5 +120,24 @@ public class SyslogConnection implements Runnable {
         m_logPrefix = prefix;
     }
 
+    private DatagramPacket copyPacket(final DatagramPacket packet) {
+        byte[] message = new byte[packet.getLength()];
+        System.arraycopy(packet.getData(), 0, message, 0, packet.getLength());
+        InetAddress addr = null;
+        try {
+            addr = InetAddress.getByAddress(packet.getAddress().getHostName(), packet.getAddress().getAddress());
+            DatagramPacket retPacket = new DatagramPacket(
+                                                          message,
+                                                          packet.getOffset(),
+                                                          packet.getLength(),
+                                                          addr,
+                                                          packet.getPort()
+                                                      );
+                                                      return retPacket;
+        } catch (UnknownHostException e) {
+            ThreadCategory.getInstance(getClass()).warn("unable to clone InetAddress object for " + packet.getAddress());
+        }
+        return null;
+    }
 }
 // END OF CLASS

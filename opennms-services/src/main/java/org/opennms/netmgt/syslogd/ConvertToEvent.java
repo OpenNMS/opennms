@@ -85,16 +85,10 @@ final class ConvertToEvent {
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
-    @SuppressWarnings("unused")
-    private static String m_localAddr;
-
     /**
      * The received XML event, decoded using the US-ASCII encoding.
      */
     private String m_eventXML;
-
-    @SuppressWarnings("unused")
-    private static Event e;
 
     /**
      * The decoded event document. The classes are defined in an XSD and
@@ -139,14 +133,10 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(DatagramPacket packet, String matchPattern,
-                               int hostGroup, int messageGroup,
-                               UeiList ueiList, HideMessage hideMessage,
-                               String discardUei)
-
+    static ConvertToEvent make(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup, UeiList ueiList,
+            HideMessage hideMessage, String discardUei)
             throws UnsupportedEncodingException, MessageDiscardedException {
-        return make(packet.getAddress(), packet.getPort(), packet.getData(),
-                packet.getLength(), matchPattern, hostGroup, messageGroup,
+        return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), matchPattern, hostGroup, messageGroup,
                 ueiList, hideMessage, discardUei);
     }
 
