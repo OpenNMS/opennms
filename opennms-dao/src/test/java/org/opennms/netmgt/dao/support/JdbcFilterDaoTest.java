@@ -74,6 +74,7 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     protected String[] getConfigLocations() {
         return new String[] {
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         };
     }
