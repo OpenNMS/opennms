@@ -48,6 +48,8 @@ import org.opennms.netmgt.config.syslogd.UeiList;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -161,13 +163,11 @@ class SyslogReceiver implements Runnable {
             log.debug("Thread context started");
 
         // allocate a buffer
-        //
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
 
         // set an SO timout to make sure we don't block forever
         // if a socket is closed.
-        //
         try {
             log.debug("Setting socket timeout to 500ms");
             m_dgSock.setSoTimeout(500);
@@ -179,7 +179,6 @@ class SyslogReceiver implements Runnable {
 
         // Increase the receive buffer for the
         // socket
-        //
         try {
             log.debug("Setting receive buffer size to " + length);
             m_dgSock.setReceiveBufferSize(length);
@@ -202,10 +201,16 @@ class SyslogReceiver implements Runnable {
                     log.debug("Wating on a datagram to arrive");
                 DatagramPacket pkt = new DatagramPacket(buffer, length);
                 m_dgSock.receive(pkt);
+                //SyslogConnection *Must* copy pkt datas and InetAddress as DatagramPacket is a mutable type
                 Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 worker.start();
                 ioInterrupted = false; // reset the flag
-            } catch (InterruptedIOException e) {
+            }
+		catch (SocketTimeoutException e) {
+		  ioInterrupted = true;
+		  continue;
+		} 
+		catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
