@@ -342,6 +342,9 @@ final class ConvertToEvent {
                 message = m.group(messageGroup);
                 log.debug("Regexp used to find node: " + event.getNodeid());
             }
+        } else {
+            log.debug("Regexp not matched message: " + message);            
+            throw new MessageDiscardedException();
         }
 
         // We will need these shortly
