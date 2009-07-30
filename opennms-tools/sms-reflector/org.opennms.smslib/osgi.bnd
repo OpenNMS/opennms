@@ -7,3 +7,4 @@
 # to also inline dependencies of this artifact add Embed-Transitive: true
 #
 Embed-Dependency: *;scope=compile|runtime;type=!pom;inline=true
+Import-Package: *,gnu.io;resolution:=optional,javax.comm;resolution:=optional

@@ -1,14 +1,19 @@
 package org.opennms.sms.reflector;
 
-import static org.junit.Assert.*;
-import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.provision;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Inject;
@@ -31,272 +36,286 @@ import org.smslib.AGateway.Protocols;
 import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 import org.smslib.crypto.AESKey;
+import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
 import org.smslib.test.TestGateway;
 
 @RunWith(JUnit4TestRunner.class)
 public class SmsLibTest {
-	
-	@Configuration
-	public static Option[] configuration(){
-		return options(felix(), provision(
-				mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service"),
-				mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api"),
-				mavenBundle().groupId("org.opennms.sms-reflector").artifactId("org.opennms.smslib").version("3.4.2-SNAPSHOT"),
-				mavenBundle().groupId("commons-net").artifactId("commons-net"),
-				mavenBundle().groupId("org.opennms.sms-reflector").artifactId("org.rxtx").version("2.2pre2-001-SNAPSHOT")
-		));
-	}
-	
-	@Inject
-	private BundleContext m_bundleContext;
-	
-	@Test
-	public void myFirstTest(){
-		assertNotNull(m_bundleContext);
-	}
-	
-	 public class OutboundNotification implements IOutboundMessageNotification {
-	        public void process(String gatewayId, OutboundMessage msg) {
-	            System.out.println("Outbound handler called from Gateway: "
-	                    + gatewayId);
-	            System.out.println(msg);
-	        }
-	    }
 
-	    @Test
-	    public void testSendAMessage() throws Exception {
-	        Service srv = null;
-	        try {
-	            OutboundMessage msg;
-	            OutboundNotification outboundNotification = new OutboundNotification();
-	            System.out.println("Example: Send message from a serial gsm modem.");
-	            System.out.println(Library.getLibraryDescription());
-	            System.out.println("Version: " + Library.getLibraryVersion());
-	            srv = new Service();
-	            // SerialModemGateway gateway = new
-	            // SerialModemGateway("modem.com1", "COM1", 57600, "Nokia",
-	            // "6310i");
-	            AGateway gateway = createGateway();
-	            gateway.setInbound(true);
-	            gateway.setOutbound(true);
-	            srv.setOutboundNotification(outboundNotification);
-	            srv.addGateway(gateway);
-	            srv.startService();
+    @Configuration
+    public static Option[] configuration(){
+        return options(equinox(), provision(
+                mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service"),
+                mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api"),
+                mavenBundle().groupId("org.opennms.sms-reflector").artifactId("org.opennms.smslib").version("3.4.2-SNAPSHOT"),
+                mavenBundle().groupId("commons-net").artifactId("commons-net"),
+                mavenBundle().groupId("org.rxtx").artifactId("rxtx-osgi").version("2.2-pre2")
+        ));
+    }
 
-	            printGatewayInfo(gateway);
+    @Inject
+    private BundleContext m_bundleContext;
 
-	            // Send a message synchronously.
-	            msg = new OutboundMessage("+19198124984",
-	                                      "If you can read this then I got SMSLib to work from my mac!");
-	            // msg = new OutboundMessage("+19194125045",
-	            // "If you can read this then I got SMSLib to work from my mac!");
-	            srv.sendMessage(msg);
-	            System.out.println(msg);
+    @Test
+    @Ignore
+    public void myFirstTest(){
+        assertNotNull(m_bundleContext);
+    }
+    
+    @Test
+    public void testCommPortEnumerator() {
+         Enumeration<CommPortIdentifier> commPorts = CommPortIdentifier.getPortIdentifiers();
+         
+         while(commPorts.hasMoreElements()) {
+             CommPortIdentifier commPort = commPorts.nextElement();
+             System.err.println(commPort.getName());
+         }
+    }
 
-	        } finally {
-	            if (srv != null)
-	                srv.stopService();
-	        }
-	    }
+    @Test
+    @Ignore
+    public void testSendAMessage() throws Exception {
+        Service srv = null;
+        try {
+            OutboundMessage msg;
+            OutboundNotification outboundNotification = new OutboundNotification();
+            System.out.println("Example: Send message from a serial gsm modem.");
+            System.out.println(Library.getLibraryDescription());
+            System.out.println("Version: " + Library.getLibraryVersion());
+            srv = new Service();
+            // SerialModemGateway gateway = new
+            // SerialModemGateway("modem.com1", "COM1", 57600, "Nokia",
+            // "6310i");
+            AGateway gateway = createGateway();
+            gateway.setInbound(true);
+            gateway.setOutbound(true);
+            srv.setOutboundNotification(outboundNotification);
+            srv.addGateway(gateway);
+            srv.startService();
 
-	    private void printGatewayInfo(AGateway gw) throws Exception {
-	        System.out.println();
-	        System.out.println(gw);
-	        if (gw instanceof ModemGateway) {
-	            ModemGateway gateway = (ModemGateway) gw;
-	            System.out.println();
-	            System.out.println("Modem Information:");
-	            System.out.println("  Manufacturer: " + gateway.getManufacturer());
-	            System.out.println("  Model: " + gateway.getModel());
-	            System.out.println("  Serial No: " + gateway.getSerialNo());
-	            System.out.println("  SIM IMSI: " + gateway.getImsi());
-	            System.out.println("  Signal Level: " + gateway.getSignalLevel()
-	                    + "%");
-	            System.out.println("  Battery Level: "
-	                    + gateway.getBatteryLevel() + "%");
-	            System.out.println();
-	        }
-	    }
+            printGatewayInfo(gateway);
 
-	    private AGateway createGateway() {
-	        File file = new File("/dev/tty.usbmodem2414");
-	        if (file.exists()) {
-	            return new SerialModemGateway("modem.com1",
-	                                          "/dev/tty.usbmodem2414", 57600,
-	                                          "SonyEricsson", "W760");
-	        } else {
-	            return new TestGateway("testGateway") {
+            // Send a message synchronously.
+            msg = new OutboundMessage("+19198124984",
+            "If you can read this then I got SMSLib to work from my mac!");
+            // msg = new OutboundMessage("+19194125045",
+            // "If you can read this then I got SMSLib to work from my mac!");
+            srv.sendMessage(msg);
+            System.out.println(msg);
 
-	                @Override
-	                public int getQueueSchedulingInterval() {
-	                    return 1000;
-	                }
-	                
-	            };
-	        }
-	    }
+        } finally {
+            if (srv != null)
+                srv.stopService();
+        }
+    }
 
-	    // ReadMessages.java - Sample application.
-	    //
-	    // This application shows you the basic procedure needed for reading
-	    // SMS messages from your GSM modem, in synchronous mode.
-	    //
-	    // Operation description:
-	    // The application setup the necessary objects and connects to the phone.
-	    // As a first step, it reads all messages found in the phone.
-	    // Then, it goes to sleep, allowing the asynchronous callback handlers to
-	    // be called. Furthermore, for callback demonstration purposes, it
-	    // responds
-	    // to each received message with a "Got It!" reply.
-	    //
-	    // Tasks:
-	    // 1) Setup Service object.
-	    // 2) Setup one or more Gateway objects.
-	    // 3) Attach Gateway objects to Service object.
-	    // 4) Setup callback notifications.
-	    // 5) Run
+    private void printGatewayInfo(AGateway gw) throws Exception {
+        System.out.println();
+        System.out.println(gw);
+        if (gw instanceof ModemGateway) {
+            ModemGateway gateway = (ModemGateway) gw;
+            System.out.println();
+            System.out.println("Modem Information:");
+            System.out.println("  Manufacturer: " + gateway.getManufacturer());
+            System.out.println("  Model: " + gateway.getModel());
+            System.out.println("  Serial No: " + gateway.getSerialNo());
+            System.out.println("  SIM IMSI: " + gateway.getImsi());
+            System.out.println("  Signal Level: " + gateway.getSignalLevel()
+                    + "%");
+            System.out.println("  Battery Level: "
+                    + gateway.getBatteryLevel() + "%");
+            System.out.println();
+        }
+    }
 
-	    @Test
-	    public void testReadMessage() throws Exception {
-	        Service srv = null;
-	        // Define a list which will hold the phonebook entries.
-	        Phonebook phonebook;
+    private AGateway createGateway() {
+        File file = new File("/dev/tty.usbmodem2414");
+        if (file.exists()) {
+            return new SerialModemGateway("modem.com1",
+                    "/dev/tty.usbmodem2414", 57600,
+                    "SonyEricsson", "W760");
+        } else {
+            return new TestGateway("testGateway") {
 
-	        // Define a list which will hold the read messages.
-	        List<InboundMessage> msgList;
+                @Override
+                public int getQueueSchedulingInterval() {
+                    return 1000;
+                }
 
-	        // Create the notification callback method for inbound & status report
-	        // messages.
-	        InboundNotification inboundNotification = new InboundNotification();
+            };
+        }
+    }
 
-	        // Create the notification callback method for inbound voice calls.
-	        CallNotification callNotification = new CallNotification();
+    // ReadMessages.java - Sample application.
+    //
+    // This application shows you the basic procedure needed for reading
+    // SMS messages from your GSM modem, in synchronous mode.
+    //
+    // Operation description:
+    // The application setup the necessary objects and connects to the phone.
+    // As a first step, it reads all messages found in the phone.
+    // Then, it goes to sleep, allowing the asynchronous callback handlers to
+    // be called. Furthermore, for callback demonstration purposes, it
+    // responds
+    // to each received message with a "Got It!" reply.
+    //
+    // Tasks:
+    // 1) Setup Service object.
+    // 2) Setup one or more Gateway objects.
+    // 3) Attach Gateway objects to Service object.
+    // 4) Setup callback notifications.
+    // 5) Run
 
-	        // Create the notification callback method for gateway statuses.
-	        GatewayStatusNotification statusNotification = new GatewayStatusNotification();
+    @Test
+    @Ignore
+    public void testReadMessage() throws Exception {
+        Service srv = null;
+        // Define a list which will hold the phonebook entries.
+        Phonebook phonebook;
 
-	        try {
-	            System.out.println("Example: Read messages from a serial gsm modem.");
-	            System.out.println(Library.getLibraryDescription());
-	            System.out.println("Version: " + Library.getLibraryVersion());
+        // Define a list which will hold the read messages.
+        List<InboundMessage> msgList;
 
-	            // Create new Service object - the parent of all and the main
-	            // interface
-	            // to you.
-	            srv = new Service();
+        // Create the notification callback method for inbound & status report
+        // messages.
+        InboundNotification inboundNotification = new InboundNotification();
 
-	            // Create the Gateway representing the serial GSM modem.
-	            AGateway gateway = createGateway();
+        // Create the notification callback method for inbound voice calls.
+        CallNotification callNotification = new CallNotification();
 
-	            // Set the modem protocol to PDU (alternative is TEXT). PDU is the
-	            // default, anyway...
-	            gateway.setProtocol(Protocols.PDU);
+        // Create the notification callback method for gateway statuses.
+        GatewayStatusNotification statusNotification = new GatewayStatusNotification();
 
-	            // Do we want the Gateway to be used for Inbound messages?
-	            gateway.setInbound(true);
+        try {
+            System.out.println("Example: Read messages from a serial gsm modem.");
+            System.out.println(Library.getLibraryDescription());
+            System.out.println("Version: " + Library.getLibraryVersion());
 
-	            // Do we want the Gateway to be used for Outbound messages?
-	            gateway.setOutbound(true);
+            // Create new Service object - the parent of all and the main
+            // interface
+            // to you.
+            srv = new Service();
 
-	            // Set up the notification methods.
-	            srv.setInboundNotification(inboundNotification);
-	            srv.setCallNotification(callNotification);
-	            srv.setGatewayStatusNotification(statusNotification);
+            // Create the Gateway representing the serial GSM modem.
+            AGateway gateway = createGateway();
 
-	            // Add the Gateway to the Service object.
-	            srv.addGateway(gateway);
+            // Set the modem protocol to PDU (alternative is TEXT). PDU is the
+            // default, anyway...
+            gateway.setProtocol(Protocols.PDU);
 
-	            // Similarly, you may define as many Gateway objects, representing
-	            // various GSM modems, add them in the Service object and control
-	            // all of them.
+            // Do we want the Gateway to be used for Inbound messages?
+            gateway.setInbound(true);
 
-	            // Start! (i.e. connect to all defined Gateways)
-	            srv.startService();
+            // Do we want the Gateway to be used for Outbound messages?
+            gateway.setOutbound(true);
 
-	            // Printout some general information about the modem.
-	            printGatewayInfo(gateway);
+            // Set up the notification methods.
+            srv.setInboundNotification(inboundNotification);
+            srv.setCallNotification(callNotification);
+            srv.setGatewayStatusNotification(statusNotification);
 
-	            // In case you work with encrypted messages, its a good time to
-	            // declare your keys.
-	            // Create a new AES Key with a known key value.
-	            // Register it in KeyManager in order to keep it active. SMSLib
-	            // will then automatically
-	            // encrypt / decrypt all messages send to / received from this
-	            // number.
-	            srv.getKeyManager().registerKey("+306948494037", new AESKey(new SecretKeySpec("0011223344556677".getBytes(), "AES")));
+            // Add the Gateway to the Service object.
+            srv.addGateway(gateway);
 
-	            // Read Messages. The reading is done via the Service object and
-	            // affects all Gateway objects defined. This can also be more
-	            // directed to a specific
-	            // Gateway - look the JavaDocs for information on the Service
-	            // method calls.
-	            msgList = new ArrayList<InboundMessage>();
-	            srv.readMessages(msgList, MessageClasses.ALL);
-	            for (InboundMessage msg : msgList)
-	                System.out.println(msg);
+            // Similarly, you may define as many Gateway objects, representing
+            // various GSM modems, add them in the Service object and control
+            // all of them.
 
-	            /*
-	             * // Read Phonebook. phonebook = new Phonebook();
-	             * System.out.println("TOTAL PHONEBOOK ENTRIES = " +
-	             * srv.readPhonebook(phonebook, gateway.getGatewayId())); // Print
-	             * out all contacts retrieved. for (Contact entry :
-	             * phonebook.getContacts()) System.out.println(entry); // Print
-	             * out contact stored on the SIM card. for (Contact entry :
-	             * phonebook.getContacts(Contact.ContactLocation.SIM_ENTRIES))
-	             * System.out.println(entry);
-	             */
+            // Start! (i.e. connect to all defined Gateways)
+            srv.startService();
 
-	            // Sleep now. Emulate real world situation and give a chance to
-	            // the notifications
-	            // methods to be called in the event of message or voice call
-	            // reception.
-	            
-	            Thread.sleep(20000);
+            // Printout some general information about the modem.
+            printGatewayInfo(gateway);
 
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        } finally {
-	            if (srv != null) srv.stopService();
-	        }
-	    }
+            // In case you work with encrypted messages, its a good time to
+            // declare your keys.
+            // Create a new AES Key with a known key value.
+            // Register it in KeyManager in order to keep it active. SMSLib
+            // will then automatically
+            // encrypt / decrypt all messages send to / received from this
+            // number.
+            srv.getKeyManager().registerKey("+306948494037", new AESKey(new SecretKeySpec("0011223344556677".getBytes(), "AES")));
 
-	    public class InboundNotification implements IInboundMessageNotification {
-	        public void process(String gatewayId, MessageTypes msgType,
-	                InboundMessage msg) {
-	            if (msgType == MessageTypes.INBOUND)
-	                System.out.println(">>> New Inbound message detected from Gateway: "
-	                        + gatewayId);
-	            else if (msgType == MessageTypes.STATUSREPORT)
-	                System.out.println(">>> New Inbound Status Report message detected from Gateway: "
-	                        + gatewayId);
-	            System.out.println(msg);
-	            try {
-	                // Uncomment following line if you wish to delete the message
-	                // upon arrival.
-	                // ReadMessages.this.srv.deleteMessage(msg);
-	            } catch (Exception e) {
-	                System.out.println("Oops!!! Something gone bad...");
-	                e.printStackTrace();
-	            }
-	        }
-	    }
+            // Read Messages. The reading is done via the Service object and
+            // affects all Gateway objects defined. This can also be more
+            // directed to a specific
+            // Gateway - look the JavaDocs for information on the Service
+            // method calls.
+            msgList = new ArrayList<InboundMessage>();
+            srv.readMessages(msgList, MessageClasses.ALL);
+            for (InboundMessage msg : msgList)
+                System.out.println(msg);
 
-	    public class CallNotification implements ICallNotification {
-	        public void process(String gatewayId, String callerId) {
-	            System.out.println(">>> New call detected from Gateway: "
-	                    + gatewayId + " : " + callerId);
-	        }
-	    }
+            /*
+             * // Read Phonebook. phonebook = new Phonebook();
+             * System.out.println("TOTAL PHONEBOOK ENTRIES = " +
+             * srv.readPhonebook(phonebook, gateway.getGatewayId())); // Print
+             * out all contacts retrieved. for (Contact entry :
+             * phonebook.getContacts()) System.out.println(entry); // Print
+             * out contact stored on the SIM card. for (Contact entry :
+             * phonebook.getContacts(Contact.ContactLocation.SIM_ENTRIES))
+             * System.out.println(entry);
+             */
 
-	    public class GatewayStatusNotification implements
-	            IGatewayStatusNotification {
-	        public void process(String gatewayId, GatewayStatuses oldStatus,
-	                GatewayStatuses newStatus) {
-	            System.out.println(">>> Gateway Status change for " + gatewayId
-	                    + ", OLD: " + oldStatus + " -> NEW: " + newStatus);
-	        }
-	    }
+            // Sleep now. Emulate real world situation and give a chance to
+            // the notifications
+            // methods to be called in the event of message or voice call
+            // reception.
+
+            Thread.sleep(20000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (srv != null) srv.stopService();
+        }
+    }
+
+    public class OutboundNotification implements IOutboundMessageNotification {
+        public void process(String gatewayId, OutboundMessage msg) {
+            System.out.println("Outbound handler called from Gateway: "
+                    + gatewayId);
+            System.out.println(msg);
+        }
+    }
+
+    public class InboundNotification implements IInboundMessageNotification {
+        public void process(String gatewayId, MessageTypes msgType,
+                InboundMessage msg) {
+            if (msgType == MessageTypes.INBOUND)
+                System.out.println(">>> New Inbound message detected from Gateway: "
+                        + gatewayId);
+            else if (msgType == MessageTypes.STATUSREPORT)
+                System.out.println(">>> New Inbound Status Report message detected from Gateway: "
+                        + gatewayId);
+            System.out.println(msg);
+            try {
+                // Uncomment following line if you wish to delete the message
+                // upon arrival.
+                // ReadMessages.this.srv.deleteMessage(msg);
+            } catch (Exception e) {
+                System.out.println("Oops!!! Something gone bad...");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public class CallNotification implements ICallNotification {
+        public void process(String gatewayId, String callerId) {
+            System.out.println(">>> New call detected from Gateway: "
+                    + gatewayId + " : " + callerId);
+        }
+    }
+
+    public class GatewayStatusNotification implements
+    IGatewayStatusNotification {
+        public void process(String gatewayId, GatewayStatuses oldStatus,
+                GatewayStatuses newStatus) {
+            System.out.println(">>> Gateway Status change for " + gatewayId
+                    + ", OLD: " + oldStatus + " -> NEW: " + newStatus);
+        }
+    }
 
 }
