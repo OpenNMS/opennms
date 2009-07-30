@@ -303,6 +303,12 @@ final class ConvertToEvent {
         * node to match against nodeId.
          */
 
+        // Antonio: Here seems to me a duplicated match
+        // m is setted why i need to reassign?
+        // What is wrong?
+        // This is causing a trouble generating syslog events not needed
+        // I added an else with trowing 
+        // Bug # 3278
         if ((m = pattern.matcher(message)).matches()) {
 
             log.debug("Regexp matched message: " + message);
@@ -343,7 +349,7 @@ final class ConvertToEvent {
                 log.debug("Regexp used to find node: " + event.getNodeid());
             }
         } else {
-            log.debug("Regexp not matched message: " + message);            
+            log.error("Regexp not matched message: " + message);            
             throw new MessageDiscardedException();
         }
 
