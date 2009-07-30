@@ -14,6 +14,7 @@ public final class Activator
 {
     
     ServiceRegistration m_registration;
+    SmsCommands m_commandService;
     /**
      * Called whenever the OSGi framework starts our bundle
      */
@@ -26,7 +27,8 @@ public final class Activator
         // add specific service properties here...
 
         System.out.println( "REGISTER org.opennms.sms.reflector.commands.GetPropsCommand" );
-
+        
+        m_commandService = new SmsCommands(bc);
         // Register our example service implementation in the OSGi service registry
         m_registration = bc.registerService( CommandProvider.class.getName(), new SmsCommands(bc), null );
     }
@@ -40,6 +42,7 @@ public final class Activator
         System.out.println( "STOPPING org.opennms.sms.reflector.commands" );
 
         m_registration.unregister();
+        m_commandService.stopService();
     }
 }
 
