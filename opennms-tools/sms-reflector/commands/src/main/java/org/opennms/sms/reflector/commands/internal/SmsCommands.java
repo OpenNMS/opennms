@@ -36,7 +36,7 @@ import org.smslib.modem.SerialModemGateway;
  */
 public class SmsCommands implements CommandProvider
 {
-    
+    private String m_port;
     private Service m_service;
     private OutboundNotification m_outboundNotification;
     private InboundNotification m_inboundNotification;
@@ -57,6 +57,26 @@ public class SmsCommands implements CommandProvider
 	          e.printStackTrace();
     		}
     	}
+    }
+    
+    public void smsSend(OutboundMessage msg){
+    	try{
+    		m_service.sendMessage(msg);
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public List<InboundMessage> checkMessages(){
+    	List<InboundMessage> msgList = new ArrayList<InboundMessage>();
+    	try{
+    		m_service.readMessages(msgList, MessageClasses.UNREAD);
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    	return msgList;
     }
     
     public Object _smsSend(CommandInterpreter intp) {
@@ -100,6 +120,37 @@ public class SmsCommands implements CommandProvider
 
         return null;
    }
+    
+    public Object _ussdSend(CommandInterpreter intp) {
+        String data = intp.nextArgument();
+        if (data == null) {
+            intp.println("usage: ussdSend <data>");
+            return null;
+        }
+        boolean isInteractive = false;
+        String interactiveStr = intp.nextArgument();
+        if (interactiveStr.equalsIgnoreCase("true")) {
+            isInteractive = true;
+        }
+        
+        intp.println("Data is : " + data);
+        intp.println("Interactive : " + isInteractive);
+        
+        String ussdResult = null;
+        try { 
+            ModemGateway gw;
+            gw = (ModemGateway) m_service.findGateway("modem."+m_port);
+            if (gw == null) {
+                intp.println("Onoes, gateway is null, bailing");
+                return null;
+            }
+            ussdResult = gw.sendUSSDCommand(data);
+            intp.println(ussdResult);
+        } catch (Exception e) {
+            intp.println("Caught exception sending USSD command: " + e.getMessage());
+        }
+        return ussdResult;
+    }
     
     public Object _checkMessages(CommandInterpreter intp){
     	
@@ -163,6 +214,7 @@ public class SmsCommands implements CommandProvider
 	        m_service.startService();
 	        
 	        printGatewayInfo(gateway, intp);
+	        m_port = port;
     	
     	}catch(Exception e){
     		intp.printStackTrace(e);
@@ -177,6 +229,7 @@ public class SmsCommands implements CommandProvider
        buffer.append("listPorts\n\t"); 
        buffer.append("smsSend <modemPort> <phonenumber> <text>\n\t"); 
        buffer.append("checkMessages\n\t");
+       buffer.append("ussdSend <data> <isInteractive>\n\t");
        return buffer.toString(); 
    } 
 
