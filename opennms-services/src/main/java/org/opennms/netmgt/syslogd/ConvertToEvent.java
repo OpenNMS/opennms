@@ -337,7 +337,7 @@ final class ConvertToEvent {
                 }
             }
         } else {
-            log.warn("Regexp not matched: " + message);            
+            log.debug("Regexp not matched: " + message);            
             throw new MessageDiscardedException();
         }
 
