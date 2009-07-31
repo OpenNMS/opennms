@@ -55,12 +55,14 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 /**
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
 class SyslogReceiver implements Runnable {
 
+    private static final int SOCKET_TIMEOUT = 500;
+    
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     /**
@@ -126,8 +128,7 @@ class SyslogReceiver implements Runnable {
         m_stop = true;
         if (m_context != null) {
             Category log = ThreadCategory.getInstance(getClass());
-            log.debug("Stopping and joining thread context "
-                    + m_context.getName());
+            log.debug("Stopping and joining thread context " + m_context.getName());
             m_context.interrupt();
             m_context.join();
             log.debug("Thread context stopped and joined");
@@ -148,11 +149,9 @@ class SyslogReceiver implements Runnable {
      */
     public void run() {
         // get the context
-        //
         m_context = Thread.currentThread();
 
         // Get a log instance
-        //
         ThreadCategory.setPrefix(m_logPrefix);
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -166,30 +165,25 @@ class SyslogReceiver implements Runnable {
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
 
-        // set an SO timout to make sure we don't block forever
+        // set an SO timeout to make sure we don't block forever
         // if a socket is closed.
         try {
-            log.debug("Setting socket timeout to 500ms");
-            m_dgSock.setSoTimeout(500);
+            log.debug("Setting socket timeout to " + SOCKET_TIMEOUT + "ms");
+            m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
         } catch (SocketException e) {
-            log.warn(
-                    "An I/O error occured while trying to set the socket timeout",
-                    e);
+            log.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
-        // Increase the receive buffer for the
-        // socket
+        // Increase the receive buffer for the socket
         try {
             log.debug("Setting receive buffer size to " + length);
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
             log.info("Failed to set the receive buffer to " + length, e);
         }
-        // set to avoid numerious tracing message
-        // 
+        // set to avoid numerous tracing message
         boolean ioInterrupted = false;
-        // now start processing incomming request
-        //
+        // now start processing incoming requests
         while (!m_stop) {
             if (m_context.isInterrupted()) {
                 log.debug("Thread context interrupted");
@@ -197,34 +191,33 @@ class SyslogReceiver implements Runnable {
             }
 
             try {
-                if (!ioInterrupted)
+                if (!ioInterrupted) {
                     log.debug("Wating on a datagram to arrive");
+                }
+
                 DatagramPacket pkt = new DatagramPacket(buffer, length);
                 m_dgSock.receive(pkt);
-                //SyslogConnection *Must* copy pkt datas and InetAddress as DatagramPacket is a mutable type
+
+                //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
                 Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 worker.start();
                 ioInterrupted = false; // reset the flag
-            }
-		catch (SocketTimeoutException e) {
-		  ioInterrupted = true;
-		  continue;
-		} 
-		catch (InterruptedIOException e) {
+            } catch (SocketTimeoutException e) {
+                ioInterrupted = true;
+                continue;
+            } catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
-                log.error(
-                        "An I/O exception occured on the datagram receipt port, exiting",
-                        e);
+                log.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;
             }
 
-        } // end while status ok
+        } // end while status OK
 
         log.debug("Thread context exiting");
 
-    } // end run method
+    }
 
     protected void setLogPrefix(String prefix) {
         m_logPrefix = prefix;

@@ -115,6 +115,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         // relies on you reading some of the logging....
 
         SyslogClient s = null;
+        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
         try {
             s = new SyslogClient(null, 0, SyslogClient.LOG_DEBUG);
             s.syslog(SyslogClient.LOG_ERR, "Hello.");
