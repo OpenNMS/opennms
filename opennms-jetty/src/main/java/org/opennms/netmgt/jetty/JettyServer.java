@@ -91,6 +91,8 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         if (ajp_port != null) {
             connector = new Ajp13SocketConnector();
             connector.setPort(ajp_port);
+            // Apache AJP connector freaks out with anything larger
+            connector.setHeaderBufferSize(8096);
             m_server.addConnector(connector);
         }
         
