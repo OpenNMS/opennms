@@ -122,24 +122,17 @@ public class SyslogdTest extends OpenNMSTestCase {
         } catch (UnknownHostException e) {
             //Failures are for weenies
         }
-
+        MockLogAppender.resetLogLevel();
     }
 
     public void testMyPatternsSyslogNG() {
         SyslogClient s = null;
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
+            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.google.com A SyslogNG style message");
         } catch (UnknownHostException e) {
             //Failures are for weenies
         }
-
-        //LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        //assertEquals("number of logged events", 0, events.length);
-        //assertEquals("first logged event severity (should be ERROR)", Level.ERROR, events[0].getLevel());
-
-        MockLogAppender.resetEvents();
-        MockLogAppender.resetLogLevel();
     }
 
     public void testIPPatternsSyslogNG() {
