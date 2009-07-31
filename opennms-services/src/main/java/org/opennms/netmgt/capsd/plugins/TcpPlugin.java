@@ -273,7 +273,6 @@ public final class TcpPlugin extends AbstractPlugin {
             }
             
             boolean result = isServer(address, port, retries, timeout, regex, bannerResult);
-            System.err.println("result: " + result);
             if (result && qualifiers != null) {
                 if (bannerResult != null && bannerResult.length() > 0)
                     qualifiers.put("banner", bannerResult.toString());
