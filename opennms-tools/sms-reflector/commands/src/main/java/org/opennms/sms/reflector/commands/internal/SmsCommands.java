@@ -36,15 +36,15 @@ import org.smslib.modem.SerialModemGateway;
  */
 public class SmsCommands implements CommandProvider
 {
-    private BundleContext m_context;
+    
     private Service m_service;
     private OutboundNotification m_outboundNotification;
     private InboundNotification m_inboundNotification;
     private CallNotification m_callNotification;
     private GatewayStatusNotification m_gatewayStatusNotification;
     
-    public SmsCommands(BundleContext context) {
-        m_context = context;
+    public SmsCommands() {
+        
     }
     
     public void stopService(){
