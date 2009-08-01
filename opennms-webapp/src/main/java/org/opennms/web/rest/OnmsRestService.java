@@ -19,7 +19,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -29,6 +28,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 public class OnmsRestService {
 
 	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
+
+	private List<Order> m_ordering = new ArrayList<Order>();
 
 	public OnmsRestService() {
 		super();
@@ -95,8 +96,6 @@ public class OnmsRestService {
 		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
 	    paramsCopy.putAll(params);
 
-	    System.err.println("params = " + paramsCopy);
-	    
 		if(paramsCopy.containsKey("query")) {
 			String query=paramsCopy.getFirst("query");
 			criteria.add(Restrictions.sqlRestriction(query));
@@ -118,8 +117,6 @@ public class OnmsRestService {
             paramsCopy.remove("node.id");
         }
         
-		System.err.println("matchType = " + matchType);
-
 		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
 		if(paramsCopy.containsKey("comparator")) {
@@ -154,7 +151,6 @@ public class OnmsRestService {
 		for(String key: paramsCopy.keySet()) {
 
 		    for (String stringValue : paramsCopy.get(key)) {
-		        System.err.println(String.format("parsing key/value: %s/%s", key, stringValue));
     			if("null".equals(stringValue)) {
     				criteriaList.add(Restrictions.isNull(key));
     			} else if ("notnull".equals(stringValue)) {
@@ -204,7 +200,6 @@ public class OnmsRestService {
 		        or = Restrictions.or(or, rhs);
 		    }
 		    
-		    System.err.println("criterion = " + or);
 		    criteria.add(or);
 		} else {
 		    for (Criterion c : criteriaList) {
@@ -229,11 +224,14 @@ public class OnmsRestService {
 				}
 				params.remove("order");
 			}
+			Order o;
 			if(orderAsc) {
-				criteria.addOrder(Order.asc(orderBy));
+			    o = Order.asc(orderBy);
 			} else {
-				criteria.addOrder(Order.desc(orderBy));
+				o = Order.desc(orderBy);
 			}
+			// criteria.addOrder(o);
+			m_ordering.add(o);
 		}
 	}
 	
@@ -278,7 +276,7 @@ public class OnmsRestService {
         return result.toString();
     }
 
-    protected OnmsCriteria getDistinctIdCriteria(OnmsCriteria criteria) {
+    protected OnmsCriteria getDistinctIdCriteria(Class<?> clazz, OnmsCriteria criteria) {
         criteria.setProjection(
                                Projections.distinct(
                                    Projections.projectionList().add(
@@ -286,9 +284,12 @@ public class OnmsRestService {
                                    )
                                )
                            );
-                           
-        OnmsCriteria rootCriteria = new OnmsCriteria(OnmsNode.class);
+
+        OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
+        for (Order o : m_ordering) {
+            rootCriteria.addOrder(o);
+        }
         return rootCriteria;
     }
     
