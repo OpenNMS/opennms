@@ -68,7 +68,7 @@ public class AlarmRestService extends OnmsRestService {
         addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsAlarm.class);
 
-        return new OnmsAlarmCollection(m_alarmDao.findMatching(criteria));
+        return new OnmsAlarmCollection(m_alarmDao.findMatching(getDistinctIdCriteria(OnmsAlarm.class, criteria)));
     }
     
     @PUT

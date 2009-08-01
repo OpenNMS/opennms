@@ -139,8 +139,9 @@ public class OnmsMapRestService extends OnmsRestService {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMap.class);
 
     	setLimitOffset(params, criteria, LIMIT);
+    	addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsMap.class);
 
-        return criteria;
+        return getDistinctIdCriteria(OnmsMap.class, criteria);
     }
 }
