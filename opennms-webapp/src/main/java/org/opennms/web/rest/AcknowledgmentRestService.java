@@ -114,9 +114,10 @@ public class AcknowledgmentRestService extends OnmsRestService {
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAcknowledgment.class);
 
     	setLimitOffset(params, criteria);
+    	addOrdering(params, criteria);
     	addFiltersToCriteria(params, criteria, OnmsAcknowledgment.class);
 
-        return new OnmsAcknowledgmentCollection(m_ackDao.findMatching(criteria));
+        return new OnmsAcknowledgmentCollection(m_ackDao.findMatching(getDistinctIdCriteria(OnmsAcknowledgment.class, criteria)));
     }
     
     @PUT
