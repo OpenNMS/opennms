@@ -125,8 +125,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         }
     }
 
-    @Ignore("has different behavior depending on OpenDNS")
-    public void testMyPatternsSyslogNG() {
+    public void XXXtestMyPatternsSyslogNG() {
         SyslogClient s = null;
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
