@@ -118,34 +118,30 @@ public class IfLabel extends Object {
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
             public void processRow(ResultSet rs) throws SQLException {
-                while (rs.next()) {
-                    // If the description portion of ifLabel matches an entry
-                    // in the snmpinterface table...
+                // If the description portion of ifLabel matches an entry
+                // in the snmpinterface table...
 
-                    /*
-                     * When Cisco Express Forwarding (CEF) or some ATM encapsulations
-                     * (AAL5) are used on Cisco routers, an additional entry might be 
-                     * in the ifTable for these sub-interfaces, but there is no
-                     * performance data available for collection.  This check excludes
-                     * ifTable entries where ifDescr contains "-cef".  See bug #803.
-                     */
-                    if (rs.getString("snmpifdescr") != null) {
-                        if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
-                            continue;
-                    }
+                /*
+                 * When Cisco Express Forwarding (CEF) or some ATM encapsulations
+                 * (AAL5) are used on Cisco routers, an additional entry might be 
+                 * in the ifTable for these sub-interfaces, but there is no
+                 * performance data available for collection.  This check excludes
+                 * ifTable entries where ifDescr contains "-cef".  See bug #803.
+                 */
+                if (rs.getString("snmpifdescr") != null) {
+                    if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
+                        return;
+                }
 
-                    if ((AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc2)) || (AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc2))) {
+                if ((AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc2)) || (AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc2))) {
 
-                        // If the mac address portion of the ifLabel matches
-                        // an entry in the snmpinterface table...
-                        if (mac2 == null || mac2.equals(rs.getString("snmpphysaddr"))) {
-                            ThreadCategory.getInstance(IfLabel.class).debug("getInterfaceInfoFromIfLabel: found match...");
-                            for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                                // Get extra information about the interface
-                                info.put(rs.getMetaData().getColumnName(i), rs.getString(i));
-                            }
-
-                            break;
+                    // If the mac address portion of the ifLabel matches
+                    // an entry in the snmpinterface table...
+                    if (mac2 == null || mac2.equals(rs.getString("snmpphysaddr"))) {
+                        ThreadCategory.getInstance(IfLabel.class).debug("getInterfaceInfoFromIfLabel: found match...");
+                        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                            // Get extra information about the interface
+                            info.put(rs.getMetaData().getColumnName(i), rs.getString(i));
                         }
                     }
                 }
@@ -175,13 +171,11 @@ public class IfLabel extends Object {
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
             public void processRow(ResultSet rs) throws SQLException {
-                while (rs.next()) {
-                    String name = rs.getString("snmpifname");
-                    String descr = rs.getString("snmpifdescr");
-                    String physAddr = rs.getString("snmpphysaddr");
+                String name = rs.getString("snmpifname");
+                String descr = rs.getString("snmpifdescr");
+                String physAddr = rs.getString("snmpphysaddr");
 
-                    list.add(getIfLabel(name, descr, physAddr));
-                }
+                list.add(getIfLabel(name, descr, physAddr));
             }
             
         });
@@ -221,17 +215,15 @@ public class IfLabel extends Object {
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
             public void processRow(ResultSet rs) throws SQLException {
-                if (rs.next()) {
-                    String name = rs.getString("snmpifname");
-                    String descr = rs.getString("snmpifdescr");
-                    String physAddr = rs.getString("snmpphysaddr");
+                String name = rs.getString("snmpifname");
+                String descr = rs.getString("snmpifdescr");
+                String physAddr = rs.getString("snmpphysaddr");
 
-                    if (name != null || descr != null) {
-                        holder.setLabel(getIfLabel(name, descr, physAddr));
-                    } else {
-                        log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-                        holder.setLabel("no_ifLabel");
-                    }
+                if (name != null || descr != null) {
+                    holder.setLabel(getIfLabel(name, descr, physAddr));
+                } else {
+                    log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    holder.setLabel("no_ifLabel");
                 }
             }
         });
@@ -277,21 +269,15 @@ public class IfLabel extends Object {
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
             public void processRow(ResultSet rs) throws SQLException {
-                if (rs.next()) {
-                    String name = rs.getString("snmpifname");
-                    String descr = rs.getString("snmpifdescr");
-                    String physAddr = rs.getString("snmpphysaddr");
+                String name = rs.getString("snmpifname");
+                String descr = rs.getString("snmpifdescr");
+                String physAddr = rs.getString("snmpphysaddr");
 
-                    if (name != null || descr != null) {
-                        holder.setLabel(getIfLabel(name, descr, physAddr));
-                    } else {
-                        log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-                        holder.setLabel("no_ifLabel");
-                    }
-                }
-
-                if (rs.next()) {
-                    log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
+                if (name != null || descr != null) {
+                    holder.setLabel(getIfLabel(name, descr, physAddr));
+                } else {
+                    log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    holder.setLabel("no_ifLabel");
                 }
             }
             

@@ -57,6 +57,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.test.mock.EasyMockUtils;
@@ -186,6 +187,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         db.populate(network);
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
+        Vault.setDataSource(db);
 
         Event event = new Event();
         event.setUei("uei.opennms.org/threshold/highThresholdExceeded");
