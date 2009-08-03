@@ -2,3 +2,5 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
+Bundle-Activator: org.opennms.sms.reflector.smsservice.internal.Activator
+

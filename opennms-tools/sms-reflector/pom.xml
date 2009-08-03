@@ -65,6 +65,7 @@
           -->
           <provision>
             <param>--platform=equinox</param>
+            <param>--profiles=equinox.config</param>
           </provision>
         </configuration>
         <executions>

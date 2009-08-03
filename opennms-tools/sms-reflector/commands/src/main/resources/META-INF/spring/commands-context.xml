@@ -3,6 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
-	<bean id="smsCommands" class="org.opennms.sms.reflector.commands.internal.SmsCommands"></bean>
+	<bean id="smsCommands" class="org.opennms.sms.reflector.commands.internal.SmsCommands">
+	   <constructor-arg ref="configAdmin" />
+	</bean>
 	
 </beans>

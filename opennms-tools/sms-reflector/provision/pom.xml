@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <groupId>org.opennms</groupId>
@@ -32,6 +32,13 @@
       <artifactId>pax-logging-service</artifactId>
       <version>1.3.0</version>
     </dependency>
+<!--
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
+      <version>1.0.10</version>
+    </dependency>
+-->
     <dependency>
       <groupId>org.rxtx</groupId>
       <artifactId>rxtx-osgi</artifactId>
@@ -61,11 +68,6 @@
       <groupId>org.aopalliance</groupId>
       <artifactId>com.springsource.org.aopalliance</artifactId>
       <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.configadmin</artifactId>
-      <version>1.0.10</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
