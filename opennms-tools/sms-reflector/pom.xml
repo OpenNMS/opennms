@@ -40,6 +40,7 @@
     -->
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+    <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
   </properties>
 
   <packaging>pom</packaging>
@@ -65,7 +66,6 @@
           -->
           <provision>
             <param>--platform=equinox</param>
-            <param>--profiles=equinox.config</param>
           </provision>
         </configuration>
         <executions>
