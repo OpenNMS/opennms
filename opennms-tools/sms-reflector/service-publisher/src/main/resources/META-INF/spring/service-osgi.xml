@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:osgi="http://www.springframework.org/schema/osgi" 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+      http://www.springframework.org/schema/osgi/spring-osgi.xsd
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+      
+    <osgi:service ref="smsLibService" interface="org.smslib.Service"/>
+    
+    <osgi:list id="outboundList" cardinality="0..N" interface="org.smslib.IOutboundMessageNotification"/>
+    <osgi:list id="inboundList" cardinality="0..N" interface="org.smslib.IInboundMessageNotification"/>
+    <osgi:list id="gatewayStatusList" cardinality="0..N" interface="org.smslib.IGatewayStatusNotification"/>
+
+</beans>
