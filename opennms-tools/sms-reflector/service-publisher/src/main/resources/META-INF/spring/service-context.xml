@@ -10,6 +10,10 @@
 		<property name="gatewayStatusNotification" ref="gatewayStatusNotification"/>
 	</bean>
 	
+	<bean id="gatewayListener" class="org.opennms.sms.reflector.GatewayListener">
+		<property name="service" ref="smsLibService"/>
+	</bean>
+	
 	<bean id="outboundMessageNotification" class="org.opennms.sms.reflector.OutboundMessageNotification">
 		<property name="listenerList" ref="outboundList"/>
 	</bean>
