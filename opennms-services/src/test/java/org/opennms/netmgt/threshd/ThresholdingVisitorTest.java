@@ -52,6 +52,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -918,6 +919,10 @@ public class ThresholdingVisitorTest {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
             log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
             if (m_anticipatedEvents.size() != receivedList.size()) {
+                for (Event e : m_anticipatedEvents) {
+                    System.err.println("expected event " + e.getUei() + ": " + e.getDescr());
+                }
+                System.err.println("anticipated = " + m_anticipatedEvents + ", received = " + receivedList);
                 fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
@@ -978,6 +983,7 @@ public class ThresholdingVisitorTest {
         db.populate(network);
         db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
+        Vault.setDataSource(db);
     }
     
     private void setupSnmpInterfaceWithoutIpDatabase(String ifName, int ifIndex, boolean skipUpdate) throws Exception {
@@ -997,6 +1003,7 @@ public class ThresholdingVisitorTest {
         if (!skipUpdate)
             db.update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias, snmpifName, snmpifDescr, snmpifIndex) values (?, ?, ?, ?, ?, ?)", 1, "0.0.0.0", ifName, ifName, ifName, ifIndex);
         DataSourceFactory.setInstance(db);
+        Vault.setDataSource(db);
     }
     
     private boolean deleteDirectory(File path) {
