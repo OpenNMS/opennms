@@ -38,6 +38,7 @@ package org.opennms.web.rest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -119,8 +120,9 @@ public class AcknowledgmentRestService extends OnmsRestService {
 
         return new OnmsAcknowledgmentCollection(m_ackDao.findMatching(getDistinctIdCriteria(OnmsAcknowledgment.class, criteria)));
     }
-    
-    @PUT
+
+//    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public OnmsAcknowledgment acknowledgeAlarm(@FormParam("alarmId") String alarmId, @FormParam("action") String action) {
