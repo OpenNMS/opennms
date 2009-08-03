@@ -4,6 +4,23 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.6">
+		<title>Release 1.7.6</title>
+		
+		<para>
+			Release 1.7.6 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.8.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			Since 1.7.5, more bugfixing has been going on, in preparation for the 1.8 release.
+		</para>
+		
+		<para>
+			The codename for 1.7.6 is <emphasis>Orange Chicken</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.5">
 		<title>Release 1.7.5</title>
 		
