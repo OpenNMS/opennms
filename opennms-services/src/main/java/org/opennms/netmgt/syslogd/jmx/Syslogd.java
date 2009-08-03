@@ -47,7 +47,7 @@ public class Syslogd implements SyslogdMBean {
     }
 
     public void stop() {
-        org.opennms.netmgt.syslogd.Syslogd.getInstance().stop();
+        org.opennms.netmgt.syslogd.Syslogd.getInstance();
     }
 
     public int getStatus() {
