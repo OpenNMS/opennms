@@ -42,7 +42,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,12 +84,12 @@ public class IfLabel extends Object {
      * @throws SQLException
      *             if error occurs accessing the database.
      */
-    public static Map<String, String> getInterfaceInfoFromIfLabel(Connection conn, int nodeId, String ifLabel) throws SQLException {
+    public static Map<String, String> getInterfaceInfoFromIfLabel(int nodeId, String ifLabel) {
         if (ifLabel == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Map<String, String> info = new HashMap<String, String>();
+        final Map<String, String> info = new HashMap<String, String>();
         String desc = ifLabel;
         String mac = null;
 
@@ -102,116 +101,94 @@ public class IfLabel extends Object {
             desc = ifLabel.substring(0, dashIndex);
             mac = ifLabel.substring(dashIndex + 1, ifLabel.length());
         }
-
+        
+       final String desc2 = desc;
+       final String mac2 = mac;
+ 
         log.debug("getInterfaceInfoFromIfLabel: desc=" + desc + " mac=" + mac);
 
-        String query = "SELECT * FROM snmpinterface WHERE nodeid = '" + String.valueOf(nodeId) + "'";
+        String queryDesc = desc.replace('_', '%');
 
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
+        String query = "" +
+                "SELECT * " +
+                "  FROM snmpinterface " +
+                " WHERE nodeid = "+nodeId+
+                "   AND (snmpifdescr ILIKE '"+queryDesc+"'" +
+                "    OR snmpifname ilike '"+queryDesc+"')";
+        log.debug("getInterfaceInfoFromLabel: query is: "+query);
+        
+        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
-        while (rs.next()) {
-            // If the description portion of ifLabel matches an entry
-            // in the snmpinterface table...
+            public void processRow(ResultSet rs) throws SQLException {
+                while (rs.next()) {
+                    // If the description portion of ifLabel matches an entry
+                    // in the snmpinterface table...
 
-            /*
-             * When Cisco Express Forwarding (CEF) or some ATM encapsulations
-             * (AAL5) are used on Cisco routers, an additional entry might be 
-             * in the ifTable for these sub-interfaces, but there is no
-             * performance data available for collection.  This check excludes
-             * ifTable entries where ifDescr contains "-cef".  See bug #803.
-             */
-            if (rs.getString("snmpifdescr") != null) {
-                if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
-                    continue;
-            }
-
-            if ((AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc)) || (AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc))) {
-
-                // If the mac address portion of the ifLabel matches
-                // an entry in the snmpinterface table...
-                if (mac == null || mac.equals(rs.getString("snmpphysaddr"))) {
-                    ThreadCategory.getInstance(IfLabel.class).debug("getInterfaceInfoFromIfLabel: found match...");
-                    for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                        // Get extra information about the interface
-                        info.put(rs.getMetaData().getColumnName(i), rs.getString(i));
+                    /*
+                     * When Cisco Express Forwarding (CEF) or some ATM encapsulations
+                     * (AAL5) are used on Cisco routers, an additional entry might be 
+                     * in the ifTable for these sub-interfaces, but there is no
+                     * performance data available for collection.  This check excludes
+                     * ifTable entries where ifDescr contains "-cef".  See bug #803.
+                     */
+                    if (rs.getString("snmpifdescr") != null) {
+                        if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
+                            continue;
                     }
 
-                    break;
+                    if ((AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc2)) || (AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc2))) {
+
+                        // If the mac address portion of the ifLabel matches
+                        // an entry in the snmpinterface table...
+                        if (mac2 == null || mac2.equals(rs.getString("snmpphysaddr"))) {
+                            ThreadCategory.getInstance(IfLabel.class).debug("getInterfaceInfoFromIfLabel: found match...");
+                            for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                                // Get extra information about the interface
+                                info.put(rs.getMetaData().getColumnName(i), rs.getString(i));
+                            }
+
+                            break;
+                        }
+                    }
                 }
             }
-        }
-
-        rs.close();
-        stmt.close();
-
+            
+        });
+        q.execute();
+        log.debug("getInterfaceInfoFromLabel: Querier result count is: "+q.getCount());
+        
         // The map will remain empty if the information was not located in the
-        // DB.
-        return info;
-    }
-
-    /**
-     * Return a map of useful SNMP information for the interface specified by
-     * the nodeId and ifLabel. Essentially a "decoding" algorithm for the
-     * ifLabel.
-     * 
-     * Overloaded method which first obtains a database connection from the
-     * vault.
-     * 
-     * @param nodeId
-     *            Node id
-     * @param ifLabel
-     *            Interface label of format: <description>-<macAddr>
-     * 
-     * @return Map of SNMP info keyed by 'snmpInterface' table column names for
-     *         the interface specified by nodeId and ifLabel args.
-     * 
-     * @throws SQLException
-     *             if error occurs accessing the database.
-     */
-    public static Map<String, String> getInterfaceInfoFromIfLabel(int nodeId, String ifLabel) throws SQLException {
-        Connection conn = Vault.getDbConnection();
-
-        Map<String, String> info = null;
-        try {
-            info = getInterfaceInfoFromIfLabel(conn, nodeId, ifLabel);
-        } finally {
-            Vault.releaseDbConnection(conn);
-        }
-
-        // The map will remain null if the information was not located in the
         // DB.
         return info;
     }
 
     /** Get the interface labels for each interface on a given node. */
     public static String[] getIfLabels(int nodeId) throws SQLException {
-        ArrayList<String> list = new ArrayList<String>();
-        Connection conn = Vault.getDbConnection();
+        
+        String query = "" +
+        		"SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr " +
+        		"  FROM snmpinterface, ipinterface " +
+        		" WHERE (ipinterface.ismanaged!='D') " +
+        		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
+        		"   AND ifindex = snmpifindex " +
+        		"   AND ipinterface.nodeid="+nodeId;
+        
+        final ArrayList<String> list = new ArrayList<String>();
+        
+        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+            public void processRow(ResultSet rs) throws SQLException {
+                while (rs.next()) {
+                    String name = rs.getString("snmpifname");
+                    String descr = rs.getString("snmpifdescr");
+                    String physAddr = rs.getString("snmpphysaddr");
 
-        final DBUtils d = new DBUtils(IfLabel.class);
-        try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex = snmpifindex AND ipinterface.nodeid=?");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                String name = rs.getString("snmpifname");
-                String descr = rs.getString("snmpifdescr");
-                String physAddr = rs.getString("snmpphysaddr");
-
-                list.add(getIfLabel(name, descr, physAddr));
+                    list.add(getIfLabel(name, descr, physAddr));
+                }
             }
-        } finally {
-            d.cleanUp();
-            Vault.releaseDbConnection(conn);
-        }
-
+            
+        });
+        q.execute();
         String[] labels = list.toArray(new String[list.size()]);
-
         return labels;
     }
 
