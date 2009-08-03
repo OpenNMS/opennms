@@ -731,40 +731,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
 
     private void populateIfDataMap(Integer nodeId, String ifLabel, Map<String, String> ifDataMap) {
-        Connection dbConn;
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-        } catch (SQLException e) {
-            log().error("checkIfDir: Failed getting connection to the database: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        }
-
-        // Make certain we close the connection
-        try {
-            ifDataMap.putAll(IfLabel.getInterfaceInfoFromIfLabel(dbConn, nodeId.intValue(), ifLabel));
-        } catch (SQLException e) {
-            // Logging a warning message but processing will
-            // continue for
-            // this thresholding event, when the event is
-            // created it
-            // will be created with an interface value set
-            // to the primary
-            // SNMP interface address and an event source
-            // set to
-            // <datasource>:<ifLabel>.
-            //
-            log().warn("Failed to retrieve interface info from database using ifLabel '" + ifLabel + "': " + e, e);
-        } finally {
-            // Done with the database so close the connection
-            try {
-                if (dbConn != null) {
-                    dbConn.close();
-                }
-            } catch (SQLException e) {
-                log().info("checkIfDir: SQLException while closing database connection: " + e, e);
-            }
-        }
-        
+        ifDataMap.putAll(IfLabel.getInterfaceInfoFromIfLabel(nodeId.intValue(), ifLabel));
         // Add ifLabel value to the map for potential when creating events
         ifDataMap.put("iflabel", ifLabel);
     }
