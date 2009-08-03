@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Aug 03: Cleaned up JDBC work and tried to suppress N^2+1 issues
 // 2005 Jan 03: minor mod to support lame SNMP hosts
 // 25 Sep 2003: Fixed a bug with SNMP Performance link on webUI.
 // 31 Jan 2003: Cleaned up some unused imports.
@@ -38,8 +39,6 @@
 
 package org.opennms.netmgt.utils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -192,67 +190,57 @@ public class IfLabel extends Object {
         return labels;
     }
 
-    public static String getIfLabel(Connection conn, int nodeId, String ipAddr) throws SQLException {
+    public static String getIfLabel(final int nodeId, final String ipAddr) {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String label = null;
-        final DBUtils d = new DBUtils(IfLabel.class);
+        
+        class LabelHolder {
+            private String m_label;
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=?");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
+            public void setLabel(String label) {
+                m_label = label;
+            }
 
-        ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-        if (rs.next()) {
-            String name = rs.getString("snmpifname");
-            String descr = rs.getString("snmpifdescr");
-            String physAddr = rs.getString("snmpphysaddr");
-
-            if (name != null || descr != null) {
-                label = getIfLabel(name, descr, physAddr);
-            } else {
-                log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-                label = "no_ifLabel";
+            public String getLabel() {
+                return m_label;
             }
         }
+        
+        final LabelHolder holder = new LabelHolder();
 
-        if (rs.next()) {
-            log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
-        }
-        } finally {
-            d.cleanUp();
-            Vault.releaseDbConnection(conn);
-        }
+        String query = "" +
+        		"SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr " +
+        		"  FROM snmpinterface, ipinterface " +
+        		" WHERE (ipinterface.ismanaged!='D') " +
+        		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
+        		"   AND ifindex=snmpifindex " +
+        		"   AND ipinterface.nodeid = "+nodeId+
+        		"   AND ipinterface.ipaddr = '"+ipAddr+"'";
+        
+        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+            public void processRow(ResultSet rs) throws SQLException {
+                if (rs.next()) {
+                    String name = rs.getString("snmpifname");
+                    String descr = rs.getString("snmpifdescr");
+                    String physAddr = rs.getString("snmpphysaddr");
 
-        return label;
+                    if (name != null || descr != null) {
+                        holder.setLabel(getIfLabel(name, descr, physAddr));
+                    } else {
+                        log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                        holder.setLabel("no_ifLabel");
+                    }
+                }
+            }
+        });
+        q.execute();
+        
+        return holder.getLabel();
     }
 
-    public static String getIfLabel(int nodeId, String ipAddr) throws SQLException {
-        if (ipAddr == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String label = null;
-        final DBUtils d = new DBUtils(IfLabel.class);
-
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            label = getIfLabel(conn, nodeId, ipAddr);
-        } finally {
-            d.cleanUp();
-        }
-
-        return label;
-    }
-
-    public static String getIfLabelfromIfIndex(int nodeId, String ipAddr, int ifIndex) throws SQLException, NumberFormatException {
+    public static String getIfLabelfromIfIndex(final int nodeId, final String ipAddr, final int ifIndex) {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -261,43 +249,56 @@ public class IfLabel extends Object {
         	return getIfLabel(nodeId, ipAddr);
         }
         
-        String label = null;
-        Connection conn = Vault.getDbConnection();
+        class LabelHolder {
+            private String m_label;
 
-        final DBUtils d = new DBUtils(IfLabel.class);
-        try {
-        	Integer intIfIndex = Integer.valueOf(ifIndex);
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex=snmpifindex AND ipinterface.nodeid=? AND ipinterface.ipaddr=? AND ipinterface.ifindex=?");
-            d.watch(stmt);
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setInt(3, intIfIndex);
+            public void setLabel(String label) {
+                m_label = label;
+            }
 
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
+            public String getLabel() {
+                return m_label;
+            }
+        }
+        
+        final LabelHolder holder = new LabelHolder();
+        
+        String query = "" +
+        		"SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr " +
+        		"  FROM snmpinterface, ipinterface " +
+        		" WHERE (ipinterface.ismanaged!='D') " +
+        		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
+        		"   AND ifindex=snmpifindex " +
+        		"   AND ipinterface.nodeid=? " +
+        		"   AND ipinterface.ipaddr=? " +
+        		"   AND ipinterface.ifindex=?";
+        
+        
+        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
-            if (rs.next()) {
-                String name = rs.getString("snmpifname");
-                String descr = rs.getString("snmpifdescr");
-                String physAddr = rs.getString("snmpphysaddr");
+            public void processRow(ResultSet rs) throws SQLException {
+                if (rs.next()) {
+                    String name = rs.getString("snmpifname");
+                    String descr = rs.getString("snmpifdescr");
+                    String physAddr = rs.getString("snmpphysaddr");
 
-                if (name != null || descr != null) {
-                    label = getIfLabel(name, descr, physAddr);
-                } else {
-                    log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
-                    label = "no_ifLabel";
+                    if (name != null || descr != null) {
+                        holder.setLabel(getIfLabel(name, descr, physAddr));
+                    } else {
+                        log.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                        holder.setLabel("no_ifLabel");
+                    }
+                }
+
+                if (rs.next()) {
+                    log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
                 }
             }
-
-            if (rs.next()) {
-                log.warn("Found more than one interface for node=" + nodeId + " ip=" + ipAddr);
-            }
-        } finally {
-            d.cleanUp();
-            Vault.releaseDbConnection(conn);
-        }
-
-        return label;
+            
+        });
+        q.execute();
+        
+        return holder.getLabel();
     }
 
     public static String getIfLabel(String name, String descr, String physAddr) {
@@ -305,7 +306,7 @@ public class IfLabel extends Object {
         // since it is guaranteed to be unique. Otherwise
         // ifDescr is used. In either case, all non
         // alpha numeric characters are converted to
-        // underscores to ensure that the resuling string
+        // underscores to ensure that the resulting string
         // will make a decent file name and that RRD
         // won't have any problems using it
         //
