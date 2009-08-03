@@ -35,12 +35,9 @@
  */
 package org.opennms.netmgt.threshd;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.IfLabel;
 
 /**
@@ -61,30 +58,7 @@ public class JdbcIfInfoGetter implements IfInfoGetter {
     }
 
     public String getIfLabel(int nodeId, String ipAddress) {
-        // Get database connection
-        java.sql.Connection dbConn = null;
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-        } catch (SQLException e) {
-            //log().error("checkIfDir: Failed getting connection to the database: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        }
-    
-        // Make certain we close the connection
-        String label = null;
-        try {
-            label = IfLabel.getIfLabel(dbConn, nodeId, ipAddress);
-        } catch (SQLException e) {
-        } finally {
-            // Done with the database so close the connection
-            try {
-                if (dbConn != null) {
-                    dbConn.close();
-                }
-            } catch (SQLException e) {
-            }
-        }
-        return label;
+        return IfLabel.getIfLabel(nodeId, ipAddress);
     }
 
 }
