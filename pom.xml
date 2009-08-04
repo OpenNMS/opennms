@@ -1161,7 +1161,7 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>rancid-api</artifactId>
-        <version>0.97</version>
+        <version>0.98</version>
       </dependency>
       <dependency>
         <groupId>org.dnsjava</groupId>
