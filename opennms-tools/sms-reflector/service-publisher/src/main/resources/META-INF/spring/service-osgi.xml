@@ -7,7 +7,7 @@
       http://www.springframework.org/schema/beans 
       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
       
-    <osgi:service ref="smsLibService" interface="org.smslib.Service"/>
+    <osgi:service ref="smsService" interface="org.opennms.sms.reflector.SmsService"/>
     
     <osgi:list id="outboundList" cardinality="0..N" interface="org.smslib.IOutboundMessageNotification"/>
     <osgi:list id="inboundList" cardinality="0..N" interface="org.smslib.IInboundMessageNotification"/>
@@ -15,5 +15,5 @@
 	
 	<osgi:list id="gateways" cardinality="0..N" interface="org.smslib.AGateway">
 		<osgi:listener ref="gatewayListener" bind-method="addGateway" unbind-method="removeGateway"/>
-	</osgi:list>	
+	</osgi:list>
 </beans>

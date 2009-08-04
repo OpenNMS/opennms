@@ -4,6 +4,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	
+	<bean id="smsService" class="org.opennms.sms.reflector.SmsServiceImpl">
+		<property name="service" ref="smsLibService"/>
+	</bean>
+	
 	<bean id="smsLibService" class="org.smslib.Service">
 		<property name="outboundNotification" ref="outboundMessageNotification"/>
 		<property name="inboundNotification" ref="inboundMessageNotification"/>

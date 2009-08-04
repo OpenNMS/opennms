@@ -11,7 +11,7 @@ import org.smslib.AGateway.Protocols;
 import org.smslib.Service.ServiceStatus;
 import org.springframework.osgi.service.importer.OsgiServiceLifecycleListener;
 
-public class GatewayListener implements OsgiServiceLifecycleListener {
+public class GatewayListener {
 	
 	private Service m_service;
 	
