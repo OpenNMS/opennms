@@ -26,6 +26,7 @@ import org.smslib.Message.MessageTypes;
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
+import org.smslib.modem.USSDResponse;
 
 /**
  * Public API representing an example OSGi service
@@ -130,14 +131,14 @@ public class SmsCommands implements CommandProvider
         }
         boolean isInteractive = false;
         String interactiveStr = intp.nextArgument();
-        if (interactiveStr.equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(interactiveStr)) {
             isInteractive = true;
         }
         
         intp.println("Data is : " + data);
         intp.println("Interactive : " + isInteractive);
         
-        String ussdResult = null;
+        USSDResponse ussdResult = null;
         try { 
             ModemGateway gw;
             gw = (ModemGateway) m_service.findGateway("modem."+m_port);

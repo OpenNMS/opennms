@@ -9,7 +9,7 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.opennms.sms-reflector.commands</bundle.symbolicName>
+    <bundle.symbolicName>org.opennms.sms.reflector.commands</bundle.symbolicName>
     <bundle.namespace>org.opennms.sms.reflector.commands</bundle.namespace>
   </properties>
 
