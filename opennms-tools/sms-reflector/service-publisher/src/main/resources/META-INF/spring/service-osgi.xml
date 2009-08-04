@@ -13,7 +13,7 @@
     <osgi:list id="inboundList" cardinality="0..N" interface="org.smslib.IInboundMessageNotification"/>
     <osgi:list id="gatewayStatusList" cardinality="0..N" interface="org.smslib.IGatewayStatusNotification"/>
 	
-	<osgi:list id="gateways" cardinality="0..N" interface="org.smslib.AGateway">
+	<osgi:list id="gateways" cardinality="1..N" interface="org.smslib.AGateway">
 		<osgi:listener ref="gatewayListener" bind-method="addGateway" unbind-method="removeGateway"/>
 	</osgi:list>
 </beans>

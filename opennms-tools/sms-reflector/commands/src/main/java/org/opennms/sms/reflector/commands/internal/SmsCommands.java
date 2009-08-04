@@ -76,6 +76,10 @@ public class SmsCommands implements CommandProvider
     	return msgList;
     }
     
+    public Object _smsPing(CommandInterpreter intp) {
+        return "hello "+ intp.nextArgument();
+    }
+    
     public Object _smsSend(CommandInterpreter intp) {
         //String port = intp.nextArgument();
         

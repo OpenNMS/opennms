@@ -9,7 +9,6 @@ import org.smslib.Service;
 import org.smslib.TimeoutException;
 import org.smslib.AGateway.Protocols;
 import org.smslib.Service.ServiceStatus;
-import org.springframework.osgi.service.importer.OsgiServiceLifecycleListener;
 
 public class GatewayListener {
 	

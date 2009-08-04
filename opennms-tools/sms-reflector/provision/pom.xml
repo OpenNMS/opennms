@@ -97,6 +97,11 @@
       <artifactId>spring-aop</artifactId>
       <version>2.5.6</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.lib</groupId>
+      <artifactId>org.opennms.lib.rt</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
