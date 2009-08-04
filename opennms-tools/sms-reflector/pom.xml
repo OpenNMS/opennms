@@ -53,11 +53,12 @@
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.smslib</module>
+<!--
     <module>bundle-tests</module>
+-->
     <module>commands</module>
     <module>sms-service</module>
     <module>sms-ping</module>
-    <module>service-publisher</module>
   </modules>
 
   <build>
