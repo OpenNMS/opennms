@@ -33,6 +33,7 @@ package org.opennms.sms.ping.internal;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.RequestTracker;
 import org.opennms.sms.ping.PingRequestId;
 import org.opennms.sms.ping.PingResponseCallback;
@@ -46,12 +47,27 @@ import org.smslib.Service;
  */
 public class SmsPingTrackerImpl extends RequestTracker<PingRequestId, PingRequest, PingReply> implements SmsPingTracker {
     
+    Logger log = Logger.getLogger(getClass());
+    
     public SmsPingTrackerImpl(SmsMessenger smsMessenger) throws IOException {
         super("SMS", smsMessenger);
+        log.debug("Created SmsPingTrackerImpl");
     }
 
     public void sendRequest(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
         sendRequest(new PingRequest(new PingRequestId(phoneNumber), timeout, retries, cb));
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.rt.RequestTracker#start()
+     */
+    @Override
+    public synchronized void start() {
+        log.debug("Calling start()");
+        super.start();
+        log.debug("Called start()");
+    }
+    
+    
 
 }

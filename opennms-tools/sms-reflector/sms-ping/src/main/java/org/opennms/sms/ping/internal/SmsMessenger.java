@@ -34,6 +34,7 @@ package org.opennms.sms.ping.internal;
 
 import java.util.Queue;
 
+import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Messenger;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.InboundMessage;
@@ -48,23 +49,29 @@ import org.smslib.Message.MessageTypes;
  */
 public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInboundMessageNotification {
     
+    Logger log = Logger.getLogger(getClass());
+    
     private SmsService m_smsService;
     
     private Queue<PingReply> m_replyQueue;
     
     public SmsMessenger(SmsService smsService) {
+        log.debug("Created SmsMessenger: "+smsService);
         m_smsService = smsService;
     }
 
     public void sendRequest(PingRequest request) throws Exception {
+        log.debug("SmsMessenger.sendRequest" + request);
         m_smsService.sendMessage(request.getRequest());
     }
 
     public void start(Queue<PingReply> replyQueue) {
+        log.debug("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
 
     public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
+        log.debug("SmsMessenger.processInboundMessage");
         if (m_replyQueue != null) {
             m_replyQueue.add(new PingReply(msg));
         }

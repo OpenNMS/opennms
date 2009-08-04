@@ -13,7 +13,7 @@
         <constructor-arg ref="smsService" />
     </bean>
     
-    <bean id="smsPingTracker" class="org.opennms.sms.ping.internal.SmsPingTrackerImpl">
+    <bean id="smsPingTracker" class="org.opennms.sms.ping.internal.SmsPingTrackerImpl" init-method="start">
         <constructor-arg ref="smsMessenger" />
     </bean>
     
