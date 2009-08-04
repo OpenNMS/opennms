@@ -200,7 +200,7 @@ public class RequestTracker<ReqIdT, ReqT extends Request<ReqIdT, ReqT, ReplyT>, 
      * timeouts and retries. Retries are sent if the timeout processing
      * indicates that they should be.
      */
-    public void sendRequest(ReqT request) throws IOException {
+    public void sendRequest(ReqT request) throws Exception {
         assertStarted();
         synchronized(m_pendingRequests) {
             ReqT oldRequest = m_pendingRequests.get(request.getId());

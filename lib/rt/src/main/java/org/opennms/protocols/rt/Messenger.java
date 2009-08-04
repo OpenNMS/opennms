@@ -31,7 +31,6 @@
  */
 package org.opennms.protocols.rt;
 
-import java.io.IOException;
 import java.util.Queue;
 
 
@@ -46,7 +45,7 @@ public interface Messenger<ReqT, ReplyT> {
     /**
      * Send a message using the messenger service
      */
-    public void sendRequest(ReqT request) throws IOException ;
+    public void sendRequest(ReqT request) throws Exception ;
     
     /**
      * Start listening for replies and enqueue any replies received to the passed in queue
