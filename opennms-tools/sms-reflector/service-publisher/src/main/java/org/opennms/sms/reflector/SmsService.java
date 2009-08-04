@@ -14,7 +14,7 @@ import org.smslib.IQueueSendingNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
-import org.smslib.QueueManager;
+import org.smslib.queues.QueueManager;
 import org.smslib.SMSLibException;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
@@ -30,7 +30,6 @@ public interface SmsService {
 	void addGateway(AGateway gateway) throws GatewayException;
 	boolean removeGateway(AGateway gateway) throws GatewayException;
 	void startService() throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException;
-	void startService(boolean startAll) throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException;
 	void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException;
 	int readMessages(Collection<InboundMessage> msgList, MessageClasses msgClass) throws TimeoutException, GatewayException, IOException, InterruptedException;
 	InboundMessage[] readMessages(MessageClasses msgClass) throws TimeoutException, GatewayException, IOException, InterruptedException;

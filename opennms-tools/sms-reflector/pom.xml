@@ -96,7 +96,7 @@
   <repositories>
     <repository>
       <id>ops4j.releases</id>
-      <url>http://repository.ops4j.org/maven2/</url>
+      <url>http://repository.ops4j.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -112,8 +112,9 @@
       <id>opennms-snapshots</id>
       <url>http://repo.opennms.org/snapshots</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
+      <releases><enabled>false</enabled></releases>
     </repository>
     <repository>
       <id>com.springsource.repository.bundles.external</id>

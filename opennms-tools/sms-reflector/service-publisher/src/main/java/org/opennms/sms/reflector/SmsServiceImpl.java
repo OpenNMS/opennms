@@ -14,7 +14,7 @@ import org.smslib.IQueueSendingNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
-import org.smslib.QueueManager;
+import org.smslib.queues.QueueManager;
 import org.smslib.SMSLibException;
 import org.smslib.Service;
 import org.smslib.Settings;
@@ -262,15 +262,11 @@ public class SmsServiceImpl implements SmsService {
 		m_service.setRouter(router);
 	}
 
-	public synchronized void startService() throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException {
+	public void startService() throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException {
 		m_service.startService();
 	}
 
-	public void startService(boolean startAll) throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException {
-		m_service.startService(startAll);
-	}
-
-	public synchronized void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException {
+	public void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException {
 		m_service.stopService();
 	}
 

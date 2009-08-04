@@ -25,12 +25,12 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>1.4.0</version>
+      <version>1.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
-      <version>1.4.0</version>
+      <version>1.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
