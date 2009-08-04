@@ -261,17 +261,18 @@ public class SmsCommands implements CommandProvider
             String model = intp.nextArgument();
 
             Properties properties = new Properties();
-            properties.put("org.smslib.modem.id", id);
-            properties.put("org.smslib.modem.port", port);
-            properties.put("org.smslib.modem.baudRate", baudRate);
-            properties.put("org.smslib.modem.manufacturer", manufacturer);
-            properties.put("org.smslib.modem.model", model);
+            properties.put("modemId", id);
+            properties.put("modemPort", port);
+            properties.put("baudRate", baudRate);
+            properties.put("manufacturer", manufacturer);
+            properties.put("model", model);
             
 
-            Configuration[] existingConfigs = m_configAdmin.listConfigurations("(org.smslib.modem.id="+id+")");
-            Configuration config = m_configAdmin.createFactoryConfiguration("org.smslib.Service", null);
+            Configuration[] existingConfigs = m_configAdmin.listConfigurations("(modemId="+id+")");
+            Configuration config = null;
+            
             if (existingConfigs == null || existingConfigs.length == 0) {
-                config = m_configAdmin.createFactoryConfiguration("org.smslib.Service", null);
+                config = m_configAdmin.createFactoryConfiguration("org.opennms.sms.reflector.smsservice", null);
                 intp.println("new configuration pid is "+config.getPid());
             } else {
                 config = existingConfigs[0];
