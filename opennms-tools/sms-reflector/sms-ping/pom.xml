@@ -53,6 +53,13 @@
 
     <dependency>
       <groupId>org.opennms.sms-reflector</groupId>
+      <artifactId>sms-service</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.sms-reflector</groupId>
       <artifactId>org.opennms.smslib</artifactId>
       <version>3.4.2-SNAPSHOT</version>
       <scope>provided</scope>

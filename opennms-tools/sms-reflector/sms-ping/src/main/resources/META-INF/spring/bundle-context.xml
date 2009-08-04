@@ -23,6 +23,5 @@
           <list><ref bean="smsPingTracker"/></list>
         </property>
     </bean>
-    
-    
+
 </beans>

@@ -37,7 +37,7 @@ import java.util.Queue;
 import org.opennms.protocols.rt.Messenger;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.InboundMessage;
-import org.smslib.Service;
+import org.opennms.sms.reflector.smsservice.SmsService;
 import org.smslib.Message.MessageTypes;
 
 
@@ -48,11 +48,11 @@ import org.smslib.Message.MessageTypes;
  */
 public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInboundMessageNotification {
     
-    private Service m_smsService;
+    private SmsService m_smsService;
     
     private Queue<PingReply> m_replyQueue;
     
-    public SmsMessenger(Service smsService) {
+    public SmsMessenger(SmsService smsService) {
         m_smsService = smsService;
     }
 

@@ -28,6 +28,8 @@ import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
 import org.smslib.modem.USSDResponse;
 
+import org.opennms.sms.ping.SmsPinger;
+
 /**
  * Public API representing an example OSGi service
  */
@@ -78,7 +80,12 @@ public class SmsCommands implements CommandProvider
     }
     
     public Object _smsPing(CommandInterpreter intp) {
-        return "hello "+ intp.nextArgument();
+        try {
+            SmsPinger.ping(intp.nextArgument());
+        } catch (Exception e) {
+            intp.printStackTrace(e);
+        }
+        return null;
     }
     
     public Object _smsSend(CommandInterpreter intp) {
