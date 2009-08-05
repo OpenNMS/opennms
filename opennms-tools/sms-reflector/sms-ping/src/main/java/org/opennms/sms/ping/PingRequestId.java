@@ -44,7 +44,7 @@ public class PingRequestId {
     
     public PingRequestId(String destination) {
         Assert.notNull(destination);
-        m_destination = destination;
+        m_destination = destination.startsWith("+") ? destination.substring(1) : destination;
     }
     
     public String getDestination() {

@@ -2,3 +2,5 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
+Import-Package: org.springframework.beans.factory.config,\
+    *

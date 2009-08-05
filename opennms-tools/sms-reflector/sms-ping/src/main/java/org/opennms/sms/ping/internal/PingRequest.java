@@ -102,6 +102,8 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_log        = logger;
         m_callback   = cb;
         
+        m_expiration = System.currentTimeMillis() + timeout;
+        
         m_request = new OutboundMessage(id.getDestination(), "ping");
     }
     

@@ -39,6 +39,6 @@ package org.opennms.sms.ping;
 public interface PingConstants {
     
     public static final int DEFAULT_RETRIES = 2;
-    public static final int DEFAULT_TIMEOUT = 800;
+    public static final int DEFAULT_TIMEOUT = 60000;
 
 }

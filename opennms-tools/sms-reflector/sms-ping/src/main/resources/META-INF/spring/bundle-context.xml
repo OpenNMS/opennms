@@ -17,7 +17,7 @@
         <constructor-arg ref="smsMessenger" />
     </bean>
     
-    <bean class="org.springframework.util.MethodInvoker">
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="org.opennms.sms.ping.SmsPinger.setSmsPingTracker" />
         <property name="arguments">
           <list><ref bean="smsPingTracker"/></list>
