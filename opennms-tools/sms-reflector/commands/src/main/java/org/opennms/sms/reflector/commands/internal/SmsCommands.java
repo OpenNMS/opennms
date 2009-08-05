@@ -156,7 +156,7 @@ public class SmsCommands implements CommandProvider
             ussdResult = gw.sendUSSDCommand(data);
             intp.println(ussdResult);
         } catch (Exception e) {
-            intp.println("Caught exception sending USSD command: " + e.getMessage());
+            intp.println("Caught exception sending USSD command: " + e);
         }
         return ussdResult;
     }
