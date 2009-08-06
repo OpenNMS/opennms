@@ -213,7 +213,19 @@ public class OnmsRestService {
 	 * @param params - set of values to look in for the "order" and "orderBy" values
 	 * @param criteria - the criteria object which will be updated with ordering configuration
 	 */
-	protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
+    protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
+        addOrdering(params, criteria, true);
+    }
+
+    /**
+     * Same as addOrdering() but you can say whether to add the order to the criteria object immediately.
+     * 
+     * @param params - set of values to look in for the "order" and "orderBy" values
+     * @param criteria - the criteria object which will be updated with ordering configuration
+     * @param addImmediately - whether to add immediately to the criteria object.  Use "false" if you intend to
+     * build a joined/distinct criteria object using {@link #getDistinctIdCriteria(Class, OnmsCriteria)}, or "true" otherwise.
+     */
+    protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, boolean addImmediately) {
 	    if(params.containsKey("orderBy")) {
 			String orderBy=params.getFirst("orderBy");
 			params.remove("orderBy");
@@ -230,7 +242,9 @@ public class OnmsRestService {
 			} else {
 				o = Order.desc(orderBy);
 			}
-			// criteria.addOrder(o);
+			if (addImmediately) {
+			    criteria.addOrder(o);
+			}
 			m_ordering.add(o);
 		}
 	}
