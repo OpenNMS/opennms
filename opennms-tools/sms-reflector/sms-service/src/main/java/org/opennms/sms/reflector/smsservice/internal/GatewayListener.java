@@ -14,6 +14,7 @@ public class GatewayListener {
 	
 	private Service m_service;
 	
+	
 	public void setService(Service service){
 		m_service = service;
 	}

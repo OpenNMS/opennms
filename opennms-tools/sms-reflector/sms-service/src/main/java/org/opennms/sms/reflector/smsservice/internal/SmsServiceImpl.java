@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -33,7 +34,7 @@ import org.smslib.routing.Router;
 
 public class SmsServiceImpl implements SmsService {
 	
-	private Service m_service;
+	private Service m_service = new Service();
 	private String m_modemId;
 	private String m_modemPort;
 	private int m_baudRate;
@@ -42,7 +43,7 @@ public class SmsServiceImpl implements SmsService {
     private List<IOutboundMessageNotification> m_outboundListeners;
     private List<IInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
-    
+    private List<GatewayGroup> m_gatewayGroup;
     
 	
 	/**
@@ -55,8 +56,7 @@ public class SmsServiceImpl implements SmsService {
     /**
      * @param outboundListeners the outboundListeners to set
      */
-    public void setOutboundListeners(
-            List<IOutboundMessageNotification> outboundListeners) {
+    public void setOutboundListeners(List<IOutboundMessageNotification> outboundListeners) {
         m_outboundListeners = outboundListeners;
     }
 
@@ -85,8 +85,7 @@ public class SmsServiceImpl implements SmsService {
     /**
      * @param gatewayStatusListeners the gatewayStatusListeners to set
      */
-    public void setGatewayStatusListeners(
-            List<IGatewayStatusNotification> gatewayStatusListeners) {
+    public void setGatewayStatusListeners(List<IGatewayStatusNotification> gatewayStatusListeners) {
         m_gatewayStatusListeners = gatewayStatusListeners;
     }
 
@@ -162,18 +161,18 @@ public class SmsServiceImpl implements SmsService {
     
     public void start() {
         try {
-            m_service = new Service();
-            SerialModemGateway gateway = new SerialModemGateway(m_modemId, m_modemPort, m_baudRate, m_manufacturer, m_model);
-            gateway.setProtocol(Protocols.PDU);
-            gateway.setInbound(true);
-            gateway.setOutbound(true);
-            gateway.setSimPin("0000");
-            
-            m_service.setOutboundNotification(new OutboundMessageNotification(m_outboundListeners));
-            m_service.setInboundNotification(new InboundMessageNotification(m_inboundListeners));
-            m_service.setGatewayStatusNotification(new GatewayStatusNotification(m_gatewayStatusListeners));
-
-            m_service.addGateway(gateway);
+//            m_service = new Service();
+//            SerialModemGateway gateway = new SerialModemGateway(m_modemId, m_modemPort, m_baudRate, m_manufacturer, m_model);
+//            gateway.setProtocol(Protocols.PDU);
+//            gateway.setInbound(true);
+//            gateway.setOutbound(true);
+//            gateway.setSimPin("0000");
+//            
+//            m_service.setOutboundNotification(new OutboundMessageNotification(m_outboundListeners));
+//            m_service.setInboundNotification(new InboundMessageNotification(m_inboundListeners));
+//            m_service.setGatewayStatusNotification(new GatewayStatusNotification(m_gatewayStatusListeners));
+//
+//            m_service.addGateway(gateway);
 
             m_service.startService();
 
@@ -185,6 +184,7 @@ public class SmsServiceImpl implements SmsService {
     
     
     public void stop() {
+    	m_service.stopService();
     }
 
     public void refresh(Map properties) {
@@ -437,6 +437,14 @@ public class SmsServiceImpl implements SmsService {
 
 	public Service getService() {
 		return m_service;
+	}
+
+	public void setGatewayGroup(List<GatewayGroup> m_gatewayGroup) {
+		this.m_gatewayGroup = m_gatewayGroup;
+	}
+
+	public List<GatewayGroup> getGatewayGroup() {
+		return m_gatewayGroup;
 	}
 
 }

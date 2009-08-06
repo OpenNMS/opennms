@@ -8,6 +8,9 @@ import java.util.Properties;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opennms.sms.ping.SmsPinger;
+import org.opennms.sms.reflector.smsservice.GatewayGroup;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.smslib.AGateway;
@@ -27,13 +30,12 @@ import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
 import org.smslib.modem.USSDResponse;
-
-import org.opennms.sms.ping.SmsPinger;
+import org.springframework.osgi.context.BundleContextAware;
 
 /**
  * Public API representing an example OSGi service
  */
-public class SmsCommands implements CommandProvider
+public class SmsCommands implements CommandProvider, BundleContextAware
 {
     private String m_port;
     private Service m_service;
@@ -42,6 +44,7 @@ public class SmsCommands implements CommandProvider
     private CallNotification m_callNotification;
     private GatewayStatusNotification m_gatewayStatusNotification;
     private ConfigurationAdmin m_configAdmin;
+	private BundleContext m_context;
     
     public SmsCommands(ConfigurationAdmin configAdmin) {
         m_configAdmin = configAdmin;
@@ -153,7 +156,7 @@ public class SmsCommands implements CommandProvider
                 intp.println("Onoes, gateway is null, bailing");
                 return null;
             }
-            ussdResult = gw.sendUSSDCommand(data);
+            //ussdResult = gw.sendUSSDCommand(data);
             intp.println(ussdResult);
         } catch (Exception e) {
             intp.println("Caught exception sending USSD command: " + e);
@@ -193,6 +196,10 @@ public class SmsCommands implements CommandProvider
 
         return null; 
    }
+    
+    public Enumeration<CommPortIdentifier> listPorts(){
+    	return CommPortIdentifier.getPortIdentifiers();
+    }
     
     public Object _initializePort(CommandInterpreter intp){
     	String port = intp.nextArgument();
@@ -261,34 +268,31 @@ public class SmsCommands implements CommandProvider
     public Object _configureSmsService(CommandInterpreter intp) {
         
         try {
-
+        	
             String id = intp.nextArgument();
             String port = intp.nextArgument();
             String baudRate = intp.nextArgument();
             String manufacturer = intp.nextArgument();
             String model = intp.nextArgument();
-
+            String usage = intp.nextArgument();
+            
+            GatewayGroupImpl gatewayGroup = new GatewayGroupImpl();
+           	List<AGateway> gateways = new ArrayList<AGateway>();
+           	
+           	SerialModemGateway gateway = new SerialModemGateway("modem." + id, port, new Integer(baudRate), manufacturer, model);
+            gateway.setProtocol(Protocols.PDU);
+            gateway.setInbound(true);
+            gateway.setOutbound(true);
+            gateway.setSimPin("0000");
+        	
+            gateways.add(gateway);
+            
+            gatewayGroup.setGateways(gateways.toArray(new AGateway[0]));
+            
             Properties properties = new Properties();
-            properties.put("modemId", id);
-            properties.put("modemPort", port);
-            properties.put("baudRate", baudRate);
-            properties.put("manufacturer", manufacturer);
-            properties.put("model", model);
+            properties.put("gatewayUsageType", usage);
             
-
-            Configuration[] existingConfigs = m_configAdmin.listConfigurations("(modemId="+id+")");
-            Configuration config = null;
-            
-            if (existingConfigs == null || existingConfigs.length == 0) {
-                config = m_configAdmin.createFactoryConfiguration("org.opennms.sms.reflector.smsservice", null);
-                intp.println("new configuration pid is "+config.getPid());
-            } else {
-                config = existingConfigs[0];
-                intp.println("found existing configurtion with pid "+config.getPid());
-            }
-
-            config.update(properties);
-
+            getBundleContext().registerService(GatewayGroup.class.getName(), gatewayGroup, properties);
         }
         catch(Exception e) {
             intp.printStackTrace(e);
@@ -354,7 +358,7 @@ public class SmsCommands implements CommandProvider
        buffer.append("---Sms Commands---");
        buffer.append("\n\t").append("debug");
        buffer.append("\n\t").append("checkMessages");
-       buffer.append("\n\t").append("configureSmsService <modemId> <port> <baudRate> <manufacturer> <model>");
+       buffer.append("\n\t").append("configureSmsService <modemId> <port> <baudRate> <manufacturer> <model> <usage>");
        buffer.append("\n\t").append("initializePort <modemPort>");
        buffer.append("\n\t").append("listPorts"); 
        buffer.append("\n\t").append("paxLog ERROR|WARN|INFO|DEBUG [prefix]"); 
@@ -426,6 +430,13 @@ public class SmsCommands implements CommandProvider
        }
    }
 
+public void setBundleContext(BundleContext m_context) {
+	this.m_context = m_context;
+}
+
+public BundleContext getBundleContext() {
+	return m_context;
+}
 
 }
 

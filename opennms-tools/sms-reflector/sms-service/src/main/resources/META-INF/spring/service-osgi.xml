@@ -9,20 +9,39 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     ">
       
+<!--    <bean id="smsService" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceImpl">-->
+<!--    	  <property name="outboundListeners" ref="outboundList" />-->
+<!--          <property name="inboundListeners" ref="inboundList" />-->
+<!--          <property name="gatewayStatusListeners" ref="gatewayStatusList" />-->
+<!--          <property name="gatewayGroup" ref="gatewayGroupList"/>-->
+<!--    </bean>-->
     
     <osgi:list id="outboundList" cardinality="0..N" interface="org.smslib.IOutboundMessageNotification"/>
     <osgi:list id="inboundList" cardinality="0..N" interface="org.smslib.IInboundMessageNotification"/>
     <osgi:list id="gatewayStatusList" cardinality="0..N" interface="org.smslib.IGatewayStatusNotification"/>
     
-	<osgix:managed-service-factory 
-		factory-pid="org.opennms.sms.reflector.smsservice" auto-export="interfaces"
-		update-strategy="bean-managed" update-method="refresh" >
+    <osgi:list id="gatewayGroupList" cardinality="0..N" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
+    	<osgi:listener bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered">
+			<bean class="org.opennms.sms.reflector.smsservice.internal.GatewayGroupListener">
+	        	<property name="outboundListeners" ref="outboundList" />
+          		<property name="inboundListeners" ref="inboundList" />
+          		<property name="gatewayStatusListeners" ref="gatewayStatusList" />
+			</bean>
+		</osgi:listener>
+    </osgi:list>
+    
+<!--	<osgix:managed-service-factory -->
+<!--		factory-pid="org.opennms.sms.reflector.smsservice" auto-export="interfaces"-->
+<!--		update-strategy="bean-managed" update-method="refresh" >-->
+<!---->
+<!--		<bean class="org.opennms.sms.reflector.smsservice.internal.SmsServiceImpl" init-method="start" destroy-method="stop">-->
+<!--          <property name="outboundListeners" ref="outboundList" />-->
+<!--          <property name="inboundListeners" ref="inboundList" />-->
+<!--          <property name="gatewayStatusListeners" ref="gatewayStatusList" />-->
+<!--		</bean>-->
+<!--	</osgix:managed-service-factory>-->
 
-		<bean class="org.opennms.sms.reflector.smsservice.internal.SmsServiceImpl" init-method="start" destroy-method="stop">
-          <property name="outboundListeners" ref="outboundList" />
-          <property name="inboundListeners" ref="inboundList" />
-          <property name="gatewayStatusListeners" ref="gatewayStatusList" />
-		</bean>
-	</osgix:managed-service-factory>  
-      
+<!--	<osgi:service ref="smsService" interface="org.opennms.sms.reflector.smsservice.SmsService"/>-->
+	
+	
 </beans>
