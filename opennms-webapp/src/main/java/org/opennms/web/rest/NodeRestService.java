@@ -180,7 +180,7 @@ public class NodeRestService extends OnmsRestService {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
 
     	setLimitOffset(params, criteria, LIMIT);
-        addOrdering(params, criteria);
+        addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsNode.class);
 
     	criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);

@@ -65,7 +65,7 @@ public class NotificationRestService extends OnmsRestService {
 		OnmsCriteria criteria=new OnmsCriteria(OnmsNotification.class);
 
     	setLimitOffset(params, criteria, 10);
-    	addOrdering(params, criteria);
+    	addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsNotification.class);
 
         return new OnmsNotificationCollection(m_notifDao.findMatching(getDistinctIdCriteria(OnmsNotification.class,criteria)));
