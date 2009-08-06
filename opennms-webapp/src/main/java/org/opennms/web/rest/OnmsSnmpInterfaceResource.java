@@ -69,7 +69,6 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         addFiltersToCriteria(params, criteria, OnmsSnmpInterface.class);
         
         criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
-        System.err.println("criteria = " + criteria);
         OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(criteria));
         
         OnmsCriteria crit = new OnmsCriteria(OnmsSnmpInterface.class);
