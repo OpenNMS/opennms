@@ -15,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.hibernate.FetchMode;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
@@ -65,9 +66,10 @@ public class AlarmRestService extends OnmsRestService {
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
 
     	setLimitOffset(params, criteria);
-        addOrdering(params, criteria);
+        addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsAlarm.class);
-
+    	criteria.setFetchMode("firstEvent", FetchMode.JOIN);
+        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
         return new OnmsAlarmCollection(m_alarmDao.findMatching(getDistinctIdCriteria(OnmsAlarm.class, criteria)));
     }
     
@@ -107,8 +109,7 @@ public class AlarmRestService extends OnmsRestService {
 	private void processAlarmAck(OnmsAlarm alarm, Boolean ack) {
 		if (ack) {
 			alarm.setAlarmAckTime(new Date());
-			alarm.setAlarmAckUser(m_securityContext.getUserPrincipal()
-					.getName());
+			alarm.setAlarmAckUser(m_securityContext.getUserPrincipal().getName());
 		} else {
 			alarm.setAlarmAckTime(null);
 			alarm.setAlarmAckUser(null);
