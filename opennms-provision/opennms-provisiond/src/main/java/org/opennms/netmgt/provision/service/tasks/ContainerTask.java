@@ -21,6 +21,7 @@
 package org.opennms.netmgt.provision.service.tasks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,17 +69,14 @@ public class ContainerTask extends Task {
         m_triggerTask.addPrerequisite(task);
     }
     
-    private final static int CLEAR = 0;
-    private final static int ADDING = 0;
-    
     AtomicInteger m_child = new AtomicInteger(0);
 
     @Override
     public void preSchedule() {
         m_triggerTask.schedule();
         List<Task> children;
-        syncrhonized(m_children) {
-            children = m_children.clone();
+        synchronized(m_children) {
+            children = new ArrayList<Task>(m_children);
             m_children.clear();
         }
         
