@@ -250,8 +250,8 @@ public abstract class Task {
      * This is called to add the task to the queue of tasks that can be considered to be runnable
      */
     public void schedule() {
-        preSchedule();
         m_scheduleCalled.set(true);
+        preSchedule();
         getCoordinator().schedule(this);
         postSchedule();
     }
