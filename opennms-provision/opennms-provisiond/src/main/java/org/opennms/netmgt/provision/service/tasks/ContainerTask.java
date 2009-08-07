@@ -23,6 +23,8 @@ package org.opennms.netmgt.provision.service.tasks;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /*
  * ContainerTask
  * @author brozow
@@ -52,7 +54,7 @@ public class ContainerTask extends Task {
     }
 
     protected final Task m_triggerTask;
-    protected final List<Task> m_children = new ArrayList<Task>();
+    private final List<Task> m_children = Collections.synchronizedList(new ArrayList<Task>());
     
     public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
         super(coordinator, parent);
@@ -65,28 +67,47 @@ public class ContainerTask extends Task {
         super.addPrerequisite(task);
         m_triggerTask.addPrerequisite(task);
     }
+    
+    private final static int CLEAR = 0;
+    private final static int ADDING = 0;
+    
+    AtomicInteger m_child = new AtomicInteger(0);
 
     @Override
     public void preSchedule() {
         m_triggerTask.schedule();
-        for(Task task : m_children) {
+        List<Task> children;
+        syncrhonized(m_children) {
+            children = m_children.clone();
+            m_children.clear();
+        }
+        
+        for(Task task : children) {
             task.schedule();
         }
     }
     
-    protected Task getTriggerTask() {
-        return m_triggerTask;
-    }
-
     public void add(Task task) {
+
         super.addPrerequisite(task);
         addChildDependencies(task);
-        //setPreferredExecutorOfChild(task);
-        if (isScheduled()) {
-            task.schedule();
-        } else {
-            m_children.add(task);
+
+        boolean scheduleChild;
+        synchronized(m_children) {
+            scheduleChild = isScheduled();
+            if (!scheduleChild) {
+                m_children.add(task);
+            }
         }
+
+        if (scheduleChild) {
+            task.schedule();
+        }
+        
+    }
+
+    protected Task getTriggerTask() {
+        return m_triggerTask;
     }
 
 //    private void setPreferredExecutorOfChild(Task task) {
