@@ -41,6 +41,7 @@
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
+    <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
     <modem.port>/dev/tty.usbmodem412</modem.port>
     <modem.model>W760</modem.model>
     <modem.manufacturer>SonyEricsson</modem.manufacturer>
@@ -56,6 +57,7 @@
 <!--
     <module>bundle-tests</module>
 -->
+    <module>rxtx-commands</module>
     <module>commands</module>
     <module>sms-service</module>
     <module>sms-ping</module>
