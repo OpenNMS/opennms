@@ -67,13 +67,14 @@ public class ContainerTask extends Task {
     }
 
     @Override
-    public void schedule() {
+    public void preSchedule() {
         m_triggerTask.schedule();
-        for(Task task : m_children) {
-            task.schedule();
+        synchronized (m_children) {
+            for(Task task : m_children) {
+                task.schedule();
+            }
+            m_children.clear();
         }
-        m_children.clear();
-        super.schedule();
     }
     
     protected Task getTriggerTask() {
@@ -87,7 +88,9 @@ public class ContainerTask extends Task {
         if (isScheduled()) {
             task.schedule();
         } else {
-            m_children.add(task);
+            synchronized (m_children) {
+                m_children.add(task);
+            }
         }
     }
 
