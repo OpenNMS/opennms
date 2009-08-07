@@ -41,7 +41,6 @@
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
-    <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
     <modem.port>/dev/tty.usbmodem412</modem.port>
     <modem.model>W760</modem.model>
     <modem.manufacturer>SonyEricsson</modem.manufacturer>
@@ -137,4 +136,16 @@
     </repository>
   </repositories>
 
+  <profiles>
+    <profile>
+      <id>linux-specific-properties</id>
+      <activation>
+        <os><name>linux</name></os>
+      </activation>
+      <properties>
+        <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
+      </properties>
+    </profile>
+  </profiles>
+ 
 </project>
