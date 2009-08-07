@@ -85,7 +85,7 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="node"
  *     
 */
-@XmlRootElement(name = "node")
+@XmlRootElement(name="node")
 @Entity()
 @Table(name="node")
 @SecondaryTable(name="pathOutage")
