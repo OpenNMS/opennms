@@ -464,6 +464,26 @@ public final class RxtxCommands
 		port.removeEventListener();
 
 	}
+	
+	public void _rxtxEventTest(CommandInterpreter intp) {
+		try
+		{
+			String port = intp.nextArgument();
+			String testString = intp.nextArgument();
+			
+			assertNotNull( port , "usage: rxtxEventTest <port>" );
+			
+			String[] args = testString == null ? new String[] { port } : new String[] { port, testString };
+			
+			LoopbackEventTest.SerialEventHandler.main( args );
+			
+		}
+		catch( IllegalArgumentException e )
+		{
+			intp.println( e.getMessage() );
+		}
+		
+	}
 
 	public String getHelp() {
 		StringBuilder buf = new StringBuilder();
@@ -479,6 +499,7 @@ public final class RxtxCommands
 			.append("\n\t").append("rxtxUnlog <id>         -- stop redirectory of data from port <id>")
 			.append("\n\t").append("rxtxEnableEvents <id>  -- enable logging of events for port <id>")
 			.append("\n\t").append("rxtxDisableEvents <id> -- disable logging of events for port <id>")
+			.append("\n\t").append("rxtxEventTest <port>   -- test serial events on device")
 			.append("\n");
 		
 		return buf.toString();
