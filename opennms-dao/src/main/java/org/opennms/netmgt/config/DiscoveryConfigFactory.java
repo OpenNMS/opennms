@@ -146,7 +146,7 @@ public final class DiscoveryConfigFactory {
             m_singleton.getIntraPacketDelay();
             m_singleton.getConfiguredAddresses();
         } catch (Exception e) {
-            throw new ValidationException("An error occurred while validating the configuration.", e);
+            throw new ValidationException("An error occurred while validating the configuration: " + e, e);
         }
         
         m_loaded = true;
