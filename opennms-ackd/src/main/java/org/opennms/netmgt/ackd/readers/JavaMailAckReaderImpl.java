@@ -35,9 +35,12 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import org.apache.log4j.Logger;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 
 /**
@@ -67,44 +70,76 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class JavaMailAckReaderImpl implements AckReader, InitializingBean {
 
+    private Object m_lock = new Object();
     private int m_status;
     private PausibleScheduledThreadPoolExecutor m_executor;
-    private ReaderSchedule m_schedule;
+    private MailAckProcessor m_mailAckProcessor;
     
-    public void start() {
-        scheduleReads();
+    public void afterPropertiesSet() throws Exception {
+        boolean state = (m_executor != null && m_mailAckProcessor != null);
+        Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }
     
+    public void start() {
+        log().info("start: Starting reader...");
+        scheduleReads();
+        log().info("start: Reader started.");
+    }
+
     public void pause() {
+        log().info("pause: Pausing reader...");
         unScheduleReads();
+        log().info("pause: Reader paused.");
     }
 
     public void resume() {
+        log().info("resume: Resuming reader...");
         scheduleReads();
+        log().info("resume: Reader resumed.");
     }
 
     public void stop() {
+        log().info("stop: Stopping reader...");
         unScheduleReads();
+        log().info("stop: Reader stopped.");
     }
 
+    //FIXME
     private void unScheduleReads() {
         throw new IllegalStateException("Method not yet implemented");
     }
     
-    private void scheduleReads() {
+    protected void scheduleReads() {
+        log().debug("scheduleReads: attempting to acquire lock...");
         
-        if (m_schedule == null) {
-            m_schedule = ReaderSchedule.createSchedule();
+        ReaderSchedule schedule = ReaderSchedule.createSchedule();
+        
+        synchronized (m_lock) {
+            log().debug("scheduleReads: acquired lock, creating schedule...");
+            
+            m_executor.scheduleWithFixedDelay(getMailAckProcessor(), schedule.getInitialDelay(), 
+                                              schedule.getInterval(), schedule.getUnit());
+            
         }
         
-        m_executor.scheduleWithFixedDelay(MailAckProcessor.getInstance(), m_schedule.getInitialDelay(), 
-                                          m_schedule.getInterval(), m_schedule.getUnit());
+        log().debug("scheduleReads: exited lock, schedule updated.");
+        log().debug("scheduleReads: schedule is:" +
+        		    " attempts remaining: "+schedule.getAttemptsRemaining()+
+        		    "; initial delay: "+schedule.getInitialDelay()+
+        		    "; interval: "+schedule.getInterval()+
+        		    "; unit: "+schedule.getUnit());
+        
+        log().debug("scheduleReads: executor details:"+
+                    " active count: "+m_executor.getActiveCount()+
+                    "; completed task count: "+m_executor.getCompletedTaskCount()+
+                    "; task count: "+m_executor.getTaskCount()+
+                    "; queue size: "+m_executor.getQueue().size());
     }
     
-    public void setReaderSchedule(ReaderSchedule schedule) {
-        m_schedule = schedule;
+    private Logger log() {
+        return ThreadCategory.getInstance();
     }
-    
+
     public int getStatus() {
         return m_status;
     }
@@ -118,10 +153,22 @@ public class JavaMailAckReaderImpl implements AckReader, InitializingBean {
     }
 
     public void setExecutor(PausibleScheduledThreadPoolExecutor executor) {
-        m_executor = executor;
+        synchronized (m_lock) {
+            m_executor = executor;
+        }
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @Override
+    public String toString() {
+        return getClass().getCanonicalName();
+    }
+    
+    public void setMailAckProcessor(MailAckProcessor mailAckProcessor) {
+        m_mailAckProcessor = mailAckProcessor;
+    }
+
+    public MailAckProcessor getMailAckProcessor() {
+        return m_mailAckProcessor;
     }
     
 }

@@ -7,7 +7,7 @@
   alarm-sync="true" 
   alarmid-match-expression="~.*alarmid:([0-9]+).*" 
   clear-expression="~^(resolve|clear)$"
-  escalate-expression="~^ack$" 
-  notifyid-match-expression="~.*Notice #([0-9]+).*" 
-  unack-expression="~^ack$" >                       
+  escalate-expression="~^esc$" 
+  notifyid-match-expression="~.*Re:.*Notice #([0-9]+).*" 
+  unack-expression="~^unack$" >                       
 </ackd-configuration>

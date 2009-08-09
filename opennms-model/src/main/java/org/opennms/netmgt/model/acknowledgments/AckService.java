@@ -49,12 +49,12 @@ import org.springframework.transaction.annotation.Transactional;
  * Acknowledgment 
  * 
  */
-@Transactional(readOnly=false)
 public interface AckService {
 
-    
+    @Transactional(readOnly=false)
     void processAck(OnmsAcknowledgment ack);
     
+    @Transactional(readOnly=false)
     void processAcks(Collection<OnmsAcknowledgment> acks);
 
 }

@@ -175,8 +175,8 @@ public abstract class JavaMailer2 {
     /**
      * @return log4j Category
      */
-    protected Category log() {
-        return ThreadCategory.getInstance(getClass());
+    protected static Category log() {
+        return ThreadCategory.getInstance();
     }
 
     public static class LoggingByteArrayOutputStream extends ByteArrayOutputStream {

@@ -23,22 +23,22 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
 
     public Boolean acknowledgmentMatch(List<String> messageText) {
-        String expression = getContainer().getObject().getAckExpression();
+        String expression = getConfig().getAckExpression();
         return matcher(messageText, expression);
     }
 
     public Boolean clearMatch(List<String> messageText) {
-        String expression = getContainer().getObject().getClearExpression();
+        String expression = getConfig().getClearExpression();
         return matcher(messageText, expression);
     }
 
     public Boolean escalationMatch(List<String> messageText) {
-        String expression = getContainer().getObject().getEscalateExpression();
+        String expression = getConfig().getEscalateExpression();
         return matcher(messageText, expression);
     }
 
     public Boolean unAcknowledgmentMatch(List<String> messageText) {
-        String expression = getContainer().getObject().getUnackExpression();
+        String expression = getConfig().getUnackExpression();
         return matcher(messageText, expression);
     }
 

@@ -40,6 +40,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -59,9 +61,12 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.ackd.Ackd;
+import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.common.End2endMailConfig;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.config.common.ReadmailHost;
 import org.opennms.netmgt.config.common.ReadmailProtocol;
@@ -70,12 +75,15 @@ import org.opennms.netmgt.config.common.SendmailHost;
 import org.opennms.netmgt.config.common.SendmailMessage;
 import org.opennms.netmgt.config.common.SendmailProtocol;
 import org.opennms.netmgt.config.common.UserAuth;
+import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -113,9 +121,13 @@ public class JavaMailAckReaderImplTest {
     @Autowired
     private MailAckProcessor m_processor;
 
+    @Autowired
+    private AckService m_ackService;
+
     
     @Test
     public void verifyWiring() {
+        Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_daemon);
         Assert.assertNotNull(m_jmDao);
         Assert.assertNotNull(m_processor);
@@ -208,12 +220,115 @@ public class JavaMailAckReaderImplTest {
         Assert.assertEquals(new Integer(1234), acks.get(0).getRefId());
     }
 
+    @Test
     @Ignore
-    public void findAndProcessAcks() {
-        fail("Not yet implemented");
+    public void findAndProcessAcks() throws InterruptedException {
+        JavaMailAckReaderImpl reader = new JavaMailAckReaderImpl();
+        PausibleScheduledThreadPoolExecutor executor = new PausibleScheduledThreadPoolExecutor(1);
+        reader.setMailAckProcessor(m_processor);
+        Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
+        reader.setExecutor(executor);
+        m_processor.setJmConfigDao(new JmCnfDao());
+        m_processor.setAckService(m_ackService);
+        m_processor.setAckdConfigDao(createAckdConfigDao());
+        reader.setStatus(1);
+        //Thread.sleep(20000);
+        while (!f.isDone()) {
+            Thread.sleep(10);
+        }
+        Assert.assertTrue(f.isDone());
     }
 
 
+    private AckdConfigurationDao createAckdConfigDao() {
+        
+        class AckdConfigDao extends DefaultAckdConfigurationDao {
+
+            public AckdConfiguration getConfig() {
+                AckdConfiguration config = new AckdConfiguration();
+                config.setAckExpression("~^ack$");
+                config.setAlarmidMatchExpression("~.*alarmid:([0-9]+).*");
+                config.setAlarmSync(true);
+                config.setClearExpression("~^(resolve|clear)$");
+                config.setEscalateExpression("~^esc$");
+                config.setNotifyidMatchExpression("~.*Re:.*Notice #([0-9]+).*");
+                config.setReadmailConfig("default");
+                config.setUnackExpression("~^unack$");
+                return config;
+            }
+
+        }
+        
+        return new AckdConfigDao();
+        
+    }
+
+
+    protected class JmCnfDao implements JavaMailConfigurationDao {
+        
+        ReadmailConfig m_readConfig = createReadMailConfig();
+        SendmailConfig m_sendConfig = createSendMailConfig();
+        End2endMailConfig m_e2eConfig = createE2Ec();
+        
+
+        public ReadmailConfig getDefaultReadmailConfig() {
+            return m_readConfig;
+        }
+
+        private ReadmailConfig createReadMailConfig() {
+            ReadmailConfig config = new ReadmailConfig();
+            updateConfigWithGoogleReadConfiguration(config, getUser(), getPassword());
+            m_readConfig = config;
+            return m_readConfig;
+        }
+
+        private End2endMailConfig createE2Ec() {
+            return new End2endMailConfig();
+        }
+
+        private SendmailConfig createSendMailConfig() {
+            return new SendmailConfig();
+        }
+
+        public SendmailConfig getDefaultSendmailConfig() {
+            return m_sendConfig;
+        }
+
+        public End2endMailConfig getEnd2EndConfig(String name) {
+            return m_e2eConfig;
+        }
+
+        public List<End2endMailConfig> getEnd2EndConfigs() {
+            List<End2endMailConfig> list = new ArrayList<End2endMailConfig>();
+            list.add(m_e2eConfig);
+            return list;
+        }
+
+        public ReadmailConfig getReadMailConfig(String name) {
+            return m_readConfig;
+        }
+
+        public List<ReadmailConfig> getReadmailConfigs() {
+            List<ReadmailConfig> list = new ArrayList<ReadmailConfig>();
+            list.add(m_readConfig);
+            return list;
+        }
+
+        public SendmailConfig getSendMailConfig(String name) {
+            return m_sendConfig;
+        }
+
+        public List<SendmailConfig> getSendmailConfigs() {
+            List<SendmailConfig> list = new ArrayList<SendmailConfig>();
+            list.add(m_sendConfig);
+            return list;
+        }
+
+        public void verifyMarshaledConfiguration() throws IllegalStateException {
+        }
+        
+    }
+    
     @Ignore
     public void createAcknowledgment() {
         fail("Not yet implemented");
@@ -261,10 +376,10 @@ public class JavaMailAckReaderImplTest {
      */
     @Test
     @Ignore
-    public void integration() throws JavaMailerException {
+    public void testIntegration() throws JavaMailerException {
         
-        String gmailAccount = "foo";
-        String gmailPassword = "bar";
+        String gmailAccount = getUser();
+        String gmailPassword = getPassword();
         
         JavaSendMailer sendMailer = createSendMailer(gmailAccount, gmailPassword);
         
@@ -297,29 +412,37 @@ public class JavaMailAckReaderImplTest {
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(0).getAckAction());
         Assert.assertEquals(Integer.valueOf(1), acks.get(0).getRefId());
-        Assert.assertEquals("foo@gmail.com", acks.get(0).getAckUser());
+        Assert.assertEquals(getUser()+"@gmail.com", acks.get(0).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(1).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(1).getAckAction());
         Assert.assertEquals(Integer.valueOf(2), acks.get(1).getRefId());
-        Assert.assertEquals("foo@gmail.com", acks.get(1).getAckUser());
+        Assert.assertEquals(getUser()+"@gmail.com", acks.get(1).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(2).getAckType());
         Assert.assertEquals(AckAction.ACKNOWLEDGE, acks.get(2).getAckAction());
         Assert.assertEquals(Integer.valueOf(3), acks.get(2).getRefId());
-        Assert.assertEquals("foo@gmail.com", acks.get(2).getAckUser());
+        Assert.assertEquals(getUser()+"@gmail.com", acks.get(2).getAckUser());
         
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(3).getAckType());
         Assert.assertEquals(AckAction.CLEAR, acks.get(3).getAckAction());
         Assert.assertEquals(Integer.valueOf(4), acks.get(3).getRefId());
-        Assert.assertEquals("foo@gmail.com", acks.get(3).getAckUser());
+        Assert.assertEquals(getUser()+"@gmail.com", acks.get(3).getAckUser());
+    }
+
+    private String getPassword() {
+        return "bar";
+    }
+
+    private String getUser() {
+        return "foo";
     }
 
     private SendmailMessage createAckMessage(String gmailAccount, String noticeId, String body) {
         SendmailMessage sendMsg = new SendmailMessage();
         sendMsg.setTo(gmailAccount+"@gmail.com");
         sendMsg.setFrom(gmailAccount+"@gmail.com");
-        sendMsg.setSubject("re:Notice #"+noticeId+":");
+        sendMsg.setSubject("Re: Notice #"+noticeId+":");
         sendMsg.setBody(body);
         return sendMsg;
     }

@@ -81,6 +81,7 @@ public class JavaReadMailer extends JavaMailer2 {
     final private ReadmailConfig m_config;
     private Session m_session;
     private Boolean m_deleteOnClose = false;
+    private Store m_store;
 
 
     /**
@@ -89,11 +90,17 @@ public class JavaReadMailer extends JavaMailer2 {
      */
     @Override
     protected void finalize() throws Throwable {
+        log().debug("finalize: cleaning up mail folder an store connections...");
         if (m_messages != null && !m_messages.isEmpty() && m_messages.get(0).getFolder() != null && m_messages.get(0).getFolder().isOpen()) {
             m_messages.get(0).getFolder().close(m_deleteOnClose);
         }
-        super.finalize();
         
+        if (m_store.isConnected()) {
+            m_store.close();
+        }
+        
+        super.finalize();
+        log().debug("finalize: Mail folder and store connections closed.");
     }
     
     //TODO figure out why need this throws here
@@ -110,9 +117,9 @@ public class JavaReadMailer extends JavaMailer2 {
         Folder mailFolder = null;
         
         try {
-            Store store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
-            store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
-            mailFolder = store.getFolder(m_config.getMailFolder());
+            m_store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
+            m_store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+            mailFolder = m_store.getFolder(m_config.getMailFolder());
             mailFolder.open(Folder.READ_WRITE);
             msgs = mailFolder.getMessages();
         } catch (NoSuchProviderException e) {
@@ -123,6 +130,7 @@ public class JavaReadMailer extends JavaMailer2 {
         
         return new ArrayList<Message>(Arrays.asList(msgs));
     }
+    
 
     /*
      * TODO: Need readers that:
@@ -209,28 +217,34 @@ public class JavaReadMailer extends JavaMailer2 {
      * @throws IOException
      */
     public static List<String> getText(Message msg) throws MessagingException, IOException {
-        List<String> lines = new ArrayList<String>();
         
-        String content = null;
-        if (msg.isMimeType("text/*")) {
-            try {
-                content = (String)msg.getContent();
-            } catch (ClassCastException cce) {
-                Object c = msg.getContent();
-                if (c instanceof MimeMultipart) {
-                    for (int cnt = 0; cnt < ((MimeMultipart)c).getCount(); cnt++) {
-                        BodyPart bp = ((MimeMultipart)c).getBodyPart(cnt);
-                        if (bp.isMimeType("text/*")) {
-                            content = (String)bp.getContent();
-                            break;
-                        }
+        Object content = null;
+        String text = null;
+        
+        log().debug("getText: getting text of message from MimeType: text/*");
+
+        try {
+            text = (String)msg.getContent();
+
+        } catch (ClassCastException cce) {
+            content = msg.getContent();
+
+            if (content instanceof MimeMultipart) {
+
+                log().debug("getText: content is MimeMultipart, checking for text from each part...");
+
+                for (int cnt = 0; cnt < ((MimeMultipart)content).getCount(); cnt++) {
+                    BodyPart bp = ((MimeMultipart)content).getBodyPart(cnt);
+                    if (bp.isMimeType("text/*")) {
+                        text = (String)bp.getContent();
+                        log().debug("getText: found text MIME type: "+text);
+                        break;
                     }
                 }
+                log().debug("getText: did not find text within MimeMultipart message.");
             }
-            return string2Lines(content);
         }
-        
-        return lines;
+        return string2Lines(text);
     }
     
     public Boolean isDeleteOnClose() {

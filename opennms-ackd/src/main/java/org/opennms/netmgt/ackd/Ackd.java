@@ -38,6 +38,8 @@ package org.opennms.netmgt.ackd;
 import java.text.ParseException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -116,22 +118,41 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 	}
 
     public void start() {
+        log().info("start: Starting "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
+            log().debug("start: Starting reader: "+reader);
             reader.start();
         }
+        log().info("start: readers started.");
     }
     
+    /**
+     * Handles the event driven access to acknowledging <code>OnmsAcknowledgable</code>s.  The acknowledgment event
+     * contains 4 parameters: 
+     *     ackUser: The user acknowledging the <code>OnmsAcknowledgable</code>
+     *     ackAction: ack, unack, esc, clear
+     *     ackType: <code>AckType</code. representing either an <code>OnmsAlarm</code>, <code>OnmsNotification</code>, etc.
+     *     refId: The ID of the <code>OnmsAcknowledgable</code>
+     * @param event
+     */
     @EventHandler(uei=EventConstants.ACKNOWLEDGE_EVENT_UEI)
     public void handleAckEvent(Event event) {
+        
+        log().info("handleAckEvent: Received acknowledgment event: "+event);
+        
         OnmsAcknowledgment ack;
         
         try {
             ack = new OnmsAcknowledgment(event);
             m_ackService.processAck(ack);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log().error("handleAckEvent: unable to process acknowledgment event: "+event+"\t"+e);
         }
     }
     
+    private Logger log() {
+        return ThreadCategory.getInstance(getName());
+    }
+
+
 }
