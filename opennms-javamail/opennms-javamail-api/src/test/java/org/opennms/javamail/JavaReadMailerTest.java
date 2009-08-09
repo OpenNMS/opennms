@@ -35,6 +35,7 @@
  */
 package org.opennms.javamail;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -60,7 +61,7 @@ import org.opennms.netmgt.config.common.UserAuth;
 public class JavaReadMailerTest {
     
     /**
-     * This un-ignore this test with a proper gmail account
+     * Un-ignore this test with a proper gmail account
      * @throws JavaMailerException
      * @throws MessagingException
      * @throws InterruptedException
@@ -69,8 +70,8 @@ public class JavaReadMailerTest {
     @Ignore
     public void testReadMessagesWithSearchTerm() throws JavaMailerException, MessagingException, InterruptedException {
         
-        String gmailAccount = "foo";
-        String gmailPassword = "bar";
+        String gmailAccount = getUser();
+        String gmailPassword = getPassword();
         
         JavaSendMailer sendMailer = createSendMailer(gmailAccount, gmailPassword);
         
@@ -152,6 +153,14 @@ public class JavaReadMailerTest {
         Assert.assertTrue(msgs.isEmpty());
         
     }
+
+    private String getPassword() {
+        return "bar";
+    }
+
+    private String getUser() {
+        return "foo";
+    }
     
     private SendmailMessage createAckMessage(String gmailAccount, String noticeId, String regards, String body) {
         SendmailMessage sendMsg = new SendmailMessage();
@@ -195,6 +204,17 @@ public class JavaReadMailerTest {
         config.setUserAuth(auth);
         
         return new JavaSendMailer(config);
+    }
+    
+    @Test
+    @Ignore
+    public void testGetText() throws JavaMailerException, MessagingException, IOException {
+        JavaReadMailer rm = createGoogleReadMailer(getUser(), getPassword());
+        List<Message> msgs = rm.retrieveMessages();
+        for (Message msg : msgs) {
+            List<String> text = JavaReadMailer.getText(msg);
+            List<String> text2 = JavaReadMailer.string2Lines("abc\nxyz");
+        }
     }
 
     private JavaReadMailer createGoogleReadMailer(String gmailAccount, String gmailPassword) throws JavaMailerException {

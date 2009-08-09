@@ -38,6 +38,8 @@ package org.opennms.netmgt.dao.support;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -53,34 +55,41 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DefaultAckService implements AckService {
     
-    @Autowired
+    //@Autowired
     private AcknowledgmentDao m_ackDao;
     
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
+        log().info("processAcks: Processing "+acks.size()+" acknowledgements...");
         for (OnmsAcknowledgment ack : acks) {
             processAck(ack);
         }
     }
 
     public void processAck(OnmsAcknowledgment ack) {
-        
+        log().debug("processAck: Searching DB for acknowledgables for ack: "+ack);
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         
         if (ackables == null || ackables.size() < 1) {
+            log().debug("processAck: No acknowledgables found.");
             throw new IllegalStateException("No acknowlegables in the database for ack: "+ack);
         }
-        
+
+        log().debug("processAck: Found "+ackables.size()+". Acknowledging...");
         for (Acknowledgeable ackable : ackables) {
             switch (ack.getAckAction()) {
             case ACKNOWLEDGE:
+                log().debug("processAck: Acknowledging ackable: "+ackable);
                 ackable.acknowledge(ack.getAckUser());
                 break;
             case UNACKNOWLEDGE:
+                log().debug("processAck: Unacknowledging ackable: "+ackable);
                 ackable.unacknowledge(ack.getAckUser());
             case CLEAR:
+                log().debug("processAck: Clearing ackable: "+ackable);
                 ackable.clear(ack.getAckUser());
                 break;
             case ESCALATE:
+                log().debug("processAck: Escalating ackable: "+ackable);
                 ackable.escalate(ack.getAckUser());
             default:
                 break;
@@ -90,6 +99,10 @@ public class DefaultAckService implements AckService {
             m_ackDao.save(ack);
             m_ackDao.flush();
         }
+    }
+
+    private Logger log() {
+        return ThreadCategory.getInstance();
     }
 
     public void setAckDao(AcknowledgmentDao ackDao) {
