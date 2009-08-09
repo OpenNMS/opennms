@@ -51,6 +51,9 @@ import javax.mail.MessagingException;
 import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.StringUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.common.ReadmailConfig;
@@ -62,46 +65,86 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * This class uses the JavaMail API to connect to a mail store and retrieve messages, using
+ * the configured host and user details, and detects replies to notifications that have
+ * an acknowledgment action: acknowledge, unacknowledge, clear, escalate.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 class MailAckProcessor implements Runnable, InitializingBean {
     
+    private static final int LOG_FIELD_WIDTH = 128;
     private static AckdConfigurationDao m_daemonConfigDao;
     private static AckService m_ackService;
     private static JavaMailConfigurationDao m_jmConfigDao;
     private static MailAckProcessor m_instance;
+    private static Object m_lock = new Object();
 
     public void afterPropertiesSet() throws Exception {
+        log().debug("afterPropertiesSet: ");
         m_instance = this;
     }
 
     private MailAckProcessor() {
     }
 
-    public synchronized static MailAckProcessor getInstance() {
-        return m_instance;
+    public static MailAckProcessor getInstance() {
+        synchronized (m_lock) {
+            return m_instance;
+        }
     }
 
+    /**
+     * Retrieve the messages in the configured mail folder, searches for notification replies,
+     * and creates and processes the acknowledgments.
+     */
     protected void findAndProcessAcks() {
         
+        log().debug("findAndProcessAcks: checking for acknowledgments...");
         Collection<OnmsAcknowledgment> acks;
 
         try {
             List<Message> msgs = retrieveAckMessages();  //TODO: need a read *new* messages feature
             acks = createAcks(msgs);
-            m_ackService.processAcks(acks);
+            
+            if (acks != null) {
+                log().debug("findAndProcessAcks: Found "+acks.size()+" acks.  Processing...");
+                m_ackService.processAcks(acks);
+                log().debug("findAndProcessAcks: acks processed.");
+            }
         } catch (JavaMailerException e) {
-            // TODO Auto-generated catch block
+            log().error("findAndProcessAcks: Exception thrown in JavaMail: "+e);
             e.printStackTrace();
         }
+        
+        log().debug("findAndProcessAcks: completed checking for and processing acknowledgments.");
+    }
+
+    private static Logger log() {
+        return ThreadCategory.getInstance();
     }
 
     //should probably be static
+    /**
+     * Creates <code>OnmsAcknowledgment</code>s for each notification reply email message determined
+     * to have an acknowledgment action.
+     */
     protected List<OnmsAcknowledgment> createAcks(List<Message> msgs) {
+        
+        log().info("createAcks: Detecting and possibly creating acknowledgments from "+msgs.size()+" messages...");
         List<OnmsAcknowledgment> acks = null;
         
         if (msgs != null && msgs.size() > 0) {
             acks = new ArrayList<OnmsAcknowledgment>();
-            for (Message msg : msgs) {
+            
+            Iterator<Message> it = msgs.iterator();
+            while (it.hasNext()) {
+                Message msg = (Message) it.next();
                 try {
+                    
+                    log().debug("createAcks: detecting acks in message: "+msg.getSubject());
                     Integer id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getNotifyidMatchExpression());
                     
                     if (id != null) {
@@ -110,8 +153,10 @@ class MailAckProcessor implements Runnable, InitializingBean {
                         ack.setLog(createLog(msg));
                         acks.add(ack);
                         msg.setFlag(Flag.DELETED, true);
+                        log().debug("createAcks: found notification acknowledgment: "+ack);
                         continue;
                     }
+                    
                     id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getAlarmidMatchExpression());
                     
                     if (id != null) {
@@ -120,24 +165,27 @@ class MailAckProcessor implements Runnable, InitializingBean {
                         ack.setLog(createLog(msg));
                         acks.add(ack);
                         msg.setFlag(Flag.DELETED, true);
+                        log().debug("createAcks: found alarm acknowledgment."+ack);
                         continue;
                     }
                     
                 } catch (MessagingException e) {
-                    //FIXME: do something audit like here
-                    e.printStackTrace();
-                    continue;
+                    log().error("createAcks: messaging error: "+e);
                 } catch (IOException e) {
-                    // FIXME: ditto
-                    e.printStackTrace();
-                    continue;
+                    log().error("createAcks: IO problem: "+e);
                 }
             }
+        } else {
+            log().debug("createAcks: No messages for acknowledgment processing.");
         }
+        
+        log().info("createAcks: Completed detecting and possibly creating acknowledgments.  Created "+
+                   (acks == null? 0 : acks.size())+" acknowledgments.");
         return acks;
     }
 
     protected static Integer detectId(final String subject, final String expression) {
+        log().debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
         Integer id = null;
 
         //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
@@ -153,6 +201,9 @@ class MailAckProcessor implements Runnable, InitializingBean {
 
         if (matcher.matches() && matcher.groupCount() > 0) {
             id = Integer.valueOf(matcher.group(1));
+            log().debug("detectId: found acknowledgable ID: "+id);
+        } else {
+            log().debug("detectId: no acknowledgable ID found.");
         }
 
         return id;
@@ -169,13 +220,15 @@ class MailAckProcessor implements Runnable, InitializingBean {
         return ack;
     }
 
-    //should probably be static method
-    protected AckAction determineAckAction(Message msg) throws IOException, MessagingException {
+    protected static AckAction determineAckAction(Message msg) throws IOException, MessagingException {
+        log().info("determineAckAcktion: evaluating message looking for user specified acktion...");
         
         List<String> messageText = JavaReadMailer.getText(msg);
         
         AckAction action = AckAction.UNSPECIFIED;
         if (messageText != null && messageText.size() > 0) {
+            
+            log().debug("determineAction: message text: "+messageText);
             
             if (m_daemonConfigDao.acknowledgmentMatch(messageText)) {
                 action = AckAction.ACKNOWLEDGE;
@@ -190,14 +243,28 @@ class MailAckProcessor implements Runnable, InitializingBean {
             }
             
         } else {
-            //TODO something smart
+            String concern = "determineAckAction: a reply message to a notification has no text to evaluate.  " +
+            		"No action can be determined.";
+            log().warn(concern);
+            throw new MessagingException(concern);
         }
+        log().info("determineAckAcktion: evaluated message, "+action+" action determined from message.");
         return action;
     }
 
-    //should probably be static method
     protected List<Message> retrieveAckMessages() throws JavaMailerException {
+        log().debug("retrieveAckMessages: Retrieving messages...");
+        
         ReadmailConfig config = m_jmConfigDao.getReadMailConfig(m_daemonConfigDao.getConfig().getReadmailConfig());
+        
+        
+        log().debug("retrieveAckMessages: creating JavaReadMailer with config: " +
+        		"host: " + config.getReadmailHost().getHost() + 
+        		" port: " + config.getReadmailHost().getPort() +
+        		" ssl: " + config.getReadmailHost().getReadmailProtocol().getSslEnable() +
+        		" transport: " + config.getReadmailHost().getReadmailProtocol().getTransport() +
+        		" user: "+config.getUserAuth().getUserName() +
+        		" password: "+config.getUserAuth().getPassword());
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
@@ -210,23 +277,29 @@ class MailAckProcessor implements Runnable, InitializingBean {
         alarmRe = alarmRe.startsWith("~") ? alarmRe.substring(1) : alarmRe;
         
         List<Message> msgs = readMailer.retrieveMessages();
+        log().info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notifRe: "+notifRe+"and alarmRe: "+alarmRe);
+        
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();
-            
             try {
                 String subject = msg.getSubject();
+                
+                log().debug("retrieveAckMessages: comparing subject: "+subject);
                 if (!(subject.matches(notifRe) || subject.matches(alarmRe))) {
+                    
+                    log().debug("retrieveAckMessages: Subject doesn't match either Re.");
                     iterator.remove();
                 } else {
+                    //TODO: this just looks wrong
                     //delete this non-ack message because the acks will get deleted later and the config
                     //indicates delete all mail from mailbox
+                    log().debug("retrieveAckMessages: Subject matched, setting deleted flag");
                     if (config.isDeleteAllMail()) {
                         msg.setFlag(Flag.DELETED, true);
                     }
                 }
-            } catch (MessagingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Throwable t) {
+                log().error("retrieveAckMessages: Problem processing message: "+t);
             }
         }
         return msgs;
@@ -250,21 +323,34 @@ class MailAckProcessor implements Runnable, InitializingBean {
             bldr.append(value);
             bldr.append("\n");
         }
-        return bldr.toString();
+        return StringUtils.truncate(bldr.toString(), LOG_FIELD_WIDTH);
     }
 
     
     public void run() {
-        findAndProcessAcks();
+        try {
+            log().info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
+            findAndProcessAcks();
+            log().info("run: Finished processing mail acknowledgments." );
+        } catch (Exception e) {
+            log().debug("run: threw exception: "+e);
+        } finally {
+            log().debug("run: method completed.");
+        }
+        
     }
     
     
-    public synchronized void setAckdConfigDao(AckdConfigurationDao configDao) {
-        m_daemonConfigDao = configDao;
+    public void setAckdConfigDao(AckdConfigurationDao configDao) {
+        synchronized (m_lock) {
+            m_daemonConfigDao = configDao;
+        }
     }
     
-    public synchronized void setAckService(AckService ackService) {
-        m_ackService = ackService;
+    public void setAckService(AckService ackService) {
+        synchronized (m_lock) {
+            m_ackService = ackService;
+        }
     }
     
     public void setJmConfigDao(JavaMailConfigurationDao jmConfigDao) {
