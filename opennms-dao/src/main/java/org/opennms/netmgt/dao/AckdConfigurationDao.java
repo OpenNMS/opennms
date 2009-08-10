@@ -38,6 +38,7 @@ package org.opennms.netmgt.dao;
 import java.util.List;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.ReaderSchedule;
 
 public interface AckdConfigurationDao {
     
@@ -50,5 +51,7 @@ public interface AckdConfigurationDao {
     Boolean escalationMatch(List<String> messageText);
     
     Boolean unAcknowledgmentMatch(List<String> messageText);
+
+    ReaderSchedule getReaderSchedule(String readerName);
 
 }

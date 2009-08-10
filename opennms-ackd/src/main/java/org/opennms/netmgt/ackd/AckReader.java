@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.ackd;
 
+import org.opennms.netmgt.ackd.readers.ReaderSchedule;
+
 
 /**
  * Acknowledgment reader API
@@ -45,9 +47,9 @@ package org.opennms.netmgt.ackd;
  */
 public interface AckReader {
     
-    void start();
+    void start(ReaderSchedule schedule);
     void pause();
     void resume();
     void stop();
-
+    String getName();
 }

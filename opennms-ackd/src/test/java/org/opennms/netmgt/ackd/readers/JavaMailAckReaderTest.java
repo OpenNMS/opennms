@@ -110,7 +110,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 /**
  * Integration test of for the Javamail Acknowledgement Reader Implementation.
  */
-public class JavaMailAckReaderImplTest {
+public class JavaMailAckReaderTest {
 
     @Autowired
     private Ackd m_daemon;
@@ -223,7 +223,7 @@ public class JavaMailAckReaderImplTest {
     @Test
     @Ignore
     public void findAndProcessAcks() throws InterruptedException {
-        JavaMailAckReaderImpl reader = new JavaMailAckReaderImpl();
+        JavaMailAckReader reader = new JavaMailAckReader();
         PausibleScheduledThreadPoolExecutor executor = new PausibleScheduledThreadPoolExecutor(1);
         reader.setMailAckProcessor(m_processor);
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);

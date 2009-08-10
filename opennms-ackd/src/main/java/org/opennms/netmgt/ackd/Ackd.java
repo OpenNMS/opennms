@@ -41,6 +41,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -121,7 +122,12 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         log().info("start: Starting "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
             log().debug("start: Starting reader: "+reader);
-            reader.start();
+            
+            org.opennms.netmgt.config.ackd.ReaderSchedule configSchedule = getConfigDao().getReaderSchedule(reader.getName());
+            
+            long interval = configSchedule.getInterval();
+            String unit = configSchedule.getUnit();
+            reader.start(ReaderSchedule.createSchedule(interval, unit));
         }
         log().info("start: readers started.");
     }
