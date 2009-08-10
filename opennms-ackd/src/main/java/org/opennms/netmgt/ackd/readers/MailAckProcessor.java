@@ -277,17 +277,18 @@ class MailAckProcessor implements Runnable, InitializingBean {
         alarmRe = alarmRe.startsWith("~") ? alarmRe.substring(1) : alarmRe;
         
         List<Message> msgs = readMailer.retrieveMessages();
-        log().info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notifRe: "+notifRe+"and alarmRe: "+alarmRe);
+        log().info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+
+                   " and alarm expression: "+alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();
             try {
                 String subject = msg.getSubject();
                 
-                log().debug("retrieveAckMessages: comparing subject: "+subject);
+                log().debug("retrieveAckMessages: comparing the subject: "+subject);
                 if (!(subject.matches(notifRe) || subject.matches(alarmRe))) {
                     
-                    log().debug("retrieveAckMessages: Subject doesn't match either Re.");
+                    log().debug("retrieveAckMessages: Subject doesn't match either expression.");
                     iterator.remove();
                 } else {
                     //TODO: this just looks wrong

@@ -5,6 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Reader;
+import org.opennms.netmgt.config.ackd.ReaderSchedule;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 
 public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdConfiguration, AckdConfiguration> implements AckdConfigurationDao {
@@ -63,6 +65,20 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
             }
         }
         return matches;
+    }
+
+    public void getReaderSchedule() {
+        getConfig().getAckExpression();
+    }
+    
+    public ReaderSchedule getReaderSchedule(String readerName) {
+        List<Reader> readers = getConfig().getReaders().getReaderCollection();
+        for (Reader reader : readers) {
+            if (readerName.equals(reader.getReaderName())) {
+                return reader.getReaderSchedule();
+            }
+        }
+        return new ReaderSchedule();
     }
     
 }

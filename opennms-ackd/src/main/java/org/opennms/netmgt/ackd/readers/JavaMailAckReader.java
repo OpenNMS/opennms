@@ -39,7 +39,9 @@ import org.apache.log4j.Logger;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
+import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 
@@ -56,31 +58,38 @@ import org.springframework.util.Assert;
  * DONE: JavaMail configuration factory
  * DONE: Ackd configuration factory
  * TODO: Associate email replies with openNMS user
- * TODO: Finish scheduling component of JavaAckReader
- * TODO: Configurable Schedule
+ * DONE: Finish scheduling component of JavaAckReader
+ * DONE: Configurable Schedule
  * DONE: Identify Java Mail configuration element to use for reading replies
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration and JavaSendMailer
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration and JavaSendMailer
  * TODO: Move reading email messages from MTM and this class to JavaReadMailer class
- * TODO: Do some proper logging
+ * DONE: Do some proper logging
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * 
  */
-public class JavaMailAckReaderImpl implements AckReader, InitializingBean {
+public class JavaMailAckReader implements AckReader, InitializingBean {
 
+    private static final String NAME="JavaMailReader";
+    
     private Object m_lock = new Object();
     private int m_status;
     private PausibleScheduledThreadPoolExecutor m_executor;
     private MailAckProcessor m_mailAckProcessor;
+    private ReaderSchedule m_schedule;
+    
+    @Autowired
+    private AckdConfigurationDao m_ackdConfigDao;
     
     public void afterPropertiesSet() throws Exception {
         boolean state = (m_executor != null && m_mailAckProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }
     
-    public void start() {
+    public void start(ReaderSchedule schedule) {
+        setSchedule(schedule);
         log().info("start: Starting reader...");
         scheduleReads();
         log().info("start: Reader started.");
@@ -110,16 +119,14 @@ public class JavaMailAckReaderImpl implements AckReader, InitializingBean {
     }
     
     protected void scheduleReads() {
+        ReaderSchedule schedule = getSchedule();
         log().debug("scheduleReads: attempting to acquire lock...");
-        
-        ReaderSchedule schedule = ReaderSchedule.createSchedule();
         
         synchronized (m_lock) {
             log().debug("scheduleReads: acquired lock, creating schedule...");
             
             m_executor.scheduleWithFixedDelay(getMailAckProcessor(), schedule.getInitialDelay(), 
                                               schedule.getInterval(), schedule.getUnit());
-            
         }
         
         log().debug("scheduleReads: exited lock, schedule updated.");
@@ -169,6 +176,29 @@ public class JavaMailAckReaderImpl implements AckReader, InitializingBean {
 
     public MailAckProcessor getMailAckProcessor() {
         return m_mailAckProcessor;
+    }
+    
+    public String getName() {
+        return NAME;
+    }
+
+    public void setAckdConfigDao(AckdConfigurationDao ackdConfigDao) {
+        m_ackdConfigDao = ackdConfigDao;
+    }
+
+    public AckdConfigurationDao getAckdConfigDao() {
+        return m_ackdConfigDao;
+    }
+
+    public void setSchedule(ReaderSchedule schedule) {
+        m_schedule = schedule;
+    }
+
+    public ReaderSchedule getSchedule() {
+        if (m_schedule == null) {
+            m_schedule = ReaderSchedule.createSchedule();
+        }
+        return m_schedule;
     }
     
 }

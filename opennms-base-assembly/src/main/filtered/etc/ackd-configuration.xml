@@ -9,5 +9,12 @@
   clear-expression="~^(resolve|clear)$"
   escalate-expression="~^esc$" 
   notifyid-match-expression="~.*Re:.*Notice #([0-9]+).*" 
-  unack-expression="~^unack$" >                       
+  unack-expression="~^unack$" >
+  
+  <readers>
+    <reader enabled="true" reader-name="JavaMailReader">
+      <reader-schedule interval="60" unit="s"/>
+    </reader>
+  </readers>
+
 </ackd-configuration>

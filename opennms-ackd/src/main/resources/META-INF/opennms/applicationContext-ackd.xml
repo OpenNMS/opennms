@@ -24,7 +24,7 @@
     </constructor-arg>
   </bean>
   
-  <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReaderImpl" >
+  <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
     <property name="executor" ref="javaMailReadScheduler" />
     <property name="mailAckProcessor" ref="mailAckProcessor" />
   </bean>
