@@ -5,7 +5,7 @@ package org.opennms.netmgt.ackd.readers;
 
 import java.util.concurrent.TimeUnit;
 
-class ReaderSchedule {
+public class ReaderSchedule {
     
     private long m_initialDelay;
     private long m_interval;
@@ -61,6 +61,40 @@ class ReaderSchedule {
 
     public void setUnit(TimeUnit unit) {
         m_unit = unit;
+    }
+
+    /**
+     * Creates a proper <code>ReaderSchedule</code> based by computing a new interval based on the
+     * string representation of units from the ackd-configuration:
+     *     hours(h), days(d), minutes(m), seconds(s), milliseconds(ms)
+     * 
+     * note: if the specification in the configuration is seconds (s) or milliseconds (ms), then no computation is made 
+     * to adjust the interval.
+     * 
+     * @param interval
+     * @param unit
+     * @return an adjusted <code>ReaderSchedule</code>
+     */
+    public static ReaderSchedule createSchedule(long interval, String unit) {
+        TimeUnit tu = TimeUnit.SECONDS;
+        
+        if ("d".equals(unit)) {
+            interval = interval * 60*60*24;
+            
+        } else if ("h".equals(unit)) {
+            interval = interval * 60*60;
+            
+        } else if ("m".equals(unit)) {
+            interval = interval * 60;
+            
+        } else if ("s".equals(unit)) {
+            
+        } else if ("ms".equals(unit)) {
+            tu = TimeUnit.MILLISECONDS;
+            
+        }
+        
+        return createSchedule(interval, interval, 0, tu);
     }
     
 }
