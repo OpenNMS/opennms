@@ -41,10 +41,9 @@
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
-    <modem.port>/dev/tty.usbmodem412</modem.port>
-    <modem.model>W760</modem.model>
-    <modem.manufacturer>SonyEricsson</modem.manufacturer>
-    <modem.baudRate>57600</modem.baudRate>
+    <!-- From http://smslib.org/wiki/smslib:configurationparameters -->
+    <smslib.serial.polling>true</smslib.serial.polling>
+    <!-- <smslib.serial.pollinginterval>200</smslib.serial.pollinginterval> -->
   </properties>
 
   <packaging>pom</packaging>
