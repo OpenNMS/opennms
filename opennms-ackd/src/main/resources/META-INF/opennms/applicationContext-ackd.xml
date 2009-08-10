@@ -2,14 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
+<!-- moved back to dao context for now
   <tx:annotation-driven/>
     
   <bean id="ackService" class="org.opennms.netmgt.dao.support.DefaultAckService" >
     <property name="ackDao" ref="acknowledgmentDao" />
   </bean>
+-->
   
   <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
