@@ -7,9 +7,9 @@
       http://www.springframework.org/schema/beans 
       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
       
+    
     <osgi:reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
     
-
 	<osgi:service ref="smsCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
-
+	
 </beans>

@@ -52,7 +52,7 @@
     <module>poms</module>
     <module>provision</module>
     <module>org.opennms.smslib</module>
-<!--
+    <!--
     <module>bundle-tests</module>
 -->
     <module>rxtx-commands</module>
@@ -115,7 +115,9 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <releases><enabled>false</enabled></releases>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
     <repository>
       <id>com.springsource.repository.bundles.external</id>
@@ -139,12 +141,14 @@
     <profile>
       <id>linux-specific-properties</id>
       <activation>
-        <os><name>linux</name></os>
+        <os>
+          <name>linux</name>
+        </os>
       </activation>
       <properties>
         <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
       </properties>
     </profile>
   </profiles>
- 
+
 </project>

@@ -54,9 +54,6 @@ public class GatewayGroupListener implements BundleContextAware {
 		
 		smsService.start();
 		
-		//Properties serviceProps = new Properties();
-		//serviceProps.put("type", properties.get("gatewayUsageType").toString().toLowerCase());
-		
 		getBundleContext().registerService(SmsService.class.getName(), smsService, null);
 		
 	}

@@ -386,12 +386,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 		   }
 		   
 		   System.out.println("msg text: " + msg.getText());
-//		   try {
-		   	//deletes the message
-//			m_service.deleteMessage(msg);
-//		   }catch(Exception e){
-//			   e.printStackTrace();
-//		   }
 		   
 	   }
 	   
