@@ -128,7 +128,7 @@ public class Pinger {
 	    s_pingTracker.start();
 	}
 
-    public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws IOException {
+    public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, cb));
 	}
@@ -149,7 +149,7 @@ public class Pinger {
      * @throws InterruptedException 
      * @throws IOException 
      */
-    public static Long ping(InetAddress host, long timeout, int retries) throws InterruptedException, IOException {
+    public static Long ping(InetAddress host, long timeout, int retries) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         Pinger.ping(host, timeout, retries, (short)1, cb);
         cb.waitFor();
@@ -164,14 +164,14 @@ public class Pinger {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	public static Long ping(InetAddress host) throws IOException, InterruptedException {
+	public static Long ping(InetAddress host) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         Pinger.ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, (short)1, cb);
         cb.waitFor();
         return cb.getResponseTime();
 	}
 
-	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws IOException, InterruptedException {
+	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
 	    initialize();
 	    ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
         

@@ -104,13 +104,13 @@ public class IcmpDetector extends AbstractDetector {
           sb.append(false);
           sb.append(". Received an Interrupted exception.");
           log().debug(sb.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             sb.delete(0, sb.length());
             sb.append("isServiceDetected: ICMP based protocol for address: ");
             sb.append(address);
             sb.append(" is detected: ");
             sb.append(false);
-            sb.append(". Received an IO Exception.");
+            sb.append(". Received an Exception.");
             log().debug(sb.toString());
         } finally {
             
