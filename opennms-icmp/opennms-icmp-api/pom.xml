@@ -18,7 +18,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.rt</artifactId>
+      <artifactId>org.opennms.lib.tracker</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

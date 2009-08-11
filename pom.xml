@@ -814,13 +814,8 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
-        <artifactId>org.opennms.lib.rt</artifactId>
-        <version>0.1-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib</groupId>
-        <artifactId>org.opennms.lib.sms</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <artifactId>org.opennms.lib.tracker</artifactId>
+        <version>0.1</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
