@@ -8,6 +8,8 @@ import java.util.StringTokenizer;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
+import org.smslib.GatewayException;
+import org.smslib.TimeoutException;
 import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;
 import org.springframework.core.io.Resource;
@@ -62,6 +64,19 @@ public class GatewayGroupConfigImpl implements GatewayGroup {
             m_gateways[i] = gateway;
 		}
 		
+	}
+	
+	public void stopGateways(){
+		System.out.printf("%s stopping all gateways in group %s", "\n", "\n");
+		for(AGateway gateway : m_gateways){
+			try {
+				if(gateway.getStatus() != AGateway.GatewayStatuses.STOPPED){
+					gateway.stopGateway();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

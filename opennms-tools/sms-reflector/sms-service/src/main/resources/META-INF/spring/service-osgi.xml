@@ -11,8 +11,11 @@
 	
 	<osgi:service id="gatewayConfigService" ref="gatewayGroupImpl" interface="org.opennms.sms.reflector.smsservice.GatewayGroup"/>
 	
-	<bean id="gatewayGroupImpl" class="org.opennms.sms.reflector.smsservice.internal.GatewayGroupConfigImpl">
+	<bean id="gatewayGroupImpl" class="org.opennms.sms.reflector.smsservice.internal.GatewayGroupConfigImpl" destroy-method="stopGateways">
 		<property name="config" value="osgibundle:META-INF/config/modemConfig.properties"/>
+	</bean>
+	
+	<bean id="testGatewayGroupImpl" class="org.opennms.sms.reflector.smsservice.internal.TestGatewayGroupImpl" destroy-method="stopGateways">
 	</bean>
 	   
     <osgi:list id="outboundList" cardinality="0..N" interface="org.smslib.IOutboundMessageNotification"/>
