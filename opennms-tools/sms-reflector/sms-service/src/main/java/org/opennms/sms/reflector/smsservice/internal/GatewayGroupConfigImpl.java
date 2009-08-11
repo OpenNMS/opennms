@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
@@ -12,7 +13,7 @@ import org.springframework.core.io.Resource;
 
 public class GatewayGroupConfigImpl implements GatewayGroup {
 	
-	AGateway[] m_gateways = new AGateway[1];
+	AGateway[] m_gateways;
 	
 	public AGateway[] getGateways() {
 		return m_gateways;
@@ -37,14 +38,20 @@ public class GatewayGroupConfigImpl implements GatewayGroup {
 				}
 			}
 		}
-		System.out.println("\nmodemPort: " + modemProperties.getProperty("modem.port") + "\n");
-		String port = modemProperties.getProperty("modem.port", "/dev/tty.usbmodem2412");
-		String model = modemProperties.getProperty("modem.model", "w760i");
-		String manufacturer = modemProperties.getProperty("modem.manufacturer", "SonyEricsson");
-		String baudrate = modemProperties.getProperty("modem.baudrate", "56700");
 		
+		String modems = modemProperties.getProperty("modems");
+		StringTokenizer tokens = new StringTokenizer(modems);
 		
-		m_gateways[0] = new SerialModemGateway("modem." + port, port, new Integer(baudrate), manufacturer, model);
+		m_gateways = new AGateway[tokens.countTokens()];
+		
+		for(int i = 0; i < tokens.countTokens(); i++){
+			String modemId = tokens.nextToken();
+			String port = modemProperties.getProperty(modemId + ".port");
+			String baudRate = modemProperties.getProperty(modemId + ".baudrate");
+			String manufacturer = modemProperties.getProperty(modemId + ".manufacturer");
+			String model = modemProperties.getProperty(modemId + ".model");
+			m_gateways[i] = new SerialModemGateway(modemId, port, new Integer(baudRate), manufacturer, model);
+		}
 		
 	}
 
