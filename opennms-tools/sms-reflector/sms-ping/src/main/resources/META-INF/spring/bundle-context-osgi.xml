@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:osgi="http://www.springframework.org/schema/osgi"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi-1.0.xsd">
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd">
 
   <!-- definitions using elements of the osgi namespace can be included
        in this file. There is no requirement to keep these definitions
@@ -13,6 +13,11 @@
        
     <osgi:reference id="smsService" cardinality="1..1" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
     
-    <osgi:service ref="smsMessenger" interface="org.smslib.IInboundMessageNotification" />
+    <osgi:service ref="smsMessenger">
+      <osgi:interfaces>
+        <value>org.smslib.IInboundMessageNotification</value>
+        <value>org.smslib.IOutboundMessageNotification</value>
+      </osgi:interfaces>
+    </osgi:service>
     
 </beans>

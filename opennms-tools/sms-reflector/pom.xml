@@ -41,9 +41,6 @@
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
-    <!-- From http://smslib.org/wiki/smslib:configurationparameters -->
-    <smslib.serial.polling>true</smslib.serial.polling>
-    <!-- <smslib.serial.pollinginterval>200</smslib.serial.pollinginterval> -->
   </properties>
 
   <packaging>pom</packaging>
@@ -147,6 +144,9 @@
       </activation>
       <properties>
         <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
+        <!-- From http:/INFO/smslib.org/wiki/smslib:configurationparameters -->
+        <smslib.serial.polling>true</smslib.serial.polling>
+        <!-- <smslib.serial.pollinginterval>200</smslib.serial.pollinginterval> -->
       </properties>
     </profile>
   </profiles>

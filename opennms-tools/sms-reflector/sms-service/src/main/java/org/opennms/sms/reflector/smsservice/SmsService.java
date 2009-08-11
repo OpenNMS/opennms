@@ -14,7 +14,6 @@ import org.smslib.IQueueSendingNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
-import org.smslib.queues.QueueManager;
 import org.smslib.SMSLibException;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
@@ -22,11 +21,11 @@ import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
-import org.smslib.helper.*;
+import org.smslib.queues.QueueManager;
 import org.smslib.routing.Router;
 
 public interface SmsService {
-	Logger getLogger();
+
 	void addGateway(AGateway gateway) throws GatewayException;
 	boolean removeGateway(AGateway gateway) throws GatewayException;
 	void startService() throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException;

@@ -32,12 +32,17 @@
 package org.opennms.sms.ping.internal;
 
 
+import java.io.IOException;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Messenger;
+import org.smslib.GatewayException;
 import org.smslib.IInboundMessageNotification;
+import org.smslib.IOutboundMessageNotification;
 import org.smslib.InboundMessage;
+import org.smslib.OutboundMessage;
+import org.smslib.TimeoutException;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.smslib.Message.MessageTypes;
 
@@ -47,7 +52,7 @@ import org.smslib.Message.MessageTypes;
  *
  * @author brozow
  */
-public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInboundMessageNotification {
+public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInboundMessageNotification, IOutboundMessageNotification {
     
     Logger log = Logger.getLogger(getClass());
     
@@ -56,25 +61,68 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInbound
     private Queue<PingReply> m_replyQueue;
     
     public SmsMessenger(SmsService smsService) {
-        log.debug("Created SmsMessenger: "+smsService);
+        debugf("Created SmsMessenger: %s", smsService);
         m_smsService = smsService;
     }
 
     public void sendRequest(PingRequest request) throws Exception {
-        log.debug("SmsMessenger.sendRequest" + request);
-        m_smsService.sendMessage(request.getRequest());
+        debugf("SmsMessenger.sendRequest %s", request);
+        if (!m_smsService.sendMessage(request.getRequest())) {
+            throw new IOException("Failed to send sms message");
+        }
     }
 
     public void start(Queue<PingReply> replyQueue) {
-        log.debug("SmsMessenger.start");
+        debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
 
     public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
-        log.debug("SmsMessenger.processInboundMessage");
-        if (m_replyQueue != null) {
+        debugf("SmsMessenger.processInboundMessage");
+        
+        if (msg.getText() != null && msg.getText().length() >= 4 && "ping".equalsIgnoreCase(msg.getText().substring(0, 4))) {
+            sendPong(gatewayId, msg);
+        }
+        else if (m_replyQueue != null) {
             m_replyQueue.add(new PingReply(msg));
         }
+    }
+
+    private void sendPong(String gatewayId, InboundMessage msg) {
+        try {
+            OutboundMessage pong = new OutboundMessage(msg.getOriginator(), "pong");
+            pong.setGatewayId(gatewayId);
+            if (!m_smsService.sendMessage(pong)) {
+                errorf("Failed to send pong request to %s", msg.getOriginator());
+            }
+
+        } catch (TimeoutException e) {
+            errorf(e, "Timeout sending pong request to %s", msg.getOriginator());
+        } catch (GatewayException e) {
+            errorf(e, "Gateway exception sending pong request to %s", msg.getOriginator());
+        } catch (IOException e) {
+            errorf(e, "IOException sending pong request to %s", msg.getOriginator());
+        } catch (InterruptedException e) {
+            errorf(e, "InterruptedException sending poing request to %s", msg.getOriginator());
+        } 
+    }
+
+    public void process(String gatewayId, OutboundMessage msg) {
+        log.debug("Sent message "+msg);
+    }
+    
+    private void debugf(String fmt, Object... args) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(fmt, args));
+        }
+    }
+    
+    private void errorf(Throwable t, String fmt, Object... args) {
+        log.error(String.format(fmt, args), t);
+    }
+
+    private void errorf(String fmt, Object... args) {
+        log.error(String.format(fmt, args));
     }
 
 }

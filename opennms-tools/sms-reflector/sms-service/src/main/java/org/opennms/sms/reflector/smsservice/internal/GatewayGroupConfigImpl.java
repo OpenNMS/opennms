@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
+import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;
 import org.springframework.core.io.Resource;
 
@@ -50,7 +51,15 @@ public class GatewayGroupConfigImpl implements GatewayGroup {
 			String baudRate = modemProperties.getProperty(modemId + ".baudrate");
 			String manufacturer = modemProperties.getProperty(modemId + ".manufacturer");
 			String model = modemProperties.getProperty(modemId + ".model");
-			m_gateways[i] = new SerialModemGateway(modemId, port, new Integer(baudRate), manufacturer, model);
+			String pin = modemProperties.getProperty(modemId+".pin", "0000");
+			
+			SerialModemGateway gateway = new SerialModemGateway(modemId, port, Integer.parseInt(baudRate), manufacturer, model);
+			gateway.setProtocol(Protocols.PDU);
+			gateway.setInbound(true);
+			gateway.setOutbound(true);
+			gateway.setSimPin(pin);
+
+            m_gateways[i] = gateway;
 		}
 		
 	}

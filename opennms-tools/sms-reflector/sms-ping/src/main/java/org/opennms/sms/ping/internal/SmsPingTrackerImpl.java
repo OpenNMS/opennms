@@ -47,8 +47,8 @@ import org.smslib.Service;
  */
 public class SmsPingTrackerImpl extends RequestTracker<PingRequestId, PingRequest, PingReply> implements SmsPingTracker {
     
-    Logger log = Logger.getLogger(getClass());
-    
+    private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
+
     public SmsPingTrackerImpl(SmsMessenger smsMessenger) throws IOException {
         super("SMS", smsMessenger);
         log.debug("Created SmsPingTrackerImpl");
@@ -66,6 +66,13 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequestId, PingReques
         log.debug("Calling start()");
         super.start();
         log.debug("Called start()");
+    }
+    
+
+    public void stop() {
+        log.debug("Calling stop()");
+
+        log.debug("Called stop()");
     }
     
     

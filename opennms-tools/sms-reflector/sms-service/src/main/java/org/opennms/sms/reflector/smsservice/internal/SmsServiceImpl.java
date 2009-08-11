@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.SmsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.ICallNotification;
@@ -29,10 +31,12 @@ import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
-import org.smslib.helper.Logger;
 import org.smslib.routing.Router;
 
+
 public class SmsServiceImpl implements SmsService {
+    
+    private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
 	private Service m_service = new Service();
 	private String m_modemId;
@@ -255,10 +259,6 @@ public class SmsServiceImpl implements SmsService {
 		return m_service.getLoadBalancer();
 	}
 
-	public Logger getLogger() {
-		return m_service.getLogger();
-	}
-
 	public int getOutboundMessageCount(String gatewayId) {
 		return m_service.getOutboundMessageCount(gatewayId);
 	}
@@ -372,6 +372,7 @@ public class SmsServiceImpl implements SmsService {
 	}
 
 	public boolean sendMessage(OutboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException {
+	    log.debug("OutboundListeners: "+m_outboundListeners);
 		return m_service.sendMessage(msg);
 	}
 

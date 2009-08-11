@@ -105,6 +105,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_expiration = System.currentTimeMillis() + timeout;
         
         m_request = new OutboundMessage(id.getDestination(), "ping");
+        m_request.setSrcPort(6996);
     }
     
     public PingRequest(PingRequestId id, long timeout, int retries, PingResponseCallback cb) {
