@@ -634,19 +634,8 @@
         <property><name>build</name><value>all</value></property>
       </activation>
       <modules>
-        <module>lib</module>
         <module>extensions</module>
         <module>opennms-doc</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>build.lib</id>
-      <activation>
-        <property><name>build</name><value>lib</value></property>
-      </activation>
-      <modules>
-        <module>lib</module>
       </modules>
     </profile>
 
@@ -832,38 +821,38 @@
       <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.joesnmp</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.service-registration</artifactId>
-        <version>0.5</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
         <artifactId>org.opennms.lib.snmp.api</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
         <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
         <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
         <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
         <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
