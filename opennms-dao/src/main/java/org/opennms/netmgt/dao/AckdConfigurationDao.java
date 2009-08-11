@@ -38,20 +38,75 @@ package org.opennms.netmgt.dao;
 import java.util.List;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
 
+/**
+ * DAO interface for Ackd configuration
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public interface AckdConfigurationDao {
     
     AckdConfiguration getConfig();
     
+    /**
+     * Utility method for determining if a reply email should acknowledge an acknowledgable
+     * 
+     * @param messageText
+     * @return Boolean
+     */
     Boolean acknowledgmentMatch(List<String> messageText);
     
+    /**
+     * Utility method for determining if a reply email should clear an acknowledgable
+     * 
+     * @param messageText
+     * @return Boolean
+     */
     Boolean clearMatch(List<String> messageText);
     
+    /**
+     * Utility method for determining if a reply email should escalate an acknowledgable
+     * 
+     * @param messageText
+     * @return Boolean
+     */
     Boolean escalationMatch(List<String> messageText);
-    
+
+    /**
+     * Utility method for determining if a reply email should unacknoweledge an acknowledgable
+     * 
+     * @param messageText
+     * @return Boolean
+     */
     Boolean unAcknowledgmentMatch(List<String> messageText);
 
+    /**
+     * Utility method to retrieve a schedule defined for a reader.  Each <code>AckdReader</code> requires that a name property
+     * is defined and the configuration uses that name to retrieve configuration details for that named reader.
+     * 
+     * @param readerName
+     * @return a ReaderSchedule
+     */
     ReaderSchedule getReaderSchedule(String readerName);
+
+    /**
+     * Utility method to retrieve a readers configuration by name.  Each <code>AckdReader</code> requires that a name property
+     * is defined and the configuration uses that name to retrieve configuration details for that named reader.
+     * 
+     * @param readerName
+     * @return a Reader configuration
+     */
+    Reader getReader(String readerName);
+
+    /**
+     * Utility method that determines if a named reader's configuration is enabled.  Each <code>AckdReader</code> requires that
+     * a name property is defined and the configuration uses that name to retrieve configuration details for that named reader.
+     * 
+     * @param readerName
+     * @return
+     */
+    boolean isReaderEnabled(String readerName);
 
 }
