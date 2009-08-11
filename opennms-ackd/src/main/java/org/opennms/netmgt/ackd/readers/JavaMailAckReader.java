@@ -64,7 +64,10 @@ import org.springframework.util.Assert;
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration and JavaSendMailer
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration and JavaSendMailer
  * TODO: Move reading email messages from MTM and this class to JavaReadMailer class
+ * TODO: Need an event to cause re-loading of schedules based on changes to ackd-configuration
+ * TODO: Need an opennms.property or flag in each config to control auto reloading of configurations in new ConfigDaos
  * DONE: Do some proper logging
+ * TODO: Handle "enabled" flag of the readers in ackd-configuration
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
