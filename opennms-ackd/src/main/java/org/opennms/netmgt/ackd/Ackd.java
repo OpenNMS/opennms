@@ -121,6 +121,12 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     public void start() {
         log().info("start: Starting "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
+            
+            if (!getConfigDao().isReaderEnabled(reader.getName())) {
+                log().debug("start: Not starting disabled reader: "+reader);
+                continue;
+            }
+            
             log().debug("start: Starting reader: "+reader);
             
             org.opennms.netmgt.config.ackd.ReaderSchedule configSchedule = getConfigDao().getReaderSchedule(reader.getName());
