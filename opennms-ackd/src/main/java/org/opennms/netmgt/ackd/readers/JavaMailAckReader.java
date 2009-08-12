@@ -130,7 +130,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     public void resume() throws IllegalStateException {
         log().debug("resume: acquiring lock...");
         synchronized (m_lock) {
-            if (AckReaderState.PAUSED.equals(getState())) {
+            if (AckReaderState.PAUSED.equals(getState()) || AckReaderState.STOPPED.equals(getState()) ) {
                 setState(AckReaderState.RESUME_PENDING);
                 log().info("resume: lock acquired; resuming reader...");
                 scheduleReads();
@@ -149,9 +149,11 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         log().debug("resume: acquiring lock...");
         synchronized (m_lock) {
             if (!AckReaderState.STOPPED.equals(getState())) {
+                setState(AckReaderState.STOP_PENDING);
                 log().info("stop: lock acquired; stopping reader...");
                 unScheduleReads();
                 m_executor.remove(m_mailAckProcessor);
+                setState(AckReaderState.STOPPED);
                 log().info("stop: Reader stopped.");
             } else {
                 IllegalStateException e = new IllegalStateException("Reader is already stopped.");

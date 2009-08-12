@@ -247,6 +247,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         for (AckReader reader : m_ackReaders) {
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
             allowedStates.add(AckReaderState.PAUSED);
+            allowedStates.add(AckReaderState.STOPPED);
             
             try {
                 adjustReaderState(reader, AckReaderState.RESUMED, allowedStates);
