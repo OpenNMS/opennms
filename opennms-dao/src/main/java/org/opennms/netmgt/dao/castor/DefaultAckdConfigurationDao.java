@@ -136,5 +136,9 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         }
         return enabled;
     }
+
+    public void reloadConfiguration() {
+        getContainer().reload();
+    }
     
 }

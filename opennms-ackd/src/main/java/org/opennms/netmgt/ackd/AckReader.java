@@ -46,10 +46,39 @@ import org.opennms.netmgt.ackd.readers.ReaderSchedule;
  *
  */
 public interface AckReader {
+
+    public enum AckReaderState {
+        STOP_PENDING(0, "Stopped"),
+        STOPPED(1, "Stop Pending"),
+        START_PENDING(2, "Start Pending"),
+        STARTED(3, "Started"),
+        PAUSE_PENDING(4, "Pause Pending"),
+        PAUSED(5, "Paused"),
+        RESUME_PENDING(6, "Resume Pending"),
+        RESUMED(7, "Resumed")  //might be the same as started
+        ; 
+        
+        private int m_id;
+        private String m_label;
+        
+        AckReaderState(int id, String label) {
+            
+        }
+        
+        public int getId() {
+            return m_id;
+        }
+        
+        @Override
+        public String toString() {
+            return m_label;
+        }
+    };
     
     void start(ReaderSchedule schedule);
     void pause();
     void resume();
     void stop();
     String getName();
+    AckReaderState getState();
 }

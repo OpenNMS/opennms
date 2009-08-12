@@ -12,7 +12,7 @@
   unack-expression="~^unack$" >
   
   <readers>
-    <reader enabled="true" reader-name="JavaMailReader">
+    <reader enabled="false" reader-name="JavaMailReader">
       <reader-schedule interval="60" unit="s"/>
     </reader>
   </readers>
