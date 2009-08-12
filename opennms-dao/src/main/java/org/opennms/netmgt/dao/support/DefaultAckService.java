@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.acknowledgments.AckService;
  */
 public class DefaultAckService implements AckService {
     
-    //@Autowired
     private AcknowledgmentDao m_ackDao;
     
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
