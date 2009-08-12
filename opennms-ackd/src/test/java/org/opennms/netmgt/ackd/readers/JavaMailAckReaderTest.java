@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.Address;
@@ -61,7 +62,6 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.ackd.Ackd;
@@ -224,10 +224,9 @@ public class JavaMailAckReaderTest {
     @Ignore
     public void findAndProcessAcks() throws InterruptedException {
         JavaMailAckReader reader = new JavaMailAckReader();
-        PausibleScheduledThreadPoolExecutor executor = new PausibleScheduledThreadPoolExecutor(1);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
         reader.setMailAckProcessor(m_processor);
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
-        reader.setExecutor(executor);
         m_processor.setJmConfigDao(new JmCnfDao());
         m_processor.setAckService(m_ackService);
         m_processor.setAckdConfigDao(createAckdConfigDao());

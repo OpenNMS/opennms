@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.ackd;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 
 
@@ -78,10 +80,12 @@ public interface AckReader {
         
     };
     
-    void start(ReaderSchedule schedule);
+    void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule);
     void pause();
-    void resume();
+    void resume(final ScheduledThreadPoolExecutor executor);
     void stop();
-    String getName();
+    void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule);
     AckReaderState getState();
+    
+    String getName();
 }

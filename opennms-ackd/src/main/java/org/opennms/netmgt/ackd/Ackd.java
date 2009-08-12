@@ -38,6 +38,8 @@ package org.opennms.netmgt.ackd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
@@ -70,6 +72,9 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
     private volatile EventSubscriptionService m_eventSubscriptionService;
 	private volatile EventForwarder m_eventForwarder;
+	
+    private volatile ScheduledThreadPoolExecutor m_executor;
+
 
 	//FIXME change this to be like provisiond's adapters
 	private List<AckReader> m_ackReaders;
@@ -158,8 +163,13 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                 long interval = configSchedule.getInterval();
                 String unit = configSchedule.getUnit();
 
+                /**
+                 * TODO: Make this so that a reference to the executor doesn't have to be passed in and
+                 * the start method returns only the task to be scheduled.  The schedule can be adjusted
+                 * by the AckReader.  We just need to make sure that the future gets set in the AckReaer.
+                 */
                 if (AckReaderState.STARTED.equals(requestedState)) {
-                    reader.start(ReaderSchedule.createSchedule(interval, unit));
+                    reader.start(m_executor, ReaderSchedule.createSchedule(interval, unit));
                     
                 } else if (AckReaderState.STOPPED.equals(requestedState)) {
                     reader.stop();
@@ -168,7 +178,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                     reader.pause();
                     
                 } else if (AckReaderState.RESUMED.equals(requestedState)) {
-                    reader.resume();
+                    reader.resume(m_executor);
                     
                 } else {
                     IllegalStateException e = new IllegalStateException("adjustReaderState: cannot request state: "+requestedState);
@@ -183,8 +193,8 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             }
         }
     }
-    
-    private void startReaders() {
+
+    protected void startReaders() {
         log().info("startReaders: starting "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
             log().debug("startReaders: starting reader: "+reader);
@@ -247,7 +257,6 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         for (AckReader reader : m_ackReaders) {
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
             allowedStates.add(AckReaderState.PAUSED);
-            allowedStates.add(AckReaderState.STOPPED);
             
             try {
                 adjustReaderState(reader, AckReaderState.RESUMED, allowedStates);
@@ -328,6 +337,23 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
     public void destroy() throws IllegalStateException {
         stopReaders();
+        m_executor.purge();
+        m_executor.shutdown();
+
+        try {
+            //fairly arbitrary time (grin)
+            m_executor.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            m_executor.shutdownNow();
+        }
+    }
+
+    public void setExecutor(ScheduledThreadPoolExecutor executor) {
+        m_executor = executor;
+    }
+
+    public ScheduledThreadPoolExecutor getExecutor() {
+        return m_executor;
     }
 
 }
