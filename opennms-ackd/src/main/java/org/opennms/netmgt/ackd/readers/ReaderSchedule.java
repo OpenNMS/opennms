@@ -5,6 +5,11 @@ package org.opennms.netmgt.ackd.readers;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ *
+ */
 public class ReaderSchedule {
     
     private long m_initialDelay;

@@ -36,11 +36,13 @@
 package org.opennms.netmgt.ackd;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -71,6 +74,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 	//FIXME change this to be like provisiond's adapters
 	private List<AckReader> m_ackReaders;
 	private AckService m_ackService;
+    private Object m_lock = new Object();
 	
 	public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -115,28 +119,113 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         return NAME;
     }
 
-	public void destroy() throws Exception {
-	}
-
     public void start() {
         log().info("start: Starting "+m_ackReaders.size()+" readers...");
-        for (AckReader reader : m_ackReaders) {
-            
-            if (!getConfigDao().isReaderEnabled(reader.getName())) {
-                log().debug("start: Not starting disabled reader: "+reader);
-                continue;
-            }
-            
-            log().debug("start: Starting reader: "+reader);
-            
-            org.opennms.netmgt.config.ackd.ReaderSchedule configSchedule = getConfigDao().getReaderSchedule(reader.getName());
-            
-            long interval = configSchedule.getInterval();
-            String unit = configSchedule.getUnit();
-            reader.start(ReaderSchedule.createSchedule(interval, unit));
-        }
+        startReaders();
         log().info("start: readers started.");
     }
+
+    
+    private void adjustReaderState(AckReader reader, AckReaderState requestedState, List<AckReaderState> allowedCurrentStates) {
+
+        synchronized (m_lock) {
+
+            if (!getConfigDao().isReaderEnabled(reader.getName())) {
+                
+                //stop a disabled reader if necessary
+                if (!AckReaderState.STOPPED.equals(reader.getState())) {
+                    log().warn("adjustReaderState: ignoring requested state and stopping the disabled reader: "+reader.getName()+"...");
+                    reader.stop();
+                    log().warn("adjustReaderState: disabled reader: "+reader.getName()+" stopped");
+                    return;
+                }
+                
+                log().warn("adjustReaderState: Not adjustingReaderState, disabled reader: "+reader);
+                return;
+            }
+
+            if (allowedCurrentStates.contains(reader.getState())) {
+
+                log().debug("adjustReaderState: adjusting reader state from: "+reader.getState()+" to: "+requestedState+"...");
+
+                org.opennms.netmgt.config.ackd.ReaderSchedule configSchedule = getConfigDao().getReaderSchedule(reader.getName());
+
+                long interval = configSchedule.getInterval();
+                String unit = configSchedule.getUnit();
+
+                if (AckReaderState.STARTED.equals(requestedState)) {
+                    reader.start(ReaderSchedule.createSchedule(interval, unit));
+                    
+                } else if (AckReaderState.STOPPED.equals(requestedState)) {
+                    reader.stop();
+                    
+                } else if (AckReaderState.PAUSED.equals(requestedState)) {
+                    reader.pause();
+                    
+                } else if (AckReaderState.RESUMED.equals(requestedState)) {
+                    reader.resume();
+                    
+                } else {
+                    IllegalStateException e = new IllegalStateException("adjustReaderState: cannot request state: "+requestedState);
+                    log().error(e.getLocalizedMessage(), e);
+                    throw e;
+                }
+
+            } else {
+                IllegalStateException e = new IllegalStateException("error adjusting reader state; reader cannot be change from: "+reader.getState()+" to: "+requestedState);
+                log().error(e.getLocalizedMessage(), e);
+                throw e; 
+            }
+        }
+    }
+    
+    private void startReaders() throws IllegalStateException {
+        log().info("startReaders: starting "+m_ackReaders.size()+" readers...");
+        for (AckReader reader : m_ackReaders) {
+            log().debug("startReaders: starting reader: "+reader);
+            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            allowedStates.add(AckReaderState.STOPPED);
+            adjustReaderState(reader, AckReaderState.STARTED, allowedStates);
+            log().debug("startReaders: reader: "+reader+" started.");
+        }
+        log().info("startReaders: "+m_ackReaders.size()+" readers started.");
+    }
+    
+    private void stopReaders() throws IllegalStateException {
+        log().info("stopReaders: stopping "+m_ackReaders.size()+" readers...");
+        for (AckReader reader : m_ackReaders) {
+            log().debug("stopReaders: stopping reader: "+reader);
+            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            allowedStates.add(AckReaderState.PAUSE_PENDING);
+            allowedStates.add(AckReaderState.PAUSED);
+            allowedStates.add(AckReaderState.RESUME_PENDING);
+            allowedStates.add(AckReaderState.RESUMED);
+            allowedStates.add(AckReaderState.STARTED);
+            allowedStates.add(AckReaderState.START_PENDING);
+            allowedStates.add(AckReaderState.STOP_PENDING);
+            adjustReaderState(reader, AckReaderState.STOPPED, allowedStates);
+            log().debug("stopReaders: reader: "+reader+" stopped.");
+        }
+        log().info("stopReaders: "+m_ackReaders.size()+" readers stopped.");
+    }
+    
+    private void pauseReaders() throws IllegalStateException {
+        for (AckReader reader : m_ackReaders) {
+            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            allowedStates.add(AckReaderState.STARTED);
+            allowedStates.add(AckReaderState.RESUMED);
+            adjustReaderState(reader, AckReaderState.PAUSED, allowedStates);
+        }
+    }
+    
+    private void resumeReaders() throws IllegalStateException {
+        for (AckReader reader : m_ackReaders) {
+            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            allowedStates.add(AckReaderState.PAUSED);
+            adjustReaderState(reader, AckReaderState.RESUMED, allowedStates);
+        }
+    }
+
     
     /**
      * Handles the event driven access to acknowledging <code>OnmsAcknowledgable</code>s.  The acknowledgment event
@@ -166,5 +255,47 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         return ThreadCategory.getInstance(getName());
     }
 
+    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(Event event) {
+        String specifiedDaemon = null;
+        
+        log().info("handleReloadConfigEvent: processing reload event: "+event+"...");
+        
+        if (event.getParms() != null && event.getParms().getParmCount() >=1 ) {
+            List<Parm> parms = event.getParms().getParmCollection();
+            
+            for (Parm parm : parms) {
+                specifiedDaemon = parm.getValue().getContent();
+                
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) 
+                        && getName().equalsIgnoreCase(specifiedDaemon)) {
+                    
+                    log().debug("handleReloadConfigEvent: reload event is for this daemon: "+getName()+"; reloading configuration...");
+                    m_configDao.reloadConfiguration();
+                    
+                    log().debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
+                    restartReaders();
+                    
+                    log().debug("handleReloadConfigEvent: configuration reloaded.");
+                    
+                    return;  //return here because we are done.
+                }
+                
+            }
+            log().debug("handleReloadConfigEvent: reload event not for this daemon: "+getName()+"; daemon specified is: "+specifiedDaemon);
+        }
+    }
+
+    private void restartReaders() {
+        log().info("restartReaders: restarting readers...");
+        stopReaders();
+        startReaders();
+        log().info("restartReaders: readers restarted.");
+        
+    }
+
+    public void destroy() throws Exception {
+        stopReaders();
+    }
 
 }

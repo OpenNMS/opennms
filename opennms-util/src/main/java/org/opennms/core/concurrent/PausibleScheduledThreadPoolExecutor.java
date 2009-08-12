@@ -39,7 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * PausibleScheduledThreadPoolExecutor
  *
- * @author brozow
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class PausibleScheduledThreadPoolExecutor extends
         ScheduledThreadPoolExecutor {
@@ -50,6 +50,10 @@ public class PausibleScheduledThreadPoolExecutor extends
 
     public PausibleScheduledThreadPoolExecutor(int corePoolSize) {
         super(corePoolSize);
+    }
+    
+    public boolean isPaused() {
+        return isPaused.get();
     }
 
     @Override

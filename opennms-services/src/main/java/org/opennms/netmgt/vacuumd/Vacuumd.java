@@ -50,6 +50,7 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -73,8 +74,6 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
 public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
-
-    public static final String RELOAD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     private static volatile Vacuumd m_singleton;
 
@@ -109,7 +108,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         try {
             log().info("Loading the configuration file.");
             VacuumdConfigFactory.init();
-            getEventManager().addEventListener(this, RELOAD_CONFIG_UEI);
+            getEventManager().addEventListener(this, EventConstants.RELOAD_VACUUMD_CONFIG_UEI);
 
             initializeDataSources();
         } catch (Exception ex) {
@@ -309,7 +308,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     public void onEvent(Event event) {
-        if (RELOAD_CONFIG_UEI.equals(event.getUei())) {
+        if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
             try {
                 log().info("onEvent: reloading configuration.");
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());

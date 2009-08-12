@@ -179,7 +179,7 @@ public class EventConstants {
      * The discovery configuration changed event UEI
      */
     public final static String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
-    
+
     /**
      * The update server event UEI
      */
@@ -559,6 +559,17 @@ public class EventConstants {
      */
     public final static String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
     
+    /**
+     * Reload Vacuumd configuration UEI
+     */
+    public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
+
+    /**
+     * Reload Daemon configuration UEI
+     */
+    public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
+    public static final String PARM_DAEMON_NAME = "daemonName";
+
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
     public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
     public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
