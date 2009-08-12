@@ -47,6 +47,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.ackd.AckReader.AckReaderState;
+import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -164,6 +166,28 @@ public class AckdTest {
         Assert.assertNotNull(m_jmConfigDao);
         
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
+    }
+    
+    @Test
+    public void testRestartReaders() throws Exception {
+        AckReader reader = m_daemon.getAckReaders().get(0);
+        Reader readerConfig = m_daemon.getConfigDao().getReader("JavaMailReader");
+        readerConfig.setEnabled(true);
+        Assert.assertTrue(AckReaderState.STOPPED.equals(reader.getState()));
+        
+        m_daemon.restartReaders();
+        Thread.sleep(30);
+        Assert.assertTrue(AckReaderState.STARTED.equals(reader.getState()));
+        
+        m_daemon.pauseReaders();
+        Thread.sleep(30);
+        Assert.assertTrue(AckReaderState.PAUSED.equals(reader.getState()));
+        
+        m_daemon.resumeReaders();
+        Thread.sleep(30);
+        Assert.assertTrue(AckReaderState.RESUMED.equals(reader.getState()));
+        
+        m_daemon.destroy();
     }
     
 
