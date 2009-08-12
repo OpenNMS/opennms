@@ -76,11 +76,16 @@ import org.springframework.beans.factory.InitializingBean;
 class MailAckProcessor implements Runnable, InitializingBean {
     
     private static final int LOG_FIELD_WIDTH = 128;
+    
     private static AckdConfigurationDao m_daemonConfigDao;
+    
     private static AckService m_ackService;
+    
     private static JavaMailConfigurationDao m_jmConfigDao;
+    
     private static MailAckProcessor m_instance;
-    private static Object m_lock = new Object();
+    
+    volatile private static Object m_lock = new Object();
 
     public void afterPropertiesSet() throws Exception {
         log().debug("afterPropertiesSet: ");
