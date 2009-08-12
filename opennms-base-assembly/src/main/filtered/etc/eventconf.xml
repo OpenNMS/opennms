@@ -262,7 +262,7 @@
       <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
       <descr>
         &lt;p&gt;This event indicates the model-importer process has completed successfully. There 
-        is 1 parameter called importStats: %parm [importStats]%&lt;/p&gt;
+        is 1 parameter called importStats: %parm[importStats]%&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
         &lt;p&gt;This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p&gt;
@@ -294,7 +294,7 @@
                 <descr> 
                         &lt;p&gt;This event is an external command to restart polling 
                         all active services on a specified interface. The requeried 
-                        parameter is the IP address of the interface. (%parm [ipaddr]%). 
+                        parameter is the IP address of the interface. (%parm[ipaddr]%). 
                         &lt;/p&gt; 
                 </descr>
                 <logmsg dest='logndisplay'>
@@ -308,13 +308,13 @@
     <descr>
       &lt;p&gt;This event will be produced by capsd to carry the process status
                         information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm [txNo]%, 
-                        source event uei, %parm [srcUei]%, message, %parm [message]%, and process
-                        status, %parm [status]%.&lt;/p&gt;
+                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
+                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
+                        status, %parm[status]%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;A request has been made to xmlrpcd to report status for 
-      %parm [srcUei]%.&lt;/p&gt;
+      %parm[srcUei]%.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -412,6 +412,56 @@
     </logmsg>
     <severity>Warning</severity>
   </event>
+  
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfig</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration </event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and requests the configuration to be re-marshaled and applied.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration files has changed.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfigFailed</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and the request for the configuration to be re-marshaled and applied 
+      has failed.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have failed to be 
+      applied.&lt;/p&gt;
+    </logmsg>
+    <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" 
+                    alarm-type="1" 
+                    auto-clean="false" />
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfigSuccessful</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration successful</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and the request for the configuration to be re-marshaled and applied 
+      has succeeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have successfully been 
+      applied.&lt;/p&gt;
+    </logmsg>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" 
+                clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" 
+                auto-clean="false"/>
+    <severity>Normal</severity>
+  </event>
+  
+  <!--  Going to slowly get rid of these random daemon reload events for the generic
+  reloadDaemonConfig event -->
   <event>
     <uei>uei.opennms.org/internal/reloadPollerConfig</uei>
     <event-label>OpenNMS-defined internal event: reloadPollerConfig</event-label>
