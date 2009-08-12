@@ -40,6 +40,7 @@ import java.util.List;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO interface for Ackd configuration
@@ -118,6 +119,6 @@ public interface AckdConfigurationDao {
      * their state based on a configuration change.  This method will most likely be used with event processing and possibly 
      * in the ReST API.
      */
-    void reloadConfiguration();
+    void reloadConfiguration() throws DataAccessResourceFailureException;
 
 }

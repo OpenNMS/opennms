@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
@@ -137,7 +138,12 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         return enabled;
     }
 
-    public void reloadConfiguration() {
+    /**
+     * The exception boils up from the container class  The container class should
+     * indicate this.
+     * 
+     */
+    public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
     
