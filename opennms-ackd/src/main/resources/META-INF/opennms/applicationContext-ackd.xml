@@ -18,14 +18,13 @@
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
   
-  <bean id="javaMailReadScheduler" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor" >
+  <bean id="readerScheduler" class="java.util.concurrent.ScheduledThreadPoolExecutor" >
     <constructor-arg>
       <value>1</value>
     </constructor-arg>
   </bean>
   
   <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
-    <property name="executor" ref="javaMailReadScheduler" />
     <property name="mailAckProcessor" ref="mailAckProcessor" />
   </bean>
 
@@ -37,6 +36,7 @@
 
 
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
+    <property name="executor" ref="readerScheduler" />
     <property name="configDao" ref="ackdConfigurationDao" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder"/>
