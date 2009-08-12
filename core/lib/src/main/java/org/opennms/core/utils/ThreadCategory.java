@@ -90,7 +90,7 @@ public class ThreadCategory extends Category {
      * 
      * @see java.lang.InheritableThreadLocal
      */
-    public static Logger getInstance(Class c) {
+    public static Logger getInstance(Class<?> c) {
         String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {

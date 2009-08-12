@@ -8,4 +8,15 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.api</artifactId>
   <name>OpenNMS Core API</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0</version>     
+    </dependency>
+  </dependencies>
 </project>
