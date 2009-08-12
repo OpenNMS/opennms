@@ -125,12 +125,12 @@
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.7.5-SMS-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.7.5-SMS-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

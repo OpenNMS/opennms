@@ -85,7 +85,7 @@
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>SNAPSHOT</version>
+      <version>1.7.5-SMS-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
