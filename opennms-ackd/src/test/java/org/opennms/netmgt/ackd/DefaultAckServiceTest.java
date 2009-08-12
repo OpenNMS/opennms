@@ -89,7 +89,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:ackdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 
 /**
@@ -130,7 +129,7 @@ public class DefaultAckServiceTest {
         Assert.assertNotNull(m_populator);
     }
     
-    @Transactional @Test(expected=IllegalStateException.class)
+    @Test(expected=IllegalStateException.class)
     public void notificationWithMissingAlarm() {
         
         OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
@@ -167,7 +166,7 @@ public class DefaultAckServiceTest {
         m_ackService.processAck(ack);
     }
  
-    @Transactional @Test 
+    @Test 
     public void proccessAck() {
         
         OnmsNode dbNode = m_nodeDao.get(Integer.valueOf(1));
