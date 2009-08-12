@@ -3,7 +3,6 @@ package org.opennms.sms.reflector.smsservice.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;

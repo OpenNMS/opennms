@@ -1,13 +1,9 @@
 package org.opennms.sms.reflector.smsservice.internal;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.smslib.AGateway;
-import org.smslib.GatewayException;
 import org.smslib.Service;
-import org.smslib.TimeoutException;
-import org.smslib.AGateway.Protocols;
 import org.smslib.Service.ServiceStatus;
 
 public class GatewayListener {

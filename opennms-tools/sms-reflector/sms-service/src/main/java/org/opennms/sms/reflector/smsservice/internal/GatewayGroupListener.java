@@ -45,7 +45,7 @@ public class GatewayGroupListener implements BundleContextAware {
 		
 		SmsServiceImpl smsService = new SmsServiceImpl();
 		smsService.setOutboundNotification(new OutboundMessageNotification(getOutboundListeners()));
-		smsService.setInboundNotification(new InboundMessageNotification(getInboundListeners()));
+		smsService.setInboundNotification(new InboundMessageNotification(smsService, getInboundListeners()));
         smsService.setGatewayStatusNotification(new GatewayStatusNotification(getGatewayStatusListeners()));
         
 		for(int i = 0; i < gateways.length; i++){

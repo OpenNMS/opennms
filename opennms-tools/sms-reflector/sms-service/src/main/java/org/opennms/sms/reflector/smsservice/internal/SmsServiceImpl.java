@@ -20,17 +20,15 @@ import org.smslib.IQueueSendingNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
-import org.smslib.modem.SerialModemGateway;
-import org.smslib.queues.QueueManager;
 import org.smslib.SMSLibException;
 import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
-import org.smslib.AGateway.Protocols;
 import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
+import org.smslib.queues.QueueManager;
 import org.smslib.routing.Router;
 
 

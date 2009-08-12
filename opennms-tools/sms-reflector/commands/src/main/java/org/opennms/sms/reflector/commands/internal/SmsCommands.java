@@ -301,6 +301,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
     
+    @SuppressWarnings("unchecked")
     public Object _paxLog(CommandInterpreter intp) {
 
         try {
