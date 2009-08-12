@@ -108,5 +108,16 @@ public interface AckdConfigurationDao {
      * @return
      */
     boolean isReaderEnabled(String readerName);
+    
+    /**
+     * The underlying Castor based DAO abstraction in the default implementation doesn't provide access to the container so
+     * this method is defined so that access to the container doesn't have to be exposed and a reload can still be controlled 
+     * by the user.
+     * 
+     * Automatically reading in new values if the file changes is a different use case from expecting the services to alter 
+     * their state based on a configuration change.  This method will most likely be used with event processing and possibly 
+     * in the ReST API.
+     */
+    void reloadConfiguration();
 
 }

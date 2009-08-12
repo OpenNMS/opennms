@@ -165,7 +165,7 @@ public class JavaMailAckReaderTest {
         }
         List<Message> msgs = new ArrayList<Message>(1);
         msgs.add(msg);
-        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
         
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
@@ -212,7 +212,7 @@ public class JavaMailAckReaderTest {
         
         msgs.add(msg);
         
-        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
         Assert.assertEquals("david@opennms.org", acks.get(0).getAckUser());
@@ -231,7 +231,6 @@ public class JavaMailAckReaderTest {
         m_processor.setJmConfigDao(new JmCnfDao());
         m_processor.setAckService(m_ackService);
         m_processor.setAckdConfigDao(createAckdConfigDao());
-        reader.setStatus(1);
         //Thread.sleep(20000);
         while (!f.isDone()) {
             Thread.sleep(10);
@@ -402,9 +401,9 @@ public class JavaMailAckReaderTest {
         ReadmailConfig config = m_jmDao.getReadMailConfig(readmailConfig);
         updateConfigWithGoogleReadConfiguration(config, gmailAccount, gmailPassword);
         
-        List<Message> msgs = MailAckProcessor.getInstance().retrieveAckMessages();
+        List<Message> msgs = MailAckProcessor.retrieveAckMessages();
         
-        List<OnmsAcknowledgment> acks = MailAckProcessor.getInstance().createAcks(msgs);
+        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
         
         Assert.assertNotNull(acks);
         Assert.assertEquals(4, acks.size());

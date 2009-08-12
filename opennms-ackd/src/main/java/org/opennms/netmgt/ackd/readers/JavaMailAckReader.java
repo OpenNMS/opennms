@@ -64,10 +64,10 @@ import org.springframework.util.Assert;
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration and JavaSendMailer
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration and JavaSendMailer
  * TODO: Move reading email messages from MTM and this class to JavaReadMailer class
- * TODO: Need an event to cause re-loading of schedules based on changes to ackd-configuration
+ * DONE: Need an event to cause re-loading of schedules based on changes to ackd-configuration
  * TODO: Need an opennms.property or flag in each config to control auto reloading of configurations in new ConfigDaos
  * DONE: Do some proper logging
- * TODO: Handle "enabled" flag of the readers in ackd-configuration
+ * DONE: Handle "enabled" flag of the readers in ackd-configuration
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -78,10 +78,11 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     private static final String NAME="JavaMailReader";
     
     private Object m_lock = new Object();
-    private int m_status;
     private PausibleScheduledThreadPoolExecutor m_executor;
     private MailAckProcessor m_mailAckProcessor;
     private ReaderSchedule m_schedule;
+    
+    private AckReaderState m_state = AckReaderState.STOPPED;
     
     @Autowired
     private AckdConfigurationDao m_ackdConfigDao;
@@ -91,71 +92,118 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }
     
-    public void start(ReaderSchedule schedule) {
-        setSchedule(schedule);
-        log().info("start: Starting reader...");
-        scheduleReads();
-        log().info("start: Reader started.");
+    public void start(ReaderSchedule schedule) throws IllegalStateException {
+        synchronized (m_lock) {
+            if (AckReaderState.STOPPED.equals(getState())) {
+            setState(AckReaderState.START_PENDING);
+            setSchedule(schedule, false);
+            log().info("start: Starting reader...");
+            scheduleReads();
+            setState(AckReaderState.STARTED);
+            log().info("start: Reader started.");
+            } else {
+                IllegalStateException e = new IllegalStateException("Reader is not in a stopped state.  Reader state is: "+getState());
+                log().error("start: "+e, e);
+                throw e;
+            }
+        }
     }
 
-    public void pause() {
-        log().info("pause: Pausing reader...");
-        unScheduleReads();
-        log().info("pause: Reader paused.");
+    public void pause() throws IllegalStateException {
+        log().debug("pause: acquiring lock...");
+        synchronized (m_lock) {
+            if (AckReaderState.STARTED.equals(getState()) || AckReaderState.RESUMED.equals(getState())) {
+                log().info("pause: lock acquired; pausing reader...");
+                setState(AckReaderState.PAUSE_PENDING);
+                unScheduleReads();
+                setState(AckReaderState.PAUSED);
+                log().info("pause: Reader paused.");
+            } else {
+                IllegalStateException e = new IllegalStateException("Reader is not in a running state (STARTED or RESUMED).  Reader state is: "+getState());
+                log().error("pause: "+e, e);
+                throw e;
+            }
+        }
+        log().debug("pause: lock released.");
     }
 
-    public void resume() {
-        log().info("resume: Resuming reader...");
-        scheduleReads();
-        log().info("resume: Reader resumed.");
+    public void resume() throws IllegalStateException {
+        log().debug("resume: acquiring lock...");
+        synchronized (m_lock) {
+            if (AckReaderState.PAUSED.equals(getState())) {
+                setState(AckReaderState.RESUME_PENDING);
+                log().info("resume: lock acquired; resuming reader...");
+                scheduleReads();
+                setState(AckReaderState.RESUMED);
+                log().info("resume: reader resumed.");
+            } else {
+                IllegalStateException e = new IllegalStateException("Reader is not in a paused state, cannot resume.  Reader state is: "+getState());
+                log().error("resume: "+e, e);
+                throw e;
+            }
+        }
+        log().debug("resume: lock released.");
     }
 
-    public void stop() {
-        log().info("stop: Stopping reader...");
-        unScheduleReads();
-        log().info("stop: Reader stopped.");
+    public void stop() throws IllegalStateException {
+        log().debug("resume: acquiring lock...");
+        synchronized (m_lock) {
+            if (!AckReaderState.STOPPED.equals(getState())) {
+                log().info("stop: lock acquired; stopping reader...");
+                unScheduleReads();
+                m_executor.remove(m_mailAckProcessor);
+                log().info("stop: Reader stopped.");
+            } else {
+                IllegalStateException e = new IllegalStateException("Reader is already stopped.");
+                log().error("stop: "+e, e);
+                throw e;
+            }
+        }
     }
 
-    //FIXME
     private void unScheduleReads() {
-        throw new IllegalStateException("Method not yet implemented");
+        log().debug("unscheduleReades: acquiring lock...");
+        synchronized (m_lock) {
+            log().debug("unscheduleReades: lock acquired.  Pausing schedule...");
+            //this isn't probably the right way to handle this
+            getExecutor().pause();
+            log().debug("unscheduleReads: schedule paused.");
+        }
+        log().debug("unscheduleReads: lock released.");
     }
     
-    protected void scheduleReads() {
-        ReaderSchedule schedule = getSchedule();
-        log().debug("scheduleReads: attempting to acquire lock...");
+    private void scheduleReads() {
         
+        log().debug("scheduleReads: attempting to acquire lock...");
+
         synchronized (m_lock) {
+            if (getState().equals(AckReaderState.PAUSED)) {
+                getExecutor().resume();
+                return;
+            }
+
             log().debug("scheduleReads: acquired lock, creating schedule...");
-            
-            m_executor.scheduleWithFixedDelay(getMailAckProcessor(), schedule.getInitialDelay(), 
-                                              schedule.getInterval(), schedule.getUnit());
+
+            m_executor.scheduleWithFixedDelay(getMailAckProcessor(), getSchedule().getInitialDelay(), 
+                                              getSchedule().getInterval(), getSchedule().getUnit());
+            log().debug("scheduleReads: exited lock, schedule updated.");
+            log().debug("scheduleReads: schedule is:" +
+                        " attempts remaining: "+getSchedule().getAttemptsRemaining()+
+                        "; initial delay: "+getSchedule().getInitialDelay()+
+                        "; interval: "+getSchedule().getInterval()+
+                        "; unit: "+getSchedule().getUnit());
+
+            log().debug("scheduleReads: executor details:"+
+                        " active count: "+m_executor.getActiveCount()+
+                        "; completed task count: "+m_executor.getCompletedTaskCount()+
+                        "; task count: "+m_executor.getTaskCount()+
+                        "; queue size: "+m_executor.getQueue().size());
         }
         
-        log().debug("scheduleReads: exited lock, schedule updated.");
-        log().debug("scheduleReads: schedule is:" +
-        		    " attempts remaining: "+schedule.getAttemptsRemaining()+
-        		    "; initial delay: "+schedule.getInitialDelay()+
-        		    "; interval: "+schedule.getInterval()+
-        		    "; unit: "+schedule.getUnit());
-        
-        log().debug("scheduleReads: executor details:"+
-                    " active count: "+m_executor.getActiveCount()+
-                    "; completed task count: "+m_executor.getCompletedTaskCount()+
-                    "; task count: "+m_executor.getTaskCount()+
-                    "; queue size: "+m_executor.getQueue().size());
     }
     
     private Logger log() {
         return ThreadCategory.getInstance();
-    }
-
-    public int getStatus() {
-        return m_status;
-    }
-
-    public void setStatus(int status) {
-        m_status = status;
     }
 
     public PausibleScheduledThreadPoolExecutor getExecutor() {
@@ -193,8 +241,19 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         return m_ackdConfigDao;
     }
 
-    public void setSchedule(ReaderSchedule schedule) {
-        m_schedule = schedule;
+    /**
+     * Gets a new schedule and optionally reschedules <code>MailAckProcessor</code>
+     * @param schedule
+     * @param reschedule
+     */
+    public void setSchedule(ReaderSchedule schedule, boolean reschedule) {
+        synchronized (m_lock) {
+            m_schedule = schedule;
+            if (reschedule) {
+                m_executor.remove(m_mailAckProcessor);
+                scheduleReads();
+            }
+        }
     }
 
     public ReaderSchedule getSchedule() {
@@ -203,5 +262,21 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         }
         return m_schedule;
     }
+    
+    /**
+     * Anything calling this method should already have the lock.
+     * 
+     * @param state
+     */
+    private void setState(AckReaderState state) {
+        synchronized (m_lock) {
+            m_state = state;
+        }
+    }
+    
+    public AckReaderState getState() {
+        return m_state;
+    }
+
     
 }

@@ -51,6 +51,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
@@ -162,7 +163,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
         assertEquals("alarm severity -- should have been excalated", currentSeverity+1, verifyAlarmEscalated());
         
-        EventBuilder builder = new EventBuilder(Vacuumd.RELOAD_CONFIG_UEI, "test");
+        EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
         Event e = builder.getEvent();
         m_eventdIpcMgr.sendNow(e);
         

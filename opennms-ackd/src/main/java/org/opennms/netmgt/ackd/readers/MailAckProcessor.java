@@ -100,7 +100,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
      * Retrieve the messages in the configured mail folder, searches for notification replies,
      * and creates and processes the acknowledgments.
      */
-    protected void findAndProcessAcks() {
+    protected static void findAndProcessAcks() {
         
         log().debug("findAndProcessAcks: checking for acknowledgments...");
         Collection<OnmsAcknowledgment> acks;
@@ -131,7 +131,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
      * Creates <code>OnmsAcknowledgment</code>s for each notification reply email message determined
      * to have an acknowledgment action.
      */
-    protected List<OnmsAcknowledgment> createAcks(List<Message> msgs) {
+    protected static List<OnmsAcknowledgment> createAcks(final List<Message> msgs) {
         
         log().info("createAcks: Detecting and possibly creating acknowledgments from "+msgs.size()+" messages...");
         List<OnmsAcknowledgment> acks = null;
@@ -148,7 +148,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
                     Integer id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getNotifyidMatchExpression());
                     
                     if (id != null) {
-                        final OnmsAcknowledgment ack = createAcknowledgment(msg, id);
+                        final OnmsAcknowledgment ack = createAck(msg, id);
                         ack.setAckType(AckType.NOTIFICATION);
                         ack.setLog(createLog(msg));
                         acks.add(ack);
@@ -160,7 +160,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
                     id = detectId(msg.getSubject(), m_daemonConfigDao.getConfig().getAlarmidMatchExpression());
                     
                     if (id != null) {
-                        final OnmsAcknowledgment ack = createAcknowledgment(msg, id);
+                        final OnmsAcknowledgment ack = createAck(msg, id);
                         ack.setAckType(AckType.ALARM);
                         ack.setLog(createLog(msg));
                         acks.add(ack);
@@ -210,7 +210,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
     }
 
     //should probably be static method
-    protected OnmsAcknowledgment createAcknowledgment(Message msg, Integer refId) throws MessagingException, IOException {
+    protected static OnmsAcknowledgment createAck(final Message msg, final Integer refId) throws MessagingException, IOException {
         String ackUser = ((InternetAddress)msg.getFrom()[0]).getAddress();
         Date ackTime = msg.getReceivedDate();
         OnmsAcknowledgment ack = new OnmsAcknowledgment(ackTime, ackUser);
@@ -220,7 +220,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
         return ack;
     }
 
-    protected static AckAction determineAckAction(Message msg) throws IOException, MessagingException {
+    protected static AckAction determineAckAction(final Message msg) throws IOException, MessagingException {
         log().info("determineAckAcktion: evaluating message looking for user specified acktion...");
         
         List<String> messageText = JavaReadMailer.getText(msg);
@@ -252,7 +252,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
         return action;
     }
 
-    protected List<Message> retrieveAckMessages() throws JavaMailerException {
+    protected static List<Message> retrieveAckMessages() throws JavaMailerException {
         log().debug("retrieveAckMessages: Retrieving messages...");
         
         ReadmailConfig config = m_jmConfigDao.getReadMailConfig(m_daemonConfigDao.getConfig().getReadmailConfig());
@@ -307,7 +307,7 @@ class MailAckProcessor implements Runnable, InitializingBean {
     }
 
     @SuppressWarnings("unchecked")
-    private String createLog(Message msg) {
+    private static String createLog(final Message msg) {
         StringBuilder bldr = new StringBuilder();
         Enumeration<Header> allHeaders;
         try {
@@ -342,19 +342,19 @@ class MailAckProcessor implements Runnable, InitializingBean {
     }
     
     
-    public void setAckdConfigDao(AckdConfigurationDao configDao) {
+    public void setAckdConfigDao(final AckdConfigurationDao configDao) {
         synchronized (m_lock) {
             m_daemonConfigDao = configDao;
         }
     }
     
-    public void setAckService(AckService ackService) {
+    public void setAckService(final AckService ackService) {
         synchronized (m_lock) {
             m_ackService = ackService;
         }
     }
     
-    public void setJmConfigDao(JavaMailConfigurationDao jmConfigDao) {
+    public void setJmConfigDao(final JavaMailConfigurationDao jmConfigDao) {
         m_jmConfigDao = jmConfigDao;
     }
 
