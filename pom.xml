@@ -803,6 +803,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller</artifactId>
         <version>${project.version}</version>
