@@ -57,7 +57,6 @@ import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.dao.support.DefaultAckService;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -98,7 +98,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(populate=true) @Transactional
 public class DefaultAckServiceTest {
 
-    @Autowired DefaultAckService m_ackService;
+    @Autowired
+    AckService m_ackService;
     
     @Autowired AcknowledgmentDao m_ackDao;
 
