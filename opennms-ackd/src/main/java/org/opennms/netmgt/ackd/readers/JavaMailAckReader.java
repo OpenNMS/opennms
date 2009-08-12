@@ -35,8 +35,10 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import org.apache.log4j.Logger;
-import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -63,11 +65,12 @@ import org.springframework.util.Assert;
  * DONE: Identify Java Mail configuration element to use for reading replies
  * TODO: Migrate JavaMailNotificationStrategy to new JavaMail Configuration and JavaSendMailer
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration and JavaSendMailer
- * TODO: Move reading email messages from MTM and this class to JavaReadMailer class
+ * TODO: Move reading email messages from MTM to JavaReadMailer class
  * DONE: Need an event to cause re-loading of schedules based on changes to ackd-configuration
  * TODO: Need an opennms.property or flag in each config to control auto reloading of configurations in new ConfigDaos
  * DONE: Do some proper logging
  * DONE: Handle "enabled" flag of the readers in ackd-configuration
+ * TODO: Move executor to Ackd daemon
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -77,8 +80,9 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
 
     private static final String NAME="JavaMailReader";
     
-    private Object m_lock = new Object();
-    private PausibleScheduledThreadPoolExecutor m_executor;
+    volatile private Object m_lock = new Object();
+
+    private Future<?> m_future;
     private MailAckProcessor m_mailAckProcessor;
     private ReaderSchedule m_schedule;
     
@@ -88,17 +92,28 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     private AckdConfigurationDao m_ackdConfigDao;
     
     public void afterPropertiesSet() throws Exception {
-        boolean state = (m_executor != null && m_mailAckProcessor != null);
+        boolean state = (m_mailAckProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }
     
-    public void start(ReaderSchedule schedule) throws IllegalStateException {
+    private void start(final ScheduledThreadPoolExecutor executor) {
+        synchronized (m_lock) {
+            if (m_schedule == null) {
+                m_schedule = ReaderSchedule.createSchedule();
+            }
+            start(executor, m_schedule);
+        }
+    }
+    
+    public void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule) throws IllegalStateException {
         synchronized (m_lock) {
             if (AckReaderState.STOPPED.equals(getState())) {
             setState(AckReaderState.START_PENDING);
-            setSchedule(schedule, false);
+            setSchedule(executor, schedule, false);
             log().info("start: Starting reader...");
-            scheduleReads();
+            
+            scheduleReads(executor);
+            
             setState(AckReaderState.STARTED);
             log().info("start: Reader started.");
             } else {
@@ -115,7 +130,12 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
             if (AckReaderState.STARTED.equals(getState()) || AckReaderState.RESUMED.equals(getState())) {
                 log().info("pause: lock acquired; pausing reader...");
                 setState(AckReaderState.PAUSE_PENDING);
-                unScheduleReads();
+                
+                if (m_future != null) {
+                    m_future.cancel(false);
+                    m_future = null;
+                }
+                
                 setState(AckReaderState.PAUSED);
                 log().info("pause: Reader paused.");
             } else {
@@ -127,13 +147,15 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         log().debug("pause: lock released.");
     }
 
-    public void resume() throws IllegalStateException {
+    public void resume(final ScheduledThreadPoolExecutor executor) throws IllegalStateException {
         log().debug("resume: acquiring lock...");
         synchronized (m_lock) {
-            if (AckReaderState.PAUSED.equals(getState()) || AckReaderState.STOPPED.equals(getState()) ) {
+            if (AckReaderState.PAUSED.equals(getState())) {
                 setState(AckReaderState.RESUME_PENDING);
                 log().info("resume: lock acquired; resuming reader...");
-                scheduleReads();
+
+                scheduleReads(executor);
+                
                 setState(AckReaderState.RESUMED);
                 log().info("resume: reader resumed.");
             } else {
@@ -151,8 +173,12 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
             if (!AckReaderState.STOPPED.equals(getState())) {
                 setState(AckReaderState.STOP_PENDING);
                 log().info("stop: lock acquired; stopping reader...");
-                unScheduleReads();
-                m_executor.remove(m_mailAckProcessor);
+                
+                if (m_future != null) {
+                    m_future.cancel(false);
+                    m_future = null;
+                }
+                
                 setState(AckReaderState.STOPPED);
                 log().info("stop: Reader stopped.");
             } else {
@@ -163,30 +189,17 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         }
     }
 
-    private void unScheduleReads() {
-        log().debug("unscheduleReades: acquiring lock...");
-        synchronized (m_lock) {
-            log().debug("unscheduleReades: lock acquired.  Pausing schedule...");
-            //this isn't probably the right way to handle this
-            getExecutor().pause();
-            log().debug("unscheduleReads: schedule paused.");
-        }
-        log().debug("unscheduleReads: lock released.");
-    }
-    
-    private void scheduleReads() {
+    private void scheduleReads(final ScheduledThreadPoolExecutor executor) {
         
         log().debug("scheduleReads: attempting to acquire lock...");
 
         synchronized (m_lock) {
-            if (getState().equals(AckReaderState.PAUSED)) {
-                getExecutor().resume();
-                return;
-            }
-
+            
             log().debug("scheduleReads: acquired lock, creating schedule...");
 
-            m_executor.scheduleWithFixedDelay(getMailAckProcessor(), getSchedule().getInitialDelay(), 
+            executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+            executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+            m_future = executor.scheduleWithFixedDelay(getMailAckProcessor(), getSchedule().getInitialDelay(), 
                                               getSchedule().getInterval(), getSchedule().getUnit());
             log().debug("scheduleReads: exited lock, schedule updated.");
             log().debug("scheduleReads: schedule is:" +
@@ -196,26 +209,16 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
                         "; unit: "+getSchedule().getUnit());
 
             log().debug("scheduleReads: executor details:"+
-                        " active count: "+m_executor.getActiveCount()+
-                        "; completed task count: "+m_executor.getCompletedTaskCount()+
-                        "; task count: "+m_executor.getTaskCount()+
-                        "; queue size: "+m_executor.getQueue().size());
+                        " active count: "+executor.getActiveCount()+
+                        "; completed task count: "+executor.getCompletedTaskCount()+
+                        "; task count: "+executor.getTaskCount()+
+                        "; queue size: "+executor.getQueue().size());
         }
         
     }
     
     private Logger log() {
         return ThreadCategory.getInstance();
-    }
-
-    public PausibleScheduledThreadPoolExecutor getExecutor() {
-        return m_executor;
-    }
-
-    public void setExecutor(PausibleScheduledThreadPoolExecutor executor) {
-        synchronized (m_lock) {
-            m_executor = executor;
-        }
     }
 
     @Override
@@ -248,12 +251,13 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
      * @param schedule
      * @param reschedule
      */
-    public void setSchedule(ReaderSchedule schedule, boolean reschedule) {
+    public void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule) {
         synchronized (m_lock) {
             m_schedule = schedule;
+            
             if (reschedule) {
-                m_executor.remove(m_mailAckProcessor);
-                scheduleReads();
+                stop();
+                start(executor);
             }
         }
     }
@@ -278,6 +282,10 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     
     public AckReaderState getState() {
         return m_state;
+    }
+
+    public Future<?> getFuture() {
+        return m_future;
     }
 
     
