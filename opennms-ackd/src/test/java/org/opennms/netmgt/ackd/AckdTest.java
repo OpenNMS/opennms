@@ -173,19 +173,34 @@ public class AckdTest {
         AckReader reader = m_daemon.getAckReaders().get(0);
         Reader readerConfig = m_daemon.getConfigDao().getReader("JavaMailReader");
         readerConfig.setEnabled(true);
-        Assert.assertTrue(AckReaderState.STOPPED.equals(reader.getState()));
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
         
         m_daemon.restartReaders();
         Thread.sleep(30);
-        Assert.assertTrue(AckReaderState.STARTED.equals(reader.getState()));
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
         
         m_daemon.pauseReaders();
         Thread.sleep(30);
-        Assert.assertTrue(AckReaderState.PAUSED.equals(reader.getState()));
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.PAUSED.equals(reader.getState()));
         
         m_daemon.resumeReaders();
         Thread.sleep(30);
-        Assert.assertTrue(AckReaderState.RESUMED.equals(reader.getState()));
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.RESUMED.equals(reader.getState()));
+        
+        readerConfig.setEnabled(false);
+        m_daemon.restartReaders();
+        Thread.sleep(300);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
+        
+        m_daemon.resumeReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
+        
+        readerConfig.setEnabled(true);
+        m_daemon.resumeReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.RESUMED.equals(reader.getState()));
+        
         
         m_daemon.destroy();
     }
