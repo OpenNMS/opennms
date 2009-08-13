@@ -19,8 +19,6 @@
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -115,12 +113,8 @@
   notable copyright owners are listed below:
 </p>
 <ul>
-    <li>Original code base for OpenNMS version 1.0.0 Copyright &copy; 1999-2001
-      <a href="http://www.oculan.com/">Oculan Corporation</a>.</li>
     <li>Original (static) Mapping code Copyright &copy; 2003
       <a href="http://www.nksi.com">Networked Knowledge Systems, Inc.</a>.</li>
-    <li>ScriptD code Copyright &copy; 2003
-      <a href="http://www.tavve.com">Tavve Software Company</a>.</li>
   </ul>
 <p>
   This program is free software; you can redistribute it and/or
@@ -164,33 +158,26 @@
 	<table>
 	   <tr>
       
-      	   <td>
-		<p>
+      	   <td style="border-right: none;">
+		<p align="center">
         	Powered By Jetty<br/>
 		<a href="http://jetty.mortbay.org" target="_new"><img src="images/powered_by_jetty.gif" hspace="0" vspace="0"
-      		   border="0" alt="jetty.mortbay.org"></a>.
+      		   border="0" alt="jetty.mortbay.org" align="center"></a>.
       		</p>
 	   </td>
-           <td>
-		<p>
+           <td style="border-left: none; border-right: none;">
+		<p align="center">
 		Support for Tobi Oetiker's RRDTool<br/>
         	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
-           	border="0" alt="www.rrdtool.org"></a>
+           	border="0" alt="www.rrdtool.org" align="center"></a>
       		</p>      
 	   </td>
-           <td>
-		<p>
+           <td style="border-left: none;">
+		<p align="center">
 		PostgreSQL Powered<br/>
         	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
-           	border="0" alt="www.postgresql.org"></a>
+           	border="0" alt="www.postgresql.org" align="center"></a>
       		</p>      
-	   </td>
-      	   <td>
-		<p>
-        	Support for Tomcat<br/>
-		<a href="http://tomcat.apache.org/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" width="77" height="80"
-      		   border="0" alt="tomcat.apache.org"></a>.
-      		</p>
 	   </td>
 	   </tr>
 	</table>
