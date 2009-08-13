@@ -121,4 +121,6 @@ public interface AckdConfigurationDao {
      */
     void reloadConfiguration() throws DataAccessResourceFailureException;
 
+    int getEnabledReaderCount();
+
 }
