@@ -245,14 +245,14 @@ public class JavaMailAckReaderTest {
 
             public AckdConfiguration getConfig() {
                 AckdConfiguration config = new AckdConfiguration();
-                config.setAckExpression("~^AcK$");
-                config.setAlarmidMatchExpression("~.*alarmid:([0-9]+).*");
+                config.setAckExpression("~(?i)^AcK$");
+                config.setAlarmidMatchExpression("~(?i).*alarmid:([0-9]+).*");
                 config.setAlarmSync(true);
-                config.setClearExpression("~^(Resolve|cleaR)$");
-                config.setEscalateExpression("~^esc$");
-                config.setNotifyidMatchExpression("~.*RE:.*Notice #([0-9]+).*");
+                config.setClearExpression("~(?i)^(Resolve|cleaR)$");
+                config.setEscalateExpression("~(?i)^esc$");
+                config.setNotifyidMatchExpression("~(?i).*RE:.*Notice #([0-9]+).*");
                 config.setReadmailConfig("default");
-                config.setUnackExpression("~^unAck$");
+                config.setUnackExpression("~(?i)^unAck$");
                 return config;
             }
 
