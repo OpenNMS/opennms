@@ -67,10 +67,9 @@ import org.springframework.util.Assert;
  * TODO: Migrate Availability Reports send via JavaMail to new JavaMail Configuration and JavaSendMailer
  * TODO: Move reading email messages from MTM to JavaReadMailer class
  * DONE: Need an event to cause re-loading of schedules based on changes to ackd-configuration
- * TODO: Need an opennms.property or flag in each config to control auto reloading of configurations in new ConfigDaos
  * DONE: Do some proper logging
  * DONE: Handle "enabled" flag of the readers in ackd-configuration
- * TODO: Move executor to Ackd daemon
+ * DONE: Move executor to Ackd daemon
  * 
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
@@ -106,6 +105,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     }
     
     public void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule) throws IllegalStateException {
+        log().debug("start: acquiring lock...");
         synchronized (m_lock) {
             if (AckReaderState.STOPPED.equals(getState())) {
             setState(AckReaderState.START_PENDING);
@@ -122,6 +122,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
                 throw e;
             }
         }
+        log().debug("stop: lock released.");
     }
 
     public void pause() throws IllegalStateException {
@@ -168,7 +169,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     }
 
     public void stop() throws IllegalStateException {
-        log().debug("resume: acquiring lock...");
+        log().debug("stop: acquiring lock...");
         synchronized (m_lock) {
             if (!AckReaderState.STOPPED.equals(getState())) {
                 setState(AckReaderState.STOP_PENDING);
