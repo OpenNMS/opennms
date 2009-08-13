@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
   readmail-config="default" 
-  ack-expression="~^ack$" 
   alarm-sync="true" 
-  alarmid-match-expression="~.*alarmid:([0-9]+).*" 
-  clear-expression="~^(resolve|clear)$"
-  escalate-expression="~^esc$" 
-  notifyid-match-expression="~.*Re:.*Notice #([0-9]+).*" 
-  unack-expression="~^unack$" >
+  ack-expression="~(?i)^ack$" 
+  clear-expression="~(?i)^(resolve|clear)$"
+  escalate-expression="~(?i)^esc$" 
+  notifyid-match-expression="~(?i).*Re:.*Notice #([0-9]+).*" 
+  alarmid-match-expression="~(?i).*alarmid:([0-9]+).*" 
+  unack-expression="~(?i)^unack$" >
   
   <readers>
     <reader enabled="false" reader-name="JavaMailReader">
