@@ -79,16 +79,16 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
 
     private static final String NAME="JavaMailReader";
     
-    volatile private Object m_lock = new Object();
+    private volatile Object m_lock = new Object();
 
-    private Future<?> m_future;
+    private volatile Future<?> m_future;
     private MailAckProcessor m_mailAckProcessor;
     private ReaderSchedule m_schedule;
     
-    private AckReaderState m_state = AckReaderState.STOPPED;
+    private volatile AckReaderState m_state = AckReaderState.STOPPED;
     
     @Autowired
-    private AckdConfigurationDao m_ackdConfigDao;
+    private volatile AckdConfigurationDao m_ackdConfigDao;
     
     public void afterPropertiesSet() throws Exception {
         boolean state = (m_mailAckProcessor != null);
