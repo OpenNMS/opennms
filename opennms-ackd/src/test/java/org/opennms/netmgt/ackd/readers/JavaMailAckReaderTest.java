@@ -140,7 +140,7 @@ public class JavaMailAckReaderTest {
     @Test
     public void detectId() {
         String expression = m_daemon.getConfigDao().getConfig().getNotifyidMatchExpression();
-        Integer id = MailAckProcessor.detectId("Notice #1234", expression);
+        Integer id = MailAckProcessor.detectId("Re: notice #1234", expression);
         Assert.assertEquals(new Integer(1234), id);
     }
 
@@ -157,8 +157,8 @@ public class JavaMailAckReaderTest {
             addrs[0] = new InternetAddress("david@opennms.org");
             msg.addFrom(addrs);
             msg.addRecipient(javax.mail.internet.MimeMessage.RecipientType.TO, addrs[0]);
-            msg.setSubject("Notice #1234 JavaMailReaderImplTest Test Message");
-            msg.setText("ack");
+            msg.setSubject("Re: Notice #1234 JavaMailReaderImplTest Test Message");
+            msg.setText("ACK");
         } catch (AddressException e) {
             e.printStackTrace();
         } catch (MessagingException e) {
@@ -189,7 +189,7 @@ public class JavaMailAckReaderTest {
         addrs[0] = new InternetAddress("david@opennms.org");
         msg.addFrom(addrs);
         msg.addRecipient(RecipientType.TO, new InternetAddress("david@opennms.org"));
-        msg.setSubject("Notice #1234 JavaMailReaderImplTest Test Message");
+        msg.setSubject("Re: Notice #1234 JavaMailReaderImplTest Test Message");
         Multipart mpContent = new MimeMultipart();
         BodyPart textBp = new MimeBodyPart();
         BodyPart htmlBp = new MimeBodyPart();
@@ -245,14 +245,14 @@ public class JavaMailAckReaderTest {
 
             public AckdConfiguration getConfig() {
                 AckdConfiguration config = new AckdConfiguration();
-                config.setAckExpression("~^ack$");
+                config.setAckExpression("~^AcK$");
                 config.setAlarmidMatchExpression("~.*alarmid:([0-9]+).*");
                 config.setAlarmSync(true);
-                config.setClearExpression("~^(resolve|clear)$");
+                config.setClearExpression("~^(Resolve|cleaR)$");
                 config.setEscalateExpression("~^esc$");
-                config.setNotifyidMatchExpression("~.*Re:.*Notice #([0-9]+).*");
+                config.setNotifyidMatchExpression("~.*RE:.*Notice #([0-9]+).*");
                 config.setReadmailConfig("default");
-                config.setUnackExpression("~^unack$");
+                config.setUnackExpression("~^unAck$");
                 return config;
             }
 
