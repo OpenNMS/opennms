@@ -70,7 +70,7 @@ import org.springframework.beans.factory.DisposableBean;
 public class Ackd implements SpringServiceDaemon, DisposableBean {
     
 	private static final String NAME = "Ackd";
-	private AckdConfigurationDao m_configDao;
+	private volatile AckdConfigurationDao m_configDao;
 
     private volatile EventSubscriptionService m_eventSubscriptionService;
 	private volatile EventForwarder m_eventForwarder;
