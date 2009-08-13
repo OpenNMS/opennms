@@ -104,6 +104,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-ackd.xml" })
 
