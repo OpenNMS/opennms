@@ -25,5 +25,7 @@
      <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
    </bean>
 	
-	<bean name="daoWebNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
+	<bean name="daoWebNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository">
+		<qualifier value="dao" />
+	</bean>
 </beans>
