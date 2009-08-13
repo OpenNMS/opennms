@@ -64,6 +64,7 @@
     <module>commands</module>
     <module>sms-service</module>
     <module>sms-ping</module>
+    <module>sms-monitor</module>
   </modules>
 
   <build>
