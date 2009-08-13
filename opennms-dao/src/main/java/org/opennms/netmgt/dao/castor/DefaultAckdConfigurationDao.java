@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.dao.castor;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -145,6 +146,19 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
      */
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
+    }
+
+    public int getEnabledReaderCount() {
+        int cnt = 0;
+        Iterator<Reader> it = getConfig().getReaders().getReaderCollection().iterator();
+
+        while (it.hasNext()) {
+            Reader reader = (Reader) it.next();
+            if (reader.isEnabled()) {
+                cnt++;
+            }
+        }
+        return cnt;
     }
     
 }
