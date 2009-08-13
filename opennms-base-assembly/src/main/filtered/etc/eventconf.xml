@@ -438,9 +438,9 @@
       applied.&lt;/p&gt;
     </logmsg>
     <severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" 
-                    alarm-type="1" 
-                    auto-clean="false" />
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" 
+                alarm-type="1" 
+                auto-clean="false" />
   </event>
   <event>
     <uei>uei.opennms.org/internal/reloadDaemonConfigSuccessful</uei>
@@ -454,10 +454,10 @@
       &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have successfully been 
       applied.&lt;/p&gt;
     </logmsg>
+    <severity>Normal</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" 
                 clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" 
                 auto-clean="false"/>
-    <severity>Normal</severity>
   </event>
   
   <!--  Going to slowly get rid of these random daemon reload events for the generic
