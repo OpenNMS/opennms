@@ -25,5 +25,7 @@
      <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
    </bean>
 	
-	<bean name="daoWebEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
+	<bean name="daoWebEventRepository" class="org.opennms.web.event.DaoWebEventRepository">
+		<qualifier value="dao" />
+	</bean>
 </beans>

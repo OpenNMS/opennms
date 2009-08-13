@@ -25,5 +25,7 @@
      <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
    </bean>
 	
-	<bean name="daoWebAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository"/>
+	<bean name="daoWebAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository">
+		<qualifier value="dao" />
+	</bean>
 </beans>

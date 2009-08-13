@@ -107,6 +107,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         servletContext.addInitParameter("contextConfigLocation", 
                 "classpath:/org/opennms/web/rest/applicationContext-test.xml " +
+                "classpath*:/META-INF/opennms/component-service.xml " +
+                "classpath*:/META-INF/opennms/component-dao.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
                 "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
