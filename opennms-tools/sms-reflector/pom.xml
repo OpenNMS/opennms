@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!--
    | put company details here
@@ -40,7 +40,15 @@
     -->
     <org.osgi.service.http.port>8080</org.osgi.service.http.port>
     <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+    <!--
+     |  this is used so the logging configuration is loaded fomr configAdmin/services
+    -->
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
+
+    <!--
+     |  this is defined here so it can be overridden on the cmd line when running pax:provision
+    -->
+    <org.opennms.sms.gateways.modems></org.opennms.sms.gateways.modems>
   </properties>
 
   <packaging>pom</packaging>
@@ -136,6 +144,15 @@
 
   <profiles>
     <profile>
+      <id>gateway</id>
+      <activation>
+        <property><name>!no-gateway</name></property>
+      </activation>
+      <modules>
+       <module>sms-gateway</module>
+      </modules>
+    </profile>
+    <profile>
       <id>linux-specific-properties</id>
       <activation>
         <os>
@@ -143,7 +160,7 @@
         </os>
       </activation>
       <properties>
-        <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1</gnu.io.SerialPorts>
+        <gnu.io.SerialPorts>/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyACM4:/dev/ttyACM5</gnu.io.SerialPorts>
         <!-- From http:/INFO/smslib.org/wiki/smslib:configurationparameters -->
         <smslib.serial.polling>true</smslib.serial.polling>
         <!-- <smslib.serial.pollinginterval>200</smslib.serial.pollinginterval> -->

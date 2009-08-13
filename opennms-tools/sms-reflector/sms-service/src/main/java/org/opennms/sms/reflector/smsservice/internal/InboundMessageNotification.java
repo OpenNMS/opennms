@@ -22,15 +22,13 @@ public class InboundMessageNotification implements IInboundMessageNotification {
 	}
 	
 	public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
+	    
+	    deleteMessage(msg);
 
-	    try {
-	        for(IInboundMessageNotification listener : m_listenerList){
-	            notifyListener(gatewayId, msgType, msg, listener);
-	        }
+	    for(IInboundMessageNotification listener : m_listenerList){
+	        notifyListener(gatewayId, msgType, msg, listener);
 	    }
-	    finally {
-	        deleteMessage(msg);
-	    }
+
 	}
 
     private void notifyListener(String gatewayId, MessageTypes msgType, InboundMessage msg, IInboundMessageNotification listener) {

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.SmsService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
@@ -36,6 +38,7 @@ public class SmsServiceImpl implements SmsService {
     
     private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
+    private ServiceRegistration m_registration;
 	private Service m_service = new Service();
 	private String m_modemId;
 	private String m_modemPort;
@@ -163,21 +166,7 @@ public class SmsServiceImpl implements SmsService {
     
     public void start() {
         try {
-//            m_service = new Service();
-//            SerialModemGateway gateway = new SerialModemGateway(m_modemId, m_modemPort, m_baudRate, m_manufacturer, m_model);
-//            gateway.setProtocol(Protocols.PDU);
-//            gateway.setInbound(true);
-//            gateway.setOutbound(true);
-//            gateway.setSimPin("0000");
-//            
-//            m_service.setOutboundNotification(new OutboundMessageNotification(m_outboundListeners));
-//            m_service.setInboundNotification(new InboundMessageNotification(m_inboundListeners));
-//            m_service.setGatewayStatusNotification(new GatewayStatusNotification(m_gatewayStatusListeners));
-//
-//            m_service.addGateway(gateway);
-
             m_service.startService();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -445,5 +434,13 @@ public class SmsServiceImpl implements SmsService {
 	public List<GatewayGroup> getGatewayGroup() {
 		return m_gatewayGroup;
 	}
+
+    public void register(BundleContext bundleContext) {
+        m_registration = bundleContext.registerService(SmsService.class.getName(), this, null);
+    }
+    
+    public void unregister() {
+        m_registration.unregister();
+    }
 
 }

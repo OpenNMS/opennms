@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -14,6 +15,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.IGatewayStatusNotification;
@@ -25,12 +28,15 @@ import org.smslib.Service.ServiceStatus;
 import org.springframework.osgi.context.BundleContextAware;
 
 public class GatewayGroupListener implements BundleContextAware {
+    
+    private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
 	
 	private BundleContext m_bundleContext;
+	private Map<GatewayGroup, SmsServiceImpl> m_services = new HashMap<GatewayGroup, SmsServiceImpl>();
 	private List<IOutboundMessageNotification> m_outboundListeners;
     private List<IInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
-    private List<ServiceRegistration> m_registeredServices = new ArrayList<ServiceRegistration>();
+
 	
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -42,6 +48,11 @@ public class GatewayGroupListener implements BundleContextAware {
 	
 	public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map properties){
 		AGateway[] gateways = gatewayGroup.getGateways();
+		
+		if (gateways.length == 0) {
+		    log.error("A Gateway group was registered with ZERO gateways!");
+		    return;
+		}
 		
 		SmsServiceImpl smsService = new SmsServiceImpl();
 		smsService.setOutboundNotification(new OutboundMessageNotification(getOutboundListeners()));
@@ -62,24 +73,22 @@ public class GatewayGroupListener implements BundleContextAware {
 		}
 		
 		smsService.start();
-		m_registeredServices.add(getBundleContext().registerService(SmsService.class.getName(), smsService, null));
+		
+		smsService.register(m_bundleContext);
+		
+		m_services.put(gatewayGroup, smsService);
+
 		
 	}
 	
 	public void onGatewayGroupUnRegistered(GatewayGroup gatewayGroup, Map properties){
-		System.out.println("\n total services: " + m_registeredServices.size() + "\n\n");
-		for(ServiceRegistration regService : m_registeredServices){
-			SmsService smsService = (SmsService) getBundleContext().getService(regService.getReference());
-			if(gatewayIdMatches(smsService.getGateways(), gatewayGroup.getGateways())){
-				regService.unregister();
-				try {
-					smsService.stopService();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-		}
+	    
+	    SmsServiceImpl service = m_services.get(gatewayGroup);
+	    
+	    service.unregister();
+	    
+	    service.stop();
+	    
 	}
 
 	private boolean gatewayIdMatches(Collection<AGateway> gateways, AGateway[] aGateways) {

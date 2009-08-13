@@ -17,17 +17,4 @@ public class TestGatewayGroupImpl implements GatewayGroup {
 		return m_gateways;
 	}
 	
-	public void stopGateways(){
-		System.out.printf("%s stopping all gateways in group %s", "\n", "\n");
-		for(AGateway gateway : m_gateways){
-			try {
-				if(gateway.getStatus() != AGateway.GatewayStatuses.STOPPED){
-					gateway.stopGateway();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 }
