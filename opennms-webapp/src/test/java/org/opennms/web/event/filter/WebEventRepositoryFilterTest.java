@@ -48,11 +48,11 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
-import org.opennms.web.event.DaoWebEventRepository;
 import org.opennms.web.event.Event;
-import org.opennms.web.event.JdbcWebEventRepository;
+import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -71,6 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
                                   "classpath*:/META-INF/opennms/component-dao.xml",
+                                  "classpath*:/META-INF/opennms/component-service.xml",
                                   "classpath:/daoWebEventRepositoryTestContext.xml",
                                   "classpath:/jdbcWebEventRepositoryTestContext.xml"})
 @JUnitTemporaryDatabase()
@@ -80,10 +81,12 @@ public class WebEventRepositoryFilterTest {
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    DaoWebEventRepository m_daoEventRepo;
+    @Qualifier("dao")
+    WebEventRepository m_daoEventRepo;
     
     @Autowired
-    JdbcWebEventRepository m_jdbcEventRepo;
+    @Qualifier("jdbc")
+    WebEventRepository m_jdbcEventRepo;
     
     
     @Before

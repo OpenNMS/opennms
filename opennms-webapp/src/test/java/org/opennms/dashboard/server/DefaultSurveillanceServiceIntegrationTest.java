@@ -65,6 +65,7 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
                 "classpath:/META-INF/opennms/applicationContext-dao.xml",
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
                 "classpath*:/META-INF/opennms/component-dao.xml",
+                "classpath*:/META-INF/opennms/component-service.xml",
                 "classpath:/org/opennms/dashboard/applicationContext-svclayer-dashboard-test.xml"
         };
     }

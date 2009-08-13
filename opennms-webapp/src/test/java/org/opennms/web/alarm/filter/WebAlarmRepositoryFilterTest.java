@@ -45,10 +45,10 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.Alarm;
-import org.opennms.web.alarm.DaoWebAlarmRepository;
-import org.opennms.web.alarm.JdbcWebAlarmRepository;
+import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
                                   "classpath*:/META-INF/opennms/component-dao.xml",
+                                  "classpath*:/META-INF/opennms/component-service.xml",
                                   "classpath:/daoWebAlarmRepositoryTestContext.xml",
                                   "classpath:/jdbcWebAlarmRepositoryTest.xml"})
 @JUnitTemporaryDatabase()
@@ -76,10 +77,12 @@ public class WebAlarmRepositoryFilterTest {
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    DaoWebAlarmRepository m_daoAlarmRepo;
+    @Qualifier("dao")
+    WebAlarmRepository m_daoAlarmRepo;
     
     @Autowired
-    JdbcWebAlarmRepository m_jdbcWebAlarmRepo;
+    @Qualifier("jdbc")
+    WebAlarmRepository m_jdbcWebAlarmRepo;
     
     @Before
     public void setUp(){
