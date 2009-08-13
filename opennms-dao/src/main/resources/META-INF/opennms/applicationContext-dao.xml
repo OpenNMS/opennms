@@ -276,6 +276,7 @@
 
   <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
     <property name="configResource" ref="javamailConfigResourceLocation" />
+    <property name="reloadCheckInterval" value="-1" />
   </bean>
 
   <bean id="onmsMapDao" class="org.opennms.netmgt.dao.hibernate.OnmsMapDaoHibernate">
