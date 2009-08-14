@@ -23,24 +23,7 @@
     <user-auth user-name="opennms"
                password="opennms" />
   </sendmail-config>
-  
-  <readmail-config name="localhost" 
-                   attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" 
-                   debug="true" >
-    <javamail-property name="mail.pop3.apop.enable" value="false"/>
-    <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
-    <readmail-host host="127.0.0.1" port="110">
-      <readmail-protocol ssl-enable="false" start-tls="false"
-                         transport="pop3"/>
-    </readmail-host>
-    <user-auth user-name="opennms"
-               password="opennms" />
-  </readmail-config>
-  
-  <end2end-mail-config name="default" readmail-config-name="default" sendmail-config-name="default" />
 
-
-  
   <!-- Sample gmail configuration using SSL and IMAPS and SMTPS
        If you want to use either of these as a default, change the default attributes in the root element.
    -->
@@ -62,6 +45,20 @@
     
   </sendmail-config>
 
+  
+  <readmail-config name="localhost" 
+                   attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" 
+                   debug="true" >
+    <javamail-property name="mail.pop3.apop.enable" value="false"/>
+    <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+    <readmail-host host="127.0.0.1" port="110">
+      <readmail-protocol ssl-enable="false" start-tls="false"
+                         transport="pop3"/>
+    </readmail-host>
+    <user-auth user-name="opennms"
+               password="opennms" />
+  </readmail-config>
+  
   <readmail-config name="google" attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" debug="true" >
   
     <readmail-host host="imap.gmail.com" port="993">
@@ -72,5 +69,6 @@
     
   </readmail-config>
     
+  <end2end-mail-config name="default" readmail-config-name="default" sendmail-config-name="default" />
   
 </javamail-configuration>
