@@ -40,10 +40,12 @@ import org.opennms.protocols.rt.Messenger;
 import org.smslib.GatewayException;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
+import org.smslib.InboundBinaryMessage;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
 import org.opennms.sms.reflector.smsservice.SmsService;
+import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 
 
@@ -80,7 +82,7 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInbound
     public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
         debugf("SmsMessenger.processInboundMessage");
         
-        if (msg.getText() != null && msg.getText().length() >= 4 && "ping".equalsIgnoreCase(msg.getText().substring(0, 4))) {
+        if (isPingRequest(msg)) {
             sendPong(gatewayId, msg);
         }
         else if (m_replyQueue != null) {
@@ -88,6 +90,14 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInbound
         }
     }
 
+    private boolean isPingRequest(InboundMessage msg) {
+        return (!(msg instanceof InboundBinaryMessage)) 
+            && msg.getText() != null 
+            && msg.getText().length() >= 4 
+            && "ping".equalsIgnoreCase(msg.getText().substring(0, 4));
+    }
+    
+    
     private void sendPong(String gatewayId, InboundMessage msg) {
         try {
             OutboundMessage pong = new OutboundMessage(msg.getOriginator(), "pong");
