@@ -89,7 +89,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     
     @Autowired
     private volatile AckdConfigurationDao m_ackdConfigDao;
-    
+
     public void afterPropertiesSet() throws Exception {
         boolean state = (m_mailAckProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
@@ -252,7 +252,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
      * @param schedule
      * @param reschedule
      */
-    public void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule) {
+    private void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule) {
         synchronized (m_lock) {
             m_schedule = schedule;
             
@@ -263,7 +263,7 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         }
     }
 
-    public ReaderSchedule getSchedule() {
+    private ReaderSchedule getSchedule() {
         if (m_schedule == null) {
             m_schedule = ReaderSchedule.createSchedule();
         }
@@ -288,6 +288,5 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
     public Future<?> getFuture() {
         return m_future;
     }
-
     
 }

@@ -2,7 +2,6 @@
 <ackd-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
-  readmail-config="default" 
   alarm-sync="true" 
   ack-expression="~(?i)^ack$" 
   clear-expression="~(?i)^(resolve|clear)$"
@@ -14,6 +13,7 @@
   <readers>
     <reader enabled="false" reader-name="JavaMailReader">
       <reader-schedule interval="60" unit="s"/>
+      <parameter key="readmail-config" value="default" />
     </reader>
   </readers>
 
