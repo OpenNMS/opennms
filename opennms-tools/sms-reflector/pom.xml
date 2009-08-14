@@ -44,7 +44,6 @@
      |  this is used so the logging configuration is loaded fomr configAdmin/services
     -->
     <bundles.configuration.location>${basedir}/configAdmin</bundles.configuration.location>
-
     <!--
      |  this is defined here so it can be overridden on the cmd line when running pax:provision
     -->
@@ -147,10 +146,12 @@
     <profile>
       <id>gateway</id>
       <activation>
-        <property><name>!no-gateway</name></property>
+        <property>
+          <name>!no-gateway</name>
+        </property>
       </activation>
       <modules>
-       <module>sms-gateway</module>
+        <module>sms-gateway</module>
       </modules>
     </profile>
     <profile>

@@ -123,13 +123,23 @@
       <version>1.4</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller</artifactId>
-      <version>1.7.5-SMS-SNAPSHOT</version>
+      <groupId>javax.persistence</groupId>
+      <artifactId>com.springsource.javax.persistence</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.api</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
       <version>1.7.5-SMS-SNAPSHOT</version>
     </dependency>
   </dependencies>
