@@ -70,9 +70,16 @@
     
 <script language="Javascript" type="text/javascript"> 
   var data = {total:"${totalRecords}", records:[
-	<c:forEach var="resourceType" items="${model.resourceTypes}">
-       <c:forEach var="resource" items="${resourceType.value}">
-            { id: "${resource.id}", value:"${resource.label}", type: "${resourceType.key.label}" },
+	<c:forEach var="resourceType" items="${model.resourceTypes}" varStatus="outerLoopStatus">
+       <c:forEach var="resource" items="${resourceType.value}" >
+	   		<c:choose>
+				<c:when test="${outerLoopStatus.index == 0}">
+					{ id: "${resource.id}", value:"${resource.label}", type: "${resourceType.key.label}" }
+				</c:when>
+				<c:otherwise>
+					,{ id: "${resource.id}", value:"${resource.label}", type: "${resourceType.key.label}" }
+				</c:otherwise>
+	   		</c:choose>
         </c:forEach>
     </c:forEach>
   		]};
@@ -86,8 +93,23 @@
   <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
   <script language="Javascript" type="text/javascript" >
   	  Ext.onReady(function(){
-  		chooseResourceViewInit("resources-view", data, "${model.endUrl}");
+  		chooseResourceViewInit("resources-view", data, removeGraphStringIfIE("${model.endUrl}"));
+  		
   	  });
+
+	  function removeGraphStringIfIE(modelUrl){
+		  if(Ext.isIE){
+			  alert(modelUrl.substring(0,6));
+			  if(modelUrl.substring(0,6) == "graph/"){
+					return modelUrl.substring(6, modelUrl.length);
+			  }else{
+				 return modelUrl;
+			  }
+		  }else{
+			return modelUrl;
+		  }
+		
+	  }
   	  
       function isSomethingSelected(node) {
          return recursiveIsSomethingSelected(node, 5);

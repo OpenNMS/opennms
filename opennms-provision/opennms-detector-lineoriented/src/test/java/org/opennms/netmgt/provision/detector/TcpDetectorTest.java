@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import org.apache.mina.core.future.IoFutureListener;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.DetectFuture;
@@ -34,7 +35,8 @@ public class TcpDetectorTest implements ApplicationContextAware {
     public void setUp() throws Exception {
         m_detector  = getDetector(TcpDetector.class);
         m_detector.setServiceName("TCP");
-        m_detector.setTimeout(1000);
+        m_detector.setTimeout(1000000);
+        m_detector.setBanner(".*");
         m_detector.init();
     }
     
@@ -45,12 +47,22 @@ public class TcpDetectorTest implements ApplicationContextAware {
         }
     }
     
+    @Ignore
+    @Test
+    public void testLocalTelnet() throws Exception{
+        m_detector.setPort(23);
+        DetectFuture future = m_detector.isServiceDetected(InetAddress.getByName("192.168.1.100"), new NullDetectorMonitor());
+        assertNotNull(future);
+        future.awaitUninterruptibly();
+        assertTrue(future.isServiceDetected());
+    }
+    
     @Test
     public void testSucessServer() throws Exception {
         m_server = new SimpleServer() {
             
             public void onInit() {
-               setBanner("Winner");
+               setBanner("Hello");
             }
             
         };

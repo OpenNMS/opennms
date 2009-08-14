@@ -40,8 +40,11 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.log4j.Category;
-import org.opennms.core.queue.FifoQueue;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -49,11 +52,6 @@ import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * This class encapsulates the execution context for processing syslog messsages
@@ -66,6 +64,7 @@ import java.util.List;
  */
 final class SyslogProcessor implements Runnable {
 
+    @SuppressWarnings("unused")
     private BroadcastEventProcessor m_eventReader;
 
     /**
@@ -74,43 +73,11 @@ final class SyslogProcessor implements Runnable {
     private Thread m_context;
 
     /**
-     * The list of incomming events.
-     */
-    private List m_eventsIn;
-
-    /**
-     * The list of outgoing event-receipts by UUID.
-     */
-    private List m_eventsOut;
-
-    /**
-     * The list of registered event handlers.
-     */
-    private List m_handlers;
-
-    /**
      * The stop flag
      */
     private volatile boolean m_stop;
 
     private boolean m_NewSuspectOnMessage;
-
-    private String m_ForwardingRegexp;
-
-    private int m_MatchingGroupHost;
-
-    private int m_MatchingGroupMessage;
-
-    private UeiList m_UeiList;
-
-    private HideMessage m_HideMessages;
-
-    /**
-     * The UDP socket for receipt and transmission of packets from agents.
-     */
-    private DatagramSocket m_dgSock;
-
-    private FifoQueue m_queue;
 
     /**
      * The log prefix
@@ -120,8 +87,8 @@ final class SyslogProcessor implements Runnable {
     private String m_localAddr;
 
     public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
+        @SuppressWarnings("unused")
         SyslogdConfig m_syslogdConfig = syslogdConfig;
-
     }
 
     SyslogProcessor(boolean newSuspectOnMessage, String forwardingRegexp, int matchingGroupHost,
@@ -129,11 +96,6 @@ final class SyslogProcessor implements Runnable {
         m_context = null;
         m_stop = false;
         m_NewSuspectOnMessage = newSuspectOnMessage;
-        m_ForwardingRegexp = forwardingRegexp;
-        m_MatchingGroupHost = matchingGroupHost;
-        m_MatchingGroupMessage = matchingGroupMessage;
-        m_UeiList = ueiList;
-        m_HideMessages = hideMessages;
 
         m_logPrefix = Syslogd.LOG4J_CATEGORY;
 
@@ -143,7 +105,7 @@ final class SyslogProcessor implements Runnable {
             Category log = ThreadCategory.getInstance(getClass());
 
             m_localAddr = "localhost";
-            log.error("<ctor>: Error looking up local hostname", uhE);
+            log.error("Error looking up local hostname; using 'localhost'", uhE);
         }
 
     }
@@ -163,14 +125,12 @@ final class SyslogProcessor implements Runnable {
         if (m_context != null) {
             Category log = ThreadCategory.getInstance(getClass());
             if (log.isDebugEnabled())
-                log.debug("Stopping and joining thread context "
-                        + m_context.getName());
+                log.debug("Stopping and joining thread context " + m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            if (log.isDebugEnabled())
-                log.debug("Thread context stopped and joined");
+            log.debug("Thread context stopped and joined");
         }
     }
 
@@ -179,26 +139,20 @@ final class SyslogProcessor implements Runnable {
      */
     public void run() {
         // The runnable context
-        //
         m_context = Thread.currentThread();
 
         // get a logger
-        //
         ThreadCategory.setPrefix(m_logPrefix);
         Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
+        boolean isTracing = log.isEnabledFor(Level.TRACE);
 
         if (m_stop) {
             if (isTracing)
-                log.debug("Stop flag set before thread started, exiting");
+                log.log(Level.TRACE, "Stop flag set before thread started, exiting");
             return;
         } else if (isTracing)
             log.debug("Thread context started");
 
-        // This loop is labeled so that it can be
-        // exited quickly when the thread is interrupted
-        //
-        RunLoop:
         while (!m_stop) {
 
             ConvertToEvent o = null;
@@ -207,70 +161,63 @@ final class SyslogProcessor implements Runnable {
 
             if (o != null) {
                 try {
-                    log.debug("Processing a syslog to event dispatch"
-                            + o.toString());
-
-                    // print out the eui, source, and other
-                    // important aspects
-                    //
-                    String uuid = o.getEvent().getUuid();
-                    log.debug("Event {");
-                    log.debug("  uuid  = "
-                            + (uuid != null && uuid.length() > 0 ? uuid
-                            : "<not-set>"));
-                    log.debug("  uei   = " + o.getEvent().getUei());
-                    log.debug("  src   = " + o.getEvent().getSource());
-                    log.debug("  iface = " + o.getEvent().getInterface());
-                    log.debug("  time  = " + o.getEvent().getTime());
-                    log.debug("  Msg   = "
-                            + o.getEvent().getLogmsg().getContent());
-                    log.debug("  Dst   = "
-                            + o.getEvent().getLogmsg().getDest());
-                    Parm[] parms = (o.getEvent().getParms() == null ? null
-                            : o.getEvent().getParms().getParm());
-                    if (parms != null) {
-                        log.debug("  parms {");
-                        for (Parm parm : parms) {
-                            if ((parm.getParmName() != null)
-                                    && (parm.getValue().getContent() != null)) {
-                                log.debug("    ("
-                                        + parm.getParmName().trim()
-                                        + ", "
-                                        + parm.getValue().getContent().trim()
-                                        + ")");
+                    if (isTracing)  {
+                        log.log(Level.TRACE, "Processing a syslog to event dispatch" + o.toString());
+                        String uuid = o.getEvent().getUuid();
+                        log.log(Level.TRACE, "Event {");
+                        log.log(Level.TRACE, "  uuid  = "
+                                + (uuid != null && uuid.length() > 0 ? uuid
+                                : "<not-set>"));
+                        log.log(Level.TRACE, "  uei   = " + o.getEvent().getUei());
+                        log.log(Level.TRACE, "  src   = " + o.getEvent().getSource());
+                        log.log(Level.TRACE, "  iface = " + o.getEvent().getInterface());
+                        log.log(Level.TRACE, "  time  = " + o.getEvent().getTime());
+                        log.log(Level.TRACE, "  Msg   = "
+                                + o.getEvent().getLogmsg().getContent());
+                        log.log(Level.TRACE, "  Dst   = "
+                                + o.getEvent().getLogmsg().getDest());
+                        Parm[] parms = (o.getEvent().getParms() == null ? null
+                                : o.getEvent().getParms().getParm());
+                        if (parms != null) {
+                            log.log(Level.TRACE, "  parms {");
+                            for (Parm parm : parms) {
+                                if ((parm.getParmName() != null)
+                                        && (parm.getValue().getContent() != null)) {
+                                    log.log(Level.TRACE, "    ("
+                                            + parm.getParmName().trim()
+                                            + ", "
+                                            + parm.getValue().getContent().trim()
+                                            + ")");
+                                }
                             }
+                            log.log(Level.TRACE, "  }");
                         }
-                        log.debug("  }");
+                        log.log(Level.TRACE, "}");
                     }
-                    log.debug("}");
 
-                    EventIpcManagerFactory.getIpcManager().sendNow(
-                            o.getEvent());
-                    // !event.hasNodeid() && m_newSuspect
+                    EventIpcManagerFactory.getIpcManager().sendNow(o.getEvent());
+
                     if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
-                        log.debug("Syslogd: Found a new suspect "
-                                + o.getEvent().getInterface());
+                        if (isTracing) {
+                            log.log(Level.TRACE, "Syslogd: Found a new suspect " + o.getEvent().getInterface());
+                        }
                         sendNewSuspectEvent(o.getEvent().getInterface());
                     }
 
                 } catch (Throwable t) {
-                    log.error(
-                            "Unexpected error processing SyslogMessage - Could not send",
-                            t);
-
+                    log.error("Unexpected error processing SyslogMessage - Could not send", t);
                 }
             }
 
         }
 
-    } // end run()
+    }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 
     private void sendNewSuspectEvent(String trapInterface) {
-        // construct event with 'trapd' as source
         Event event = new Event();
         event.setSource("syslogd");
         event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
@@ -278,8 +225,5 @@ final class SyslogProcessor implements Runnable {
         event.setInterface(trapInterface);
         event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
         EventIpcManagerFactory.getIpcManager().sendNow(event);
-        // send the event to eventd
-        // m_eventMgr.sendNow(event);
     }
-} // end SyslogProcessor Class
-
+}

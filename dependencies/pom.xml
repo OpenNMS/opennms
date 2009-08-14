@@ -15,6 +15,7 @@
     <module>opennms-spring</module>
     <module>opennms-spring-web</module>
     <module>opennms-spring-security</module>
+    <module>opennms-jasper</module>
     <module>opennms-jersey</module>
     <module>opennms-mina</module>
     <module>opennms-spring-test</module>

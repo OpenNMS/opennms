@@ -271,7 +271,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 regex = new RE(banner);
                 bannerResult = new StringBuffer();
             }
-
+            
             boolean result = isServer(address, port, retries, timeout, regex, bannerResult);
             if (result && qualifiers != null) {
                 if (bannerResult != null && bannerResult.length() > 0)

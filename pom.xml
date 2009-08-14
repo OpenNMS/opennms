@@ -221,6 +221,11 @@
         <version>${maven.surefire.plugin.version}</version>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0.2</version>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <version>1.0-rc-5</version>
@@ -618,6 +623,7 @@
    <minaVersion>2.0.0-M6</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.6.2</xercesVersion>
+   <gmavenVersion>1.0-rc-5</gmavenVersion>
   </properties>
 
   <profiles>
@@ -1102,6 +1108,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rws</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-services</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1159,7 +1170,7 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>rancid-api</artifactId>
-        <version>0.97</version>
+        <version>0.98</version>
       </dependency>
       <dependency>
         <groupId>org.dnsjava</groupId>
@@ -1183,6 +1194,26 @@
         <groupId>alt.dev.jmta</groupId>
         <artifactId>jmta</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm-analysis</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm-tree</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm-util</artifactId>
+        <version>3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.ant</groupId>
@@ -1688,12 +1719,12 @@
       <dependency>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-mojo</artifactId>
-        <version>${gmaven.version}</version>
+        <version>${gmavenVersion}</version>
 	  </dependency>
 	  <dependency>
         <groupId>org.codehaus.groovy.maven.runtime</groupId>
         <artifactId>gmaven-runtime-1.5</artifactId>
-        <version>${gmaven.version}</version>
+        <version>${gmavenVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

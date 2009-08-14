@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-hibernate</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Hibernate</name>
+  <name>OpenNMS Hibernate Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the hibernate library.

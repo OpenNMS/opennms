@@ -34,6 +34,12 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.Charset;
+
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -43,12 +49,15 @@ public class TcpDetector extends AsyncLineOrientedDetector {
 
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
-
+    
+    private String m_banner = null;
+    
     /**
      * Default constructor
      */
     public TcpDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
+        setProtocolCodecFilter(new ProtocolCodecFilter ( new TcpCodecFactory ( Charset.forName("UTF-8" ))));
     }
     
     /**
@@ -62,7 +71,29 @@ public class TcpDetector extends AsyncLineOrientedDetector {
     }
 
     public void onInit() {
-        expectBanner(find("\\w"));
+        expectBanner(matches(getBanner()));
+    }
+    
+    public ResponseValidator<LineOrientedResponse> matches(final String regex){
+        return new ResponseValidator<LineOrientedResponse>() {
+
+            public boolean validate(LineOrientedResponse response) {
+                
+                if(regex == null){
+                    return true;
+                }
+                
+                return response.matches(regex);
+            }
+        };
+    }
+
+    public void setBanner(String banner) {
+        m_banner = banner;
+    }
+
+    public String getBanner() {
+        return m_banner;
     }
     
 }

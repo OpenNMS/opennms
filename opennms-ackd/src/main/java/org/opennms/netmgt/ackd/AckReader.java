@@ -35,6 +35,10 @@
  */
 package org.opennms.netmgt.ackd;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+import org.opennms.netmgt.ackd.readers.ReaderSchedule;
+
 
 /**
  * Acknowledgment reader API
@@ -44,10 +48,44 @@ package org.opennms.netmgt.ackd;
  *
  */
 public interface AckReader {
-    
-    void start();
-    void pause();
-    void resume();
-    void stop();
 
+    public enum AckReaderState {
+        STOP_PENDING(1, "Stop Pending"),
+        STOPPED(2, "Stopped"),
+        START_PENDING(3, "Start Pending"),
+        STARTED(4, "Started"),
+        PAUSE_PENDING(5, "Pause Pending"),
+        PAUSED(6, "Paused"),
+        RESUME_PENDING(7, "Resume Pending"),
+        RESUMED(8, "Resumed")  //might be the same as started
+        ; 
+        
+        private int m_id;
+        private String m_label;
+        
+        AckReaderState(int id, String label) {
+            m_id = id;
+            m_label = label;
+        }
+        
+        public int getId() {
+            return m_id;
+        }
+        
+        @Override
+        public String toString() {
+            return m_label;
+        }
+        
+        
+    };
+    
+    void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule);
+    void pause();
+    void resume(final ScheduledThreadPoolExecutor executor);
+    void stop();
+    void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule);
+    AckReaderState getState();
+    
+    String getName();
 }

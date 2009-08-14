@@ -52,6 +52,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -61,7 +62,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.Filter;
 import org.springframework.core.style.ToStringCreator;
 
-@XmlRootElement
+@XmlRootElement(name="event")
 @Entity
 @Table(name="events")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
@@ -424,7 +425,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLogMsg = eventlogmsg;
 	}
 
-	@XmlAttribute(name="severity")
+	@XmlTransient
 	@Column(name="eventSeverity", nullable=false)
 	public Integer getEventSeverity() {
 		return m_eventSeverity;
@@ -433,6 +434,17 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public void setEventSeverity(Integer severity) {
 		m_eventSeverity = severity;
 	}
+
+    @Transient
+    @XmlAttribute(name="severity")
+    public String getSeverityLabel() {
+        return OnmsSeverity.get(m_eventSeverity).name();
+    }
+
+    public void setSeverityLabel(String label) {
+        m_eventSeverity = OnmsSeverity.get(label).getId();
+    }
+    
 
 	@XmlElement(name="pathOutage")
 	@Column(name="eventPathOutage", length=1024)

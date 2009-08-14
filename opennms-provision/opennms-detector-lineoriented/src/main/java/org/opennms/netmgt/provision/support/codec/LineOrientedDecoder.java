@@ -59,6 +59,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
         // Now find the first CRLF in the buffer.
         byte previous = 0;
         while (in.hasRemaining()) {
+            
             byte current = in.get();
             
             if (previous == '\r' && current == '\n') {
@@ -78,6 +79,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
                     in.position(position);
                     in.limit(limit);
                 }
+                
                 // Decoded one line; CumulativeProtocolDecoder will
                 // call me again until I return false. So just
                 // return true until there are no more lines in the
@@ -91,7 +93,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
         // Could not find CRLF in the buffer. Reset the initial
         // position to the one we recorded above.
         in.position(start);
-        
+
         return false;
         
     }

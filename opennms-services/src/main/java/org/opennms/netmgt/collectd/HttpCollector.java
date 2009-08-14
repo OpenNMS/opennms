@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Jul 23: Actually use URL parameters (bug 3266) - jeffg@opennms.org
 // 2008 Dec 25: Make HttpCollectionSet have many HttpCollectionResources
 //              so that all resources get properly persisted when a collection
 //              has many URIs, without re-breaking storeByGroup for this
@@ -18,8 +19,6 @@
 //              org.opennms.netmgt.config.datacollection to
 //              org.opennms.netmgt.config.httpdatacollection. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -67,6 +66,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpVersion;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -85,6 +85,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
+import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -526,13 +527,46 @@ public class HttpCollector implements ServiceCollector {
     private HttpMethod buildHttpMethod(final HttpCollectionSet collectionSet) throws URIException {
         HttpMethod method;
         if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
-            method = new GetMethod();
+            method = buildGetMethod(collectionSet);
         } else {
-            method = new PostMethod();
+            method = buildPostMethod(collectionSet);
         }
         method.setURI(buildUri(collectionSet));
 
         return method;
+    }
+    
+    private PostMethod buildPostMethod(final HttpCollectionSet collectionSet) {
+        PostMethod method = new PostMethod();
+        NameValuePair[] postParams = buildRequestParameters(collectionSet);
+        if (postParams.length > 0) {
+            method.setRequestBody(postParams);
+        }
+        return method;
+    }
+    
+    private GetMethod buildGetMethod(final HttpCollectionSet collectionSet) {
+        GetMethod method = new GetMethod();
+        NameValuePair[] queryParams = buildRequestParameters(collectionSet);
+        if (queryParams.length > 0) {
+            method.setQueryString(queryParams);
+        }
+        return method;
+    }
+    
+    private NameValuePair[] buildRequestParameters(final HttpCollectionSet collectionSet) {
+        NameValuePair[] nvpArray = {};
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        if (collectionSet.getUriDef().getUrl().getParameters() == null)
+            return nvpArray;
+        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
+        if (parameters.size() > 0) {
+            nvps = new ArrayList<NameValuePair>();
+            for (Parameter p : parameters) {
+                nvps.add(new NameValuePair(p.getKey(), p.getValue()));
+            }
+        }
+        return nvps.toArray(nvpArray);
     }
 
     private URI buildUri(final HttpCollectionSet collectionSet) throws URIException {

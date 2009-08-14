@@ -47,6 +47,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.ackd.AckReader.AckReaderState;
+import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -88,7 +90,9 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-ackd.xml",
@@ -163,6 +167,42 @@ public class AckdTest {
         Assert.assertNotNull(m_jmConfigDao);
         
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
+    }
+    
+    @Test
+    public void testRestartReaders() throws Exception {
+        AckReader reader = m_daemon.getAckReaders().get(0);
+        Reader readerConfig = m_daemon.getConfigDao().getReader("JavaMailReader");
+        readerConfig.setEnabled(true);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
+        
+        m_daemon.restartReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
+        
+        m_daemon.pauseReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.PAUSED.equals(reader.getState()));
+        
+        m_daemon.resumeReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.RESUMED.equals(reader.getState()));
+        
+        readerConfig.setEnabled(false);
+        m_daemon.restartReaders();
+        Thread.sleep(300);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
+        
+        m_daemon.resumeReaders();
+        Thread.sleep(30);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
+        
+        readerConfig.setEnabled(true);
+        m_daemon.startReaders();
+        Thread.sleep(300);
+        Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
+                
+        m_daemon.destroy();
     }
     
 

@@ -17,13 +17,13 @@
 	      	<artifactId>cargo-maven2-plugin</artifactId>
 	      	<version>1.0</version>
 	      	<extensions>true</extensions>
-	      	<executions>
-	      		<execution>
-	      			<goals>
-	      				<goal>uberwar</goal>
-	      			</goals>
-	      		</execution>
-	      	</executions>
+<!--	      	<executions>-->
+<!--	      		<execution>-->
+<!--	      			<goals>-->
+<!--	      				<goal>uberwar</goal>-->
+<!--	      			</goals>-->
+<!--	      		</execution>-->
+<!--	      	</executions>-->
 	      	<configuration>
 	      		<descriptor>src/assemble/merge.xml</descriptor>
 	      		<container>

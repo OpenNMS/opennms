@@ -50,6 +50,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.hibernate.criterion.CriteriaSpecification;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -179,9 +180,12 @@ public class NodeRestService extends OnmsRestService {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
 
     	setLimitOffset(params, criteria, LIMIT);
+        addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsNode.class);
-        
-        return criteria;
+
+    	criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+        return getDistinctIdCriteria(OnmsNode.class, criteria);
     }
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {

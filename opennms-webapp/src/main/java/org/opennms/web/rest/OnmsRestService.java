@@ -1,5 +1,8 @@
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -8,9 +11,12 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Category;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
@@ -21,7 +27,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class OnmsRestService {
 
-	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS}
+	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
+
+	private List<Order> m_ordering = new ArrayList<Order>();
 
 	public OnmsRestService() {
 		super();
@@ -87,22 +95,28 @@ public class OnmsRestService {
 		
 		MultivaluedMap<String, String> paramsCopy = new MultivaluedMapImpl();
 	    paramsCopy.putAll(params);
-		
+
 		if(paramsCopy.containsKey("query")) {
 			String query=paramsCopy.getFirst("query");
 			criteria.add(Restrictions.sqlRestriction(query));
 			paramsCopy.remove("query");
 		}
-		
-		if(paramsCopy.containsKey("node.id")) {
-		    String nodeId = paramsCopy.getFirst("node.id");
-		    Integer id = new Integer(nodeId);
-		    criteria.createCriteria("node").add(Restrictions.eq("id", id));
-		    paramsCopy.remove("node.id");
-		}
-		
+
 		paramsCopy.remove("_dc");
 
+		String matchType="all";
+		if (paramsCopy.containsKey("match")) {
+		    matchType = paramsCopy.getFirst("match");
+		    paramsCopy.remove("match");
+		}
+
+        if(paramsCopy.containsKey("node.id") && !matchType.equalsIgnoreCase("any")) {
+            String nodeId = paramsCopy.getFirst("node.id");
+            Integer id = new Integer(nodeId);
+            criteria.createCriteria("node").add(Restrictions.eq("id", id));
+            paramsCopy.remove("node.id");
+        }
+        
 		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
 		if(paramsCopy.containsKey("comparator")) {
@@ -131,48 +145,67 @@ public class OnmsRestService {
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(objectClass);
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
+		
+		List<Criterion> criteriaList = new ArrayList<Criterion>();
+		
 		for(String key: paramsCopy.keySet()) {
-		    
-		    String stringValue=paramsCopy.getFirst(key);
-		   
-			if("null".equals(stringValue)) {
-				criteria.add(Restrictions.isNull(key));
-			} else if ("notnull".equals(stringValue)) {
-				criteria.add(Restrictions.isNotNull(key));
-			} else {
-				Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-				switch(op) {
-		   		case EQ:
-		    		criteria.add(Restrictions.eq(key, thisValue));
-					break;
-		  		case NE:
-		    		criteria.add(Restrictions.ne(key,thisValue));
-					break;
-		   		case ILIKE:
-		    		criteria.add(Restrictions.ilike(key, thisValue));
-					break;
-		   		case LIKE:
-		    		criteria.add(Restrictions.like(key, thisValue));
-					break;
-		   		case GT:
-		    		criteria.add(Restrictions.gt(key, thisValue));
-					break;
-		   		case LT:
-		    		criteria.add(Restrictions.lt(key, thisValue));
-					break;
-		   		case GE:
-		    		criteria.add(Restrictions.ge(key, thisValue));
-					break;
-		   		case LE:
-		    		criteria.add(Restrictions.le(key, thisValue));
-					break;
-		   		case CONTAINS:
-		   		    criteria.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
-		   		    
-				}
-			}
+
+		    for (String stringValue : paramsCopy.get(key)) {
+    			if("null".equals(stringValue)) {
+    				criteriaList.add(Restrictions.isNull(key));
+    			} else if ("notnull".equals(stringValue)) {
+    				criteriaList.add(Restrictions.isNotNull(key));
+    			} else {
+    				Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    				switch(op) {
+    		   		case EQ:
+    		    		criteriaList.add(Restrictions.eq(key, thisValue));
+    					break;
+    		  		case NE:
+    		  		    criteriaList.add(Restrictions.ne(key,thisValue));
+    					break;
+    		   		case ILIKE:
+    		   		    criteriaList.add(Restrictions.ilike(key, thisValue));
+    					break;
+    		   		case LIKE:
+    		   		    criteriaList.add(Restrictions.like(key, thisValue));
+    					break;
+    		   		case GT:
+    		   		    criteriaList.add(Restrictions.gt(key, thisValue));
+    					break;
+    		   		case LT:
+    		    		criteriaList.add(Restrictions.lt(key, thisValue));
+    					break;
+    		   		case GE:
+    		    		criteriaList.add(Restrictions.ge(key, thisValue));
+    					break;
+    		   		case LE:
+    		    		criteriaList.add(Restrictions.le(key, thisValue));
+    					break;
+    		   		case CONTAINS:
+    		   		    criteriaList.add(Restrictions.ilike(key, stringValue, MatchMode.ANYWHERE));
+    				}
+    			}
+		    }
 		}
 
+		if (criteriaList.size() > 1 && matchType.equalsIgnoreCase("any")) {
+		    // OR everything
+		    Criterion lhs = criteriaList.remove(0);
+		    Criterion rhs = criteriaList.remove(0);
+	            
+		    Criterion or = Restrictions.or(lhs, rhs);
+		    while (criteriaList.size() > 0) {
+		        rhs = criteriaList.remove(0);
+		        or = Restrictions.or(or, rhs);
+		    }
+		    
+		    criteria.add(or);
+		} else {
+		    for (Criterion c : criteriaList) {
+		        criteria.add(c);
+		    }
+		}
 	}
 
 	/**
@@ -180,8 +213,19 @@ public class OnmsRestService {
 	 * @param params - set of values to look in for the "order" and "orderBy" values
 	 * @param criteria - the criteria object which will be updated with ordering configuration
 	 */
-	protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
-		System.out.println("order by params: " + params);
+    protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
+        addOrdering(params, criteria, true);
+    }
+
+    /**
+     * Same as addOrdering() but you can say whether to add the order to the criteria object immediately.
+     * 
+     * @param params - set of values to look in for the "order" and "orderBy" values
+     * @param criteria - the criteria object which will be updated with ordering configuration
+     * @param addImmediately - whether to add immediately to the criteria object.  Use "false" if you intend to
+     * build a joined/distinct criteria object using {@link #getDistinctIdCriteria(Class, OnmsCriteria)}, or "true" otherwise.
+     */
+    protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, boolean addImmediately) {
 	    if(params.containsKey("orderBy")) {
 			String orderBy=params.getFirst("orderBy");
 			params.remove("orderBy");
@@ -192,16 +236,20 @@ public class OnmsRestService {
 				}
 				params.remove("order");
 			}
+			Order o;
 			if(orderAsc) {
-				criteria.addOrder(Order.asc(orderBy));
+			    o = Order.asc(orderBy);
 			} else {
-				criteria.addOrder(Order.desc(orderBy));
+				o = Order.desc(orderBy);
 			}
+			if (addImmediately) {
+			    criteria.addOrder(o);
+			}
+			m_ordering.add(o);
 		}
 	}
 	
     protected <T> T throwException(Status status, String msg) {
-        System.out.println("error: " + msg);
         log().error(msg);
         throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
@@ -242,6 +290,23 @@ public class OnmsRestService {
         return result.toString();
     }
 
+    protected OnmsCriteria getDistinctIdCriteria(Class<?> clazz, OnmsCriteria criteria) {
+        criteria.setProjection(
+                               Projections.distinct(
+                                   Projections.projectionList().add(
+                                       Projections.alias( Projections.property("id"), "id" )
+                                   )
+                               )
+                           );
+
+        OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
+        rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
+        for (Order o : m_ordering) {
+            rootCriteria.addOrder(o);
+        }
+        return rootCriteria;
+    }
+    
     protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
         BeanWrapper wrapper = new BeanWrapperImpl(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());

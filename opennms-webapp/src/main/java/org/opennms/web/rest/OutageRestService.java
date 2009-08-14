@@ -113,10 +113,10 @@ public class OutageRestService extends OnmsRestService {
 		OnmsCriteria criteria=new OnmsCriteria(OnmsOutage.class);
 
     	setLimitOffset(params, criteria);
-    	addOrdering(params, criteria);
+    	addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsOutage.class);
 
-    	return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
+    	return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
     }
 
     @GET
@@ -128,7 +128,7 @@ public class OutageRestService extends OnmsRestService {
         OnmsCriteria criteria=new OnmsCriteria(OnmsOutage.class);
 
         setLimitOffset(params, criteria);
-        addOrdering(params, criteria);
+        addOrdering(params, criteria, false);
         addFiltersToCriteria(params, criteria, OnmsOutage.class);
 
         criteria.createAlias("monitoredService", "monitoredService");
@@ -143,7 +143,7 @@ public class OutageRestService extends OnmsRestService {
         RecentOutagesFilter recent = new RecentOutagesFilter(d);
         criteria.add(recent.getCriterion());
 
-        return new OnmsOutageCollection(m_outageDao.findMatching(criteria));
+        return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
     }
 }
 

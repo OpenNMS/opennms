@@ -398,7 +398,7 @@
 
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <h3>VLAN Information</h3>
+    <h3 class="o-box">VLAN Information</h3>
     <table class="o-box">
       <thead>
         <tr>

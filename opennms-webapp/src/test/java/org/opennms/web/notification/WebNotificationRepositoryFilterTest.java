@@ -57,6 +57,7 @@ import org.opennms.web.notification.filter.ResponderFilter;
 import org.opennms.web.notification.filter.ServiceFilter;
 import org.opennms.web.notification.filter.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -74,6 +75,8 @@ import org.springframework.transaction.annotation.Transactional;
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/applicationContext-dao.xml",
+                                 "classpath*:/META-INF/opennms/component-dao.xml",
+                                 "classpath*:/META-INF/opennms/component-service.xml",
                                  "classpath:/daoWebNotificationRepositoryTestContext.xml",
                                  "classpath:/jdbcWebNotificationRepositoryTestContext.xml"})
 @JUnitTemporaryDatabase()
@@ -83,10 +86,12 @@ public class WebNotificationRepositoryFilterTest {
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    DaoWebNotificationRepository m_daoNotificationRepo;
+    @Qualifier("dao")
+    WebNotificationRepository m_daoNotificationRepo;
     
     @Autowired
-    JdbcWebNotificationRepository m_jdbcNotificationRepo;
+    @Qualifier("jdbc")
+    WebNotificationRepository m_jdbcNotificationRepo;
     
     @BeforeClass
     public static void setUpLogging(){

@@ -11,14 +11,72 @@
       </documentation>
     </annotation>
     <complexType>
+      <sequence>
+        <element ref="this:readers" minOccurs="0" maxOccurs="1" />
+      </sequence>
       <attribute name="readmail-config" type="string" use="required" />
       <attribute name="alarm-sync" type="boolean" use="optional" default="true" />
       <attribute name="ack-expression" type="string" use="optional" default="~^ack$" />
-      <attribute name="unack-expression" type="string" use="optional" default="~^ack$" />
-      <attribute name="escalate-expression" type="string" use="optional" default="~^ack$" />
+      <attribute name="unack-expression" type="string" use="optional" default="~^unack$" />
+      <attribute name="escalate-expression" type="string" use="optional" default="~^esc$" />
       <attribute name="clear-expression" type="string" use="optional" default="~^(resolve|clear)$" />
-      <attribute name="notifyid-match-expression" type="string" use="optional" default="~.*Notice #([0-9]+).*" />
-      <attribute name="alarmid-match-expression" type="string" use="optional" default="~.*alarmid:([0-9]+).*" />
+      <attribute name="notifyid-match-expression" type="string" use="optional" default="~.*Re:.*Notice #([0-9]+).*" />
+      <attribute name="alarmid-match-expression" type="string" use="optional" default="~.*Re:.*Alarm #([0-9]+).*" />
     </complexType>
   </element>
+  
+  <element name="readers" >
+    <annotation>
+      <documentation>
+        Location for user to define readers and they're schedules.
+      </documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+        <element ref="this:reader" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="reader">
+    <complexType>
+      <sequence>
+        <element ref="this:reader-schedule" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="reader-name" type="string" >
+        <annotation>
+          <documentation>
+            The reader name is the value returned by the getName() method required by the
+            AckReader interface.  Readers are currently wired in using Spring.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="enabled" type="boolean" use="optional" default="true" />
+    </complexType>
+  </element>
+  
+  <element name="reader-schedule">
+    <annotation>
+      <documentation>
+        A very basic configuration for defining simple input to a schedule (java.lang.concurrent)
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="interval" type="positiveInteger" use="optional" default="1" />
+      <attribute name="unit" type="this:schedule-units" use="optional" default="m" />
+    </complexType>
+  </element>
+
+  <simpleType name="schedule-units">
+    <annotation>
+      <documentation>
+        Days(d); Hours(h); Minutes(m); Seconds(s); Milliseconds(ms)
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="d|h|m|s|ms" />
+    </restriction>
+  </simpleType>
+  
 </schema>
