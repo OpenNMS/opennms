@@ -59,96 +59,164 @@
 	</div>
 </c:if>
 
+<div class="TwoColLeft">
 <c:choose>
 <c:when test="${empty requisitions}">
 	<h2>Missing Requisition</h2>
 	<p>You must first <a href='admin/provisioningGroups.htm'>create and import a provisioning group</a> before using this page.</p>
 </c:when>
 <c:otherwise>
-<h2><span style="font-color: red">Note: this <strong>will</strong> override any unimported modifications made to the provisioning group.</span></h2>
 <form action="admin/node/add.htm">
 	<input type="hidden" name="actionCode" value="add" />
-	<table class="normal">
-		<tr>
-			<td>Provisioning Group:</td>
-			<td>
-				<select name="foreignSource">
-					<c:forEach var="req" items="${requisitions}">
-						<option><c:out value="${req.foreignSource}" /></option>
-					</c:forEach>
-				</select>
-			</td>
+	<h3>Basic Attributes</h3>
+	<div class="boxWrapper">
+		<table class="normal">
+			<tr>
+				<td>Provisioning Group:</td>
+				<td colspan="3">
+					<select name="foreignSource">
+						<c:forEach var="req" items="${requisitions}">
+							<option><c:out value="${req.foreignSource}" /></option>
+						</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>IP Address:</td>
+				<td><input type="text" name="ipAddress" /></td>
 
-			<td>Node Label:</td>
-			<td><input type="text" name="nodeLabel" /></td>
+				<td>Node Label:</td>
+				<td><input type="text" name="nodeLabel" /></td>
+			</tr>
+		</table>
+	</div>
 
-			<td>IP Address:</td>
-			<td><input type="text" name="ipAddress" /></td>
-		</tr>
-		<tr>
-			<td>Category:</td>
-			<td>
-				<select name="category">
-					<c:forEach var="cat" items="${categories}">
-						<option><c:out value="${cat}" /></option>
-					</c:forEach>
-				</select>
-			</td>
+	<h3>Surveillance Category Memberships</h3>
+	<div class="boxWrapper">
+		<table class="normal">
+			<tr>
+				<td>Category:</td>
+				<td>
+					<select name="category">
+						<c:forEach var="cat" items="${categories}">
+							<option><c:out value="${cat}" /></option>
+						</c:forEach>
+					</select>
+				</td>
 
-			<td>Category:</td>
-			<td>
-				<select name="category">
-					<c:forEach var="cat" items="${categories}">
-						<option><c:out value="${cat}" /></option>
-					</c:forEach>
-				</select>
-			</td>
+				<td>Category:</td>
+				<td>
+					<select name="category">
+						<c:forEach var="cat" items="${categories}">
+							<option><c:out value="${cat}" /></option>
+						</c:forEach>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
 
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<td>Community String:</td>
-			<td><input type="text" name="community" /></td>
+	<h3>SNMP Parameters</h3>
+	<div class="boxWrapper">
+		<table class="normal">
+			<tr>
+				<td>Community String:</td>
+				<td><input type="text" name="community" /></td>
 
-			<td>Version</td>
-			<td><select name="snmpVersion"><option>v1</option><option selected>v2c</option></select></td>
+				<td>Version</td>
+				<td><select name="snmpVersion"><option>v1</option><option selected>v2c</option></select></td>
 
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<td>Device Username:</td>
-			<td><input type="text" name="deviceUsername" /></td>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+		</table>
+	</div>
 
-			<td>Device Password:</td>
-			<td><input type="text" name="devicePassword" /></td>
-			
-			<td>Enable Password:</td>
-			<td><input type="text" name="enablePassword" /></td>
-		</tr>
-        <tr>
-            <td>Access Method:</td>
-            <td>
-              <select name="accessMethod" >
-                <option value="rsh">RSH</option>
-                <option value="ssh">SSH</option>
-                <option value="telnet" selected="true">Telnet</option>
-              </select>  
-            </td>
-            <td>Auto Enable:</td>
-            <td>
-              <select name="autoEnable" >
-                <option selected="true"></option>
-                <option value="A">Yes</option>
-              </select>
-            </td>
-        </tr>
-	</table>
+	<h3>CLI Authentication Parameters</h3>
+	<div class="boxWrapper">
+		<table class="normal">
+			<tr>
+				<td>Device Username:</td>
+				<td colspan="3"><input type="text" name="deviceUsername" /></td>
+			</tr>
+			<tr>
+				<td>Device Password:</td>
+				<td><input type="text" name="devicePassword" /></td>
+				
+				<td>Enable Password:</td>
+				<td><input type="text" name="enablePassword" /></td>
+			</tr>
+			<tr>
+				<td>Access Method:</td>
+				<td>
+					<select name="accessMethod" >
+					<option value="rsh">RSH</option>
+					<option value="ssh">SSH</option>
+					<option value="telnet" selected="true">Telnet</option>
+					</select>  
+				</td>
+				<td>Auto Enable:</td>
+				<td>
+					<select name="autoEnable" >
+						<option selected="true"></option>
+						<option value="A">Yes</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 	<input type="submit" value="Provision" />
 	<input type="reset" />
 </form>
 
 </c:otherwise>
 </c:choose> <!--  empty requisitions -->
+</div>
+
+<div class="TwoColRight">
+	<h3>Node Quick-Add</h3>
+	<div class="boxWrapper">
+		<p>
+		This workflow provides a quick way to add a node to an existing
+		provisioning group in this OpenNMS system.
+		</p>
+
+		<p>
+		<strong>Note: This operation <em>will</em> override any unimported modifications
+		made to the selected provisioning group.</strong>
+		</p>
+
+		<p>
+		<em>Basic Attributes</em> are common to all nodes. Select the provisioning group
+		into which this node should be added, provide an IP address on which OpenNMS
+		will communicate with the node, and enter a node label. The node label will
+		serve as the display name for the node throughout OpenNMS.
+		</p>
+
+		<p>
+		<em>Surveillance Category Memberships</em> are optional and work like tags.
+		A node can be a member of any number of surveillance categories, and the
+		names of those categories can be used in a variety of powerful ways throughout
+		the OpenNMS system.
+		</p>
+
+		<p>
+		<em>SNMP Parameters</em> are optional and apply only to the node being
+		provisioned. If no values are specified here, OpenNMS' system-wide SNMP
+		configuration will be used to determine the appropriate values for the IP
+		address entered in the <em>Basic Attributes</em> section. Configuring SNMPv3
+		parameters via the web UI is not supported; contact your OpenNMS administrator
+		if this node requires SNMPv3 parameters that differ from those in the
+		system-wide configuration.
+		</p>
+
+		<p>
+		<em>CLI Authentication Parameters</em> are optional and will be used only if one
+		or more provisioning adapters are configured to use them. Typically this is the
+		case if OpenNMS is integrated with an external configuration management system.
+		</p>
+	</div>
+</div>
 
 <br />
 
