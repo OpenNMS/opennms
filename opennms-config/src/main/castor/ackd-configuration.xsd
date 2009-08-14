@@ -14,7 +14,6 @@
       <sequence>
         <element ref="this:readers" minOccurs="0" maxOccurs="1" />
       </sequence>
-      <attribute name="readmail-config" type="string" use="required" />
       <attribute name="alarm-sync" type="boolean" use="optional" default="true" />
       <attribute name="ack-expression" type="string" use="optional" default="~^ack$" />
       <attribute name="unack-expression" type="string" use="optional" default="~^unack$" />
@@ -43,6 +42,7 @@
     <complexType>
       <sequence>
         <element ref="this:reader-schedule" minOccurs="0" maxOccurs="1" />
+        <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="reader-name" type="string" >
         <annotation>
@@ -78,5 +78,19 @@
       <pattern value="d|h|m|s|ms" />
     </restriction>
   </simpleType>
+  
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for collecting this service.
+      Parameters are specfic to the service monitor.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+  
   
 </schema>

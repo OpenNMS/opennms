@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -159,6 +160,10 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
             }
         }
         return cnt;
+    }
+
+    public List<Parameter> getParametersForReader(String name) {
+        return getReader(name).getParameterCollection();
     }
     
 }
