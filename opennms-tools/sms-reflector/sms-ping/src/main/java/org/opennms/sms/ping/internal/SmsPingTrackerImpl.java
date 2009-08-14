@@ -38,7 +38,6 @@ import org.opennms.protocols.rt.RequestTracker;
 import org.opennms.sms.ping.PingRequestId;
 import org.opennms.sms.ping.PingResponseCallback;
 import org.opennms.sms.ping.SmsPingTracker;
-import org.smslib.Service;
 
 /**
  * SmsPingTrackerImpl
