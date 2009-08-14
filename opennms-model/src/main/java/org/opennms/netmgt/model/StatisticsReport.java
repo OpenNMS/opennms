@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Aug 13: Added methods to return the minimum and maximum Datum values for a report. ayres@opennms.org
  * 2007 Apr 10: Created this file.
  *
  * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
@@ -38,6 +39,7 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -209,6 +211,36 @@ public class StatisticsReport implements Serializable {
     @Transient
     public String getJobDurationString() {
         return getStringForInterval(getJobDuration());
+    }
+    
+    @Transient
+    public Double getMaxDatumValue() {
+        Double mv = null;
+        for ( Iterator<StatisticsReportData> it = m_data.iterator(); it.hasNext(); ) {
+            Double val = it.next().getValue();
+            if (mv == null) {
+                 mv = val;
+            }
+            else if ( val > mv) {
+                 mv = val;
+            }
+        }
+        return mv;
+    }
+    
+    @Transient
+    public Double getMinDatumValue() {
+        Double mv = null;
+        for ( Iterator<StatisticsReportData> it = m_data.iterator(); it.hasNext(); ) {
+            Double val = it.next().getValue();
+            if (mv == null) {
+                 mv = val;
+            }
+            else if ( val < mv) {
+                 mv = val;
+            }
+        }
+        return mv;
     }
     
     private String getStringForInterval(long interval) {
