@@ -12,6 +12,7 @@
  *
  * Modifications:
  *
+ * 2009 Aug 13: Added columns for minimum and maximum values. ayres@opennms.org
  * 2008 Feb 16: Remove CSV export since eXtremeTable does not handle embedded commas
  				at all gracefully. Remove custom column interceptor as it is unneeded
  				and causes the bottom cell to lack a bottom border. - jeffg@opennms.org
@@ -118,6 +119,13 @@
             ${row.jobDurationString}
           </ec:column>
         --%>
+
+          <ec:column property="maxDatumValue" title="Max Value">
+            ${row.maxDatumValue}
+          </ec:column>
+          <ec:column property="minDatumValue" title="Min Value">
+            ${row.minDatumValue}
+          </ec:column>
 
           <ec:column property="purgeDate" title="Keep Until At Least" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
         </ec:row>
