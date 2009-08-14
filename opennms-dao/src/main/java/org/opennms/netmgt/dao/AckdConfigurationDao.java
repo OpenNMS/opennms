@@ -38,6 +38,7 @@ package org.opennms.netmgt.dao;
 import java.util.List;
 
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -122,5 +123,7 @@ public interface AckdConfigurationDao {
     void reloadConfiguration() throws DataAccessResourceFailureException;
 
     int getEnabledReaderCount();
+
+    List<Parameter> getParametersForReader(String name);
 
 }
