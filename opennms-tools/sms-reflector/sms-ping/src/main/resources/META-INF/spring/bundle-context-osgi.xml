@@ -15,7 +15,7 @@
     
     <osgi:service ref="smsMessenger">
       <osgi:interfaces>
-        <value>org.smslib.IInboundMessageNotification</value>
+        <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
         <value>org.smslib.IOutboundMessageNotification</value>
       </osgi:interfaces>
     </osgi:service>

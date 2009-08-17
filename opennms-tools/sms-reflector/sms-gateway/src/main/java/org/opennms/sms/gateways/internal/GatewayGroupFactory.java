@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;
+import org.springframework.beans.factory.FactoryBean;
 
-public class GatewayGroupFactory {
+public class GatewayGroupFactory implements FactoryBean {
     
     private static Logger log = LoggerFactory.getLogger(GatewayGroupFactory.class); 
 
@@ -103,6 +104,18 @@ public class GatewayGroupFactory {
 	    if (log.isInfoEnabled()) {
 	        log.info(String.format(fmt, args));
 	    }
+	}
+
+	public Object getObject() throws Exception {
+		return m_gatewayGroups;
+	}
+
+	public Class<?> getObjectType() {
+		return GatewayGroup[].class;
+	}
+
+	public boolean isSingleton() {
+		return true;
 	}
 
 

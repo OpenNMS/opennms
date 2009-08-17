@@ -122,7 +122,7 @@ public class SmsPinger {
 	 * Initializes this singleton
 	 */
 	public synchronized static void initialize() throws IOException {
-	    if (s_pingTracker == null) throw new IllegalStateException("SmsPinger not yet inialized!!"); 
+	    if (s_pingTracker == null) throw new IllegalStateException("SmsPinger not yet initialized!!"); 
 	}
 	
 	public synchronized static void setSmsPingTracker(SmsPingTracker pingTracker) {

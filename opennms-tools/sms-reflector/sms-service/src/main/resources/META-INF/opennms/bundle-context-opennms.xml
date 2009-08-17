@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="testGatewayGroupImpl" class="org.opennms.sms.reflector.smsservice.internal.TestGatewayGroupImpl" />
+	<bean id="phonebook" class="org.opennms.sms.phonebook.PropertyPhonebook" />
+
+	<bean id="inboundMessageDispatcher" class="org.opennms.sms.reflector.smsservice.internal.InboundMessageNotification" />
+	<bean id="outboundMessageDispatcher" class="org.opennms.sms.reflector.smsservice.internal.OutboundMessageNotification" />
+	<bean id="gatewayStatusDispatcher" class="org.opennms.sms.reflector.smsservice.internal.GatewayStatusNotification" />
+
+	<bean id="smsServiceList" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceFactoryBean">
+		<property name="inboundMessageNotification" ref="inboundMessageDispatcher" />
+		<property name="outboundMessageNotification" ref="outboundMessageDispatcher" />
+		<property name="gatewayStatusNotification" ref="gatewayStatusDispatcher" />
+		<!--  from sms-gateway -->
+		<property name="gatewayGroupList" ref="gatewayGroupList" />
+	</bean>
+
+</beans>

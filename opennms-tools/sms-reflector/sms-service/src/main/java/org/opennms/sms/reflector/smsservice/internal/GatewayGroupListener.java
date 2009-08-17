@@ -1,20 +1,13 @@
 package org.opennms.sms.reflector.smsservice.internal;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
-import org.opennms.sms.reflector.smsservice.SmsService;
+import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
@@ -22,19 +15,17 @@ import org.smslib.GatewayException;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
-import org.smslib.Service;
-import org.smslib.TimeoutException;
 import org.smslib.Service.ServiceStatus;
 import org.springframework.osgi.context.BundleContextAware;
 
 public class GatewayGroupListener implements BundleContextAware {
     
     private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
-	
+
 	private BundleContext m_bundleContext;
 	private Map<GatewayGroup, SmsServiceImpl> m_services = new HashMap<GatewayGroup, SmsServiceImpl>();
 	private List<IOutboundMessageNotification> m_outboundListeners;
-    private List<IInboundMessageNotification> m_inboundListeners;
+    private List<OnmsInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
 
 	
@@ -56,7 +47,7 @@ public class GatewayGroupListener implements BundleContextAware {
 		
 		SmsServiceImpl smsService = new SmsServiceImpl();
 		smsService.setOutboundNotification(new OutboundMessageNotification(getOutboundListeners()));
-		smsService.setInboundNotification(new InboundMessageNotification(smsService, getInboundListeners()));
+		smsService.setInboundNotification(new InboundMessageNotification(getInboundListeners()));
         smsService.setGatewayStatusNotification(new GatewayStatusNotification(getGatewayStatusListeners()));
         
 		for(int i = 0; i < gateways.length; i++){
@@ -110,11 +101,11 @@ public class GatewayGroupListener implements BundleContextAware {
 		return m_outboundListeners;
 	}
 
-	public void setInboundListeners(List<IInboundMessageNotification> m_inboundListeners) {
+	public void setInboundListeners(List<OnmsInboundMessageNotification> m_inboundListeners) {
 		this.m_inboundListeners = m_inboundListeners;
 	}
 
-	public List<IInboundMessageNotification> getInboundListeners() {
+	public List<OnmsInboundMessageNotification> getInboundListeners() {
 		return m_inboundListeners;
 	}
 

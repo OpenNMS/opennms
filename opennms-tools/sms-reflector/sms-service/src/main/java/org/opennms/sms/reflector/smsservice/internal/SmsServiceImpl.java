@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
+import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -27,6 +28,7 @@ import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
 import org.smslib.InboundMessage.MessageClasses;
+import org.smslib.Message.MessageTypes;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
@@ -46,10 +48,24 @@ public class SmsServiceImpl implements SmsService {
 	private String m_manufacturer;
 	private String m_model;
     private List<IOutboundMessageNotification> m_outboundListeners;
-    private List<IInboundMessageNotification> m_inboundListeners;
+    private List<OnmsInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
     private List<GatewayGroup> m_gatewayGroup;
     
+    private class InboundNotificationAdapter implements IInboundMessageNotification {
+    	private OnmsInboundMessageNotification m_inboundNotification;
+
+    	public InboundNotificationAdapter(OnmsInboundMessageNotification onmsInbound) {
+    		m_inboundNotification = onmsInbound;
+    	}
+		public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
+			m_inboundNotification.process(SmsServiceImpl.this.findGateway(gatewayId), msgType, msg);
+		}
+		
+		public OnmsInboundMessageNotification getOnmsInboundMessageNotification() {
+			return m_inboundNotification;
+		}
+    }
 	
 	/**
      * @return the outboundListeners
@@ -68,16 +84,8 @@ public class SmsServiceImpl implements SmsService {
     /**
      * @return the inboundListeners
      */
-    public List<IInboundMessageNotification> getInboundListeners() {
+    public List<OnmsInboundMessageNotification> getInboundListeners() {
         return m_inboundListeners;
-    }
-
-    /**
-     * @param inboundListeners the inboundListeners to set
-     */
-    public void setInboundListeners(
-            List<IInboundMessageNotification> inboundListeners) {
-        m_inboundListeners = inboundListeners;
     }
 
     /**
@@ -234,8 +242,8 @@ public class SmsServiceImpl implements SmsService {
 		return m_service.getInboundMessageCount();
 	}
 
-	public IInboundMessageNotification getInboundNotification() {
-		return m_service.getInboundNotification();
+	public OnmsInboundMessageNotification getInboundNotification() {
+		return ((InboundNotificationAdapter)m_service.getInboundNotification()).getOnmsInboundMessageNotification();
 	}
 
 	public KeyManager getKeyManager() {
@@ -391,8 +399,9 @@ public class SmsServiceImpl implements SmsService {
 		m_service.setGatewayStatusNotification(gatewayStatusNotification);
 	}
 
-	public void setInboundNotification(IInboundMessageNotification inboundNotification) {
-		m_service.setInboundNotification(inboundNotification);
+	public void setInboundNotification(OnmsInboundMessageNotification inboundNotification) {
+		InboundNotificationAdapter adapter = new InboundNotificationAdapter(inboundNotification);
+		m_service.setInboundNotification(adapter);
 	}
 
 	public void setLoadBalancer(LoadBalancer loadBalancer) {

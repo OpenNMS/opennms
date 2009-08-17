@@ -59,7 +59,7 @@ public class Activator implements BundleActivator {
         
         String configURLString = context.getProperty("org.opennms.sms.gateway.configURL");
         
-        URL configURL = configURLString != null ? new URL(configURLString) : context.getBundle().getEntry("/config/modemConfig.properties");
+        URL configURL = configURLString != null ? new URL(configURLString) : context.getBundle().getEntry("/modemConfig.properties");
         
         log.info("Using modem configuration from " + configURL);
         

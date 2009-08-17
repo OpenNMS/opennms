@@ -65,8 +65,8 @@ public interface SmsService {
 	void setLoadBalancer(LoadBalancer loadBalancer);
 	Router getRouter();
 	void setRouter(Router router);
-	IInboundMessageNotification getInboundNotification();
-	void setInboundNotification(IInboundMessageNotification inboundNotification);
+	OnmsInboundMessageNotification getInboundNotification();
+	void setInboundNotification(OnmsInboundMessageNotification inboundNotification);
 	IOutboundMessageNotification getOutboundNotification();
 	void setOutboundNotification(IOutboundMessageNotification outboundNotification);
 	ICallNotification getCallNotification();

@@ -3,4 +3,4 @@
 #-----------------------------------------------------------------
 
 #Bundle-Activator: ${bundle.namespace}.internal.ExampleActivator
-#Import-Package: org.opennms.sms.ping,org.opennms.sms.phonebook,*
+Import-Package: *,org.opennms.sms.ping,org.opennms.sms.phonebook,org.smslib.test

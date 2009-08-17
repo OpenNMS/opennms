@@ -37,15 +37,15 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Messenger;
+import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
+import org.opennms.sms.reflector.smsservice.SmsService;
+import org.smslib.AGateway;
 import org.smslib.GatewayException;
-import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.InboundBinaryMessage;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
-import org.opennms.sms.reflector.smsservice.SmsService;
-import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 
 
@@ -54,7 +54,7 @@ import org.smslib.Message.MessageTypes;
  *
  * @author brozow
  */
-public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInboundMessageNotification, IOutboundMessageNotification {
+public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInboundMessageNotification, IOutboundMessageNotification {
     
     Logger log = Logger.getLogger(getClass());
     
@@ -79,11 +79,11 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, IInbound
         m_replyQueue = replyQueue;
     }
 
-    public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
+    public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         debugf("SmsMessenger.processInboundMessage");
         
         if (isPingRequest(msg)) {
-            sendPong(gatewayId, msg);
+            sendPong(gateway.getGatewayId(), msg);
         }
         else if (m_replyQueue != null) {
             m_replyQueue.add(new PingReply(msg));
