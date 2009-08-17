@@ -69,6 +69,6 @@
     
   </readmail-config>
     
-  <end2end-mail-config name="default" readmail-config-name="default" sendmail-config-name="default" />
+  <end2end-mail-config name="default" readmail-config-name="localhost" sendmail-config-name="localhost" />
   
 </javamail-configuration>
