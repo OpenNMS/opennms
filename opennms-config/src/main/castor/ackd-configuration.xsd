@@ -44,7 +44,7 @@
         <element ref="this:reader-schedule" minOccurs="0" maxOccurs="1" />
         <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="reader-name" type="string" >
+      <attribute name="reader-name" type="string" use="required" >
         <annotation>
           <documentation>
             The reader name is the value returned by the getName() method required by the
