@@ -326,6 +326,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
+    @XmlElement(name="nodeId")
     @XmlIDREF
     public OnmsNode getNode() {
         return m_node;
