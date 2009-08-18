@@ -10,7 +10,11 @@
 	<bean id="outboundMessageDispatcher" class="org.opennms.sms.reflector.smsservice.internal.OutboundMessageNotification" />
 	<bean id="gatewayStatusDispatcher" class="org.opennms.sms.reflector.smsservice.internal.GatewayStatusNotification" />
 
-	<bean id="smsServiceList" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceFactoryBean">
+	<bean id="smsService" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceFactoryBean">
+		<property name="smsServiceList" ref="smsServiceList" />
+	</bean>
+
+	<bean id="smsServiceList" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceListFactoryBean">
 		<property name="inboundMessageNotification" ref="inboundMessageDispatcher" />
 		<property name="outboundMessageNotification" ref="outboundMessageDispatcher" />
 		<property name="gatewayStatusNotification" ref="gatewayStatusDispatcher" />

@@ -48,6 +48,9 @@
      |  this is defined here so it can be overridden on the cmd line when running pax:provision
     -->
     <org.opennms.sms.gateways.modems></org.opennms.sms.gateways.modems>
+    <!-- fix macroman warnings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <packaging>pom</packaging>

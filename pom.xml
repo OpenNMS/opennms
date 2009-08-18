@@ -546,6 +546,9 @@
 
   <properties>
   
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>

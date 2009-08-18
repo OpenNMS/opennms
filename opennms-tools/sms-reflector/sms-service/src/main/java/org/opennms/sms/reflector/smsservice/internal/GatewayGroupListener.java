@@ -37,7 +37,7 @@ public class GatewayGroupListener implements BundleContextAware {
 		return m_bundleContext;
 	}
 	
-	public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map properties){
+	public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map<String, Object> properties){
 		AGateway[] gateways = gatewayGroup.getGateways();
 		
 		if (gateways.length == 0) {

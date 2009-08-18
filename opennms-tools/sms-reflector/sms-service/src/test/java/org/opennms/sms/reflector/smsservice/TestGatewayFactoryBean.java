@@ -13,6 +13,9 @@ public class TestGatewayFactoryBean implements FactoryBean {
 				return new AGateway[] { new TestGateway("monkeys!") };
 			}
 			
+			public String toString() {
+				return "I am a monkey gateway!";
+			}
 		} };
 	}
 

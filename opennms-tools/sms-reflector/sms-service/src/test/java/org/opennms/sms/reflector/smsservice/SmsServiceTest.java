@@ -3,9 +3,11 @@ package org.opennms.sms.reflector.smsservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -14,12 +16,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath*:/META-INF/spring/bundle-context.xml",
         "classpath*:/META-INF/opennms/bundle-context-opennms.xml",
         "classpath:/testGatewayContext.xml"
-})
+}
+)
 public class SmsServiceTest {
+	@Autowired
+	ApplicationContext m_context;
+
 	SmsService[] m_serviceList;
-	
+
+	@Before
+	public void setUp() {
+		m_serviceList = (SmsService[])m_context.getBean("smsServiceList");
+		for (String name : m_context.getBeanDefinitionNames()) {
+			System.err.println(String.format("bean '%s' exists: %s", name, m_context.getBean(name)));
+		}
+	}
+
 	@Test
-	@Ignore
 	public void testInitialization() {
 		assertNotNull(m_serviceList);
 		assertEquals("must have one service", 1, m_serviceList.length);

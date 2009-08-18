@@ -1,33 +1,82 @@
 package org.opennms.sms.monitor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.opennms.sms.monitor.SMSPingMonitor;
+import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.sms.reflector.smsservice.SmsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-/*        "classpath*:/META-INF/spring/bundle-context.xml",
+        "classpath*:/META-INF/spring/bundle-context.xml",
         "classpath*:/META-INF/opennms/bundle-context-opennms.xml",
-        */
         "classpath:/testContext.xml"
 })
 public class SMSPingMonitorTest {
+	@Autowired
+	ApplicationContext m_context;
+	SmsService[] m_serviceList;
 
-	private PingTestGateway m_gateway;
-
+	MonitoredService m_service;
+	
 	@Before
 	public void setUp() {
-		m_gateway = new PingTestGateway("test");
+		m_serviceList = (SmsService[])m_context.getBean("smsServiceList");
+		m_service = new MonitoredService() {
+			public InetAddress getAddress() {
+				try {
+					return InetAddress.getLocalHost();
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+
+			public String getIpAddr() {
+				return "127.0.0.1";
+			}
+
+			public NetworkInterface getNetInterface() {
+				return new IPv4NetworkInterface(getAddress());
+			}
+
+			public int getNodeId() {
+				return 1;
+			}
+
+			public String getNodeLabel() {
+				return "localhost";
+			}
+
+			public String getSvcName() {
+				return "SMS";
+			}
+		};
 	}
 
 	@Test
-	@Ignore
 	public void testPing() {
+		assertNotNull(m_serviceList);
 		SMSPingMonitor p = new SMSPingMonitor();
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("retry", "0");
+		parameters.put("timeout", "3000");
+		PollStatus s = p.poll(m_service, parameters);
+		assertEquals("ping should fail", PollStatus.SERVICE_UNAVAILABLE, s.getStatusCode());
 	}
 }
