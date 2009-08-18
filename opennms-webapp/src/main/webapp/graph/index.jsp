@@ -151,31 +151,19 @@
     </p>
 	<script language="Javascript" type="text/javascript">
 		var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
+									<c:set var="first" value="true"/>
 									<c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
-									<c:choose>
-									  <c:when test="${match == null || match == ''}">
-									  	<c:choose>
-											<c:when test="${resourceCount.index == 0}">
-												{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-											</c:when>
-											<c:otherwise>
-												,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-											</c:otherwise>
-									  	</c:choose>
-									  </c:when>
-									  <c:otherwise>
-									    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+									  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
 									    	<c:choose>
-									    		<c:when test="${resourceCount.index == 0}">
+									    		<c:when test="${first == true}">
+												<c:set var="first" value="false"/>
 									    			{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
 									    		</c:when>
 										    	<c:otherwise>
 										    		,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
 										    	</c:otherwise>
 									    	</c:choose>
-									    </c:if>
-									  </c:otherwise>  
-									</c:choose>
+									    </c:if>  
 									  </c:forEach>
 
 			                                          		]};
@@ -199,33 +187,20 @@
     </p>
 	<script language="Javascript" type="text/javascript">
 		var customResources = {total:"${fn:length(topLevelResources)}", records:[
+                                            <c:set var="first" value="true"/>
                                             <c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
-                                      	  <c:choose>
-                                            <c:when test="${match == null || match == ''}">
-                                            	<c:choose>
-													<c:when test="${resourceCount.index == 0}">
-														{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-													</c:when>
-													<c:otherwise>
-														,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-													</c:otherwise>
-									  			</c:choose>
-                                      	    </c:when>
-                                      	    <c:otherwise>
-                                      	      <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-                                      	    	<c:choose>
-									    			<c:when test="${resourceCount.index == 0}">
-									    				{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-									    			</c:when>
-										    		<c:otherwise>
-										    			,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
-										    		</c:otherwise>
-									    		</c:choose>
-                                      	      
-                                      	      </c:if>
-                                      	    </c:otherwise>  
-                                      	  </c:choose>
-                                              </c:forEach>
+                                              <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
+                                                <c:choose>
+                                                  <c:when test="${first == true}">
+                                                    <c:set var="first" value="false"/>
+                                                    {id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+                                                  </c:when>
+                                                  <c:otherwise>
+                                                    ,{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"}
+                                                  </c:otherwise>
+                                                </c:choose>
+                                              </c:if>  
+                                            </c:forEach>
 
 			                                                                 		]};
 		Ext.onReady(function(){
