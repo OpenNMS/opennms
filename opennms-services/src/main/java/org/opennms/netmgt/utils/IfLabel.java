@@ -261,9 +261,9 @@ public class IfLabel extends Object {
         		" WHERE (ipinterface.ismanaged!='D') " +
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
-        		"   AND ipinterface.nodeid=? " +
-        		"   AND ipinterface.ipaddr=? " +
-        		"   AND ipinterface.ifindex=?";
+        		"   AND ipinterface.nodeid= "+nodeId+
+        		"   AND ipinterface.ipaddr= '"+ipAddr+"'"+
+        		"   AND ipinterface.ifindex= "+ifIndex;
         
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
