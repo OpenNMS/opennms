@@ -115,7 +115,6 @@ public class EventRestService extends OnmsRestService {
 				.getQueryParameters();
 		OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
 		setLimitOffset(params, criteria, 10);
-		addOrdering(params, criteria);
 		addFiltersToCriteria(params, criteria, OnmsEvent.class);
 		//added ordering of the events based on id
 		criteria.addOrder(Order.desc("eventTime"));
