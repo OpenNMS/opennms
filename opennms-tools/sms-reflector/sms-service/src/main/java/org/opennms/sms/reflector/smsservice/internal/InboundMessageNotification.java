@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
-import org.opennms.sms.reflector.smsservice.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
@@ -43,7 +42,9 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
 	    deleteMessage(gateway, msg);
 
 	    for(OnmsInboundMessageNotification listener : getListeners()){
-	        notifyListener(gateway, msgType, msg, listener);
+	    	if (listener != this) {
+	    		notifyListener(gateway, msgType, msg, listener);
+	    	}
 	    }
 
 	}

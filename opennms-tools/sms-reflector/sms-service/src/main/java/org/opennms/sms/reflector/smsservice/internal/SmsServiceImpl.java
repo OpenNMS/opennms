@@ -38,7 +38,8 @@ import org.smslib.routing.Router;
 
 public class SmsServiceImpl implements SmsService {
     
-    private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
+    @SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
     private ServiceRegistration m_registration;
 	private Service m_service = new Service();
@@ -367,7 +368,6 @@ public class SmsServiceImpl implements SmsService {
 	}
 
 	public boolean sendMessage(OutboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException {
-	    log.debug("OutboundListeners: "+m_outboundListeners);
 		return m_service.sendMessage(msg);
 	}
 

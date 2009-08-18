@@ -21,14 +21,16 @@
 package org.opennms.sms.monitor;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
+
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
-import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage.MessageStatuses;
 
@@ -42,27 +44,46 @@ public class PingTestGateway extends AGateway
 
 	private int counter = 0;
 
-	/**
-	 * After how much sent messages next one should fail setting to 2 makes two
-	 * messages sent, and then one failed.
-	 */
-	protected int failCycle;
+	private class QueueRunner implements Runnable, Delayed {
+		InboundMessage m_message;
+		long m_expiration = 0;
+		
+		public QueueRunner(InboundMessage message, long milliseconds) {
+			System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + message);
+			m_message = message;
+			m_expiration = System.currentTimeMillis() + milliseconds;
+		}
+		public void run() {
+			System.err.println("QueueRunner(run): " + getService().getInboundNotification());
+			if (getService().getInboundNotification() != null ) {
+				getService().getInboundNotification().process(getGatewayId(), MessageTypes.INBOUND, m_message);
+			}
+		}
 
-	/**
-	 * Duration between incoming messages in milliseconds
-	 */
-	protected int receiveCycle;
+		public long getDelay(TimeUnit unit) {
+			long remainder = m_expiration - System.currentTimeMillis();
+			return unit.convert(remainder, TimeUnit.MILLISECONDS);
+		}
 
+		public int compareTo(Delayed o) {
+			long thisVal = this.getDelay(TimeUnit.NANOSECONDS);
+			long anotherVal = o.getDelay(TimeUnit.NANOSECONDS);
+			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+		}
+		
+	}
+	
+	private DelayQueue<QueueRunner> m_delayQueue = new DelayQueue<QueueRunner>();
+	
 	Thread incomingMessagesThread;
 
 	public PingTestGateway(String id)
 	{
 		super(id);
+		System.err.println("Initializing PingTestGateway");
 		setAttributes(GatewayAttributes.SEND);
 		setInbound(true);
 		setOutbound(true);
-		//setFailCycle(2);
-		this.receiveCycle = 60000;
 	}
 
 	/* (non-Javadoc)
@@ -97,22 +118,13 @@ public class PingTestGateway extends AGateway
 			{
 				while (!PingTestGateway.this.incomingMessagesThread.isInterrupted())
 				{
-					synchronized (PingTestGateway.this.incomingMessagesThread)
-					{
-						try
-						{
-							PingTestGateway.this.incomingMessagesThread.wait(PingTestGateway.this.receiveCycle);
-						}
-						catch (InterruptedException e)
-						{
-							// NOOP
-							break;
-						}
-					}
-					if (!PingTestGateway.this.incomingMessagesThread.isInterrupted() && (getService().getInboundNotification() != null))
-					{
-						getService().getLogger().logInfo("Detecting incoming message", null, getGatewayId());
-						if (getService().getInboundNotification() != null ) getService().getInboundNotification().process(getGatewayId(), MessageTypes.INBOUND, generateIncomingMessage());
+					try {
+						QueueRunner runner = m_delayQueue.take();
+						runner.run();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						break;
 					}
 				}
 			}
@@ -129,31 +141,8 @@ public class PingTestGateway extends AGateway
 		super.stopGateway();
 		if (this.incomingMessagesThread != null)
 		{
-			synchronized (this.incomingMessagesThread)
-			{
-				this.incomingMessagesThread.interrupt();
-			}
+			this.incomingMessagesThread.interrupt();
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.smslib.AGateway#readMessage(java.lang.String, int)
-	 */
-	@Override
-	public InboundMessage readMessage(String memLoc, int memIndex) throws TimeoutException, GatewayException, IOException, InterruptedException
-	{
-		// Return a new generated message 
-		return generateIncomingMessage();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.smslib.AGateway#readMessages(java.util.List, org.smslib.MessageClasses)
-	 */
-	@Override
-	public void readMessages(Collection<InboundMessage> msgList, MessageClasses msgClass) throws TimeoutException, GatewayException, IOException, InterruptedException
-	{
-		// Return a new generated message
-		msgList.add(generateIncomingMessage());
 	}
 
 	@Override
@@ -163,37 +152,17 @@ public class PingTestGateway extends AGateway
 		getService().getLogger().logInfo("Sending to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
 		Thread.sleep(500);
 		this.counter++;
-		if ((this.failCycle > 0) && (this.counter >= this.failCycle))
-		{
-			throw new IOException("Dummy Exception!!!");
-			//msg.setFailureCause(FailureCauses.GATEWAY_FAILURE);
-			//this.failCycle = 0;
-			//return false;
-		}
+
 		msg.setDispatchDate(new Date());
 		msg.setMessageStatus(MessageStatuses.SENT);
 		msg.setRefNo(Integer.toString(++this.refCounter));
 		msg.setGatewayId(getGatewayId());
 		getService().getLogger().logInfo("Sent to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
-		incOutboundMessageCount();
+
+		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msg.getText(), 1, "DEADBEEF");
+		QueueRunner runner = new QueueRunner(inbound, 500);
+		m_delayQueue.offer(runner);
 		return true;
-	}
-
-	public int getFailCycle()
-	{
-		return this.failCycle;
-	}
-
-	/**
-	 * Set fail cycle value. This is count of successfully sent messages that is
-	 * followed by one failed message.
-	 * 
-	 * @param myFailCycle
-	 *            Set to zero to disable failures.
-	 */
-	public void setFailCycle(int myFailCycle)
-	{
-		this.failCycle = myFailCycle;
 	}
 
 	@Override

@@ -60,6 +60,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
 
     public void handleResponse(PingRequestId address, Message packet) {
         info("got response for address " + address + ", message = " + packet);
+        responseTime = 1L;
         bs.countDown();
     }
 

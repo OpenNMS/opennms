@@ -29,6 +29,7 @@ public class SmsServiceListFactoryBean implements FactoryBean, InitializingBean 
 
 	private IOutboundMessageNotification m_outboundMessageNotification;
 	private OnmsInboundMessageNotification m_inboundMessageNotification;
+	@SuppressWarnings("unused")
 	private IGatewayStatusNotification m_gatewayStatusNotification;
 
 	public SmsServiceListFactoryBean() {

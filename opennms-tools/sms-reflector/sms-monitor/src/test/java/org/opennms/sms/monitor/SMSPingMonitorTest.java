@@ -77,6 +77,8 @@ public class SMSPingMonitorTest {
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
 		PollStatus s = p.poll(m_service, parameters);
-		assertEquals("ping should fail", PollStatus.SERVICE_UNAVAILABLE, s.getStatusCode());
+		System.err.println("reason = " + s.getReason());
+		System.err.println("status name = " + s.getStatusName());
+		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
 	}
 }

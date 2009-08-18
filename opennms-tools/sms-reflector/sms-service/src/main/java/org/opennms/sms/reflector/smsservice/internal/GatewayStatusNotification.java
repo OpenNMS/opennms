@@ -23,7 +23,9 @@ public class GatewayStatusNotification implements IGatewayStatusNotification, Ap
 	
 	public void process(String gtwId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
 		for(IGatewayStatusNotification listener : getListeners()){
-			listener.process(gtwId, oldStatus, newStatus);
+			if (listener != this) {
+				listener.process(gtwId, oldStatus, newStatus);
+			}
 		}
 	}
 
