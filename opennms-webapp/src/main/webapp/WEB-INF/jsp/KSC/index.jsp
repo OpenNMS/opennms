@@ -189,17 +189,19 @@
   <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
 	<script language="Javascript" type="text/javascript">
 		var customData = {total:"${fn:length(reports)}", records:[
+											<c:set var="first" value="true"/>
 											<c:forEach var="report" items="${reports}">
-											<c:choose>
-											  <c:when test="${match == null || match == ''}">
-											    {id:"${report.key}", value:"${report.value}", type:"custom"},
-											  </c:when>
-											  <c:otherwise>
-											    <c:if test="${fn:containsIgnoreCase(report.value,match)}">
-											      {id:"${report.key}", value:"${report.value}", type:"custom"},
-											    </c:if>
-											  </c:otherwise>  
-											</c:choose>
+											  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(report.value,match)}">
+											    <c:choose>
+											      <c:when test="${first == true}">
+												<c:set var="first" value="false"/>
+											        {id:"${report.key}", value:"${report.value}", type:"custom"}
+											      </c:when>
+											      <c:otherwise>
+											        ,{id:"${report.key}", value:"${report.value}", type:"custom"}
+											      </c:otherwise>
+											    </c:choose>
+											  </c:if>
 											</c:forEach>
 				                             ]};
 		
@@ -217,17 +219,19 @@
       <c:set var="totalNodeResources" value="${fn:length(nodeResources)}"/>
       <script language="Javascript" type="text/javascript">
       	var nodeData = {total:"${totalNodeResources}", records:[
+												<c:set var="first" value="true"/>
 												<c:forEach var="resource" items="${nodeResources}">
-												<c:choose>
-												  <c:when test="${match == null || match == ''}">
-												  {id:"${resource.name}", value:"${resource.label}", type:"node"},
-												  </c:when>
-												  <c:otherwise>
-												    <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
-												    {id:"${resource.name}", value:"${resource.label}", type:"node"},
-												    </c:if>
-												  </c:otherwise>  
-												</c:choose>
+												  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
+												    <c:choose>
+												      <c:when test="${first == true}">
+													<c:set var="first" value="false"/>
+													{id:"${resource.name}", value:"${resource.label}", type:"node"}
+												      </c:when>
+												      <c:otherwise>
+													,{id:"${resource.name}", value:"${resource.label}", type:"node"}
+												      </c:otherwise>
+												    </c:choose>
+												  </c:if>
 												</c:forEach>
       	                                  	]};
         	Ext.onReady(function(){
@@ -248,8 +252,19 @@
           <p>Select domain for desired performance report</p>
           <script>
           		var domainData = {total:"${fn:length(domainResources)}", records:[
+														<c:set var="first" value="true"/>
 														<c:forEach var="resource" items="${domainResources}">
+												  		  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">}">
+														    <c:choose>
+														      <c:when test="${first == true}">
+															<c:set var="first" value="false"/>
 															{id:"${resource.name}", value:"${resource.label}", type:"domain"}
+														      </c:when>
+														      <c:otherwise>
+															,{id:"${resource.name}", value:"${resource.label}", type:"domain"}
+														      </c:otherwise>
+														    </c:choose>
+														  </c:if>
 														</c:forEach>	
           		                                		]}
           </script>
@@ -264,7 +279,21 @@
 
                   <select style="width: 100%;" name="domain" size="10">
                     <c:forEach var="resource" items="${domainResources}">
-                      <option value="${resource.name}">${resource.label}</option>
+
+
+                      <c:choose>
+                        <c:when test="${match == null || match == ''}">
+                          <option value="${resource.name}">${resource.label}</option>
+                        </c:when>
+                        <c:otherwise>
+                          <c:if test="${fn:containsIgnoreCase(resource.label,match)}">
+                            <option value="${resource.name}">${resource.label}</option>
+                          </c:if>
+                        </c:otherwise>
+                      </c:choose>
+
+
+
                     </c:forEach>
                   </select>
 
