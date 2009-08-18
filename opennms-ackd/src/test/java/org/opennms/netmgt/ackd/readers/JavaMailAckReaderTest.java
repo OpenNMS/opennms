@@ -166,7 +166,7 @@ public class JavaMailAckReaderTest {
         }
         List<Message> msgs = new ArrayList<Message>(1);
         msgs.add(msg);
-        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
+        List<OnmsAcknowledgment> acks = m_processor.createAcks(msgs);
         
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
@@ -213,7 +213,7 @@ public class JavaMailAckReaderTest {
         
         msgs.add(msg);
         
-        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
+        List<OnmsAcknowledgment> acks = m_processor.createAcks(msgs);
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals(AckType.NOTIFICATION, acks.get(0).getAckType());
         Assert.assertEquals("david@opennms.org", acks.get(0).getAckUser());
@@ -221,15 +221,18 @@ public class JavaMailAckReaderTest {
         Assert.assertEquals(new Integer(1234), acks.get(0).getRefId());
     }
 
-    @Test
     @Ignore
+    @Test
     public void findAndProcessAcks() throws InterruptedException {
         JavaMailAckReader reader = new JavaMailAckReader();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
         reader.setMailAckProcessor(m_processor);
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
+        
+        m_processor.setJmConfigDao(m_jmDao);
+        
         m_processor.setJmConfigDao(new JmCnfDao());
-        m_processor.setAckService(m_ackService);
+//        m_processor.setAckService(m_ackService);
         m_processor.setAckdConfigDao(createAckdConfigDao());
         //Thread.sleep(20000);
         while (!f.isDone()) {
@@ -251,7 +254,6 @@ public class JavaMailAckReaderTest {
                 config.setClearExpression("~(?i)^(Resolve|cleaR)$");
                 config.setEscalateExpression("~(?i)^esc$");
                 config.setNotifyidMatchExpression("~(?i).*RE:.*Notice #([0-9]+).*");
-                config.setReadmailConfig("default");
                 config.setUnackExpression("~(?i)^unAck$");
                 return config;
             }
@@ -373,8 +375,8 @@ public class JavaMailAckReaderTest {
      * @throws JavaMailerException 
      * 
      */
-    @Test
     @Ignore
+    @Test
     public void testIntegration() throws JavaMailerException {
         
         String gmailAccount = getUser();
@@ -394,16 +396,15 @@ public class JavaMailAckReaderTest {
         sendMsg = createAckMessage(gmailAccount, "4", "clear");
         sendMailer.setMessage(sendMailer.buildMimeMessage(sendMsg));
         sendMailer.send();
+
+        ReadmailConfig config = m_processor.determineMailReaderConfig();
         
-        //this is bad mojo
-        String readmailConfig = m_daemon.getConfigDao().getConfig().getReadmailConfig();
-        Assert.assertNotNull(readmailConfig);
-        ReadmailConfig config = m_jmDao.getReadMailConfig(readmailConfig);
+        Assert.assertNotNull(config);
         updateConfigWithGoogleReadConfiguration(config, gmailAccount, gmailPassword);
         
-        List<Message> msgs = MailAckProcessor.retrieveAckMessages();
+        List<Message> msgs = m_processor.retrieveAckMessages();
         
-        List<OnmsAcknowledgment> acks = MailAckProcessor.createAcks(msgs);
+        List<OnmsAcknowledgment> acks = m_processor.createAcks(msgs);
         
         Assert.assertNotNull(acks);
         Assert.assertEquals(4, acks.size());

@@ -91,12 +91,12 @@ public class DefaultJavamailConfigurationDaoTest {
     
     @Test
     public void testMarshalling() {
-        Assert.assertEquals(m_jmcDao.getDefaultReadmailConfig().getName(), "default");
-        Assert.assertEquals(m_jmcDao.getDefaultSendmailConfig().getName(), "default");
+        Assert.assertEquals("localhost", m_jmcDao.getDefaultReadmailConfig().getName());
+        Assert.assertEquals("localhost", m_jmcDao.getDefaultSendmailConfig().getName());
         Assert.assertEquals("false", m_jmcDao.getDefaultReadmailConfig().getJavamailProperty(0).getValue());
         Assert.assertNotNull(m_jmcDao.getEnd2EndConfig("default"));
-        Assert.assertEquals(m_jmcDao.getEnd2EndConfig("default").getReadmailConfigName(), "default");
-        Assert.assertEquals(m_jmcDao.getEnd2EndConfig("default").getSendmailConfigName(), "default");
+        Assert.assertEquals("localhost", m_jmcDao.getEnd2EndConfig("default").getReadmailConfigName());
+        Assert.assertEquals("localhost", m_jmcDao.getEnd2EndConfig("default").getSendmailConfigName());
     }
     
 }

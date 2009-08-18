@@ -84,7 +84,8 @@ public interface AckReader {
     void pause();
     void resume(final ScheduledThreadPoolExecutor executor);
     void stop();
-    void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule);
+    //void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule);
+    
     AckReaderState getState();
     
     String getName();
