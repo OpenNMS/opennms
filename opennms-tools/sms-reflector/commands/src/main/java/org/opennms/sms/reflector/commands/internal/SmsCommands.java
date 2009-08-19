@@ -84,7 +84,14 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     
     public Object _smsPing(CommandInterpreter intp) {
         try {
-            SmsPinger.ping(intp.nextArgument());
+            Long latency = SmsPinger.ping(intp.nextArgument());
+            
+            if(latency == null){
+            	intp.println("Ping Timedout");
+            }else{
+            	intp.println("Ping roundtrip time: " + latency);
+            }
+            
         } catch (Exception e) {
             intp.printStackTrace(e);
         }

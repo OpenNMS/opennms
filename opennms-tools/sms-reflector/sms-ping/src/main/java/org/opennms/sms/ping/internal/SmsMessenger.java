@@ -68,6 +68,7 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInbo
     }
 
     public void sendRequest(PingRequest request) throws Exception {
+    	request.setSentTimestamp(System.currentTimeMillis());
         debugf("SmsMessenger.sendRequest %s", request);
         if (!m_smsService.sendMessage(request.getRequest())) {
             throw new IOException("Failed to send sms message");
@@ -80,13 +81,15 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInbo
     }
 
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
+    	long receiveTime = System.currentTimeMillis();
+    	
         debugf("SmsMessenger.processInboundMessage");
         
         if (isPingRequest(msg)) {
             sendPong(gateway.getGatewayId(), msg);
         }
         else if (m_replyQueue != null) {
-            m_replyQueue.add(new PingReply(msg));
+            m_replyQueue.add(new PingReply(msg, receiveTime));
         }
     }
 

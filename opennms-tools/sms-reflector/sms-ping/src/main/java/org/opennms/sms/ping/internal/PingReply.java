@@ -74,17 +74,21 @@ public final class PingReply implements Reply<PingRequestId> {
      */
     private final InboundMessage m_packet;
 
+	private long m_receiveTimestamp;
+
     /**
      * Constructs a new reply with the packet as the contents
      * of the reply.
      * 
      * @param pkt
      *            The received packet.
+     * @param receiveTime 
      * 
      */
-    public PingReply(InboundMessage pkt) {
+    public PingReply(InboundMessage pkt, long receiveTime) {
         m_packet = pkt;
         m_requestId = new PingRequestId(pkt.getOriginator());
+        m_receiveTimestamp = receiveTime;
     }
 
     public PingRequestId getRequestId() {
@@ -93,6 +97,14 @@ public final class PingReply implements Reply<PingRequestId> {
     
     public InboundMessage getPacket() {
         return m_packet;
+    }
+    
+    public void setReceiveTimestamp(long millis){
+    	m_receiveTimestamp = millis;
+    }
+    
+    public long getReceiveTimestamp(){
+    	return m_receiveTimestamp;
     }
 
 }

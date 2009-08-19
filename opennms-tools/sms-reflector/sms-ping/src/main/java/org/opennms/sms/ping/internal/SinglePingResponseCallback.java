@@ -58,9 +58,9 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         m_phoneNumber = phoneNumber;
     }
 
-    public void handleResponse(PingRequestId address, Message packet) {
-        info("got response for address " + address + ", message = " + packet);
-        responseTime = 1L;
+    public void handleResponse(PingRequest request, Message packet) {
+        info("got response for request " + request + ", message = " + packet);
+        responseTime = request.getRoundTripTime();
         bs.countDown();
     }
 
@@ -68,13 +68,13 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         return Logger.getLogger(this.getClass());
     }
 
-    public void handleTimeout(PingRequestId address, Message packet) {
-        info("timed out pinging address " + address + ", message = " + packet);
+    public void handleTimeout(PingRequest request, Message packet) {
+        info("timed out pinging request " + request + ", message = " + packet);
         bs.countDown();
     }
 
-    public void handleError(PingRequestId address, Message pr, Throwable t) {
-        info("an error occurred pinging " + address, t);
+    public void handleError(PingRequest request, Message pr, Throwable t) {
+        info("an error occurred pinging " + request, t);
         error = t;
         bs.countDown();
     }

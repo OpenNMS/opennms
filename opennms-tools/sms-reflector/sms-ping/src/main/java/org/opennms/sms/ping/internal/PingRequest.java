@@ -93,6 +93,10 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      * The thread logger associated with this request.
      */
     private Logger m_log;
+
+	private Long m_sentTimestamp;
+
+	private Long m_responseTimestamp;
     
 
     PingRequest(PingRequestId id, long timeout, int retries, Logger logger, PingResponseCallback cb) {
@@ -142,13 +146,14 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public void processResponse(PingReply reply) {
-        processResponse(reply.getPacket());
+    	setResponseTimestamp(reply.getReceiveTimestamp());
+    	processResponse(reply.getPacket());
     }
 
     private void processResponse(InboundMessage packet) {
         m_response = packet;
         log().debug(System.currentTimeMillis()+": Ping Response Received "+this);
-        m_callback.handleResponse(m_id, packet);
+        m_callback.handleResponse(this, packet);
     }
 
     public PingRequest processTimeout() {
@@ -159,7 +164,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
                 log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
             } else {
                 log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                m_callback.handleTimeout(getId(), getRequest());
+                m_callback.handleTimeout(this, getRequest());
             }
         }
         return returnval;
@@ -176,7 +181,8 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         sb.append("Retries=").append(getRetries()).append(",");
         sb.append("Timeout=").append(getTimeout()).append(",");
         sb.append("Expiration=").append(getExpiration()).append(',');
-        sb.append("Callback=").append(m_callback);
+        sb.append("Callback=").append(m_callback).append(',');
+        sb.append("Request=").append(m_request);
         sb.append("]");
         return sb.toString();
     }
@@ -194,8 +200,19 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public void processError(Throwable t) {
-        m_callback.handleError(getId(), getRequest(), t);
+        m_callback.handleError(this, getRequest(), t);
     }
     
+    public void setSentTimestamp(Long millis){
+    	m_sentTimestamp = millis;
+    }
+    
+    public void setResponseTimestamp(Long millis){
+    	m_responseTimestamp = millis;
+    }
+    
+    public long getRoundTripTime(){
+    	return m_responseTimestamp - m_sentTimestamp;
+    }
 
 }

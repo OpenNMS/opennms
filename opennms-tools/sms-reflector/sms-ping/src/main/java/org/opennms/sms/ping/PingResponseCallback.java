@@ -35,6 +35,7 @@
  */
 package org.opennms.sms.ping;
 
+import org.opennms.sms.ping.internal.PingRequest;
 import org.smslib.Message;
 
 /**
@@ -43,8 +44,8 @@ import org.smslib.Message;
  */
 public interface PingResponseCallback {
 
-	public void handleResponse(PingRequestId id, Message packet);
-	public void handleTimeout(PingRequestId id, Message packet);
-    public void handleError(PingRequestId id, Message packet, Throwable t);
+	public void handleResponse(PingRequest request, Message packet);
+	public void handleTimeout(PingRequest request, Message packet);
+    public void handleError(PingRequest request, Message packet, Throwable t);
 
 }
