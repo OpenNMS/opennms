@@ -64,7 +64,7 @@ public class DefaultAckService implements AckService {
     }
 
     public void processAck(OnmsAcknowledgment ack) {
-        log().debug("processAck: Searching DB for acknowledgables for ack: "+ack);
+        log().info("processAck: Searching DB for acknowledgables for ack: "+ack);
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         
         if (ackables == null || ackables.size() < 1) {
@@ -76,19 +76,24 @@ public class DefaultAckService implements AckService {
         for (Acknowledgeable ackable : ackables) {
             switch (ack.getAckAction()) {
             case ACKNOWLEDGE:
-                log().debug("processAck: Acknowledging ackable: "+ackable);
+                log().debug("processAck: Acknowledging ackable: "+ackable+"...");
                 ackable.acknowledge(ack.getAckUser());
+                log().debug("processAck: Acknowledged ackable: "+ackable);
                 break;
             case UNACKNOWLEDGE:
-                log().debug("processAck: Unacknowledging ackable: "+ackable);
+                log().debug("processAck: Unacknowledging ackable: "+ackable+"...");
                 ackable.unacknowledge(ack.getAckUser());
+                log().debug("processAck: Unacknowledged ackable: "+ackable);
+                break;
             case CLEAR:
-                log().debug("processAck: Clearing ackable: "+ackable);
+                log().debug("processAck: Clearing ackable: "+ackable+"...");
                 ackable.clear(ack.getAckUser());
+                log().debug("processAck: Cleared ackable: "+ackable);
                 break;
             case ESCALATE:
-                log().debug("processAck: Escalating ackable: "+ackable);
+                log().debug("processAck: Escalating ackable: "+ackable+"...");
                 ackable.escalate(ack.getAckUser());
+                log().debug("processAck: Escalated ackable: "+ackable);
             default:
                 break;
             }
@@ -97,6 +102,7 @@ public class DefaultAckService implements AckService {
             m_ackDao.save(ack);
             m_ackDao.flush();
         }
+        log().info("processAck: Found and processed acknowledgables for the acknowledgement: "+ack);
     }
 
     private Logger log() {
