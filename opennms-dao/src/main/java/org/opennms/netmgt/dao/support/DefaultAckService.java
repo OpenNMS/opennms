@@ -94,6 +94,7 @@ public class DefaultAckService implements AckService {
                 log().debug("processAck: Escalating ackable: "+ackable+"...");
                 ackable.escalate(ack.getAckUser());
                 log().debug("processAck: Escalated ackable: "+ackable);
+                break;
             default:
                 break;
             }
