@@ -46,7 +46,7 @@
       <parameter key="userid" value="" />
       <parameter key="password" value="" />
     </service>
-    <service name="SNMP" interval="300000" user-defined="false" status="off">
+    <service name="SNMP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
       <parameter key="port" value="161" />
