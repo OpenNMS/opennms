@@ -85,6 +85,7 @@ import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -326,6 +327,11 @@ public class JavaMailAckReaderTest {
         }
 
         public void verifyMarshaledConfiguration() throws IllegalStateException {
+        }
+
+        public void reloadConfiguration()
+                throws DataAccessResourceFailureException {
+            
         }
         
     }

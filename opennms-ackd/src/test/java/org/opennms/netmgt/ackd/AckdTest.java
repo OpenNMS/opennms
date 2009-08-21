@@ -176,7 +176,7 @@ public class AckdTest {
         readerConfig.setEnabled(true);
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
         
-        m_daemon.restartReaders();
+        m_daemon.restartReaders(false);
         Thread.sleep(30);
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STARTED.equals(reader.getState()));
         
@@ -189,7 +189,7 @@ public class AckdTest {
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.RESUMED.equals(reader.getState()));
         
         readerConfig.setEnabled(false);
-        m_daemon.restartReaders();
+        m_daemon.restartReaders(true);
         Thread.sleep(300);
         Assert.assertTrue("Unexpected reader state: "+reader.getState(), AckReaderState.STOPPED.equals(reader.getState()));
         

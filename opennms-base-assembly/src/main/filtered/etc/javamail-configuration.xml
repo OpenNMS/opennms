@@ -20,8 +20,8 @@
                       from="root@[127.0.0.1]" 
                       subject="OpenNMS Test Message"  
                       body="This is an OpenNMS test message." />
-    <user-auth user-name="opennms"
-               password="opennms" />
+                      
+    <user-auth user-name="opennms" password="opennms" />
   </sendmail-config>
 
   <!-- Sample gmail configuration using SSL and IMAPS and SMTPS
@@ -41,7 +41,7 @@
                       subject="OpenNMS Test Message"  
                       body="This is an OpenNMS test message." />
 
-    <user-auth user-name="opennms" password="opennms" />
+    <user-auth user-name="networksRusNOC" password="w00t" />
     
   </sendmail-config>
 
@@ -55,8 +55,7 @@
       <readmail-protocol ssl-enable="false" start-tls="false"
                          transport="pop3"/>
     </readmail-host>
-    <user-auth user-name="opennms"
-               password="opennms" />
+    <user-auth user-name="opennms" password="opennms" />
   </readmail-config>
   
   <readmail-config name="google" attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" debug="true" >
