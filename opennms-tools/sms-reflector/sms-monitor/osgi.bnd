@@ -4,3 +4,4 @@
 
 #Bundle-Activator: ${bundle.namespace}.internal.ExampleActivator
 Import-Package: *,org.opennms.sms.ping,org.opennms.sms.phonebook,org.smslib.test,org.opennms.sms.reflector.smsservice
+Require-Bundle: com.springsource.com.sun.xml.bind
