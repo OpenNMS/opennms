@@ -74,12 +74,12 @@
 		<table>
 			<thead>
 				<tr>
-					<th>category</th>
-					<th>type</th>
-					<th>period ending</th>
-					<th>available</th>
-					<th>view report</th>
-					<th>select</th>
+					<th>Category</th>
+					<th>Style</th>
+					<th>Period Ending</th>
+					<th>Available?</th>
+					<th>View Format</th>
+					<th>Select</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -90,17 +90,17 @@
 					<td>${report.date}</td>
 					<td>${report.available}</td>
 					<td><a
-						href="report/availability/view/report.htm?reportid=${report.id}">html</a>
+						href="report/availability/view/report.htm?reportid=${report.id}">HTML</a>
 					<a
-						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
+						href="report/availability/view/report.pdf?reportid=${report.id}">PDF</a>
 					<a
-						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
+						href="report/availability/view/svgreport.pdf?reportid=${report.id}">SVG</a>
 					</td>
 					<td><form:checkbox path="ids" value="${report.id}"/></td>
 				</tr>
 			</c:forEach>
 		</table>
-		<input type="submit" value="delete checked reports"/>
+		<input type="submit" value="Delete Checked Reports"/>
 	</form:form>
 	</c:otherwise>
 </c:choose>
