@@ -70,10 +70,12 @@
     
 <script language="Javascript" type="text/javascript"> 
   var data = {total:"${totalRecords}", records:[
-	<c:forEach var="resourceType" items="${model.resourceTypes}" varStatus="outerLoopStatus">
+	<c:set var="first" value="true"/>
+	<c:forEach var="resourceType" items="${model.resourceTypes}">
        <c:forEach var="resource" items="${resourceType.value}" >
 	   		<c:choose>
-				<c:when test="${outerLoopStatus.index == 0}">
+	   			<c:when test="${first == true}">
+	   			<c:set var="first" value="false"/>
 					{ id: "${resource.id}", value:"${resource.label}", type: "${resourceType.key.label}" }
 				</c:when>
 				<c:otherwise>
