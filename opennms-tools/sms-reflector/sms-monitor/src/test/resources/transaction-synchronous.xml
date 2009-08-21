@@ -1,0 +1,3 @@
+<sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <transaction label="USSD balance" />
+</sms-sequence>

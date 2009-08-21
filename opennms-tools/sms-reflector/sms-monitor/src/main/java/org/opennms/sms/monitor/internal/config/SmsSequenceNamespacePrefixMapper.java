@@ -13,13 +13,13 @@ public class SmsSequenceNamespacePrefixMapper extends NamespacePrefixMapper {
         }
 
         if("http://xmlns.opennms.org/xsd/config/sms-sequence".equals(namespaceUri)) {
-            return "sms";
+            return "";
         }
 
         return suggestion;
     }
-    
+
     public String[] getPreDeclaredNamespaceUris() {
-    	return new String[] { "sms" };
+    	return new String[] { };
     }
 }

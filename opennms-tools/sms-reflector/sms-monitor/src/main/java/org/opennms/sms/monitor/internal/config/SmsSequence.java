@@ -8,6 +8,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -17,7 +18,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 	private static final long serialVersionUID = 1L;
 
-	@XmlElement(name="transaction")
+	@XmlElementRef
 	List<SequenceTransaction> m_transactions = Collections.synchronizedList(new ArrayList<SequenceTransaction>());
 
 	public void addTransaction(SequenceTransaction transaction) {
@@ -27,7 +28,7 @@ public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 	public List<SequenceTransaction> getTransactions() {
 		return m_transactions;
 	}
-	
+
 	public void setTransactions(List<SequenceTransaction> transactions) {
 		m_transactions = transactions;
 	}
@@ -37,7 +38,6 @@ public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 			.append(this.getTransactions(), o.getTransactions())
 			.toComparison();
 	}
-	
 }
 
 /*

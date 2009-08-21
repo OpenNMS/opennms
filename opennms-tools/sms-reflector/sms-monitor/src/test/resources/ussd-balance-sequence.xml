@@ -1,4 +1,4 @@
-<sms-sequence>
+<sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
   <transaction label="USSD balance">
     <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
     <session-variable name="amount" class="org.opennms.sms.monitor.internal.config.UniqueNumber">

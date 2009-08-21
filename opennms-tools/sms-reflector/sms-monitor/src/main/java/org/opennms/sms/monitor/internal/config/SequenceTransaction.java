@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
-@XmlJavaTypeAdapter(AbstractSequenceTransaction.Adapter.class)
+@XmlJavaTypeAdapter(SequenceTransactionAdapter.class)
 public interface SequenceTransaction {
 	public String getType();
 	

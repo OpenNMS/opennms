@@ -8,13 +8,15 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+//@XmlSeeAlso({AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class})
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class AbstractSequenceTransaction implements SequenceTransaction {
+public class AbstractSequenceTransaction implements SequenceTransaction {
 	private String m_label;
 	private List<SequenceSessionVariable> m_sessionVariables = Collections.synchronizedList(new ArrayList<SequenceSessionVariable>());
 	private List<SequenceTransaction> m_sequenceTransactions = Collections.synchronizedList(new ArrayList<SequenceTransaction>());
@@ -50,7 +52,7 @@ public abstract class AbstractSequenceTransaction implements SequenceTransaction
 		m_sequenceTransactions.add(operation);
 	}
 
-	@XmlElement(name="operation")
+	@XmlElementRef
 	public List<SequenceTransaction> getOperations() {
 		return m_sequenceTransactions;
 	}
@@ -66,17 +68,5 @@ public abstract class AbstractSequenceTransaction implements SequenceTransaction
 			.append("session-variables", getSessionVariables())
 			.append("operations", getOperations())
 			.toString();
-	}
-	
-	static class Adapter extends XmlAdapter<AbstractSequenceTransaction,SequenceTransaction> {
-		@Override
-		public AbstractSequenceTransaction marshal(SequenceTransaction v) throws Exception {
-			return (AbstractSequenceTransaction)v;
-		}
-
-		@Override
-		public SequenceTransaction unmarshal(AbstractSequenceTransaction v) throws Exception {
-			return v;
-		}
 	}
 }

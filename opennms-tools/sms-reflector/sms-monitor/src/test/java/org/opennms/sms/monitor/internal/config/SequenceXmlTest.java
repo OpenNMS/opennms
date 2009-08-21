@@ -15,6 +15,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -54,7 +56,7 @@ public class SequenceXmlTest {
 
     	m_smsSequence = new SmsSequence();
 
-    	AbstractSequenceTransaction ussdTransaction = new SynchronousSequenceTransaction("USSD balance");
+    	SynchronousSequenceTransaction ussdTransaction = new SynchronousSequenceTransaction("USSD balance");
 
     	SequenceSessionVariable s = new SequenceSessionVariable("amount", "org.opennms.sms.monitor.internal.config.UniqueNumber");
     	s.addParameter("min", "1");
@@ -99,15 +101,15 @@ public class SequenceXmlTest {
     	m_smsSequence.addTransaction(ussdTransaction);
 
 //    	m_context = new SmsSequenceContext();
-    	m_context = JAXBContext.newInstance(SmsSequence.class, AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class);
+    	m_context = JAXBContext.newInstance(SmsSequence.class, AbstractSequenceTransaction.class, AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class);
 
     	m_marshaller = m_context.createMarshaller();
     	m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         m_marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new SmsSequenceNamespacePrefixMapper());
-    	
+
     	m_unmarshaller = m_context.createUnmarshaller();
     	m_unmarshaller.setSchema(null);
-    	
+
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setNormalize(true);
@@ -118,10 +120,22 @@ public class SequenceXmlTest {
     	m_fileAnticipator.tearDown();
     }
 
+    private void printFile(File file) throws IOException {
+    	BufferedReader br = new BufferedReader(new FileReader(file));
+    	StringBuilder sb = new StringBuilder();
+    	String line = null;
+
+    	while ((line = br.readLine()) != null) {
+    		sb.append(line).append("\n");
+    	}
+    	System.err.println(sb.toString());
+    }
+
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = m_fileAnticipator.expecting("sms-sequence.xsd");
         m_context.generateSchema(new TestOutputResolver(schemaFile));
+        printFile(schemaFile);
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
@@ -132,12 +146,31 @@ public class SequenceXmlTest {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
         m_marshaller.marshal(m_smsSequence, objectXML);
+        System.err.println(objectXML.toString());
+    }
+
+    static private class TestValidationEventHandler implements ValidationEventHandler {
+		public boolean handleEvent(ValidationEvent event) {
+			System.err.println("Validation failure event: " + event);
+//			event.getLinkedException().printStackTrace();
+			return false;
+		}
     }
 
     @Test
-    @Ignore
+    public void readSynchronousTransactionXML() throws Exception {
+    	File exampleFile = new File(ClassLoader.getSystemResource("transaction-synchronous.xml").getFile());
+    	ValidationEventHandler handler = new TestValidationEventHandler();
+    	m_unmarshaller.setEventHandler(handler);
+    	SmsSequence s = (SmsSequence)m_unmarshaller.unmarshal(exampleFile);
+    	System.err.println("sequence = " + s);
+    }
+    
+    @Test
     public void readXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
+    	ValidationEventHandler handler = new TestValidationEventHandler();
+    	m_unmarshaller.setEventHandler(handler);
     	SmsSequence s = (SmsSequence)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
     }
