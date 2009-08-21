@@ -135,6 +135,7 @@ public class SequenceXmlTest {
     }
 
     @Test
+    @Ignore
     public void readXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
     	SmsSequence s = (SmsSequence)m_unmarshaller.unmarshal(exampleFile);
