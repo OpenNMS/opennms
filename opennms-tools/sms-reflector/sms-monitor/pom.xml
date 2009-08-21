@@ -128,6 +128,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.stream</groupId>
+      <artifactId>com.springsource.javax.xml.stream</artifactId>
+      <version>1.0.1</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>com.springsource.javax.xml.bind</artifactId>
+      <version>2.1.7</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test dependencies -->
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.4</version>
@@ -135,13 +155,19 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-		<artifactId>opennms-spring-test</artifactId>
+      <artifactId>opennms-spring-test</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
       <version>1.7.5-SMS-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.smslib</groupId>
-		<artifactId>smslib</artifactId>
+      <artifactId>smslib</artifactId>
       <version>3.4.2-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
@@ -150,6 +176,12 @@
       <artifactId>sms-service</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
