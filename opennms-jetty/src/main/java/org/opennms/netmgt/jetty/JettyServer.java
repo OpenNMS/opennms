@@ -100,6 +100,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         if (https_port != null) {
         	SslSocketConnector sslConnector = new SslSocketConnector();
         	sslConnector.setPort(https_port);
+        	excludeCipherSuites(sslConnector);
     		sslConnector.setKeystore(System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore"));
     		sslConnector.setPassword(System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit"));
     		sslConnector.setKeyPassword(System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit"));
@@ -109,7 +110,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     		}
     		m_server.addConnector(sslConnector);
         }
-
+        
         HandlerCollection handlers = new HandlerCollection();
 
         if (webappsDir.exists()) {
@@ -160,6 +161,37 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
             services.put(contextName, srs);
         } catch (Exception e) {
             log().warn("unable to get a DNS-SD object for context '" + contextPath + "'", e);
+        }
+    }
+
+    protected void excludeCipherSuites(SslSocketConnector sslConnector) {
+        String[] defaultExclSuites = {
+                "SSL_DHE_DSS_WITH_DES_CBC_SHA",
+                "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
+                "SSL_DHE_RSA_WITH_DES_CBC_SHA",
+                "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "SSL_RSA_EXPORT_WITH_RC4_40_MD5",
+                "SSL_RSA_WITH_3DES_EDE_CBC_SHA",
+                "SSL_RSA_WITH_DES_CBC_SHA",
+                "TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "TLS_RSA_EXPORT_WITH_DES40_CBC_SHA",
+                "TLS_RSA_WITH_DES_CBC_SHA"
+        };
+        
+        String[] exclSuites;
+        String exclSuitesString = System.getProperty("org.opennms.netmgt.jetty.https-exclude-cipher-suites");
+        if (exclSuitesString == null) {
+            log().warn("No excluded SSL/TLS cipher suites specified, using hard-coded defaults");
+            exclSuites = defaultExclSuites;
+        } else {
+            exclSuites = exclSuitesString.split("\\s*:\\s*");
+            log().warn("Excluding " + exclSuites.length + " user-specified SSL/TLS cipher suites");
+        }
+        
+        sslConnector.setExcludeCipherSuites(exclSuites);
+        for (String suite : exclSuites) {
+            log().info("Excluded SSL/TLS cipher suite " + suite + " for connector on port " + sslConnector.getPort());
         }
     }
 
