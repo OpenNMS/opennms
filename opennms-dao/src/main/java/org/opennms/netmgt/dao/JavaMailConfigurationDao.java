@@ -40,6 +40,7 @@ import java.util.List;
 import org.opennms.netmgt.config.common.End2endMailConfig;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.config.common.SendmailConfig;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 
 /**
@@ -66,5 +67,7 @@ public interface JavaMailConfigurationDao {
     List<End2endMailConfig> getEnd2EndConfigs();
     
     void verifyMarshaledConfiguration() throws IllegalStateException;
+    
+    void reloadConfiguration() throws DataAccessResourceFailureException;
     
 }
