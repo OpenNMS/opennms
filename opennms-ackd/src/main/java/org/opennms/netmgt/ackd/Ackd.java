@@ -105,7 +105,17 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         log().info("destroy: readers shutdown.");
     }
 
+    /**
+     * Starts the AckReaders without indicating a reload of their configuration is necessary.
+     */
     protected void startReaders() {
+        this.startReaders(false);
+    }
+    
+    /**
+     * Starts the AckReaders indicating a reload of their configuration is necessary.
+     */
+    protected void startReaders(boolean reloadConfig) {
         int enabledReaderCount = getConfigDao().getEnabledReaderCount();
         
         if (enabledReaderCount < 1) {
@@ -123,7 +133,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             allowedStates.add(AckReaderState.STOPPED);
             
             try {
-                adjustReaderState(reader, AckReaderState.STARTED, allowedStates);
+                adjustReaderState(reader, AckReaderState.STARTED, allowedStates, reloadConfig);
             } catch (Exception e) {
                 log().error("startReaders: Could not start reader: "+reader, e);
                 continue;
@@ -148,7 +158,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             allowedStates.add(AckReaderState.STOP_PENDING);
             
             try {
-                adjustReaderState(reader, AckReaderState.STOPPED, allowedStates);
+                adjustReaderState(reader, AckReaderState.STOPPED, allowedStates, false);
             } catch (Exception e) {
                 log().error("startReaders: Could not stop reader: "+reader, e);
             }
@@ -165,7 +175,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             allowedStates.add(AckReaderState.RESUMED);
             
             try {
-                adjustReaderState(reader, AckReaderState.PAUSED, allowedStates);
+                adjustReaderState(reader, AckReaderState.PAUSED, allowedStates, false);
             } catch (Exception e) {
                 log().error("startReaders: Could not pause reader: "+reader, e);
             }
@@ -178,7 +188,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             allowedStates.add(AckReaderState.PAUSED);
             
             try {
-                adjustReaderState(reader, AckReaderState.RESUMED, allowedStates);
+                adjustReaderState(reader, AckReaderState.RESUMED, allowedStates, false);
             } catch (Exception e) {
                 log().error("startReaders: Could not resume reader: "+reader, e);
             }
@@ -186,15 +196,16 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     }
 
     
-    protected void restartReaders() {
+    protected void restartReaders(boolean reloadConfigs) {
         log().info("restartReaders: restarting readers...");
         stopReaders();
-        startReaders();
+        startReaders(reloadConfigs);
         log().info("restartReaders: readers restarted.");
         
     }
 
-    private void adjustReaderState(AckReader reader, AckReaderState requestedState, List<AckReaderState> allowedCurrentStates) {
+    private void adjustReaderState(AckReader reader, 
+            AckReaderState requestedState, List<AckReaderState> allowedCurrentStates, boolean reloadConfig) {
     
         synchronized (m_lock) {
     
@@ -227,7 +238,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                  * by the AckReader.  We just need to make sure that the future gets set in the AckReaer.
                  */
                 if (AckReaderState.STARTED.equals(requestedState)) {
-                    reader.start(m_executor, ReaderSchedule.createSchedule(interval, unit));
+                    reader.start(m_executor, ReaderSchedule.createSchedule(interval, unit), reloadConfig);
                     
                 } else if (AckReaderState.STOPPED.equals(requestedState)) {
                     reader.stop();
@@ -303,7 +314,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                         m_eventForwarder.sendNow(bldr.getEvent());
                         
                         log().debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
-                        restartReaders();
+                        this.restartReaders(true);
                     } catch (Exception e) {
                         log().error("handleReloadConfigEvent: "+e, e);
                         EventBuilder bldr = new EventBuilder(

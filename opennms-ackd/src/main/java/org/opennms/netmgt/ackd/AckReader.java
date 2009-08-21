@@ -80,7 +80,7 @@ public interface AckReader {
         
     };
     
-    void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule);
+    void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig);
     void pause();
     void resume(final ScheduledThreadPoolExecutor executor);
     void stop();
