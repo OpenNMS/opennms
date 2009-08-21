@@ -38,6 +38,7 @@ import org.opennms.netmgt.config.common.JavamailConfiguration;
 import org.opennms.netmgt.config.common.ReadmailConfig;
 import org.opennms.netmgt.config.common.SendmailConfig;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<JavamailConfiguration, JavamailConfiguration> implements JavaMailConfigurationDao {
 
@@ -116,6 +117,11 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
         // TODO verify that the default config names match as specified in javamail configuration element
         // TODO verify that the config names match as specified in all the end2end configuration elements
         
+    }
+
+    public void reloadConfiguration() throws DataAccessResourceFailureException {
+        getContainer().reload();
+        this.verifyMarshaledConfiguration();
     }
 
 }
