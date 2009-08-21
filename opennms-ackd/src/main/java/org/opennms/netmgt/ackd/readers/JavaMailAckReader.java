@@ -100,22 +100,30 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
             if (m_schedule == null) {
                 m_schedule = ReaderSchedule.createSchedule();
             }
-            start(executor, m_schedule);
+            this.start(executor, m_schedule, true);
         }
     }
     
-    public void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule) throws IllegalStateException {
+    public void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig) throws IllegalStateException {
         log().debug("start: acquiring lock...");
         synchronized (m_lock) {
+            
+            if (reloadConfig) {
+                //FIXME:The reload of JavaMailConfiguration is made here because the DAO is there. Perhaps that should be changed.
+                log().info("start: reloading JavaMail configuration...");
+                m_mailAckProcessor.reloadConfigs();
+                log().info("start: JavaMail configuration reloaded.");
+            }
+            
             if (AckReaderState.STOPPED.equals(getState())) {
-            setState(AckReaderState.START_PENDING);
-            setSchedule(executor, schedule, false);
-            log().info("start: Starting reader...");
-            
-            scheduleReads(executor);
-            
-            setState(AckReaderState.STARTED);
-            log().info("start: Reader started.");
+                this.setState(AckReaderState.START_PENDING);
+                this.setSchedule(executor, schedule, false);
+                log().info("start: Starting reader...");
+
+                this.scheduleReads(executor);
+
+                this.setState(AckReaderState.STARTED);
+                log().info("start: Reader started.");
             } else {
                 IllegalStateException e = new IllegalStateException("Reader is not in a stopped state.  Reader state is: "+getState());
                 log().error("start: "+e, e);
