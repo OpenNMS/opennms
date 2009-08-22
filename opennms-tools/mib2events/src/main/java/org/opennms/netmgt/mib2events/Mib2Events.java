@@ -167,7 +167,7 @@ public class Mib2Events {
             Events events = convertMibToEvents(mib, getEffectiveUeiBase());
 
             if (events.getEventCount() < 1) {
-                System.err.println("No trap definitions found in this MIB (" + mib.getName() + "), exiting");
+                System.err.println("No trap or notification definitions found in this MIB (" + mib.getName() + "), exiting");
                 System.exit(0);
             }
 
