@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="transaction")
-public class SynchronousSequenceTransaction extends AbstractSequenceTransaction {
+public class SynchronousSequenceTransaction extends BaseTransactionOperation {
 	@XmlAttribute(name="type", required=false)
 	private String m_type = "synchronous";
 	

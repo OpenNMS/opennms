@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,7 +24,6 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
@@ -101,7 +99,7 @@ public class SequenceXmlTest {
     	m_smsSequence.addTransaction(ussdTransaction);
 
 //    	m_context = new SmsSequenceContext();
-    	m_context = JAXBContext.newInstance(SmsSequence.class, AbstractSequenceTransaction.class, AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class);
+    	m_context = JAXBContext.newInstance(SmsSequence.class, BaseTransactionOperation.class, AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class);
 
     	m_marshaller = m_context.createMarshaller();
     	m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -110,6 +108,7 @@ public class SequenceXmlTest {
     	m_unmarshaller = m_context.createUnmarshaller();
     	m_unmarshaller.setSchema(null);
 
+    	XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setNormalize(true);
@@ -152,7 +151,9 @@ public class SequenceXmlTest {
     static private class TestValidationEventHandler implements ValidationEventHandler {
 		public boolean handleEvent(ValidationEvent event) {
 			System.err.println("Validation failure event: " + event);
-//			event.getLinkedException().printStackTrace();
+			if (event != null && event.getLinkedException() != null) {
+				event.getLinkedException().printStackTrace();
+			}
 			return false;
 		}
     }
@@ -176,7 +177,6 @@ public class SequenceXmlTest {
     }
     
     @Test
-    @Ignore
     public void validateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();

@@ -8,19 +8,25 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name="SequenceSessionVariableType", propOrder={"m_name", "m_className", "m_parameters"})
 @XmlRootElement(name="session-variable")
 public class SequenceSessionVariable {
 	@XmlAttribute(name="name")
 	private String m_name;
-	
+
 	@XmlAttribute(name="class")
 	private String m_className;
 
+	@XmlElementWrapper(name="parameters", required=false)
 	@XmlElement(name="parameter")
-	private List<SequenceParameter> m_parameters = Collections.synchronizedList(new ArrayList<SequenceParameter>());
+	private List<SequenceParameter> m_parameters;
 	
 	public SequenceSessionVariable() {
 	}
@@ -45,6 +51,9 @@ public class SequenceSessionVariable {
 	}
 
 	public void addParameter(String key, String value) {
+		if (m_parameters == null) {
+			m_parameters = Collections.synchronizedList(new ArrayList<SequenceParameter>());
+		}
 		m_parameters.add(new SequenceParameter(key, value));
 	}
 	
@@ -54,5 +63,13 @@ public class SequenceSessionVariable {
 	
 	public void setParameters(List<SequenceParameter> parameters) {
 		m_parameters = parameters;
+	}
+	
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("name", getName())
+			.append("class", getClassName())
+			.append("parameters", getParameters())
+			.toString();
 	}
 }

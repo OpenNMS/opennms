@@ -9,17 +9,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-//@XmlSeeAlso({AsynchronousSequenceTransaction.class, SynchronousSequenceTransaction.class, SequenceOperation.class})
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class AbstractSequenceTransaction implements SequenceTransaction {
+@XmlType(propOrder={"label", "sessionVariables", "operations"})
+public class BaseTransactionOperation implements Operation {
 	private String m_label;
-	private List<SequenceSessionVariable> m_sessionVariables = Collections.synchronizedList(new ArrayList<SequenceSessionVariable>());
-	private List<SequenceTransaction> m_sequenceTransactions = Collections.synchronizedList(new ArrayList<SequenceTransaction>());
+	private List<SequenceSessionVariable> m_sessionVariables;
+	private List<Operation> m_sequenceTransactions;
 
 	@XmlTransient
 	public String getType() {
@@ -36,6 +36,9 @@ public class AbstractSequenceTransaction implements SequenceTransaction {
 	}
 
 	public void addSessionVariable(SequenceSessionVariable var) {
+		if (m_sessionVariables == null) {
+			m_sessionVariables = Collections.synchronizedList(new ArrayList<SequenceSessionVariable>());
+		}
 		m_sessionVariables.add(var);
 	}
 
@@ -48,16 +51,19 @@ public class AbstractSequenceTransaction implements SequenceTransaction {
 		m_sessionVariables = sessionVariables;
 	}
 
-	public void addOperation(SequenceTransaction operation) {
+	public void addOperation(Operation operation) {
+		if (m_sequenceTransactions == null) {
+			m_sequenceTransactions = Collections.synchronizedList(new ArrayList<Operation>());
+		}
 		m_sequenceTransactions.add(operation);
 	}
 
 	@XmlElementRef
-	public List<SequenceTransaction> getOperations() {
+	public List<Operation> getOperations() {
 		return m_sequenceTransactions;
 	}
 
-	public void setOperations(List<SequenceTransaction> operations) {
+	public void setOperations(List<Operation> operations) {
 		m_sequenceTransactions = operations;
 	}
 
