@@ -28,6 +28,7 @@
     <module>runtime</module>
     <module>schema</module>
     <module>soa</module>
+    <module>tasks</module>
     <!--<module>web</module>-->
     <module>doc</module>
   </modules>

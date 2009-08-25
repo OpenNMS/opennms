@@ -12,27 +12,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.sms.monitor.OperationExecutor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="sms-sequence")
 public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 	private static final long serialVersionUID = 1L;
 
-	@XmlElementRef
-	List<Operation> m_transactions;
+//	@XmlElementRef
+	List<TransactionOperation> m_transactions;
 
-	public void addTransaction(Operation transaction) {
+	public void addTransaction(TransactionOperation transaction) {
 		if (m_transactions == null) {
-			m_transactions = Collections.synchronizedList(new ArrayList<Operation>());
+			m_transactions = Collections.synchronizedList(new ArrayList<TransactionOperation>());
 		}
 		m_transactions.add(transaction);
 	}
 
-	public List<Operation> getTransactions() {
+	public List<TransactionOperation> getTransactions() {
 		return m_transactions;
 	}
 
-	public void setTransactions(List<Operation> transactions) {
+	public void setTransactions(List<TransactionOperation> transactions) {
 		m_transactions = transactions;
 	}
 
@@ -47,6 +48,7 @@ public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 			.append("transactions", getTransactions())
 			.toString();
 	}
+
 }
 
 /*

@@ -29,58 +29,52 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
-/**
- * DefaultTaskMonitor
- *
- * @author brozow
- */
-public class DefaultTaskMonitor implements TaskMonitor {
+import org.springframework.util.Assert;
 
-    public DefaultTaskMonitor(Task task) {
-    }
+public class AsyncTask<T> extends Task {
+    
+    private final Async<T> m_async;
+    private final Callback<T> m_callback;
 
-    public void completed(Task task) {
-        log("completed(%s)", task);
-    }
-
-    public void prerequisiteAdded(Task monitored, Task prerequsite) {
-        log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
-    }
-
-    public void prerequisiteCompleted(Task monitored, Task prerequisite) {
-        log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
-    }
-
-    public void scheduled(Task task) {
-        log("scheduled(%s)", task);
-    }
-
-    public void started(Task task) {
-        log("started(%s)", task);
-    }
-
-    public void submitted(Task task) {
-        log("submitted(%s)", task);
-    }
-
-    public void monitorException(Throwable t) {
-        log(t, "monitorException(%s)", t);
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async) {
+        this(coordinator, parent, async, null);
     }
     
-    public TaskMonitor getChildTaskMonitor(Task task, Task child) {
-        return this;
-    }
-
-    private void log(String format, Object... args) {
-        //String msg = String.format("%1$tY-%1$tm-%1$td %1$tT,%1$tL : [%2$s] MONITOR: %3$s", System.currentTimeMillis(), Thread.currentThread(), String.format(format, args));
-        //System.err.println(msg);
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async, Callback<T> callback) {
+        super(coordinator, parent);
+        Assert.notNull(async, "async parameter must not be null");
+        m_async = async;
+        m_callback = callback;
     }
     
-    private void log(Throwable t, String format, Object... args) {
-        //log(format, args);
-        //t.printStackTrace();
+    @Override
+    public String toString() {
+        return String.valueOf(m_async);
     }
 
+    @Override
+    protected void doSubmit() {
+        m_async.submit(callback());
+    }
+    
+    private Callback<T> callback() {
+        return new Callback<T>() {
+            public void complete(T t) {
+                if (m_callback != null) {
+                    m_callback.complete(t);
+                }
+                markTaskAsCompleted();
+            }
+            public void handleException(Throwable t) {
+                if (m_callback != null) {
+                    m_callback.handleException(t);
+                }
+                markTaskAsCompleted();
+            }
+        };
+    }
+    
+    
 }

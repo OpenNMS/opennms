@@ -18,7 +18,7 @@
  * contact: OpenNMS Licensing <license@opennms.org> http://www.opennms.org/
  * http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
 import java.util.ArrayList;
 import java.util.Collections;

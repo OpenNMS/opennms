@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
@@ -158,6 +159,15 @@ public class SequenceXmlTest {
 		}
     }
 
+    @Test(expected=UnmarshalException.class)
+    public void readInvalidXML() throws Exception {
+    	File exampleFile = new File(ClassLoader.getSystemResource("invalid-sequence.xml").getFile());
+    	ValidationEventHandler handler = new TestValidationEventHandler();
+    	m_unmarshaller.setEventHandler(handler);
+    	SmsSequence s = (SmsSequence)m_unmarshaller.unmarshal(exampleFile);
+    	System.err.println("sequence = " + s);
+    }
+    
     @Test
     public void readSynchronousTransactionXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("transaction-synchronous.xml").getFile());

@@ -13,10 +13,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.sms.monitor.OperationExecutor;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder={"label", "sessionVariables", "operations"})
-public class BaseTransactionOperation implements Operation {
+public class BaseTransactionOperation implements TransactionOperation {
 	private String m_label;
 	private List<SequenceSessionVariable> m_sessionVariables;
 	private List<Operation> m_sequenceTransactions;
@@ -67,6 +68,11 @@ public class BaseTransactionOperation implements Operation {
 		m_sequenceTransactions = operations;
 	}
 
+	@XmlTransient
+	public OperationExecutor getExecutor() {
+		return new NullOperationExecutor(false);
+	}
+	
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("type", getType())

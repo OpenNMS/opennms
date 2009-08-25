@@ -29,52 +29,32 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
-import org.springframework.util.Assert;
+/**
+ * TaskMonitor
+ *
+ * @author brozow
+ */
+public interface TaskMonitor {
+    
+    public void prerequisiteAdded(Task monitored, Task prerequsite);
+    
+    public void prerequisiteCompleted(Task monitored, Task prerequisite);
+    
+    public void scheduled(Task task);
+    
+    public void submitted(Task task);
+    
+    public void started(Task task);
+    
+    public void completed(Task task);
+    
+    public TaskMonitor getChildTaskMonitor(Task task, Task child);
+    
+    /**
+     * This is called if an exception occurs while calling a monitor method
+     */
+    public void monitorException(Throwable t);
 
-public class AsyncTask<T> extends Task {
-    
-    private final Async<T> m_async;
-    private final Callback<T> m_callback;
-
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async) {
-        this(coordinator, parent, async, null);
-    }
-    
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async, Callback<T> callback) {
-        super(coordinator, parent);
-        Assert.notNull(async, "async parameter must not be null");
-        m_async = async;
-        m_callback = callback;
-    }
-    
-    @Override
-    public String toString() {
-        return String.valueOf(m_async);
-    }
-
-    @Override
-    protected void doSubmit() {
-        m_async.submit(callback());
-    }
-    
-    private Callback<T> callback() {
-        return new Callback<T>() {
-            public void complete(T t) {
-                if (m_callback != null) {
-                    m_callback.complete(t);
-                }
-                markTaskAsCompleted();
-            }
-            public void handleException(Throwable t) {
-                if (m_callback != null) {
-                    m_callback.handleException(t);
-                }
-                markTaskAsCompleted();
-            }
-        };
-    }
-    
-    
 }

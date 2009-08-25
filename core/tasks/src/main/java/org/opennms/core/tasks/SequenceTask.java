@@ -29,20 +29,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * TaskWaiter
- *
- * @author brozow
- */
-public interface TaskWaiter {
+public class SequenceTask extends ContainerTask {
+    
+    private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
 
-    public void waitFor() throws InterruptedException, ExecutionException;
+    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+        super(coordinator, parent);
+        m_lastChild.set(getTriggerTask());
+    }
+    
+    @Override
+    protected void addChildDependencies(Task child) {
+        super.addChildDependencies(child);
+        Task last = m_lastChild.getAndSet(child);
+        child.addPrerequisite(last);
+    }
+    
+    public String toString() {
+        return "sequenceTask";
+    }
+    
+    
 
-    public void waitFor(long timeout, TimeUnit unit)  throws InterruptedException, ExecutionException, TimeoutException;
+
 }

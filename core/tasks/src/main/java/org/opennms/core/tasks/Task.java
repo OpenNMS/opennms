@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
 import java.util.HashSet;
 import java.util.Set;

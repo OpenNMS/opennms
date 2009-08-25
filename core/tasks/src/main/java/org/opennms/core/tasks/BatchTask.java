@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -29,15 +29,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
-/**
- * Async
- *
- * @author brozow
- */
-public interface Async<T> {
+
+public class BatchTask extends ContainerTask {
     
-    void submit(Callback<T> cb);
-
+    public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+        super(coordinator, parent);
+    }
+    
+    public String toString() {
+        return "batch task";
+    }
 }

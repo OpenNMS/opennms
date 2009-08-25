@@ -29,32 +29,58 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
 /**
- * TaskMonitor
+ * DefaultTaskMonitor
  *
  * @author brozow
  */
-public interface TaskMonitor {
+public class DefaultTaskMonitor implements TaskMonitor {
+
+    public DefaultTaskMonitor(Task task) {
+    }
+
+    public void completed(Task task) {
+        log("completed(%s)", task);
+    }
+
+    public void prerequisiteAdded(Task monitored, Task prerequsite) {
+        log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
+    }
+
+    public void prerequisiteCompleted(Task monitored, Task prerequisite) {
+        log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
+    }
+
+    public void scheduled(Task task) {
+        log("scheduled(%s)", task);
+    }
+
+    public void started(Task task) {
+        log("started(%s)", task);
+    }
+
+    public void submitted(Task task) {
+        log("submitted(%s)", task);
+    }
+
+    public void monitorException(Throwable t) {
+        log(t, "monitorException(%s)", t);
+    }
     
-    public void prerequisiteAdded(Task monitored, Task prerequsite);
+    public TaskMonitor getChildTaskMonitor(Task task, Task child) {
+        return this;
+    }
+
+    private void log(String format, Object... args) {
+        //String msg = String.format("%1$tY-%1$tm-%1$td %1$tT,%1$tL : [%2$s] MONITOR: %3$s", System.currentTimeMillis(), Thread.currentThread(), String.format(format, args));
+        //System.err.println(msg);
+    }
     
-    public void prerequisiteCompleted(Task monitored, Task prerequisite);
-    
-    public void scheduled(Task task);
-    
-    public void submitted(Task task);
-    
-    public void started(Task task);
-    
-    public void completed(Task task);
-    
-    public TaskMonitor getChildTaskMonitor(Task task, Task child);
-    
-    /**
-     * This is called if an exception occurs while calling a monitor method
-     */
-    public void monitorException(Throwable t);
+    private void log(Throwable t, String format, Object... args) {
+        //log(format, args);
+        //t.printStackTrace();
+    }
 
 }

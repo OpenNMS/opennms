@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision.service.tasks;
+package org.opennms.core.tasks;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -48,6 +48,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.tasks.ContainerTask;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.SequenceTask;
+import org.opennms.core.tasks.Task;
 
 
 /**

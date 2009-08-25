@@ -1,0 +1,38 @@
+<sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
+  <transaction type="synchronous" label="USSD balance">
+    <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
+    <session-variable name="amount" class="org.opennms.sms.monitor.internal.config.UniqueNumber">
+      <parameters>
+        <parameter key="min" value="1" />
+        <parameter key="max" value="15" />
+      </parameters>
+    </session-variable>
+    <operation type="test" label="originator sends balance request">
+      <value>*327*${session.target}*${session.amount}#</value>
+    </operation>
+    <operation type="test" label="network asks for balance confirmation">
+      <match type="success">~Transfiere L ${session.amount} al ${session.target}</match>
+      <parameters>
+        <!-- CUSD -->
+        <parameter key="session-status" value="1" />
+      </parameters>
+    </operation>
+    <operation type="test" label="send 1 to confirm balance request">
+      <value>1</value>
+    </operation>
+    <transaction type="asynchronous">
+      <operation type="test" label="transaction is processing">
+        <match type="success">~Su transaccion se esta procesando</match>
+        <parameters>
+          <parameter key="session-status" value="0" />
+        </parameters>
+      </operation>
+      <operation type="test" label="receive balance amount">
+        <match type="success">~le ha transferido L ${session.amount}</match>
+        <parameters>
+          <parameter key="validate-source" value="+3746" />
+        </parameters>
+      </operation>
+    </transaction>
+  </transaction>
+</sms-sequence>
