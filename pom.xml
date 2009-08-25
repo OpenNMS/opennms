@@ -222,6 +222,11 @@
         <version>${maven.eclipse.plugin.version}</version>
       </plugin>
       <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>${maven.pax.plugin.version}</version>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
@@ -277,6 +282,10 @@
            </file>
          </additionalConfig>
        </configuration>
+     </plugin>
+     <plugin>
+       <groupId>org.ops4j</groupId>
+       <artifactId>maven-pax-plugin</artifactId>
      </plugin>
      <plugin>
        <inherited>false</inherited>
@@ -552,6 +561,7 @@
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
+    <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
