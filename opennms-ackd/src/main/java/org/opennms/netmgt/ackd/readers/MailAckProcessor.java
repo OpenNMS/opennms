@@ -362,6 +362,20 @@ class MailAckProcessor implements Runnable, InitializingBean {
         }
     }
     
+    protected void reloadConfigs() {
+        log().debug("reloadConfigs: acquiring lock...");
+        synchronized (m_lock) {
+            log().debug("reloadConfigs: lock acquired; reloading configuration...");
+            m_jmConfigDao.reloadConfiguration();
+            log().debug("reloadConfigs: configuration reloaded");
+        }
+        log().debug("reloadConfigs: lock released.");
+    }
+    
+    protected JavaMailConfigurationDao getJmConfigDao() {
+        return m_jmConfigDao;
+    }
+
     public void setJmConfigDao(final JavaMailConfigurationDao jmConfigDao) {
         m_jmConfigDao = jmConfigDao;
     }

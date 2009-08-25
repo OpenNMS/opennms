@@ -13,7 +13,7 @@
   <readers>
     <reader enabled="false" reader-name="JavaMailReader">
       <reader-schedule interval="60" unit="s"/>
-      <parameter key="readmail-config" value="default" />
+      <parameter key="readmail-config" value="localhost" />
     </reader>
   </readers>
 
