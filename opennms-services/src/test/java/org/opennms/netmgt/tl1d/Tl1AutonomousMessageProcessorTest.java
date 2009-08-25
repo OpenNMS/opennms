@@ -76,6 +76,41 @@ public class Tl1AutonomousMessageProcessorTest extends TestCase {
         assertEquals("0", alarm.getId().getAlarmTag());
         assertEquals("REPT ALM BITS", alarm.getId().getVerb());
         assertEquals("\"1-4:NTFCNCDE=CR,CONDTYPE=FAIL,SRVEFF=SA,OCRDAT=09-23,OCRTM=02-03-04,LOCN=NEND,DIRN=RCV\"", alarm.getAutoBlock().getBlock());
+        assertEquals("CR", alarm.getAutoBlock().getNtfcncde());
+        
+    }
+    
+    /**
+     * Presumed Alcatel example from opennms-discuss mailing list, 24-Aug-2009
+     * Two-digit year in header, bare NTFCNCDE value in auto block (both appear to be legal)
+     * http://marc.info/?l=opennms-discuss&m=125112385300943&w=2
+     */
+    public void testProcessAlcatel() {
+        
+        String sampleMessage = "DSALC003 09-04-20 07:38:35\n" + 
+                "** 169 REPT ALM ENV\n" + 
+                "   \"ENV-2:MJ,MISC,4-7,7-30-15,\\\"Miscellaneous environment alarm\\\"\"\n" + 
+                ";\n" + 
+                "";
+        
+        Tl1AutonomousMessage alarm = m_processor.process(sampleMessage, Tl1Message.AUTONOMOUS);
+        
+        assertNotNull(alarm.getRawMessage());
+        assertNotNull(alarm.getHeader());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        assertEquals("2009-04-20", formatter.format(alarm.getHeader().getTimestamp()));
+        formatter = new SimpleDateFormat("HH:mm:ss");
+        assertEquals("07:38:35", formatter.format(alarm.getHeader().getTimestamp()));
+        assertEquals("DSALC003", alarm.getHost());
+        assertEquals("DSALC003", alarm.getHeader().getSid());
+        assertEquals(alarm.getTimestamp(), alarm.getHeader().getTimestamp());
+        
+        assertEquals("** 169 REPT ALM ENV", alarm.getId().getRawMessage());
+        assertEquals("**", alarm.getId().getAlarmCode());
+        assertEquals("169", alarm.getId().getAlarmTag());
+        assertEquals("REPT ALM ENV", alarm.getId().getVerb());
+        assertEquals("\"ENV-2:MJ,MISC,4-7,7-30-15,\\\"Miscellaneous environment alarm\\\"\"", alarm.getAutoBlock().getBlock());
+        assertEquals("MJ", alarm.getAutoBlock().getNtfcncde());
         
     }
     
