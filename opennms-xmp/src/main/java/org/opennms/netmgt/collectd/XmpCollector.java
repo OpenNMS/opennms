@@ -493,6 +493,8 @@ public class XmpCollector implements ServiceCollector {
 
         // log().debug("collect: attempting to open session with "+agent.getInetAddress()+":"+xmpPort+","+authenUser);
 
+        // Set the SO_TIMEOUT, why don't we...
+        sockopts.setConnectTimeout(timeout);
         session = new XmpSession(sockopts,
                                  agent.getInetAddress(),
                                  xmpPort,authenUser);

@@ -228,6 +228,9 @@ public class XmpMonitor extends IPv4Monitor {
         
         long startTime = System.currentTimeMillis();
         
+        // Set the SO_TIMEOUT.  What a concept!
+        sockopts.setConnectTimeout(timeout);
+        
         session = new XmpSession(sockopts, ipaddr, port, authenUser);
         if (session == null) {
             log.info("XMP connection failed to " + ipaddr + ":" + port + " with user " + authenUser + " and " + sockopts);
