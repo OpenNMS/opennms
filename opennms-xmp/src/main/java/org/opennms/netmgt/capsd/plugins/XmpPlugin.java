@@ -236,6 +236,9 @@ public final class XmpPlugin extends AbstractPlugin {
             maxMatchesUnbounded = (maxMatchesUnboundedStr.equalsIgnoreCase("unbounded"));
         }
         
+        // Set the SO_TIMEOUT so that this thing has a prayer of working over a WAN
+        sockopts.setConnectTimeout(timeout);
+        
         // If this is a SelectTableRequest, then you can't use the defaults
         // for Table and Object.
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {
