@@ -177,6 +177,11 @@
       <artifactId>com.springsource.org.jvnet.staxex</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.tasks</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>

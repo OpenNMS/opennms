@@ -127,7 +127,6 @@
       <version>2.1.7</version>
       <scope>provided</scope>
     </dependency>
-
     <!-- test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -165,6 +164,12 @@
       <artifactId>xmlunit</artifactId>
       <version>1.2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.tasks</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
