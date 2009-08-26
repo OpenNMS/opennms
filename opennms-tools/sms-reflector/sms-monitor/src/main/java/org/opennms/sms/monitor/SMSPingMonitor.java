@@ -8,12 +8,11 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
-
-import org.opennms.sms.ping.PingConstants;
-import org.opennms.sms.ping.SmsPinger;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.phonebook.PropertyPhonebook;
+import org.opennms.sms.ping.PingConstants;
+import org.opennms.sms.ping.SmsPinger;
 
 @Distributable(DistributionContext.DAEMON)
 final public class SMSPingMonitor extends IPv4Monitor {

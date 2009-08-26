@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 
@@ -61,5 +62,5 @@ public abstract class BaseTransactionOperation extends BaseOperation implements 
 			.toString();
 	}
 
-	public abstract Task createTask(DefaultTaskCoordinator coordinator);
+	public abstract Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent);
 }

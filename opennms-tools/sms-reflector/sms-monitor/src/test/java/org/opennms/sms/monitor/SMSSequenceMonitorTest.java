@@ -124,7 +124,7 @@ public class SMSSequenceMonitorTest {
 
     private StringBuffer getXmlBuffer(String fileName) throws IOException {
         StringBuffer xmlBuffer = new StringBuffer();
-        File xmlFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
+        File xmlFile = new File(ClassLoader.getSystemResource(fileName).getFile());
         assertTrue("ussd-balance-sequence.xml is readable", xmlFile.canRead());
 
         BufferedReader reader = new BufferedReader(new FileReader(xmlFile));

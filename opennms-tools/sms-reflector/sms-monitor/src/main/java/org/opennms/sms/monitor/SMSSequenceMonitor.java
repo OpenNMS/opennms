@@ -1,27 +1,25 @@
 package org.opennms.sms.monitor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
-import org.opennms.sms.monitor.internal.config.Operation;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
 import org.opennms.sms.monitor.internal.config.SmsSequence;
 import org.opennms.sms.monitor.internal.config.TransactionOperation;
 import org.opennms.sms.phonebook.Phonebook;
-import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.phonebook.PropertyPhonebook;
 import org.opennms.sms.ping.PingConstants;
-import org.opennms.sms.ping.SmsPinger;
 
 @Distributable(DistributionContext.DAEMON)
 final public class SMSSequenceMonitor extends IPv4Monitor {
@@ -29,8 +27,10 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
 
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
-        long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
+        @SuppressWarnings("unused")
+		int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
+        @SuppressWarnings("unused")
+		long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
         String config = ParameterMap.getKeyedString(parameters, "sequence", "");
         if (config.isEmpty()) {
         	return PollStatus.unavailable("Sequence configuration was empty.  You must specify a 'sequence' parameter in the SMSSequenceMonitor poller configuration!");
@@ -51,15 +51,26 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
 			return PollStatus.available();
 		}
 
-		DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
-		
-		/*
-		List<Task> tasks = new ArrayList<Task>();
-		for (Operation op : sequence.getTransactions()) {
-			tasks.add(op.createTask(coordinator));
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(executor);
+		SequenceTask topTask = coordinator.createSequence(null);
+
+		for (TransactionOperation op : sequence.getTransactions()) {
+			op.createTask(coordinator, topTask);
 		}
-		*/
-		
+
+		System.err.println("scheduling tasks");
+		topTask.schedule();
+		try {
+			topTask.waitFor();
+		} catch (InterruptedException e) {
+			log().info("SMS sequence (" + svc.getIpAddr() + ") task(s) were interrupted", e);
+			return PollStatus.unavailable("the sequence task(s) were interrupted");
+		} catch (ExecutionException e) {
+			log().warn("Execution failure for SMS sequence (" + svc.getIpAddr() + ")", e);
+			return PollStatus.unavailable("the sequence task(s) were interrupted");
+		}
+		System.err.println("finished tasks");
 
 		/*
 		Long rtt = null;

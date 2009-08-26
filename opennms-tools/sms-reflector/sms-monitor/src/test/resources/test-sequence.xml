@@ -1,7 +1,7 @@
 <sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
   <transaction type="synchronous" label="USSD balance">
     <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
-    <session-variable name="amount" class="org.opennms.sms.monitor.internal.config.UniqueNumber">
+    <session-variable name="amount" class="org.opennms.sms.monitor.session.UniqueNumber">
       <parameters>
         <parameter key="min" value="1" />
         <parameter key="max" value="15" />

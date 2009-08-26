@@ -1,17 +1,19 @@
 package org.opennms.sms.monitor.internal.config;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.SyncTask;
 import org.opennms.core.tasks.Task;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -67,8 +69,32 @@ public class SequenceOperation extends BaseOperation {
 		m_parameters = parameters;
 	}
 
-	public Task createTask(DefaultTaskCoordinator coordinator) {
-		throw new UnsupportedOperationException("must implement creating tasks");
+	public class SequenceOperationTask extends SyncTask {
+		private SequenceOperation m_operation;
+
+		public SequenceOperationTask(DefaultTaskCoordinator coordinator, ContainerTask parent, SequenceOperation operation) {
+			super(coordinator, parent, null);
+			m_operation = operation;
+		}
+
+		public void run() {
+			System.err.println("running SequenceOperation: " + m_operation);
+		}
+	}
+	
+	public Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+		Task task = new SequenceOperationTask(coordinator, parent, this);
+		parent.add(task);
+		return task;
 	}
 
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("type", getType())
+			.append("label", getLabel())
+			.append("value", getValue())
+			.append("match", getMatch())
+			.append("parameters", getParameters())
+			.toString();
+	}
 }

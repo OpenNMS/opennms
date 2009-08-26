@@ -3,6 +3,7 @@ package org.opennms.sms.monitor.internal.config;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.log4j.Category;
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.ThreadCategory;
@@ -29,7 +30,7 @@ public abstract class BaseOperation implements Operation {
 		m_label = label;
 	}
 
-	public abstract Task createTask(DefaultTaskCoordinator coordinator);
+	public abstract Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent);
 
 	public Category log() {
 		return ThreadCategory.getInstance(getClass());

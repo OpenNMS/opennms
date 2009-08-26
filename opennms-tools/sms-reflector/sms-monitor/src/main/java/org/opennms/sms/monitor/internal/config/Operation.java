@@ -2,6 +2,7 @@ package org.opennms.sms.monitor.internal.config;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 
@@ -13,5 +14,5 @@ public interface Operation {
 	public String getLabel();
 	public void setLabel(String label);
 
-	public Task createTask(DefaultTaskCoordinator coordinator);
+	public Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent);
 }

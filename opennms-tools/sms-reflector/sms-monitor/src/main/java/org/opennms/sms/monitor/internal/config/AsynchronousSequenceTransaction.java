@@ -2,9 +2,10 @@ package org.opennms.sms.monitor.internal.config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 
@@ -22,7 +23,12 @@ public class AsynchronousSequenceTransaction extends BaseTransactionOperation {
 		setLabel(label);
 	}
 
-	public Task createTask(DefaultTaskCoordinator coordinator) {
-		throw new UnsupportedOperationException("must implement createTask");
+	public Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+		BatchTask task = coordinator.createBatch(parent);
+		parent.add(task);
+		for (Operation op : getOperations()) {
+			op.createTask(coordinator, task);
+		}
+		return task;
 	}
 }
