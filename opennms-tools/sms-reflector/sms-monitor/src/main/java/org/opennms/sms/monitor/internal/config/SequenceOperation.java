@@ -11,15 +11,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="operation")
-public class SequenceOperation extends BaseTransactionOperation {
-	@XmlAttribute(name="type", required=true)
-	private String m_type;
-
+public class SequenceOperation extends BaseOperation {
 	@XmlElement(name="value", required=false)
 	private String m_value;
-	
+
 	@XmlElement(name="match", required=false)
 	private SequenceOperationMatch m_match;
 
@@ -34,14 +34,6 @@ public class SequenceOperation extends BaseTransactionOperation {
 	public SequenceOperation(String type) {
 		super();
 		setType(type);
-	}
-
-	public String getType() {
-		return m_type;
-	}
-	
-	public void setType(String type) {
-		m_type = type;
 	}
 
 	public String getValue() {
@@ -74,4 +66,9 @@ public class SequenceOperation extends BaseTransactionOperation {
 	public void setParameters(List<SequenceParameter> parameters) {
 		m_parameters = parameters;
 	}
+
+	public Task createTask(DefaultTaskCoordinator coordinator) {
+		throw new UnsupportedOperationException("must implement creating tasks");
+	}
+
 }

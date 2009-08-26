@@ -21,7 +21,6 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.sms.monitor.internal.config.SequenceException;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

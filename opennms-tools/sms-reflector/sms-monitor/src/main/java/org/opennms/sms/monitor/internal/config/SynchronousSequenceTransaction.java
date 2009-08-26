@@ -5,22 +5,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="transaction")
 public class SynchronousSequenceTransaction extends BaseTransactionOperation {
-	@XmlAttribute(name="type", required=false)
-	private String m_type = "synchronous";
-	
 	public SynchronousSequenceTransaction() {
 		super();
+		super.setType("synchronous");
 	}
 
 	public SynchronousSequenceTransaction(String label) {
 		super();
+		super.setType("synchronous");
 		setLabel(label);
 	}
 
-	public String getType() {
-		return m_type;
+	public Task createTask(DefaultTaskCoordinator coordinator) {
+		throw new UnsupportedOperationException("must implement createTask");
 	}
 }

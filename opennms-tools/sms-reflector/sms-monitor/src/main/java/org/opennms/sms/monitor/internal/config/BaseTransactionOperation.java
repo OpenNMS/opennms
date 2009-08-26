@@ -6,35 +6,19 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.sms.monitor.OperationExecutor;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder={"label", "sessionVariables", "operations"})
-public class BaseTransactionOperation implements TransactionOperation {
-	private String m_label;
+@XmlType(propOrder={"sessionVariables", "operations"})
+public abstract class BaseTransactionOperation extends BaseOperation implements TransactionOperation {
 	private List<SequenceSessionVariable> m_sessionVariables;
 	private List<Operation> m_sequenceTransactions;
-
-	@XmlTransient
-	public String getType() {
-		throw new UnsupportedOperationException("getType must be overridden in the concrete class!");
-	}
-
-	@XmlAttribute(name="label")
-	public String getLabel() {
-		return m_label;
-	}
-
-	public void setLabel(String label) {
-		m_label = label;
-	}
 
 	public void addSessionVariable(SequenceSessionVariable var) {
 		if (m_sessionVariables == null) {
@@ -68,11 +52,6 @@ public class BaseTransactionOperation implements TransactionOperation {
 		m_sequenceTransactions = operations;
 	}
 
-	@XmlTransient
-	public OperationExecutor getExecutor() {
-		return new NullOperationExecutor(false);
-	}
-	
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("type", getType())
@@ -81,4 +60,6 @@ public class BaseTransactionOperation implements TransactionOperation {
 			.append("operations", getOperations())
 			.toString();
 	}
+
+	public abstract Task createTask(DefaultTaskCoordinator coordinator);
 }

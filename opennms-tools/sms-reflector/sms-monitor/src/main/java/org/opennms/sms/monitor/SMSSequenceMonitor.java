@@ -1,13 +1,18 @@
 package org.opennms.sms.monitor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
+import org.opennms.sms.monitor.internal.config.Operation;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
 import org.opennms.sms.monitor.internal.config.SmsSequence;
@@ -46,7 +51,17 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
 			return PollStatus.available();
 		}
 
+		DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator();
 		
+		/*
+		List<Task> tasks = new ArrayList<Task>();
+		for (Operation op : sequence.getTransactions()) {
+			tasks.add(op.createTask(coordinator));
+		}
+		*/
+		
+
+		/*
 		Long rtt = null;
         
 		String phoneNumber = null;
@@ -69,5 +84,8 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
 		} else {
 			return PollStatus.unavailable();
 		}
+		*/
+		
+		return PollStatus.unavailable();
 	}
 }

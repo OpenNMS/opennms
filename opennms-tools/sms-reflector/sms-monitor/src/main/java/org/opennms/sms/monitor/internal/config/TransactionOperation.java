@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
-@XmlJavaTypeAdapter(OperationAdapter.class)
+@XmlJavaTypeAdapter(TransactionOperationAdapter.class)
 public interface TransactionOperation extends Operation {
 	public List<SequenceSessionVariable> getSessionVariables();
 	public void setSessionVariables(List<SequenceSessionVariable> sessionVariables);
