@@ -35,7 +35,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     
     @Before
     public void setUp() throws Exception {
-        m_detector  = getDetector(TcpDetector.class);
+        m_detector = getDetector(TcpDetector.class);
         m_detector.setServiceName("TCP");
         m_detector.setTimeout(1000);
         m_detector.init();
@@ -55,35 +55,43 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     }
     
     @Test
-    @Repeat(10000)
     public void testSucessServer() throws Exception {
-        m_server = new SimpleServer() {
+        for (int i = 0; i < 10000; i++) {
+            setUp();
+            System.err.println("current loop: " + i);
+            m_server = new SimpleServer() {
+                
+                public void onInit() {
+                   setBanner("Winner");
+                }
+                
+            };
             
-            public void onInit() {
-               setBanner("Winner");
-            }
+            m_server.init();
+            m_server.startServer();
+    
+            assertNotNull(m_detector);
+            assertNotNull(m_server.getLocalPort());
+            m_detector.setPort(m_server.getLocalPort());
             
-        };
-        m_server.init();
-        m_server.startServer();
-        
-        m_detector.setPort(m_server.getLocalPort());
-        
-        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
-        future.addListener(new IoFutureListener<DetectFuture>() {
-
-            public void operationComplete(DetectFuture future) {
-                TcpDetector detector = m_detector;
-                m_detector = null;
-                detector.dispose();
-            }
+            DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor());
+            future.addListener(new IoFutureListener<DetectFuture>() {
+    
+                public void operationComplete(DetectFuture future) {
+                    TcpDetector detector = m_detector;
+                    m_detector = null;
+                    detector.dispose();
+                }
+                
+            });
             
-        });
-        
-        future.awaitUninterruptibly();
-        assertNotNull(future);
-        assertTrue(future.isServiceDetected());
-       
+            future.awaitUninterruptibly();
+            assertNotNull(future);
+            assertTrue(future.isServiceDetected());
+            
+            m_server.stopServer();
+            m_server = null;
+        }
     }
     
     @Test
