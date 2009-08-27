@@ -327,7 +327,14 @@ public class XmpCollector implements ServiceCollector {
         try {
             XmpCollectionFactory.init();
         } catch (Exception e) {
-            log().error("initialize: collection factory failed to initialize");
+            log().error("initialize: XmpCollectionFactory failed to initialize");
+            throw new UndeclaredThrowableException(e);
+        }
+        
+        try {
+            XmpPeerFactory.init();
+        } catch (Exception e) {
+            log().error("initialize: XmpPeerFactory failed to initialize");
             throw new UndeclaredThrowableException(e);
         }
 
