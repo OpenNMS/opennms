@@ -45,15 +45,15 @@ import org.apache.regexp.RESyntaxException;
 import org.krupczak.Xmp.SocketOpts;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpSession;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.XmpConfigFactory;
+import org.opennms.netmgt.config.XmpConfigFactory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
-import org.opennms.core.utils.ParameterMap;
 
 /**
  * @author jeffg
@@ -227,6 +227,9 @@ public class XmpMonitor extends IPv4Monitor {
         }
         
         long startTime = System.currentTimeMillis();
+        
+        // Set the SO_TIMEOUT.  What a concept!
+        sockopts.setConnectTimeout(timeout);
         
         session = new XmpSession(sockopts, ipaddr, port, authenUser);
         if (session == null) {

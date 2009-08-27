@@ -73,6 +73,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private int m_threadSleepLength = 0;
     private Socket m_socket;
     private String m_banner;
+    protected volatile boolean m_stopped;
     
     public void setBanner(String banner){
         m_banner = banner;
@@ -117,6 +118,8 @@ public class SimpleServer extends SimpleConversationEndPoint {
     }
     
     public void stopServer() throws IOException {
+        m_stopped = true;
+//        getServerSocket().getSoTimeout();
         getServerSocket().close();
         if(getServerThread() != null && getServerThread().isAlive()) { 
             
@@ -136,18 +139,26 @@ public class SimpleServer extends SimpleConversationEndPoint {
             
             public void run(){
                 try{
-                    getServerSocket().setSoTimeout(getTimeout());
-                    setSocket(getServerSocket().accept());
-                    if(m_threadSleepLength > 0) { Thread.sleep(m_threadSleepLength); }
-                    getSocket().setSoTimeout(getTimeout());
-                    
-                    OutputStream out = getSocket().getOutputStream();
-                    if(getBanner() != null){sendBanner(out);};
-                    
-                    
-                    BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
-                    attemptConversation(in, out);
-                }catch(Exception e){
+                    if (getTimeout() > 0) {
+                        getServerSocket().setSoTimeout(getTimeout());
+                    }
+                    while (!m_stopped) {
+                        setSocket(getServerSocket().accept());
+                        if (m_threadSleepLength > 0) {
+                            Thread.sleep(m_threadSleepLength);
+                        }
+                        if (getTimeout() > 0) {
+                            getSocket().setSoTimeout(getTimeout());
+                        }
+                        OutputStream out = getSocket().getOutputStream();
+                        if (getBanner() != null) {
+                            sendBanner(out);
+                        }
+                        ;
+                        BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+                        attemptConversation(in, out);
+                    }
+                } catch (Exception e){
                     info(e, "SimpleServer Exception on conversation");
                 } finally {
                     try {
