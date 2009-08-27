@@ -76,7 +76,11 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
     }
 
     public void setException(Throwable throwable) {
+//        System.err.println("setting exeception to " + throwable);
         setValue(throwable);
     }
-    
+
+    public Object getObjectValue() {
+        return super.getValue();
+    }
 }
