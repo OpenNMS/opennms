@@ -72,6 +72,7 @@ public class GatewayGroupListener implements InitializingBean {
 	    
 	}
 
+	@SuppressWarnings("unused")
 	private boolean gatewayIdMatches(Collection<AGateway> gateways, AGateway[] aGateways) {
 		for(AGateway serviceGateway : gateways){
 			for(AGateway groupGateway : aGateways){

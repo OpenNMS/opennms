@@ -48,7 +48,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
 	private static final String INTERFACE_ATTR = "interface";
 	private String m_serviceInterface = null;
 	
-	@Override
+    @Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ReferenceListFactoryBean.class);
 		factory.addPropertyReference("serviceRegistry", SERVICE_REGISTRY_BEAN_NAME);
@@ -59,6 +59,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
             factory.addPropertyValue("serviceInterface", serviceInterface);
         }
 		
+        @SuppressWarnings("unchecked")
         List childElements = DomUtils.getChildElementsByTagName(element, "listener");
         
         if (childElements != null && childElements.size() > 0) {
@@ -68,6 +69,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
 		return factory.getBeanDefinition();
 	}
 
+    @SuppressWarnings("unchecked")
 	private void parseList(List childElements, BeanDefinitionBuilder factory) {
 		BeanDefinitionBuilder listener = parseListener((Element)childElements.get(0));
 		factory.addPropertyValue("listener", listener.getBeanDefinition());
