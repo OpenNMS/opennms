@@ -57,7 +57,7 @@
    @version $Id: XmpConfigFactory.java 38 2008-07-24 13:39:32Z rdk $
  */
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
