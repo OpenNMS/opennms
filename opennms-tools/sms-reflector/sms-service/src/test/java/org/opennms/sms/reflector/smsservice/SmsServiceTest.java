@@ -3,7 +3,10 @@ package org.opennms.sms.reflector.smsservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Before;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +24,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class SmsServiceTest {
 	@Autowired
 	ApplicationContext m_context;
-
-	SmsService[] m_serviceList;
-
-	@Before
-	public void setUp() {
-		m_serviceList = (SmsService[])m_context.getBean("smsServiceList");
-		for (String name : m_context.getBeanDefinitionNames()) {
-			System.err.println(String.format("bean '%s' exists: %s", name, m_context.getBean(name)));
-		}
-	}
+	
+	@Resource(name="smsServiceList")
+	List<SmsService> m_serviceList;
 
 	@Test
 	public void testInitialization() {
 		assertNotNull(m_serviceList);
-		assertEquals("must have one service", 1, m_serviceList.length);
-		assertEquals("must have one gateway", 1, m_serviceList[0].getGateways().size());
-		assertEquals("gateway ID must be 'monkeys!'", "monkeys!", m_serviceList[0].getGateways().iterator().next().getGatewayId());
+		assertEquals("must have one service", 1, m_serviceList.size());
+		assertEquals("must have one gateway", 1, m_serviceList.get(0).getGateways().size());
+		assertEquals("gateway ID must be 'monkeys!'", "monkeys!", m_serviceList.get(0).getGateways().iterator().next().getGatewayId());
 	}
 }

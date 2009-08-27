@@ -18,6 +18,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -30,13 +31,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class SMSPingMonitorTest {
 	@Autowired
 	ApplicationContext m_context;
-	SmsService[] m_serviceList;
+	
+	@Autowired
+	SmsService m_smsService;
 
 	MonitoredService m_service;
 	
 	@Before
 	public void setUp() {
-		m_serviceList = (SmsService[])m_context.getBean("smsServiceList");
+		
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
 				try {
@@ -70,8 +73,9 @@ public class SMSPingMonitorTest {
 	}
 
 	@Test
+	@DirtiesContext
 	public void testPing() {
-		assertNotNull(m_serviceList);
+		assertNotNull(m_smsService);
 		SMSPingMonitor p = new SMSPingMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");

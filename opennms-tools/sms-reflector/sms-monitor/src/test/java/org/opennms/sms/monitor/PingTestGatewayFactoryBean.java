@@ -1,30 +1,37 @@
 package org.opennms.sms.monitor;
 
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
-import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
-public class PingTestGatewayFactoryBean implements FactoryBean {
+public class PingTestGatewayFactoryBean implements InitializingBean {
+	
+	
+	private ServiceRegistry m_serviceRegistry;
 
-	public Object getObject() throws Exception {
-		return new GatewayGroup[] { new GatewayGroup(){
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(getServiceRegistry(), "serviceRegistry must not be null");
+		
+		GatewayGroup gatewayGroup = new GatewayGroup() {
 
 			public AGateway[] getGateways() {
-				return new AGateway[] { new PingTestGateway("monkeys!") };
+				return new AGateway[] { new PingTestGateway( "monkeys!" ) };
 			}
-
-			public String toString() {
-				return "I am a monkey gateway!";
-			}
-		} };
+			
+		};
+		
+		getServiceRegistry().register(gatewayGroup, GatewayGroup.class);
+		
 	}
 
-	public Class<?> getObjectType() {
-		return GatewayGroup[].class;
+	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		m_serviceRegistry = serviceRegistry;
 	}
 
-	public boolean isSingleton() {
-		return true;
+	public ServiceRegistry getServiceRegistry() {
+		return m_serviceRegistry;
 	}
 	
 	

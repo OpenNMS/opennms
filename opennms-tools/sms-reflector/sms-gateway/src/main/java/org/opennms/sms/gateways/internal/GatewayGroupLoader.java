@@ -11,18 +11,21 @@ import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;
-import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public class GatewayGroupFactory implements FactoryBean {
+public class GatewayGroupLoader implements InitializingBean {
     
-    private static Logger log = LoggerFactory.getLogger(GatewayGroupFactory.class); 
+    private static Logger log = LoggerFactory.getLogger(GatewayGroupLoader.class); 
 
     private URL m_configURL;
     private GatewayGroup[] m_gatewayGroups;
+    private GatewayGroupRegistrar m_gatewayGroupRegistrar;
 	
-    public GatewayGroupFactory(URL configURL) {
-        m_configURL = configURL;
-        load();
+    public GatewayGroupLoader(GatewayGroupRegistrar gatewayGroupRegistrar, URL configURL) {
+        m_gatewayGroupRegistrar = gatewayGroupRegistrar;
+    	m_configURL = configURL;
+        
+        
     }
     
     public GatewayGroup[] getGatewayGroups() {
@@ -106,17 +109,10 @@ public class GatewayGroupFactory implements FactoryBean {
 	    }
 	}
 
-	public Object getObject() throws Exception {
-		return m_gatewayGroups;
+	public void afterPropertiesSet() throws Exception {
+		load();
+		for(GatewayGroup group : getGatewayGroups()){
+			m_gatewayGroupRegistrar.registerGatewayGroup(group);
+		}
 	}
-
-	public Class<?> getObjectType() {
-		return GatewayGroup[].class;
-	}
-
-	public boolean isSingleton() {
-		return true;
-	}
-
-
 }

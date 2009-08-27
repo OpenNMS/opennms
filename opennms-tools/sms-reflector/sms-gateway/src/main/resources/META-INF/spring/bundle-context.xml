@@ -3,10 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
-	<bean id="gatewayGroupLoader" class="org.opennms.sms.reflector.smsservice.TestGatewayFactoryBean">
-		<property name="serviceRegistry" ref="serviceRegistry"/>
+	<bean id="gatewayGroupLoader" class="org.opennms.sms.gateways.internal.GatewayGroupLoader">
+		<constructor-arg ref="gatewayGroupRegistrar"/>
+		<constructor-arg value="classpath:/modemConfig.properties" />
 	</bean>
-	
-	<bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry" />
-	
+
 </beans>

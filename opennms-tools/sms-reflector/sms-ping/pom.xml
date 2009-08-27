@@ -88,6 +88,13 @@
       <version>1.7.5-SMS-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms.core</groupId>
+    	<artifactId>org.opennms.core.soa</artifactId>
+    	<version>1.7.5-SMS-SNAPSHOT</version>
+    	<scope>provided</scope>
+    	<optional>true</optional>
+    </dependency>
   </dependencies>
 
 </project>

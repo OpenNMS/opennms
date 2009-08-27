@@ -84,6 +84,20 @@
       <version>1.7.5-SMS-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms.core</groupId>
+    	<artifactId>org.opennms.core.soa</artifactId>
+    	<version>1.7.5-SMS-SNAPSHOT</version>
+    	<scope>provided</scope>
+    	<optional>true</optional>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework.osgi</groupId>
+    	<artifactId>spring-osgi-core</artifactId>
+    	<version>1.2.0</version>
+    	<scope>provided</scope>
+    	<optional>true</optional>
+    </dependency>
   </dependencies>
 
 </project>

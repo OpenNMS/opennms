@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -24,6 +25,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -37,13 +39,13 @@ public class SMSSequenceMonitorTest {
 
 	@Autowired
 	ApplicationContext m_context;
-	SmsService[] m_serviceList;
+	List<SmsService> m_serviceList;
 
 	MonitoredService m_service;
 	
 	@Before
 	public void setUp() {
-		m_serviceList = (SmsService[])m_context.getBean("smsServiceList");
+		m_serviceList = (List<SmsService>)m_context.getBean("smsServiceList");
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
 				try {
@@ -77,6 +79,7 @@ public class SMSSequenceMonitorTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void testBrokenConfiguration() throws Exception {
 		SMSSequenceMonitor m = new SMSSequenceMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -91,6 +94,7 @@ public class SMSSequenceMonitorTest {
 	}
 
 	@Test
+	@DirtiesContext
 	public void testParseConfiguration() throws Exception {
 		assertNotNull(m_serviceList);
 		SMSSequenceMonitor m = new SMSSequenceMonitor();

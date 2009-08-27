@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:omnsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
+	">
+	
+	
+	<omnsgi:list id="outboundList" interface="org.smslib.IOutboundMessageNotification"/>
+    <omnsgi:list id="inboundList" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
+    <omnsgi:list id="gatewayStatusList" interface="org.smslib.IGatewayStatusNotification"/>
 
-	<bean id="testGatewayGroupImpl" class="org.opennms.sms.reflector.smsservice.internal.TestGatewayGroupImpl" />
-	<bean id="phonebook" class="org.opennms.sms.phonebook.PropertyPhonebook" />
-
-	<bean id="inboundMessageDispatcher" class="org.opennms.sms.reflector.smsservice.internal.InboundMessageNotification" />
-	<bean id="outboundMessageDispatcher" class="org.opennms.sms.reflector.smsservice.internal.OutboundMessageNotification" />
-	<bean id="gatewayStatusDispatcher" class="org.opennms.sms.reflector.smsservice.internal.GatewayStatusNotification" />
-
-	<bean id="smsService" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceFactoryBean">
-		<property name="smsServiceList" ref="smsServiceList" />
+    <omnsgi:list id="gatewayGroupList" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
+    	<omnsgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
+    </omnsgi:list>
+    
+    <omnsgi:list id="smsServiceList" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
+	
+	<bean id="smsServiceRegistrar" class="org.opennms.sms.reflector.smsservice.internal.OnmsSmsServiceRegistrar">
+		<property name="serviceRegistry" ref="serviceRegistry"/>
 	</bean>
-
-	<bean id="smsServiceList" class="org.opennms.sms.reflector.smsservice.internal.SmsServiceListFactoryBean">
-		<property name="inboundMessageNotification" ref="inboundMessageDispatcher" />
-		<property name="outboundMessageNotification" ref="outboundMessageDispatcher" />
-		<property name="gatewayStatusNotification" ref="gatewayStatusDispatcher" />
-		<!--  from sms-gateway -->
-		<property name="gatewayGroupList" ref="gatewayGroupList" />
-	</bean>
-
+	
 </beans>

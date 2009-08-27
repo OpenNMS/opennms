@@ -7,37 +7,27 @@ import java.util.Map;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.IGatewayStatusNotification;
-import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.Service.ServiceStatus;
-import org.springframework.osgi.context.BundleContextAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
-public class GatewayGroupListener implements BundleContextAware {
+public class GatewayGroupListener implements InitializingBean {
     
     private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
-
-	private BundleContext m_bundleContext;
+    
+	private SmsServiceRegistrar m_smsServiceRegistrar;
 	private Map<GatewayGroup, SmsServiceImpl> m_services = new HashMap<GatewayGroup, SmsServiceImpl>();
 	private List<IOutboundMessageNotification> m_outboundListeners;
     private List<OnmsInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
 
-	
-	public void setBundleContext(BundleContext bundleContext) {
-		m_bundleContext = bundleContext;
-	}
-	
-	public BundleContext getBundleContext(){
-		return m_bundleContext;
-	}
-	
-	public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map<String, Object> properties){
+    public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map<String, Object> properties){
 		AGateway[] gateways = gatewayGroup.getGateways();
 		
 		if (gateways.length == 0) {
@@ -65,7 +55,7 @@ public class GatewayGroupListener implements BundleContextAware {
 		
 		smsService.start();
 		
-		smsService.register(m_bundleContext);
+		smsService.register(m_smsServiceRegistrar);
 		
 		m_services.put(gatewayGroup, smsService);
 
@@ -115,6 +105,19 @@ public class GatewayGroupListener implements BundleContextAware {
 
 	public List<IGatewayStatusNotification> getGatewayStatusListeners() {
 		return m_gatewayStatusListeners;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(m_smsServiceRegistrar);
+		
+	}
+
+	public void setSmsServiceRegistrar(SmsServiceRegistrar smsServiceRegistrar) {
+		m_smsServiceRegistrar = smsServiceRegistrar;
+	}
+
+	public SmsServiceRegistrar getSmsServiceRegistrar() {
+		return m_smsServiceRegistrar;
 	}
 
 }

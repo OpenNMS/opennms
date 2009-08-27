@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-
-  <bean id="gatewayGroupList" class="org.opennms.sms.gateways.internal.GatewayGroupFactory">
-  	<constructor-arg value="classpath:/modemConfig.properties" />
+  
+  <bean id="gatewayGroupRegistrar" class="org.opennms.sms.gateways.internal.OnmsGatewayGroupRegistrar">
+  	<!-- Service Registry must be defined by the loading context -->
+  	<property name="serviceRegistry" ref="serviceRegistry"/>
   </bean>
+ 
 
 </beans>

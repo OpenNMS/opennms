@@ -9,7 +9,6 @@ import java.util.Map;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ public class SmsServiceImpl implements SmsService {
     private List<OnmsInboundMessageNotification> m_inboundListeners;
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
     private List<GatewayGroup> m_gatewayGroup;
-    
+
     private class InboundNotificationAdapter implements IInboundMessageNotification {
     	private OnmsInboundMessageNotification m_inboundNotification;
 
@@ -444,12 +443,13 @@ public class SmsServiceImpl implements SmsService {
 		return m_gatewayGroup;
 	}
 
-    public void register(BundleContext bundleContext) {
-        m_registration = bundleContext.registerService(SmsService.class.getName(), this, null);
+    public void register(SmsServiceRegistrar smsServiceRegistrar) {
+    	smsServiceRegistrar.registerSmsService(this);
+    	//m_registration = bundleContext.registerService(SmsService.class.getName(), this, null);
     }
     
     public void unregister() {
-        m_registration.unregister();
+    	m_registration.unregister();
     }
 
 }
