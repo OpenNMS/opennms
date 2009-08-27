@@ -7,8 +7,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.soa.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,17 +24,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 }
 )
 public class SmsServiceTest {
-	@Autowired
-	ApplicationContext m_context;
 	
-	@Resource(name="smsServiceList")
-	List<SmsService> m_serviceList;
-
+	@Autowired
+	SmsService m_service;
+	
 	@Test
 	public void testInitialization() {
-		assertNotNull(m_serviceList);
-		assertEquals("must have one service", 1, m_serviceList.size());
-		assertEquals("must have one gateway", 1, m_serviceList.get(0).getGateways().size());
-		assertEquals("gateway ID must be 'monkeys!'", "monkeys!", m_serviceList.get(0).getGateways().iterator().next().getGatewayId());
+		assertNotNull(m_service);
+		assertEquals("must have one gateway", 1, m_service.getGateways().size());
+		assertEquals("gateway ID must be 'monkeys!'", "monkeys!", m_service.getGateways().iterator().next().getGatewayId());
 	}
 }

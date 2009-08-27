@@ -6,7 +6,7 @@ import org.smslib.test.TestGateway;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class TestGatewayFactoryBean implements InitializingBean {
+public class TestGatewayGroupLoader implements InitializingBean {
 	
 	private ServiceRegistry m_serviceRegistry;
 	

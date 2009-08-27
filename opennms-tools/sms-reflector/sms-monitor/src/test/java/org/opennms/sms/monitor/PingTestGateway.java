@@ -158,8 +158,13 @@ public class PingTestGateway extends AGateway
 		msg.setRefNo(Integer.toString(++this.refCounter));
 		msg.setGatewayId(getGatewayId());
 		getService().getLogger().logInfo("Sent to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
+		
+		String msgText = msg.getText();
+		if (msgText != null && msgText.startsWith("ping")) {
+		    msgText = "pong";
+		}
 
-		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msg.getText(), 1, "DEADBEEF");
+		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msgText, 1, "DEADBEEF");
 		QueueRunner runner = new QueueRunner(inbound, 500);
 		m_delayQueue.offer(runner);
 		return true;

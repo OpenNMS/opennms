@@ -66,7 +66,7 @@ public class GatewayGroupListener implements InitializingBean {
 	    
 	    SmsServiceImpl service = m_services.get(gatewayGroup);
 	    
-	    service.unregister();
+	    service.unregister(m_smsServiceRegistrar);
 	    
 	    service.stop();
 	    

@@ -37,15 +37,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class SMSSequenceMonitorTest {
 
-	@Autowired
-	ApplicationContext m_context;
-	List<SmsService> m_serviceList;
-
 	MonitoredService m_service;
 	
 	@Before
 	public void setUp() {
-		m_serviceList = (List<SmsService>)m_context.getBean("smsServiceList");
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
 				try {
@@ -96,7 +91,7 @@ public class SMSSequenceMonitorTest {
 	@Test
 	@DirtiesContext
 	public void testParseConfiguration() throws Exception {
-		assertNotNull(m_serviceList);
+
 		SMSSequenceMonitor m = new SMSSequenceMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
@@ -112,7 +107,7 @@ public class SMSSequenceMonitorTest {
 	@Test
 	@Ignore
 	public void testSimpleSequence() throws Exception {
-		assertNotNull(m_serviceList);
+
 		SMSSequenceMonitor m = new SMSSequenceMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");

@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:omnsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
+    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
 	">
 	
 	
-	<omnsgi:list id="outboundList" interface="org.smslib.IOutboundMessageNotification"/>
-    <omnsgi:list id="inboundList" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
-    <omnsgi:list id="gatewayStatusList" interface="org.smslib.IGatewayStatusNotification"/>
+	<onmsgi:list id="outboundList" interface="org.smslib.IOutboundMessageNotification"/>
+    <onmsgi:list id="inboundList" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
+    <onmsgi:list id="gatewayStatusList" interface="org.smslib.IGatewayStatusNotification"/>
 
-    <omnsgi:list id="gatewayGroupList" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
-    	<omnsgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
-    </omnsgi:list>
+    <onmsgi:list id="gatewayGroupList" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
+    	<onmsgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
+    </onmsgi:list>
     
-    <omnsgi:list id="smsServiceList" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
-	
 	<bean id="smsServiceRegistrar" class="org.opennms.sms.reflector.smsservice.internal.OnmsSmsServiceRegistrar">
 		<property name="serviceRegistry" ref="serviceRegistry"/>
 	</bean>

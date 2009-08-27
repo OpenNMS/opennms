@@ -9,7 +9,6 @@ import java.util.Map;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
@@ -40,7 +39,6 @@ public class SmsServiceImpl implements SmsService {
     @SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
-    private ServiceRegistration m_registration;
 	private Service m_service = new Service();
 	private String m_modemId;
 	private String m_modemPort;
@@ -445,11 +443,10 @@ public class SmsServiceImpl implements SmsService {
 
     public void register(SmsServiceRegistrar smsServiceRegistrar) {
     	smsServiceRegistrar.registerSmsService(this);
-    	//m_registration = bundleContext.registerService(SmsService.class.getName(), this, null);
     }
     
-    public void unregister() {
-    	m_registration.unregister();
+    public void unregister(SmsServiceRegistrar smsServiceRegistrar) {
+    	smsServiceRegistrar.unregisterSmsService(this);
     }
 
 }

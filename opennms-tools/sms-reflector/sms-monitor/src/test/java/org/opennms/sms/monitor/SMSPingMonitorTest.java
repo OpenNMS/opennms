@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.PollStatus;
@@ -74,12 +75,16 @@ public class SMSPingMonitorTest {
 
 	@Test
 	@DirtiesContext
+	@Ignore
 	public void testPing() {
 		assertNotNull(m_smsService);
+		
+		assertEquals("monkeys!", m_smsService.getGateways().iterator().next().getGatewayId());
+		
 		SMSPingMonitor p = new SMSPingMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
-		parameters.put("timeout", "3000");
+		parameters.put("timeout", "30000");
 		PollStatus s = p.poll(m_service, parameters);
 		System.err.println("reason = " + s.getReason());
 		System.err.println("status name = " + s.getStatusName());

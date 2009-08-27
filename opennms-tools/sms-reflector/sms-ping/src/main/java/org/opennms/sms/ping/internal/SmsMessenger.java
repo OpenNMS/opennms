@@ -63,7 +63,8 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInbo
     private Queue<PingReply> m_replyQueue;
     
     public SmsMessenger(SmsService smsService) {
-        debugf("Created SmsMessenger: %s", smsService);
+        // Can't make calls smsService in constructor
+        //debugf("Created SmsMessenger: %s", smsService);
         m_smsService = smsService;
     }
 

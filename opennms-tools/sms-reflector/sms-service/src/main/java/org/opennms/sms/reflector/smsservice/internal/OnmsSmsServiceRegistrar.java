@@ -1,29 +1,29 @@
 package org.opennms.sms.reflector.smsservice.internal;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.sms.reflector.smsservice.SmsService;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class OnmsSmsServiceRegistrar implements SmsServiceRegistrar, InitializingBean, DisposableBean {
+public class OnmsSmsServiceRegistrar implements SmsServiceRegistrar, InitializingBean {
 	
 	private ServiceRegistry m_serviceRegistry;
-	private List<Registration> m_registrations = new ArrayList<Registration>();
+	private Map<SmsService, Registration> m_registrationMap = new HashMap<SmsService, Registration>();
 	
 	public void registerSmsService(SmsService service) {
-		m_registrations.add(getServiceRegistry().register(service, SmsService.class));
+		Registration registration = getServiceRegistry().register(service, SmsService.class);
+		m_registrationMap.put(service, registration);
 	}
-
-	public void destroy() throws Exception {
-		for(Registration registration : m_registrations) {
-			registration.unregister();
-		}
-		
+	
+	public void unregisterSmsService(SmsService service) {
+	    Registration registration = m_registrationMap.remove(service);
+	    if (registration != null) {
+	        registration.unregister();
+	    }
 	}
 
 	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
