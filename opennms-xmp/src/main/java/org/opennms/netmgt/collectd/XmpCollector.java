@@ -75,6 +75,9 @@ import org.krupczak.Xmp.XmpMessage;
 import org.krupczak.Xmp.XmpSession;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.XmpAgentConfig;
+import org.opennms.netmgt.config.XmpConfigFactory;
+import org.opennms.netmgt.config.XmpPeerFactory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Group;
 import org.opennms.netmgt.config.xmpDataCollection.MibObj;
@@ -91,7 +94,8 @@ public class XmpCollector implements ServiceCollector {
 
     /* instance variables ******************************** */
     int xmpPort;
-    int timeout;  /* millseconds */
+    long timeout;  /* millseconds */
+    int retries;
     Set setOfNodes;
     SocketOpts sockopts;
     String authenUser;
@@ -444,17 +448,28 @@ public class XmpCollector implements ServiceCollector {
         log().debug("collect agent "+agent);
 
         oldUptime = 0;
+        
+        // First go to the peer factory
+        XmpAgentConfig peerConfig = XmpPeerFactory.getInstance().getAgentConfig(agent.getInetAddress());
+        authenUser = peerConfig.getAuthenUser();
+        timeout = peerConfig.getTimeout();
+        retries = peerConfig.getRetry();
+        xmpPort = peerConfig.getPort();
 
         if (parameters.get("authenUser") != null)
             authenUser = (String)parameters.get("authenUser");
 
         if (parameters.get("timeout") != null) {
-            timeout = Integer.valueOf(parameters.get("timeout")).intValue();
+            timeout = Integer.valueOf(parameters.get("timeout"));
+        }
+        
+        if (parameters.get("retry") != null) {
+            retries = Integer.valueOf(parameters.get("retries"));
         }
         parameters.get("collection");
 
         if (parameters.get("port") != null) {
-            xmpPort = Integer.valueOf((String)parameters.get("port")).intValue();
+            xmpPort = Integer.valueOf((String)parameters.get("port"));
         }
 
         String collectionName = parameters.get("collection");
@@ -494,7 +509,7 @@ public class XmpCollector implements ServiceCollector {
         // log().debug("collect: attempting to open session with "+agent.getInetAddress()+":"+xmpPort+","+authenUser);
 
         // Set the SO_TIMEOUT, why don't we...
-        sockopts.setConnectTimeout(timeout);
+        sockopts.setConnectTimeout((int) timeout);
         session = new XmpSession(sockopts,
                                  agent.getInetAddress(),
                                  xmpPort,authenUser);
