@@ -20,7 +20,6 @@ import org.opennms.sms.monitor.internal.config.TransactionOperation;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PropertyPhonebook;
 import org.opennms.sms.ping.PingConstants;
-import org.springframework.util.StringUtils;
 
 @Distributable(DistributionContext.DAEMON)
 final public class SMSSequenceMonitor extends IPv4Monitor {
@@ -33,7 +32,7 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
         @SuppressWarnings("unused")
 		long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
         String config = ParameterMap.getKeyedString(parameters, "sequence", "");
-        if (!StringUtils.hasText(config)) {
+        if (config == null || "".equals(config)) {
         	return PollStatus.unavailable("Sequence configuration was empty.  You must specify a 'sequence' parameter in the SMSSequenceMonitor poller configuration!");
         }
 
