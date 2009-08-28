@@ -13,7 +13,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class InboundMessageNotification implements OnmsInboundMessageNotification, ApplicationContextAware {
+public class InboundMessageNotification implements OnmsInboundMessageNotification {
 
     private static Logger log = LoggerFactory.getLogger(InboundMessageNotification.class);
     
@@ -29,11 +29,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
 	    m_listenerList = listeners;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Collection<OnmsInboundMessageNotification> getListeners() {
-		if (m_listenerList == null) {
-			m_listenerList = m_applicationContext.getBeansOfType(OnmsInboundMessageNotification.class).values();
-		}
 		return m_listenerList;
 	}
 

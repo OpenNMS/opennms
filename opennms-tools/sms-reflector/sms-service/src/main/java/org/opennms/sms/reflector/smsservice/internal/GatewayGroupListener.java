@@ -62,7 +62,7 @@ public class GatewayGroupListener implements InitializingBean {
 		
 	}
 	
-	public void onGatewayGroupUnRegistered(GatewayGroup gatewayGroup, Map properties){
+	public void onGatewayGroupUnRegistered(GatewayGroup gatewayGroup, Map<?,?> properties){
 	    
 	    SmsServiceImpl service = m_services.get(gatewayGroup);
 	    
@@ -109,7 +109,7 @@ public class GatewayGroupListener implements InitializingBean {
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(m_smsServiceRegistrar);
+		Assert.notNull(m_smsServiceRegistrar, "the smsServiceRegistrar must not be null");
 		
 	}
 
