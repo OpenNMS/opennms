@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -14,8 +15,24 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name="sms-sequence")
 public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 	private static final long serialVersionUID = 1L;
+	private List<TransactionOperation> m_transactions;
+	private List<SequenceSessionVariable> m_sessionVariables;
 
-	List<TransactionOperation> m_transactions;
+	public void addSessionVariable(SequenceSessionVariable var) {
+		getSessionVariables().add(var);
+	}
+
+	@XmlElement(name="session-variable")
+	public List<SequenceSessionVariable> getSessionVariables() {
+		if (m_sessionVariables == null) {
+			m_sessionVariables = Collections.synchronizedList(new ArrayList<SequenceSessionVariable>());
+		}
+		return m_sessionVariables;
+	}
+
+	public void setSessionVariables(List<SequenceSessionVariable> sessionVariables) {
+		m_sessionVariables = sessionVariables;
+	}
 
 	public void addTransaction(TransactionOperation transaction) {
 		if (m_transactions == null) {

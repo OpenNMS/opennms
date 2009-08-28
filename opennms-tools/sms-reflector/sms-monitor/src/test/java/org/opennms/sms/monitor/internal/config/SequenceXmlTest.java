@@ -55,12 +55,12 @@ public class SequenceXmlTest {
 
     	m_smsSequence = new SmsSequence();
 
-    	SynchronousSequenceTransaction ussdTransaction = new SynchronousSequenceTransaction("USSD balance");
-
     	SequenceSessionVariable s = new SequenceSessionVariable("amount", "org.opennms.sms.monitor.internal.config.UniqueNumber");
     	s.addParameter("min", "1");
     	s.addParameter("max", "15");
-    	ussdTransaction.addSessionVariable(s);
+    	m_smsSequence.addSessionVariable(s);
+
+    	SynchronousSequenceTransaction ussdTransaction = new SynchronousSequenceTransaction("USSD balance");
 
     	SequenceOperation op = new SequenceOperation("send-ussd");
     	op.setLabel("originator sends balance request");

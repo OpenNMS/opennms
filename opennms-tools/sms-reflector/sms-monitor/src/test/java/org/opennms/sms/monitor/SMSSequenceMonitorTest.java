@@ -40,6 +40,7 @@ public class SMSSequenceMonitorTest {
 	MonitoredService m_service;
 	
 	@Before
+	@SuppressWarnings("unchecked")
 	public void setUp() {
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
@@ -105,6 +106,7 @@ public class SMSSequenceMonitorTest {
 	}
 
 	@Test
+	@DirtiesContext
 	@Ignore
 	public void testSimpleSequence() throws Exception {
 

@@ -25,7 +25,7 @@
         <match type="success">~than to receive</match>
         <parameters>
           <parameter key="validate-source" value="+327${session.target}" />
-        </parameter>
+        </parameters>
       </operation>
     </transaction>
   </transaction>
