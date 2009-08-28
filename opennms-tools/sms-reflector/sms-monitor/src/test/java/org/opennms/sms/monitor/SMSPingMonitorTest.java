@@ -8,8 +8,9 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.PollStatus;
@@ -33,7 +34,7 @@ public class SMSPingMonitorTest {
 	@Autowired
 	ApplicationContext m_context;
 	
-	@Autowired
+	@Resource(name="smsService")
 	SmsService m_smsService;
 
 	MonitoredService m_service;
@@ -75,7 +76,6 @@ public class SMSPingMonitorTest {
 
 	@Test
 	@DirtiesContext
-	@Ignore
 	public void testPing() {
 		assertNotNull(m_smsService);
 		
