@@ -1095,7 +1095,11 @@
     <exception-type>org.opennms.web.alarm.AlarmIdNotFoundException</exception-type>
     <location>/errors/alarmidnotfound.jsp</location>
   </error-page>
-    <error-page>
+  <error-page>
+    <exception-type>org.opennms.web.element.ElementNotFoundException</exception-type>
+    <location>/errors/elementnotfound.jsp</location>
+  </error-page>
+  <error-page>
     <exception-type>org.opennms.web.element.ElementIdNotFoundException</exception-type>
     <location>/errors/elementidnotfound.jsp</location>
   </error-page>
