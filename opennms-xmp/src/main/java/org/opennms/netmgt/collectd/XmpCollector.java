@@ -94,7 +94,7 @@ public class XmpCollector implements ServiceCollector {
 
     /* instance variables ******************************** */
     int xmpPort;
-    long timeout;  /* millseconds */
+    int timeout;  /* millseconds */
     int retries;
     Set setOfNodes;
     SocketOpts sockopts;
@@ -103,6 +103,8 @@ public class XmpCollector implements ServiceCollector {
     /* constructors  ************************************* */
     public XmpCollector() 
     {
+        log().debug("XmpCollector created");
+
         // initialize collections and containers for storing
         // list of systems to query 
         setOfNodes = new HashSet();
@@ -459,7 +461,7 @@ public class XmpCollector implements ServiceCollector {
         // First go to the peer factory
         XmpAgentConfig peerConfig = XmpPeerFactory.getInstance().getAgentConfig(agent.getInetAddress());
         authenUser = peerConfig.getAuthenUser();
-        timeout = peerConfig.getTimeout();
+        timeout = (int)peerConfig.getTimeout();
         retries = peerConfig.getRetry();
         xmpPort = peerConfig.getPort();
 
@@ -479,6 +481,8 @@ public class XmpCollector implements ServiceCollector {
             xmpPort = Integer.valueOf((String)parameters.get("port"));
         }
 
+        log().debug("collect got parameters for "+agent);
+
         String collectionName = parameters.get("collection");
 
         // collectionName tells us what set of data to get 
@@ -488,6 +492,8 @@ public class XmpCollector implements ServiceCollector {
             log().warn("collect found no collectionName for "+agent);
             return null;
         }
+
+        log().debug("collect got collectionName for "+agent);
 
         // get/create our collections set
         collectionSet = new XmpCollectionSet(agent);
@@ -513,10 +519,11 @@ public class XmpCollector implements ServiceCollector {
 
         // open/get a session with the target agent
 
-        // log().debug("collect: attempting to open session with "+agent.getInetAddress()+":"+xmpPort+","+authenUser);
+        log().debug("collect: attempting to open XMP session with "+agent.getInetAddress()+":"+xmpPort+","+authenUser);
 
         // Set the SO_TIMEOUT, why don't we...
-        sockopts.setConnectTimeout((int) timeout);
+        sockopts.setConnectTimeout(timeout);
+
         session = new XmpSession(sockopts,
                                  agent.getInetAddress(),
                                  xmpPort,authenUser);
@@ -532,6 +539,8 @@ public class XmpCollector implements ServiceCollector {
             return collectionSet;
         }
 
+        log().debug("collect: successfully opened XMP session with"+agent);
+
         // for each group within the collection (from data config)
         // query agent
 
@@ -543,7 +552,7 @@ public class XmpCollector implements ServiceCollector {
             MibObj[] mibObjects = group.getMibObj();
             XmpVar[] vars = new XmpVar[mibObjects.length];
 
-            log().debug("collecting group "+groupName+" with "+mibObjects.length+" mib objects");
+            log().debug("collecting XMP group "+groupName+" with "+mibObjects.length+" mib objects");
 
             // prepare the query vars
             for (i=0 ; i< mibObjects.length; i++) {
@@ -603,15 +612,15 @@ public class XmpCollector implements ServiceCollector {
 
         collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
 
-        //log().info("collect finished, uptime for "+agent+" is "+
-        //            agent.getSavedSysUpTime());
+        log().debug("XMP collect finished, uptime for "+agent+" is "+
+                    agent.getSavedSysUpTime());
 
         return collectionSet;
     }
 
     public RrdRepository getRrdRepository(String collectionName)
     {
-        log().info("getRrdRepository called for "+collectionName);
+        log().info("XMP getRrdRepository called for "+collectionName);
 
         // return the Rrd that I initialized but
         // I dont have to put data in it; initialize

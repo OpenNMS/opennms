@@ -63,7 +63,7 @@ import org.opennms.netmgt.protocols.xmp.XmpUtilException;
  * </P>
  * 
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * 
  * 
  */
