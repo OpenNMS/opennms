@@ -1,32 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-  <!--
-   | put company details here
-  <organization>
-    <name>...</name>
-    <url>http://...</url>
-  </organization>
-  -->
-
-  <!--
-   | put license details here
-  <licenses>
-    <license>
-      <name>...</name>
-      <url>http://...</url>
-      <comments>
-      </comments>
-    </license>
-  </licenses>
-  -->
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>1.7.5-SMS-SNAPSHOT</version>
+  </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
+  <groupId>org.opennms.features</groupId>
   <artifactId>sms-reflector</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
 
-  <name>org.opennms.sms-reflector (OSGi project)</name>
+  <name>org.opennms.features.sms-reflector (OSGi project)</name>
 
   <!--
    | describe your project here

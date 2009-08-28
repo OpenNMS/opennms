@@ -48,7 +48,8 @@ public class Main {
                 "classpath*:/META-INF/opennms/bundle-context-opennms.xml",
         };
         
-        ApplicationContext appContext = new ClassPathXmlApplicationContext(contextFiles);
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(contextFiles);
+        appContext.registerShutdownHook();
         
         Long latency = SmsPinger.ping("+19198124984");
         
