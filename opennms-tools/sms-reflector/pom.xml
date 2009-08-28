@@ -67,6 +67,7 @@
     <module>sms-service</module>
     <module>sms-ping</module>
     <module>sms-monitor</module>
+    <module>integration</module>
   </modules>
 
   <build>

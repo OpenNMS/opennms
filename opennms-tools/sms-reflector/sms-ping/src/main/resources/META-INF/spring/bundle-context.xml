@@ -24,10 +24,4 @@
         </property>
     </bean>
     
-    <bean id="gatewayGroupListener" class="org.opennms.sms.reflector.smsservice.internal.GatewayGroupListener">
-		<property name="outboundListeners" ref="outboundList" />
-		<property name="inboundListeners" ref="inboundList" />
-		<property name="gatewayStatusListeners" ref="gatewayStatusList" />
-	</bean>
-
 </beans>
