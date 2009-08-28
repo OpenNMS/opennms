@@ -52,7 +52,7 @@ import org.springframework.util.Assert;
 
 
 /**
- * And adapter manager.  Makes writing tests much easier.
+ * An adapter manager.  Makes writing tests much easier.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
@@ -160,6 +160,12 @@ public class ProvisioningAdapterManager implements InitializingBean {
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
+    }
+
+    public void initializeAdapters() {
+        for (ProvisioningAdapter adapter : m_adapters) {
+            adapter.init();
+        }
     }
 
 }
