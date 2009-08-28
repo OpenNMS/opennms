@@ -9,6 +9,11 @@
 	
 	<onmsgi:reference id="smsService" interface="org.opennms.sms.reflector.smsservice.SmsService" />
 	
-	<onmsgi:service ref="smsMessenger" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
+	<onmsgi:service ref="smsMessenger">
+	  <onmsgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
+        <value>org.smslib.IOutboundMessageNotification</value>
+      </onmsgi:interfaces>
+	</onmsgi:service>
 	
 </beans>
