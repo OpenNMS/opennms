@@ -74,4 +74,12 @@ public interface ProvisioningAdapter {
      */
     void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
     
+    /**
+     * This method is called in case the adapter needs to perform some initialization prior to 
+     * receiving calls from the AdapterManager.
+     * 
+     * @throws ProvisioningAdapterException
+     */
+    void init() throws ProvisioningAdapterException;
+    
 }

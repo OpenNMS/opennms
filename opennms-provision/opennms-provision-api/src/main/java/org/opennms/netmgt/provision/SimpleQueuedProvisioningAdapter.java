@@ -196,6 +196,17 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         }
     }
     
+    /**
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.provision.ProvisioningAdapter#init()
+     * 
+     * Override this implementation if needed. 
+     */
+    public void init() {
+        
+    }
+    
+    
     class AdapterOperationQueue {
         
         private final ConcurrentHashMap<Integer,LinkedBlockingQueue<AdapterOperation>> m_mappedQueue;
