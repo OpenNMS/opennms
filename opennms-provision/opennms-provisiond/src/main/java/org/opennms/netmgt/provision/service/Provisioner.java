@@ -60,6 +60,7 @@ import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
@@ -79,6 +80,9 @@ public class Provisioner implements SpringServiceDaemon {
     private volatile EventForwarder m_eventForwarder;
     
     private volatile TimeTrackingMonitor m_stats;
+    
+    @Autowired
+    private ProvisioningAdapterManager m_manager;
 
     public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
@@ -102,6 +106,7 @@ public class Provisioner implements SpringServiceDaemon {
 	
     public void start() throws Exception {
         scheduleRescanForExistingNodes();
+        m_manager.initializeAdapters();
     }
 	
     public void afterPropertiesSet() throws Exception {
