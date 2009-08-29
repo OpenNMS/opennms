@@ -31,19 +31,48 @@
  */
 package org.opennms.netmgt.provision;
 
+/*
+ * FIXME: seems like the method: isServiceDetected should be defined here.
+ */
 /**
  * ServiceDetector
  *
- * @author brozow
+ * @author <a href="mailto:brozow@opennms.org>Mathew Brozowski</a>
  */
 public interface ServiceDetector {
     
+    /*
+     * FIXME: Document this API requirement.  Not sure what is expected, perhaps nothing
+     * but there is a lot of inconsistency in the implementation from abstract classes and their
+     * implementations.
+     */
+    /**
+     * Perform any necessary initialization after construction and before detecting.
+     */
     public void init();
     
+    /*
+     * FIXME: Probably should make sure that the service names are always unique.
+     */
+    
+    /**
+     * Requires that all implementations of this API return a service name.
+     * @return
+     */
     public String getServiceName();
-    
+
+    /**
+     * Service name is mutable so that we can create new instances of each implementation
+     * and define a new service detector using the underlying protocol.
+     * 
+     * @param serviceName
+     */
     public void setServiceName(String serviceName);
+
     
+    /**
+     * The detector should clean up after itself in this method if necessary.
+     */
     public void dispose();
 
 }
