@@ -59,6 +59,7 @@ import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -309,40 +310,63 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     public void onEvent(Event event) {
+        
         if (isReloadConfigEvent(event)) {
-            try {
-                log().info("onEvent: reloading configuration.");
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
-                log().debug("onEvent: calling stop on scheduler.");
+            handleReloadConifgEvent();
+        }
+    }
 
-                stop();
-                while (m_scheduler.getRunner().getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
-                    log().debug("onEvent: waiting for scheduler to stop." +
-                            " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
-                    Thread.sleep(500);
-                }
-                log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
-                log().debug("onEvent: reloading vacuumd configuration.");
-
-                VacuumdConfigFactory.reload();
-                log().debug("onEvent: creating new schedule and rescheduling automations.");
-
-                init();
-                log().debug("onEvent: restarting vacuumd and scheduler.");
-
-                start();
-                log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
-            } catch (MarshalException e) {
-                log().error("onEvent: problem marshaling vacuumd configuration: " + e, e);
-            } catch (ValidationException e) {
-                log().error("onEvent: problem validating vacuumd configuration: " + e, e);
-            } catch (IOException e) {
-                log().error("onEvent: IO problem reading vacuumd configuration: " + e, e);
-            } catch (InterruptedException e) {
-                log().error("onEvent: Problem interrupting current Vacuumd Thread: " + e, e);
+    private void handleReloadConifgEvent() {
+        log().info("onEvent: reloading configuration...");
+        
+        EventBuilder ebldr = null;
+        
+        try {
+            log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled()+"; calling stop on scheduler...");
+            stop();
+            while (m_scheduler.getRunner().getStatus() != STOPPED || m_scheduler.getStatus() != STOPPED) {
+                log().debug("onEvent: waiting for scheduler to stop." +
+                        " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
+                Thread.sleep(500);
             }
-            log().info("onEvent: completed configuration reload.");
+            log().debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+m_scheduler.getRunner().getStatus());
+            log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
+            log().debug("onEvent: reloading vacuumd configuration.");
+
+            VacuumdConfigFactory.reload();
+            log().debug("onEvent: creating new schedule and rescheduling automations.");
+
+            init();
+            log().debug("onEvent: restarting vacuumd and scheduler.");
+
+            start();
+            log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
+            
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            
+        } catch (MarshalException e) {
+            log().error("onEvent: problem marshaling vacuumd configuration: " + e, e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+        } catch (ValidationException e) {
+            log().error("onEvent: problem validating vacuumd configuration: " + e, e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+        } catch (IOException e) {
+            log().error("onEvent: IO problem reading vacuumd configuration: " + e, e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+        } catch (InterruptedException e) {
+            log().error("onEvent: Problem interrupting current Vacuumd Thread: " + e, e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+        }
+        
+        log().info("onEvent: completed configuration reload.");
+        
+        if (ebldr != null) {
+            m_eventMgr.sendNow(ebldr.getEvent());
         }
     }
 
