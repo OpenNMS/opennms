@@ -322,6 +322,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                                                              getName(), 
                                                              Calendar.getInstance().getTime());
                         bldr.addParam(EventConstants.PARM_DAEMON_NAME, getName());
+                        bldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
                         m_eventForwarder.sendNow(bldr.getEvent());
                     }
                     
