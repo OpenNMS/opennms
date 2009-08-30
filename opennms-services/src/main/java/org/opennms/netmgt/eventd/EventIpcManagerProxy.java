@@ -78,22 +78,22 @@ public class EventIpcManagerProxy implements EventIpcManager {
 
     public void removeEventListener(EventListener listener) {
         assertState();
-        m_delegate.addEventListener(listener);
+        m_delegate.removeEventListener(listener);
     }
 
     public void removeEventListener(EventListener listener, List<String> ueiList) {
         assertState();
-        m_delegate.addEventListener(listener, ueiList);
+        m_delegate.removeEventListener(listener, ueiList);
     }
 
     public void removeEventListener(EventListener listener, String uei) {
         assertState();
-        m_delegate.addEventListener(listener, uei);
+        m_delegate.removeEventListener(listener, uei);
     }
 
     public void removeEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
-        m_delegate.addEventListener(listener, ueis);
+        m_delegate.removeEventListener(listener, ueis);
     }
     
     public void send(Event event) throws EventProxyException {
