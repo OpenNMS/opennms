@@ -345,7 +345,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         }
 
         @Override
-        protected void update() throws IOException, MarshalException, ValidationException {
+        public void update() throws IOException, MarshalException, ValidationException {
             return;
         }
     }
