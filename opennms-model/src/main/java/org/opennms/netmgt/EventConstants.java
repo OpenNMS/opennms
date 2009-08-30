@@ -986,6 +986,11 @@ public class EventConstants {
      */
     public static final String NODE_CONFIG_CHANGE_UEI = "uei.opennms.org/internal/translator/entityConfigChanged";
 
+    /**
+     * Used for indicating a reason message in an event or alarm.
+     */
+    public static final String PARM_REASON = "reason";
+
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
