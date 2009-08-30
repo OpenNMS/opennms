@@ -349,18 +349,22 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             log().error("onEvent: problem marshaling vacuumd configuration: " + e, e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (ValidationException e) {
             log().error("onEvent: problem validating vacuumd configuration: " + e, e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
             log().error("onEvent: IO problem reading vacuumd configuration: " + e, e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (InterruptedException e) {
             log().error("onEvent: Problem interrupting current Vacuumd Thread: " + e, e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         }
         
         log().info("onEvent: completed configuration reload.");
