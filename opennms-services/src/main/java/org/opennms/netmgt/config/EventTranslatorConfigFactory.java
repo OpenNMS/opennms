@@ -143,11 +143,37 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
         m_dbConnFactory = dbConnFactory;
     }
-
+    
     @Deprecated
     private synchronized void marshall(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, rdr);
         m_dbConnFactory = dbConnFactory;
+    }
+    
+    private synchronized void marshall(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
+    }
+
+    /**
+     * Simply marshals the config without messing with the singletons.
+     */
+    public void update() throws Exception  {
+        
+        synchronized (this) {
+            
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
+            InputStream stream = null;
+            
+            try {
+                stream = new FileInputStream(cfgFile);
+                marshall(stream);
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
+            
+        }
     }
 
     /**
@@ -195,7 +221,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         init();
     }
-
+    
     /**
      * Return the singleton instance of this factory.
      * 
