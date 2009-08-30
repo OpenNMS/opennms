@@ -151,7 +151,7 @@ public class GroupFactory extends GroupManager {
     /**
      * 
      */
-    protected void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_groupsConfFile.lastModified()) {
             reload();
         }

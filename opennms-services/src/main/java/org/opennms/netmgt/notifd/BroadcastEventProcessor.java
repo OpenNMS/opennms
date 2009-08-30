@@ -84,6 +84,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.utils.RowProcessor;
@@ -204,6 +205,29 @@ public final class BroadcastEventProcessor implements EventListener {
      *            The event .
      */
     public void onEvent(Event event) {
+        
+        if (isReloadConfigEvent(event)) {
+            log().info("onEvent: handling reload configuration event...");
+            EventBuilder ebldr = null;
+            try {
+                m_userManager.update();
+                m_groupManager.update();
+                m_notificationManager.update();
+                m_destinationPathManager.update();
+                m_notificationCommandManager.update();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
+            } catch (Exception e) {
+                log().debug("onEvent: could not reload notifd configuration: "+e, e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
+            }
+            m_eventManager.sendNow(ebldr.getEvent());
+            log().info("onEvent: reload configuration event handled.");
+            return;
+        }
+        
         if (event == null) return;
 
         boolean notifsOn = computeNullSafeStatus();
@@ -216,6 +240,24 @@ public final class BroadcastEventProcessor implements EventListener {
             }
         }
         automaticAcknowledge(event, notifsOn);
+    }
+
+    private boolean isReloadConfigEvent(Event event) {
+        boolean isTarget = false;
+
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            List<Parm> parmCollection = event.getParms().getParmCollection();
+
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Notifd".equalsIgnoreCase(parm.getValue().getContent())) {
+                    isTarget = true;
+                    break;
+                }
+            }
+
+            log().debug("isReloadConfigEventTarget: Notifd was target of reload event: "+isTarget);
+        }
+        return isTarget;
     }
 
     /**

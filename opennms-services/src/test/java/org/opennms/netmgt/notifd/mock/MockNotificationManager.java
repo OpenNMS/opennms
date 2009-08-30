@@ -69,7 +69,7 @@ public class MockNotificationManager extends NotificationManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.NotificationManager#update()
      */
-    protected void update() throws IOException, MarshalException,
+    public void update() throws IOException, MarshalException,
             ValidationException {
         // TODO Auto-generated method stub
 

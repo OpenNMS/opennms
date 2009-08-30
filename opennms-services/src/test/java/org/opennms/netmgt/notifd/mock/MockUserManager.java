@@ -84,7 +84,7 @@ public class MockUserManager extends UserManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.UserManager#update()
      */
-    protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }
