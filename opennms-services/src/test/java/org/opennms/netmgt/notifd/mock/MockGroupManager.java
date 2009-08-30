@@ -65,7 +65,7 @@ public class MockGroupManager extends GroupManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.GroupManager#updateFromFile()
      */
-    protected void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException, MarshalException, ValidationException {
         if (updateNeeded) {
             parseXML();
         }

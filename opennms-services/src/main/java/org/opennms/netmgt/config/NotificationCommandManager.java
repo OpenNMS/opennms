@@ -102,6 +102,8 @@ public abstract class NotificationCommandManager {
         }
         return config.getCommandCollection();
     }
+    
+    public abstract void update() throws Exception;
 
     private Category log() {
         return ThreadCategory.getInstance(NotificationCommandManager.class);

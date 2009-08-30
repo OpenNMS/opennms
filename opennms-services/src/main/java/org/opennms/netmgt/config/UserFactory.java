@@ -167,7 +167,7 @@ public class UserFactory extends UserManager {
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (isUpdateNeeded()) {
             reload();
         }
