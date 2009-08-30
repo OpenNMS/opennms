@@ -435,7 +435,7 @@
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have failed to be 
-      applied.&lt;/p&gt;
+      applied. Reason: %parm[reason]%.&lt;/p&gt;
     </logmsg>
     <severity>Major</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" 
