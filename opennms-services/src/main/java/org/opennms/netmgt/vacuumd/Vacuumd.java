@@ -64,6 +64,7 @@ import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
@@ -308,7 +309,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     public void onEvent(Event event) {
-        if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
+        if (isReloadConfigEvent(event)) {
             try {
                 log().info("onEvent: reloading configuration.");
                 log().debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled());
@@ -345,6 +346,27 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    private boolean isReloadConfigEvent(Event event) {
+        boolean isTarget = false;
+        
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            List<Parm> parmCollection = event.getParms().getParmCollection();
+            
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Vacuumd".equalsIgnoreCase(parm.getValue().getContent())) {
+                    isTarget = true;
+                    break;
+                }
+            }
+        
+        //Depreciating this one...
+        } else if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
+            isTarget = true;
+        }
+        
+        return isTarget;
+    }
+    
     private VacuumdConfigFactory getVacuumdConfig() {
         return VacuumdConfigFactory.getInstance();
     }
