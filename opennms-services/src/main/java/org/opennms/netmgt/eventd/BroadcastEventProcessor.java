@@ -38,12 +38,16 @@
 //
 package org.opennms.netmgt.eventd;
 
+import java.util.List;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.util.Assert;
 
 public class BroadcastEventProcessor implements EventListener {
@@ -103,19 +107,48 @@ public class BroadcastEventProcessor implements EventListener {
      * 
      */
     public void onEvent(Event event) {
-        if (log().isDebugEnabled()) {
-            log().debug("received event, UEI = " + event.getUei());
-        }
         
-        if (event.getUei().equals(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI)) {
+        log().debug("onEvent: received event, UEI = " + event.getUei());
+        EventBuilder ebldr = null;
+        
+        if (isReloadConfigEvent(event)) {
             try {
                 m_eventConfDao.reload();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
+                
             } catch (Exception e) {
-                log().error("Could not reload events config: " + e, e);
+                log().error("onEvent: Could not reload events config: " + e, e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
             }
-        } else {
-            log().warn("Received unanticipated event with UEI '" + event.getUei() + "': " + event);
+            
+            if (ebldr != null) {
+                m_eventIpcManager.sendNow(ebldr.getEvent());
+            }
         }
+    }
+
+    private boolean isReloadConfigEvent(Event event) {
+        boolean isTarget = false;
+        
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            List<Parm> parmCollection = event.getParms().getParmCollection();
+            
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Eventd".equalsIgnoreCase(parm.getValue().getContent())) {
+                    isTarget = true;
+                    break;
+                }
+            }
+        
+        //Depreciating this one...
+        } else if (EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI.equals(event.getUei())) {
+            isTarget = true;
+        }
+        
+        return isTarget;
     }
 
     private Category log() {
