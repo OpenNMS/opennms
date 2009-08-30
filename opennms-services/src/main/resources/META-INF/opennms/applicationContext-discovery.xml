@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+  <bean id="init-discoveryConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="discoveryFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-capsdConfig-factory">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.getInstance</value></property>
+  </bean>
+
+  <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
+    <property name="discoveryFactory" ref="discoveryFactory" />
+    <property name="eventForwarder" ref="eventForwarder"/>
+  </bean>
+  
+</beans>
