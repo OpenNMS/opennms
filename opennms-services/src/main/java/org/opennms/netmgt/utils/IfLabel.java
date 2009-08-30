@@ -189,6 +189,7 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
         
         class LabelHolder {
             private String m_label;
@@ -211,7 +212,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid = "+nodeId+
-        		"   AND ipinterface.ipaddr = '"+ipAddr+"'";
+        		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
             public void processRow(ResultSet rs) throws SQLException {
@@ -237,8 +238,10 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
+
         if (ifIndex == -1) {
-        	return getIfLabel(nodeId, ipAddr);
+        	return getIfLabel(nodeId, inetAddr);
         }
         
         class LabelHolder {
@@ -262,7 +265,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid= "+nodeId+
-        		"   AND ipinterface.ipaddr= '"+ipAddr+"'"+
+        		"   AND ipinterface.ipaddr= '"+inetAddr+"'"+
         		"   AND ipinterface.ifindex= "+ifIndex;
         
         
