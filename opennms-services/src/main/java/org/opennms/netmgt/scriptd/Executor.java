@@ -44,6 +44,7 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.config.scriptd.Engine;
 import org.opennms.netmgt.config.scriptd.EventScript;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 import org.opennms.netmgt.config.scriptd.Uei;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
 
 import org.apache.bsf.BSFException;
@@ -223,7 +225,7 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             // check for reload event
-            if ("uei.opennms.org/internal/reloadScriptConfig".equals(event.getUei())) {
+            if (isReloadConfigEvent(event)) {
                 try {
                     ScriptdConfigFactory.reload();
                     m_config = ScriptdConfigFactory.getInstance();
@@ -320,6 +322,26 @@ final class Executor implements Runnable, PausableFiber {
         }
 
     } // end run
+
+    private boolean isReloadConfigEvent(Event event) {
+        boolean isTarget = false;
+        
+        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
+            List<Parm> parmCollection = event.getParms().getParmCollection();
+            
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Scriptd".equalsIgnoreCase(parm.getValue().getContent())) {
+                    isTarget = true;
+                }
+            }
+        
+        //Depreciating this one...
+        } else if ("uei.opennms.org/internal/reloadScriptConfig".equals(event.getUei())) {
+            isTarget = true;
+        }
+        
+        return isTarget;
+    }
 
     /**
      * Starts the fiber. If the fiber has already been run or is currently
