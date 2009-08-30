@@ -332,6 +332,7 @@ final class Executor implements Runnable, PausableFiber {
             for (Parm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Scriptd".equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
+                    break;
                 }
             }
         
