@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
 import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.netmgt.dao.castor.statsd.StatsdConfig;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO implementation for accessing the XML configuration for
@@ -74,4 +75,15 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
     public List<StatsdPackage> getPackages() {
         return getConfig().getPackages();
     }
+    
+    public void reloadConfiguration() throws DataAccessResourceFailureException {
+        getContainer().reload();
+        this.verifyMarshaledConfiguration();
+    }
+
+    private void verifyMarshaledConfiguration() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

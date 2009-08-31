@@ -263,6 +263,7 @@
 
   <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" ref="statsdConfigResourceLocation" />
+    <property name="reloadCheckInterval" value="-1" />
   </bean>
   
   <bean id="javamailConfigResourceLocation" class="java.lang.String">
