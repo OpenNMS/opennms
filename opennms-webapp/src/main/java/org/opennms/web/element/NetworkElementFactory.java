@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
 // 2007 May 29: Add "id" for Interface model object. - dj@opennms.org
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
@@ -527,7 +528,7 @@ public class NetworkElementFactory {
 
             augmentInterfacesWithSnmpData(intfs, conn);
 
-            // what do I do if this actually returns more than one node?
+            // what do I do if this actually returns more than one ?
             if (intfs.length > 0) {
                 intf = intfs[0];
             }
@@ -538,6 +539,44 @@ public class NetworkElementFactory {
         return intf;
     }
 
+    /**
+     * Get interface from snmpinterface table. Intended for use with non-ip interfaces.
+     * 
+     * @param int nodeId
+     * 
+     * @param int ifIndex
+     * 
+     * @return Interface
+     * 
+     * @throws SQLException
+     */
+    public static Interface getSnmpInterface(int nodeId, int ifIndex) throws SQLException {
+
+        Interface intf = null;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID = ? AND SNMPIFINDEX=?");
+            d.watch(stmt);
+            stmt.setInt(1, nodeId);
+            stmt.setInt(2, ifIndex);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
+            Interface[] intfs = rs2SnmpInterfaces(rs);
+
+            if (intfs.length > 0) {
+                intf = intfs[0];
+            }
+        } finally {
+            d.cleanUp();
+        }
+
+        return intf;
+    }
+    
     public static Interface[] getInterfacesWithIpAddress(String ipAddress) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1010,6 +1049,46 @@ public class NetworkElementFactory {
 
     }
 
+    /**
+     * This method returns the data from the result set as an vector of
+     * interface objects for non-ip interfaces.
+     * 
+     * @param ResultSet rs
+     * 
+     * @return Interface[]
+     * 
+     * @throws SQLException
+     * 
+     */
+    protected static Interface[] rs2SnmpInterfaces(ResultSet rs) throws SQLException {
+        List<Interface> intfs = new ArrayList<Interface>();
+
+        while (rs.next()) {
+            
+            Interface intf = new Interface();
+
+            intf.m_nodeId = rs.getInt("nodeid");
+            intf.m_ipAddr = rs.getString("ipaddr");
+            intf.m_snmpIfIndex = rs.getInt("snmpifindex");
+            intf.m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
+            intf.m_snmpPhysAddr = rs.getString("snmpPhysAddr");
+            intf.m_snmpIfDescr = rs.getString("snmpIfDescr");
+            intf.m_snmpIfName = rs.getString("snmpIfName");
+            intf.m_snmpIfType = rs.getInt("snmpIfType");
+            intf.m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
+            intf.m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
+            intf.m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
+            intf.m_snmpIfAlias = rs.getString("snmpIfAlias");
+            
+            intfs.add(intf);
+        }
+
+        Collections.sort(intfs, INTERFACE_COMPARATOR);
+        return intfs.toArray(new Interface[intfs.size()]);
+
+    }
+
+    
     protected static void augmentInterfacesWithSnmpData(Interface[] intfs, Connection conn) throws SQLException {
         if (intfs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -48,7 +49,20 @@
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
 <c:if test="${model.interfaceCount == 1 && (command.snmpParm != null || command.maclike != null)}">
-  <jsp:forward page="/element/interface.jsp?ipinterfaceid=${model.nodes[0].interfaces[0].id}"/>
+  <c:choose>
+    <c:when test="${model.nodes[0].arpInterfaces[0].ipAddress != null && model.nodes[0].arpInterfaces[0].ipAddress != '0.0.0.0'}">
+      <jsp:forward page="/element/interface.jsp?node=${model.nodes[0].node.id}&intf=${model.nodes[0].arpInterfaces[0].ipAddress}"/>
+    </c:when>
+    <c:when test="${model.nodes[0].snmpInterfaces[0].ipAddress == null || model.nodes[0].snmpInterfaces[0].ipAddress == '0.0.0.0'}">
+      <jsp:forward page="/element/snmpinterface.jsp?node=${model.nodes[0].node.id}&ifindex=${model.nodes[0].snmpInterfaces[0].ifIndex}"/>
+    </c:when>
+    <c:when test="${model.nodes[0].snmpInterfaces[0].ipAddress != null && model.nodes[0].snmpInterfaces[0].ipAddress != '0.0.0.0'}">
+      <jsp:forward page="/element/interface.jsp?node=${model.nodes[0].node.id}&intf=${model.nodes[0].snmpInterfaces[0].ipAddress}"/>
+    </c:when>
+    <c:otherwise>
+      <jsp:forward page="/element/interface.jsp?ipinterfaceid=${model.nodes[0].interfaces[0].id}"/>
+    </c:otherwise>
+  </c:choose>
 </c:if>
 
 <jsp:include page="/includes/header.jsp" flush="false" >

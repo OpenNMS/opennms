@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2007-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
  * Created: February 9, 2007
  *
  *
@@ -39,6 +40,7 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 /**
  * 
@@ -81,11 +83,14 @@ public class NodeListModel {
         private OnmsNode m_node;
         private List<OnmsIpInterface> m_interfaces;
         private List<OnmsArpInterface> m_arpinterfaces;
+        private List<OnmsSnmpInterface> m_snmpinterfaces;
         
-        public NodeModel(OnmsNode node, List<OnmsIpInterface> interfaces, List<OnmsArpInterface> arpinterfaces) {
+        
+        public NodeModel(OnmsNode node, List<OnmsIpInterface> interfaces, List<OnmsArpInterface> arpinterfaces, List<OnmsSnmpInterface> snmpinterfaces) {
             m_node = node;
             m_interfaces = interfaces;
             m_arpinterfaces = arpinterfaces;
+            m_snmpinterfaces = snmpinterfaces;
         }
         
         public OnmsNode getNode() {
@@ -98,6 +103,10 @@ public class NodeListModel {
         
         public List<OnmsArpInterface> getArpInterfaces() {
             return m_arpinterfaces;
+        }
+        
+        public List<OnmsSnmpInterface> getSnmpInterfaces() {
+            return m_snmpinterfaces;
         }
     }
 
