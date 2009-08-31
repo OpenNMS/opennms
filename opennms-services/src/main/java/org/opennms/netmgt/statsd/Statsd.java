@@ -84,25 +84,30 @@ public class Statsd implements SpringServiceDaemon {
         if (isReloadConfigEventTarget(e)) {
             log().info("handleReloadConfigEvent: reloading configuration...");
             EventBuilder ebldr = null;
-            try {
-                log().debug("handleReloadConfigEvent: remarshaling config...");
-                m_reportDefinitionBuilder.reload();
-                log().debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
-                unscheduleReports();
-                log().debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
-                start();
-                log().debug("handleRelodConfigEvent: reports rescheduled.");
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-            } catch (Exception exception) {
-                log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+
+            log().debug("handleReloadConfigEvent: acquiring lock...");
+            synchronized (m_scheduler) {
+                try {
+                    log().debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                    unscheduleReports();
+                    m_reportDefinitionBuilder.reload();
+                    log().debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
+                    log().debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
+                    start();
+                    log().debug("handleRelodConfigEvent: reports rescheduled.");
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                } catch (Exception exception) {
+                    log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+                }
+                if (ebldr != null) {
+                    getEventForwarder().sendNow(ebldr.getEvent());
+                }
             }
-            if (ebldr != null) {
-                getEventForwarder().sendNow(ebldr.getEvent());
-            }
+            log().debug("handleReloadConfigEvent: lock released.");
         }
         
     }
@@ -130,38 +135,51 @@ public class Statsd implements SpringServiceDaemon {
      * Changed this to just throw Exception since nothing is actually done with each individual exception types.
      */
     public void start() throws Exception {
-        log().info("start: scheduling Reports...");
-        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-            log().debug("start: scheduling Report: "+reportDef+"...");
-            scheduleReport(reportDef);
+        log().debug("start: acquiring lock...");
+        synchronized (m_scheduler) {
+            log().info("start: lock acquired (may have reentered), scheduling Reports...");
+            for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+                log().debug("start: scheduling Report: "+reportDef+"...");
+                scheduleReport(reportDef);
+            }
+            log().info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
         }
-        log().info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+        log().debug("start: lock released (unless reentrant).");
     }
     
     public void unscheduleReports() throws Exception {
-        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-            m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+        
+        synchronized (m_scheduler) {
+            for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+                m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+            }
         }
     }
     
     private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException {
-        MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
-        jobFactory.setTargetObject(this);
-        jobFactory.setTargetMethod("runReport");
-        jobFactory.setArguments(new Object[] { reportDef });
-        jobFactory.setConcurrent(false);
-        jobFactory.setBeanName(reportDef.getDescription());
-        jobFactory.afterPropertiesSet();
-        JobDetail jobDetail = (JobDetail) jobFactory.getObject();
         
-        CronTriggerBean cronReportTrigger = new CronTriggerBean();
-        cronReportTrigger.setBeanName(reportDef.getDescription());
-        cronReportTrigger.setJobDetail(jobDetail);
-        cronReportTrigger.setCronExpression(reportDef.getCronExpression());
-        cronReportTrigger.afterPropertiesSet();
-        
-        m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
-        log().debug("Schedule report " + cronReportTrigger);
+        //this is most likely reentrant since the method is private and called from start via plural version.
+        synchronized (m_scheduler) {
+            
+            MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
+            jobFactory.setTargetObject(this);
+            jobFactory.setTargetMethod("runReport");
+            jobFactory.setArguments(new Object[] { reportDef });
+            jobFactory.setConcurrent(false);
+            jobFactory.setBeanName(reportDef.getDescription());
+            jobFactory.afterPropertiesSet();
+            JobDetail jobDetail = (JobDetail) jobFactory.getObject();
+            
+            CronTriggerBean cronReportTrigger = new CronTriggerBean();
+            cronReportTrigger.setBeanName(reportDef.getDescription());
+            cronReportTrigger.setJobDetail(jobDetail);
+            cronReportTrigger.setCronExpression(reportDef.getCronExpression());
+            cronReportTrigger.afterPropertiesSet();
+            
+            m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
+            log().debug("Schedule report " + cronReportTrigger);
+            
+        }
     }
 
     public void runReport(ReportDefinition reportDef) throws Throwable {
