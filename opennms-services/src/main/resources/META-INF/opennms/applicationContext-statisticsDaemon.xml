@@ -22,13 +22,18 @@
       <property name="reportPersister" ref="reportPersister"/>
       <property name="scheduler" ref="scheduler"/>
       <property name="reportDefinitionBuilder" ref="reportDefinitionBuilder"/>
+      <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+      <property name="eventForwarder" ref="eventForwarder" />
     </bean>
+
+  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
 
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="schedulerName" value="Statsd" />
     </bean>
     
-    
-	
     <tx:annotation-driven/>
 </beans>

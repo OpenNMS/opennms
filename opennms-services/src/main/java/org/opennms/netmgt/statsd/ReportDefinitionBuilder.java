@@ -55,7 +55,19 @@ import org.springframework.util.Assert;
 public class ReportDefinitionBuilder implements InitializingBean {
     private StatisticsDaemonConfigDao m_statsdConfigDao;
     
-    public Collection<ReportDefinition> buildReportDefinitions() {
+    public void reload() throws DataAccessResourceFailureException {
+        m_statsdConfigDao.reloadConfiguration();
+        
+    }
+
+    /**
+     * Builds and schedules all reports enabled in the statsd-configuration.
+     * This method has the capability to throw a ton of exceptions, just generically throwing <code>Exception</code>
+     * 
+     * @return a <code>Collection</code> of enabled reports from the statsd-configuration.
+     * @throws Exception
+     */
+    public Collection<ReportDefinition> buildReportDefinitions() throws Exception {
         Set<ReportDefinition> reportDefinitions = new HashSet<ReportDefinition>();
         
         for (StatsdPackage pkg : m_statsdConfigDao.getPackages()) {
