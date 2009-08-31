@@ -1655,7 +1655,7 @@
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
         <groupId>org.opennms.smslib</groupId>
         <artifactId>smslib</artifactId>
-        <version>3.4.2-SNAPSHOT</version>
+        <version>3.4.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.snmp4j</groupId>
