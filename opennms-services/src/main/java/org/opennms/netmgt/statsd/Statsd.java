@@ -37,13 +37,22 @@
 package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventSubscriptionService;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -57,6 +66,7 @@ import org.springframework.util.Assert;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
+@EventListener(name="OpenNMS:Statsd")
 public class Statsd implements SpringServiceDaemon {
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
@@ -65,13 +75,75 @@ public class Statsd implements SpringServiceDaemon {
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
+    private volatile EventSubscriptionService m_eventSubscriptionService;
+    private volatile EventForwarder m_eventForwarder;
 
-    public void start() throws InterruptedException, ParseException, SchedulerException, ClassNotFoundException, NoSuchMethodException {
-        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-            scheduleReport(reportDef);
+    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(Event e) {
+        
+        if (isReloadConfigEventTarget(e)) {
+            log().info("handleReloadConfigEvent: reloading configuration...");
+            EventBuilder ebldr = null;
+            try {
+                log().debug("handleReloadConfigEvent: remarshaling config...");
+                m_reportDefinitionBuilder.reload();
+                log().debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
+                unscheduleReports();
+                log().debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
+                start();
+                log().debug("handleRelodConfigEvent: reports rescheduled.");
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+            } catch (Exception exception) {
+                log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
+            }
         }
+        
+    }
+    
+    private boolean isReloadConfigEventTarget(Event event) {
+        boolean isTarget = false;
+        
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Statsd".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        
+        log().debug("isReloadConfigEventTarget: Statsd was target of reload event: "+isTarget);
+        return isTarget;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.daemon.SpringServiceDaemon#start()
+     *
+     * Changed this to just throw Exception since nothing is actually done with each individual exception types.
+     */
+    public void start() throws Exception {
+        log().info("start: scheduling Reports...");
+        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+            log().debug("start: scheduling Report: "+reportDef+"...");
+            scheduleReport(reportDef);
+        }
+        log().info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+    }
+    
+    public void unscheduleReports() throws Exception {
+        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+            m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+        }
+    }
+    
     private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException {
         MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
         jobFactory.setTargetObject(this);
@@ -126,6 +198,7 @@ public class Statsd implements SpringServiceDaemon {
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
         Assert.state(m_scheduler != null, "property scheduler must be set to a non-null value");
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
+        Assert.state(m_eventForwarder != null, "eventForwarder property must be set to a non-null value");
     }
     
     public ResourceDao getResourceDao() {
@@ -182,5 +255,21 @@ public class Statsd implements SpringServiceDaemon {
 
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        m_eventSubscriptionService = eventSubscriptionService;
+    }
+
+    public EventSubscriptionService getEventSubscriptionService() {
+        return m_eventSubscriptionService;
     }
 }

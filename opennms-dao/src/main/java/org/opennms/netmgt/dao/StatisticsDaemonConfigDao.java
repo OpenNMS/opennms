@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO for accessing the configuration for statsd.
@@ -50,4 +51,6 @@ public interface StatisticsDaemonConfigDao {
     public List<Report> getReports();
     
     public List<StatsdPackage> getPackages();
+    
+    void reloadConfiguration() throws DataAccessResourceFailureException;
 }
