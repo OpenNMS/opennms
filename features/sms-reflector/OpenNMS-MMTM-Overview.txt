@@ -8,13 +8,13 @@ Objectives
 Based on the discussions our team had with you and Carlos we settled
 on the following design objectives for the first milestone:
 
-1.  Be able to verify that SMS messages sent from one phone to another
+1.  Be able to verify that SMS messages are sent from one phone to another
     and to track how long it takes to send these messages.
 
-2.  Be able to verify that interactions with the TIGO system via either
-    SMS or USSD are functioning correctly (and example of this would
-    be a gift SMS message or gifting SMS Minutes as defined in the
-    spreadsheet you sent to Jeff)  Time measurements will also be
+2.  Be able to verify that interactions with the TIGO network via either
+    SMS or USSD are functioning correctly (an example of this would
+    be a gift SMS message or gifting account balance as defined in the
+    spreadsheet you sent to Jeff).  Time measurements will also be
     valuable for this case.
 
 
@@ -28,23 +28,23 @@ Architectural Overview
 OpenNMS has a Poller that periodically tests various services like
 HTTP, SMTP, or ICMP periodically to ensure that these services are
 functioning and to collect latency data for them.  If one of these
-services fails to respond correctly, the poller will send create an
-outage and send an event.  These events can be used with our
-notification mechanism to notify administrations of network failures.
+services fails to respond correctly, the poller will create an outage
+and send an event.  These events can be used with our notification
+mechanism to notify administrators of network failures.
 
 These service specific tests are provided to the poller through the use
 of a plugin architecture.  Each type of test is provided to the poller
-as a plugin know as a ServiceMonitor.  These plugins have the
+as a plugin known as a ServiceMonitor.  These plugins have the
 responsibility when asked to determine if the service they represent
 is functioning on the interface that is being tested. 
 
 In the OpenNMS GUI each of these monitors are represented as a service
 on an interface.  Latency data is displayed for them via Response Time
-graphs for the service and outages are represented in the Outage table
+graphs for the service and outages are represented in the outage table
 and as events and alarms.
 
 The MMTM requirements seem to fit this model well.  Each type of
-service will need to be periodcally tested and measured for latency.
+service will need to be periodically tested and measured for latency.
 In the event of outages these will need to be tracked and technicians
 will need to be notified.  Since this fit so well we decided to
 implement the requirements as two ServiceMonitors, the SMSPingMonitor
@@ -57,7 +57,7 @@ to do monitoring, quite a bit of additional infrastructure was needed
 to make the monitors work. 
 
 The finished milestone will include a set of libraries that adds modem
-support to java and provides for the sending and receiving of SMS and
+support to Java and provides for the sending and receiving of SMS and
 USSD messages.
 
 Also included will be a program known as the sms-reflector.  It has
@@ -106,12 +106,12 @@ and workaround.  But we now have these resolved.
 
 smslib - On top of access to the serial ports we needed code that
 understood the modem commands for sending and receiving SMS messages.
-We use the opensource library smslib to process these.  Smslib did not
+We use the open source library smslib to process these.  Smslib did not
 have USSD support and we have added this to smslib in order to make
-use of it with out project.
+use of it with our project.
 
 SmsPingMonitor - In order to verify basic Ping functionality to remote
-systems, we implemented an "SMS Pinger"  This allows us to sends an SMS
+systems, we implemented an "SMS Pinger."  This allows us to sends an SMS
 message to a remote phone and have the phone respond with a simple
 response.  If we receive the response in the specified timeout then we
 mark the SMS service as up and save the latency data.  Otherwise, we
@@ -137,7 +137,7 @@ can act as the 'initiator' in every case.
 
 
 modem/phone - Although I have represented only a single phone in the
-diagram, It is not clear how we will be able to deal with interleaving
+diagram, it is not clear how we will be able to deal with interleaving
 of different sequences while running in a multi-threaded high
 throughput environment.  It may be necessary to have multiple
 modems/phones connected to a system in order to ensure we can handle
