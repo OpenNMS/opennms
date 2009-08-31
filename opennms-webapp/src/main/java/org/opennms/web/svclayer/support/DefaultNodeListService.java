@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2007-2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2007-2009 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
  * Created: February 12, 2007
  *
  *
@@ -62,6 +63,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.web.command.NodeListCommand;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.NodeListService;
@@ -79,6 +81,7 @@ import org.springframework.util.Assert;
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
     private static final Comparator<OnmsArpInterface> ARP_INTERFACE_COMPARATOR = new ArpInterfaceComparator();
+    private static final Comparator<OnmsSnmpInterface> SNMP_INTERFACE_COMPARATOR = new SnmpInterfaceComparator();
     
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
@@ -146,7 +149,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.createAlias("node.ipInterfaces", "ipInterface");
         criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
 
-        criteria.createAlias("node.ipInterfaces.snmpInterface", "snmpInterface");
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface");
         if(snmpParmMatchType.equals("contains")) {
             criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
         } else if(snmpParmMatchType.equals("equals")) {
@@ -289,45 +292,46 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         for (OnmsNode node : onmsNodes) {
             List<OnmsIpInterface> displayInterfaces = new LinkedList<OnmsIpInterface>();
             List<OnmsArpInterface> displayArpInterfaces = new LinkedList<OnmsArpInterface>();
+            List<OnmsSnmpInterface> displaySnmpInterfaces = new LinkedList<OnmsSnmpInterface>();
             if (command.getListInterfaces()) {
                 if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("contains")) {
                     String parmValueMatchString = (".*" + command.getSnmpParmValue().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("\\\\%", ".*").replaceAll("_", ".") + ".*");
-                    if (command.getSnmpParm().equals("ifAlias")) { 
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().toLowerCase().matches(parmValueMatchString)) {
-                                displayInterfaces.add(intf);
+                    if (command.getSnmpParm().equals("ifAlias")) {
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().toLowerCase().matches(parmValueMatchString)) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifName")) {
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfName() != null && intf.getSnmpInterface().getIfName().toLowerCase().matches(parmValueMatchString)) {
-                                displayInterfaces.add(intf);
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null &&snmpIntf.getIfName() != null && snmpIntf.getIfName().toLowerCase().matches(parmValueMatchString)) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifDescr")) {
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfDescr() != null && intf.getSnmpInterface().getIfDescr().toLowerCase().matches(parmValueMatchString)) {
-                                displayInterfaces.add(intf);
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().toLowerCase().matches(parmValueMatchString)) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     }
                 } else if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("equals")) {
                     if (command.getSnmpParm().equals("ifAlias")) {
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null && intf.getSnmpInterface().getIfAlias() != null && intf.getSnmpInterface().getIfAlias().equalsIgnoreCase(command.getSnmpParmValue())) {
-                                displayInterfaces.add(intf);
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifName")) {
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfName() != null && intf.getSnmpInterface().getIfName().equalsIgnoreCase(command.getSnmpParmValue())) {
-                                displayInterfaces.add(intf);
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null &&snmpIntf.getIfName() != null && snmpIntf.getIfName().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifDescr")) {
-                        for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                            if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getIfDescr() != null && intf.getSnmpInterface().getIfDescr().equalsIgnoreCase(command.getSnmpParmValue())) {
-                                displayInterfaces.add(intf);
+                        for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                            if (snmpIntf != null &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().equalsIgnoreCase(command.getSnmpParmValue())) {
+                                displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     }
@@ -337,6 +341,14 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(macLikeStripped)) {
                 			displayInterfaces.add(intf);
                 		}
+                	}
+                	for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
+                	    if (snmpIntf.getPhysAddr() != null && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
+                	        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(snmpIntf.getIpAddress());
+                	        if (intf == null) {
+                	            displaySnmpInterfaces.add(snmpIntf);
+                	        }
+                	    }
                 	}
                 	for (OnmsArpInterface aint : node.getArpInterfaces()) {
                 		if (aint.getPhysAddr() != null && aint.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
@@ -356,11 +368,13 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             }
             
             Collections.sort(displayInterfaces, IP_INTERFACE_COMPARATOR);
-            Collections.sort(displayArpInterfaces, ARP_INTERFACE_COMPARATOR);           
+            Collections.sort(displayArpInterfaces, ARP_INTERFACE_COMPARATOR);
+            Collections.sort(displaySnmpInterfaces, SNMP_INTERFACE_COMPARATOR);
 
-            displayNodes.add(new NodeListModel.NodeModel(node, displayInterfaces, displayArpInterfaces));
+            displayNodes.add(new NodeListModel.NodeModel(node, displayInterfaces, displayArpInterfaces, displaySnmpInterfaces));
             interfaceCount += displayInterfaces.size();
             interfaceCount += displayArpInterfaces.size();
+            interfaceCount += displaySnmpInterfaces.size();
         }
 
         return new NodeListModel(displayNodes, interfaceCount);
@@ -457,6 +471,47 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             
             // Sort by ifIndex
             if ((diff = o1.getSnmpInterface().getIfIndex().compareTo(o2.getSnmpInterface().getIfIndex())) != 0) {
+                return diff;
+            }
+
+            // Fallback to id
+            return o1.getId().compareTo(o2.getId());
+        }
+    }
+    /**
+     * This class implements a comparator for OnmsSnmpInterfaces. (For comparing non-ip interfaces).
+     *
+     */
+    public static class SnmpInterfaceComparator implements Comparator<OnmsSnmpInterface>, Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public int compare(OnmsSnmpInterface o1, OnmsSnmpInterface o2) {
+            int diff;
+            
+            // Sort by ifName
+            if (o1.getIfName() == null || o2.getIfName() == null) {
+                if (o1.getIfName() != null) {
+                    return -1;
+                } else if (o2.getIfName() != null) {
+                    return 1;
+                }
+            } else if ((diff = o1.getIfName().compareTo(o2.getIfName())) != 0) {
+                return diff;
+            }
+            
+            // Sort by ifDescr
+            if (o1.getIfDescr() == null || o2.getIfDescr() == null) {
+                if (o1.getIfDescr() != null) {
+                    return -1;
+                } else if (o2.getIfDescr() != null) {
+                    return 1;
+                }
+            } else if ((diff = o1.getIfDescr().compareTo(o2.getIfDescr())) != 0) {
+                return diff;
+            }
+            
+            // Sort by ifIndex
+            if ((diff = o1.getIfIndex().compareTo(o2.getIfIndex())) != 0) {
                 return diff;
             }
 
