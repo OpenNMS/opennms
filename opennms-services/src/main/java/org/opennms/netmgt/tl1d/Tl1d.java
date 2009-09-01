@@ -36,18 +36,24 @@
 package org.opennms.netmgt.tl1d;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.jfree.util.Log;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.Tl1ConfigurationDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventSubscriptionService;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -55,14 +61,16 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean, EventListener {
+@EventListener(name="OpenNMS:Tl1d")
+public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean {
 
     /*
      * The last status sent to the service control manager.
      */
     private volatile int m_status = START_PENDING;
     private volatile Thread m_tl1MesssageProcessor;
-    private volatile EventIpcManager m_eventManager;
+    private volatile EventSubscriptionService m_eventSubscriptionService;
+    private volatile EventForwarder m_eventForwarder;
 	private volatile Tl1ConfigurationDao m_configurationDao;
 
     private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
@@ -72,25 +80,147 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         super("OpenNMS.Tl1d");
     }
 	
-	public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
-	    m_configurationDao = configurationDao;
-	}
+    /**
+     * 
+     */
+    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleRelooadConfigurationEvent(Event e) {
+        
 
+        if (isReloadConfigEventTarget(e)) {
+            EventBuilder ebldr = null;
+            try {
+                stopListeners();
+                removeClients();
+                /*
+                 * leave everything currently on the queue, no need to mess with that, might want a handler
+                 * someday for emptying the current queue on a reload event or even a pause clients or something.
+                 * 
+                 * Don't interrupt message processor, it simply waits on the queue from something to be added.
+                 * 
+                 */
 
-    public void setEventManager(EventIpcManager eventManager) {
-        m_eventManager = eventManager;
+                m_configurationDao.update();
+
+                initializeTl1Connections();
+
+                startClients();
+
+                log().debug("handleReloadConfigurationEvent: "+m_tl1Clients.size()+" defined.");
+                log().info("handleReloadConfigurationEvent: completed.");
+                
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");
+
+            } catch (Exception exception) {
+                log().error("handleReloadConfigurationEvent: failed.", exception);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");
+                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+            }
+            
+            if (ebldr != null) {
+                m_eventForwarder.sendNow(ebldr.getEvent());
+            }
+
+        }
+    }
+    
+    private boolean isReloadConfigEventTarget(Event event) {
+        boolean isTarget = false;
+        
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Tl1d".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        
+        log().debug("isReloadConfigEventTarget: Tl1d was target of reload event: "+isTarget);
+        return isTarget;
     }
 
     public synchronized void onInit() {
-        log().info("onInit: Initializing Tl1d connections." );
-    
-        //initialize a factory of configuration
+        initializeTl1Connections();  
+    }
+
+    public synchronized void onStart() {
+        log().info("onStart: Initializing Tl1d message processing." );
+        
+        m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
+            public void run() {
+                doMessageProcessing();
+            }
+        };
+
+        log().info("onStart: starting message processing thread...");
+        m_tl1MesssageProcessor.start();
+        log().info("onStart: message processing thread started.");
+
+        startClients();
+        
+        log().info("onStart: Finished Initializing Tl1d connections.");
+    }
+
+    private void startClients() {
+        log().info("startClients: starting clients...");
+        
+        for (Tl1Client client : m_tl1Clients) {
+            log().debug("startClients: starting client: "+client);
+            client.start();
+            log().debug("startClients: started client.");
+        }
+        
+        log().info("startClients: clients started.");
+    }
+
+	public synchronized void onStop() {
+		stopListeners();
+        m_tl1MesssageProcessor.interrupt();
+		removeClients();
+	}
+	
+	private void removeClients() {
+	    
+	    log().info("removeClients: removing current set of defined TL1 clients...");
+	    
+	    Iterator<Tl1Client> it = m_tl1Clients.iterator();
+	    while (it.hasNext()) {
+            Tl1Client client = it.next();
+            
+            log().debug("removeClients: removing client: "+client);
+            
+            client = null;
+            it.remove();
+        }
+	    
+	    log().info("removeClients: all clients removed.");
+	}
+
+    private void stopListeners() {
+        log().info("stopListeners: calling stop on all clients...");
+        
+        for (Tl1Client client : m_tl1Clients) {
+            log().debug("stopListeners: calling stop on client: "+client);
+			client.stop();
+		}
+        
+        log().info("stopListeners: clients stopped.");
+    }
+
+    private void initializeTl1Connections() {
+        log().info("onInit: Initializing Tl1d connections..." );
     
         List<Tl1Element> configElements = m_configurationDao.getElements();
     
         for(Tl1Element element : configElements) {
             try {
                 Tl1Client client = (Tl1Client) Class.forName(element.getTl1ClientApi()).newInstance();
+                
+                log().debug("initializeTl1Connections: initializing client: "+client);
+                
                 client.setHost(element.getHost());
                 client.setPort(element.getPort());
                 client.setTl1Queue(m_tl1Queue);
@@ -98,6 +228,8 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
                 client.setLog(log());
                 client.setReconnectionDelay(element.getReconnectDelay());
                 m_tl1Clients.add(client);
+                
+                log().debug("initializeTl1Connections: client initialized.");
             } catch (InstantiationException e) {
                 log().error("onInit: could not instantiate specified class.", e);
             } catch (IllegalAccessException e) {
@@ -107,34 +239,11 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
             }
         }
 
-        log().info("onInit: Finished Initializing Tl1d connections.");  
+        log().info("onInit: Finished Initializing Tl1d connections.");
     }
-
-    public synchronized void onStart() {
-        log().info("onStart: Initializing Tl1d message processing." );
-        m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
-            public void run() {
-                doMessageProcessing();
-            }
-        };
-
-        m_tl1MesssageProcessor.start();
-
-        for (Tl1Client client : m_tl1Clients) {
-            client.start();
-        }
-        log().info("onStart: Finished Initializing Tl1d connections.");
-    }
-
-	public synchronized void onStop() {
-		for (Tl1Client client : m_tl1Clients) {
-			client.stop();
-		}
-		m_tl1MesssageProcessor.interrupt();
-	}
-
 
     private void processMessage(Tl1AutonomousMessage message) {
+        
         log().debug("processMessage: Processing message: "+message);
 
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
@@ -152,16 +261,11 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         bldr.addParam("aid",message.getAutoBlock().getAid());
         bldr.addParam("additionalParams",message.getAutoBlock().getAdditionalParams());
         
-        m_eventManager.sendNow(bldr.getEvent());
+        m_eventForwarder.sendNow(bldr.getEvent());
+        
         log().debug("processMessage: Message processed: "+ message);
     }
 
-
-    public void onPause() {
-    }
-
-    public void onResume() {
-    }
 
     /**
      * Returns the current status of the service.
@@ -177,16 +281,40 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         boolean cont = true;
         while (cont ) {
             try {
+                log().debug("doMessageProcessing: taking message from queue..");
+                
                 Tl1AutonomousMessage message = m_tl1Queue.take();
+                
+                log().debug("doMessageProcessing: message taken: "+message);
+                
                 processMessage(message);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.warn("doMessageProcessing: received interrupt: "+e, e);
             }
         }
+        
         log().debug("doMessageProcessing: Exiting processing messages.");
     }
-
-    public void onEvent(Event e) {
+    
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
+
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        m_eventSubscriptionService = eventSubscriptionService;
+    }
+
+    public EventSubscriptionService getEventSubscriptionService() {
+        return m_eventSubscriptionService;
+    }
+    
+    public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
+        m_configurationDao = configurationDao;
+    }
+
 
 }
