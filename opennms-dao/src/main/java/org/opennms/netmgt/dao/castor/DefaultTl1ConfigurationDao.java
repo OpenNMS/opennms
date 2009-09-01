@@ -35,13 +35,14 @@ import java.util.List;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.dao.Tl1ConfigurationDao;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DefaultTl1ConfigurationDao
  *
  * @author brozow
  */
-public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConfiguration, List<Tl1Element>>implements Tl1ConfigurationDao {
+public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConfiguration, Tl1dConfiguration>implements Tl1ConfigurationDao {
 
     public DefaultTl1ConfigurationDao() {
         super(Tl1dConfiguration.class, "TL1d configuration");
@@ -51,13 +52,16 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
      * @see org.opennms.netmgt.dao.Tl1ConfigurationDao#getElements()
      */
     public List<Tl1Element> getElements() {
-        return getContainer().getObject();
+        return Collections.unmodifiableList(getContainer().getObject().getTl1ElementCollection());
     }
 
+    public void update() throws DataAccessResourceFailureException {
+        getContainer().reload();
+    }
 
     @Override
-    public List<Tl1Element> translateConfig(Tl1dConfiguration castorConfig) {
-        return Collections.unmodifiableList(castorConfig.getTl1ElementCollection());
+    public Tl1dConfiguration translateConfig(Tl1dConfiguration castorConfig) {
+        return castorConfig;
     }
 
 }

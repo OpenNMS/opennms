@@ -65,7 +65,7 @@ import java.util.Date;
 <td><i>MyNE</i></td>
 <td><i>04-08-14</i></td>
 <td><i>09:12:04</i></td>
-<td><i>A</i></td>
+<td><i><center>A</center></i></td>
 <td><i>101</i></td>
 <td><i>REPT EVT SESSION</i></td>
 <td></td>

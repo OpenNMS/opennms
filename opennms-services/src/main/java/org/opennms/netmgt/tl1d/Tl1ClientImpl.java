@@ -46,6 +46,7 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Category;
+import org.jfree.util.Log;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 
 /**
@@ -57,7 +58,7 @@ public class Tl1ClientImpl implements Tl1Client {
 
     String m_host;
     int m_port;
-    boolean m_started = false;
+    private volatile boolean m_started = false;
 
     private Socket m_tl1Socket;
     private Thread m_socketReader;
@@ -89,9 +90,9 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#start()
      */
     public void start() {
-        m_log.info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
-        m_log.info("start:Connection delay = " + m_reconnectionDelay );
-        m_started = true;
+        log().info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
+        log().info("start:Connection delay = " + m_reconnectionDelay );
+        setStarted(true);
 
         m_socketReader = new Thread("TL1-Socket-Reader") {
 
@@ -102,50 +103,65 @@ public class Tl1ClientImpl implements Tl1Client {
         };
 
         m_socketReader.start();
-        m_log.info("Started TL1 client: "+m_host+":"+String.valueOf(m_port));
+        log().info("Started TL1 client: "+m_host+":"+String.valueOf(m_port));
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#stop()
      */
     public void stop() {
-        m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
-        m_started = false;
+        log().info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+        setStarted(false);
+        
+        //waiting a second or so for the reader thread to clean up the socket and shut
+        //itself down.
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Log.error("stop: "+e, e);
+        }
     }
 
-    private BufferedReader getReader() {
+    private BufferedReader getReader() throws InterruptedException {
         if (m_reader == null) {
             m_reader = createReader();
         }
         return m_reader;
     }
 
-    private BufferedReader createReader() {
+    private BufferedReader createReader() throws InterruptedException {
         BufferedReader reader;
-        while (m_started) {
+        
+        while (isStarted()) {
+            
             try {
                 m_tl1Socket = new Socket(m_host, m_port);
                 reader = new BufferedReader(new InputStreamReader(m_tl1Socket.getInputStream()));
                 resetTimeout();
                 return reader;
+                
             } catch (IOException e) {
-                m_log.error("TL1 Connection Failed to " + m_host + ":" + m_port);
-                m_log.debug(e);
+                log().error("TL1 Connection Failed to " + m_host + ":" + m_port);
+                log().debug(e);
+                
                 waitUntilNextConnectTime();
             } 
         }
+        
         return null;
     }
 
     private void resetTimeout() {
-        m_log.debug("resetTimeout: Resetting timeout Thread");
+        log().debug("resetTimeout: Resetting timeout Thread");
         m_reconnectAttempts = 0;
         m_sleeper = null;
     }
 
-    private void waitUntilNextConnectTime() {
-        m_log.debug("waitUntilNextConnectTime: current connection attempts: "+m_reconnectAttempts);
-        if (m_started) {
+    private void waitUntilNextConnectTime() throws InterruptedException {
+        log().debug("waitUntilNextConnectTime: current connection attempts: "+m_reconnectAttempts);
+        
+        if (isStarted()) {
+            
             if (m_sleeper == null) {
                 m_sleeper = new TimeoutSleeper();
             }
@@ -153,8 +169,9 @@ public class Tl1ClientImpl implements Tl1Client {
             m_reconnectAttempts++;
             /* If the system is not responding, we want to wait longer and longer for the retry */
             long waitTime = computeWait();
-            m_log.info("waitUntilNextConnectTime: Waiting " + waitTime + " ms......");
-            try { m_sleeper.sleep(waitTime); } catch (InterruptedException e) {}
+            log().info("waitUntilNextConnectTime: Waiting " + waitTime + " ms......");
+            
+            m_sleeper.sleep(waitTime);
         }
     }
 
@@ -172,15 +189,26 @@ public class Tl1ClientImpl implements Tl1Client {
     private void readMessages() {
         StringBuilder rawMessageBuilder = new StringBuilder();
         
-        m_log.info("readMessages: Begin reading off socket...");
-        while(m_started) {
+        log().info("readMessages: Begin reading off socket...");
+        
+        while (isStarted()) {
             try {
-                m_log.info("readMessages: reading line from TL1 socket...");
-                BufferedReader reader = getReader();
+                log().debug("readMessages: reading line from TL1 socket...");
+                
+                BufferedReader reader = null;
+                
+                try {
+                    reader = getReader();
+                    
+                } catch (InterruptedException e) {
+                    log().warn("readMessages: interrupted.");
+                    return;
+                }
                 
                 if (reader != null) {
                     int ch;
-                    while((ch = reader.read()) != -1) {
+                    
+                    while((ch = reader.read()) != -1 && isStarted()) {
                         rawMessageBuilder.append((char)ch);
                         
                         if((char)ch == ';') {
@@ -188,24 +216,32 @@ public class Tl1ClientImpl implements Tl1Client {
                             rawMessageBuilder.setLength(0);
                         }
                     }
-                    m_log.warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
+                    rawMessageBuilder = null;
+                    
+                    log().warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
                     resetReader(null);
                 }
+                
             } catch (IOException e) {
                 resetReader(e);
             }
         }
-        m_log.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+        
+        log().info("TL1 client stopped for: "+m_host+":"+String.valueOf(m_port));
+    }
+
+    private Category log() {
+        return m_log;
     }
 
     private void createAndQueueTl1Message(StringBuilder rawMessageBuilder) {
-        m_log.debug("readMessages: offering message to queue: "+rawMessageBuilder.toString());
+        log().debug("readMessages: offering message to queue: "+rawMessageBuilder.toString());
         Tl1AutonomousMessage message = detectMessageType(rawMessageBuilder);
         if (message != null) {
             m_tl1Queue.offer(message);
-            m_log.debug("readMessages: successfully offered to queue.");
+            log().debug("readMessages: successfully offered to queue.");
         } else {
-            m_log.debug("readMessages: message was null, not offered to queue.");
+            log().debug("readMessages: message was null, not offered to queue.");
         }
     }
 
@@ -228,20 +264,29 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void resetReader(IOException ex) {
+        
         if (ex != null) {
-            m_log.error("resetReader: connection failure.", ex);
+            log().error("resetReader: connection failure.", ex);
         }
+        
         try {
             m_reader.close();
-        } catch (IOException e) { 
+            
+        } catch (IOException e) {
+            log().warn("resetReader: "+e, e);
+            
         } finally {
             m_reader = null;
         }
+        
         try {
             m_tl1Socket.close();
+            
         } catch (IOException e) {
+            log().warn("resetReader: "+e, e);
             m_tl1Socket = null;
         }
+        
     }
 
     /* (non-Javadoc)
@@ -302,6 +347,14 @@ public class Tl1ClientImpl implements Tl1Client {
         m_messageProcessor = messageProcessor;
     }
 
+    public void setStarted(boolean started) {
+        m_started = started;
+    }
+
+    public boolean isStarted() {
+        return m_started;
+    }
+
     public void setLog(Category log) {
         m_log = log;
     }
@@ -316,4 +369,10 @@ public class Tl1ClientImpl implements Tl1Client {
             Thread.sleep(sleepTime);
         }
     }
+    
+    @Override
+    public String toString() {
+        return "Tl1Client: class: "+getClass()+"; host: "+m_host+"; port: "+m_port;
+    }
+    
 }
