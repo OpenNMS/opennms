@@ -114,7 +114,7 @@ public class EventRestService extends OnmsRestService {
 		MultivaluedMap<java.lang.String, java.lang.String> params = m_uriInfo
 				.getQueryParameters();
 		OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
-		setLimitOffset(params, criteria, 10);
+		setLimitOffset(params, criteria, 10, true);
 		addFiltersToCriteria(params, criteria, OnmsEvent.class);
 		//added ordering of the events based on id
 		criteria.addOrder(Order.desc("eventTime"));
@@ -164,7 +164,7 @@ public class EventRestService extends OnmsRestService {
 		}
 		
 		OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
-		setLimitOffset(formProperties, criteria, 10);
+		setLimitOffset(formProperties, criteria, 10, true);
 		addFiltersToCriteria(formProperties, criteria, OnmsEvent.class);
 
 		

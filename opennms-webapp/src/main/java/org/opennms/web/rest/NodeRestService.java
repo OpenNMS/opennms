@@ -179,7 +179,7 @@ public class NodeRestService extends OnmsRestService {
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
 
-    	setLimitOffset(params, criteria, LIMIT);
+    	setLimitOffset(params, criteria, LIMIT, false);
         addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsNode.class);
 

@@ -99,7 +99,7 @@ public class AlarmRestService extends OnmsRestService {
 			formProperties.remove("ack");
 		}
 		OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-		setLimitOffset(formProperties, criteria, 10);
+		setLimitOffset(formProperties, criteria, 10, true);
 		addFiltersToCriteria(formProperties, criteria, OnmsAlarm.class);
 		for (OnmsAlarm alarm : m_alarmDao.findMatching(criteria)) {
 			processAlarmAck(alarm, ack);

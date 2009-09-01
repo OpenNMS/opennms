@@ -67,8 +67,8 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        setLimitOffset(params, criteria, 20);
-        addOrdering(params, criteria);
+        setLimitOffset(params, criteria, 20, true);
+        addOrdering(params, criteria, true);
         
         addFiltersToCriteria(params, criteria, OnmsIpInterface.class);
         criteria.createCriteria("node").add(Restrictions.eq("id", node.getId()));
