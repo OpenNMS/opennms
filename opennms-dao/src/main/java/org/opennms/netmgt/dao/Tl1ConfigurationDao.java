@@ -32,6 +32,7 @@ package org.opennms.netmgt.dao;
 import java.util.List;
 
 import org.opennms.netmgt.config.tl1d.Tl1Element;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * Tl1ConfigurationDao
@@ -41,5 +42,7 @@ import org.opennms.netmgt.config.tl1d.Tl1Element;
 public interface Tl1ConfigurationDao {
     
     List<Tl1Element> getElements();
+    
+    void update() throws DataAccessResourceFailureException;
 
 }

@@ -8,11 +8,18 @@
        
   <bean id="tl1dConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml" />
+    <property name="reloadCheckInterval" value="-1" />
   </bean>
   
   <bean id="daemon" class="org.opennms.netmgt.tl1d.Tl1d">
-    <property name="eventManager" ref="eventIpcManager" />
     <property name="configurationDao" ref="tl1dConfigurationDao" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+  
+  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
   
 </beans>
