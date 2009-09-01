@@ -13,8 +13,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.tasks.SyncTask;
 import org.opennms.core.tasks.Task;
+import org.opennms.sms.monitor.NullOperationTask;
+import org.opennms.sms.monitor.OperationTask;
+import org.opennms.sms.monitor.ReceiveSmsOperationTask;
+import org.opennms.sms.monitor.ReceiveUssdOperationTask;
+import org.opennms.sms.monitor.SendSmsOperationTask;
+import org.opennms.sms.monitor.SendUssdOperationTask;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="operation")
@@ -69,21 +74,20 @@ public class SequenceOperation extends BaseOperation {
 		m_parameters = parameters;
 	}
 
-	public class SequenceOperationTask extends SyncTask {
-		private SequenceOperation m_operation;
-
-		public SequenceOperationTask(DefaultTaskCoordinator coordinator, ContainerTask parent, SequenceOperation operation) {
-			super(coordinator, parent, null);
-			m_operation = operation;
+	public OperationTask createTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+		// FIXME: use the new service registry stuff to keep track of various task implementations
+		OperationTask task;
+		if (getType().equals("send-ussd")) {
+			task = new SendUssdOperationTask(coordinator, parent, this);
+		} else if (getType().equals("receive-ussd")) {
+			task = new ReceiveUssdOperationTask(coordinator, parent, this);
+		} else if (getType().equals("send-sms")) {
+			task = new SendSmsOperationTask(coordinator, parent, this);
+		} else if (getType().equals("receive-sms")) {
+			task = new ReceiveSmsOperationTask(coordinator, parent, this);
+		} else {
+			task = new NullOperationTask(coordinator, parent, this);
 		}
-
-		public void run() {
-			System.err.println("running SequenceOperation: " + m_operation);
-		}
-	}
-	
-	public Task createTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
-		Task task = new SequenceOperationTask(coordinator, parent, this);
 		parent.add(task);
 		return task;
 	}

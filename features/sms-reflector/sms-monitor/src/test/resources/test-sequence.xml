@@ -7,27 +7,27 @@
   </session-variable>
   <transaction type="synchronous" label="USSD balance">
     <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
-    <operation type="test" label="originator sends balance request">
+    <operation type="send-ussd" label="originator sends balance request">
       <value>*327*${session.target}*${session.amount}#</value>
     </operation>
-    <operation type="test" label="network asks for balance confirmation">
+    <operation type="receive-ussd" label="network asks for balance confirmation">
       <match type="success">~Transfiere L ${session.amount} al ${session.target}</match>
       <parameters>
         <!-- CUSD -->
         <parameter key="session-status" value="1" />
       </parameters>
     </operation>
-    <operation type="test" label="send 1 to confirm balance request">
+    <operation type="send-ussd" label="send 1 to confirm balance request">
       <value>1</value>
     </operation>
     <transaction type="asynchronous">
-      <operation type="test" label="transaction is processing">
+      <operation type="receive-ussd" label="transaction is processing">
         <match type="success">~Su transaccion se esta procesando</match>
         <parameters>
           <parameter key="session-status" value="0" />
         </parameters>
       </operation>
-      <operation type="test" label="receive balance amount">
+      <operation type="receive-sms" label="receive balance amount">
         <match type="success">~le ha transferido L ${session.amount}</match>
         <parameters>
           <parameter key="validate-source" value="+3746" />

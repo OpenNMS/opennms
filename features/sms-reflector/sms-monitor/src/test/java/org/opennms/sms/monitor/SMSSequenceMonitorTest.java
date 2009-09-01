@@ -1,7 +1,6 @@
 package org.opennms.sms.monitor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -22,9 +20,6 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.sms.reflector.smsservice.SmsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,7 +35,6 @@ public class SMSSequenceMonitorTest {
 	MonitoredService m_service;
 	
 	@Before
-	@SuppressWarnings("unchecked")
 	public void setUp() {
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
@@ -126,7 +120,7 @@ public class SMSSequenceMonitorTest {
     private StringBuffer getXmlBuffer(String fileName) throws IOException {
         StringBuffer xmlBuffer = new StringBuffer();
         File xmlFile = new File(ClassLoader.getSystemResource(fileName).getFile());
-        assertTrue("ussd-balance-sequence.xml is readable", xmlFile.canRead());
+        assertTrue("xml file is readable", xmlFile.canRead());
 
         BufferedReader reader = new BufferedReader(new FileReader(xmlFile));
         String line;
