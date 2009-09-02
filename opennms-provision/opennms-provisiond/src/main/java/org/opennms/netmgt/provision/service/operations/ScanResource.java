@@ -38,7 +38,10 @@ public class ScanResource {
                 m_node.setSysLocation(value);
             } else if (key.equals("sysObjectId")) {
                 m_node.setSysObjectId(value);
+            } else if (key.equals("sysName")) {
+                m_node.setSysName(value);
             }
+            
         }
     }
 
