@@ -495,12 +495,18 @@ public class ThresholdingVisitorTest {
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
-        // Add Events
+        /*
+         * Add Events
+         * FIXME Depending of Java Version used the event order is different.
+         * For Java5, first add 'myCounter - 30' then 'myCounter'
+         * For Java6, first add 'myCounter' then 'myCounter - 30'
+         * Is this related to thresholds.xml parsing ?
+         */
         addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
         addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
         addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
         addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
-
+        
         // Collect Step 1 : First Data: Last should be NaN
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(2000));
@@ -914,7 +920,7 @@ public class ThresholdingVisitorTest {
         m_anticipatedEvents.add(e);
     }
     
-    void verifyEvents(int remainEvents) {
+    private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
             log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
@@ -926,34 +932,51 @@ public class ThresholdingVisitorTest {
                 fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
-                String anticipated = eventToString(m_anticipatedEvents.get(i));
-                String received = eventToString(receivedList.get(i));
-                log().info("verifyEvents: Anticipated " + anticipated);
-                log().info("verifyEvents: Received    " + received);
-                assertTrue(received.startsWith(anticipated));
+                log().info("verifyEvents: processing event " + (i+1));
+                assertTrue(compareEvents(m_anticipatedEvents.get(i), receivedList.get(i)));
             }
         }
-        m_anticipator.verifyAnticipated(1000, 0, 0, remainEvents, 0);
+        m_anticipator.verifyAnticipated(0, 0, 0, remainEvents, 0);
     }
     
-    public String eventToString(Event e) {
-        StringBuffer b = new StringBuffer();
-        b.append(e.getUei());
-        b.append(";");
-        b.append(e.getNodeid());
-        b.append(";");
-        b.append(e.getInterface());
-        b.append(";");
-        b.append(e.getService());
-        b.append(";");
-        for (Parm p : e.getParms().getParm()) {
-            b.append(p.getParmName() + "=" + p.getValue().getContent());
-            b.append(";");
+    private boolean compareEvents(Event anticipated, Event received) {
+        if (!anticipated.getUei().equals(received.getUei())) {
+            log().info("compareEvents: uei differs. Received '" + received.getUei() + "' and must be '" + anticipated.getUei() + "'");
+            return false;
         }
-        return b.toString();
+        if (anticipated.getNodeid() != received.getNodeid()) {
+            log().info("compareEvents: nodeid differs. Received '" + received.getNodeid() + "' and must be '" + anticipated.getNodeid() + "'");
+            return false;
+        }
+        if (!anticipated.getInterface().equals(received.getInterface())) {
+            log().info("compareEvents: interface differs. Received '" + received.getInterface() + "' and must be '" + anticipated.getInterface() + "'");
+            return false;
+        }
+        if (!anticipated.getService().equals(received.getService())) {
+            log().info("compareEvents: service differs. Received '" + received.getService() + "' and must be '" + anticipated.getService() + "'");
+            return false;
+        }
+        for (Parm source : anticipated.getParms().getParmCollection()) {
+            Parm found = null;
+            for (Parm p : received.getParms().getParmCollection()) {
+                if (p.getParmName().equals(source.getParmName()))
+                    found = p;
+            }
+            if (found == null) {
+                log().info("compareEvents: parameter " + source.getParmName() + " not found on received event");
+                return false;
+            }
+            if (source.getValue().getContent() == null)
+                source.getValue().setContent("null");
+            if (!found.getValue().getContent().equals(source.getValue().getContent()) ) {
+                log().info("compareEvents: parameter " + source.getParmName() + " differs. Received '" + found.getValue().getContent() + "' and must be '" + source.getValue().getContent() + "'");
+                return false;
+            }
+        }
+        return true;
     }
     
-    void resetAnticipator() {
+    private void resetAnticipator() {
         m_anticipator.reset();
         m_anticipatedEvents.clear();
     }
