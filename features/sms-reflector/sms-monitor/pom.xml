@@ -77,9 +77,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>org.opennms.smslib</artifactId>
-      <version>3.4.2-SNAPSHOT</version>
+      <groupId>org.opennms.smslib</groupId>
+      <artifactId>smslib</artifactId>
+      <version>3.4.3-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -149,7 +149,7 @@
     <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.2-SNAPSHOT</version>
+      <version>3.4.3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

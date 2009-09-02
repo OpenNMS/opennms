@@ -29,7 +29,7 @@ import org.smslib.Message.MessageTypes;
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
-import org.smslib.modem.USSDResponse;
+import org.smslib.USSDResponse;
 import org.springframework.osgi.context.BundleContextAware;
 
 /**
@@ -132,7 +132,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             Thread.sleep(2000);
             
         } catch (Exception e) {
-            intp.println("Exception Stopping Sending Message: ");
+            intp.println("Exception Sending Message: ");
             intp.printStackTrace(e);
 
         } 
@@ -140,6 +140,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
    }
     
+    /*
     public Object _ussdSend(CommandInterpreter intp) {
         String data = intp.nextArgument();
         if (data == null) {
@@ -170,6 +171,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
         return ussdResult;
     }
+    */
     
     public Object _checkMessages(CommandInterpreter intp){
     	
@@ -371,7 +373,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
        buffer.append("\n\t").append("listPorts"); 
        buffer.append("\n\t").append("paxLog ERROR|WARN|INFO|DEBUG [prefix]"); 
        buffer.append("\n\t").append("smsSend <phonenumber> <text>"); 
-       buffer.append("\n\t").append("ussdSend <data> <isInteractive>");
        buffer.append("\n");
        return buffer.toString(); 
    } 

@@ -43,7 +43,6 @@
   <modules>
     <module>poms</module>
     <module>provision</module>
-    <module>org.opennms.smslib</module>
     <!--
     <module>bundle-tests</module>
 -->

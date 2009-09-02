@@ -7,4 +7,8 @@
 	   <constructor-arg ref="configAdmin" />
 	</bean>
 	
+	<bean id="ussdCommands" class="org.opennms.sms.reflector.commands.internal.UssdCommands">
+	</bean>
+	
+	
 </beans>

@@ -12,4 +12,6 @@
     
 	<osgi:service ref="smsCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
 	
+	<osgi:service ref="ussdCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+	
 </beans>

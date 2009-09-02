@@ -49,7 +49,7 @@ public class SmsLibTest {
         return options(equinox(), provision(
                 mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service"),
                 mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api"),
-                mavenBundle().groupId("org.opennms.sms-reflector").artifactId("org.opennms.smslib").version("3.4.2-SNAPSHOT"),
+                mavenBundle().groupId("org.opennms.smslib").artifactId("smslib").version("3.4.3-SNAPSHOT"),
                 mavenBundle().groupId("commons-net").artifactId("commons-net"),
                 mavenBundle().groupId("org.rxtx").artifactId("rxtx-osgi").version("2.2-pre2")
         ));

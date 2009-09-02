@@ -32,9 +32,9 @@
       <version>${pom.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>org.opennms.smslib</artifactId>
-      <version>3.4.2-SNAPSHOT</version>
+      <groupId>org.opennms.smslib</groupId>
+      <artifactId>smslib</artifactId>
+      <version>3.4.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
