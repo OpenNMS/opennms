@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 
 /**
@@ -117,14 +118,14 @@ import org.opennms.protocols.rt.RequestTracker;
 public class Pinger {
     
     
-    private static RequestTracker<PingRequestId, PingRequest, PingReply> s_pingTracker;
+    private static RequestTracker<PingRequest, PingReply> s_pingTracker;
     
 	/**
 	 * Initializes this singleton
 	 */
 	public synchronized static void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<PingRequestId, PingRequest, PingReply>("ICMP", new IcmpMessenger());
+	    s_pingTracker = new RequestTracker<PingRequest, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
 	    s_pingTracker.start();
 	}
 

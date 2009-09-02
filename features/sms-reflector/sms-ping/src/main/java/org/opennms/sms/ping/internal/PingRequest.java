@@ -145,9 +145,10 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return m_log;
     }
 
-    public void processResponse(PingReply reply) {
+    public boolean processResponse(PingReply reply) {
     	setResponseTimestamp(reply.getReceiveTimestamp());
     	processResponse(reply.getPacket());
+    	return true;
     }
 
     private void processResponse(InboundMessage packet) {

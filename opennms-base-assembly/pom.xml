@@ -264,6 +264,23 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- dependencies for SMS monitors -->
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-gateway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-service</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-ping</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-monitor</artifactId>
+    </dependency>
 
     <!-- this is a runtime depdency we need at install time -->
     <dependency>

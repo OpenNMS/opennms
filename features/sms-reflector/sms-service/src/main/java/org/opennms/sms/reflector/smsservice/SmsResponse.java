@@ -29,50 +29,67 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.sms.ping.internal;
+package org.opennms.sms.reflector.smsservice;
 
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
-import org.opennms.protocols.rt.IDBasedRequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
-import org.opennms.sms.ping.PingRequestId;
-import org.opennms.sms.ping.PingResponseCallback;
-import org.opennms.sms.ping.SmsPingTracker;
+import org.opennms.protocols.rt.Response;
 
 /**
- * SmsPingTrackerImpl
+ * SmsResponse
  *
  * @author brozow
  */
-public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> implements SmsPingTracker {
+public class SmsResponse implements Response {
     
-    private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
+    private String m_originator;
+    private String m_recipient;
+    private String m_text;
 
-    public SmsPingTrackerImpl(SmsMessenger smsMessenger) throws IOException {
-        super("SMS", smsMessenger, new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
-        log.debug("Created SmsPingTrackerImpl");
+    public SmsResponse(String originator, String recipient, String text) {
+        m_originator = originator;
+        m_recipient = recipient;
+        m_text = text;
     }
 
-    public void sendRequest(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
-        sendRequest(new PingRequest(new PingRequestId(phoneNumber), timeout, retries, cb));
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.rt.RequestTracker#start()
+    /**
+     * @return the originator
      */
-    @Override
-    public synchronized void start() {
-        log.debug("Calling start()");
-        super.start();
-        log.debug("Called start()");
+    public String getOriginator() {
+        return m_originator;
     }
-    
 
-    public void stop() {
-        log.debug("Calling stop()");
+    /**
+     * @param originator the originator to set
+     */
+    public void setOriginator(String originator) {
+        m_originator = originator;
+    }
 
-        log.debug("Called stop()");
+    /**
+     * @return the recipient
+     */
+    public String getRecipient() {
+        return m_recipient;
+    }
+
+    /**
+     * @param recipient the recipient to set
+     */
+    public void setRecipient(String recipient) {
+        m_recipient = recipient;
+    }
+
+    /**
+     * @return the text
+     */
+    public String getText() {
+        return m_text;
+    }
+
+    /**
+     * @param text the text to set
+     */
+    public void setText(String text) {
+        m_text = text;
     }
     
     

@@ -44,7 +44,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import org.opennms.protocols.icmp.ICMPEchoPacket;
-import org.opennms.protocols.rt.Reply;
+import org.opennms.protocols.rt.ResponseWithId;
 
 /**
  * <p>
@@ -63,7 +63,7 @@ import org.opennms.protocols.rt.Reply;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public final class PingReply implements Reply<PingRequestId> {
+public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * The sender's address.
      */

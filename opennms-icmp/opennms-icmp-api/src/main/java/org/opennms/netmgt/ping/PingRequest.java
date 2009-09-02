@@ -194,8 +194,9 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_request = iPkt;
     }
     
-    public void processResponse(PingReply reply) {
+    public boolean processResponse(PingReply reply) {
         processResponse(reply.getPacket());
+        return true;
     }
 
     private void processResponse(ICMPEchoPacket packet) {

@@ -863,9 +863,29 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-gateway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-ping</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-monitor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.tracker</artifactId>
-        <version>0.1</version>
+        <version>0.2</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>

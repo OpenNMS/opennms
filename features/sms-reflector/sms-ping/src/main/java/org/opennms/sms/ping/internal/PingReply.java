@@ -40,7 +40,7 @@
 
 package org.opennms.sms.ping.internal;
 
-import org.opennms.protocols.rt.Reply;
+import org.opennms.protocols.rt.ResponseWithId;
 import org.opennms.sms.ping.PingRequestId;
 import org.smslib.InboundMessage;
 
@@ -63,7 +63,7 @@ import org.smslib.InboundMessage;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public final class PingReply implements Reply<PingRequestId> {
+public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * The sender's address.
      */

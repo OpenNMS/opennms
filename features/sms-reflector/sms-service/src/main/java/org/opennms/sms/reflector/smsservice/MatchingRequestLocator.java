@@ -29,52 +29,46 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.sms.ping.internal;
+package org.opennms.sms.reflector.smsservice;
 
-import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.log4j.Logger;
-import org.opennms.protocols.rt.IDBasedRequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
-import org.opennms.sms.ping.PingRequestId;
-import org.opennms.sms.ping.PingResponseCallback;
-import org.opennms.sms.ping.SmsPingTracker;
+import org.opennms.protocols.rt.RequestLocator;
 
 /**
- * SmsPingTrackerImpl
+ * MatchingRequestLocator
  *
  * @author brozow
  */
-public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> implements SmsPingTracker {
+public class MatchingRequestLocator implements RequestLocator<SmsRequest, SmsResponse> {
     
-    private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
+    private final Set<SmsRequest> m_requests = new CopyOnWriteArraySet<SmsRequest>();
 
-    public SmsPingTrackerImpl(SmsMessenger smsMessenger) throws IOException {
-        super("SMS", smsMessenger, new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
-        log.debug("Created SmsPingTrackerImpl");
+    public boolean trackRequest(SmsRequest request) {
+        m_requests.add(request);
+        return true;
     }
 
-    public void sendRequest(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
-        sendRequest(new PingRequest(new PingRequestId(phoneNumber), timeout, retries, cb));
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.rt.RequestTracker#start()
-     */
-    @Override
-    public synchronized void start() {
-        log.debug("Calling start()");
-        super.start();
-        log.debug("Called start()");
+    public SmsRequest locateMatchingRequest(SmsResponse response) {
+        for(SmsRequest request : m_requests) {
+            
+            if (request.matches(response)) {
+                return request;
+            }
+        }   
+            
+        return null;
     }
     
-
-    public void stop() {
-        log.debug("Calling stop()");
-
-        log.debug("Called stop()");
+    public SmsRequest requestTimedOut(SmsRequest timedOutRequest) {
+        m_requests.remove(timedOutRequest);
+        return timedOutRequest;
     }
-    
-    
+
+    public void requestComplete(SmsRequest request) {
+        m_requests.remove(request);
+    }
+
 
 }
