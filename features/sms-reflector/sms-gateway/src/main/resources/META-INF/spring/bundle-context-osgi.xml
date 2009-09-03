@@ -11,11 +11,7 @@
   	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd
   ">
 	
-	<ctx:property-placeholder properties-ref="cmProps"/>
-	
-	<osgix:cm-properties id="cmProps" persistent-id="modemConfigLocation">
-		<prop key="modemConfig.location">file://${sms.modemConfig.home}/modemConfig.properties</prop>
-	</osgix:cm-properties>
+	<osgix:cm-properties id="modemConfiguration" persistent-id="org.opennms.sms.gateways" />
 	
 	<bean id="gatewayGroupRegistrar" class="org.opennms.sms.gateways.internal.OsgiGatewayGroupRegistrar"/>
 

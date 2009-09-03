@@ -7,6 +7,8 @@
   	<!-- Service Registry must be defined by the loading context -->
   	<property name="serviceRegistry" ref="serviceRegistry"/>
   </bean>
+  
+  
  
 
 </beans>
