@@ -119,7 +119,7 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 		if(this.getSelectionModel().getSelected().data.ipAddress != "0.0.0.0"){
 			window.location = "element/interface.jsp?node=" + this.nodeId + "&intf=" + this.getSelectionModel().getSelected().data.ipAddress;
 		}else{
-			alert("This Physical Interface has no Corresponding IP Interface");
+			window.location = "element/snmpinterface.jsp?node=" + this.nodeId + "&ifindex=" + this.getSelectionModel().getSelected().data.ifIndex;
 		}
 	}
 
