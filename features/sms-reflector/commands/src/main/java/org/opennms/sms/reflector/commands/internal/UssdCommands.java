@@ -2,7 +2,7 @@ package org.opennms.sms.reflector.commands.internal;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.smslib.Service;
+import org.opennms.sms.reflector.smsservice.SmsService;
 import org.smslib.USSDRequest;
 
 /**
@@ -10,7 +10,12 @@ import org.smslib.USSDRequest;
  */
 public class UssdCommands implements CommandProvider
 {
-    private Service m_service;
+    private SmsService m_service;
+    private USSDNotification m_ussdNotification;
+    
+    public void setService(SmsService svc) {
+        m_service = svc;
+    }
     
     public void _ussdSend(CommandInterpreter intp) {
         String data = intp.nextArgument();

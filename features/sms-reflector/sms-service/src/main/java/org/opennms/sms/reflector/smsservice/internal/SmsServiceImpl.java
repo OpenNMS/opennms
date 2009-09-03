@@ -18,6 +18,7 @@ import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.IQueueSendingNotification;
+import org.smslib.IUSSDNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
@@ -25,6 +26,7 @@ import org.smslib.SMSLibException;
 import org.smslib.Service;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
+import org.smslib.USSDRequest;
 import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 import org.smslib.Service.ServiceStatus;
@@ -447,6 +449,18 @@ public class SmsServiceImpl implements SmsService {
     
     public void unregister(SmsServiceRegistrar smsServiceRegistrar) {
     	smsServiceRegistrar.unregisterSmsService(this);
+    }
+
+    public IUSSDNotification getUSSDNotification() {
+        return m_service.getUSSDNotification();
+    }
+
+    public boolean sendUSSDRequest(USSDRequest req, String gatewayId) throws GatewayException, TimeoutException, IOException, InterruptedException {
+        return m_service.sendUSSDRequest(req, gatewayId);
+    }
+
+    public void setUSSDNotification(IUSSDNotification notif) {
+        m_service.setUSSDNotification(notif);
     }
 
 }

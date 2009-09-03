@@ -11,6 +11,7 @@
 	<onmsgi:list id="outboundList" interface="org.smslib.IOutboundMessageNotification"/>
     <onmsgi:list id="inboundList" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
     <onmsgi:list id="gatewayStatusList" interface="org.smslib.IGatewayStatusNotification"/>
+    <onmsgi:list id="ussdListeners" interface="org.smslib.IUSSDNotification"/>
 
     <onmsgi:list id="gatewayGroupList" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
     	<onmsgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>

@@ -11,6 +11,7 @@
 		<property name="outboundListeners" ref="outboundList"/>
 		<property name="inboundListeners" ref="inboundList"/>
 		<property name="gatewayStatusListeners" ref="gatewayStatusList"/>
+		<property name="ussdListeners" ref="ussdListeners"/>
 	</bean>
 		
 </beans>

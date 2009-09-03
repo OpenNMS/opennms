@@ -8,6 +8,10 @@
 	</bean>
 	
 	<bean id="ussdCommands" class="org.opennms.sms.reflector.commands.internal.UssdCommands">
+		<property name="service" ref="service" />
+	</bean>
+	
+	<bean id="ussdListener" class="org.opennms.sms.reflector.commands.internal.USSDNotification">
 	</bean>
 	
 </beans>

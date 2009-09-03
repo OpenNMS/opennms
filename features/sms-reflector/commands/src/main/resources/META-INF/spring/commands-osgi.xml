@@ -14,4 +14,8 @@
 	
 	<osgi:service ref="ussdCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
 	
+	<osgi:reference id="service" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
+	
+	<osgi:service ref="ussdListener" interface="org.smslib.IUSSDNotification"/>
+	
 </beans>

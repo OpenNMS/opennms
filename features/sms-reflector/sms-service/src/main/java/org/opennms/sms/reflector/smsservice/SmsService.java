@@ -11,12 +11,14 @@ import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.IQueueSendingNotification;
+import org.smslib.IUSSDNotification;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.Phonebook;
 import org.smslib.SMSLibException;
 import org.smslib.Settings;
 import org.smslib.TimeoutException;
+import org.smslib.USSDRequest;
 import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
@@ -85,4 +87,7 @@ public interface SmsService {
 	boolean removeFromGroup(String groupName, String number);
 	QueueManager getQueueManager();
 	KeyManager getKeyManager();
+	boolean sendUSSDRequest(USSDRequest req, String gatewayId) throws GatewayException, TimeoutException, IOException, InterruptedException;
+	void setUSSDNotification(IUSSDNotification notif);
+	IUSSDNotification getUSSDNotification();
 }

@@ -14,6 +14,7 @@
     <osgi:list id="outboundList" cardinality="0..N" interface="org.smslib.IOutboundMessageNotification"/>
     <osgi:list id="inboundList" cardinality="0..N" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
     <osgi:list id="gatewayStatusList" cardinality="0..N" interface="org.smslib.IGatewayStatusNotification"/>
+    <osgi:list id="ussdListeners" cardinality="0..N" interface="org.smslib.IUSSDNotification"/>
 
     <osgi:list id="gatewayGroupList" cardinality="0..N" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
     	<osgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
