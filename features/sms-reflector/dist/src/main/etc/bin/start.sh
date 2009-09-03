@@ -1,12 +1,12 @@
 #!/bin/bash
 
 PROG_PATH=`dirname "$0"`
-WHAT_HOME=`cd "$PROG_PATH/.."; pwd`
+SMS_REFLECTOR_HOME=`cd "$PROG_PATH/.."; pwd`
 
 cat>runner.args<<EOF
 --downloadFeedback=false
 --log=NONE
---vmOptions=-Dbundles.configuration.location=../../conf -Dsms.modemConfig.home=$WHAT_HOME
+--vmOptions=-Dbundles.configuration.location=$SMS_REFLECTOR_HOME/conf -Dsms.modemConfig.home=$SMS_REFLECTOR_HOME
 --platform=equinox
 --repositories=file:../equinox
 scan-dir:../lib
