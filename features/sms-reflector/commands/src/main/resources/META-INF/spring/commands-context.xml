@@ -10,5 +10,4 @@
 	<bean id="ussdCommands" class="org.opennms.sms.reflector.commands.internal.UssdCommands">
 	</bean>
 	
-	
 </beans>

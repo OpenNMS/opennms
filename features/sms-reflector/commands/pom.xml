@@ -75,6 +75,12 @@
     	<version>1.2.0</version>
     	<scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.shell</artifactId>
+      <version>1.0.2</version>
+      <scope>provided</scope>
+    </dependency>
 
   </dependencies>
 

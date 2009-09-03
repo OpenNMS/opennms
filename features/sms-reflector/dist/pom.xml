@@ -31,6 +31,11 @@
       <version>${pom.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>commands</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
       <version>3.4.3-SNAPSHOT</version>
@@ -85,7 +90,7 @@
       <version>0.5.1</version>
     </dependency>
 
-<!-- OSGi configuration admin serviceb -->
+<!-- OSGi configuration admin service -->
     <dependency>
       <groupId>org.eclipse.osgi</groupId>
       <artifactId>org.eclipse.equinox.cm</artifactId>

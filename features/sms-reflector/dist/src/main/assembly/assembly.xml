@@ -1,6 +1,6 @@
 <assembly>
   <formats>    
-    <format>zip</format>
+    <format>tar.gz</format>
   </formats>   
   
   <dependencySets>    
@@ -46,5 +46,6 @@
       <fileMode>0755</fileMode>
       <outputDirectory></outputDirectory>
     </fileSet>
-  </fileSets>      
+  </fileSets>
+
 </assembly>

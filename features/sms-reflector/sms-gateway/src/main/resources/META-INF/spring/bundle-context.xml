@@ -5,7 +5,7 @@
 	
 	<bean id="gatewayGroupLoader" class="org.opennms.sms.gateways.internal.GatewayGroupLoader">
 		<constructor-arg ref="gatewayGroupRegistrar"/>
-		<constructor-arg value="classpath:/modemConfig.properties" />
+		<constructor-arg value="${modemConfig.location}" />
 	</bean>
-
+	
 </beans>
