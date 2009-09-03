@@ -711,6 +711,37 @@ public class NetworkElementFactory {
         return intfs;
     }
 
+    /**
+     * Returns all snmp interfaces on a node
+     *
+     * @Param int nodeId
+     *               The nodeId of the node we are looking at
+     *                             
+     * @return Interface[]
+     *
+     */
+    
+    public static Interface[] getAllSnmpInterfacesOnNode(int nodeId) throws SQLException {
+        Interface[] intfs = null;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID = ?");
+            d.watch(stmt);
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            
+            intfs = rs2SnmpInterfaces(rs);
+
+        } finally {
+            d.cleanUp();
+        }
+
+        return intfs;
+    }
+    
     public static Interface[] getActiveInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
