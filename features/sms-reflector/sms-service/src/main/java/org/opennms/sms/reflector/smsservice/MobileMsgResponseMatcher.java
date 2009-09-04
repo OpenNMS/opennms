@@ -8,8 +8,6 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -31,44 +29,13 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.protocols.rt.RequestLocator;
-
 /**
- * MatchingRequestLocator
+ * SmsResponseMatcher
  *
  * @author brozow
  */
-public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, MobileMsgResponse> {
+public interface MobileMsgResponseMatcher {
     
-    private final Set<MobileMsgRequest> m_requests = new CopyOnWriteArraySet<MobileMsgRequest>();
-
-    public boolean trackRequest(MobileMsgRequest request) {
-        m_requests.add(request);
-        return true;
-    }
-
-    public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
-        for(MobileMsgRequest request : m_requests) {
-            
-            if (request.matches(response)) {
-                return request;
-            }
-        }   
-            
-        return null;
-    }
-    
-    public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
-        m_requests.remove(timedOutRequest);
-        return timedOutRequest;
-    }
-
-    public void requestComplete(MobileMsgRequest request) {
-        m_requests.remove(request);
-    }
-
+    public boolean matches(MobileMsgRequest request, MobileMsgResponse response);
 
 }

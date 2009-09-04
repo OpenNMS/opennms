@@ -8,6 +8,8 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,105 +27,88 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ *
  */
+
 package org.opennms.sms.reflector.smsservice;
 
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
-
-import org.opennms.protocols.rt.Request;
+import org.smslib.OutboundMessage;
 
 /**
- * SmsRequest
- *
  * @author brozow
+ *
  */
-public class SmsRequest implements Request<String, SmsRequest, SmsResponse> {
-    
-    String m_originator;
-    String m_recipient;
-    String m_text;
-    SmsResponseMatcher m_responseMatcher;
+public class SmsRequest extends MobileMsgRequest {
 
-    public SmsRequest(String originator, String recipient, String text, SmsResponseMatcher responseMatcher) {
-        m_originator = originator;
-        m_recipient = recipient;
-        m_text = text;
-        m_responseMatcher = responseMatcher;
+    private OutboundMessage m_msg;
+
+    /**
+     * @param msg
+     * @param timeout
+     * @param retries
+     * @param cb
+     * @param responseMatcher
+     */
+    public SmsRequest(OutboundMessage msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
+        super(timeout, retries, cb, responseMatcher);
+        m_msg = msg;
+        
     }
-    
+
     /**
      * @return the originator
      */
     public String getOriginator() {
-        return m_originator;
+        return m_msg.getFrom();
     }
 
     /**
      * @param originator the originator to set
      */
     public void setOriginator(String originator) {
-        m_originator = originator;
+        m_msg.setFrom(originator);
     }
 
     /**
      * @return the recipient
      */
     public String getRecipient() {
-        return m_recipient;
+        return m_msg.getRecipient();
     }
 
     /**
      * @param recipient the recipient to set
      */
     public void setRecipient(String recipient) {
-        m_recipient = recipient;
+        m_msg.setRecipient(recipient);
     }
 
     /**
      * @return the text
      */
     public String getText() {
-        return m_text;
+        return m_msg.getText();
     }
 
-    /**
-     * @param text the text to set
-     */
-    public void setText(String text) {
-        m_text = text;
-    }
-
-    public long getDelay(TimeUnit unit) {
-        throw new UnsupportedOperationException("Request<String,SmsRequest,SmsResponse>.getDelay is not yet implemented");
-    }
-
+    @Override
     public String getId() {
-        throw new UnsupportedOperationException("Request<String,SmsRequest,SmsResponse>.getId is not yet implemented");
+        return m_msg.getRecipient();
     }
 
-    public void processError(Throwable t) {
-        throw new UnsupportedOperationException("Request<String,SmsRequest,SmsResponse>.processError is not yet implemented");
+    /* (non-Javadoc)
+     * @see org.opennms.sms.reflector.smsservice.MobileMsgRequest#createNextRetry()
+     */
+    @Override
+    public MobileMsgRequest createNextRetry() {
+        if (getRetries() > 0) {
+            return new SmsRequest(m_msg, getTimeout(), getRetries()-1, getCb(), getResponseMatcher());
+        } else {
+            return null;
+        }
+        
     }
-
-    public boolean processResponse(SmsResponse reply) {
-        throw new UnsupportedOperationException("Request<String,SmsRequest,SmsResponse>.processResponse is not yet implemented");
-    }
-
-    public SmsRequest processTimeout() {
-        throw new UnsupportedOperationException("Request<String,SmsRequest,SmsResponse>.processTimeout is not yet implemented");
-    }
-
-    public int compareTo(Delayed o) {
-        throw new UnsupportedOperationException("Comparable<Delayed>.compareTo is not yet implemented");
-    }
-
-    public boolean matches(SmsResponse response) {
-        return m_responseMatcher.matches(this, response);
-    }
-
 
 }

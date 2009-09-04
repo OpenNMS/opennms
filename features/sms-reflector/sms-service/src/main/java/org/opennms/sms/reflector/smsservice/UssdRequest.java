@@ -8,6 +8,8 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,50 +27,61 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ *
  */
+
 package org.opennms.sms.reflector.smsservice;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.protocols.rt.RequestLocator;
+import org.smslib.OutboundMessage;
+import org.smslib.USSDRequest;
 
 /**
- * MatchingRequestLocator
- *
  * @author brozow
+ *
  */
-public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, MobileMsgResponse> {
-    
-    private final Set<MobileMsgRequest> m_requests = new CopyOnWriteArraySet<MobileMsgRequest>();
+public class UssdRequest extends MobileMsgRequest {
 
-    public boolean trackRequest(MobileMsgRequest request) {
-        m_requests.add(request);
-        return true;
+    private USSDRequest m_msg;
+
+    /**
+     * @param msg
+     * @param timeout
+     * @param retries
+     * @param cb
+     * @param responseMatcher
+     */
+    public UssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
+        super(timeout, retries, cb, responseMatcher);
+        m_msg = msg;
+        
     }
 
-    public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
-        for(MobileMsgRequest request : m_requests) {
-            
-            if (request.matches(response)) {
-                return request;
-            }
-        }   
-            
-        return null;
-    }
-    
-    public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
-        m_requests.remove(timedOutRequest);
-        return timedOutRequest;
+    /**
+     * @return the text
+     */
+    public String getContent() {
+        return m_msg.getContent();
     }
 
-    public void requestComplete(MobileMsgRequest request) {
-        m_requests.remove(request);
+    @Override
+    public String getId() {
+        return "1";
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.sms.reflector.smsservice.MobileMsgRequest#createNextRetry()
+     */
+    @Override
+    public MobileMsgRequest createNextRetry() {
+        if (getRetries() > 0) {
+            return new UssdRequest(m_msg, getTimeout(), getRetries()-1, getCb(), getResponseMatcher());
+        } else {
+            return null;
+        }
+        
+    }
 
 }

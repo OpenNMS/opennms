@@ -31,44 +31,15 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.protocols.rt.RequestLocator;
+import org.opennms.protocols.rt.Response;
 
 /**
- * MatchingRequestLocator
+ * SmsResponse
  *
  * @author brozow
  */
-public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, MobileMsgResponse> {
+public class MobileMsgResponse implements Response {
     
-    private final Set<MobileMsgRequest> m_requests = new CopyOnWriteArraySet<MobileMsgRequest>();
-
-    public boolean trackRequest(MobileMsgRequest request) {
-        m_requests.add(request);
-        return true;
-    }
-
-    public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
-        for(MobileMsgRequest request : m_requests) {
-            
-            if (request.matches(response)) {
-                return request;
-            }
-        }   
-            
-        return null;
-    }
     
-    public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
-        m_requests.remove(timedOutRequest);
-        return timedOutRequest;
-    }
-
-    public void requestComplete(MobileMsgRequest request) {
-        m_requests.remove(request);
-    }
-
 
 }

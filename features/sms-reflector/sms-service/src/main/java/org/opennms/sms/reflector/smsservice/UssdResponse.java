@@ -8,6 +8,8 @@
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
+ * Modifications:
+ *
  * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,50 +27,52 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- * OpenNMS Licensing       <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ *
  */
+
 package org.opennms.sms.reflector.smsservice;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.protocols.rt.RequestLocator;
+import org.smslib.USSDResponse;
+import org.smslib.USSDSessionStatus;
 
 /**
- * MatchingRequestLocator
- *
  * @author brozow
+ *
  */
-public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, MobileMsgResponse> {
+public class UssdResponse extends MobileMsgResponse {
     
-    private final Set<MobileMsgRequest> m_requests = new CopyOnWriteArraySet<MobileMsgRequest>();
-
-    public boolean trackRequest(MobileMsgRequest request) {
-        m_requests.add(request);
-        return true;
+    private USSDResponse m_msg;
+    
+    public UssdResponse(USSDResponse msg) {
+        m_msg = msg;
     }
 
-    public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
-        for(MobileMsgRequest request : m_requests) {
-            
-            if (request.matches(response)) {
-                return request;
-            }
-        }   
-            
-        return null;
+    /**
+     * @return the text
+     */
+    public String getContent() {
+        return m_msg.getContent();
     }
     
-    public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
-        m_requests.remove(timedOutRequest);
-        return timedOutRequest;
+    
+    /**
+     * 
+     */
+    public USSDSessionStatus getSessionStatus() {
+        return m_msg.getSessionStatus();
     }
 
-    public void requestComplete(MobileMsgRequest request) {
-        m_requests.remove(request);
+    /**
+     * @return
+     */
+    public USSDResponse getMessage() {
+        return m_msg;
+        
     }
+
 
 
 }

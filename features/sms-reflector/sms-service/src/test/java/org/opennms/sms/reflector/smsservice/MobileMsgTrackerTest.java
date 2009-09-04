@@ -31,7 +31,24 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
+import static org.junit.Assert.assertSame;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Exchanger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.protocols.rt.Messenger;
+import org.smslib.InboundMessage;
+import org.smslib.OutboundMessage;
+import org.smslib.USSDDcs;
+import org.smslib.USSDRequest;
+import org.smslib.USSDResponse;
+import org.smslib.USSDSessionStatus;
 
 
 /**
@@ -41,13 +58,202 @@ import org.junit.Test;
  */
 public class MobileMsgTrackerTest {
     
+    /**
+     * @author brozow
+     *
+     */
+    public class BalanceCheckMatcher implements MobileMsgResponseMatcher {
+
+        /* (non-Javadoc)
+         * @see org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher#matches(org.opennms.sms.reflector.smsservice.MobileMsgRequest, org.opennms.sms.reflector.smsservice.MobileMsgResponse)
+         */
+        public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
+            
+            if (response instanceof UssdResponse) {
+                UssdResponse ussdResponse = (UssdResponse)response;
+
+                String regex = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
+
+                return ussdResponse.getContent().matches(regex);
+
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    /**
+     * @author brozow
+     *
+     */
+    public class TestMessenger implements Messenger<MobileMsgRequest, MobileMsgResponse> {
+        
+        Queue<MobileMsgResponse> m_q;
+
+        /* (non-Javadoc)
+         * @see org.opennms.protocols.rt.Messenger#sendRequest(java.lang.Object)
+         */
+        public void sendRequest(MobileMsgRequest request) throws Exception {
+            // fake send this
+            request.setSendTimestamp(System.currentTimeMillis());
+        }
+
+        /* (non-Javadoc)
+         * @see org.opennms.protocols.rt.Messenger#start(java.util.Queue)
+         */
+        public void start(Queue<MobileMsgResponse> q) {
+            m_q = q;
+        }
+        
+        public void sendTestResponse(MobileMsgResponse response) {
+            m_q.offer(response);
+        }
+
+        /**
+         * @param msg1
+         */
+        public void sendTestResponse(InboundMessage msg) {
+            sendTestResponse(new SmsResponse(msg));
+        }
+
+        /**
+         * @param response
+         */
+        public void sendTestResponse(USSDResponse response) {
+            sendTestResponse(new UssdResponse(response));
+        }
+
+    }
+    
+    public static class TestCallback implements MobileMsgResponseCallback {
+        
+        CountDownLatch m_latch = new CountDownLatch(1);
+        AtomicReference<MobileMsgResponse> m_response = new AtomicReference<MobileMsgResponse>(null);
+
+        
+        MobileMsgResponse getResponse() throws InterruptedException {
+            m_latch.await();
+            return m_response.get();
+        }
+
+        /* (non-Javadoc)
+         * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleError(org.opennms.sms.reflector.smsservice.SmsRequest, java.lang.Throwable)
+         */
+        public void handleError(MobileMsgRequest request, Throwable t) {
+            System.err.println("Error processing SmsRequest: " + request);
+            m_latch.countDown();
+        }
+
+        /* (non-Javadoc)
+         * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleResponse(org.opennms.sms.reflector.smsservice.SmsRequest, org.opennms.sms.reflector.smsservice.SmsResponse)
+         */
+        public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse response) {
+            m_response.set(response);
+            m_latch.countDown();
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleTimeout(org.opennms.sms.reflector.smsservice.SmsRequest)
+         */
+        public void handleTimeout(MobileMsgRequest request) {
+            System.err.println("Timeout waiting for SmsRequest: " + request);
+            m_latch.countDown();
+        }
+
+        /**
+         * @return
+         * @throws InterruptedException 
+         */
+        public InboundMessage getMessage() throws InterruptedException {
+            MobileMsgResponse response = getResponse();
+            if (response instanceof SmsResponse) {
+                return ((SmsResponse)response).getMessage();
+            }
+            return null;
+            
+        }
+        
+        public USSDResponse getUSSDResponse() throws InterruptedException{
+            MobileMsgResponse response = getResponse();
+            if (response instanceof UssdResponse) {
+                return ((UssdResponse)response).getMessage();
+            }
+            return null;
+        }
+        
+    }
+    
+    TestMessenger m_messenger;
+    MobileMsgTracker m_tracker;
+    
+    @Before
+    public void setUp() throws Exception {
+        m_messenger = new TestMessenger();
+        m_tracker = new MobileMsgTracker("test", m_messenger);
+        m_tracker.start();
+    }
+
     @Test
-    public void testPing() {
+    public void testPing() throws Exception {
+        
+        OutboundMessage msg = new OutboundMessage("+19195552121", "ping");
+        OutboundMessage msg2 = new OutboundMessage("+19195553131", "ping");
+        
+        TestCallback cb = new TestCallback();
+        TestCallback cb2 = new TestCallback();
+        
+        m_tracker.sendSmsRequest(msg, 60000L, 0, cb, new PingResponseMatcher());
+        m_tracker.sendSmsRequest(msg2, 60000, 0, cb2, new PingResponseMatcher());
+        
+        InboundMessage responseMsg = createInboundMessage("+19195552121", "pong");
+        InboundMessage responseMsg2 = createInboundMessage("+19195553131", "pong");
+        
+        m_messenger.sendTestResponse(responseMsg);
+        m_messenger.sendTestResponse(responseMsg2);
         
         
-        
+        assertSame(responseMsg, cb.getMessage());
+        assertSame(responseMsg2, cb2.getMessage());
         
         
     }
+    
+    
+    @Test
+    public void testTMobileGetBalance() throws Exception {
+        
+        TestCallback cb = new TestCallback();
+        
+        USSDRequest request = new USSDRequest("#225#");
+        
+        
+        m_tracker.sendUssdRequest(request, 10000, 0, cb, new BalanceCheckMatcher());
+        
+        
+        String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
+        
+        USSDResponse response = new USSDResponse();
+        response.setContent(content);
+        response.setUSSDSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED);
+        response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
+        
+        m_messenger.sendTestResponse(response);
+        
+        assertSame(response, cb.getUSSDResponse());
+    }
+   
+
+    /**
+     * @param originator
+     * @param text
+     * @return
+     */
+    private InboundMessage createInboundMessage(String originator, String text) {
+        InboundMessage msg = new InboundMessage(new Date(), originator, text, 0, "0");
+        return msg;
+    }
+    
 
 }
