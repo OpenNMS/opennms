@@ -55,20 +55,20 @@
     statusMap.put( new Character('N'), "Not Active" );
 
     Interface intf = null;
+    DataLinkInterface[] dl_if = null;
     String requestNode = request.getParameter("node");
     String requestIntf = request.getParameter("intf");
     String requestIfindex = request.getParameter("ifindex");
     if(requestNode != null && requestIfindex != null && requestIntf == null) {
         intf = ElementUtil.getSnmpInterfaceByParams(request);
+        dl_if = NetworkElementFactory.getDataLinksOnInterface(intf.getNodeId(), intf.getSnmpIfIndex());
     } else {
         intf = ElementUtil.getInterfaceByParams(request);
+        dl_if = NetworkElementFactory.getDataLinksOnInterface(intf.getNodeId(), intf.getIfIndex());
     }
 
-// find links
-
-    DataLinkInterface[] dl_if = NetworkElementFactory.getDataLinksOnInterface(intf.getNodeId(), intf.getIfIndex());
-	
 %>
+	
 <h3>Link Node/Interface</h3>
 <table>
  
@@ -87,29 +87,19 @@
   <% for( int i=0; i < dl_if.length; i++ ) { %>
     <% Interface iface = null; %>
     <tr>
-    <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
-	<td class="standard">
-    <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() )) { %>
-		<% if ( dl_if[i].get_parentifindex() == 0) {
-			iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr());
-		 } else {
-		   iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr(),dl_if[i].get_parentifindex());
-         }
-		%>
-<a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>&ifindex=<%=dl_if[i].get_parentifindex()%>">Non-IP</a>
-<%=" (ifIndex: "+dl_if[i].get_parentifindex()+"-"+iface.getSnmpIfDescription()+")"%>
-    <% } else { %>  
-		<%if(dl_if[i].get_parentipaddr()!=null){%>
-<a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a>
-		<% }else{
-	   	out.print("&nbsp;");
-	   	}%>      
-   <% } %>
-   </td>
+      <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
+      <td class="standard">
+      <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() ) || dl_if[i].get_parentipaddr() == null ) {
+        iface = NetworkElementFactory.getSnmpInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentifindex()); %>
+        <a href="element/snmpinterface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&ifindex=<%=dl_if[i].get_parentifindex()%>"><%=iface.getSnmpIfDescription()%></a>
+      <% } else { %>  
+        <a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a>
+      <% } %>
+      </td>
 
       <td><%=getStatusString(dl_if[i].get_status())%></td>
       <td><%=dl_if[i].get_lastPollTime()%></td>
-     </tr>
+    </tr>
   <% } %>
 <% } %>
 
