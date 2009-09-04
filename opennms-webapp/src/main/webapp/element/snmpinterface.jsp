@@ -84,9 +84,8 @@
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Interface" />
-  <jsp:param name="headTitle" value="<%= ipAddr %>" />
-  <jsp:param name="headTitle" value="Interface" />
+  <jsp:param name="title" value="Snmp Interface" />
+  <jsp:param name="headTitle" value="Snmp Interface" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="SnmpInterface" />
