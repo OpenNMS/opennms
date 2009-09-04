@@ -49,7 +49,7 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
     
     private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
 
-    public SmsPingTrackerImpl(SmsMessenger smsMessenger) throws IOException {
+    public SmsPingTrackerImpl(SmsPingMessenger smsMessenger) throws IOException {
         super("SMS", smsMessenger, new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
         log.debug("Created SmsPingTrackerImpl");
     }

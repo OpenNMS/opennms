@@ -111,4 +111,8 @@ public class SmsRequest extends MobileMsgRequest {
         
     }
 
+    public OutboundMessage getMessage() {
+        return m_msg;
+    }
+
 }

@@ -31,11 +31,6 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
-import java.io.IOException;
-
-import org.opennms.protocols.rt.Messenger;
-import org.opennms.protocols.rt.RequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
 
@@ -44,21 +39,14 @@ import org.smslib.USSDRequest;
  *
  * @author brozow
  */
-public class MobileMsgTracker extends RequestTracker<MobileMsgRequest, MobileMsgResponse> {
+public interface MobileMsgTracker {
 
-    public MobileMsgTracker(String name,  Messenger<MobileMsgRequest, MobileMsgResponse> messenger)
-            throws IOException {
-        super(name, messenger, new MatchingRequestLocator());
+    public abstract void sendSmsRequest(OutboundMessage msg, long timeout,
+            int retries, MobileMsgResponseCallback cb,
+            MobileMsgResponseMatcher matcher) throws Exception;
 
-    }
-    
-    
-    public void sendSmsRequest(OutboundMessage msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
-        sendRequest(new SmsRequest(msg, timeout, retries, cb, matcher));
-    }
-
-    public void sendUssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
-        sendRequest(new UssdRequest(msg, timeout, retries, cb, matcher));
-    }
+    public abstract void sendUssdRequest(String gatewayId, USSDRequest msg,
+            long timeout, int retries, MobileMsgResponseCallback cb,
+            MobileMsgResponseMatcher matcher) throws Exception;
 
 }

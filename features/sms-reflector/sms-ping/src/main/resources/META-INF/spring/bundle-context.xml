@@ -9,12 +9,12 @@
        for integration testing outside of an OSGi environment -->
 
 
-    <bean id="smsMessenger" class="org.opennms.sms.ping.internal.SmsMessenger">
+    <bean id="smsPingMessenger" class="org.opennms.sms.ping.internal.SmsPingMessenger">
         <constructor-arg ref="smsService" />
     </bean>
 
     <bean id="smsPingTracker" class="org.opennms.sms.ping.internal.SmsPingTrackerImpl" init-method="start" destroy-method="stop">
-        <constructor-arg ref="smsMessenger" />
+        <constructor-arg ref="smsPingMessenger" />
     </bean>
 
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

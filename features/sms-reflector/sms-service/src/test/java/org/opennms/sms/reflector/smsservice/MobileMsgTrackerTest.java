@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.protocols.rt.Messenger;
+import org.opennms.sms.reflector.smsservice.internal.MobileMsgTrackerImpl;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDDcs;
@@ -114,14 +115,14 @@ public class MobileMsgTrackerTest {
          * @param msg1
          */
         public void sendTestResponse(InboundMessage msg) {
-            sendTestResponse(new SmsResponse(msg));
+            sendTestResponse(new SmsResponse(msg, System.currentTimeMillis()));
         }
 
         /**
          * @param response
          */
-        public void sendTestResponse(USSDResponse response) {
-            sendTestResponse(new UssdResponse(response));
+        public void sendTestResponse(String gatewayId, USSDResponse response) {
+            sendTestResponse(new UssdResponse(gatewayId, response));
         }
 
     }
@@ -186,12 +187,12 @@ public class MobileMsgTrackerTest {
     }
     
     TestMessenger m_messenger;
-    MobileMsgTracker m_tracker;
+    MobileMsgTrackerImpl m_tracker;
     
     @Before
     public void setUp() throws Exception {
         m_messenger = new TestMessenger();
-        m_tracker = new MobileMsgTracker("test", m_messenger);
+        m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
     }
 
@@ -224,12 +225,14 @@ public class MobileMsgTrackerTest {
     @Test
     public void testTMobileGetBalance() throws Exception {
         
+        String gatewayId = "G";
+        
         TestCallback cb = new TestCallback();
         
         USSDRequest request = new USSDRequest("#225#");
         
         
-        m_tracker.sendUssdRequest(request, 10000, 0, cb, new BalanceCheckMatcher());
+        m_tracker.sendUssdRequest(gatewayId, request, 10000, 0, cb, new BalanceCheckMatcher());
         
         
         String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
@@ -239,7 +242,7 @@ public class MobileMsgTrackerTest {
         response.setUSSDSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED);
         response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
         
-        m_messenger.sendTestResponse(response);
+        m_messenger.sendTestResponse(gatewayId, response);
         
         assertSame(response, cb.getUSSDResponse());
     }

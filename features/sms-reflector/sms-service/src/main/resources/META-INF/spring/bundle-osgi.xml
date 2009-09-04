@@ -20,4 +20,19 @@
     	<osgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
     </osgi:list>
     
+    <osgi:reference id="smsService" cardinality="0..1" interface="org.opennms.sms.reflector.smsservice.SmsService" />
+    
+    <osgi:service ref="smsMessenger">
+      <osgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
+        <value>org.smslib.IUSSDNotification</value>
+      </osgi:interfaces>
+    </osgi:service>
+    
+    <osgi:service ref="mobileMsgTracker">
+      <osgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.MobileMsgTracker</value>
+      </osgi:interfaces>
+    </osgi:service>
+    
 </beans>

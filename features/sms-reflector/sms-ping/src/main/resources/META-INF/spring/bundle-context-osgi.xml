@@ -13,7 +13,7 @@
        
     <osgi:reference id="smsService" cardinality="1..1" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
     
-    <osgi:service ref="smsMessenger">
+    <osgi:service ref="smsPingMessenger">
       <osgi:interfaces>
         <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
         <value>org.smslib.IOutboundMessageNotification</value>

@@ -44,8 +44,9 @@ import org.smslib.InboundMessage;
 public class SmsResponse extends MobileMsgResponse {
     
     private InboundMessage m_msg;
+    private long m_receiveTime;
     
-    public SmsResponse(InboundMessage msg) {
+    public SmsResponse(InboundMessage msg, long receiveTime) {
         m_msg = msg;
     }
 
@@ -69,6 +70,15 @@ public class SmsResponse extends MobileMsgResponse {
     public InboundMessage getMessage() {
         return m_msg;
         
+    }
+    
+    public long getReceiveTime() {
+        return m_receiveTime;
+    }
+    
+    @Override
+    public String toString() {
+        return "" + m_msg;
     }
 
 

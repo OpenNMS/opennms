@@ -43,11 +43,17 @@ import org.smslib.USSDSessionStatus;
  *
  */
 public class UssdResponse extends MobileMsgResponse {
-    
+
+    private String m_gatewayId;
     private USSDResponse m_msg;
     
-    public UssdResponse(USSDResponse msg) {
+    public UssdResponse(String gatewayId, USSDResponse msg) {
+        m_gatewayId = gatewayId;
         m_msg = msg;
+    }
+    
+    public String getGatewayId() {
+        return m_gatewayId;
     }
 
     /**
@@ -71,6 +77,11 @@ public class UssdResponse extends MobileMsgResponse {
     public USSDResponse getMessage() {
         return m_msg;
         
+    }
+    
+    @Override
+    public String toString() {
+        return "" + m_msg;
     }
 
 

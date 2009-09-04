@@ -54,7 +54,7 @@ import org.smslib.Message.MessageTypes;
  *
  * @author brozow
  */
-public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInboundMessageNotification, IOutboundMessageNotification {
+public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, OnmsInboundMessageNotification, IOutboundMessageNotification {
     
     Logger log = Logger.getLogger(getClass());
     
@@ -62,7 +62,7 @@ public class SmsMessenger implements Messenger<PingRequest, PingReply>, OnmsInbo
     
     private Queue<PingReply> m_replyQueue;
     
-    public SmsMessenger(SmsService smsService) {
+    public SmsPingMessenger(SmsService smsService) {
         // Can't make calls smsService in constructor
         //debugf("Created SmsMessenger: %s", smsService);
         m_smsService = smsService;

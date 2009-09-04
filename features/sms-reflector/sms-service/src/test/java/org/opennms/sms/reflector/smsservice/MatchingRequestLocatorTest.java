@@ -115,7 +115,7 @@ public class MatchingRequestLocatorTest {
     
     public SmsResponse createResponse(String originator, String recipient, String text) {
         InboundMessage msg = new InboundMessage(new Date(), originator, text, 0, "0");
-        return new SmsResponse(msg);
+        return new SmsResponse(msg, System.currentTimeMillis());
         
     }
     

@@ -14,4 +14,8 @@
 	<bean id="ussdListener" class="org.opennms.sms.reflector.commands.internal.USSDNotification">
 	</bean>
 	
+	<bean id="msgTrackerCommands" class="org.opennms.sms.reflector.commands.internal.MsgTrackerCommands">
+	   <property name="mobileMsgTracker" ref="mobileMsgTracker" />
+	</bean>
+	
 </beans>
