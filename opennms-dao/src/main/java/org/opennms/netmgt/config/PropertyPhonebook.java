@@ -1,4 +1,4 @@
-package org.opennms.sms.phonebook;
+package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 
 public class PropertyPhonebook implements Phonebook {
+    
     private String m_propertyFile;
     private long m_lastModified = 0;
     private Properties m_lastProperties = null;
@@ -82,6 +83,12 @@ public class PropertyPhonebook implements Phonebook {
 
     public String getTargetForAddress(String address) throws PhonebookException {
         Properties p = getProperties();
-        return p.getProperty(address);
+        String property = p.getProperty(address);
+        
+        if (property == null) {
+            throw new PhonebookException("address: "+address+" not found in properties file");
+        }
+        
+        return property;
     }
 }

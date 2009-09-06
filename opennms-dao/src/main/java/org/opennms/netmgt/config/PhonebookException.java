@@ -1,4 +1,4 @@
-package org.opennms.sms.phonebook;
+package org.opennms.netmgt.config;
 
 public class PhonebookException extends Exception {
     private static final long serialVersionUID = 1L;

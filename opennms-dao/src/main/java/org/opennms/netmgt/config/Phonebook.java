@@ -1,4 +1,4 @@
-package org.opennms.sms.phonebook;
+package org.opennms.netmgt.config;
 
 public interface Phonebook {
 

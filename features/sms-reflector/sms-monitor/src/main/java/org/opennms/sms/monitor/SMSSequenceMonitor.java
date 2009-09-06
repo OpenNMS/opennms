@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.config.Phonebook;
+import org.opennms.netmgt.config.PropertyPhonebook;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -17,8 +19,6 @@ import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
 import org.opennms.sms.monitor.internal.config.SmsSequence;
 import org.opennms.sms.monitor.internal.config.TransactionOperation;
-import org.opennms.sms.phonebook.Phonebook;
-import org.opennms.sms.phonebook.PropertyPhonebook;
 import org.opennms.sms.ping.PingConstants;
 
 @Distributable(DistributionContext.DAEMON)
