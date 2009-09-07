@@ -11,7 +11,10 @@
   	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd
   ">
 	
-	<osgix:cm-properties id="modemConfiguration" persistent-id="org.opennms.sms.gateways" />
+	<osgix:cm-properties id="modemConfiguration" persistent-id="org.opennms.sms.gateways">
+		
+	</osgix:cm-properties>
+	
 	
 	<bean id="gatewayGroupRegistrar" class="org.opennms.sms.gateways.internal.OsgiGatewayGroupRegistrar"/>
 

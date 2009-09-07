@@ -3,6 +3,8 @@ package org.opennms.sms.gateways.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
@@ -30,7 +32,16 @@ public class GatewayGroupLoader implements InitializingBean {
         m_gatewayGroupRegistrar = gatewayGroupRegistrar;
         m_configProperties = configProperties;
     }
-
+    
+    private void printProperties(Properties props){
+    	Enumeration properties = props.elements();
+    	
+    	if(props.size() > 0){
+    		while(properties.hasMoreElements()){
+    			System.out.println("property: " + properties.nextElement());
+    		}
+    	}
+    }
     
     public GatewayGroup[] getGatewayGroups() {
         return m_gatewayGroups;
@@ -53,10 +64,11 @@ public class GatewayGroupLoader implements InitializingBean {
         if (tokens.length == 0) {
             m_gatewayGroups = new GatewayGroup[0];
         } else {
-
+        	System.out.println("\n What is the size: " + m_configProperties.size() + "\n");
             for(int i = 0; i < tokens.length; i++){
                 String modemId = tokens[i];
                 String port = modemProperties.getProperty(modemId + ".port");
+                
                 if (port == null) {
                     throw new IllegalArgumentException("No port defined for modem with id " + modemId );
                 }

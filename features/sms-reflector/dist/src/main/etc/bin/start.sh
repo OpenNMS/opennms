@@ -6,7 +6,7 @@ SMS_REFLECTOR_HOME=`cd "$PROG_PATH/.."; pwd`
 cat>runner.args<<EOF
 --downloadFeedback=false
 --log=NONE
---vmOptions=-Dbundles.configuration.location=$SMS_REFLECTOR_HOME/conf -Dsms.modemConfig.home=$SMS_REFLECTOR_HOME
+--vmOptions=-Dbundles.configuration.location=$SMS_REFLECTOR_HOME/conf -Dsms.modemConfig.home=$SMS_REFLECTOR_HOME -Dorg.opennms.sms.gateways.modems=mac2412 -Dsms.modemConfig.url=file://$SMS_REFLECTOR_HOME/modemConfig.properties
 --platform=equinox
 --repositories=file:../equinox
 scan-dir:../lib
