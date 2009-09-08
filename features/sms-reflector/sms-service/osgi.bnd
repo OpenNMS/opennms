@@ -3,3 +3,4 @@
 #-----------------------------------------------------------------
 
 Export-Package: org.opennms.sms.phonebook,org.opennms.sms.reflector.smsservice
+Import-Package: *,org.opennms.sms.phonebook
