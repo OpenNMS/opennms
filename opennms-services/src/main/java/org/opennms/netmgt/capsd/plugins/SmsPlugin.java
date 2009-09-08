@@ -37,9 +37,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.capsd.Plugin;
-import org.opennms.netmgt.config.Phonebook;
-import org.opennms.netmgt.config.PhonebookException;
-import org.opennms.netmgt.config.PropertyPhonebook;
+import org.opennms.sms.phonebook.Phonebook;
+import org.opennms.sms.phonebook.PhonebookException;
+import org.opennms.sms.phonebook.PropertyPhonebook;
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *

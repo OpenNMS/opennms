@@ -35,9 +35,9 @@
  */
 package org.opennms.netmgt.provision.detector.sms.response;
 
-import org.opennms.netmgt.config.Phonebook;
-import org.opennms.netmgt.config.PhonebookException;
-import org.opennms.netmgt.config.PropertyPhonebook;
+import org.opennms.sms.phonebook.Phonebook;
+import org.opennms.sms.phonebook.PhonebookException;
+import org.opennms.sms.phonebook.PropertyPhonebook;
 
 
 /**

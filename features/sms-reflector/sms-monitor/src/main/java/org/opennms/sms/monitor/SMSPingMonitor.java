@@ -3,9 +3,9 @@ package org.opennms.sms.monitor;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.Phonebook;
-import org.opennms.netmgt.config.PhonebookException;
-import org.opennms.netmgt.config.PropertyPhonebook;
+import org.opennms.sms.phonebook.Phonebook;
+import org.opennms.sms.phonebook.PhonebookException;
+import org.opennms.sms.phonebook.PropertyPhonebook;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;

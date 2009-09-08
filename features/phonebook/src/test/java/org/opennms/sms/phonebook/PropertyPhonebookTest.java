@@ -1,9 +1,9 @@
-package org.opennms.netmgt.config;
+package org.opennms.sms.phonebook;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opennms.netmgt.config.PropertyPhonebook;
+import org.opennms.sms.phonebook.PropertyPhonebook;
 
 public class PropertyPhonebookTest {
 
