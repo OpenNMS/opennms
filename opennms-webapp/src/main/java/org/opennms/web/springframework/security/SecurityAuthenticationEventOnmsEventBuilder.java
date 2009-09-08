@@ -50,8 +50,12 @@ import org.springframework.security.Authentication;
 import org.springframework.security.event.authentication.AbstractAuthenticationEvent;
 import org.springframework.security.event.authentication.AbstractAuthenticationFailureEvent;
 import org.springframework.security.event.authentication.AuthenticationSuccessEvent;
+import org.springframework.security.event.authentication.InteractiveAuthenticationSuccessEvent;
+import org.springframework.security.event.authorization.AuthorizationFailureEvent;
+import org.springframework.security.event.authorization.AuthorizedEvent;
 import org.springframework.security.ui.WebAuthenticationDetails;
 import org.springframework.util.Assert;
+import org.springframework.web.context.support.ServletRequestHandledEvent;
 
 public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
@@ -60,6 +64,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     private EventProxy m_eventProxy;
     
     public void onApplicationEvent(ApplicationEvent event) {
+        log().debug("Received ApplicationEvent " + event.getClass().toString());
         if (event instanceof AuthenticationSuccessEvent) {
             AuthenticationSuccessEvent authEvent = (AuthenticationSuccessEvent) event;
 
@@ -69,12 +74,36 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         
         if (event instanceof AbstractAuthenticationFailureEvent) {
             AbstractAuthenticationFailureEvent authEvent = (AbstractAuthenticationFailureEvent) event;
-
+            
+            log().debug("AbstractAuthenticationFailureEvent was received, exception message - " + authEvent.getException().getMessage());
             EventBuilder builder = createEvent(FAILURE_UEI, authEvent);
             builder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
             builder.addParam("exceptionMessage", authEvent.getException().getMessage());
             sendEvent(builder.getEvent());
         }
+        
+        if (event instanceof AuthorizedEvent) {
+            AuthorizedEvent authEvent = (AuthorizedEvent) event;
+            log().debug("AuthorizedEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " + 
+                        authEvent.getAuthentication().getPrincipal());
+        }
+        if (event instanceof AuthorizationFailureEvent) {
+            AuthorizationFailureEvent authEvent = (AuthorizationFailureEvent) event;
+            log().debug("AuthorizationFailureEvent received  -\n   Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " + 
+                        authEvent.getAuthentication().getPrincipal());
+        }
+        if (event instanceof InteractiveAuthenticationSuccessEvent) {
+            InteractiveAuthenticationSuccessEvent authEvent = (InteractiveAuthenticationSuccessEvent) event;
+            log().debug("InteractiveAuthenticationSuccessEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() + 
+                        "\n  Principal -  " + authEvent.getAuthentication().getPrincipal());
+            
+        }
+        if (event instanceof ServletRequestHandledEvent) {
+            ServletRequestHandledEvent authEvent = (ServletRequestHandledEvent) event;
+            log().debug("ServletRequestHandledEvent received - " + authEvent.getDescription() + "\n  Servlet - " + authEvent.getServletName() +
+                        "\n  URL - " + authEvent.getRequestUrl());
+        }
+        
     }
 
     private EventBuilder createEvent(String uei, AbstractAuthenticationEvent authEvent) {
