@@ -13,6 +13,7 @@
     <module>poller</module>
     <module>provisioning</module>
     <module>ticketing</module>
+    <module>phonebook</module>
     <module>sms-reflector</module>
   </modules>
 
