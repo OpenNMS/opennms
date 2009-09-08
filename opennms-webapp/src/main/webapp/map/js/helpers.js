@@ -204,6 +204,10 @@ function openLink( link, params){
 	   	var appdomain = uriObj.protocol+"://"+uriObj.authority;
        		open(appdomain+appContext+unescape(link), '', params);	
            } else {
-       		open(unescape(link), '', params);	
+		if ( uriObj.protocol =='telnet' ) {
+			window.location=unescape(link);
+		} else {
+       			open(unescape(link), '', params);	
+		}
            }	
 }
