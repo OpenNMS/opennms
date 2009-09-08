@@ -143,6 +143,11 @@
       <version>1.7.5-SMS-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.phonebook</artifactId>
+      <version>1.7.5-SMS-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
       <version>1.7.5-SMS-SNAPSHOT</version>
@@ -181,6 +186,11 @@
       <groupId>org.jvnet.staxex</groupId>
       <artifactId>com.springsource.org.jvnet.staxex</artifactId>
       <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.shell</artifactId>
+      <version>1.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
