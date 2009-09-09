@@ -31,10 +31,12 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Exchanger;
@@ -51,6 +53,7 @@ import org.smslib.USSDRequest;
 import org.smslib.USSDResponse;
 import org.smslib.USSDSessionStatus;
 
+import static org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder.sms;
 
 /**
  * MobileMsgTrackerTeste
@@ -221,7 +224,6 @@ public class MobileMsgTrackerTest {
         
     }
     
-    
     @Test
     public void testTMobileGetBalance() throws Exception {
         
@@ -246,9 +248,26 @@ public class MobileMsgTrackerTest {
         
         assertSame(response, cb.getUSSDResponse());
     }
-   
 
-    /**
+    @Test
+    public void testPingWithBuilder() throws Exception {
+        String gatewayId = "G";
+        
+        TestCallback cb = new TestCallback();
+
+        MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
+
+        builder.addTransaction("SMS ping").sendSms("+19192640655", "ping").expect(sms("^pong$"));
+        MobileMsgSequence sequence = builder.getSequence();
+        Map<String,Long> timing = sequence.execute();
+
+        assertNotNull(timing);
+        assertTrue(timing.size() > 0);
+        // sequence.start();
+        // sequence.waitFor();
+    }
+
+	/**
      * @param originator
      * @param text
      * @return

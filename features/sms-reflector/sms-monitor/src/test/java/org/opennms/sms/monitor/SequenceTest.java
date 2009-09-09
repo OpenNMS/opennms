@@ -50,8 +50,6 @@ public class SequenceTest {
     
     @Test
     public void testExchange() {
-        
-        
         // build the exchange
         MobileExchange exchange = new SmsExchange("+19198124984", "ping");
         
@@ -62,7 +60,6 @@ public class SequenceTest {
         
         // verify the exchange
         Map<String, Long> times = exchange.verify(m_tracker);
-        
         
         // verify the results
         assertNotNull(times);
