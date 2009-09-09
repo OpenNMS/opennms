@@ -21,4 +21,17 @@
 		<property name="serviceRegistry" ref="serviceRegistry"/>
 	</bean>
 	
+	<onmsgi:service ref="smsMessenger">
+      <onmsgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
+        <value>org.smslib.IUSSDNotification</value>
+      </onmsgi:interfaces>
+    </onmsgi:service>
+    
+    <onmsgi:service ref="mobileMsgTracker">
+      <onmsgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.MobileMsgTracker</value>
+      </onmsgi:interfaces>
+    </onmsgi:service>
+	
 </beans>
