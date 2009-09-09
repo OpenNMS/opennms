@@ -12,4 +12,4 @@ cat>runner.args<<EOF
 scan-dir:../lib
 EOF
 
-exec java -jar pax-runner-0.17.0.jar
+exec java -jar pax-runner-1.1.1.jar
