@@ -36,6 +36,7 @@
 package org.opennms.sms.reflector.smsservice;
 
 import org.smslib.OutboundMessage;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * @author brozow
@@ -113,6 +114,13 @@ public class SmsRequest extends MobileMsgRequest {
 
     public OutboundMessage getMessage() {
         return m_msg;
+    }
+    
+    public String toString() {
+    	return new ToStringCreator(this)
+    		.append("recipient", getRecipient())
+    		.append("text", getText())
+    		.toString();
     }
 
 }

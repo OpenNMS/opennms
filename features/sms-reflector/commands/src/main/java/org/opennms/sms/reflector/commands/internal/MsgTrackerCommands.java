@@ -65,13 +65,7 @@ public class MsgTrackerCommands implements CommandProvider
 
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
             System.err.println("Using regex: " + m_regex + " to match response: " + response );
-            boolean retVal = false;
-            if (response instanceof SmsResponse) {
-               retVal =  ((SmsResponse)response).getText().matches(m_regex);
-            }
-            else if (response instanceof UssdResponse) {
-                retVal = ((UssdResponse)response).getContent().matches(m_regex);
-            }
+            boolean retVal = response.getText().matches(m_regex);
             System.err.println("Mathing: " + retVal + " for regex " + m_regex + " response " + response);
             return retVal;
         }

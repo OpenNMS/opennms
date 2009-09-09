@@ -31,19 +31,32 @@
  */
 package org.opennms.sms.reflector.smsservice;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.and;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isSms;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isUssd;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.smsFromRecipient;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.textMatches;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Exchanger;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.tasks.Async;
+import org.opennms.core.tasks.Callback;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
 import org.opennms.protocols.rt.Messenger;
 import org.opennms.sms.reflector.smsservice.internal.MobileMsgTrackerImpl;
 import org.smslib.InboundMessage;
@@ -52,8 +65,7 @@ import org.smslib.USSDDcs;
 import org.smslib.USSDRequest;
 import org.smslib.USSDResponse;
 import org.smslib.USSDSessionStatus;
-
-import static org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder.sms;
+import org.springframework.util.Log4jConfigurer;
 
 /**
  * MobileMsgTrackerTeste
@@ -62,32 +74,35 @@ import static org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder.sms;
  */
 public class MobileMsgTrackerTest {
     
-    /**
-     * @author brozow
-     *
-     */
-    public class BalanceCheckMatcher implements MobileMsgResponseMatcher {
+    private static final String TMOBILE_USSD_MATCH = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
 
-        /* (non-Javadoc)
-         * @see org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher#matches(org.opennms.sms.reflector.smsservice.MobileMsgRequest, org.opennms.sms.reflector.smsservice.MobileMsgResponse)
-         */
-        public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-            
-            if (response instanceof UssdResponse) {
-                UssdResponse ussdResponse = (UssdResponse)response;
+    private final class LatencyCallback implements Callback<MobileMsgResponse> {
+		private final AtomicLong m_start = new AtomicLong();
+		private final AtomicLong m_end = new AtomicLong();
 
-                String regex = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
+		private LatencyCallback(long startTime) {
+			m_start.set(startTime);
+		}
 
-                return ussdResponse.getContent().matches(regex);
+		public void complete(MobileMsgResponse t) {
+			if (t != null) {
+				m_end.set(System.currentTimeMillis());
+			}
+		}
 
-            } else {
-                return false;
-            }
-        }
+		public void handleException(Throwable t) {
+		}
+		
+		public Long getLatency() {
+			if (m_end.get() == 0) {
+				return null;
+			} else {
+				return m_end.get() - m_start.get();
+			}
+		}
+	}
 
-    }
-
-    /**
+	/**
      * @author brozow
      *
      */
@@ -197,6 +212,8 @@ public class MobileMsgTrackerTest {
         m_messenger = new TestMessenger();
         m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
+        
+        System.err.println("=== STARTING TEST ===");
     }
 
     @Test
@@ -234,8 +251,7 @@ public class MobileMsgTrackerTest {
         USSDRequest request = new USSDRequest("#225#");
         
         
-        m_tracker.sendUssdRequest(gatewayId, request, 10000, 0, cb, new BalanceCheckMatcher());
-        
+        m_tracker.sendUssdRequest(gatewayId, request, 10000, 0, cb, and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
         
         String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
         
@@ -250,16 +266,19 @@ public class MobileMsgTrackerTest {
     }
 
     @Test
-    public void testPingWithBuilder() throws Exception {
-        String gatewayId = "G";
-        
-        TestCallback cb = new TestCallback();
-
+    @Ignore
+    // Shouldn't be passing, investigate!!!
+    public void testPingWithBuilder() throws Throwable {
+    	DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+    	
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.addTransaction("SMS ping").sendSms("+19192640655", "ping").expect(sms("^pong$"));
+        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
-        Map<String,Long> timing = sequence.execute();
+        System.err.println("sequence = " + sequence);
+        assertNotNull(sequence);
+        
+        Map<String,Long> timing = sequence.execute(m_tracker, coordinator);
 
         assertNotNull(timing);
         assertTrue(timing.size() > 0);
@@ -267,7 +286,59 @@ public class MobileMsgTrackerTest {
         // sequence.waitFor();
     }
 
-	/**
+    @Test
+    public void testRawSmsPing() throws Exception {
+        final long start = System.currentTimeMillis();
+
+        LatencyCallback cb = new LatencyCallback(start);
+		final MobileMsgResponseMatcher responseMatcher = and(smsFromRecipient(), textMatches("^[Pp]ong$"));
+		final OutboundMessage msg = new OutboundMessage("+19192640655", "ping");
+ 
+		Async<MobileMsgResponse> async = new SmsAsync(m_tracker, msg, responseMatcher);
+
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+        Task t = coordinator.createTask(null, async, cb);
+        t.schedule();
+        
+        InboundMessage responseMsg = createInboundMessage("+19192640655", "pong");
+        
+        Thread.sleep(500);
+        m_messenger.sendTestResponse(responseMsg);
+        
+        t.waitFor();
+
+        assertNotNull(cb.getLatency());
+        System.err.println("testRawSmsPing(): latency = " + cb.getLatency());
+    }
+
+    
+    @Test
+    public void testRawUssdMessage() throws Exception {
+        final String gatewayId = "G";
+        
+        LatencyCallback cb = new LatencyCallback(System.currentTimeMillis());
+        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, gatewayId, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
+
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+        Task t = coordinator.createTask(null, async, cb);
+        t.schedule();
+        
+        String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
+        USSDResponse response = new USSDResponse();
+        response.setContent(content);
+        response.setUSSDSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED);
+        response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
+        
+        Thread.sleep(500);
+        m_messenger.sendTestResponse(gatewayId, response);
+        
+        t.waitFor();
+        assertNotNull(cb.getLatency());
+        System.err.println("testRawUssdMessage(): latency = " + cb.getLatency());
+    }
+
+
+    /**
      * @param originator
      * @param text
      * @return

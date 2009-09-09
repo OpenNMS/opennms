@@ -59,7 +59,7 @@ public class UssdResponse extends MobileMsgResponse {
     /**
      * @return the text
      */
-    public String getContent() {
+    public String getText() {
         return m_msg.getContent();
     }
     

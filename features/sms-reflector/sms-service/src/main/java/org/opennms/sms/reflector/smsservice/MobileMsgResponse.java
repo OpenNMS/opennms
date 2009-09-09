@@ -38,8 +38,8 @@ import org.opennms.protocols.rt.Response;
  *
  * @author brozow
  */
-public class MobileMsgResponse implements Response {
+public abstract class MobileMsgResponse implements Response {
     
-    
+    public abstract String getText();
 
 }
