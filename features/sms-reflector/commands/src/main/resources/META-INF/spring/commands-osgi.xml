@@ -23,4 +23,6 @@
 
 	<osgi:service ref="ussdListener" interface="org.smslib.IUSSDNotification"/>
 	
+	<!-- Felix Command Service for the SMSPingCommand -->
+	<osgi:service ref="smsPingCommand" interface="org.apache.felix.shell.Command"/>
 </beans>

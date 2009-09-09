@@ -18,4 +18,7 @@
 	   <property name="mobileMsgTracker" ref="mobileMsgTracker" />
 	</bean>
 	
+	<!-- Felix Shell command for the SMSPing command -->
+	<bean id="smsPingCommand" class="org.opennms.sms.reflector.commands.internal.SmsPingCommand"/>
+	
 </beans>

@@ -12,7 +12,6 @@
   ">
 	
 	<osgix:cm-properties id="modemConfiguration" persistent-id="org.opennms.sms.gateways">
-		
 	</osgix:cm-properties>
 	
 	

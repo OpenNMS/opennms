@@ -8,4 +8,5 @@
 		<constructor-arg value="${sms.modemConfig.url}" />
 	</bean>
 	<!-- ref="modemConfiguration" -->
+<!--	value="${sms.modemConfig.url}"-->
 </beans>

@@ -51,7 +51,7 @@ public class Main {
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(contextFiles);
         appContext.registerShutdownHook();
         
-        Long latency = SmsPinger.ping("+19198124984");
+        Long latency = SmsPinger.ping("+19193602380");
         
         System.err.println(String.format("Latency is %d", latency));
         
