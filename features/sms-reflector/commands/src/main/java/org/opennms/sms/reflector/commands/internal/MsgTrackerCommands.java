@@ -9,13 +9,8 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseCallback;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
-import org.opennms.sms.reflector.smsservice.SmsResponse;
-import org.opennms.sms.reflector.smsservice.SmsService;
-import org.opennms.sms.reflector.smsservice.UssdResponse;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
-
-import com.sun.org.apache.regexp.internal.recompile;
 
 /**
  * Public API representing an example OSGi service
