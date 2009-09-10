@@ -44,12 +44,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,7 +63,6 @@ import org.smslib.USSDDcs;
 import org.smslib.USSDRequest;
 import org.smslib.USSDResponse;
 import org.smslib.USSDSessionStatus;
-import org.springframework.util.Log4jConfigurer;
 
 /**
  * MobileMsgTrackerTeste

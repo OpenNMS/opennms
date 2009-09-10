@@ -95,6 +95,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+      <version>${pom.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
       <version>${pom.version}</version>
       <scope>provided</scope>
