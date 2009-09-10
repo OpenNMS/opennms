@@ -47,11 +47,12 @@ public class UssdResponse extends MobileMsgResponse {
     private String m_gatewayId;
     private USSDResponse m_msg;
     
-    public UssdResponse(String gatewayId, USSDResponse msg) {
+    public UssdResponse(String gatewayId, USSDResponse msg, long receiveTime) {
+    	super(receiveTime);
         m_gatewayId = gatewayId;
         m_msg = msg;
     }
-    
+
     public String getGatewayId() {
         return m_gatewayId;
     }

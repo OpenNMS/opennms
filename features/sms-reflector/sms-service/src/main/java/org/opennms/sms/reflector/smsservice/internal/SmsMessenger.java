@@ -118,7 +118,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     public void process(String gatewayId, USSDResponse ussdResponse) {
-        m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse));
+        m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse, System.currentTimeMillis()));
     }
 
 

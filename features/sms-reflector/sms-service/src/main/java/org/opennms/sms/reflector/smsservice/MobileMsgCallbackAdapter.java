@@ -7,7 +7,7 @@ import java.net.SocketTimeoutException;
 
 import org.opennms.core.tasks.Callback;
 
-final class MobileMsgCallbackAdapter implements MobileMsgResponseCallback {
+public class MobileMsgCallbackAdapter implements MobileMsgResponseCallback {
 	private final Callback<MobileMsgResponse> cb;
 
 	MobileMsgCallbackAdapter(Callback<MobileMsgResponse> cb) {

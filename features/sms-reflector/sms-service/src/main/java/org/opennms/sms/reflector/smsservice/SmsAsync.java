@@ -7,14 +7,15 @@ import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.smslib.OutboundMessage;
 
-final class SmsAsync implements Async<MobileMsgResponse> {
+public class SmsAsync implements Async<MobileMsgResponse> {
 	private MobileMsgTracker m_tracker;
 	private final OutboundMessage m_message;
 	private final MobileMsgResponseMatcher m_responseMatcher;
 
-	SmsAsync(MobileMsgTracker tracker, String recipient, String text, MobileMsgResponseMatcher responseMatcher) {
+	SmsAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher responseMatcher) {
 		this.m_tracker = tracker;
 		this.m_message = new OutboundMessage(recipient, text);
+		this.m_message.setGatewayId(gatewayId);
 		this.m_responseMatcher = responseMatcher;
 	}
 
@@ -25,7 +26,6 @@ final class SmsAsync implements Async<MobileMsgResponse> {
 	}
 
 	public void submit(final Callback<MobileMsgResponse> cb) {
-
 		MobileMsgResponseCallback mmrc = new MobileMsgCallbackAdapter(cb);
 
 		try {

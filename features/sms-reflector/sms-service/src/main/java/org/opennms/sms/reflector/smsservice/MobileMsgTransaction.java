@@ -12,19 +12,18 @@ import org.springframework.core.style.ToStringCreator;
 
 public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse> {
 	public static class SmsTransaction extends MobileMsgTransaction {
-
 		private String m_recipient;
 		private String m_text;
 
-		public SmsTransaction(String label, String recipient, String text, MobileMsgResponseMatcher matcher) {
-			super(label, matcher);
+		public SmsTransaction(String label, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher matcher) {
+			super(label, gatewayId, timeout, retries, matcher);
 			m_recipient = recipient;
 			m_text = text;
 		}
 
 		@Override
 		public Async<MobileMsgResponse> createAsync(MobileMsgTracker tracker) {
-			return new SmsAsync(tracker, m_recipient, m_text, getMatcher());
+			return new SmsAsync(tracker, getGatewayId(), getTimeout(), getRetries(), m_recipient, m_text, getMatcher());
 		}
 
 		public String toString() {
@@ -37,13 +36,35 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 		}
 	}
 
+	public static class UssdTransaction extends MobileMsgTransaction {
+		private String m_text;
+
+		public UssdTransaction(String label, String gatewayId, long timeout, int retries, String text, MobileMsgResponseMatcher matcher) {
+			super(label, gatewayId, timeout, retries, matcher);
+			m_text = text;
+		}
+
+		@Override
+		public Async<MobileMsgResponse> createAsync(MobileMsgTracker tracker) {
+			return new UssdAsync(tracker, getGatewayId(), getTimeout(), getRetries(), m_text, getMatcher());
+		}
+
+	}
+
+
 	private String m_label;
 	private MobileMsgResponseMatcher m_matcher;
-	private Long m_end;
+	private Long m_latency;
 	private Throwable m_error;
+	private long m_timeout;
+	private int m_retries;
+	private String m_gatewayId;
 	
-	public MobileMsgTransaction(String label, MobileMsgResponseMatcher matcher) {
+	public MobileMsgTransaction(String label, String gatewayId, long timeout, int retries, MobileMsgResponseMatcher matcher) {
 		m_label = label;
+		m_gatewayId = gatewayId;
+		m_timeout = timeout;
+		m_retries = retries;
 		m_matcher = matcher;
 	}
 
@@ -51,12 +72,24 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 		return m_label;
 	}
 
+	public String getGatewayId() {
+		return m_gatewayId;
+	}
+	
+	public long getTimeout() {
+		return m_timeout;
+	}
+	
+	public int getRetries() {
+		return m_retries;
+	}
+	
 	public MobileMsgResponseMatcher getMatcher() {
 		return m_matcher;
 	}
 
-	public Long getEnd() {
-		return m_end;
+	public Long getLatency() {
+		return m_latency;
 	}
 	
 	public Throwable getError() {
@@ -71,7 +104,7 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 
 	public void complete(MobileMsgResponse t) {
 		if (t != null) {
-			m_end = System.currentTimeMillis();
+			m_latency = t.getReceiveTime() - t.getRequest().getSentTime();
 		}
 	}
 

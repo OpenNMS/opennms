@@ -35,7 +35,6 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.protocols.rt.Request;
-import org.smslib.OutboundMessage;
 
 /**
  * SmsRequest
@@ -50,12 +49,17 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     private MobileMsgResponseMatcher m_responseMatcher;
     
     private long m_expiration;
+	private long m_sentTime;
 
     public MobileMsgRequest(long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
         m_timeout = timeout;
         m_retries = retries;
         m_cb = cb;
         m_responseMatcher = responseMatcher;
+    }
+    
+    public long getSentTime() {
+    	return m_sentTime;
     }
     
     /**
@@ -115,6 +119,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     }
 
     public void setSendTimestamp(long timeInMillis) {
+    	m_sentTime = timeInMillis;
         m_expiration = timeInMillis + m_timeout;
     }
 
@@ -129,6 +134,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     }
 
     public boolean processResponse(MobileMsgResponse response) {
+    	response.setRequest(this);
         return m_cb.handleResponse(this, response);
     }
 

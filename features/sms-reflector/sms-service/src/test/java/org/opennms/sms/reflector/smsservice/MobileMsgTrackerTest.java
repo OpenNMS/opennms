@@ -39,6 +39,7 @@ import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isS
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isUssd;
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.smsFromRecipient;
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.textMatches;
+import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.ussdStatusIs;
 
 import java.util.Date;
 import java.util.Map;
@@ -137,7 +138,7 @@ public class MobileMsgTrackerTest {
          * @param response
          */
         public void sendTestResponse(String gatewayId, USSDResponse response) {
-            sendTestResponse(new UssdResponse(gatewayId, response));
+            sendTestResponse(new UssdResponse(gatewayId, response, System.currentTimeMillis()));
         }
 
     }
@@ -200,9 +201,10 @@ public class MobileMsgTrackerTest {
         }
         
     }
-    
+
     TestMessenger m_messenger;
     MobileMsgTrackerImpl m_tracker;
+	DefaultTaskCoordinator m_coordinator;
     
     @Before
     public void setUp() throws Exception {
@@ -210,6 +212,8 @@ public class MobileMsgTrackerTest {
         m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
         
+        m_coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+
         System.err.println("=== STARTING TEST ===");
     }
 
@@ -231,7 +235,6 @@ public class MobileMsgTrackerTest {
         m_messenger.sendTestResponse(responseMsg);
         m_messenger.sendTestResponse(responseMsg2);
         
-        
         assertSame(responseMsg, cb.getMessage());
         assertSame(responseMsg2, cb2.getMessage());
         
@@ -247,10 +250,15 @@ public class MobileMsgTrackerTest {
         
         USSDRequest request = new USSDRequest("#225#");
         
-        
         m_tracker.sendUssdRequest(gatewayId, request, 10000, 0, cb, and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
         
-        String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
+        USSDResponse response = sendTmobileUssdResponse(gatewayId);
+        
+        assertSame(response, cb.getUSSDResponse());
+    }
+
+	private USSDResponse sendTmobileUssdResponse(String gatewayId) {
+		String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
         
         USSDResponse response = new USSDResponse();
         response.setContent(content);
@@ -258,29 +266,95 @@ public class MobileMsgTrackerTest {
         response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
         
         m_messenger.sendTestResponse(gatewayId, response);
-        
-        assertSame(response, cb.getUSSDResponse());
-    }
+		return response;
+	}
 
-    @Test
-    @Ignore
-    // Shouldn't be passing, investigate!!!
-    public void testPingWithBuilder() throws Throwable {
-    	DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
-    	
+    @Test(expected=java.net.SocketTimeoutException.class)
+    public void testPingTimeoutWithBuilder() throws Throwable {
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
         builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
+
+        sequence.execute(m_tracker, m_coordinator);
+    }
+
+    @Test
+    public void testPingWithBuilder() throws Throwable {
+        MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
+
+        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        MobileMsgSequence sequence = builder.getSequence();
+        System.err.println("sequence = " + sequence);
+        assertNotNull(sequence);
+
+        sequence.start(m_tracker, m_coordinator);
+
+        Thread.sleep(500);
+        InboundMessage msg = new InboundMessage(new Date(), "+19192640655", "pong", 0, "0");
+		m_messenger.sendTestResponse(msg);
         
-        Map<String,Long> timing = sequence.execute(m_tracker, coordinator);
+        Map<String,Long> timing = sequence.getLatency();
 
         assertNotNull(timing);
         assertTrue(timing.size() > 0);
-        // sequence.start();
-        // sequence.waitFor();
+        assertTrue(timing.get("SMS Ping") > 400);
+    }
+
+    @Test
+    public void testUssdWithBuilder() throws Throwable {
+    	MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
+
+        builder.sendUssd("USSD request", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
+        MobileMsgSequence sequence = builder.getSequence();
+        System.err.println("sequence = " + sequence);
+        assertNotNull(sequence);
+
+        sequence.start(m_tracker, m_coordinator);
+
+        Thread.sleep(500);
+        sendTmobileUssdResponse("G");
+        
+        Map<String,Long> timing = sequence.getLatency();
+
+        assertNotNull(timing);
+        assertTrue(timing.size() > 0);
+        assertTrue(timing.get("USSD request") > 400);
+    }
+
+    @Test
+    public void testMultipleStepSequenceBuilder() throws Throwable {
+    	MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
+    	
+        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendUssd("USSD request", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
+        MobileMsgSequence sequence = builder.getSequence();
+        assertNotNull(sequence);
+        
+        sequence.start(m_tracker, m_coordinator);
+
+        Thread.sleep(100);
+        InboundMessage msg = new InboundMessage(new Date(), "+19192640655", "pong", 0, "0");
+		m_messenger.sendTestResponse(msg);
+		
+        Thread.sleep(100);
+        sendTmobileUssdResponse("G");
+
+        Map<String,Long> timing = sequence.getLatency();
+
+        assertNotNull(timing);
+        assertTrue(timing.size() == 2);
+        System.err.println(timing);
+        assertTrue(timing.get("SMS Ping") > 50);
+        assertTrue(timing.get("USSD request") > 50);
+    }
+    
+    @Test
+    @Ignore
+    public void testMultiResponseBuilder() throws Throwable {
+    	// FIXME: handle multiple responses from a single request
     }
 
     @Test
@@ -293,8 +367,7 @@ public class MobileMsgTrackerTest {
  
 		Async<MobileMsgResponse> async = new SmsAsync(m_tracker, msg, responseMatcher);
 
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
-        Task t = coordinator.createTask(null, async, cb);
+        Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
         
         InboundMessage responseMsg = createInboundMessage("+19192640655", "pong");
@@ -314,10 +387,9 @@ public class MobileMsgTrackerTest {
         final String gatewayId = "G";
         
         LatencyCallback cb = new LatencyCallback(System.currentTimeMillis());
-        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, gatewayId, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
+        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, gatewayId, 3000L, 0, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
 
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
-        Task t = coordinator.createTask(null, async, cb);
+        Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
         
         String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
@@ -333,7 +405,6 @@ public class MobileMsgTrackerTest {
         assertNotNull(cb.getLatency());
         System.err.println("testRawUssdMessage(): latency = " + cb.getLatency());
     }
-
 
     /**
      * @param originator
