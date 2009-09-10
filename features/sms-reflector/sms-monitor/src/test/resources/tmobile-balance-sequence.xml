@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
+  <transaction label="USSD balance">
+    <ussd-request text="#225#" gateway="ACM0"/>
+    <ussd-response>
+      <matches>regex</matches>
+      <session-status>0</session-status>
+    </ussd-response>
+  </transaction>
+ </mobile-sequence>

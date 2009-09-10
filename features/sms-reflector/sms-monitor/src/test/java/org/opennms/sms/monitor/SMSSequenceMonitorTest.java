@@ -105,19 +105,26 @@ public class SMSSequenceMonitorTest {
 	public void testSimpleSequence() throws Exception {
 
 		SMSSequenceMonitor m = new SMSSequenceMonitor();
+		m.initialize(new HashMap<String, Object>());
+		m.initialize(m_service);
+		
+		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
-		StringBuffer xmlBuffer = getXmlBuffer("test-sequence.xml");
-		parameters.put("sequence", xmlBuffer.toString());
+		parameters.put("sequence", getXmlBuffer("sms-ping-sequence.xml"));
 
 		PollStatus s = m.poll(m_service, parameters);
+
 		System.err.println("reason = " + s.getReason());
 		System.err.println("status name = " + s.getStatusName());
 		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
+		
+		m.release(m_service);
+		m.release();
 	}
 
-    private StringBuffer getXmlBuffer(String fileName) throws IOException {
+    private String getXmlBuffer(String fileName) throws IOException {
         StringBuffer xmlBuffer = new StringBuffer();
         File xmlFile = new File(ClassLoader.getSystemResource(fileName).getFile());
         assertTrue("xml file is readable", xmlFile.canRead());
@@ -132,7 +139,7 @@ public class SMSSequenceMonitorTest {
             }
             xmlBuffer.append(line).append("\n");
         }
-        return xmlBuffer;
+        return xmlBuffer.toString();
     }
 
 }
