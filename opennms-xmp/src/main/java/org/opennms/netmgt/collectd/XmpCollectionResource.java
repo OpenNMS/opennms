@@ -100,14 +100,18 @@ class XmpCollectionResource extends AbstractCollectionResource
             this.resourceType = resourceType;
         nodeType = -1;
 
-
         // filter the instance so it does not have slashes (/) nor colons 
         // in it as they can munge our rrd file layout
+
+        // filter so there are not spaces either just so that
+        // it makes directory structures less annoying to deal with
+        // rdk - 9/11/2009
 
         if (instance != null) {
             this.instance = instance.replace('/','_');
             this.instance = this.instance.replace('\\','_');
             this.instance = this.instance.replace(':','_');
+            this.instance = this.instance.replace(' ','_');
         }
         else {
             this.instance = instance;
