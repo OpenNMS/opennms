@@ -15,7 +15,7 @@ public class UssdAsync implements Async<MobileMsgResponse> {
 	private long m_timeout;
 	private int m_retries;
 
-	UssdAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, USSDRequest req, MobileMsgResponseMatcher matcher) {
+	public UssdAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, USSDRequest req, MobileMsgResponseMatcher matcher) {
 		this.m_tracker = tracker;
 		this.m_gatewayId = gatewayId;
 		this.m_timeout = timeout;

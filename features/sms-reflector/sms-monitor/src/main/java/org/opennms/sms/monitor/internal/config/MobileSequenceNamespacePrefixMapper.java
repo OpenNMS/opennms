@@ -2,8 +2,8 @@ package org.opennms.sms.monitor.internal.config;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
-public class SmsSequenceNamespacePrefixMapper extends NamespacePrefixMapper {
-    public SmsSequenceNamespacePrefixMapper() {
+public class MobileSequenceNamespacePrefixMapper extends NamespacePrefixMapper {
+    public MobileSequenceNamespacePrefixMapper() {
     }
     
     @Override
@@ -12,7 +12,7 @@ public class SmsSequenceNamespacePrefixMapper extends NamespacePrefixMapper {
             return "xsi";
         }
 
-        if("http://xmlns.opennms.org/xsd/config/sms-sequence".equals(namespaceUri)) {
+        if("http://xmlns.opennms.org/xsd/config/mobile-sequence".equals(namespaceUri)) {
             return "";
         }
 

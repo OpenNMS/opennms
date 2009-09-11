@@ -1,4 +1,4 @@
-<sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
   <session-variable name="amount" class="org.opennms.sms.monitor.session.UniqueNumber">
     <parameters>
       <parameter key="min" value="1" />
@@ -35,4 +35,4 @@
       </operation>
     </transaction>
   </transaction>
-</sms-sequence>
+</mobile-sequence>

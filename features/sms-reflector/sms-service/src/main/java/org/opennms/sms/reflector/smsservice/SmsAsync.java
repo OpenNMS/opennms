@@ -12,14 +12,14 @@ public class SmsAsync implements Async<MobileMsgResponse> {
 	private final OutboundMessage m_message;
 	private final MobileMsgResponseMatcher m_responseMatcher;
 
-	SmsAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher responseMatcher) {
+	public SmsAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher responseMatcher) {
 		this.m_tracker = tracker;
 		this.m_message = new OutboundMessage(recipient, text);
 		this.m_message.setGatewayId(gatewayId);
 		this.m_responseMatcher = responseMatcher;
 	}
 
-	SmsAsync(MobileMsgTracker tracker, OutboundMessage msg, MobileMsgResponseMatcher responseMatcher) {
+	public SmsAsync(MobileMsgTracker tracker, OutboundMessage msg, MobileMsgResponseMatcher responseMatcher) {
 		this.m_tracker = tracker;
 		this.m_message = msg;
 		this.m_responseMatcher = responseMatcher;

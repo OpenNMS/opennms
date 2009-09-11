@@ -6,16 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-@XmlRootElement(name="sms-sequence")
-public class SmsSequence implements Serializable, Comparable<SmsSequence> {
+@XmlRootElement(name="mobile-sequence")
+public class MobileSequence implements Serializable, Comparable<MobileSequence> {
 	private static final long serialVersionUID = 1L;
-	private List<TransactionOperation> m_transactions;
+	private List<MobileSequenceTransaction> m_transactions = Collections.synchronizedList(new ArrayList<MobileSequenceTransaction>());
 	private List<SequenceSessionVariable> m_sessionVariables;
 
 	public void addSessionVariable(SequenceSessionVariable var) {
@@ -34,23 +33,21 @@ public class SmsSequence implements Serializable, Comparable<SmsSequence> {
 		m_sessionVariables = sessionVariables;
 	}
 
-	public void addTransaction(TransactionOperation transaction) {
-		if (m_transactions == null) {
-			m_transactions = Collections.synchronizedList(new ArrayList<TransactionOperation>());
-		}
+	public void addTransaction(MobileSequenceTransaction transaction) {
 		m_transactions.add(transaction);
 	}
 
-	@XmlElementRef
-	public List<TransactionOperation> getTransactions() {
+	@XmlElement(name="transaction")
+	public List<MobileSequenceTransaction> getTransactions() {
 		return m_transactions;
 	}
 
-	public void setTransactions(List<TransactionOperation> transactions) {
-		m_transactions = transactions;
+	public synchronized void setTransactions(List<MobileSequenceTransaction> transactions) {
+		m_transactions.clear();
+		m_transactions.addAll(transactions);
 	}
 
-	public int compareTo(SmsSequence o) {
+	public int compareTo(MobileSequence o) {
 		return new CompareToBuilder()
 			.append(this.getTransactions(), o.getTransactions())
 			.toComparison();

@@ -35,7 +35,6 @@
 
 package org.opennms.sms.reflector.smsservice;
 
-import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
 
 /**

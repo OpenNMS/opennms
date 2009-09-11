@@ -192,7 +192,7 @@ public class JaxbTest {
 		}
 	}
 
-	private String m_testXml = "<canyon xmlns=\"http://xmlns.opennms.org/xsd/config/sms-sequence\" name=\"box\">" +
+	private String m_testXml = "<canyon xmlns=\"http://xmlns.opennms.org/xsd/config/mobile-sequence\" name=\"box\">" +
 			"<waterfall name=\"super big huge\"><height>5280</height></waterfall>" +
 			"<waterfall name=\"snakey\"><height>40</height></waterfall>" +
 			"<river name=\"neuse\" width=\"200\" />" +

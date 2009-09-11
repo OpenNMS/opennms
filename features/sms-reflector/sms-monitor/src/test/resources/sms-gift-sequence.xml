@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sms-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
   <transaction label="SMS gift">
     <operation type="send-sms" label="sending ping">
       <value>'tis better to give...</value>
@@ -29,4 +29,4 @@
       </operation>
     </transaction>
   </transaction>
-</sms-sequence>
+</mobile-sequence>

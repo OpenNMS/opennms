@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/sms-sequence">
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
   <transaction label="USSD balance">
     <ussd-request text="#225#" gateway="ACM0"/>
     <ussd-response>

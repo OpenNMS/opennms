@@ -8,7 +8,6 @@ import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.ICallNotification;
 import org.smslib.IGatewayStatusNotification;
-import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.IQueueSendingNotification;
 import org.smslib.IUSSDNotification;

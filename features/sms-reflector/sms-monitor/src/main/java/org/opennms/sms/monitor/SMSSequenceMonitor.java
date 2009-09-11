@@ -17,8 +17,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
-import org.opennms.sms.monitor.internal.config.SmsSequence;
-import org.opennms.sms.monitor.internal.config.TransactionOperation;
+import org.opennms.sms.monitor.internal.config.MobileSequence;
+import org.opennms.sms.monitor.internal.config.MobileSequenceOperation;
 import org.opennms.sms.ping.PingConstants;
 
 @Distributable(DistributionContext.DAEMON)
@@ -36,7 +36,7 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
         	return PollStatus.unavailable("Sequence configuration was empty.  You must specify a 'sequence' parameter in the SMSSequenceMonitor poller configuration!");
         }
 
-        SmsSequence sequence = null;
+        MobileSequence sequence = null;
         try {
             SequenceConfigFactory factory = SequenceConfigFactory.getInstance();
 			sequence = factory.getSequenceForXml(config);
@@ -55,9 +55,11 @@ final public class SMSSequenceMonitor extends IPv4Monitor {
 		DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(executor);
 		SequenceTask topTask = coordinator.createSequence(null);
 
-		for (TransactionOperation op : sequence.getTransactions()) {
+		/*
+		for (MobileSequenceOperation op : sequence.getTransactions()) {
 			op.createTask(coordinator, topTask);
 		}
+		*/
 
 		System.err.println("scheduling tasks");
 		topTask.schedule();
