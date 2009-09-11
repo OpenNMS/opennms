@@ -481,9 +481,11 @@ public class XmpCollector implements ServiceCollector {
             xmpPort = Integer.valueOf((String)parameters.get("port"));
         }
 
-        log().debug("collect got parameters for "+agent);
+        //log().debug("collect got parameters for "+agent);
 
         String collectionName = parameters.get("collection");
+
+        //log().debug("XMP collection name "+collectionName);
 
         // collectionName tells us what set of data to get 
         // this would/will come from xmp-datacollection.xml
@@ -493,7 +495,8 @@ public class XmpCollector implements ServiceCollector {
             return null;
         }
 
-        log().debug("collect got collectionName for "+agent);
+        //log().debug("collect got collectionName for "+agent);
+        log().debug("XmpCollector: collect "+collectionName+" from "+agent);
 
         // get/create our collections set
         collectionSet = new XmpCollectionSet(agent);
@@ -607,13 +610,12 @@ public class XmpCollector implements ServiceCollector {
         // query will have handled this by searching returned
         // MIB objects for sysUpTime
 
-        // warning, each collection should have a scalar query that
-        // includes core.sysUpTime 
+        // WARNING, EACH COLLECTION SHOULD HAVE A SCALAR QUERY THAT
+        // INCLUDES Core.sysUpTime 
 
         collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
 
-        log().debug("XMP collect finished, uptime for "+agent+" is "+
-                    agent.getSavedSysUpTime());
+        log().debug("XMP collect finished for "+collectionName+", uptime for "+agent+" is "+agent.getSavedSysUpTime());
 
         return collectionSet;
     }
