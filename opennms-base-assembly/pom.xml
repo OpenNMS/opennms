@@ -281,6 +281,18 @@
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-monitor</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.smslib</groupId>
+      <artifactId>smslib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.rxtx</groupId>
+      <artifactId>rxtx-osgi</artifactId>
+    </dependency>
 
     <!-- this is a runtime depdency we need at install time -->
     <dependency>

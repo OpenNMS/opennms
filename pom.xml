@@ -1683,6 +1683,11 @@
         <version>3.4.3-SNAPSHOT</version>
       </dependency>
       <dependency>
+        <groupId>org.rxtx</groupId>
+        <artifactId>rxtx</artifactId>
+        <version>2.2-pre2</version>
+      </dependency>
+      <dependency>
         <groupId>org.snmp4j</groupId>
         <artifactId>snmp4j</artifactId>
         <version>1.9.2a</version>

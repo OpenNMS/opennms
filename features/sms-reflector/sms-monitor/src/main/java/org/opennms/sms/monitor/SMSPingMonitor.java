@@ -13,10 +13,18 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
 import org.opennms.sms.ping.PingConstants;
 import org.opennms.sms.ping.SmsPinger;
+import org.opennms.sms.monitor.internal.BeanUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @Distributable(DistributionContext.DAEMON)
 final public class SMSPingMonitor extends IPv4Monitor {
 	Phonebook phonebook = new PropertyPhonebook();
+
+	@Override
+	public void initialize(Map<String,Object> params) {
+		super.initialize(params);
+		BeanUtils.getFactory("smsPollerContext", ClassPathXmlApplicationContext.class);
+	}
 
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
