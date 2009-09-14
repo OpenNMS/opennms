@@ -6,6 +6,24 @@ import org.smslib.USSDSessionStatus;
 
 public class MobileMsgResponseMatchers {
 
+	public static MobileMsgResponseMatcher smsFrom(final String originator) {
+		return new MobileMsgResponseMatcher() {
+			
+			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
+				tracef("smsFrom.matches(%s, %s, %s)", originator, request, response);
+				if (response instanceof SmsResponse) {
+					SmsResponse resp = (SmsResponse)response;
+					return resp.getOriginator().equals(originator);
+				}
+				return false;
+			}
+			
+			public String toString() {
+				return "smsFromRecipient()";
+			}
+		};
+	}
+
 	public static MobileMsgResponseMatcher smsFromRecipient() {
 		return new MobileMsgResponseMatcher() {
 			

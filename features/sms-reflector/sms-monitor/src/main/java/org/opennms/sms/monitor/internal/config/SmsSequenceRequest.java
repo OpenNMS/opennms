@@ -10,8 +10,8 @@ public class SmsSequenceRequest extends MobileSequenceRequest {
 	public SmsSequenceRequest() {
 	}
 
-	public SmsSequenceRequest(String text) {
-		super(text);
+	public SmsSequenceRequest(String label, String text) {
+		super(label, text);
 	}
 
 	@XmlAttribute(name="recipient")

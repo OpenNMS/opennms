@@ -5,20 +5,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 
-@XmlRootElement(name="matches")
-public class TextResponseMatcher extends SequenceResponseMatcher {
+@XmlRootElement(name="validate-source")
+public class SmsSourceMatcher extends SequenceResponseMatcher {
 
-	public TextResponseMatcher() {
+	public SmsSourceMatcher() {
+		super();
 	}
-
-	public TextResponseMatcher(String text) {
-		this();
-		setText(text);
+	
+	public SmsSourceMatcher(String originator) {
+		super(originator);
 	}
 
 	@Override
 	public MobileMsgResponseMatcher getMatcher() {
-		return MobileMsgResponseMatchers.textMatches(getText());
+		return MobileMsgResponseMatchers.smsFrom(getText());
 	}
 
 }

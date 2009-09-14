@@ -10,6 +10,14 @@ public abstract class MobileSequenceResponse extends MobileSequenceOperation {
 
 	private List<SequenceResponseMatcher> m_matchers = Collections.synchronizedList(new ArrayList<SequenceResponseMatcher>());
 
+	public MobileSequenceResponse() {
+		super();
+	}
+	
+	public MobileSequenceResponse(String label) {
+		super(label);
+	}
+
 	@XmlElementRef
 	public List<SequenceResponseMatcher> getMatchers() {
 		return m_matchers;

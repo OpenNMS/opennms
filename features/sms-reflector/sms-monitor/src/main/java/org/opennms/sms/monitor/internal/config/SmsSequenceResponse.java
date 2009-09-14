@@ -4,4 +4,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="sms-response")
 public class SmsSequenceResponse extends MobileSequenceResponse {
+	
+	public SmsSequenceResponse() {
+		super();
+	}
+	
+	public SmsSequenceResponse(String label) {
+		super(label);
+	}
 }

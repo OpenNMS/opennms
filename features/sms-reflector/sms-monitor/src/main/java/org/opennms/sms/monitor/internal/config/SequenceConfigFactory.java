@@ -27,7 +27,17 @@ public class SequenceConfigFactory {
 
 	protected synchronized void initializeContext() throws JAXBException {
 		if (m_context == null) {
-			m_context = JAXBContext.newInstance(MobileSequence.class, MobileSequenceOperation.class);
+			m_context = JAXBContext.newInstance(
+					MobileSequenceConfig.class,
+	    			SmsSequenceRequest.class,
+	    			UssdSequenceRequest.class,
+	    			SmsSequenceResponse.class,
+	    			UssdSequenceResponse.class,
+	    			SmsFromRecipientResponseMatcher.class,
+	    			SmsSourceMatcher.class,
+	    			TextResponseMatcher.class,
+	    			UssdSessionStatusMatcher.class
+			);
 			m_marshaller = m_context.createMarshaller();
 			m_unmarshaller = m_context.createUnmarshaller();
 			
@@ -40,22 +50,22 @@ public class SequenceConfigFactory {
 		}
 	}
 	
-	public MobileSequence getSequenceForXml(String sequenceXml) throws SequenceException {
+	public MobileSequenceConfig getSequenceForXml(String sequenceXml) throws SequenceException {
 		try {
 			initializeContext();
 			Reader r = new StringReader(sequenceXml);
 			m_unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
-			MobileSequence s = (MobileSequence)m_unmarshaller.unmarshal(r);
+			MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(r);
 	    	return s;
 		} catch (JAXBException e) {
 			throw new SequenceException("An error occurred reading the sequence.", e);
 		}
 	}
 
-	public MobileSequence getSequenceForFile(File sequenceFile) throws SequenceException {
+	public MobileSequenceConfig getSequenceForFile(File sequenceFile) throws SequenceException {
 		try {
 			initializeContext();
-			return (MobileSequence)m_unmarshaller.unmarshal(sequenceFile);
+			return (MobileSequenceConfig)m_unmarshaller.unmarshal(sequenceFile);
 		} catch (JAXBException e) {
 			throw new SequenceException("An error occurred reading the sequence from " + sequenceFile.getPath(), e);
 		}

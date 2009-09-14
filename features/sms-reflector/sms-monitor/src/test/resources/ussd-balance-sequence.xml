@@ -1,38 +1,29 @@
 <mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
   <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
+  <!-- 
   <session-variable name="amount" class="org.opennms.sms.monitor.internal.config.UniqueNumber">
     <parameters>
       <parameter key="min" value="1" />
       <parameter key="max" value="15" />
     </parameters>
   </session-variable>
-  <transaction type="synchronous" label="USSD balance">
-    <operation type="send-ussd" label="originator sends balance request">
-      <value>*327*${session.target}*${session.amount}#</value>
-    </operation>
-    <operation type="receive-ussd" label="network asks for balance confirmation">
-      <match type="success">~Transfiere L ${session.amount} al ${session.target}</match>
-      <parameters>
-        <!-- CUSD -->
-        <parameter key="session-status" value="1" />
-      </parameters>
-    </operation>
-    <operation type="send-ussd" label="send 1 to confirm balance request">
-      <value>1</value>
-    </operation>
-    <transaction type="asynchronous">
-      <operation type="receive-ussd" label="transaction is processing">
-        <match type="success">~Su transaccion se esta procesando</match>
-        <parameters>
-          <parameter key="session-status" value="0" />
-        </parameters>
-      </operation>
-      <operation type="receive-sms" label="receive balance amount">
-        <match type="success">~le ha transferido L ${session.amount}</match>
-        <parameters>
-          <parameter key="validate-source" value="+3746" />
-        </parameters>
-      </operation>
-    </transaction>
+  -->
+  <transaction label="ussd-transfer">
+    <ussd-request label="req-balance-transfer" text="*327*${session.target}*${session.amount}#" />
+    <ussd-response label="balance-conf-resp">
+      <session-status>FURTHER_ACTION_REQUIRED</session-status>
+      <matches>^Transfiere L ${session.amount} al ${session.target}$</matches>
+    </ussd-response>
+  </transaction>
+  <transaction label="req-conf">
+    <ussd-request label="conf-transfer" text="1" />
+    <ussd-response label="processing">
+      <session-status>NO_FURTHER_ACTION_REQUIRED</session-status>
+      <matches>^.*Su transaccion se esta procesando.*$</matches>
+    </ussd-response>
+    <sms-response label="transferred">
+      <matches>^.*le ha transferido L ${session.amount}.*$</matches>
+      <validate-source>+3746</validate-source>
+    </sms-response>
   </transaction>
 </mobile-sequence>

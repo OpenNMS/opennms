@@ -8,9 +8,11 @@ public abstract class MobileSequenceRequest extends MobileSequenceOperation {
 	private String m_text;
 
 	public MobileSequenceRequest() {
+		super();
 	}
 	
-	public MobileSequenceRequest(String text) {
+	public MobileSequenceRequest(String label, String text) {
+		super(label);
 		setText(text);
 	}
 

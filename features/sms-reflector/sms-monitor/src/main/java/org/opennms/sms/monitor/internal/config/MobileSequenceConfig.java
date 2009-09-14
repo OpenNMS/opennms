@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="mobile-sequence")
-public class MobileSequence implements Serializable, Comparable<MobileSequence> {
+public class MobileSequenceConfig implements Serializable, Comparable<MobileSequenceConfig> {
 	private static final long serialVersionUID = 1L;
 	private List<MobileSequenceTransaction> m_transactions = Collections.synchronizedList(new ArrayList<MobileSequenceTransaction>());
 	private List<SequenceSessionVariable> m_sessionVariables;
@@ -47,7 +47,7 @@ public class MobileSequence implements Serializable, Comparable<MobileSequence> 
 		m_transactions.addAll(transactions);
 	}
 
-	public int compareTo(MobileSequence o) {
+	public int compareTo(MobileSequenceConfig o) {
 		return new CompareToBuilder()
 			.append(this.getTransactions(), o.getTransactions())
 			.toComparison();

@@ -25,7 +25,6 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
@@ -33,7 +32,7 @@ import org.xml.sax.SAXException;
 public class SequenceXmlTest {
 
 	private FileAnticipator m_fileAnticipator;
-	private MobileSequence m_smsSequence;
+	private MobileSequenceConfig m_smsSequence;
 	private JAXBContext m_context;
 	private Marshaller m_marshaller;
 	private Unmarshaller m_unmarshaller;
@@ -54,28 +53,47 @@ public class SequenceXmlTest {
     public void setUp() throws Exception {
     	m_fileAnticipator = new FileAnticipator();
 
-    	m_smsSequence = new MobileSequence();
+    	m_smsSequence = new MobileSequenceConfig();
 
-    	MobileSequenceTransaction smsPingTransaction = new MobileSequenceTransaction("sms-ping");
+    	MobileSequenceTransaction reqBalanceTransfer = new MobileSequenceTransaction("ussd-transfer");
     	
-    	SmsSequenceRequest request = new SmsSequenceRequest("ping");
-    	request.setRecipient("+19192640655");
-    	smsPingTransaction.setRequest(request);
+    	UssdSequenceRequest request = new UssdSequenceRequest("req-balance-transfer", "*327*${session.target}*${session.amount}#");
+    	reqBalanceTransfer.setRequest(request);
+    	
+    	UssdSequenceResponse response = new UssdSequenceResponse("balance-conf-resp");
+    	response.addMatcher(new UssdSessionStatusMatcher("FURTHER_ACTION_REQUIRED"));
+    	response.addMatcher(new TextResponseMatcher("^Transfiere L ${session.amount} al ${session.target}$"));
+    	reqBalanceTransfer.addResponse(response);
 
-    	SmsSequenceResponse response = new SmsSequenceResponse();
-    	response.addMatcher(new SmsFromRecipientResponseMatcher());
-    	response.addMatcher(new TextResponseMatcher("^[Pp]ong$"));
+    	m_smsSequence.addTransaction(reqBalanceTransfer);
     	
-    	smsPingTransaction.addResponse(response);
+    	MobileSequenceTransaction reqConf = new MobileSequenceTransaction("req-conf");
+    	
+    	request = new UssdSequenceRequest("conf-transfer", "1");
+    	reqConf.setRequest(request);
+    	
+    	response = new UssdSequenceResponse("processing");
+    	response.addMatcher(new UssdSessionStatusMatcher("NO_FURTHER_ACTION_REQUIRED"));
+    	response.addMatcher(new TextResponseMatcher("^.*Su transaccion se esta procesando.*$"));
+    	reqConf.addResponse(response);
 
-    	m_smsSequence.addTransaction(smsPingTransaction);
-    	
+    	SmsSequenceResponse smsResponse = new SmsSequenceResponse("transferred");
+    	smsResponse.addMatcher(new TextResponseMatcher("^.*le ha transferido L ${session.amount}.*$"));
+    	smsResponse.addMatcher(new SmsSourceMatcher("+3746"));
+    	reqConf.addResponse(smsResponse);
+
+    	m_smsSequence.addTransaction(reqConf);
+
     	m_context = JAXBContext.newInstance(
-    			MobileSequence.class,
+    			MobileSequenceConfig.class,
     			SmsSequenceRequest.class,
+    			UssdSequenceRequest.class,
     			SmsSequenceResponse.class,
+    			UssdSequenceResponse.class,
     			SmsFromRecipientResponseMatcher.class,
-    			TextResponseMatcher.class
+    			SmsSourceMatcher.class,
+    			TextResponseMatcher.class,
+    			UssdSessionStatusMatcher.class
     			);
 
     	m_marshaller = m_context.createMarshaller();
@@ -140,32 +158,20 @@ public class SequenceXmlTest {
     	File exampleFile = new File(ClassLoader.getSystemResource("invalid-sequence.xml").getFile());
     	ValidationEventHandler handler = new TestValidationEventHandler();
     	m_unmarshaller.setEventHandler(handler);
-    	MobileSequence s = (MobileSequence)m_unmarshaller.unmarshal(exampleFile);
+    	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
     }
     
     @Test
-    @Ignore
-    public void readSynchronousTransactionXML() throws Exception {
-    	File exampleFile = new File(ClassLoader.getSystemResource("transaction-synchronous.xml").getFile());
-    	ValidationEventHandler handler = new TestValidationEventHandler();
-    	m_unmarshaller.setEventHandler(handler);
-    	MobileSequence s = (MobileSequence)m_unmarshaller.unmarshal(exampleFile);
-    	System.err.println("sequence = " + s);
-    }
-    
-    @Test
-    @Ignore
     public void readXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
     	ValidationEventHandler handler = new TestValidationEventHandler();
     	m_unmarshaller.setEventHandler(handler);
-    	MobileSequence s = (MobileSequence)m_unmarshaller.unmarshal(exampleFile);
+    	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
     }
     
     @Test
-    @Ignore
     public void validateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
@@ -185,6 +191,13 @@ public class SequenceXmlTest {
         assertEquals("number of XMLUnit differences between the example XML and the mock object XML is 0", 0, myDiff.getAllDifferences().size());
     }
 
+    @Test
+    public void tryFactory() throws Exception {
+    	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
+    	MobileSequenceConfig sequence = SequenceConfigFactory.getInstance().getSequenceForFile(exampleFile);
+    	assertEquals("ussd-transfer", sequence.getTransactions().iterator().next().getLabel());
+    }
+    
     @SuppressWarnings("unchecked")
 	private DetailedDiff getDiff(StringWriter objectXML, StringBuffer exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));

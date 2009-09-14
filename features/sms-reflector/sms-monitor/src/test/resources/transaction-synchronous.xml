@@ -1,3 +1,0 @@
-<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <transaction label="USSD balance" />
-</mobile-sequence>

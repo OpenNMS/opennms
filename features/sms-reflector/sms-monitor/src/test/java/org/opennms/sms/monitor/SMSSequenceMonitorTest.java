@@ -85,7 +85,6 @@ public class SMSSequenceMonitorTest {
 
 	@Test
 	@DirtiesContext
-	@Ignore
 	public void testParseConfiguration() throws Exception {
 
 		SMSSequenceMonitor m = new SMSSequenceMonitor();
