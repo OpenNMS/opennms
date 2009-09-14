@@ -151,12 +151,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
-      <artifactId>smslib</artifactId>
-      <version>3.4.3-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
       <version>${pom.version}</version>
