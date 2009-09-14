@@ -10,6 +10,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.tasks.Task;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 
 
 public class MobileMsgSequence {
@@ -21,12 +22,14 @@ public class MobileMsgSequence {
 		m_transactions.add(t);
 	}
 
-	public Map<String, Long> execute(MobileMsgTracker tracker, DefaultTaskCoordinator coordinator) throws Throwable {
+	public Map<String, Number> execute(MobileMsgTracker tracker, DefaultTaskCoordinator coordinator) throws Throwable {
 		start(tracker, coordinator);
 		return getLatency();
 	}
 
 	public void start(MobileMsgTracker tracker, DefaultTaskCoordinator coordinator) {
+		Assert.notNull(tracker);
+		Assert.notNull(coordinator);
 		SequenceTask sequence = coordinator.createSequence(null);
 		for (MobileMsgTransaction t : m_transactions) {
 			Task task = t.createTask(tracker, coordinator, sequence);
@@ -36,13 +39,13 @@ public class MobileMsgSequence {
 		m_mainTask = sequence;
 	}
 
-	public Map<String, Long> getLatency() throws Throwable {
+	public Map<String, Number> getLatency() throws Throwable {
 		if (m_mainTask == null) {
 			throw new IllegalStateException("getLatency called, but the sequence has never been started!");
 		}
 		m_mainTask.waitFor();
 		
-		Map<String,Long> response = new HashMap<String,Long>();
+		Map<String,Number> response = new HashMap<String,Number>();
 		for (MobileMsgTransaction t : m_transactions) {
 			if (t.getError() != null) {
 				throw t.getError();

@@ -34,7 +34,6 @@ package org.opennms.sms.reflector.smsservice.internal;
 import java.io.IOException;
 
 import org.opennms.protocols.rt.Messenger;
-import org.opennms.protocols.rt.RequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 import org.opennms.sms.reflector.smsservice.MatchingRequestLocator;
 import org.opennms.sms.reflector.smsservice.MobileMsgRequest;

@@ -30,7 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath*:/META-INF/opennms/bundle-context-opennms.xml",
         "classpath:/testContext.xml"
 })
-public class SMSSequenceMonitorTest {
+public class MobileMsgSequenceMonitorTest {
 
 	MonitoredService m_service;
 	
@@ -71,15 +71,13 @@ public class SMSSequenceMonitorTest {
 	@Test
 	@DirtiesContext
 	public void testBrokenConfiguration() throws Exception {
-		SMSSequenceMonitor m = new SMSSequenceMonitor();
+		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
 		parameters.put("sequence", "<mobile-sequence xmlns=\"http://xmlns.opennms.org/xsd/config/mobile-sequence\"><octagon sides=\"8\" /></mobile-sequence>");
 
 		PollStatus s = m.poll(m_service, parameters);
-		System.err.println("reason = " + s.getReason());
-		System.err.println("status name = " + s.getStatusName());
 		assertEquals("monitor should fail", PollStatus.SERVICE_UNAVAILABLE, s.getStatusCode());
 	}
 
@@ -87,16 +85,15 @@ public class SMSSequenceMonitorTest {
 	@DirtiesContext
 	public void testParseConfiguration() throws Exception {
 
-		SMSSequenceMonitor m = new SMSSequenceMonitor();
+		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
 		parameters.put("sequence", "<mobile-sequence xmlns=\"http://xmlns.opennms.org/xsd/config/mobile-sequence\" />");
 
 		PollStatus s = m.poll(m_service, parameters);
-		System.err.println("reason = " + s.getReason());
-		System.err.println("status name = " + s.getStatusName());
-		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
+		assertEquals("ping should pass", PollStatus.SERVICE_UNAVAILABLE, s.getStatusCode());
+		assertEquals("No transactions were configured for host 127.0.0.1", s.getReason());
 	}
 
 	@Test
@@ -104,7 +101,7 @@ public class SMSSequenceMonitorTest {
 	@Ignore
 	public void testSimpleSequence() throws Exception {
 
-		SMSSequenceMonitor m = new SMSSequenceMonitor();
+		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
 		m.initialize(new HashMap<String, Object>());
 		m.initialize(m_service);
 		

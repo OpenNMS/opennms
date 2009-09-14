@@ -23,7 +23,7 @@ final public class SMSPingMonitor extends IPv4Monitor {
 	@Override
 	public void initialize(Map<String,Object> params) {
 		super.initialize(params);
-		BeanUtils.getFactory("smsPollerContext", ClassPathXmlApplicationContext.class);
+		BeanUtils.getFactory("mobileMessagePollerContext", ClassPathXmlApplicationContext.class);
 	}
 
 	@Override

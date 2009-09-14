@@ -296,11 +296,11 @@ public class MobileMsgTrackerTest {
         InboundMessage msg = new InboundMessage(new Date(), "+19192640655", "pong", 0, "0");
 		m_messenger.sendTestResponse(msg);
         
-        Map<String,Long> timing = sequence.getLatency();
+        Map<String,Number> timing = sequence.getLatency();
 
         assertNotNull(timing);
         assertTrue(timing.size() > 0);
-        assertTrue(timing.get("SMS Ping") > 400);
+        assertTrue(timing.get("SMS Ping").doubleValue() > 400);
     }
 
     @Test
@@ -317,11 +317,11 @@ public class MobileMsgTrackerTest {
         Thread.sleep(500);
         sendTmobileUssdResponse("G");
         
-        Map<String,Long> timing = sequence.getLatency();
+        Map<String,Number> timing = sequence.getLatency();
 
         assertNotNull(timing);
         assertTrue(timing.size() > 0);
-        assertTrue(timing.get("USSD request") > 400);
+        assertTrue(timing.get("USSD request").doubleValue() > 400);
     }
 
     @Test
@@ -342,13 +342,13 @@ public class MobileMsgTrackerTest {
         Thread.sleep(100);
         sendTmobileUssdResponse("G");
 
-        Map<String,Long> timing = sequence.getLatency();
+        Map<String,Number> timing = sequence.getLatency();
 
         assertNotNull(timing);
         assertTrue(timing.size() == 2);
         System.err.println(timing);
-        assertTrue(timing.get("SMS Ping") > 50);
-        assertTrue(timing.get("USSD request") > 50);
+        assertTrue(timing.get("SMS Ping").doubleValue() > 50);
+        assertTrue(timing.get("USSD request").doubleValue() > 50);
     }
     
     @Test
