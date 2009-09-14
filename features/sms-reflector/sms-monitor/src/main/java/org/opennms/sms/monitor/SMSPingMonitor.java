@@ -2,6 +2,7 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
@@ -13,7 +14,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
 import org.opennms.sms.ping.PingConstants;
 import org.opennms.sms.ping.SmsPinger;
-import org.opennms.sms.monitor.internal.BeanUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @Distributable(DistributionContext.DAEMON)

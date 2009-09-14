@@ -3,13 +3,13 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
-import org.opennms.sms.monitor.internal.BeanUtils;
 import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
