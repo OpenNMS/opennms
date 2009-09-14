@@ -727,7 +727,7 @@ public class NetworkElementFactory {
         try {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM SNMPINTERFACE WHERE NODEID = ? ORDER BY SNMPIFINDEX");
             d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
