@@ -62,7 +62,7 @@ public class StpInterface
 
         public static final String[] STP_PORT_STATUS = new String[] {
             "&nbsp;",     //0 (not supported)
-            "Disables",   //1
+            "Disabled",   //1
             "Blocking",   //2
             "Listening",  //3
             "Learning",   //4
