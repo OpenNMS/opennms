@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.PollStatus;
@@ -98,13 +97,9 @@ public class MobileMsgSequenceMonitorTest {
 
 	@Test
 	@DirtiesContext
-	@Ignore
 	public void testSimpleSequence() throws Exception {
 
 		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
-		m.initialize(new HashMap<String, Object>());
-		m.initialize(m_service);
-		
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
@@ -117,8 +112,6 @@ public class MobileMsgSequenceMonitorTest {
 		System.err.println("status name = " + s.getStatusName());
 		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
 		
-		m.release(m_service);
-		m.release();
 	}
 
     private String getXmlBuffer(String fileName) throws IOException {
