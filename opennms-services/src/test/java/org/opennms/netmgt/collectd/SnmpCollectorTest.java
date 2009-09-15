@@ -37,20 +37,12 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collectd.Filter;
-import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -63,7 +55,6 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
@@ -283,6 +274,58 @@ public class SnmpCollectorTest extends AbstractCollectorTest {
         initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
 
         initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
+
+        createSnmpCollector();
+
+        OnmsIpInterface iface = createInterface();
+
+        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
+
+        CollectionAgent agent = createCollectionAgent(iface);
+
+        File brocadeDir = anticipatePath(getSnmpRrdDirectory(), "1", "brocadeFCPortIndex"); 
+        for (int i = 1; i <= 8; i++) {
+            File brocadeIndexDir = anticipatePath(brocadeDir, Integer.toString(i));
+            anticipateFiles(brocadeIndexDir, "strings.properties");
+            anticipateRrdFiles(brocadeIndexDir, "swFCPortTxWords", "swFCPortRxWords");
+        }
+
+        // don't for get to initialize the agent
+        spec.initialize(agent);
+
+        // now do the actual collection
+        CollectionSet collectionSet=spec.collect(agent);
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+        
+        persistCollectionSet(spec, collectionSet);
+        
+        
+        System.err.println("FIRST COLLECTION FINISHED");
+        
+        //need a one second time elapse to update the RRD
+        Thread.sleep(1000);
+
+        // try collecting again
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                spec.collect(agent).getStatus());
+
+        System.err.println("SECOND COLLECTION FINISHED");
+
+        // release the agent
+        spec.release(agent);
+        
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
+        
+    }
+    
+    public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
+        initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
+
+        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml");
 
         createSnmpCollector();
 
