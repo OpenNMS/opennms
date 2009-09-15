@@ -38,7 +38,6 @@ import org.smslib.routing.Router;
 
 public class SmsServiceImpl implements SmsService {
     
-    @SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
 	private Service m_service = new Service();
@@ -186,8 +185,9 @@ public class SmsServiceImpl implements SmsService {
     	m_service.stopService();
     }
 
-    public void refresh(Map properties) {
-	    System.out.println("Received a configuration refresh! "+properties);
+    @SuppressWarnings("unchecked")
+	public void refresh(Map properties) {
+    	log.debug("Received a configuration refresh! " + properties);
 	}
 	
 	public void addGateway(AGateway gateway) throws GatewayException {

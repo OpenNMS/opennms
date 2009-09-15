@@ -6,7 +6,7 @@ import org.smslib.AGateway;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class PingTestGatewayFactoryBean implements InitializingBean {
+public class FakeTestGatewayFactoryBean implements InitializingBean {
 	
 	
 	private ServiceRegistry m_serviceRegistry;
@@ -17,7 +17,7 @@ public class PingTestGatewayFactoryBean implements InitializingBean {
 		GatewayGroup gatewayGroup = new GatewayGroup() {
 
 			public AGateway[] getGateways() {
-				return new AGateway[] { new PingTestGateway( "monkeys!" ) };
+				return new AGateway[] { new FakeTestGateway( "ACM0" ) };
 			}
 			
 		};

@@ -36,6 +36,7 @@
 package org.opennms.sms.reflector.smsservice;
 
 import org.smslib.USSDRequest;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * @author brozow
@@ -59,7 +60,7 @@ public class UssdRequest extends MobileMsgRequest {
     }
     
     public String getGatewayId() {
-        return m_msg.getGatewayId();
+    	return m_msg.getGatewayId();
     }
 
     /**
@@ -91,4 +92,12 @@ public class UssdRequest extends MobileMsgRequest {
         return m_msg;
     }
 
+    public String toString() {
+    	return new ToStringCreator(this)
+    		.append("id", getId())
+    		.append("gatewayId", getGatewayId())
+    		.append("content", getContent())
+    		.append("message", getMessage())
+    		.toString();
+    }
 }

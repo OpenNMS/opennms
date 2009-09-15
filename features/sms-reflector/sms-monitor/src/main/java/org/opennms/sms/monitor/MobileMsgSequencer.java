@@ -10,15 +10,18 @@ import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isU
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
 import org.opennms.sms.monitor.internal.config.MobileSequenceResponse;
 import org.opennms.sms.monitor.internal.config.MobileSequenceTransaction;
 import org.opennms.sms.monitor.internal.config.SequenceResponseMatcher;
+import org.opennms.sms.monitor.internal.config.SequenceSessionVariable;
 import org.opennms.sms.monitor.internal.config.SmsSequenceRequest;
 import org.opennms.sms.monitor.internal.config.SmsSequenceResponse;
 import org.opennms.sms.monitor.internal.config.UssdSequenceRequest;
@@ -47,27 +50,54 @@ public class MobileMsgSequencer {
 	    s_tracker = tracker;
 	}
 
-	public static Map<String,Number> executeSequence(MobileSequenceConfig sequenceConfig) throws Throwable {
+	public static String substitute(String text, Properties session) {
+		if (text == null) {
+			return null;
+		}
+		return PropertiesUtils.substitute(text, session);
+	}
+
+	public static Map<String,Number> executeSequence(MobileSequenceConfig sequenceConfig, Properties session) throws Throwable {
 		initialize();
 		MobileMsgSequenceBuilder sequenceBuilder = new MobileMsgSequenceBuilder();
-		
-		for (MobileSequenceTransaction t : sequenceConfig.getTransactions()) {
+
+		for (@SuppressWarnings("unused") SequenceSessionVariable var : sequenceConfig.getSessionVariables()) {
+			// FIXME!  gotta implement dynamic session variables
+		}
+
+		for (final MobileSequenceTransaction t : sequenceConfig.getTransactions()) {
 			final MobileMsgTransactionBuilder transactionBuilder;
+
+			if (t.getGatewayId() != null) {
+				sequenceBuilder.setDefaultGatewayId(t.getGatewayId());
+			}
+
+			String label = t.getRequest().getLabel();
+			if (label == null) label = t.getLabel();
+			
 			if (t.getRequest() instanceof SmsSequenceRequest) {
 				SmsSequenceRequest req = (SmsSequenceRequest)t.getRequest();
-				// FIXME, what happens with the label?  is this the transaction label or the request one?
-				transactionBuilder = sequenceBuilder.sendSms(req.getLabel(), req.getRecipient(), req.getText());
+				transactionBuilder = sequenceBuilder.sendSms(
+					substitute(label, session),
+					substitute(req.getGatewayId(), session),
+					substitute(req.getRecipient(), session),
+					substitute(req.getText(), session)
+				);
 			} else if (t.getRequest() instanceof UssdSequenceRequest) {
 				UssdSequenceRequest req = (UssdSequenceRequest)t.getRequest();
-				transactionBuilder = sequenceBuilder.sendUssd(req.getLabel(), req.getText());
+				transactionBuilder = sequenceBuilder.sendUssd(
+					substitute(label, session),
+					substitute(req.getGatewayId(), session),
+					substitute(req.getText(), session)
+				);
 			} else {
 				throw new SequencerException("Unknown request type: " + t.getRequest());
 			}
-
+			
 			for (MobileSequenceResponse r : t.getResponses()) {
 				List<MobileMsgResponseMatcher> matchers = new ArrayList<MobileMsgResponseMatcher>();
 				for (SequenceResponseMatcher m : r.getMatchers()) {
-					matchers.add(m.getMatcher());
+					matchers.add(m.getMatcher(session));
 				}
 				if (r instanceof SmsSequenceResponse) {
 					matchers.add(isSms());
@@ -79,6 +109,7 @@ public class MobileMsgSequencer {
 		}
 
 		MobileMsgSequence seq = sequenceBuilder.getSequence();
+		System.err.println("sequence = " + seq);
 		long start = System.currentTimeMillis();
 		Map<String,Number> responseTimes = seq.execute(s_tracker, s_coordinator);
 		long end = System.currentTimeMillis();

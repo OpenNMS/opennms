@@ -1,6 +1,7 @@
 package org.opennms.sms.monitor.internal.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -8,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
+import org.apache.commons.io.FileUtils;
 
 public class SequenceConfigFactory {
 	private static SequenceConfigFactory m_singleton = null;
@@ -49,7 +52,7 @@ public class SequenceConfigFactory {
 	    	m_unmarshaller.setSchema(null);
 		}
 	}
-	
+
 	public MobileSequenceConfig getSequenceForXml(String sequenceXml) throws SequenceException {
 		try {
 			initializeContext();
@@ -64,9 +67,8 @@ public class SequenceConfigFactory {
 
 	public MobileSequenceConfig getSequenceForFile(File sequenceFile) throws SequenceException {
 		try {
-			initializeContext();
-			return (MobileSequenceConfig)m_unmarshaller.unmarshal(sequenceFile);
-		} catch (JAXBException e) {
+			return getSequenceForXml(FileUtils.readFileToString(sequenceFile));
+		} catch (IOException e) {
 			throw new SequenceException("An error occurred reading the sequence from " + sequenceFile.getPath(), e);
 		}
 	}

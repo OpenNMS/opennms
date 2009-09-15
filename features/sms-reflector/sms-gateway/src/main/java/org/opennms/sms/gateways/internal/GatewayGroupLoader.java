@@ -3,8 +3,6 @@ package org.opennms.sms.gateways.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import org.opennms.sms.reflector.smsservice.GatewayGroup;

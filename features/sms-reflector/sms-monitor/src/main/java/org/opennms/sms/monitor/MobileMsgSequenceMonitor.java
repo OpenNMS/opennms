@@ -2,6 +2,7 @@ package org.opennms.sms.monitor;
 
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -14,13 +15,14 @@ import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.monitor.internal.config.SequenceException;
 import org.opennms.sms.phonebook.Phonebook;
+import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.phonebook.PropertyPhonebook;
 import org.opennms.sms.ping.PingConstants;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @Distributable(DistributionContext.DAEMON)
 final public class MobileMsgSequenceMonitor extends IPv4Monitor {
-	Phonebook phonebook = new PropertyPhonebook();
+	private Phonebook phonebook = new PropertyPhonebook();
 
 	@Override
 	public void initialize(Map<String,Object> params) {
@@ -39,6 +41,20 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
         	return PollStatus.unavailable("Sequence configuration was empty.  You must specify a 'sequence' parameter in the SMSSequenceMonitor poller configuration!");
         }
 
+        Properties session = new Properties();
+        try {
+        	// first, transfer anything from the parameters to the session
+			for (Map.Entry<String,Object> entry : parameters.entrySet()) {
+				if (entry.getKey() != null && entry.getValue() != null) {
+					session.put(entry.getKey(), entry.getValue());
+				}
+			}
+			session.setProperty("recipient", phonebook.getTargetForAddress(svc.getIpAddr()));
+		} catch (PhonebookException e) {
+			log().warn("Unable to locate recpient phone number for IP address " + svc.getIpAddr(), e);
+			return PollStatus.unavailable("Unable to find phone number for IP address " + svc.getIpAddr());
+		}
+
         MobileSequenceConfig sequenceConfig = null;
         try {
             SequenceConfigFactory factory = SequenceConfigFactory.getInstance();
@@ -55,7 +71,7 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 		}
 
 		try {
-			Map<String, Number> responseTimes = MobileMsgSequencer.executeSequence(sequenceConfig);
+			Map<String, Number> responseTimes = MobileMsgSequencer.executeSequence(sequenceConfig, session);
 			PollStatus response = PollStatus.available();
 			response.setProperties(responseTimes);
 			return response;

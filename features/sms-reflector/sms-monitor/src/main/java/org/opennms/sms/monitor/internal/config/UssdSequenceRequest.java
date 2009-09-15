@@ -12,4 +12,9 @@ public class UssdSequenceRequest extends MobileSequenceRequest {
 	public UssdSequenceRequest(String label, String text) {
 		super(label, text);
 	}
+
+	public UssdSequenceRequest(String gatewayId, String label, String text) {
+		super(gatewayId, label, text);
+	}
+
 }

@@ -29,6 +29,9 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 		public String toString() {
 			return new ToStringCreator(this)
 				.append("label", getLabel())
+				.append("gatewayId", getGatewayId())
+				.append("timeout", getTimeout())
+				.append("retries", getRetries())
 				.append("recipient", m_recipient)
 				.append("text", m_text)
 				.append("matcher", getMatcher())
@@ -49,6 +52,16 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 			return new UssdAsync(tracker, getGatewayId(), getTimeout(), getRetries(), m_text, getMatcher());
 		}
 
+		public String toString() {
+			return new ToStringCreator(this)
+				.append("label", getLabel())
+				.append("gatewayId", getGatewayId())
+				.append("timeout", getTimeout())
+				.append("retries", getRetries())
+				.append("text", m_text)
+				.append("matcher", getMatcher())
+				.toString();
+		}
 	}
 
 
@@ -114,8 +127,11 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 
 	public String toString() {
 		return new ToStringCreator(this)
-			.append("label", m_label)
-			.append("matcher", m_matcher)
+			.append("label", getLabel())
+			.append("gatewayId", getGatewayId())
+			.append("timeout", getTimeout())
+			.append("retries", getRetries())
+			.append("matcher", getMatcher())
 			.toString();
 	}
 }

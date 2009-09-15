@@ -12,4 +12,8 @@ public class UssdSequenceResponse extends MobileSequenceResponse {
 	public UssdSequenceResponse(String label) {
 		super(label);
 	}
+	
+	public UssdSequenceResponse(String gatewayId, String label) {
+		super(gatewayId, label);
+	}
 }

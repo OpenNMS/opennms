@@ -50,7 +50,6 @@ public class MobileMsgSequence {
 			if (t.getError() != null) {
 				throw t.getError();
 			}
-			// FIXME: get latency  ;)
 			response.put(t.getLabel(), t.getLatency());
 		}
 		return response;

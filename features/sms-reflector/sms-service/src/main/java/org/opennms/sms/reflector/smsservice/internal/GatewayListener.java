@@ -15,6 +15,7 @@ public class GatewayListener {
 		m_service = service;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addGateway(AGateway gateway, Map properties){
 		if(m_service != null){
 			try{
@@ -32,6 +33,7 @@ public class GatewayListener {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void removeGateway(AGateway gateway, Map properties){
 		if(m_service != null){
 			try{
@@ -47,11 +49,13 @@ public class GatewayListener {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void bind(Object arg0, Map arg1) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public void unbind(Object arg0, Map arg1) throws Exception {
 		// TODO Auto-generated method stub
 		

@@ -43,6 +43,7 @@ import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.uss
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -205,12 +206,16 @@ public class MobileMsgTrackerTest {
     TestMessenger m_messenger;
     MobileMsgTrackerImpl m_tracker;
 	DefaultTaskCoordinator m_coordinator;
+	@SuppressWarnings("unused")
+	private Properties m_session;
     
     @Before
     public void setUp() throws Exception {
         m_messenger = new TestMessenger();
         m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
+        
+        m_session = new Properties();
         
         m_coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
 
@@ -273,7 +278,7 @@ public class MobileMsgTrackerTest {
     public void testPingTimeoutWithBuilder() throws Throwable {
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
@@ -285,7 +290,7 @@ public class MobileMsgTrackerTest {
     public void testPingWithBuilder() throws Throwable {
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
@@ -307,7 +312,7 @@ public class MobileMsgTrackerTest {
     public void testUssdWithBuilder() throws Throwable {
     	MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.sendUssd("USSD request", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
+        builder.sendUssd("USSD request", "G", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
@@ -328,8 +333,8 @@ public class MobileMsgTrackerTest {
     public void testMultipleStepSequenceBuilder() throws Throwable {
     	MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
     	
-        builder.sendSms("SMS Ping", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
-        builder.sendUssd("USSD request", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
+        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendUssd("USSD request", "G", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
         MobileMsgSequence sequence = builder.getSequence();
         assertNotNull(sequence);
         

@@ -11,7 +11,6 @@ import org.smslib.InboundMessage;
 import org.smslib.Message.MessageTypes;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 public class InboundMessageNotification implements OnmsInboundMessageNotification {
 
@@ -19,6 +18,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
     
 	private Collection<OnmsInboundMessageNotification> m_listenerList;
     // private SmsService m_smsService;
+	@SuppressWarnings("unused")
 	private ApplicationContext m_applicationContext;
 
 	public InboundMessageNotification() {

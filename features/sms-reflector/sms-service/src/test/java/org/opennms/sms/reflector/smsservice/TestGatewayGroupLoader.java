@@ -23,7 +23,7 @@ public class TestGatewayGroupLoader implements InitializingBean {
 		
 		GatewayGroup g = new GatewayGroup(){
 			public AGateway[] getGateways() {
-				return new AGateway[] { new TestGateway("monkeys!") };
+				return new AGateway[] { new TestGateway("ACM0") };
 			}
 			
 			public String toString() {

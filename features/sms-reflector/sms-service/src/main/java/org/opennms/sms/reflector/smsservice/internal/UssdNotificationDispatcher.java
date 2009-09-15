@@ -8,12 +8,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smslib.IOutboundMessageNotification;
 import org.smslib.IUSSDNotification;
-import org.smslib.OutboundMessage;
 import org.smslib.USSDResponse;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 
 /**
  * @author jeffg

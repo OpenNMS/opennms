@@ -56,29 +56,36 @@ public class SequenceXmlTest {
     	m_smsSequence = new MobileSequenceConfig();
 
     	MobileSequenceTransaction reqBalanceTransfer = new MobileSequenceTransaction("ussd-transfer");
+    	reqBalanceTransfer.setGatewayId("ACM0");
     	
-    	UssdSequenceRequest request = new UssdSequenceRequest("req-balance-transfer", "*327*${session.target}*${session.amount}#");
+    	UssdSequenceRequest request = new UssdSequenceRequest("req-balance-transfer", "*327*${recipient}*${amount}#");
+    	request.setGatewayId("ACM0");
     	reqBalanceTransfer.setRequest(request);
     	
     	UssdSequenceResponse response = new UssdSequenceResponse("balance-conf-resp");
+    	response.setGatewayId("ACM0");
     	response.addMatcher(new UssdSessionStatusMatcher("FURTHER_ACTION_REQUIRED"));
-    	response.addMatcher(new TextResponseMatcher("^Transfiere L ${session.amount} al ${session.target}$"));
+    	response.addMatcher(new TextResponseMatcher("^Transfiere L ${amount} al ${recipient}$"));
     	reqBalanceTransfer.addResponse(response);
 
     	m_smsSequence.addTransaction(reqBalanceTransfer);
     	
     	MobileSequenceTransaction reqConf = new MobileSequenceTransaction("req-conf");
+    	reqConf.setGatewayId("ACM0");
     	
     	request = new UssdSequenceRequest("conf-transfer", "1");
+    	request.setGatewayId("ACM0");
     	reqConf.setRequest(request);
     	
     	response = new UssdSequenceResponse("processing");
+    	response.setGatewayId("ACM0");
     	response.addMatcher(new UssdSessionStatusMatcher("NO_FURTHER_ACTION_REQUIRED"));
     	response.addMatcher(new TextResponseMatcher("^.*Su transaccion se esta procesando.*$"));
     	reqConf.addResponse(response);
 
     	SmsSequenceResponse smsResponse = new SmsSequenceResponse("transferred");
-    	smsResponse.addMatcher(new TextResponseMatcher("^.*le ha transferido L ${session.amount}.*$"));
+    	smsResponse.setGatewayId("ACM0");
+    	smsResponse.addMatcher(new TextResponseMatcher("^.*le ha transferido L ${amount}.*$"));
     	smsResponse.addMatcher(new SmsSourceMatcher("+3746"));
     	reqConf.addResponse(smsResponse);
 

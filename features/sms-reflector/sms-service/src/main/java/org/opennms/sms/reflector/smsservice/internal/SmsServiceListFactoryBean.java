@@ -1,5 +1,7 @@
 package org.opennms.sms.reflector.smsservice.internal;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
@@ -48,7 +50,7 @@ public class SmsServiceListFactoryBean implements FactoryBean, InitializingBean 
 			AGateway[] gateways = group.getGateways();
 			
 			if (gateways.length == 0) {
-			    System.err.println("A Gateway group was registered with ZERO gateways!");
+				log().warn("A Gateway group was registered with ZERO gateways!");
 			    return;
 			}
 			
@@ -76,6 +78,10 @@ public class SmsServiceListFactoryBean implements FactoryBean, InitializingBean 
 		}
 	}
 	
+	private Logger log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
 	public Object getObject() throws Exception {
 		return m_services;
 	}

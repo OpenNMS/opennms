@@ -23,7 +23,13 @@ public class UssdAsync implements Async<MobileMsgResponse> {
 	}
 
 	public UssdAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, String text, MobileMsgResponseMatcher matcher) {
-		this(tracker, timeout, retries, new USSDRequest(text), matcher);
+		this(tracker, timeout, retries, getRequest(gatewayId, text), matcher);
+	}
+
+	private static USSDRequest getRequest(String gatewayId, String text) {
+		USSDRequest request = new USSDRequest(text);
+		request.setGatewayId(gatewayId);
+		return request;
 	}
 
 	public void submit(final Callback<MobileMsgResponse> cb) {

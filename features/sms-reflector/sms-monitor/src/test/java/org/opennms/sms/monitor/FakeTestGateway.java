@@ -38,7 +38,7 @@ import org.smslib.OutboundMessage.MessageStatuses;
  * TestGateway - virtual gateway to simulate sending and receiving messages to
  * make testing easier.
  */
-public class PingTestGateway extends AGateway
+public class FakeTestGateway extends AGateway
 {
 	private int refCounter = 0;
 
@@ -77,7 +77,7 @@ public class PingTestGateway extends AGateway
 	
 	Thread incomingMessagesThread;
 
-	public PingTestGateway(String id)
+	public FakeTestGateway(String id)
 	{
 		super(id);
 		System.err.println("Initializing PingTestGateway");
@@ -116,7 +116,7 @@ public class PingTestGateway extends AGateway
 			// Run thread to fake incoming messages
 			public void run()
 			{
-				while (!PingTestGateway.this.incomingMessagesThread.isInterrupted())
+				while (!FakeTestGateway.this.incomingMessagesThread.isInterrupted())
 				{
 					try {
 						QueueRunner runner = m_delayQueue.take();

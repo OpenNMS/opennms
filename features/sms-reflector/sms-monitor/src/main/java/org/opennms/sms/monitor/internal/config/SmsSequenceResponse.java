@@ -12,4 +12,8 @@ public class SmsSequenceResponse extends MobileSequenceResponse {
 	public SmsSequenceResponse(String label) {
 		super(label);
 	}
+	
+	public SmsSequenceResponse(String gatewayId, String label) {
+		super(gatewayId, label);
+	}
 }

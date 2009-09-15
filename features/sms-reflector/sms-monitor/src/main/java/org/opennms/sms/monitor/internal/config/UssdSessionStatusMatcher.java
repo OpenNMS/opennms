@@ -1,7 +1,10 @@
 package org.opennms.sms.monitor.internal.config;
 
+import java.util.Properties;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 import org.smslib.USSDSessionStatus;
@@ -18,13 +21,14 @@ public class UssdSessionStatusMatcher extends SequenceResponseMatcher {
 	}
 
 	@Override
-	public MobileMsgResponseMatcher getMatcher() {
+	public MobileMsgResponseMatcher getMatcher(Properties session) {
 		USSDSessionStatus status;
+		String text = PropertiesUtils.substitute(getText(), session);
 		try {
-			int statusVal = Integer.parseInt(getText());
+			int statusVal = Integer.parseInt(text);
 			status = USSDSessionStatus.getByNumeric(statusVal);
 		} catch (NumberFormatException e) {
-			status = USSDSessionStatus.valueOf(getText());
+			status = USSDSessionStatus.valueOf(text);
 		}
 		return MobileMsgResponseMatchers.ussdStatusIs(status);
 	}

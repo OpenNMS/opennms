@@ -8,21 +8,21 @@
     </parameters>
   </session-variable>
   -->
-  <transaction label="ussd-transfer">
-    <ussd-request label="req-balance-transfer" text="*327*${session.target}*${session.amount}#" />
-    <ussd-response label="balance-conf-resp">
+  <transaction label="ussd-transfer" gatewayId="ACM0">
+    <ussd-request gatewayId="ACM0" label="req-balance-transfer" text="*327*${recipient}*${amount}#" />
+    <ussd-response gatewayId="ACM0" label="balance-conf-resp">
       <session-status>FURTHER_ACTION_REQUIRED</session-status>
-      <matches>^Transfiere L ${session.amount} al ${session.target}$</matches>
+      <matches>^Transfiere L ${amount} al ${recipient}$</matches>
     </ussd-response>
   </transaction>
-  <transaction label="req-conf">
-    <ussd-request label="conf-transfer" text="1" />
-    <ussd-response label="processing">
+  <transaction label="req-conf" gatewayId="ACM0">
+    <ussd-request gatewayId="ACM0" label="conf-transfer" text="1" />
+    <ussd-response gatewayId="ACM0" label="processing">
       <session-status>NO_FURTHER_ACTION_REQUIRED</session-status>
       <matches>^.*Su transaccion se esta procesando.*$</matches>
     </ussd-response>
-    <sms-response label="transferred">
-      <matches>^.*le ha transferido L ${session.amount}.*$</matches>
+    <sms-response gatewayId="ACM0" label="transferred">
+      <matches>^.*le ha transferido L ${amount}.*$</matches>
       <validate-source>+3746</validate-source>
     </sms-response>
   </transaction>

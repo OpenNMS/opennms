@@ -3,16 +3,9 @@ package org.opennms.sms.reflector.smsservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.soa.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -32,6 +25,6 @@ public class SmsServiceTest {
 	public void testInitialization() {
 		assertNotNull(m_service);
 		assertEquals("must have one gateway", 1, m_service.getGateways().size());
-		assertEquals("gateway ID must be 'monkeys!'", "monkeys!", m_service.getGateways().iterator().next().getGatewayId());
+		assertEquals("gateway ID must be 'ACM0'", "ACM0", m_service.getGateways().iterator().next().getGatewayId());
 	}
 }

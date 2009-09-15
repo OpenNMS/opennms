@@ -14,6 +14,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name="transaction")
 public class MobileSequenceTransaction implements Comparable<MobileSequenceTransaction> {
 	private String m_label;
+	private String m_gatewayId;
 	private MobileSequenceRequest m_request;
 	private List<MobileSequenceResponse> m_responses = Collections.synchronizedList(new ArrayList<MobileSequenceResponse>());
 
@@ -25,6 +26,11 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 		setLabel(label);
 	}
 	
+	public MobileSequenceTransaction(String gatewayId, String label) {
+		this(label);
+		setGatewayId(gatewayId);
+	}
+	
 	@XmlAttribute(name="label")
 	public String getLabel() {
 		return m_label;
@@ -32,6 +38,15 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 	
 	public void setLabel(String label) {
 		m_label = label;
+	}
+
+	@XmlAttribute(name="gatewayId")
+	public void setGatewayId(String gatewayId) {
+		m_gatewayId = gatewayId;
+	}
+
+	public String getGatewayId() {
+		return m_gatewayId;
 	}
 
 	@XmlElementRef
@@ -66,6 +81,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 	
 	public String toString() {
 		return new ToStringBuilder(this)
+			.append("label", getLabel())
 			.append("request", getRequest())
 			.append("response(s)", getResponses())
 			.toString();

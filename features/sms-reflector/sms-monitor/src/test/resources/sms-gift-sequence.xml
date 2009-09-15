@@ -4,7 +4,7 @@
     <operation type="send-sms" label="sending ping">
       <value>'tis better to give...</value>
       <parameters>
-        <parameter key="destination" value="*327${session.target}" />
+        <parameter key="destination" value="*327${recipient}" />
       </parameters>
     </operation>
     <transaction type="asynchronous">
@@ -24,7 +24,7 @@
       <operation> type="receive-sms" label="receive pong">
         <match type="success">~than to receive</match>
         <parameters>
-          <parameter key="validate-source" value="+327${session.target}" />
+          <parameter key="validate-source" value="+327${recipient}" />
         </parameters>
       </operation>
     </transaction>

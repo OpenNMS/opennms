@@ -1,7 +1,10 @@
 package org.opennms.sms.monitor.internal.config;
 
+import java.util.Properties;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 
@@ -17,8 +20,8 @@ public class SmsSourceMatcher extends SequenceResponseMatcher {
 	}
 
 	@Override
-	public MobileMsgResponseMatcher getMatcher() {
-		return MobileMsgResponseMatchers.smsFrom(getText());
+	public MobileMsgResponseMatcher getMatcher(Properties session) {
+		return MobileMsgResponseMatchers.smsFrom(PropertiesUtils.substitute(getText(), session));
 	}
 
 }
