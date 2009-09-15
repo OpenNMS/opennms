@@ -164,7 +164,6 @@ class SyslogReceiver implements Runnable {
         //
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
-        DatagramPacket pkt = new DatagramPacket(buffer, length);
 
         // set an SO timout to make sure we don't block forever
         // if a socket is closed.
@@ -201,6 +200,7 @@ class SyslogReceiver implements Runnable {
             try {
                 if (!ioInterrupted)
                     log.debug("Wating on a datagram to arrive");
+                DatagramPacket pkt = new DatagramPacket(buffer, length);
                 m_dgSock.receive(pkt);
                 Thread worker = new Thread(new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 worker.start();
@@ -214,11 +214,6 @@ class SyslogReceiver implements Runnable {
                         e);
                 break;
             }
-
-            // Fire off a new worker bee to handle
-            // this connction
-
-            pkt = new DatagramPacket(buffer, length);
 
         } // end while status ok
 
