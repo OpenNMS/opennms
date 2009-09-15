@@ -250,7 +250,7 @@ public class MobileMsgTrackerTest {
         
         USSDRequest request = new USSDRequest("#225#");
         
-        m_tracker.sendUssdRequest(gatewayId, request, 10000, 0, cb, and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
+        m_tracker.sendUssdRequest(request, 10000, 0, cb, and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
         
         USSDResponse response = sendTmobileUssdResponse(gatewayId);
         
@@ -387,7 +387,7 @@ public class MobileMsgTrackerTest {
         final String gatewayId = "G";
         
         LatencyCallback cb = new LatencyCallback(System.currentTimeMillis());
-        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, gatewayId, 3000L, 0, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
+        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, 3000L, 0, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
 
         Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();

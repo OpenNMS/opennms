@@ -45,7 +45,7 @@ public interface MobileMsgTracker {
             int retries, MobileMsgResponseCallback cb,
             MobileMsgResponseMatcher matcher) throws Exception;
 
-    public abstract void sendUssdRequest(String gatewayId, USSDRequest msg,
+    public abstract void sendUssdRequest(USSDRequest msg,
             long timeout, int retries, MobileMsgResponseCallback cb,
             MobileMsgResponseMatcher matcher) throws Exception;
 

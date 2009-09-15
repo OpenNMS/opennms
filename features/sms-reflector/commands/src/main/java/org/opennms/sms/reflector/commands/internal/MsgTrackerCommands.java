@@ -113,9 +113,10 @@ public class MsgTrackerCommands implements CommandProvider
             }
 
             USSDRequest msg = new USSDRequest(text);
+            msg.setGatewayId(gatewayId);
 
             MsgCallback cb = new MsgCallback();
-            m_tracker.sendUssdRequest(gatewayId, msg, 60000, 0, cb, new MsgMatcher(regex));
+            m_tracker.sendUssdRequest(msg, 60000, 0, cb, new MsgMatcher(regex));
 
             cb.waitFor();
 

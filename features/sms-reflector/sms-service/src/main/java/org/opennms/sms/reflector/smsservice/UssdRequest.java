@@ -43,7 +43,6 @@ import org.smslib.USSDRequest;
  */
 public class UssdRequest extends MobileMsgRequest {
 
-    private String m_gatewayId;
     private USSDRequest m_msg;
 
     /**
@@ -53,15 +52,14 @@ public class UssdRequest extends MobileMsgRequest {
      * @param cb
      * @param responseMatcher
      */
-    public UssdRequest(String gatewayId, USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
+    public UssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
         super(timeout, retries, cb, responseMatcher);
-        m_gatewayId = gatewayId;
         m_msg = msg;
         
     }
     
     public String getGatewayId() {
-        return m_gatewayId;
+        return m_msg.getGatewayId();
     }
 
     /**
@@ -82,7 +80,7 @@ public class UssdRequest extends MobileMsgRequest {
     @Override
     public MobileMsgRequest createNextRetry() {
         if (getRetries() > 0) {
-            return new UssdRequest(m_gatewayId, m_msg, getTimeout(), getRetries()-1, getCb(), getResponseMatcher());
+            return new UssdRequest(m_msg, getTimeout(), getRetries()-1, getCb(), getResponseMatcher());
         } else {
             return null;
         }

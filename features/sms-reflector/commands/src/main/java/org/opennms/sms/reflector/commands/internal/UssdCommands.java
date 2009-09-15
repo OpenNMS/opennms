@@ -28,6 +28,7 @@ public class UssdCommands implements CommandProvider
         intp.println("Gateway ID is : " + gwId);
         
         USSDRequest req = new USSDRequest(data);
+        req.setGatewayId(gwId);
         intp.println("USSD raw request: " + req.toString());
 
         try {
