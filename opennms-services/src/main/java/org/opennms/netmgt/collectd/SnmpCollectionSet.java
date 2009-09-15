@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,10 +10,9 @@
 //
 // Modifications:
 //
+// 2009 Sep 15: Create SnmpIfCollector even if only generic-index resource types exist and no interface ones (bug 2447) - jeffg@opennms.org
 // 2008 Aug 29: Throw detailed failure exceptions in collect(). - dj@opennms.org
 // 2006 Aug 15: Formatting, use generics for collections, be explicit about method visibility, add support for generic indexes. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -165,7 +164,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private SnmpIfCollector createIfCollector() {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
-        if (hasInterfaceDataToCollect()) {
+        if (hasInterfaceDataToCollect() || hasGenericIndexResourceDataToCollect()) {
             ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedIndexedAttributes(), this);
         }
         return ifCollector;
@@ -176,11 +175,15 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     boolean hasDataToCollect() {
-        return (getNodeResourceType().hasDataToCollect() || getIfResourceType().hasDataToCollect());
+        return (getNodeResourceType().hasDataToCollect() || getIfResourceType().hasDataToCollect() || hasGenericIndexResourceDataToCollect());
     }
 
     boolean hasInterfaceDataToCollect() {
         return getIfResourceType().hasDataToCollect();
+    }
+    
+    boolean hasGenericIndexResourceDataToCollect() {
+        return ! getGenericIndexResourceTypes().isEmpty();
     }
 
     public CollectionAgent getCollectionAgent() {
