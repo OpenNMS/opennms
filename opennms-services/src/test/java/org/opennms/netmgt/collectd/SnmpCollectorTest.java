@@ -323,6 +323,58 @@ public class SnmpCollectorTest extends AbstractCollectorTest {
         Thread.sleep(1000);
         
     }
+    
+    public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
+        initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
+
+        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml");
+
+        createSnmpCollector();
+
+        OnmsIpInterface iface = createInterface();
+
+        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
+
+        CollectionAgent agent = createCollectionAgent(iface);
+
+        File brocadeDir = anticipatePath(getSnmpRrdDirectory(), "1", "brocadeFCPortIndex"); 
+        for (int i = 1; i <= 8; i++) {
+            File brocadeIndexDir = anticipatePath(brocadeDir, Integer.toString(i));
+            anticipateFiles(brocadeIndexDir, "strings.properties");
+            anticipateRrdFiles(brocadeIndexDir, "swFCPortTxWords", "swFCPortRxWords");
+        }
+
+        // don't for get to initialize the agent
+        spec.initialize(agent);
+
+        // now do the actual collection
+        CollectionSet collectionSet=spec.collect(agent);
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+        
+        persistCollectionSet(spec, collectionSet);
+        
+        
+        System.err.println("FIRST COLLECTION FINISHED");
+        
+        //need a one second time elapse to update the RRD
+        Thread.sleep(1000);
+
+        // try collecting again
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                spec.collect(agent).getStatus());
+
+        System.err.println("SECOND COLLECTION FINISHED");
+
+        // release the agent
+        spec.release(agent);
+        
+        // Wait for any RRD writes to finish up
+        Thread.sleep(1000);
+        
+    }
 
     private void createSnmpCollector() {
         m_snmpCollector = new SnmpCollector();
