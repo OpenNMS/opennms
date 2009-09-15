@@ -54,6 +54,8 @@ import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
 import org.smslib.USSDResponse;
 import org.smslib.Message.MessageTypes;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 
 /**
@@ -61,7 +63,7 @@ import org.smslib.Message.MessageTypes;
  *
  * @author brozow
  */
-public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgResponse>, OnmsInboundMessageNotification, IUSSDNotification {
+public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgResponse>, OnmsInboundMessageNotification, IUSSDNotification, InitializingBean {
     
     Logger log = Logger.getLogger(getClass());
     
@@ -69,12 +71,14 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     
     private Queue<MobileMsgResponse> m_replyQueue;
     
-    public SmsMessenger(SmsService smsService) {
-        // Can't make calls smsService in constructor
-        //debugf("Created SmsMessenger: %s", smsService);
+    public void setSmsService(SmsService smsService) {
         m_smsService = smsService;
     }
-
+    
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_smsService, "the smsService must not be null");
+    }
+    
     public void sendRequest(MobileMsgRequest request) throws Exception {
     	request.setSendTimestamp(System.currentTimeMillis());
     	
@@ -109,10 +113,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     	
         debugf("SmsMessenger.processInboundMessage");
         
-        if (isPingRequest(msg)) {
-            sendPong(gateway.getGatewayId(), msg);
-        }
-        else if (m_replyQueue != null) {
+        if (m_replyQueue != null) {
             m_replyQueue.add(new SmsResponse(msg, receiveTime));
         }
     }
@@ -122,49 +123,13 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
 
-    private boolean isPingRequest(InboundMessage msg) {
-        return (!(msg instanceof InboundBinaryMessage)) 
-            && msg.getText() != null 
-            && msg.getText().length() >= 4 
-            && "ping".equalsIgnoreCase(msg.getText().substring(0, 4));
-    }
-    
-    
-    private void sendPong(String gatewayId, InboundMessage msg) {
-        try {
-            OutboundMessage pong = new OutboundMessage(msg.getOriginator(), "pong");
-            pong.setGatewayId(gatewayId);
-            if (!m_smsService.sendMessage(pong)) {
-                errorf("Failed to send pong request to %s", msg.getOriginator());
-            }
-
-        } catch (TimeoutException e) {
-            errorf(e, "Timeout sending pong request to %s", msg.getOriginator());
-        } catch (GatewayException e) {
-            errorf(e, "Gateway exception sending pong request to %s", msg.getOriginator());
-        } catch (IOException e) {
-            errorf(e, "IOException sending pong request to %s", msg.getOriginator());
-        } catch (InterruptedException e) {
-            errorf(e, "InterruptedException sending poing request to %s", msg.getOriginator());
-        } 
-    }
-
-    public void process(String gatewayId, OutboundMessage msg) {
-        log.debug("Sent message "+msg);
-    }
-    
     private void debugf(String fmt, Object... args) {
         if (log.isDebugEnabled()) {
             log.debug(String.format(fmt, args));
         }
     }
-    
-    private void errorf(Throwable t, String fmt, Object... args) {
-        log.error(String.format(fmt, args), t);
-    }
 
-    private void errorf(String fmt, Object... args) {
-        log.error(String.format(fmt, args));
-    }
+
+
 
 }

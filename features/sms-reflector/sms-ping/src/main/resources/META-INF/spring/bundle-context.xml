@@ -10,8 +10,10 @@
 
 
     <bean id="smsPingMessenger" class="org.opennms.sms.ping.internal.SmsPingMessenger">
-        <constructor-arg ref="smsService" />
+        <property name="smsService" ref="smsService" />
     </bean>
+    
+    <bean id="smsPonger" class="org.opennms.sms.ping.internal.SmsPonger" />
 
     <bean id="smsPingTracker" class="org.opennms.sms.ping.internal.SmsPingTrackerImpl" init-method="start" destroy-method="stop">
         <constructor-arg ref="smsPingMessenger" />

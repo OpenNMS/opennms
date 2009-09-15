@@ -15,7 +15,7 @@
 	</bean>
 	
 	<bean id="smsMessenger" class="org.opennms.sms.reflector.smsservice.internal.SmsMessenger">
-	  <constructor-arg ref="smsService" />
+      <property name="smsService" ref="smsService" />
 	</bean>
 	
 	<bean id="mobileMsgTracker" class="org.opennms.sms.reflector.smsservice.internal.MobileMsgTrackerImpl">
