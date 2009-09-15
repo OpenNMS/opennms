@@ -230,6 +230,11 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 if (ipInterfaces.size() > 0) {
                     int id = ipInterfaces.iterator().next().getId();
                     resource.setLink("element/interface.jsp?ipinterfaceid=" + id);
+                } else {
+                    int ifIndex = snmpInterface.getIfIndex();
+                    if(ifIndex > -1) {
+                        resource.setLink("element/snmpinterface.jsp?node=" + nodeId + "&ifindex=" + ifIndex);
+                    }
                 }
 
                 resource.setEntity(snmpInterface);
