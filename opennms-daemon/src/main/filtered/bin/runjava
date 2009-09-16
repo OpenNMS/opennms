@@ -119,8 +119,8 @@ javaCheck() {
 	if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
 	    return 0
 	fi
-	if $JP -version 2>&1 | egrep 'OpenJDK Core VM' >/dev/null; then
-		build="`$JP -version 2>&1 | egrep '^OpenJDK Core VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
+	if $JP -version 2>&1 | egrep 'OpenJDK (Client|Core) VM' >/dev/null; then
+		build="`$JP -version 2>&1 | egrep '^OpenJDK (Client|Core) VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
 		if [ $build -ge $OPENJDK_MINIMUM_BUILD ]; then
 			return 0
 		else
