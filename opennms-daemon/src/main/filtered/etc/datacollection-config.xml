@@ -195,6 +195,17 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <!-- DELL Remote Access Controller Resource Types -->
+    <resourceType name="drsChassisIndex" label="Chassis">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="drsPSUIndex" label="PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <!-- Dell OpenManage Resource Types -->
     <resourceType name="coolingDeviceIndex" label="Cooling Device" resourceLabel="${coolingDeviceLocationName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
