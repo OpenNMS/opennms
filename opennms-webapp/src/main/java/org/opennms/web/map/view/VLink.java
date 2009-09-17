@@ -53,7 +53,7 @@ final public class VLink {
 	//the link typology defined in the map properties file
 	int linkTypeId;
 
-	int linkOperStatus;
+	int linkStatus;
 	
 	String id;
 
@@ -66,10 +66,12 @@ final public class VLink {
 		id = getLinkId();
 	}
 	
-	public String getLinkOperStatusString() {
-		if (linkOperStatus == 1 ) return "up";
-		else if (linkOperStatus == 2 ) return "down";
-		else return "testing";
+	public String getLinkStatusString() {
+		if (linkStatus == 0 ) return "up";
+		else if (linkStatus == 1 ) return "down";
+		else if (linkStatus == 2 ) return "admindown";
+        else if (linkStatus == 3 ) return "testing";	    
+		else return "unknown";
 	}
 
 	/**
@@ -144,15 +146,15 @@ final public class VLink {
 	}
 
 	public int getLinkOperStatus() {
-		return linkOperStatus;
+		return linkStatus;
 	}
 	
 	public void setLinkOperStatus(int operStatus) {
-		linkOperStatus = operStatus;
+		linkStatus = operStatus;
 	}
 	
 	public String toString() {
-			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkOperStatus+" hashCode:"+this.hashCode();
+			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkStatus+" hashCode:"+this.hashCode();
 	}
 	
     //like client function

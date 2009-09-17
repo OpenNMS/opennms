@@ -1451,7 +1451,7 @@ public class ManagerDefaultImpl implements Manager {
                                     continue;
                                 }
 				    			VLink vlink = new VLink(first,second);
-				    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
+				    			vlink.setLinkOperStatus(getLinkStatus(linfo));
 				    			vlink.setLinkTypeId(getLinkTypeId(linfo));
 				    			int index = links.indexOf(vlink);
 				    			if(index!=-1){
@@ -1567,7 +1567,13 @@ public class ManagerDefaultImpl implements Manager {
         return links.toArray(new VLink[0]);
     }
     
-	private VLink[] getLinksOnElement(VElement[] elems,VElement elem) throws MapsException {
+	private int getLinkStatus(LinkInfo linfo) {
+	    if (linfo.snmpifoperstatus==1 && linfo.snmpifadminstatus==1) return 0;
+	    if (linfo.snmpifoperstatus==2 && linfo.snmpifadminstatus==1) return 1;
+	    return linfo.snmpifadminstatus;
+    }
+
+    private VLink[] getLinksOnElement(VElement[] elems,VElement elem) throws MapsException {
  		if(elems==null || elem==null) {
             return null;
         }
