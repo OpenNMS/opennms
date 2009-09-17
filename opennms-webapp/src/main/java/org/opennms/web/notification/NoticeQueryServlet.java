@@ -112,7 +112,10 @@ public class NoticeQueryServlet extends HttpServlet {
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
-                limit = WebSecurityUtils.safeParseInt(limitString);
+                int newlimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newlimit > 0) {
+                    limit = newlimit;
+                }
             } catch (NumberFormatException e) {
             }
         }
@@ -122,7 +125,7 @@ public class NoticeQueryServlet extends HttpServlet {
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
-                multiple = WebSecurityUtils.safeParseInt(multipleString);
+                multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
             } catch (NumberFormatException e) {
             }
         }
