@@ -1537,6 +1537,18 @@
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.4" instance="juniSystemTempIndex" alias="juniSTPhysicalIndex" type="string" />
       </group>
 
+      <group name="juniper-jrouter" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.9.1.0" instance="0" alias="juniperMemUsed"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.15.9.1.0" instance="0" alias="juniperMemInst"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.9.1.0"  instance="0" alias="juniperTempRe"       type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.9.1.0"  instance="0" alias="juniperCpuRe"        type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.34.1.1"          instance="0" alias="junFwddCpuMKernel"   type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.34.1.2"          instance="0" alias="junFwddCpuRtThread"  type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.34.1.3"          instance="0" alias="junFwddHeapUtiliz"   type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.34.1.4"          instance="0" alias="junFwddBufferUtiliz" type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.34.1.5"          instance="0" alias="junFwddUptime"       type="gauge32" />
+      </group>
+
       <group name="juniper-mroute-interfaces" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.65.1.2.4.1.1" instance="ifIndex" alias="juniMRtIfActiveGrp" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.65.1.2.4.1.2" instance="ifIndex" alias="juniMRtIfBlockedGrp" type="Gauge32" />
@@ -3149,6 +3161,15 @@
           <includeGroup>juniper-erx-systemslot</includeGroup>
           <includeGroup>juniper-erx-temperature</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper J-Routers">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.19</sysoidMask>
+        <collect>
+          <includeGroup>juniper-jrouter</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
         </collect>
       </systemDef>
 
