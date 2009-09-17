@@ -1628,11 +1628,18 @@
         <artifactId>postgresql</artifactId>
         <version>8.1-407.jdbc3</version>
       </dependency>
+<dependency>
+  <groupId>org.opensymphony.quartz</groupId>
+  <artifactId>quartz</artifactId>
+  <version>1.6.5</version>
+</dependency>
+<!--
       <dependency>
         <groupId>quartz</groupId>
         <artifactId>quartz</artifactId>
-        <version>1.5.1</version>
+        <version>1.6.5</version>
       </dependency>
+-->
       <dependency>
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
@@ -1735,6 +1742,10 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+    <repository>
+      <id>JBOSS</id>
+      <url>http://repository.jboss.org/maven2</url>
     </repository>
     <repository>
       <id>maven-restlet</id>

@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+ * OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
  * reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included
  * code and modified
@@ -12,6 +12,9 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ * 
+ * 2009 SEP 17: Implemented Logger PrintStream to capture stderr/stdout to the
+ *              Logger API.
  *
  * 2007 May 20: Deduplicate the file resource searching and property setting.
  *              Improve logging of property handling.  Do not override system
@@ -24,9 +27,6 @@
  *              wasn't working for these files.  Reorganize code a bit to be
  *              more clear. - dj@opennms.org
  * 2003 Jan 31: Cleaned up some unused imports.
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
- * reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,10 @@ public class Starter {
                         + propertiesFile.getAbsolutePath() + ".  Exiting.");
             }
         }
+
+        CaptchaStds.captchaStdOut();
     }
+    
     
     private void setDefaultProperties() {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");

@@ -26,6 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "interface")
 public class RequisitionInterface {
 
+    //TODO Change these to be sets so that we don't have to verify duplicates in the lists
+    
     @XmlElement(name="monitored-service")
     protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
 

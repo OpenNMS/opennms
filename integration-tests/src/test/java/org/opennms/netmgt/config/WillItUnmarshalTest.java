@@ -96,6 +96,7 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
@@ -547,6 +548,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testAckdConfiguration() throws Exception {
         unmarshal("ackd-configuration.xml", AckdConfiguration.class);
+    }
+    @Test
+    public void provisiondConfiguration() throws Exception {
+        unmarshal("provisiond-configuration.xml", ProvisiondConfiguration.class);
     }
     @Test
     public void testRwsConfiguration() throws Exception {
