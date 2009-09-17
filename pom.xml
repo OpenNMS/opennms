@@ -122,6 +122,7 @@
     <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
     <module>integration-tests</module>
+    <module>opennms-rxtx-assembly</module>
   </modules>
   <build>
   <pluginManagement>
