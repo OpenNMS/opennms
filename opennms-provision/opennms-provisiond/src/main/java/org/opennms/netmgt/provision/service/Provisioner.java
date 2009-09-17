@@ -36,6 +36,8 @@
 //
 package org.opennms.netmgt.provision.service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,16 +57,24 @@ import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.Assert;
 
+/**
+ * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
+ * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ *
+ */
 @EventListener(name="Provisiond:EventListener")
 public class Provisioner implements SpringServiceDaemon {
     
@@ -75,7 +85,6 @@ public class Provisioner implements SpringServiceDaemon {
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
-    private volatile Resource m_importResource;
     private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
     
@@ -83,6 +92,8 @@ public class Provisioner implements SpringServiceDaemon {
     
     @Autowired
     private ProvisioningAdapterManager m_manager;
+    
+    private ImportScheduler m_importSchedule;
 
     public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
@@ -104,15 +115,36 @@ public class Provisioner implements SpringServiceDaemon {
 	    m_providers = providers;
 	}
 	
+    public void setImportSchedule(ImportScheduler schedule) {
+        m_importSchedule = schedule;
+    }
+
+    public ImportScheduler getImportSchedule() {
+        return m_importSchedule;
+    }
+
+
+	
     public void start() throws Exception {
-        scheduleRescanForExistingNodes();
         m_manager.initializeAdapters();
+        scheduleRescanForExistingNodes();
+        m_importSchedule.start();
     }
 	
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
         Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
+        
+
+        //since this class depends on the Import Schedule, the UrlFactory should already
+        //be registered in the URL class.. but, just in-case...
+        try {
+            new URL("dns://localhost/localhost");
+        } catch (MalformedURLException e) {
+            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
+        }
+            
     }
     
     protected void scheduleRescanForExistingNodes() {        
@@ -221,6 +253,7 @@ public class Provisioner implements SpringServiceDaemon {
         doImport(resource, monitor, new ImportManager());
     }
 
+    //FIXME? ImportManager is not used.
     private void doImport(Resource resource, final ProvisionMonitor monitor,
             ImportManager importManager) throws Exception {
         
@@ -235,14 +268,6 @@ public class Provisioner implements SpringServiceDaemon {
     public Category log() {
     	return ThreadCategory.getInstance(getClass());
 	}
-
-    public void setImportResource(Resource resource) {
-        m_importResource = resource;
-    }
-
-    public Resource getImportResource() {
-        return m_importResource;
-    }
 
     public EventSubscriptionService getEventSubscriptionService() {
         return m_eventSubscriptionService;
@@ -261,9 +286,10 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     public void doImport() {
-        doImport(null);
+        Event e = null;
+        doImport(e);
     }
-
+    
     /**
      * Begins importing from resource specified in model-importer.properties file or
      * in event parameter: url.  Import Resources are managed with a "key" called 
@@ -273,26 +299,43 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
     public void doImport(Event event) {
-        Resource resource = null;
+        String url = getEventUrl(event);
+        
+        if (url != null) {
+            doImport(url);
+        } else {
+            String msg = "reloadImport event requires 'url' paramter";
+            log().error("doImport: "+msg);
+            send(importFailedEvent(msg, url));
+        }
+        
+    }
+
+    public void doImport(String url) {
+        
         try {
+            
+            log().info("doImport: importing from url: "+url+"...");
+            
+            Resource resource = new UrlResource(url);
+            
             m_stats = new TimeTrackingMonitor();
             
-            resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : getImportResource()); 
-    
             send(importStartedEvent(resource));
     
-    		importModelFromResource(resource, m_stats);
+            importModelFromResource(resource, m_stats);
     
-    		log().info("Finished Importing: "+m_stats);
+            log().info("Finished Importing: "+m_stats);
     
-    		send(importSuccessEvent(m_stats, resource));
+            send(importSuccessEvent(m_stats, url));
     
         } catch (Exception e) {
-            String msg = "Exception importing "+resource;
-    		log().error(msg, e);
-            send(importFailedEvent((msg+": "+e.getMessage()), resource));
+            String msg = "Exception importing "+url;
+            log().error(msg, e);
+            send(importFailedEvent((msg+": "+e.getMessage()), url));
         }
     }
+
 
     /**
      * @param e
@@ -339,6 +382,57 @@ public class Provisioner implements SpringServiceDaemon {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         
     }
+    
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(Event e) {
+        
+        if (isReloadConfigEventTarget(e)) {
+            log().info("handleReloadConfigEvent: reloading configuration...");
+            EventBuilder ebldr = null;
+
+            try {
+                log().debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                
+                m_importSchedule.rebuildImportSchedule();
+                
+                log().debug("handleRelodConfigEvent: reports rescheduled.");
+                
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                
+            } catch (Exception exception) {
+                
+                log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
+                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+                
+            }
+            
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
+            }
+            log().info("handleReloadConfigEvent: configuration reloaded.");
+        }
+        
+    }
+    
+    private boolean isReloadConfigEventTarget(Event event) {
+        boolean isTarget = false;
+        
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        
+        log().debug("isReloadConfigEventTarget: Provisiond was target of reload event: "+isTarget);
+        return isTarget;
+    }
+
 
     private String getEventUrl(Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
@@ -346,10 +440,10 @@ public class Provisioner implements SpringServiceDaemon {
 
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
-    private Event importSuccessEvent(TimeTrackingMonitor stats, Resource resource) {
+    private Event importSuccessEvent(TimeTrackingMonitor stats, String url) {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
             .getEvent();
     }
@@ -358,10 +452,10 @@ public class Provisioner implements SpringServiceDaemon {
         getEventForwarder().sendNow(event);
     }
 
-    private Event importFailedEvent(String msg, Resource resource) {
+    private Event importFailedEvent(String msg, String url) {
     
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
+            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
             .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
             .getEvent();
     }

@@ -31,7 +31,32 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 
 /**
@@ -39,7 +64,31 @@ import org.junit.Test;
  *
  * @author brozow
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    JUnitSnmpAgentExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/detectors.xml",
+        "classpath:/importerServiceTest.xml"
+})
+@JUnitTemporaryDatabase()
 public class ProvisionServiceTest {
+    
+    @Autowired
+    ProvisionService m_provService;
     
     /*
      *  A list of use cases/todos for a Provision Service
@@ -162,8 +211,54 @@ public class ProvisionServiceTest {
      * Also need an indication of where transactions should live 
      * 
      */
+
+    @Before
+    public void verifyWiring() {
+        Assert.assertNotNull(m_provService);
+    }
+
+    @Before
+    public void dwVerifyUrlHandler() {
+        try {
+            new URL("dns://localhost:53/localhos");
+        } catch (MalformedURLException e) {
+            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
+        }
+
+    }
+    
+    
+    /**
+     * This test should be set to Ignore until a DNS server can be integrated into unit tests
+     * 
+     * @throws MalformedURLException
+     */
+    @Test
+    @Ignore
+    public void dwLoadRequisition() throws MalformedURLException {
+        
+        String nodeLabel = "localhost";
+        
+        int nhash = nodeLabel.hashCode();
+        
+        int chash = "localhost".hashCode();
+        
+        Assert.assertEquals(nhash, chash);
+        
+        
+        Resource resource = new UrlResource("dns://localhost/localhost");
+        Requisition r = m_provService.loadRequisition(resource);
+        Assert.assertNotNull(r);
+        Assert.assertEquals(1, r.getNodeCount());
+        String foreignId = String.valueOf("localhost".hashCode());
+        RequisitionNode node = r.getNode(foreignId);
+        Assert.assertNotNull(node);
+        RequisitionInterface inf = node.getInterface("127.0.0.1");
+        Assert.assertNotNull(inf);
+    }
     
     @Test
+    @Ignore
     public void testLifeCycle() throws Exception {
         
 //        ProcessBuilder bldr = new ProcessBuilder();

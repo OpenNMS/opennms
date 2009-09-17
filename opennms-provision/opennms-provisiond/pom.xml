@@ -38,7 +38,7 @@
       <artifactId>opennms-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>quartz</groupId>
+      <groupId>org.opensymphony.quartz</groupId>
       <artifactId>quartz</artifactId>
     </dependency>
 

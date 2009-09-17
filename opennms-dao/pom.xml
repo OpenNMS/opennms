@@ -154,5 +154,9 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
+    </dependency>
   </dependencies>
 </project>

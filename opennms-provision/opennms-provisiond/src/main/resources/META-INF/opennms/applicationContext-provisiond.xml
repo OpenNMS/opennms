@@ -13,10 +13,7 @@
   
   <context:property-placeholder location="file:${opennms.home}/etc/model-importer.properties" />
 
-  <bean id="importResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg><value>${importer.importURL}</value></constructor-arg>
-  </bean>
-
+<!-- 
   <bean id="importThreads" class="java.lang.Integer">
     <constructor-arg><value>${importer.importThreads}</value></constructor-arg>
   </bean>
@@ -32,10 +29,7 @@
   <bean id="rescanThreads" class="java.lang.Integer">
     <constructor-arg><value>10</value></constructor-arg>
   </bean>
-  
-  <bean id="cronExpression" class="java.lang.String">
-    <constructor-arg><value>${importer.importSchedule}</value></constructor-arg>
-  </bean>
+-->
   
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
@@ -44,6 +38,18 @@
   <bean id="transactionAwareEventForwarder" class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
     <qualifier value="transactionAware" />
     <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+  
+  <bean id="importThreads" factory-bean="provisiondConfigDao" factory-method="getImportThreads" class="java.lang.Integer" >
+  </bean>
+  
+  <bean id="scanThreads" factory-bean="provisiondConfigDao" factory-method="getScanThreads" class="java.lang.Integer" >
+  </bean>
+  
+  <bean id="writeThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getWriteThreads" >
+  </bean>
+  
+  <bean id="rescanThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getRescanThreads" >
   </bean>
   
   <bean id="importExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
@@ -57,7 +63,6 @@
   <bean id="writeExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
     <property name="poolSize" ref="writeThreads" />
   </bean>
-  
 
   <bean id="scheduledExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
     <constructor-arg ref="rescanThreads" />
@@ -165,11 +170,11 @@
     
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
     <property name="provisionService" ref="provisionService" />
-    <property name="importResource" ref="importResource"/>
     <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
     <property name="lifeCycleRepository" ref="lifeCycleRepository" />
     <property name="scheduledExecutor" ref="scheduledExecutor" />
+    <property name="importSchedule" ref="provisiondImportSchedule" />
     <property name="providers">
     	<list>
             <ref bean="coreImportActivities" />
@@ -188,33 +193,29 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
-  <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-    <property name="targetObject">
-      <ref bean="daemon" />
-    </property>
-    <property name="targetMethod">  
-      <value>doImport</value>
-    </property>
-    <property name="concurrent">
-      <value>false</value>
-    </property>
+  <bean id="provisiondConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/provisiond-configuration.xml" />
   </bean>
 
-
-  <bean id="cronImportTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-    <property name="jobDetail" ref="modelImportingJobDetail" />
-    <property name="cronExpression" ref="cronExpression" />
-  </bean>
-
-  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="schedulerName" value="Importer" />
-    <property name="triggers">
-      <list>
-        <ref bean="cronImportTrigger" />
-      </list>
-    </property>
+  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.castor.DefaultProvisiondConfigurationDao">
+    <property name="configResource" ref="provisiondConfigResourceLocation" />
+    <property name="reloadCheckInterval" value="-1" />
   </bean>
   
- 
+  <bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory" >
+  <!-- <constructor-arg value="file:${opennms.home}/etc/org.quartz.properties" /> -->
+  </bean>
+
+  <bean id="quartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
+     
+  <bean id="provisiondImportSchedule" class="org.opennms.netmgt.provision.service.ImportScheduler" >
+    <constructor-arg ref="quartzScheduler" />
+    <property name="provisioner" ref="daemon" />
+    <property name="importJobFactory" ref="jobFactory" />
+  </bean>
+  
+  <bean id="jobFactory" class="org.opennms.netmgt.provision.service.ImportJobFactory" >
+    <property name="provisioner" ref="daemon" />
+  </bean>
 
 </beans>
