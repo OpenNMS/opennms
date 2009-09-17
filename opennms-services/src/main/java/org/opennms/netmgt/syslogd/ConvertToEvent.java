@@ -86,14 +86,10 @@ final class ConvertToEvent {
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
-    private static String m_localAddr;
-
     /**
      * The received XML event, decoded using the US-ASCII encoding.
      */
     private String m_eventXML;
-
-    private static Event e;
 
     /**
      * The decoded event document. The classes are defined in an XSD and
@@ -102,7 +98,7 @@ final class ConvertToEvent {
     private Log m_log;
 
     /**
-     * The internet addrress of the sending agent.
+     * The internet address of the sending agent.
      */
     private InetAddress m_sender;
 
@@ -114,7 +110,7 @@ final class ConvertToEvent {
     /**
      * The list of event that have been acknowledged.
      */
-    private List m_ackEvents;
+    private List<Event> m_ackEvents;
 
     private Event m_event;
 
@@ -138,14 +134,10 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(DatagramPacket packet, String matchPattern,
-                               int hostGroup, int messageGroup,
-                               UeiList ueiList, HideMessage hideMessage,
-                               String discardUei)
-
+    static ConvertToEvent make(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup, UeiList ueiList,
+            HideMessage hideMessage, String discardUei)
             throws UnsupportedEncodingException, MessageDiscardedException {
-        return make(packet.getAddress(), packet.getPort(), packet.getData(),
-                packet.getLength(), matchPattern, hostGroup, messageGroup,
+        return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), matchPattern, hostGroup, messageGroup,
                 ueiList, hideMessage, discardUei);
     }
 
@@ -175,7 +167,7 @@ final class ConvertToEvent {
         e.m_sender = addr;
         e.m_port = port;
         e.m_eventXML = new String(data, 0, len, "US-ASCII");
-        e.m_ackEvents = new ArrayList(16);
+        e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
         String m_logPrefix = Syslogd.LOG4J_CATEGORY;
@@ -363,11 +355,11 @@ final class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        Iterator match = ueiList.getUeiMatchCollection().iterator();
+        Iterator<UeiMatch> ueiMatch = ueiList.getUeiMatchCollection().iterator();
         UeiMatch uei;
-        while (match.hasNext()) {
+        while (ueiMatch.hasNext()) {
 
-            uei = (UeiMatch) match.next();
+            uei = ueiMatch.next();
             if (uei.getMatch().getType().equals("substr")) {
                 if (log.isDebugEnabled()) {
                     log.debug("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
@@ -427,12 +419,12 @@ final class ConvertToEvent {
 
         // Time to verify if we need to hide the message
 
-        match = hideMessage.getHideMatchCollection().iterator();
+        Iterator<HideMatch> hideMatch = hideMessage.getHideMatchCollection().iterator();
 
         HideMatch hide;
     	boolean doHide = false;
-        while (match.hasNext()) {
-            hide = (HideMatch) match.next();
+        while (hideMatch.hasNext()) {
+            hide = hideMatch.next();
             if (hide.getMatch().getType().equals("substr")) {
                 if (message.contains(hide.getMatch().getExpression())) {
                     // We should hide the message based on this match
@@ -598,7 +590,7 @@ final class ConvertToEvent {
     /**
      * Get the acknowledged events
      */
-    public List getAckedEvents() {
+    public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 
