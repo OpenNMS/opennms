@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
@@ -37,8 +36,6 @@ import org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder.MobileMsgTr
 
 public class MobileMsgSequencer {
 	private static MobileMsgTracker s_tracker;
-	@SuppressWarnings("unused")
-	private static ServiceRegistry m_serviceRegistry;
     private static Logger log = Logger.getLogger(MobileMsgSequencer.class);
 	private static DefaultTaskCoordinator s_coordinator;
 	private static boolean m_initialized = false;
@@ -59,9 +56,6 @@ public class MobileMsgSequencer {
 	    s_tracker = tracker;
 	}
 
-	public synchronized static void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		m_serviceRegistry = serviceRegistry;
-	}
 	
 	public static String substitute(String text, Properties session) {
 		if (text == null) {
