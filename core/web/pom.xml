@@ -11,12 +11,12 @@
   <packaging>war</packaging>
   
   <build>
-  	<plugins>
+<!--  	<plugins>
   		<plugin>
 	      	<groupId>org.codehaus.cargo</groupId>
 	      	<artifactId>cargo-maven2-plugin</artifactId>
 	      	<version>1.0</version>
-	      	<extensions>true</extensions>
+	      	<extensions>true</extensions>-->
 <!--	      	<executions>-->
 <!--	      		<execution>-->
 <!--	      			<goals>-->
@@ -24,7 +24,7 @@
 <!--	      			</goals>-->
 <!--	      		</execution>-->
 <!--	      	</executions>-->
-	      	<configuration>
+<!--	      	<configuration>
 	      		<descriptor>src/assemble/merge.xml</descriptor>
 	      		<container>
 	      			<containerId>jetty6x</containerId>
@@ -32,17 +32,8 @@
 	      		</container>
 	      	</configuration>
 	      </plugin>
-  	</plugins>
+  	</plugins>-->
   </build>
   
-  <dependencies>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-webapp</artifactId>
-  		<version>${project.version}</version>
-  		<type>war</type>
-  	</dependency>
-
-  </dependencies>
   
 </project>

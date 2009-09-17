@@ -34,10 +34,6 @@ package org.opennms.netmgt.provision.detector.snmp;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
-import org.jfree.util.Log;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.plugins.BgpSessionPlugin;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.context.annotation.Scope;
@@ -46,6 +42,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class BgpSessionDetector extends SnmpDetector {
+   
     /**
      * Name of monitored service.
      */
@@ -85,7 +82,7 @@ public class BgpSessionDetector extends SnmpDetector {
             configureAgentVersion(agentConfig);
 
             String bgpPeerState = getValue(agentConfig, BGP_PEER_STATE_OID + "." + bgpPeerIp);
-            if (Log.isDebugEnabled()) {
+            if (log().isDebugEnabled()) {
                 log().debug("BgpSessionMonitor.capsd: bgpPeerState: " + bgpPeerState);
             }
             if  (bgpPeerState != null && Integer.parseInt(bgpPeerState) >= 1 && Integer.parseInt(bgpPeerState) <= 6){
