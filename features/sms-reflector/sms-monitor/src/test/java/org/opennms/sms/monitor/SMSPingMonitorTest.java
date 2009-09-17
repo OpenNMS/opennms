@@ -79,7 +79,7 @@ public class SMSPingMonitorTest {
 	public void testPing() {
 		assertNotNull(m_smsService);
 		
-		assertEquals("monkeys!", m_smsService.getGateways().iterator().next().getGatewayId());
+		assertEquals("ACM0", m_smsService.getGateways().iterator().next().getGatewayId());
 		
 		SMSPingMonitor p = new SMSPingMonitor();
 		Map<String, Object> parameters = new HashMap<String, Object>();

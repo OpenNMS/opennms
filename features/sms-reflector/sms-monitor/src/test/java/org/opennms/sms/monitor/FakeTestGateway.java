@@ -26,11 +26,14 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.sms.reflector.smsservice.MobileMsgTrackerTest;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
+import org.smslib.USSDRequest;
+import org.smslib.USSDResponse;
 import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage.MessageStatuses;
 
@@ -46,17 +49,31 @@ public class FakeTestGateway extends AGateway
 
 	private class QueueRunner implements Runnable, Delayed {
 		InboundMessage m_message;
+		private USSDResponse m_response;
 		long m_expiration = 0;
 		
+		public QueueRunner(USSDResponse response, long milliseconds) {
+			System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + response);
+			m_response = response;
+			m_expiration = System.currentTimeMillis() + milliseconds;
+		}
+
 		public QueueRunner(InboundMessage message, long milliseconds) {
 			System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + message);
 			m_message = message;
 			m_expiration = System.currentTimeMillis() + milliseconds;
 		}
 		public void run() {
-			System.err.println("QueueRunner(run): " + getService().getInboundNotification());
-			if (getService().getInboundNotification() != null ) {
-				getService().getInboundNotification().process(getGatewayId(), MessageTypes.INBOUND, m_message);
+			if (m_message != null) {
+				System.err.println("QueueRunner(run): " + getService().getInboundNotification());
+				if (getService().getInboundNotification() != null ) {
+					getService().getInboundNotification().process(getGatewayId(), MessageTypes.INBOUND, m_message);
+				}
+			} else if (m_response != null) {
+				System.err.println("QueueRunner(run): " + getService().getUSSDNotification());
+				if (getService().getUSSDNotification() != null ) {
+					getService().getUSSDNotification().process(getGatewayId(), m_response);
+				}
 			}
 		}
 
@@ -80,7 +97,7 @@ public class FakeTestGateway extends AGateway
 	public FakeTestGateway(String id)
 	{
 		super(id);
-		System.err.println("Initializing PingTestGateway");
+		System.err.println("Initializing FakeTestGateway");
 		setAttributes(GatewayAttributes.SEND);
 		setInbound(true);
 		setOutbound(true);
@@ -94,14 +111,6 @@ public class FakeTestGateway extends AGateway
 	{
 		//NOOP
 		return true;
-	}
-
-	InboundMessage generateIncomingMessage()
-	{
-		incInboundMessageCount();
-		InboundMessage msg = new InboundMessage(new java.util.Date(), "+1234567890", "Hello World! #" + getInboundMessageCount(), 0, null);
-		msg.setGatewayId(this.getGatewayId());
-		return msg;
 	}
 
 	/* (non-Javadoc)
@@ -166,6 +175,26 @@ public class FakeTestGateway extends AGateway
 
 		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msgText, 1, "DEADBEEF");
 		QueueRunner runner = new QueueRunner(inbound, 500);
+		m_delayQueue.offer(runner);
+		return true;
+	}
+
+	@Override
+	public boolean sendUSSDRequest(USSDRequest request) throws GatewayException, TimeoutException, IOException, InterruptedException
+	{
+		getService().getLogger().logInfo("Sending to: " + request.getContent() + " via: " + request.getGatewayId(), null, getGatewayId());
+		Thread.sleep(500);
+		this.counter++;
+
+		request.setGatewayId(getGatewayId());
+
+		String content = request.getContent();
+		if (content != null && content.equals("#225#")) {
+			content = "+CUSD: 0,\"" + MobileMsgTrackerTest.TMOBILE_RESPONSE + "\"";
+		}
+
+		USSDResponse response  = new USSDResponse(content, getGatewayId());
+		QueueRunner runner = new QueueRunner(response, 500);
 		m_delayQueue.offer(runner);
 		return true;
 	}

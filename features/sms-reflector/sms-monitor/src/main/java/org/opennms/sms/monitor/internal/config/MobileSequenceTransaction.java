@@ -82,6 +82,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("label", getLabel())
+			.append("gatewayId", getGatewayId())
 			.append("request", getRequest())
 			.append("response(s)", getResponses())
 			.toString();

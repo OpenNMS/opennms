@@ -32,6 +32,7 @@ public class SequenceConfigFactory {
 		if (m_context == null) {
 			m_context = JAXBContext.newInstance(
 					MobileSequenceConfig.class,
+					SequenceSessionVariable.class,
 	    			SmsSequenceRequest.class,
 	    			UssdSequenceRequest.class,
 	    			SmsSequenceResponse.class,

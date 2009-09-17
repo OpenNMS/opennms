@@ -55,6 +55,11 @@ public class SequenceXmlTest {
 
     	m_smsSequence = new MobileSequenceConfig();
 
+    	SequenceSessionVariable amountSessionVar = new SequenceSessionVariable("amount", "org.opennms.sms.monitor.session.UniqueNumber");
+    	amountSessionVar.addParameter("min", "1");
+    	amountSessionVar.addParameter("max", "15");
+    	m_smsSequence.addSessionVariable(amountSessionVar);
+    	
     	MobileSequenceTransaction reqBalanceTransfer = new MobileSequenceTransaction("ussd-transfer");
     	reqBalanceTransfer.setGatewayId("ACM0");
     	

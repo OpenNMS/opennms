@@ -2,7 +2,9 @@ package org.opennms.sms.monitor.internal.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -59,6 +61,16 @@ public class SequenceSessionVariable {
 	
 	public List<SequenceParameter> getParameters() {
 		return m_parameters;
+	}
+
+	public Map<String,String> getParametersAsMap() {
+		Map<String,String> m = new HashMap<String,String>();
+		if (m_parameters != null) {
+			for (SequenceParameter p : m_parameters) {
+				m.put(p.getKey(), p.getValue());
+			}
+		}
+		return m;
 	}
 	
 	public void setParameters(List<SequenceParameter> parameters) {

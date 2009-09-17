@@ -8,6 +8,7 @@ import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isS
 import static org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers.isUssd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -15,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
@@ -26,6 +28,7 @@ import org.opennms.sms.monitor.internal.config.SmsSequenceRequest;
 import org.opennms.sms.monitor.internal.config.SmsSequenceResponse;
 import org.opennms.sms.monitor.internal.config.UssdSequenceRequest;
 import org.opennms.sms.monitor.internal.config.UssdSequenceResponse;
+import org.opennms.sms.monitor.session.SessionVariableGenerator;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
 import org.opennms.sms.reflector.smsservice.MobileMsgSequence;
 import org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder;
@@ -34,15 +37,21 @@ import org.opennms.sms.reflector.smsservice.MobileMsgSequenceBuilder.MobileMsgTr
 
 public class MobileMsgSequencer {
 	private static MobileMsgTracker s_tracker;
+	@SuppressWarnings("unused")
+	private static ServiceRegistry m_serviceRegistry;
     private static Logger log = Logger.getLogger(MobileMsgSequencer.class);
 	private static DefaultTaskCoordinator s_coordinator;
+	private static boolean m_initialized = false;
 
 	public synchronized static void initialize() {
-		if (s_coordinator == null) {
+		if (!m_initialized) {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			s_coordinator = new DefaultTaskCoordinator(executor);
+		    if (s_tracker == null) {
+		    	throw new IllegalStateException("MobileMsgSequencer not yet initialized!!"); 
+		    }
+		    m_initialized = true;
 		}
-	    if (s_tracker == null) throw new IllegalStateException("MobileMsgSequencer not yet initialized!!"); 
 	}
 
 	public synchronized static void setMobileMsgTracker(MobileMsgTracker tracker) {
@@ -50,6 +59,10 @@ public class MobileMsgSequencer {
 	    s_tracker = tracker;
 	}
 
+	public synchronized static void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		m_serviceRegistry = serviceRegistry;
+	}
+	
 	public static String substitute(String text, Properties session) {
 		if (text == null) {
 			return null;
@@ -61,8 +74,25 @@ public class MobileMsgSequencer {
 		initialize();
 		MobileMsgSequenceBuilder sequenceBuilder = new MobileMsgSequenceBuilder();
 
-		for (@SuppressWarnings("unused") SequenceSessionVariable var : sequenceConfig.getSessionVariables()) {
-			// FIXME!  gotta implement dynamic session variables
+		Map<String,SessionVariableGenerator> sessionGenerators = new HashMap<String,SessionVariableGenerator>();
+
+		// FIXME: use the service registry for this
+		for (SequenceSessionVariable var : sequenceConfig.getSessionVariables()) {
+			Class<?> c = Class.forName(var.getClassName());
+
+			Class<?> superclass = c.getSuperclass();
+			if (superclass != null && superclass.getName().equals("org.opennms.sms.monitor.session.BaseSessionVariableGenerator")) {
+				SessionVariableGenerator generator = (SessionVariableGenerator)c.newInstance();
+				generator.setParameters(var.getParametersAsMap());
+				sessionGenerators.put(var.getName(), generator);
+				String value = generator.checkOut();
+				if (value == null) {
+					value = "";
+				}
+				session.setProperty(var.getName(), value);
+			} else {
+				log.warn("unable to get instance of session class: " + c);
+			}
 		}
 
 		for (final MobileSequenceTransaction t : sequenceConfig.getTransactions()) {
@@ -109,11 +139,16 @@ public class MobileMsgSequencer {
 		}
 
 		MobileMsgSequence seq = sequenceBuilder.getSequence();
-		System.err.println("sequence = " + seq);
-		long start = System.currentTimeMillis();
-		Map<String,Number> responseTimes = seq.execute(s_tracker, s_coordinator);
-		long end = System.currentTimeMillis();
-		responseTimes.put("response-time", Long.valueOf(end - start));
-		return responseTimes;
+		try {
+			long start = System.currentTimeMillis();
+			Map<String,Number> responseTimes = seq.execute(s_tracker, s_coordinator);
+			long end = System.currentTimeMillis();
+			responseTimes.put("response-time", Long.valueOf(end - start));
+			return responseTimes;
+		} finally {
+			for (Map.Entry<String, SessionVariableGenerator> generator : sessionGenerators.entrySet()) {
+				generator.getValue().checkIn(session.getProperty(generator.getKey()));
+			}
+		}
 	}
 }

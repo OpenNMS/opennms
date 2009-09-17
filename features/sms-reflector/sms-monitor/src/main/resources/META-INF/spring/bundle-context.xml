@@ -10,4 +10,11 @@
         </property>
     </bean>
     
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.opennms.sms.monitor.MobileMsgSequencer.setServiceRegistry" />
+        <property name="arguments">
+          <list><ref bean="serviceRegistry"/></list>
+        </property>
+    </bean>
+    
 </beans>

@@ -1,13 +1,11 @@
 <mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
   <!-- UniqueNumber conforms to TransactionSessionVariable interface, checkOut(), and checkIn(value) -->
-  <!-- 
-  <session-variable name="amount" class="org.opennms.sms.monitor.internal.config.UniqueNumber">
+  <session-variable name="amount" class="org.opennms.sms.monitor.session.UniqueNumber">
     <parameters>
       <parameter key="min" value="1" />
       <parameter key="max" value="15" />
     </parameters>
   </session-variable>
-  -->
   <transaction label="ussd-transfer" gatewayId="ACM0">
     <ussd-request gatewayId="ACM0" label="req-balance-transfer" text="*327*${recipient}*${amount}#" />
     <ussd-response gatewayId="ACM0" label="balance-conf-resp">

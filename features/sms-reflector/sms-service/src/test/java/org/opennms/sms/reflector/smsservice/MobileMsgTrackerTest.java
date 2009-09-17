@@ -73,7 +73,8 @@ import org.smslib.USSDSessionStatus;
  */
 public class MobileMsgTrackerTest {
     
-    private static final String TMOBILE_USSD_MATCH = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
+	public static final String TMOBILE_RESPONSE = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
+    public static final String TMOBILE_USSD_MATCH = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
 
     private final class LatencyCallback implements Callback<MobileMsgResponse> {
 		private final AtomicLong m_start = new AtomicLong();
@@ -263,10 +264,8 @@ public class MobileMsgTrackerTest {
     }
 
 	private USSDResponse sendTmobileUssdResponse(String gatewayId) {
-		String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
-        
-        USSDResponse response = new USSDResponse();
-        response.setContent(content);
+		USSDResponse response = new USSDResponse();
+        response.setContent(TMOBILE_RESPONSE);
         response.setUSSDSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED);
         response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
         
@@ -397,9 +396,8 @@ public class MobileMsgTrackerTest {
         Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
         
-        String content = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
         USSDResponse response = new USSDResponse();
-        response.setContent(content);
+        response.setContent(TMOBILE_RESPONSE);
         response.setUSSDSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED);
         response.setDcs(USSDDcs.UNSPECIFIED_7BIT);
         

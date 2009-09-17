@@ -7,8 +7,12 @@ import java.util.Set;
 public class UniqueNumber extends BaseSessionVariableGenerator {
 	private int min = 0;
 	private int max = 1000;
-	private Set<Integer> m_used = new HashSet<Integer>();
+	private static Set<Integer> m_used = new HashSet<Integer>();
 
+	public UniqueNumber() {
+		super();
+	}
+	
 	public UniqueNumber(Map<String,String> parameters) {
 		super(parameters);
 

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.PollStatus;
@@ -117,21 +116,19 @@ public class MobileMsgSequenceMonitorTest {
 
 	@Test
 	@DirtiesContext
-	@Ignore
 	public void testUssdSequence() throws Exception {
 		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
-		parameters.put("sequence", getXmlBuffer("ussd-balance-sequence.xml"));
+		parameters.put("sequence", getXmlBuffer("tmobile-balance-sequence.xml"));
 
 		PollStatus s = m.poll(m_service, parameters);
 
 		System.err.println("reason = " + s.getReason());
 		System.err.println("status name = " + s.getStatusName());
 		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
-//		assertTrue(s.getProperty("sms-ping").longValue() > 10);
 	}
 	
     private String getXmlBuffer(String fileName) throws IOException {
