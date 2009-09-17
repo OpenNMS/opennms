@@ -1753,7 +1753,7 @@ public class DBManager extends Manager {
 			}
 
 			String sql = "SELECT "
-					+ "datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus "
+					+ "datalinkinterface.nodeid, ifindex,nodeparentid, parentifindex, snmpiftype,snmpifspeed,snmpifoperstatus,snmpifadminstatus "
 					+ "FROM datalinkinterface "
 					+ "left join snmpinterface on nodeparentid = snmpinterface.nodeid "
 					+ "WHERE"
@@ -1764,6 +1764,7 @@ public class DBManager extends Manager {
 					+ nodelist
 					+ ")) "
 					+ "AND status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex";
+			
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -1809,9 +1810,17 @@ public class DBManager extends Manager {
 					snmpifoperstatus = ((Integer) element);
 				}
 
+                element = new Integer(rs.getInt("snmpifadminstatus"));
+                int snmpifadminstatus = -1;
+                if (element != null) {
+                    snmpifadminstatus = ((Integer) element);
+                }
+
+                // If oper status is down try to verify if admin status is down on the other side of the link!
+
 				LinkInfo link = new LinkInfo(nodeid, ifindex, nodeparentid,
 						parentifindex, snmpiftype, snmpifspeed,
-						snmpifoperstatus);
+						snmpifoperstatus,snmpifadminstatus);
 
 				nodes.add(link);
 			}

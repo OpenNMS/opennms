@@ -84,7 +84,7 @@ public class ResponseAssembler {
 					response += "&" + vl.getFirst().getId()
 					+ vl.getFirst().getType() + "+"
 					+ vl.getSecond().getId()
-					+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
+					+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
 			}
 		} 
 		log.debug("getRefreshResponse: String assembled: "+response);
@@ -121,7 +121,7 @@ public class ResponseAssembler {
 				response += "&" + vl.getFirst().getId()
 						+ vl.getFirst().getType() + "+"
 						+ vl.getSecond().getId()
-						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
+						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
 			}
 		}		
 		log.debug("getAddMapsResponse: String assembled: "+response);
@@ -162,7 +162,7 @@ public class ResponseAssembler {
 				response += "&" + vl.getFirst().getId()
 						+ vl.getFirst().getType() + "+"
 						+ vl.getSecond().getId()
-						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkOperStatusString();
+						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
 			}
 		}		
 		log.debug("getAddElementResponse: String assembled: "+response);
@@ -267,7 +267,7 @@ public class ResponseAssembler {
 							+ links[i].getSecond().getId()
 							+ links[i].getSecond().getType()+ "+"
 							+links[i].getLinkTypeId() + "+"
-							+links[i].getLinkOperStatusString();
+							+links[i].getLinkStatusString();
 				}
 			}	
 		} else {
