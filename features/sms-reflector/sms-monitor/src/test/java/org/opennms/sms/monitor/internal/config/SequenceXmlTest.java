@@ -15,8 +15,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -155,20 +155,28 @@ public class SequenceXmlTest {
         System.err.println(objectXML.toString());
     }
 
-    static private class TestValidationEventHandler implements ValidationEventHandler {
-		public boolean handleEvent(ValidationEvent event) {
-			System.err.println("Validation failure event: " + event);
-			if (event != null && event.getLinkedException() != null) {
-				event.getLinkedException().printStackTrace();
-			}
-			return false;
-		}
-    }
-
     @Test(expected=UnmarshalException.class)
     public void readInvalidXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("invalid-sequence.xml").getFile());
-    	ValidationEventHandler handler = new TestValidationEventHandler();
+    	ValidationEventHandler handler = new DefaultValidationEventHandler();
+    	m_unmarshaller.setEventHandler(handler);
+    	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
+    	System.err.println("sequence = " + s);
+    }
+    
+    @Test(expected=UnmarshalException.class)
+    public void readPoorlyFormedXML() throws Exception {
+    	File exampleFile = new File(ClassLoader.getSystemResource("poorly-formed-sequence.xml").getFile());
+    	ValidationEventHandler handler = new DefaultValidationEventHandler();
+    	m_unmarshaller.setEventHandler(handler);
+    	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
+    	System.err.println("sequence = " + s);
+    }
+    
+    @Test()
+    public void readAnotherSampleXML() throws Exception {
+    	File exampleFile = new File(ClassLoader.getSystemResource("alternate-ping-sequence.xml").getFile());
+    	ValidationEventHandler handler = new DefaultValidationEventHandler();
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
@@ -177,7 +185,7 @@ public class SequenceXmlTest {
     @Test
     public void readXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
-    	ValidationEventHandler handler = new TestValidationEventHandler();
+    	ValidationEventHandler handler = new DefaultValidationEventHandler();
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);

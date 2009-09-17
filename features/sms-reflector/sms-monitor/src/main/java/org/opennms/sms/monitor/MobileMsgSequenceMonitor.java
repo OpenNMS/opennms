@@ -55,6 +55,7 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 			return PollStatus.unavailable("Unable to find phone number for IP address " + svc.getIpAddr());
 		}
 
+		log().warn("session = " + session);
         MobileSequenceConfig sequenceConfig = null;
         try {
             SequenceConfigFactory factory = SequenceConfigFactory.getInstance();
@@ -64,6 +65,7 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 			return PollStatus.unavailable("unable to read sequence configuration");
 		}
 
+		log().warn("sequenceConfig = " + sequenceConfig);
 		// FIXME: Decide the validity of an empty sequence; is it a failure to configure?  Or passing because no transactions failed?
 		if (sequenceConfig.getTransactions() == null || sequenceConfig.getTransactions().size() == 0) {
 			log().warn("No transactions were configured for host " + svc.getIpAddr());

@@ -123,7 +123,33 @@ public class MobileMsgSequenceMonitorTest {
 		parameters.put("retry", "0");
 		parameters.put("timeout", "3000");
 		parameters.put("sequence", getXmlBuffer("tmobile-balance-sequence.xml"));
+		
+		PollStatus s = m.poll(m_service, parameters);
 
+		System.err.println("reason = " + s.getReason());
+		System.err.println("status name = " + s.getStatusName());
+		assertEquals("ping should pass", PollStatus.SERVICE_AVAILABLE, s.getStatusCode());
+	}
+	
+	@Test
+	@DirtiesContext
+	public void testInlineSequence() throws Exception {
+		MobileMsgSequenceMonitor m = new MobileMsgSequenceMonitor();
+		
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("retry", "0");
+		parameters.put("timeout", "3000");
+		parameters.put("sequence", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<mobile-sequence xmlns=\"http://xmlns.opennms.org/xsd/config/mobile-sequence\">\n" +
+				"<transaction label=\"sms-ping\">\n" +
+				"<sms-request recipient=\"${recipient}\" text=\"You suck!\"/>\n" +
+				"<sms-response>\n" +
+				"<from-recipient/>\n" +
+				"<matches>^[Nn]o$</matches>\n" +
+				"</sms-response>\n" +
+				"</transaction>\n" +
+				"</mobile-sequence>");
+		
 		PollStatus s = m.poll(m_service, parameters);
 
 		System.err.println("reason = " + s.getReason());

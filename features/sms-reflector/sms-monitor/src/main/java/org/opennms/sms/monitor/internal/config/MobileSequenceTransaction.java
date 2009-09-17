@@ -40,7 +40,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 		m_label = label;
 	}
 
-	@XmlAttribute(name="gatewayId")
+	@XmlAttribute(name="gatewayId", required=false)
 	public void setGatewayId(String gatewayId) {
 		m_gatewayId = gatewayId;
 	}

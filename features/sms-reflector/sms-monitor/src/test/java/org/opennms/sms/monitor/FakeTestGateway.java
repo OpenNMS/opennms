@@ -169,8 +169,12 @@ public class FakeTestGateway extends AGateway
 		getService().getLogger().logInfo("Sent to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
 		
 		String msgText = msg.getText();
-		if (msgText != null && msgText.startsWith("ping")) {
-		    msgText = "pong";
+		if (msgText != null) {
+			if (msgText.startsWith("ping")) {
+			    msgText = "pong";
+			} else if (msgText.startsWith("You suck")) {
+				msgText = "No";
+			}
 		}
 
 		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msgText, 1, "DEADBEEF");
