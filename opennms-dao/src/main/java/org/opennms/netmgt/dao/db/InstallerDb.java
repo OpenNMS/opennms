@@ -86,7 +86,7 @@ public class InstallerDb {
 
     public static final float POSTGRES_MIN_VERSION = 7.3f;
     
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.4f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
 
     private static final int s_fetch_size = 1024;
     
@@ -1526,8 +1526,7 @@ public class InstallerDb {
         Statement st = getAdminConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT version()");
         if (!rs.next()) {
-            throw new Exception("Database didn't return any rows for "
-                    + "'SELECT version()'");
+            throw new Exception("Database didn't return any rows for 'SELECT version()'");
         }
 
         String versionString = rs.getString(1);
@@ -1535,12 +1534,19 @@ public class InstallerDb {
         rs.close();
         st.close();
 
-        Matcher m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+)").matcher(
-                                                                         versionString);
+        Matcher m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+\\.\\d+)").matcher(versionString);
+        if (m.find()) {
+            String pgFullVersion = m.group(1);
+            if (pgFullVersion.equals("8.4.0")) {
+                throw new Exception(String.format("Unsupported database version 8.4.0.  PostgreSQL 8.4.0 has a bug" +
+                		" in left join subselects which causes issues with OpenNMS."));
+            }
+        }
+
+        m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+)").matcher(versionString);
 
         if (!m.find()) {
-            throw new Exception("Could not parse version number out of "
-                    + "version string: " + versionString);
+            throw new Exception("Could not parse version number out of version string: " + versionString);
         }
         m_pg_version = Float.parseFloat(m.group(1));
 
