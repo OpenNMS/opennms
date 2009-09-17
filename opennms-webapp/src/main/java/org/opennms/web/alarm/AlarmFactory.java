@@ -47,6 +47,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -223,9 +224,11 @@ public class AlarmFactory extends Object {
         }
 
         int alarmCount = 0;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer select = new StringBuffer("SELECT COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
@@ -237,6 +240,7 @@ public class AlarmFactory extends Object {
 //            select.append(" AND ALARMDISPLAY='Y' ");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             
             int parameterIndex = 1;
             for (int i = 0; i < filters.length; i++) {
@@ -244,15 +248,13 @@ public class AlarmFactory extends Object {
             }
             
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 alarmCount = rs.getInt("ALARMCOUNT");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return alarmCount;
@@ -271,9 +273,11 @@ public class AlarmFactory extends Object {
         }
 
         int[] alarmCounts = new int[8];
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer select = new StringBuffer("SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
@@ -286,6 +290,7 @@ public class AlarmFactory extends Object {
             select.append(" GROUP BY SEVERITY");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             
             int parameterIndex = 1;
             for (int i = 1; i < filters.length; i++) {
@@ -293,6 +298,7 @@ public class AlarmFactory extends Object {
             }
             
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 int severity = rs.getInt("SEVERITY");
@@ -300,11 +306,8 @@ public class AlarmFactory extends Object {
 
                 alarmCounts[severity] = alarmCount;
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return alarmCounts;
@@ -313,12 +316,16 @@ public class AlarmFactory extends Object {
     /** Return a specific alarm. */
     public static Alarm getAlarms(int alarmId) throws SQLException {
         Alarm alarm = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ALARMID=? ");
+            d.watch(stmt);
             stmt.setInt(1, alarmId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Alarm[] alarms = rs2Alarms(rs);
 
@@ -326,11 +333,8 @@ public class AlarmFactory extends Object {
             if (alarms.length > 0) {
                 alarm = alarms[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return alarm;
@@ -404,9 +408,11 @@ public class AlarmFactory extends Object {
         }
 
         Alarm[] alarms = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer select = new StringBuffer("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING(NODEID) LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
             select.append(getAcknowledgeTypeClause(ackType));
 
@@ -426,6 +432,7 @@ public class AlarmFactory extends Object {
             }
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             
             int parameterIndex = 1;
             for (int i = 0; i < filters.length; i++) {
@@ -433,13 +440,11 @@ public class AlarmFactory extends Object {
             }
             
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             alarms = rs2Alarms(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return alarms;
@@ -713,9 +718,11 @@ public class AlarmFactory extends Object {
         }
 
         Alarm[] alarms = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             StringBuffer select = new StringBuffer("SELECT * FROM ALARMS WHERE DPNAME=?");
 
             if (!includeAcknowledged) {
@@ -726,15 +733,14 @@ public class AlarmFactory extends Object {
             select.append(" ORDER BY ALARMID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setString(1, poller);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             alarms = rs2Alarms(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return alarms;
@@ -794,17 +800,19 @@ public class AlarmFactory extends Object {
             update.append(")");
             update.append(" AND ALARMACKUSER IS NULL");
 
-            Connection conn = Vault.getDbConnection();
-
+            final DBUtils d = new DBUtils(AlarmFactory.class);
             try {
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
                 stmt.setString(1, user);
                 stmt.setTimestamp(2, new Timestamp(time.getTime()));
 
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }
@@ -834,10 +842,13 @@ public class AlarmFactory extends Object {
             update.append(filters[i].getParamSql());
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement(update.toString());
+            d.watch(stmt);
             stmt.setString(1, user);
             stmt.setTimestamp(2, new Timestamp(time.getTime()));
             
@@ -847,9 +858,8 @@ public class AlarmFactory extends Object {
             }
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -870,17 +880,19 @@ public class AlarmFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL");
+            d.watch(stmt);
             stmt.setString(1, user);
             stmt.setTimestamp(2, new Timestamp(time.getTime()));
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
     }
@@ -922,14 +934,16 @@ public class AlarmFactory extends Object {
 
             update.append(")");
 
-            Connection conn = Vault.getDbConnection();
-
+            final DBUtils d = new DBUtils(AlarmFactory.class);
             try {
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }
@@ -950,10 +964,13 @@ public class AlarmFactory extends Object {
             update.append(filters[i].getParamSql());
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement(update.toString());
+            d.watch(stmt);
             
             int parameterIndex = 1;
             for (int i = 0; i < filters.length; i++) {
@@ -961,9 +978,8 @@ public class AlarmFactory extends Object {
             }
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -971,14 +987,17 @@ public class AlarmFactory extends Object {
      * Unacknowledge all acknowledged alarms.
      */
     public static void unacknowledgeAll() throws SQLException {
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(AlarmFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL");
+            d.watch(stmt);
+            
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
     }
@@ -1262,14 +1281,17 @@ public class AlarmFactory extends Object {
             update.append("  SEVERITY <=?");
             update.append(" ) )");
 
-            Connection conn = Vault.getDbConnection();
-            
             if (log().isDebugEnabled()) {
             	log().debug("escalateAlarms: built query |" + update.toString() + "|");
             }
 
+            final DBUtils d = new DBUtils(AlarmFactory.class);
             try {
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+                
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
                 stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
                 stmt.setInt(2, OnmsAlarm.WARNING_SEVERITY);
                 stmt.setInt(3, OnmsAlarm.CRITICAL_SEVERITY);
@@ -1282,9 +1304,8 @@ public class AlarmFactory extends Object {
                 stmt.setInt(10, OnmsAlarm.CRITICAL_SEVERITY);
 
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }
@@ -1321,19 +1342,21 @@ public class AlarmFactory extends Object {
             update.append(" AND SEVERITY >=?");
             update.append(" AND SEVERITY <=?");
 
-            Connection conn = Vault.getDbConnection();
-
+            final DBUtils d = new DBUtils(AlarmFactory.class);
             try {
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
                 stmt.setInt(1, OnmsAlarm.CLEARED_SEVERITY);
                 stmt.setInt(2, OnmsAlarm.RESOLUTION_TYPE);
                 stmt.setInt(3, OnmsAlarm.NORMAL_SEVERITY);
                 stmt.setInt(4, OnmsAlarm.CRITICAL_SEVERITY);
 
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }

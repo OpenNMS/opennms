@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -107,11 +108,14 @@ public class SnmpManageNodesServlet extends HttpServlet {
                 primeInt = testInterface.getAddress();
         }
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             Connection connection = Vault.getDbConnection();
+            d.watch(connection);
             try {
                 connection.setAutoCommit(false);
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_INTERFACE);
+                d.watch(stmt);
 
                 for (SnmpManagedInterface curInterface : allInterfaces) {
                     String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
@@ -136,10 +140,11 @@ public class SnmpManageNodesServlet extends HttpServlet {
                 connection.commit();
             } finally { // close off the db connection
                 connection.setAutoCommit(true);
-                Vault.releaseDbConnection(connection);
             }
         } catch (SQLException e) {
             throw new ServletException(e);
+        } finally {
+            d.cleanUp();
         }
 
         // send the event to restart SNMP Collection

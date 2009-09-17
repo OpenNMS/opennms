@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.web.WebSecurityUtils;
 
@@ -102,13 +103,17 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         List<SnmpManagedInterface> nodeInterfaces = new ArrayList<SnmpManagedInterface>();
         int lineCount = 0;
 
+        final DBUtils d = new DBUtils(getClass());
         try {
             connection = DataSourceFactory.getInstance().getConnection();
+            d.watch(connection);
 
             PreparedStatement interfaceSelect = connection.prepareStatement(INTERFACE_QUERY);
+            d.watch(interfaceSelect);
             interfaceSelect.setInt(1, nodeid);
 
             ResultSet interfaceSet = interfaceSelect.executeQuery();
+            d.watch(interfaceSet);
 
             if (interfaceSet != null) {
                 while (interfaceSet.next()) {
@@ -126,14 +131,8 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
                     newInterface.setIfAlias(interfaceSet.getString(9));
                 }
             }
-            interfaceSelect.close();
         } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
+            d.cleanUp();
         }
 
         return nodeInterfaces;
