@@ -6,24 +6,8 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/dependency/lib/mac-10.5</directory>
-      <outputDirectory>/mac</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency/lib/i686-pc-linux-gnu</directory>
-      <outputDirectory>/linux32</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency/lib/x86_64-unknown-linux-gnu</directory>
-      <outputDirectory>/linux64</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency/lib/win32</directory>
-      <outputDirectory>/win32</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency/lib/win64</directory>
-      <outputDirectory>/win64</outputDirectory>
+      <directory>target/dependency/lib</directory>
+      <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
