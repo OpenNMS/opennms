@@ -39,6 +39,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * Implementation of the <code>Tl1MessageProcessor</code> Interface.  This is the default
  * Autonomous Message Parser based on Tl1Messages recorded from the Hitachi GPOND TL1 simulator.
@@ -48,7 +51,8 @@ import java.util.StringTokenizer;
  */
 public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+    private static final SimpleDateFormat SDF_4DY = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+    private static final SimpleDateFormat SDF_2DY = new SimpleDateFormat( "yy-MM-dd HH:mm:ss" );
 
     /*
      * (non-Javadoc)
@@ -102,10 +106,14 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         message.getHeader().setTime(headerParser.nextToken());
         
         try {
-            message.getHeader().setTimestamp(SDF.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+            if (message.getHeader().getDate().matches("^[0-9]{4}")) {
+                message.getHeader().setTimestamp(SDF_4DY.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+            } else {
+                message.getHeader().setTimestamp(SDF_2DY.parse(message.getHeader().getDate()+" "+message.getHeader().getTime()));
+            }
             message.setTimestamp(message.getHeader().getTimestamp());
         } catch (ParseException e) {
-            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF.toLocalizedPattern());
+            throw new IllegalArgumentException("The line: "+line+", doesn't contain date and time in the format: "+SDF_2DY.toLocalizedPattern() + " or " + SDF_4DY.toLocalizedPattern());
         }
         
         return true;
@@ -167,25 +175,53 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
         StringTokenizer autoBlockParser = new StringTokenizer(line,",");
         
-        System.out.println("parseAutoBlock: Autoblock: " + line);
+        if (log().isDebugEnabled()) {
+            log().debug("parseAutoBlock: Autoblock: " + line);
+        }
         
         // should count tokens and see if only aid:code;
         // for now I am assuming more than one parm.
         // Also we could have muliple messages in this block. Need to handle later.
         String aidAndCode = autoBlockParser.nextToken().trim();
-        System.out.println("parseAutoBlock: aidAndCode: " + aidAndCode);
+        if (log().isDebugEnabled()) {
+            log().debug("parseAutoBlock: aidAndCode: " + aidAndCode);
+        }
         
         StringTokenizer aidParser = new StringTokenizer(aidAndCode,":");
         //get the aid. Trimoff the begining "
         message.getAutoBlock().setAid(aidParser.nextToken().substring(1));
         
-        //Two forms nftcncde= code and code.
+        // There are two forms that the NTFCNCDE IE can take...
         String ntfcncde = aidParser.nextToken().trim();
-        StringTokenizer codeParser = new StringTokenizer(ntfcncde,"=");
-        if(codeParser.hasMoreTokens()) {
-            //We have an = so we parse out the code
-            codeParser.nextToken();
-            ntfcncde = codeParser.nextToken().trim();
+        StringTokenizer codeParser;
+        if (ntfcncde.startsWith("NTFCNCDE=")) {
+            if (log().isInfoEnabled()) {
+                log().info("NTFCNCDE appears to be of form: NTFCNCDE=<CODE>");
+            }
+            codeParser = new StringTokenizer(ntfcncde,"=");
+            if(codeParser.countTokens() >= 2) {
+                codeParser.nextToken();
+                ntfcncde = codeParser.nextToken().trim();
+                if (log().isDebugEnabled()) {
+                    log().debug("Determined NTFCNCDE is " + ntfcncde);
+                }
+            } else {
+                log().warn("NTFCNCDE could not be determined from auto block: " + ntfcncde);
+            }
+        } else if (ntfcncde.matches("^(CL|CR|MJ|MN|NA|NR),")) {
+            if (log().isInfoEnabled()) {
+                log().info("NTFCNCDE appears to be of form: <CODE>");
+            }
+            codeParser = new StringTokenizer(ntfcncde, ",");
+            if (codeParser.hasMoreTokens()) {
+                ntfcncde = codeParser.nextToken().trim();
+                if (log().isDebugEnabled()) {
+                    log().debug("Determined NTFCNCDE is " + ntfcncde);
+                }
+            } else {
+                log().warn("NTFCNCDE could not be determined from auto block: " + ntfcncde);
+            }
+
         }
           
         message.getAutoBlock().setNtfcncde(ntfcncde);
@@ -202,5 +238,9 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         message.getAutoBlock().setAdditionalParams(addParms.trim());
    
         return true;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass().getName());
     }
 }
