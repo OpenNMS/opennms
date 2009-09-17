@@ -186,18 +186,22 @@ EXTRA_TARGETS="$EXTRA_TARGETS test"
 EXTRA_TARGETS="$EXTRA_TARGETS docs"
 %endif
 
+if [ -e "settings.xml" ]; then
+	SETTINGS_XML="-s `pwd`/settings.xml"
+fi
+
 echo "=== RUNNING INSTALL ==="
 
-sh ./build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+sh ./build.sh $SETTINGS_XML -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
     -Dopennms.home=%{instprefix} install assembly:attached
 
 pushd opennms-tools
-    sh ../build.sh -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+    sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} install
 popd
 
 pushd opennms-remote-poller
-    sh ../build.sh -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
+    sh ../build.sh $SETTINGS_XML -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} package
 popd
 
