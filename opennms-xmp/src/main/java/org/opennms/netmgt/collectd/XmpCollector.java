@@ -622,7 +622,7 @@ public class XmpCollector implements ServiceCollector {
 
     public RrdRepository getRrdRepository(String collectionName)
     {
-        log().info("XMP getRrdRepository called for "+collectionName);
+        log().debug("XMP getRrdRepository called for "+collectionName);
 
         // return the Rrd that I initialized but
         // I dont have to put data in it; initialize
