@@ -217,7 +217,7 @@
 				
 				<listitem>
 					<para>It is now valid to have no http-collection tags in the
-					<file>http-datacollection-config.xml</file> file. (Bug
+					<filename>http-datacollection-config.xml</filename> filename. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3343">#3343</ulink>)</para>
 				</listitem>
 				
