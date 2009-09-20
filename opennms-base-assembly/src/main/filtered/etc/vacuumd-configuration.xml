@@ -353,6 +353,7 @@
   
     <action-event name="createTicket" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/create" />
+      <assignment type="field" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
       <assignment type="parameter" name="user" value="${_user}" />
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
@@ -360,6 +361,7 @@
     
     <action-event name="updateTicket" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/update" />
+      <assignment type="field" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
       <assignment type="parameter" name="user" value="${_user}" />
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
@@ -368,6 +370,7 @@
 
     <action-event name="closeTicket" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/close" />
+      <assignment type="field" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
       <assignment type="parameter" name="user" value="${_user}" />
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
@@ -379,6 +382,7 @@
       <assignment type="field" name="nodeid" value="${_nodeid}" />
       <assignment type="field" name="interface" value="${_ipaddr}" />
       <assignment type="field" name="service" value="${_servicename}" />
+      <assignment type="field" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
     </action-event>
