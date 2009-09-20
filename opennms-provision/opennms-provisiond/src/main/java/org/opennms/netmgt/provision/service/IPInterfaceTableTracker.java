@@ -31,6 +31,9 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -97,8 +100,12 @@ public class IPInterfaceTableTracker extends TableTracker {
             iface.setSnmpInterface(snmpIface);
             
             iface.setIfIndex(ifIndex);
+            try {
+                iface.setIpHostName(InetAddress.getByName(ipAddr).getHostName());
+            } catch (UnknownHostException e) {
+                iface.setIpHostName(ipAddr);
+            }
             
-
             return iface;
         }
 
