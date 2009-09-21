@@ -145,7 +145,7 @@ public class CollectionResourceWrapper {
     }
 
     /*
-     * FIXME What happend with numeric fields from strings.properties ?
+     * FIXME What happen with numeric fields from strings.properties ?
      */ 
     public Double getAttributeValue(String ds) {
         if (m_attributes == null || m_attributes.get(ds) == null) {
