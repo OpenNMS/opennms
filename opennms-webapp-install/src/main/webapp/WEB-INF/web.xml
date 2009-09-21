@@ -3,9 +3,19 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>GWT-Maven-Archetype</display-name>	
+	<display-name>OpenNMS Web Application: Installation Wizard</display-name>	
 	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+	
+	<servlet>
+		<servlet-name>install</servlet-name>
+		<servlet-class>org.opennms.server.InstallServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>install</servlet-name>
+		<url-pattern>/org.opennms.Application/install</url-pattern>
+	</servlet-mapping>
 </web-app>
