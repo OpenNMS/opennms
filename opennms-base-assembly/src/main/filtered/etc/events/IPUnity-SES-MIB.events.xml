@@ -49,7 +49,10 @@ occured.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asDataBaseError" clear-key="uei.opennms.org/vendors/ipUnity/asDataBaseError:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asDataBaseError:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -145,7 +148,10 @@ asTrapInfoString gives the detailed description of the error.&lt;/p&gt;&lt;table
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asWrapperCriticalError" clear-key="uei.opennms.org/vendors/ipUnity/asWrapperCriticalError:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asWrapperCriticalError:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -239,7 +245,10 @@ asTrapInfoString gives the detailed description of the error.&lt;/p&gt;&lt;table
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asProcMgrCriticalError" clear-key="uei.opennms.org/vendors/ipUnity/asProcMgrCriticalError:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asProcMgrCriticalError:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -342,7 +351,10 @@ for the current interval exceeds the threshold value fcOverloadThreshold1.&lt;/p
 			asTrapInfoString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asOverloadThreshold1Exceed" clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold1Exceed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold1Exceed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -454,7 +466,10 @@ for the current interval exceeds the threshold value fcOverloadThreshold2.&lt;/p
 			asTrapInfoString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asOverloadThreshold2Exceed" clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold2Exceed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold2Exceed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -566,7 +581,10 @@ for the current interval exceeds the threshold value fcOverloadThreshold3.&lt;/p
 			asTrapInfoString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asOverloadThreshold3Exceed" clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold3Exceed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asOverloadThreshold3Exceed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -669,7 +687,10 @@ the detail description of the disk path and freespace left etc.,&lt;/p&gt;&lt;ta
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNoDiskSpace" clear-key="uei.opennms.org/vendors/ipUnity/asNoDiskSpace:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNoDiskSpace:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -762,7 +783,10 @@ that the Master SNMP Agent is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asSnmpAgentDown" clear-key="uei.opennms.org/vendors/ipUnity/asSnmpAgentDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asSnmpAgentDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -854,7 +878,10 @@ that its heart beat software is down or not functioning.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asHeartBeatSWDown" clear-key="uei.opennms.org/vendors/ipUnity/asHeartBeatSWDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asHeartBeatSWDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -946,7 +973,10 @@ that FIP interface is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asFipIfDown" clear-key="uei.opennms.org/vendors/ipUnity/asFipIfDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asFipIfDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1039,7 +1069,10 @@ asTrapInfoString gives the detailed description of the error.&lt;/p&gt;&lt;table
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asFwJVMOutOfMemory" clear-key="uei.opennms.org/vendors/ipUnity/asFwJVMOutOfMemory:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asFwJVMOutOfMemory:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1221,7 +1254,10 @@ that the Media Server it is interacting with is down or not responding.&lt;/p&gt
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMediaServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asMediaServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMediaServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1313,7 +1349,10 @@ that the EJB Server it is interacting with is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asEJBServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asEJBServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asEJBServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1405,7 +1444,10 @@ that the Tomcat Server it is interacting with is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asTomcatServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asTomcatServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asTomcatServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1498,7 +1540,10 @@ asTrapInfoString gives the detailed description.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asLDAPServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asLDAPServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asLDAPServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1591,7 +1636,10 @@ that the Web Server is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asWebServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asWebServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asWebServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1678,7 +1726,10 @@ that the NAS Server it is using is down.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNASServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asNASServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNASServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1765,7 +1816,10 @@ that the database server it is using is down.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asDataBaseDown" clear-key="uei.opennms.org/vendors/ipUnity/asDataBaseDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asDataBaseDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1852,7 +1906,10 @@ that the Verity Application it is using is down.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asVerityAppDown" clear-key="uei.opennms.org/vendors/ipUnity/asVerityAppDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asVerityAppDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -1940,7 +1997,10 @@ imap, pop and smtp servers.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMessagingServerDown" clear-key="uei.opennms.org/vendors/ipUnity/asMessagingServerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMessagingServerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2076,7 +2136,10 @@ occured.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asAppError" clear-key="uei.opennms.org/vendors/ipUnity/asAppError:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asAppError:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2167,7 +2230,10 @@ resources allocated on the Media Server.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNoResources" clear-key="uei.opennms.org/vendors/ipUnity/asNoResources:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNoResources:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2319,7 +2385,10 @@ app server.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNoAlarmLog" clear-key="uei.opennms.org/vendors/ipUnity/asNoAlarmLog:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNoAlarmLog:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2401,7 +2470,10 @@ app server.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNoDebugLog" clear-key="uei.opennms.org/vendors/ipUnity/asNoDebugLog:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNoDebugLog:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2483,7 +2555,10 @@ app server.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNoCDRLog" clear-key="uei.opennms.org/vendors/ipUnity/asNoCDRLog:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNoCDRLog:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2577,7 +2652,10 @@ Object umTrapDescr object gives the description of the notification.&lt;/p&gt;&l
 			umTrapDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/umNotResponding" clear-key="uei.opennms.org/vendors/ipUnity/umNotResponding:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/umNotResponding:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2678,7 +2756,10 @@ the actual notification.&lt;/p&gt;&lt;table&gt;
 			umTrapDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/umMajorException" clear-key="uei.opennms.org/vendors/ipUnity/umMajorException:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/umMajorException:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2783,7 +2864,10 @@ changed to asProcessState.&lt;/p&gt;&lt;table&gt;
 			asProcessState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-uei="uei.opennms.org/vendors/ipUnity/asProcessStateChange" clear-key="uei.opennms.org/vendors/ipUnity/asProcessStateChange:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asProcessStateChange:%dpname%:%nodeid%:%interface%:%parm[#2]%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -2887,7 +2971,10 @@ information.&lt;/p&gt;&lt;table&gt;
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asProcessManagerDown" clear-key="uei.opennms.org/vendors/ipUnity/asProcessManagerDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asProcessManagerDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3248,7 +3335,10 @@ asTrapInfoString gives the detailed description of the error.&lt;/p&gt;&lt;table
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asFwJVMHighMemUsage" clear-key="uei.opennms.org/vendors/ipUnity/asFwJVMHighMemUsage:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asFwJVMHighMemUsage:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3764,7 +3854,10 @@ the actual notification.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMGCPDown" clear-key="uei.opennms.org/vendors/ipUnity/asMGCPDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMGCPDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -3803,7 +3896,10 @@ ipuMGCPLowerBoundForPacketLoss.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMGCPPktLossCrossed" clear-key="uei.opennms.org/vendors/ipUnity/asMGCPPktLossCrossed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMGCPPktLossCrossed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -3842,7 +3938,10 @@ ipuMGCPLowerBoundForJitter.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMGCPJitterCrossed" clear-key="uei.opennms.org/vendors/ipUnity/asMGCPJitterCrossed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMGCPJitterCrossed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -3881,7 +3980,10 @@ ipuMGCPLowerBoundForLatency.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asMGCPLatencyCrossed" clear-key="uei.opennms.org/vendors/ipUnity/asMGCPLatencyCrossed:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asMGCPLatencyCrossed:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -3924,7 +4026,10 @@ ipuMGCPLowerBoundForLatency.&lt;/p&gt;&lt;table&gt;
 			asAppName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asAppDown" clear-key="uei.opennms.org/vendors/ipUnity/asAppDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asAppDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="false" />
 </event>
 <event>
 	<mask>
@@ -4010,7 +4115,10 @@ server corrects the split brain condition.&lt;/p&gt;&lt;table&gt;
 			asTrapSeverity=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asSplitBrainDetected" clear-key="uei.opennms.org/vendors/ipUnity/asSplitBrainDetected:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="true" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asSplitBrainDetected:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -4094,7 +4202,10 @@ asTrapInfoString gives the details like name of the node that wentdown.&lt;/p&gt
 			asTrapInfoString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-uei="uei.opennms.org/vendors/ipUnity/asNodeDown" clear-key="uei.opennms.org/vendors/ipUnity/asNodeDown:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="clear" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                clear-key="uei.opennms.org/vendors/ipUnity/asNodeDown:%dpname%:%nodeid%:%interface%" 
+                alarm-type="2" 
+                auto-clean="clear" />
 </event>
 </events>
 <!-- End of auto generated data from MIB: IPUNITY-SES-MIB -->
