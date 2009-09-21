@@ -570,7 +570,10 @@ from True to false.&lt;/p&gt;&lt;table&gt;
 			monFlags=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" clear-uei="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" 
+                alarm-type="2" 
+                auto-clean="false" 
+                clear-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" />
 </event>
 <event>
 	<mask>
@@ -774,7 +777,10 @@ specifies  that processStart Traps should be pay.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-uei="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" 
+                alarm-type="2" 
+                auto-clean="false" 
+                clear-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>
@@ -981,7 +987,10 @@ to False, this Trap is sent.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-uei="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" 
+                alarm-type="2" 
+                auto-clean="false" 
+                clear-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
 </event>
 <event>
 	<mask>

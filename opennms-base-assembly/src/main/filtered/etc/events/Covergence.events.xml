@@ -13462,7 +13462,10 @@
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-uei="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEventDown" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true"/>
+	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
+                clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
+                alarm-type="2" 
+                auto-clean="true"/>
 </event>
 <event>
 	<mask>
@@ -13512,7 +13515,10 @@
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-uei="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEventDown" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true"/>
+	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
+                clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
+                alarm-type="2" 
+                auto-clean="true"/>
 </event>
 <event>
 	<mask>

@@ -270,7 +270,6 @@
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%parm[importResource]%" 
                   alarm-type="2" 
-                  clear-uei="uei.opennms.org/internal/importer/importFailed" 
                   clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" 
                   auto-clean="true"/>
     </event>
@@ -630,7 +629,10 @@
       failed and has been restored.
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.opennms.org/nodes/dataCollectionFailed" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" auto-clean="true"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" 
+                    alarm-type="2" 
+                    clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" 
+                    auto-clean="true"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/deleteService</uei>
@@ -800,7 +802,10 @@
       Interface %interface% is up.
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/nodes/interfaceDown" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" 
+                    alarm-type="2" 
+                    clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" 
+                    auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceOperUp</uei>
@@ -1046,7 +1051,10 @@
       cleared. Service is restored.
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-uei="uei.opennms.org/nodes/nodeLostService" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" 
+                    alarm-type="2" 
+                    clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" 
+                    auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeUp</uei>
@@ -1062,7 +1070,10 @@
       Node %parm[nodelabel]% is up.
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.opennms.org/nodes/nodeDown" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" 
+                    alarm-type="2" 
+                    clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" 
+                    auto-clean="false" />
   </event>
   <event>
     <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>
@@ -1513,7 +1524,10 @@
     cleared.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-uei="uei.opennms.org/remote/nodes/nodeLostService" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" 
+                auto-clean="false"/>
   </event>
   
   <event>
@@ -1597,7 +1611,10 @@
       The disconnected remote location monitor: %parm[locationMonitorId]% has reconnected.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clear-uei="uei.opennms.org/remote/locationMonitorDisconnected" clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" 
+                auto-clean="false"/>
   </event>
   
   <event>
