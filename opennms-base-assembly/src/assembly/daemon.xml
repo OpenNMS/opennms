@@ -58,6 +58,7 @@
         <exclude>jstl-*.jar</exclude>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>servlet-api-*.jar</exclude>
+         <exclude>com.springsource.javax.xml.bind*.jar</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -111,8 +112,15 @@
        </includes>
     </dependencySet>
     <dependencySet>
+      <outputDirectory>lib/endorsed</outputDirectory>
+      <includes>
+         <include>javax.xml.bind:com.springsource.javax.xml.bind</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <excludes>
+         <exclude>javax.xml.bind:com.springsource.javax.xml.bind</exclude>
          <exclude>org.opennms:opennms-bootstrap</exclude>
          <exclude>org.opennms:opennms-install</exclude>
          <exclude>org.opennms:opennms-icmp-jni-macosx</exclude>
