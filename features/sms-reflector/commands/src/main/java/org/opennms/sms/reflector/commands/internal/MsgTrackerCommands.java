@@ -8,15 +8,19 @@ import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseCallback;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
+import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Public API representing an example OSGi service
  */
 public class MsgTrackerCommands implements CommandProvider
 {
+    
     private MobileMsgTracker m_tracker;
     
     private static class MsgCallback implements MobileMsgResponseCallback {
@@ -36,7 +40,7 @@ public class MsgTrackerCommands implements CommandProvider
         }
 
         public void handleTimeout(MobileMsgRequest request) {
-            System.err.println("Request " + request + " timed out!"); 
+           tracef("Request %s timed out!", request); 
             m_latch.countDown();
         }
         
@@ -59,9 +63,9 @@ public class MsgTrackerCommands implements CommandProvider
         }
 
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-            System.err.println("Using regex: " + m_regex + " to match response: " + response );
+            tracef("Using regex: %s to match response: %s", m_regex, response );
             boolean retVal = response.getText().matches(m_regex);
-            System.err.println("Mathing: " + retVal + " for regex " + m_regex + " response " + response);
+            tracef("Matching: %s for regex %s response %s", retVal, m_regex, response);
             return retVal;
         }
         
@@ -135,6 +139,14 @@ public class MsgTrackerCommands implements CommandProvider
         buffer.append("\n");
         return buffer.toString(); 
     } 
+    
+    public static void tracef(String format, Object... args) {
+        Logger log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
+        
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(format, args));
+        }
+    }
 
 }
 

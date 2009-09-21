@@ -6,8 +6,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.sms.ping.SmsPinger;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.osgi.framework.BundleContext;
@@ -57,9 +59,8 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             try {
                 m_service.stopService();
             } catch (Exception e) {
-                System.out.println("Exception Stopping Service Occurred: ");
+                debugf("Exception Stopping Service Occurred: %s", e.getStackTrace());
                 //intp.printStackTrace(e);
-                e.printStackTrace();
             }
         }
     }
@@ -120,9 +121,9 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         try {
             OutboundMessage msg;
 
-            System.out.println("Example: Send message from a serial gsm modem.");
-            System.out.println(Library.getLibraryDescription());
-            System.out.println("Version: " + Library.getLibraryVersion());
+            debugf("Example: Send message from a serial gsm modem.");
+            debugf(Library.getLibraryDescription());
+            debugf("Version: %s",Library.getLibraryVersion());
 
             // Send a message synchronously.
             msg = new OutboundMessage(phoneno, msgText);
@@ -198,7 +199,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
         while(commPorts.hasMoreElements()) {
             CommPortIdentifier commPort = commPorts.nextElement();
-            System.err.println(commPort.getName());
+            debugf(commPort.getName());
         }
 
         return null; 
@@ -377,22 +378,22 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
     public class OutboundNotification implements IOutboundMessageNotification {
         public void process(String gatewayId, OutboundMessage msg) {
-            System.out.println("Outbound handler called from Gateway: "
-                               + gatewayId);
-            System.out.println(msg);
+            debugf("Outbound handler called from Gateway: %s", gatewayId);
+            debugf(msg.toString());
         }
+
     }
 
     public class InboundNotification implements IInboundMessageNotification{
 
         public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
             if(msgType == MessageTypes.INBOUND){
-                System.out.println(">>> New Inbound message detected from Gateway: " + gatewayId);
+                debugf(">>> New Inbound message detected from Gateway: %s", gatewayId);
             }else if(msgType == MessageTypes.STATUSREPORT){
-                System.out.println(">>> New Inbound Status Report message detected from Gateway: " + gatewayId);
+                debugf(">>> New Inbound Status Report message detected from Gateway: %s", gatewayId);
             }
 
-            System.out.println("msg text: " + msg.getText());
+            debugf("msg text: %s", msg.getText());
 
         }
 
@@ -401,7 +402,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     public class CallNotification implements ICallNotification{
 
         public void process(String gatewayId, String callerId) {
-            System.out.println(">>> New called detected from Gateway: " + gatewayId + " : " + callerId);
+            debugf(">>> New called detected from Gateway: %s : %s", gatewayId, callerId);
         }
 
     }
@@ -409,7 +410,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     public class GatewayStatusNotification implements IGatewayStatusNotification{
 
         public void process(String gatewayId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
-            System.out.println(">>> Gateway Status change from: " + gatewayId + ", OLD: " + oldStatus + " -> NEW: " + newStatus);
+            debugf(">>> Gateway Status change from: %s, OLD:  %s -> NEW: %s", gatewayId, oldStatus, newStatus );
         }
 
     }
@@ -438,6 +439,14 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
     public BundleContext getBundleContext() {
         return m_context;
+    }
+    
+    private void debugf(String format, Object ...args){
+        Logger log = ThreadCategory.getInstance(SmsCommands.class);
+        
+        if(log.isDebugEnabled()){
+            log.debug(String.format(format, args));
+        }
     }
 
 }
