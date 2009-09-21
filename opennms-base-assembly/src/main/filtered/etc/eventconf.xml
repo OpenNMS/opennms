@@ -1835,7 +1835,7 @@
       OpenNMS user %parm[user]% has logged in from %parm[ip]%.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>
+<!--     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>  -->
   </event> 
 
   <event> 
@@ -1850,7 +1850,7 @@
       the message '%parm[exceptionMessage]%'.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%parm[exceptionName]%:%parm[user]%" alarm-type="3" auto-clean="true"/>
+<!--    <alarm-data reduction-key="%uei%:%parm[exceptionName]%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
   </event>
   
   <event> 
@@ -1863,7 +1863,7 @@
       OpenNMS user '%parm[user]%' logged out of the WebUI.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>
+<!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
   </event> 
   
   <event> 
@@ -1879,7 +1879,7 @@
       due to a session timeout.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>
+<!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
   </event> 
   
   <event> 
