@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp" rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <expression type="high" ds-type="node" value="30.0" rearm="25.0" trigger="1" ds-label="hda1_hrStorageDescr"
+                    expression="(hda1_hrStorageUsed/hda1_hrStorageSize)*100">
+                    <resource-filter field="hda1_hrStorageDescr">^/home</resource-filter>
+                </expression>
+                <expression type="high" ds-type="node" value="50.0" rearm="45.0" trigger="1" ds-label="hda2_hrStorageDescr"
+                    expression="(hda2_hrStorageUsed/hda2_hrStorageSize)*100">
+                    <resource-filter field="hda2_hrStorageDescr">^/opt</resource-filter>
+                </expression>
+        </group>
+
+</thresholding-config>

@@ -484,6 +484,13 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-bug3193.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
+     * 
+     * TODO Depending on Java Version used, thresholds.xml will be parsed different.
+     * This will affect thresholds order; so when adding expected events, me must
+     * check Java version:
+     * 
+     * For Java5, first add 'myCounter - 30' then 'myCounter'
+     * For Java6, first add 'myCounter' then 'myCounter - 30'
      */
     @Test
     public void testBug3193() throws Exception {
@@ -495,17 +502,18 @@ public class ThresholdingVisitorTest {
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
-        /*
-         * Add Events
-         * FIXME Depending of Java Version used the event order is different.
-         * For Java5, first add 'myCounter - 30' then 'myCounter'
-         * For Java6, first add 'myCounter' then 'myCounter - 30'
-         * Is this related to thresholds.xml parsing ?
-         */
-        addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
-        addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
-        addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+        // Add Events (see note above)
+        if (System.getProperty("java.specification.version").equals("1.6")) {
+            addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
+            addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
+            addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);            
+            addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
+        } else {
+            addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
+            addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
+            addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
+            addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+        }
         
         // Collect Step 1 : First Data: Last should be NaN
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
@@ -700,7 +708,7 @@ public class ThresholdingVisitorTest {
      * If we forgot it, /opt01 will not pass threshold filter
      */
     @Test
-    public void testThresholsFilters() throws Exception {
+    public void testThresholsFiltersOnGenericResource() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         
         String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
@@ -711,6 +719,50 @@ public class ThresholdingVisitorTest {
         runFileSystemDataTest(visitor, 2, "/opt01", 60, 100);
         runFileSystemDataTest(visitor, 3, "/home", 70, 100);
         
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-5.xml
+     */
+    @Test
+    public void testThresholsFiltersOnNodeResource() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-5.xml");
+        ThresholdingVisitor visitor = createVisitor();
+        
+        // Adding Expected Thresholds
+        addHighThresholdEvent(1, 30, 25, 50, "/home", null, "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 50, 45, 60, "/opt", null, "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
+
+        // Creating Node ResourceType
+        CollectionAgent agent = createCollectionAgent();
+        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, String>()), dataCollectionConfig);
+        NodeResourceType resourceType = new NodeResourceType(agent, collection);
+
+        // Creating strings.properties file
+        Properties p = new Properties();
+        p.put("hda1_hrStorageDescr", "/home");
+        p.put("hda2_hrStorageDescr", "/opt");
+        p.put("hda3_hrStorageDescr", "/usr");
+        File f = new File(getRepository().getRrdBaseDir(), "1/strings.properties");
+        ResourceTypeUtils.saveUpdatedProperties(f, p);
+        
+        // Creating Resource
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageUsed", "gauge", "node", 50);
+        addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageSize", "gauge", "node", 100);
+        addAttributeToCollectionResource(resource, resourceType, "hda2_hrStorageUsed", "gauge", "node", 60);
+        addAttributeToCollectionResource(resource, resourceType, "hda2_hrStorageSize", "gauge", "node", 100);
+        addAttributeToCollectionResource(resource, resourceType, "hda3_hrStorageUsed", "gauge", "node", 70);
+        addAttributeToCollectionResource(resource, resourceType, "hda3_hrStorageSize", "gauge", "node", 100);
+
+        // Run Visitor and Verify Events
+        resource.visit(visitor);
+        EasyMock.verify(agent);
+        f.delete();
         verifyEvents(0);
     }
 
