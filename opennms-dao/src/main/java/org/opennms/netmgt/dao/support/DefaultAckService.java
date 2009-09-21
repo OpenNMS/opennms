@@ -36,6 +36,7 @@
 package org.opennms.netmgt.dao.support;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -73,35 +74,45 @@ public class DefaultAckService implements AckService {
         }
 
         log().debug("processAck: Found "+ackables.size()+". Acknowledging...");
-        for (Acknowledgeable ackable : ackables) {
-            switch (ack.getAckAction()) {
-            case ACKNOWLEDGE:
-                log().debug("processAck: Acknowledging ackable: "+ackable+"...");
-                ackable.acknowledge(ack.getAckUser());
-                log().debug("processAck: Acknowledged ackable: "+ackable);
-                break;
-            case UNACKNOWLEDGE:
-                log().debug("processAck: Unacknowledging ackable: "+ackable+"...");
-                ackable.unacknowledge(ack.getAckUser());
-                log().debug("processAck: Unacknowledged ackable: "+ackable);
-                break;
-            case CLEAR:
-                log().debug("processAck: Clearing ackable: "+ackable+"...");
-                ackable.clear(ack.getAckUser());
-                log().debug("processAck: Cleared ackable: "+ackable);
-                break;
-            case ESCALATE:
-                log().debug("processAck: Escalating ackable: "+ackable+"...");
-                ackable.escalate(ack.getAckUser());
-                log().debug("processAck: Escalated ackable: "+ackable);
-                break;
-            default:
-                break;
+        
+        Iterator<Acknowledgeable> it = ackables.iterator();
+        while (it.hasNext()) {
+            try {
+                Acknowledgeable ackable = it.next();
+
+                switch (ack.getAckAction()) {
+                case ACKNOWLEDGE:
+                    log().debug("processAck: Acknowledging ackable: "+ackable+"...");
+                    ackable.acknowledge(ack.getAckUser());
+                    log().debug("processAck: Acknowledged ackable: "+ackable);
+                    break;
+                case UNACKNOWLEDGE:
+                    log().debug("processAck: Unacknowledging ackable: "+ackable+"...");
+                    ackable.unacknowledge(ack.getAckUser());
+                    log().debug("processAck: Unacknowledged ackable: "+ackable);
+                    break;
+                case CLEAR:
+                    log().debug("processAck: Clearing ackable: "+ackable+"...");
+                    ackable.clear(ack.getAckUser());
+                    log().debug("processAck: Cleared ackable: "+ackable);
+                    break;
+                case ESCALATE:
+                    log().debug("processAck: Escalating ackable: "+ackable+"...");
+                    ackable.escalate(ack.getAckUser());
+                    log().debug("processAck: Escalated ackable: "+ackable);
+                    break;
+                default:
+                    break;
+                }
+
+                m_ackDao.updateAckable(ackable);
+                m_ackDao.save(ack);
+                m_ackDao.flush();
+                
+            } catch (Throwable t) {
+                log().error("processAck: exception while processing: "+ack+"; "+t, t);
             }
             
-            m_ackDao.updateAckable(ackable);
-            m_ackDao.save(ack);
-            m_ackDao.flush();
         }
         log().info("processAck: Found and processed acknowledgables for the acknowledgement: "+ack);
     }
