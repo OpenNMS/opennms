@@ -1,0 +1,46 @@
+Ext GWT - Widget Library
+Copyright (c) 2006-2009, Ext JS, LLC
+All rights reserved.
+licensing@extjs.com
+
+http://extjs.com/license
+
+Open Source License
+------------------------------------------------------------------------------------------
+Ext is licensed under the terms of the Open Source GPL 3.0 license. 
+
+http://www.gnu.org/licenses/gpl.html
+
+
+Commercial License
+------------------------------------------------------------------------------------------
+If you are using this library for commercial purposes, we encourage you to purchase
+a commercial license. Please visit http://extjs.com/license for more details.
+
+
+OEM / Reseller License
+------------------------------------------------------------------------------------------
+For more details, please visit: http://extjs.com/license.
+
+Third Party Content
+The following third party software is distributed with Ext GWT and is 
+provided under other licenses and/or has source available from other locations. 
+
+Library: Google Web Toolkit
+License: Apache 2.0
+Location: http://code.google.com/webtoolkit/
+
+Library: SwfObject
+License: MIT License
+Location: http://code.google.com/p/swfobject/
+
+Library: Open Flash Chart 2
+License: LGPL
+Location: http://teethgrinder.co.uk/open-flash-chart-2/
+
+--
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.

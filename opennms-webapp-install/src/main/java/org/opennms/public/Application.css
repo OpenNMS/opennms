@@ -1,0 +1,39 @@
+/** Add css rules here for your application. */
+/*
+button {
+  display: block;
+  font-size: 16pt;
+  margin-top: 10px;
+}
+*/
+
+.widePanel {
+  width: 100%
+}
+
+img {
+  margin-top: 20px;
+}
+
+/* Provide a background image */
+body {
+	background-color: #c9dfc9;
+	background-image: url('../images/logo-background.gif');
+	background-repeat: repeat-x; 
+}
+
+.transparent-background {
+	background-color: transparent;
+}
+
+.accordion-panel {
+	padding: 10px;
+}
+
+.check-success-icon { 
+	background: url('../images/greentick.gif') no-repeat center left !important; 
+}
+
+.check-failure-icon { 
+	background: url('../images/redcross.gif') no-repeat center left !important; 
+}
