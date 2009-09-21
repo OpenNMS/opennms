@@ -30,6 +30,8 @@
 			Node %nodelabel% is no longer failing.
 		</logmsg>
 		<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.k5systems.com/analysis/outOfBounds" clear-key="uei.k5systems.com/analysis/outOfBounds:%dpname%:%nodeid%" />
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" 
+                    alarm-type="2" 
+                    clear-key="uei.k5systems.com/analysis/outOfBounds:%dpname%:%nodeid%" />
 	</event>
 </events>
