@@ -101,7 +101,6 @@
 
 	  function removeGraphStringIfIE(modelUrl){
 		  if(Ext.isIE){
-			  alert(modelUrl.substring(0,6));
 			  if(modelUrl.substring(0,6) == "graph/"){
 					return modelUrl.substring(6, modelUrl.length);
 			  }else{
