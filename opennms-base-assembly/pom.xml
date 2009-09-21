@@ -294,6 +294,7 @@
       <artifactId>rxtx-osgi</artifactId>
     </dependency>
 
+
     <!-- this is a runtime depdency we need at install time -->
     <dependency>
       <groupId>alt.dev.jmta</groupId>
