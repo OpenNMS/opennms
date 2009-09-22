@@ -42,6 +42,7 @@ import java.util.Calendar;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
@@ -187,11 +188,13 @@ public class ImportSchedulerTest {
     }
     
     @Test
+    @Ignore
     public void dwRemoveCurrentJobsFromSchedule() throws SchedulerException {
         fail("Not yet implemented");
     }
 
     @Test
+    @Ignore
     public void dwBuildImportSchedule() {
         fail("Not yet implemented");
     }
