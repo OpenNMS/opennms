@@ -30,6 +30,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -38,6 +39,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +51,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
@@ -106,6 +107,8 @@ public class ThresholdingVisitorTest {
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
+    private Comparator<Parm> m_parmComparator;
+    private Comparator<Event> m_eventComparator;
     
     @Before
     public void setUp() throws Exception {
@@ -126,6 +129,76 @@ public class ThresholdingVisitorTest {
         
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
         m_anticipatedEvents = new ArrayList<Event>();
+        
+        m_parmComparator = new Comparator<Parm>() {
+
+            public int compare(Parm o1, Parm o2) {
+                if (o1 == null && o2 == null) return 0;
+                if (o1 == null && o2 != null) return 1;
+                if (o1 != null && o2 == null) return -1;
+
+                int retVal = o1.getParmName().compareTo(o2.getParmName());
+                if (retVal == 0) {
+                    String c1 = o1.getValue().getContent();
+                    String c2 = o2.getValue().getContent();
+                    if (c1 == null && c2 == null) return 0;
+                    if (c1 == null && c2 != null) return 1;
+                    if (c1 != null && c2 == null) return -1;
+                    
+                    retVal = c1.compareTo(c2);
+                }
+                return retVal;
+            }
+        };
+
+        m_eventComparator = new Comparator<Event>() {
+
+            private int compareStrings(String s1, String s2) {
+                if (s1 == null && s2 == null) return 0;
+                if (s1 == null && s2 != null) return 1;
+                if (s1 != null && s2 == null) return -1;
+                return (s1.compareTo(s2));
+            }
+
+            public int compare(Event e1, Event e2) {
+                if (e1 == null && e2 == null) return 0;
+                if (e1 == null && e2 != null) return 1;
+                if (e1 != null && e2 == null) return -1;
+
+                int retVal = compareStrings(e1.getUei(), e2.getUei());
+                if (retVal == 0) {
+                    retVal = compareStrings(e1.getInterface(), e2.getInterface());
+                }
+                if (retVal == 0) {
+                    retVal = compareStrings(e1.getService(), e2.getService());
+                }
+                if (retVal == 0) {
+                    List<Parm> anticipatedParms = e1.getParms().getParmCollection();
+                    List<Parm> receivedParms = e2.getParms().getParmCollection();
+                    Collections.sort(anticipatedParms, m_parmComparator);
+                    Collections.sort(receivedParms, m_parmComparator);
+                    if (anticipatedParms.size() != receivedParms.size()) {
+                        retVal = Integer.valueOf(anticipatedParms.size()).compareTo(Integer.valueOf(receivedParms.size()));
+                    }
+                    if (retVal == 0) {
+                        for (int i = 0; i < anticipatedParms.size(); i++) {
+                            Parm anticipated = anticipatedParms.get(i);
+                            Parm received = receivedParms.get(i);
+                            
+                            retVal = compareStrings(anticipated.getParmName(), received.getParmName());
+                            if (retVal == 0) {
+                                retVal = compareStrings(anticipated.getValue().getContent(), received.getValue().getContent());
+                            }
+                            if (retVal != 0) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                return retVal;
+            }
+        };
     }
 
     private void initFactories(String threshd, String thresholds) throws Exception {
@@ -637,9 +710,9 @@ public class ThresholdingVisitorTest {
         m_defaultErrorLevelToCheck = Level.ERROR;
         resource.visit(visitor);
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        Assert.assertEquals(3, events.length);
+        assertEquals("expecting 3 events", 3, events.length);
         for (LoggingEvent e : events) {
-            Assert.assertEquals("getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.", e.getMessage());
+            assertEquals("getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.", e.getMessage());
         }
     }
 
@@ -975,6 +1048,9 @@ public class ThresholdingVisitorTest {
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
+            
+            Collections.sort(receivedList, m_eventComparator);
+            Collections.sort(m_anticipatedEvents, m_eventComparator);
             log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
             if (m_anticipatedEvents.size() != receivedList.size()) {
                 for (Event e : m_anticipatedEvents) {
@@ -985,47 +1061,33 @@ public class ThresholdingVisitorTest {
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
                 log().info("verifyEvents: processing event " + (i+1));
-                assertTrue(compareEvents(m_anticipatedEvents.get(i), receivedList.get(i)));
+                compareEvents(m_anticipatedEvents.get(i), receivedList.get(i));
             }
         }
         m_anticipator.verifyAnticipated(0, 0, 0, remainEvents, 0);
     }
     
-    private boolean compareEvents(Event anticipated, Event received) {
-        if (!anticipated.getUei().equals(received.getUei())) {
-            log().info("compareEvents: uei differs. Received '" + received.getUei() + "' and must be '" + anticipated.getUei() + "'");
-            return false;
-        }
-        if (anticipated.getNodeid() != received.getNodeid()) {
-            log().info("compareEvents: nodeid differs. Received '" + received.getNodeid() + "' and must be '" + anticipated.getNodeid() + "'");
-            return false;
-        }
-        if (!anticipated.getInterface().equals(received.getInterface())) {
-            log().info("compareEvents: interface differs. Received '" + received.getInterface() + "' and must be '" + anticipated.getInterface() + "'");
-            return false;
-        }
-        if (!anticipated.getService().equals(received.getService())) {
-            log().info("compareEvents: service differs. Received '" + received.getService() + "' and must be '" + anticipated.getService() + "'");
-            return false;
-        }
-        for (Parm source : anticipated.getParms().getParmCollection()) {
+    private void compareEvents(Event anticipated, Event received) {
+        assertEquals("UEIs must match", anticipated.getUei(), received.getUei());
+        assertEquals("NodeIDs must match", anticipated.getNodeid(), received.getNodeid());
+        assertEquals("interfaces must match", anticipated.getInterface(), received.getInterface());
+        assertEquals("services must match", anticipated.getService(), received.getService());
+        compareParms(anticipated.getParms().getParmCollection(), received.getParms().getParmCollection());
+    }
+
+    private void compareParms(List<Parm> anticipatedParms, List<Parm> receivedParms) {
+        Collections.sort(anticipatedParms, m_parmComparator);
+        Collections.sort(receivedParms, m_parmComparator);
+        for (Parm source : anticipatedParms) {
             Parm found = null;
-            for (Parm p : received.getParms().getParmCollection()) {
+            for (Parm p : receivedParms) {
                 if (p.getParmName().equals(source.getParmName()))
                     found = p;
             }
-            if (found == null) {
-                log().info("compareEvents: parameter " + source.getParmName() + " not found on received event");
-                return false;
-            }
-            if (source.getValue().getContent() == null)
-                source.getValue().setContent("null");
-            if (!found.getValue().getContent().equals(source.getValue().getContent()) ) {
-                log().info("compareEvents: parameter " + source.getParmName() + " differs. Received '" + found.getValue().getContent() + "' and must be '" + source.getValue().getContent() + "'");
-                return false;
-            }
+            assertNotNull("parameter " + source.getParmName() + " must be found on the received event", found);
+            if (source.getValue().getContent() == null) source.getValue().setContent("null");
+            assertEquals("content must match for parameter " + source.getParmName(), source.getValue().getContent(), found.getValue().getContent());
         }
-        return true;
     }
     
     private void resetAnticipator() {
