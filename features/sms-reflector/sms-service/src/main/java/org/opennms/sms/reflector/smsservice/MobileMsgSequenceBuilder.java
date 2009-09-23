@@ -136,7 +136,11 @@ public class MobileMsgSequenceBuilder {
 		}
 		return this;
 	}
-	
+
+	public long getDefaultTimeout() {
+		return m_timeout;
+	}
+
 	public MobileMsgSequenceBuilder setDefaultTimeout(long timeout) {
 		m_timeout = timeout;
 		if (m_currentBuilder != null) {
@@ -145,6 +149,10 @@ public class MobileMsgSequenceBuilder {
 		return this;
 	}
 	
+	public int getDefaultRetries() {
+		return m_retries;
+	}
+
 	public MobileMsgSequenceBuilder setDefaultRetries(int retries) {
 		m_retries = retries;
 		if (m_currentBuilder != null) {
