@@ -69,7 +69,7 @@ public class MobileMsgSequencer {
 		MobileMsgSequenceBuilder sequenceBuilder = new MobileMsgSequenceBuilder();
 		sequenceBuilder.setDefaultRetries(Integer.parseInt(session.getProperty("retry", String.valueOf(sequenceBuilder.getDefaultRetries()))));
 		sequenceBuilder.setDefaultTimeout(Long.parseLong(session.getProperty("timeout", String.valueOf(sequenceBuilder.getDefaultTimeout()))));
-		
+
 		Map<String,SessionVariableGenerator> sessionGenerators = new HashMap<String,SessionVariableGenerator>();
 
 		// FIXME: use the service registry for this
@@ -135,6 +135,7 @@ public class MobileMsgSequencer {
 		}
 
 		MobileMsgSequence seq = sequenceBuilder.getSequence();
+		if (log.isTraceEnabled()) log.trace("sequence = " + seq);
 		try {
 			long start = System.currentTimeMillis();
 			Map<String,Number> responseTimes = seq.execute(s_tracker, s_coordinator);
