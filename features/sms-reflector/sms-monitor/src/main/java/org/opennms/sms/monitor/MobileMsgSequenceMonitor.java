@@ -32,10 +32,12 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        @SuppressWarnings("unused")
-		int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
-        @SuppressWarnings("unused")
-		long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
+		if (parameters.get("retry") == null) {
+			parameters.put("retry", String.valueOf(PingConstants.DEFAULT_RETRIES));
+		}
+		if (parameters.get("timeout") == null) {
+			parameters.put("timeout", String.valueOf(PingConstants.DEFAULT_TIMEOUT));
+		}
         String config = ParameterMap.getKeyedString(parameters, "sequence", "");
         if (config == null || "".equals(config)) {
         	return PollStatus.unavailable("Sequence configuration was empty.  You must specify a 'sequence' parameter in the SMSSequenceMonitor poller configuration!");
