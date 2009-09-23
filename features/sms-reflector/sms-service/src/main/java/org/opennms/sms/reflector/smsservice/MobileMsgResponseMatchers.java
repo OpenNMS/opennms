@@ -32,8 +32,13 @@ public class MobileMsgResponseMatchers {
 				if (request instanceof SmsRequest && response instanceof SmsResponse) {
 					SmsRequest req = (SmsRequest)request;
 					SmsResponse resp = (SmsResponse)response;
-					
-					return req.getRecipient().equals(resp.getOriginator());
+
+					if (resp.getOriginator().equals(req.getRecipient())) {
+						return true;
+					}
+					String originator = resp.getOriginator().replaceFirst("^\\+", "");
+					String recipient = req.getRecipient().replaceFirst("^\\+", "");
+					return originator.equals(recipient);
 				}
 
 				return false;
