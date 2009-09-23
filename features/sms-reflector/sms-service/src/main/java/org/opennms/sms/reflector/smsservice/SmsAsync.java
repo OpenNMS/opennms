@@ -11,12 +11,16 @@ public class SmsAsync implements Async<MobileMsgResponse> {
 	private MobileMsgTracker m_tracker;
 	private final OutboundMessage m_message;
 	private final MobileMsgResponseMatcher m_responseMatcher;
+	private long m_timeout;
+	private int m_retries;
 
 	public SmsAsync(MobileMsgTracker tracker, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher responseMatcher) {
 		this.m_tracker = tracker;
 		this.m_message = new OutboundMessage(recipient, text);
 		this.m_message.setGatewayId(gatewayId);
 		this.m_responseMatcher = responseMatcher;
+		this.m_timeout = timeout;
+		this.m_retries = retries;
 	}
 
 	public SmsAsync(MobileMsgTracker tracker, OutboundMessage msg, MobileMsgResponseMatcher responseMatcher) {
@@ -29,7 +33,7 @@ public class SmsAsync implements Async<MobileMsgResponse> {
 		MobileMsgResponseCallback mmrc = new MobileMsgCallbackAdapter(cb);
 
 		try {
-			m_tracker.sendSmsRequest(m_message, 3000L, 0, mmrc, m_responseMatcher);
+			m_tracker.sendSmsRequest(m_message, m_timeout, m_retries, mmrc, m_responseMatcher);
 		} catch (Exception e) {
 			cb.handleException(e);
 		}

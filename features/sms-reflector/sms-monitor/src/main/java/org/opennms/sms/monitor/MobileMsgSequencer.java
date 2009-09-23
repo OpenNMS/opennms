@@ -135,7 +135,7 @@ public class MobileMsgSequencer {
 		}
 
 		MobileMsgSequence seq = sequenceBuilder.getSequence();
-		if (log.isTraceEnabled()) log.trace("sequence = " + seq);
+		log.debug("MobileMsgSequence = " + seq);
 		try {
 			long start = System.currentTimeMillis();
 			Map<String,Number> responseTimes = seq.execute(s_tracker, s_coordinator);
