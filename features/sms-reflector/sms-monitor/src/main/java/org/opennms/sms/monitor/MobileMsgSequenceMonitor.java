@@ -4,6 +4,7 @@ package org.opennms.sms.monitor;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
@@ -21,7 +22,8 @@ import org.opennms.sms.ping.PingConstants;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @Distributable(DistributionContext.DAEMON)
-final public class MobileMsgSequenceMonitor extends IPv4Monitor {
+public class MobileMsgSequenceMonitor extends IPv4Monitor {
+    private static Logger log = Logger.getLogger(MobileMsgSequenceMonitor.class);
 	private Phonebook phonebook = new PropertyPhonebook();
 
 	@Override
@@ -53,24 +55,22 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 			}
 			session.setProperty("recipient", phonebook.getTargetForAddress(svc.getIpAddr()));
 		} catch (PhonebookException e) {
-			log().warn("Unable to locate recpient phone number for IP address " + svc.getIpAddr(), e);
+			log.warn("Unable to locate recpient phone number for IP address " + svc.getIpAddr(), e);
 			return PollStatus.unavailable("Unable to find phone number for IP address " + svc.getIpAddr());
 		}
 
-		log().warn("session = " + session);
         MobileSequenceConfig sequenceConfig = null;
         try {
             SequenceConfigFactory factory = SequenceConfigFactory.getInstance();
 			sequenceConfig = factory.getSequenceForXml(config);
 		} catch (SequenceException e) {
-			log().warn("Unable to parse sequence configuration for host " + svc.getIpAddr(), e);
+			log.warn("Unable to parse sequence configuration for host " + svc.getIpAddr(), e);
 			return PollStatus.unavailable("unable to read sequence configuration");
 		}
 
-		log().warn("sequenceConfig = " + sequenceConfig);
 		// FIXME: Decide the validity of an empty sequence; is it a failure to configure?  Or passing because no transactions failed?
 		if (sequenceConfig.getTransactions() == null || sequenceConfig.getTransactions().size() == 0) {
-			log().warn("No transactions were configured for host " + svc.getIpAddr());
+			log.warn("No transactions were configured for host " + svc.getIpAddr());
 			return PollStatus.unavailable("No transactions were configured for host " + svc.getIpAddr());
 		}
 
@@ -80,7 +80,7 @@ final public class MobileMsgSequenceMonitor extends IPv4Monitor {
 			response.setProperties(responseTimes);
 			return response;
 		} catch (Throwable e) {
-			log().debug("Sequence failed", e);
+			log.debug("Sequence failed", e);
 			return PollStatus.unavailable("Sequence failed: " + e.getLocalizedMessage());
 		}
 	}
