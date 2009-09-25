@@ -1,6 +1,12 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -30,6 +36,27 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // Testing DELETE
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
+    }
+
+    @Test
+    public void testLimits() throws Exception {
+        // Testing POST
+        for (int i = 0; i < 20; i++) {
+            createNode();
+        }
+        String url = "/nodes";
+        // Testing GET Collection
+        Map<String,String> parameters = new HashMap<String,String>();
+        parameters.put("limit", "10");
+        String xml = sendRequest(GET, url, parameters, 200);
+        assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
+        Pattern p = Pattern.compile("<node>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+        Matcher m = p.matcher(xml);
+        int count = 0;
+        while (m.find()) {
+            count++;
+        }
+        assertEquals("should get 10 nodes back", 10, count);
     }
 
     @Test

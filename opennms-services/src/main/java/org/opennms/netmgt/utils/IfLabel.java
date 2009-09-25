@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
 // 2009 Aug 03: Cleaned up JDBC work and tried to suppress N^2+1 issues
 // 2005 Jan 03: minor mod to support lame SNMP hosts
 // 25 Sep 2003: Fixed a bug with SNMP Performance link on webUI.
@@ -189,6 +190,7 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
         
         class LabelHolder {
             private String m_label;
@@ -211,7 +213,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid = "+nodeId+
-        		"   AND ipinterface.ipaddr = '"+ipAddr+"'";
+        		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
             public void processRow(ResultSet rs) throws SQLException {
@@ -237,8 +239,10 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
+
         if (ifIndex == -1) {
-        	return getIfLabel(nodeId, ipAddr);
+        	return getIfLabel(nodeId, inetAddr);
         }
         
         class LabelHolder {
@@ -262,7 +266,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid= "+nodeId+
-        		"   AND ipinterface.ipaddr= '"+ipAddr+"'"+
+        		"   AND ipinterface.ipaddr= '"+inetAddr+"'"+
         		"   AND ipinterface.ifindex= "+ifIndex;
         
         
@@ -286,6 +290,60 @@ public class IfLabel extends Object {
         
         return holder.getLabel();
     }
+ 
+    /**
+     * Return the ifLabel as a string for the given node and ifIndex. Intended for
+     * use with non-ip interfaces.
+     * 
+     * @param int nodeId
+     *            
+     * @param int ifIndex
+     * 
+     * @return String
+     */
+    public static String getIfLabelfromSnmpIfIndex(final int nodeId, final int ifIndex) {
+        
+        class LabelHolder {
+            private String m_label;
+
+            public void setLabel(String label) {
+                m_label = label;
+            }
+
+            public String getLabel() {
+                return m_label;
+            }
+        }
+        
+        final LabelHolder holder = new LabelHolder();
+        
+        String query = "" +
+                "SELECT DISTINCT snmpifname, snmpifdescr,snmpphysaddr " +
+                "  FROM snmpinterface " +
+                "   WHERE nodeid= "+nodeId+
+                "   AND snmpifindex= "+ifIndex;
+        
+        
+        Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+
+            public void processRow(ResultSet rs) throws SQLException {
+                String name = rs.getString("snmpifname");
+                String descr = rs.getString("snmpifdescr");
+                String physAddr = rs.getString("snmpphysaddr");
+
+                if (name != null || descr != null) {
+                    holder.setLabel(getIfLabel(name, descr, physAddr));
+                } else {
+                    log.warn("Interface (nodeId/ifIndex=" + nodeId + "/" + ifIndex + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    holder.setLabel("no_ifLabel");
+                }
+            }
+            
+        });
+        q.execute();
+        
+        return holder.getLabel();
+    }    
 
     public static String getIfLabel(String name, String descr, String physAddr) {
         // If available ifName is used to generate the label

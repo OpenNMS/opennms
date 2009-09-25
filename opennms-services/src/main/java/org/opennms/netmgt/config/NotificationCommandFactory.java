@@ -84,6 +84,10 @@ public class NotificationCommandFactory extends NotificationCommandManager {
 
         return instance;
     }
+    
+    public void update() throws Exception {
+        reload();
+    }
 
     /**
      * @throws MarshalException

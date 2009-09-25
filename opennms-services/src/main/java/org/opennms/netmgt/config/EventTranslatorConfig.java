@@ -58,6 +58,7 @@ public interface EventTranslatorConfig {
      * @return a translated event
      */
 	public abstract List<Event> translateEvent(Event e);
-    
+	
+	public abstract void update() throws Exception;
 
 }

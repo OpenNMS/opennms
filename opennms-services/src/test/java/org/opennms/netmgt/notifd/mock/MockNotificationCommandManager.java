@@ -50,4 +50,8 @@ public class MockNotificationCommandManager extends NotificationCommandManager {
         Reader reader = new StringReader(xmlString);
         parseXML(reader);
     }
+    
+    public void update() throws Exception {
+        
+    }
 }

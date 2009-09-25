@@ -137,5 +137,14 @@
        </list>
      </constructor-arg>
      <constructor-arg ref="commonContext" />
+   </bean>
+    
+   <bean id="discoveryContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-discovery.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="commonContext" />
    </bean> 
 </beans>

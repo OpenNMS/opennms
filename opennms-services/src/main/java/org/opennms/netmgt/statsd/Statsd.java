@@ -37,13 +37,22 @@
 package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.EventSubscriptionService;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -57,6 +66,7 @@ import org.springframework.util.Assert;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
+@EventListener(name="OpenNMS:Statsd")
 public class Statsd implements SpringServiceDaemon {
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
@@ -65,31 +75,111 @@ public class Statsd implements SpringServiceDaemon {
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
+    private volatile EventSubscriptionService m_eventSubscriptionService;
+    private volatile EventForwarder m_eventForwarder;
 
-    public void start() throws InterruptedException, ParseException, SchedulerException, ClassNotFoundException, NoSuchMethodException {
-        for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-            scheduleReport(reportDef);
+    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(Event e) {
+        
+        if (isReloadConfigEventTarget(e)) {
+            log().info("handleReloadConfigEvent: reloading configuration...");
+            EventBuilder ebldr = null;
+
+            log().debug("handleReloadConfigEvent: acquiring lock...");
+            synchronized (m_scheduler) {
+                try {
+                    log().debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                    unscheduleReports();
+                    m_reportDefinitionBuilder.reload();
+                    log().debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
+                    log().debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
+                    start();
+                    log().debug("handleRelodConfigEvent: reports rescheduled.");
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                } catch (Exception exception) {
+                    log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                    ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+                }
+                if (ebldr != null) {
+                    getEventForwarder().sendNow(ebldr.getEvent());
+                }
+            }
+            log().debug("handleReloadConfigEvent: lock released.");
         }
+        
+    }
+    
+    private boolean isReloadConfigEventTarget(Event event) {
+        boolean isTarget = false;
+        
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Statsd".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        
+        log().debug("isReloadConfigEventTarget: Statsd was target of reload event: "+isTarget);
+        return isTarget;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.opennms.netmgt.daemon.SpringServiceDaemon#start()
+     *
+     * Changed this to just throw Exception since nothing is actually done with each individual exception types.
+     */
+    public void start() throws Exception {
+        log().debug("start: acquiring lock...");
+        synchronized (m_scheduler) {
+            log().info("start: lock acquired (may have reentered), scheduling Reports...");
+            for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+                log().debug("start: scheduling Report: "+reportDef+"...");
+                scheduleReport(reportDef);
+            }
+            log().info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+        }
+        log().debug("start: lock released (unless reentrant).");
+    }
+    
+    public void unscheduleReports() throws Exception {
+        
+        synchronized (m_scheduler) {
+            for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
+                m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+            }
+        }
+    }
+    
     private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException {
-        MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
-        jobFactory.setTargetObject(this);
-        jobFactory.setTargetMethod("runReport");
-        jobFactory.setArguments(new Object[] { reportDef });
-        jobFactory.setConcurrent(false);
-        jobFactory.setBeanName(reportDef.getDescription());
-        jobFactory.afterPropertiesSet();
-        JobDetail jobDetail = (JobDetail) jobFactory.getObject();
         
-        CronTriggerBean cronReportTrigger = new CronTriggerBean();
-        cronReportTrigger.setBeanName(reportDef.getDescription());
-        cronReportTrigger.setJobDetail(jobDetail);
-        cronReportTrigger.setCronExpression(reportDef.getCronExpression());
-        cronReportTrigger.afterPropertiesSet();
-        
-        m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
-        log().debug("Schedule report " + cronReportTrigger);
+        //this is most likely reentrant since the method is private and called from start via plural version.
+        synchronized (m_scheduler) {
+            
+            MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
+            jobFactory.setTargetObject(this);
+            jobFactory.setTargetMethod("runReport");
+            jobFactory.setArguments(new Object[] { reportDef });
+            jobFactory.setConcurrent(false);
+            jobFactory.setBeanName(reportDef.getDescription());
+            jobFactory.afterPropertiesSet();
+            JobDetail jobDetail = (JobDetail) jobFactory.getObject();
+            
+            CronTriggerBean cronReportTrigger = new CronTriggerBean();
+            cronReportTrigger.setBeanName(reportDef.getDescription());
+            cronReportTrigger.setJobDetail(jobDetail);
+            cronReportTrigger.setCronExpression(reportDef.getCronExpression());
+            cronReportTrigger.afterPropertiesSet();
+            
+            m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
+            log().debug("Schedule report " + cronReportTrigger);
+            
+        }
     }
 
     public void runReport(ReportDefinition reportDef) throws Throwable {
@@ -126,6 +216,7 @@ public class Statsd implements SpringServiceDaemon {
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
         Assert.state(m_scheduler != null, "property scheduler must be set to a non-null value");
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
+        Assert.state(m_eventForwarder != null, "eventForwarder property must be set to a non-null value");
     }
     
     public ResourceDao getResourceDao() {
@@ -182,5 +273,21 @@ public class Statsd implements SpringServiceDaemon {
 
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        m_eventSubscriptionService = eventSubscriptionService;
+    }
+
+    public EventSubscriptionService getEventSubscriptionService() {
+        return m_eventSubscriptionService;
     }
 }

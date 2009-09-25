@@ -3,22 +3,18 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 //
 // Modifications:
 //
+// 2009 Sep 01: Restored non-IP functionality
 // 2004 Jan 15: Added node admin function.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 01: Added response time link (Bug #684) and HTTP link (Bug #469).
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -31,12 +27,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// Foundation, Inc.:
+// 51 Franklin Street
+// 5th Floor
+// Boston, MA 02110-1301
+// USA
 //
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.opennms.com///
+//      http://www.opennms.com/
+//
 
 --%>
 
@@ -113,14 +114,19 @@
     //get the database node info
     Node node_db = NetworkElementFactory.getNode( nodeId );
     if( node_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such node in database" );
+	throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
 
     //get the child interfaces
     Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
+    Interface[] snmpIntfs = NetworkElementFactory.getAllSnmpInterfacesOnNode( nodeId );
+
     if( intfs == null ) { 
         intfs = new Interface[0]; 
+    }
+
+    if( snmpIntfs == null ) { 
+        snmpIntfs = new Interface[0]; 
     }
 
     //See if node has any ifAliases
@@ -214,7 +220,14 @@
 	   		} 
 	   	ifs.addElement(iface);
 	   	linkMap.put(ifindexmap,ifs);
-	   }
+	} else {
+	    iface = NetworkElementFactory.getSnmpInterface(nodelinkedId,nodelinkedIf);
+	    if (linkMap.containsKey(ifindexmap)){
+		ifs = linkMap.get(ifindexmap);
+            } 
+	    ifs.addElement(iface);
+	    linkMap.put(ifindexmap,ifs);
+	}
 	   
    }
 
@@ -355,7 +368,7 @@
 			<% } %>
 --%>
 
-			<th>&nbsp;</th>
+			<th>Links</th>
 			</tr>
 		</thead>
 		
@@ -372,18 +385,8 @@
 		<tr>
 		
 		<td class="standard">
-		<% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                    <% if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("")) { %>
-		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>"><%=intfs[i].getSnmpIfName()%></a>
-                    <% } else if (intfs[i].getSnmpIfDescription() != null && !intfs[i].getSnmpIfDescription().equals("")) { %>
-		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>"><%=intfs[i].getSnmpIfDescription()%></a>
-                    <% } else { %>
-		        <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-		    <% } %>
-		<% } else { %>  
 		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
 		<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-		<% } %>
 
 		</td>
                 <td>
@@ -396,7 +399,7 @@
                 <td>
                     <% if (intfs[i].getSnmpIfDescription() != null && !intfs[i].getSnmpIfDescription().equals("")) { %>
                         <%=intfs[i].getSnmpIfDescription()%>
-                    <% } else if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("") && !"0.0.0.0".equals(intfs[i].getIpAddress())) { %>
+                    <% } else if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("")) { %>
                         <%=intfs[i].getSnmpIfName()%>
                     <% } else { %>
                         &nbsp;
@@ -446,6 +449,8 @@
 				<th style="font-size:70%" width="35%">Interface</th> 
 				<th style="font-size:70%" width="15%">If Status (Adm/Op)</th>
 			
+<%--
+			// TODO - turning this off until the SET is verified.
 				<th style="font-size:70%">
 				<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 					Set Admin Status
@@ -453,6 +458,7 @@
 					&nbsp;
 				<% } %>
 				</th> 	
+--%>
 				</tr>
 		</thead>					
 			<% for (int j=0; j<ifl.size();j++) { 
@@ -464,13 +470,15 @@
 		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(curlkif.getNodeId())%></a>
 			</td>
 			<td class="standard" style="font-size:70%" width="35%">
-		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
-		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>&ifindex=<%=curlkif.getIfIndex()%>">Non-IP</a>
+		       	<% if(curlkif.getIpAddress() == null ||  "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
+		        <a href="element/snmpinterface.jsp?node=<%=curlkif.getNodeId()%>&ifindex=<%=curlkif.getSnmpIfIndex()%>"><%=curlkif.getSnmpIfName()%></a>
 		        <% } else { %>  
 		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
 		        <% } %>
 		       	<% if( curlkif.getIfIndex() != 0 ) { %>
 		        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		        <% } else if( curlkif.getSnmpIfIndex() != 0 ) { %>
+		        <%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
 		        <% } %>
 		    </td>
 			<td class="standard" style="font-size:70%" width="15%">
@@ -484,6 +492,8 @@
 				&nbsp;
 			<% } %>
 			</td>
+<%--
+			// TODO - turning this off until the SET is verified.
 			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
 				<% if(OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
 				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Down" onClick="setDown(<%=curlkif.getNodeId()%>,<%=curlkif.getIfIndex()%>);"></td>
@@ -495,6 +505,7 @@
 			<% } else {%>              
 			<td>&nbsp;</td> 
 			<% } %>
+--%>
 			<% } %>
 		    </tr>
 		    
@@ -506,6 +517,161 @@
 		
 		</tr>
 		<% } %>
+
+		<% for( int i=0; i < snmpIntfs.length; i++ ) {
+		
+			Vector ifl =null;
+			if (snmpIntfs[i].getSnmpIfIndex() == 0 ) {
+		 		ifl =(Vector)linkMap.get(new Integer(-1));
+			} else {
+		 		ifl =(Vector)linkMap.get(new Integer(snmpIntfs[i].getSnmpIfIndex()));
+			}
+
+		%>
+		
+		
+		<% if(("0.0.0.0".equals( snmpIntfs[i].getIpAddress())) || (snmpIntfs[i].getIpAddress() == null)) { %>
+		    <tr>
+		    <td class="standard">
+                    <% if (snmpIntfs[i].getSnmpIfName() != null && !snmpIntfs[i].getSnmpIfName().equals("")) { %>
+		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>"><%=snmpIntfs[i].getSnmpIfName()%></a>
+                    <% } else if (snmpIntfs[i].getSnmpIfDescription() != null && !snmpIntfs[i].getSnmpIfDescription().equals("")) { %>
+		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>"><%=snmpIntfs[i].getSnmpIfDescription()%></a>
+                    <% } else { %>
+		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>">Non-IP</a>
+		    <% } %>
+
+		    </td>
+                    <td>
+                    <% if (snmpIntfs[i].getSnmpIfIndex() > 0) { %>
+                        <%=snmpIntfs[i].getSnmpIfIndex()%>
+                    <% } else { %>
+                        &nbsp;
+                    <% } %>
+                    </td>
+                    <td>
+                    <% if (snmpIntfs[i].getSnmpIfDescription() != null && !snmpIntfs[i].getSnmpIfDescription().equals("")) { %>
+                        <%=snmpIntfs[i].getSnmpIfDescription()%>
+                    <% } else if (snmpIntfs[i].getSnmpIfName() != null && !snmpIntfs[i].getSnmpIfName().equals("")) { %>
+                        <%=snmpIntfs[i].getSnmpIfName()%>
+                    <% } else { %>
+                        &nbsp;
+                    <% } %>
+                    </td>
+                    <% if (hasIfAliases) { %>
+                        <td>
+                        <% if (snmpIntfs[i].getSnmpIfAlias() != null && !snmpIntfs[i].getSnmpIfAlias().equals("")) { %>
+                            <%=snmpIntfs[i].getSnmpIfAlias()%>
+		        <% } else {%>
+                            &nbsp;
+		        <% } %>
+                        </td>
+		    <% } %>
+		    <td class="standard">
+		    <% if( snmpIntfs[i].getSnmpIfAdminStatus() < 1 && snmpIntfs[i].getSnmpIfOperStatus() < 1 ) { %>
+			&nbsp; 
+		    <% } else { %>
+			&nbsp;
+			<%=OPER_ADMIN_STATUS[snmpIntfs[i].getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[snmpIntfs[i].getSnmpIfOperStatus()]%>
+		    <% } %>
+		    </td>
+					
+<%--
+		    // TODO - turning this off until the SET is verified.
+		    <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+			<% if(OPER_ADMIN_STATUS[snmpIntfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
+		            <td align="center"> <input type="button" value="Down" onClick="setDown(<%=snmpIntfs[i].getNodeId()%>,<%=snmpIntfs[i].getSnmpIfIndex()%>);"> </td>
+			<% } else if (OPER_ADMIN_STATUS[snmpIntfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
+		            <td align="center"> <input type="button" value="Up" onClick="setUp(<%=snmpIntfs[i].getNodeId()%>,<%=snmpIntfs[i].getSnmpIfIndex()%>);"> </td> 
+			<% } else { %>
+		            <td><b>&nbsp;</b></td> 
+			<% } %>
+		    <% } %>
+--%>
+				
+		    <td class="standard">
+		    <% if (ifl == null || ifl.size() == 0) {%>
+			&nbsp;
+		    <% } else { %>
+		
+			<table>
+		
+			<thead>
+			<tr>
+				<th style="font-size:70%" width="35%">Linked Node</th>
+				<th style="font-size:70%" width="35%">Interface</th> 
+				<th style="font-size:70%" width="15%">If Status (Adm/Op)</th>
+			
+<%--
+			// TODO - turning this off until the SET is verified.
+				<th style="font-size:70%">
+				<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
+					Set Admin Status
+				<% } else { %>
+					&nbsp;
+				<% } %>
+				</th> 	
+--%>
+			</tr>
+			</thead>					
+			<% for (int j=0; j<ifl.size();j++) { 
+				Interface curlkif =(Interface)ifl.elementAt(j); 
+			%>
+		        
+			<tr>
+			<td class="standard" style="font-size:70%" width="35%">
+		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(curlkif.getNodeId())%></a>
+			</td>
+			<td class="standard" style="font-size:70%" width="35%">
+		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() ) || curlkif.getIpAddress() == null) { %>
+			    <a href="element/snmpinterface.jsp?node=<%=curlkif.getNodeId()%>&ifindex=<%=curlkif.getSnmpIfIndex()%>"><%=curlkif.getSnmpIfName()%></a>
+		        <% } else { %>  
+			    <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
+		        <% } %>
+		       	<% if( curlkif.getSnmpIfIndex() != 0 ) { %>
+			    <%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		        <% } else if( curlkif.getIfIndex() != 0 ) { %>
+			    <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		        <% } %>
+		        </td>
+			<td class="standard" style="font-size:70%" width="15%">
+			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
+			    <% if( curlkif.getSnmpIfAdminStatus() < 1 && curlkif.getSnmpIfOperStatus() < 1 ) { %>
+				&nbsp; 
+			    <% } else { %>
+				(<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()]%>/<%=OPER_ADMIN_STATUS[curlkif.getSnmpIfOperStatus()]%>)
+			    <% } %>
+			<% } else { %>
+			    &nbsp;
+			<% } %>
+			</td>
+<%--
+			// TODO - turning this off until the SET is verified.
+			<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) && curlkif != null) { %>
+			    <% if(OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
+				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Down" onClick="setDown(<%=curlkif.getNodeId()%>,<%=curlkif.getSnmpIfIndex()%>);"></td>
+			    <% } else if (OPER_ADMIN_STATUS[curlkif.getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
+				<td class="standard" style="font-size:70%" align="center"><input type="button" value="Up" onClick="setUp(<%=curlkif.getNodeId()%>,<%=curlkif.getSnmpIfIndex()%>);"> </td> 
+			    <% } else { %>
+				<td><b>&nbsp;</b></td> 
+			    <% } %>
+			<% } else {%>              
+			    <td>&nbsp;</td> 
+			<% } %>
+--%>
+		    <% } %>
+		    </tr>
+		    
+		    </table>
+		
+		    <%}%>
+		    </td>
+		
+		
+		    </tr>
+		    <% } %>
+		<% } %>
+
 		</table>
 
 

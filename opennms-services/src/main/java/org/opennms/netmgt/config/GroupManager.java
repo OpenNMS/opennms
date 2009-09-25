@@ -146,7 +146,7 @@ public abstract class GroupManager {
      * @throws IOException
      * 
      */
-    protected abstract void update() throws IOException, MarshalException, ValidationException;
+    public abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
      * Returns a boolean indicating if the group name appears in the xml file

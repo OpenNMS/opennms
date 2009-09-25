@@ -138,7 +138,7 @@ public class OnmsMapRestService extends OnmsRestService {
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         OnmsCriteria criteria = new OnmsCriteria(OnmsMap.class);
 
-    	setLimitOffset(params, criteria, LIMIT);
+    	setLimitOffset(params, criteria, LIMIT, false);
     	addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsMap.class);
 

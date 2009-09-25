@@ -264,6 +264,7 @@ public final class SystemGroup extends AggregateTracker {
      */
     public void updateSnmpDataForResource(ScanResource sr) {
         if (!failed()) {
+            sr.setAttribute("sysName", getSysName());
             sr.setAttribute("sysContact", getSysContact());
             sr.setAttribute("sysDescription", getSysDescr());
             sr.setAttribute("sysLocation", getSysLocation());

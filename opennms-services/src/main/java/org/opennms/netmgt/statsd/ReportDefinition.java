@@ -184,6 +184,11 @@ public class ReportDefinition implements InitializingBean {
         return report;
     }
     
+    @Override
+    public String toString() {
+        return m_report.getDescription();
+    }
+    
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */

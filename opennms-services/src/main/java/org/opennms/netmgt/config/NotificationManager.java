@@ -843,7 +843,7 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    protected abstract void update() throws IOException, MarshalException, ValidationException;
+    public abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
      * @param notifId
