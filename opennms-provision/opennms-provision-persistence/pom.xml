@@ -89,8 +89,8 @@
       <artifactId>commons-beanutils-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jaxb</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

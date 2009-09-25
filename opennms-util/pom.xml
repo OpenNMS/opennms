@@ -13,8 +13,8 @@
       <artifactId>opennms-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jaxb</artifactId>
     </dependency>
   </dependencies>
 </project>
