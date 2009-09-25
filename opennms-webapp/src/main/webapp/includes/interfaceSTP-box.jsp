@@ -50,18 +50,18 @@
 <%
     
     Interface intf = null;
+    StpInterface[] stpifs = null;
     String requestNode = request.getParameter("node");
     String requestIntf = request.getParameter("intf");
     String requestIfindex = request.getParameter("ifindex");
     if(requestNode != null && requestIfindex != null && requestIntf == null) {
         intf = ElementUtil.getSnmpInterfaceByParams(request);
+        stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getSnmpIfIndex());
     } else {
         intf = ElementUtil.getInterfaceByParams(request);
+        stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getIfIndex());
     }
 
-
-// find STP interface info
-    StpInterface[] stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getIfIndex());
 
 %>
 <h3>Interface Spanning Tree Protocol Info</h3>
