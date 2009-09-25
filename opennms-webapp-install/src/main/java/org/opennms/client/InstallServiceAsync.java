@@ -1,5 +1,7 @@
 package org.opennms.client;
 
+import java.util.*;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface InstallServiceAsync {
@@ -9,6 +11,7 @@ public interface InstallServiceAsync {
 	public void setAdminPassword(String password, AsyncCallback<Void> callback);
 	public void connectToDatabase(AsyncCallback<Boolean> callback);
 	public void setDatabaseConfig(String arguments, AsyncCallback<Void> callback);
+	public void getDatabaseUpdateLogs(int offset, AsyncCallback<List<LoggingEvent>> callback);
 	public void updateDatabase(AsyncCallback<Void> callback);
 	public void checkIpLike(AsyncCallback<Boolean> callback);
 }

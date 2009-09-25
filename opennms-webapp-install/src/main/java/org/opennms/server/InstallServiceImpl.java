@@ -2,6 +2,8 @@ package org.opennms.server;
 
 import org.opennms.client.*;
 
+import java.util.*;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -28,6 +30,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	
 	public void setDatabaseConfig(String arguments){
 		
+	}
+	
+	public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
+		return Arrays.asList(new LoggingEvent[] {
+			new LoggingEvent(),
+			new LoggingEvent(),
+			new LoggingEvent()
+		});
 	}
 	
 	public void updateDatabase() {

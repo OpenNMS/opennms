@@ -1,6 +1,8 @@
 package org.opennms.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback; 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -9,6 +11,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
 
 import com.extjs.gxt.ui.client.widget.*;
+import com.extjs.gxt.ui.client.event.*; 
 import com.extjs.gxt.ui.client.widget.button.*;
 import com.extjs.gxt.ui.client.widget.layout.*; 
 
@@ -72,24 +75,40 @@ public class Application implements EntryPoint {
     verifyOwnership.setIconStyle("check-success-icon");
     verifyOwnership.setBodyStyleName("accordion-panel");
     verifyOwnership.addText("Add form controls here.");
+	verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+		public void handleEvent(ComponentEvent e) {
+		}
+	});
     
     ContentPanel setAdminPassword = new ContentPanel();
     setAdminPassword.setHeading("Set administrator password");
     setAdminPassword.setIconStyle("check-success-icon");
     setAdminPassword.setBodyStyleName("accordion-panel");
     setAdminPassword.addText("Add form controls here.");
+	setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+		public void handleEvent(ComponentEvent e) {
+		}
+	});
     
     ContentPanel connectToDatabase = new ContentPanel();
     connectToDatabase.setHeading("Connect to database");
     connectToDatabase.setIconStyle("check-failure-icon");
     connectToDatabase.setBodyStyleName("accordion-panel");
     connectToDatabase.addText("Add form controls here.");
+	connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+		public void handleEvent(ComponentEvent e) {
+		}
+	});
     
     ContentPanel checkStoredProcedures = new ContentPanel();
     checkStoredProcedures.setHeading("Check stored procedures");
     checkStoredProcedures.setIconStyle("check-failure-icon");
     checkStoredProcedures.setBodyStyleName("accordion-panel");
     checkStoredProcedures.addText("Add form controls here.");
+	checkStoredProcedures.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+		public void handleEvent(ComponentEvent e) {
+		}
+	});
     
     ContentPanel tips = new ContentPanel();
     tips.setHeading("Additional tips");
@@ -103,8 +122,13 @@ public class Application implements EntryPoint {
     gxtPanel.add(tips);
     
     // ExtJS button
-    Button continueButton = new Button("Continue &#0187;");
-    continueButton.disable();
+    Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
+        public void componentSelected(ButtonEvent e) {
+        	InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+        	// MessageBox.alert("Alert", "Button pressed on OpenNMS install wizard.", null);
+        }
+    });
+    // continueButton.disable();
     gxtPanel.addButton(continueButton);
     // vertical.add(continueButton);
     
