@@ -80,10 +80,11 @@ public class OnmsRestService {
 		}
 		
 		//added for the ExtJS will remove once it gets working with the offset
-		if(params.containsKey("start") && offset != null){
+		if(params.containsKey("start") && offset == null){
 		    offset = Integer.valueOf(params.getFirst("start"));
 		    params.remove("start");
 		}
+		
 		if (offset != null && offset != 0) {
 		    if (addImmediately) {
 		        criteria.setMaxResults(offset);
@@ -314,7 +315,7 @@ public class OnmsRestService {
                                    )
                                )
                            );
-
+        System.out.println("\nm_offest: " + m_offset + "\n");
         OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
         for (Order o : m_ordering) {
@@ -324,6 +325,7 @@ public class OnmsRestService {
             rootCriteria.setMaxResults(m_limit);
         }
         if (m_offset != null) {
+            System.out.println("\nadding m_offest: " + m_offset + "\n");
             rootCriteria.setFirstResult(m_offset);
         }
         return rootCriteria;

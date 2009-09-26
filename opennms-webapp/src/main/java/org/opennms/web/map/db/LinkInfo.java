@@ -47,10 +47,11 @@ public class LinkInfo {
 	int snmpiftype;
 	long snmpifspeed;
 	int snmpifoperstatus;
+    int snmpifadminstatus;
 
 
 	
-	LinkInfo(int nodeid, int ifindex, int nodeparentid, int parentifindex, int snmpiftype, long snmpifspeed, int snmpifoperstatus) {
+	LinkInfo(int nodeid, int ifindex, int nodeparentid, int parentifindex, int snmpiftype, long snmpifspeed, int snmpifoperstatus, int snmpifadminstatus) {
 		super();
 		this.nodeid = nodeid;
 		this.ifindex = ifindex;
@@ -59,6 +60,7 @@ public class LinkInfo {
 		this.snmpiftype = snmpiftype;
 		this.snmpifspeed = snmpifspeed;
 		this.snmpifoperstatus = snmpifoperstatus;
+        this.snmpifadminstatus = snmpifadminstatus;
 	}
 	
 	public boolean equals(Object obj) {
@@ -71,14 +73,15 @@ public class LinkInfo {
 					&& ol.parentifindex == this.parentifindex
 					&& ol.snmpiftype == this.snmpiftype
 					&& ol.snmpifspeed == this.snmpifspeed
-					&& ol.snmpifoperstatus==this.snmpifoperstatus);
+					&& ol.snmpifoperstatus==this.snmpifoperstatus
+					&& ol.snmpifadminstatus==this.snmpifadminstatus);
 			
 		} 
 		return false;
 	}
 	
 	public int hashCode() {
-		return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus);
+		return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus)+(19*snmpifadminstatus);
 	}
 
 }

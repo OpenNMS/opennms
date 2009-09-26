@@ -43,6 +43,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +53,7 @@ import java.util.Properties;
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
@@ -79,6 +82,7 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
@@ -95,6 +99,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -166,6 +171,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     @Autowired
     private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
     
+    @Autowired
+    private ImportScheduler m_importSchedule;
+    
     private EventAnticipator m_eventAnticipator;
 
     private ForeignSourceRepository m_foreignSourceRepository;
@@ -176,6 +184,12 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
+    }
+    
+    @Before
+    public void dwVerifyDnsUrlHandlerFactory() throws MalformedURLException {
+        new URL("dns://david:rocks@localhost:53/opennms");
+        assertNotNull("failed to wire the ImportSchedule class", m_importSchedule);
     }
     
     @BeforeClass
@@ -221,6 +235,21 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         CountingVisitor visitor = new CountingVisitor();
         requisition.visit(visitor);
         verifyCounts(visitor);
+    }
+    
+    /**
+     * We have to ignore this test until there is a DNS service available in the test harness
+     * 
+     * @throws ForeignSourceRepositoryException
+     * @throws MalformedURLException
+     */
+    @Test
+    @Ignore
+    public void dwImportDnsResourceRequisition() throws ForeignSourceRepositoryException, MalformedURLException {
+        Requisition r = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost/localhost"));
+        CountingVisitor v = new CountingVisitor();
+        r.visit(v);
+        verifyCounts2(v);
     }
 
     @Test
@@ -753,6 +782,21 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         return node;
     }
     
+    private void verifyCounts2(CountingVisitor visitor) {
+        assertEquals(1, visitor.getModelImportCount());
+        assertEquals(1, visitor.getNodeCount());
+        assertEquals(0, visitor.getNodeCategoryCount());
+        assertEquals(1, visitor.getInterfaceCount());
+        assertEquals(2, visitor.getMonitoredServiceCount());
+        assertEquals(0, visitor.getServiceCategoryCount());
+        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
+        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
+        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
+        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
+        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
+        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
+    }
+    
     private void verifyCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
@@ -846,8 +890,8 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         public void visitNode(OnmsNodeRequisition nodeReq) {
             m_nodeCount++;
-            assertEquals("apknd", nodeReq.getNodeLabel());
-            assertEquals("4243", nodeReq.getForeignId());
+            assertEquals("localhost", nodeReq.getNodeLabel());
+            assertEquals(String.valueOf("localhost".hashCode()), nodeReq.getForeignId());
         }
 
         public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
