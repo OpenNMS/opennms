@@ -77,19 +77,19 @@ public class KSC_PerformanceReportFactory {
      * graph
      */
     public static final String[] TIMESPAN_OPTIONS = {
-            "1 hour",
-            "2 hour",
-            "4 hour",
-            "6 hour",
-            "8 hour",
-            "12 hour",
-            "1 day",
-            "2 day",
-            "7 day",
-            "1 month",
-            "3 month",
-            "6 month",
-            "1 year",
+            "1_hour",
+            "2_hour",
+            "4_hour",
+            "6_hour",
+            "8_hour",
+            "12_hour",
+            "1_day",
+            "2_day",
+            "7_day",
+            "1_month",
+            "3_month",
+            "6_month",
+            "1_year",
             "Today",
             "Yesterday",
             "Yesterday 9am-5pm",
@@ -288,31 +288,31 @@ public class KSC_PerformanceReportFactory {
      * Calendar.getInstance();
      */
     public static synchronized void getBeginEndTime(String interval, Calendar begin_time, Calendar end_time) throws IllegalArgumentException {
-        if (interval.equals("1 hour")) {
+        if (interval.equals("1_hour")) {
             begin_time.add(Calendar.HOUR, -1);
-        } else if (interval.equals("2 hour")) {
+        } else if (interval.equals("2_hour")) {
             begin_time.add(Calendar.HOUR, -2);
-        } else if (interval.equals("4 hour")) {
+        } else if (interval.equals("4_hour")) {
             begin_time.add(Calendar.HOUR, -4);
-        } else if (interval.equals("6 hour")) {
+        } else if (interval.equals("6_hour")) {
             begin_time.add(Calendar.HOUR, -6);
-        } else if (interval.equals("8 hour")) {
+        } else if (interval.equals("8_hour")) {
             begin_time.add(Calendar.HOUR, -8);
-        } else if (interval.equals("12 hour")) {
+        } else if (interval.equals("12_hour")) {
             begin_time.add(Calendar.HOUR, -12);
-        } else if (interval.equals("1 day")) {
+        } else if (interval.equals("1_day")) {
             begin_time.add(Calendar.DATE, -1);
-        } else if (interval.equals("2 day")) {
+        } else if (interval.equals("2_day")) {
             begin_time.add(Calendar.DATE, -2);
-        } else if (interval.equals("7 day")) {
+        } else if (interval.equals("7_day")) {
             begin_time.add(Calendar.DATE, -7);
-        } else if (interval.equals("1 month")) {
+        } else if (interval.equals("1_month")) {
             begin_time.add(Calendar.DATE, -30);
-        } else if (interval.equals("3 month")) {
+        } else if (interval.equals("3_month")) {
             begin_time.add(Calendar.DATE, -90);
-        } else if (interval.equals("6 month")) {
+        } else if (interval.equals("6_month")) {
             begin_time.add(Calendar.DATE, -183);
-        } else if (interval.equals("1 year")) {
+        } else if (interval.equals("1_year")) {
             begin_time.add(Calendar.DATE, -365);
         } else {
             // From current time, lets zero out the small components
