@@ -890,8 +890,8 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         public void visitNode(OnmsNodeRequisition nodeReq) {
             m_nodeCount++;
-            assertEquals("localhost", nodeReq.getNodeLabel());
-            assertEquals(String.valueOf("localhost".hashCode()), nodeReq.getForeignId());
+            assertEquals("apknd", nodeReq.getNodeLabel());
+            assertEquals("4243", nodeReq.getForeignId());
         }
 
         public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {

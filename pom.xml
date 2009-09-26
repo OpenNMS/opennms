@@ -81,9 +81,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</developerConnection>
-    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/trunk</url>
+    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7</connection>
+    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7</developerConnection>
+    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/branches/1.7</url>
   </scm>
   <modules>
     <!-- new structure -->
@@ -278,7 +278,7 @@
          <additionalConfig>
            <file>
              <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
            </file>
          </additionalConfig>
        </configuration>
