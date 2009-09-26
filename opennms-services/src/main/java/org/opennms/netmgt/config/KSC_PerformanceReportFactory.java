@@ -77,21 +77,23 @@ public class KSC_PerformanceReportFactory {
      * graph
      */
     public static final String[] TIMESPAN_OPTIONS = {
-            "1_hour",
-            "2_hour",
-            "4_hour",
-            "6_hour",
-            "8_hour",
-            "12_hour",
-            "1_day",
-            "2_day",
-            "7_day",
-            "1_month",
-            "3_month",
-            "6_month",
-            "1_year",
+            "1 hour",
+            "2 hour",
+            "4 hour",
+            "6 hour",
+            "8 hour",
+            "12 hour",
+            "1 day",
+            "2 day",
+            "7 day",
+            "1 month",
+            "3 month",
+            "6 month",
+            "1 year",
             "Today",
             "Yesterday",
+            "Yesterday 9am-5pm",
+            "Yesterday 5pm-10pm",
             "This Week",
             "Last Week",
             "This Month",
@@ -286,31 +288,31 @@ public class KSC_PerformanceReportFactory {
      * Calendar.getInstance();
      */
     public static synchronized void getBeginEndTime(String interval, Calendar begin_time, Calendar end_time) throws IllegalArgumentException {
-        if (interval.equals("1_hour")) {
+        if (interval.equals("1 hour")) {
             begin_time.add(Calendar.HOUR, -1);
-        } else if (interval.equals("2_hour")) {
+        } else if (interval.equals("2 hour")) {
             begin_time.add(Calendar.HOUR, -2);
-        } else if (interval.equals("4_hour")) {
+        } else if (interval.equals("4 hour")) {
             begin_time.add(Calendar.HOUR, -4);
-        } else if (interval.equals("6_hour")) {
+        } else if (interval.equals("6 hour")) {
             begin_time.add(Calendar.HOUR, -6);
-        } else if (interval.equals("8_hour")) {
+        } else if (interval.equals("8 hour")) {
             begin_time.add(Calendar.HOUR, -8);
-        } else if (interval.equals("12_hour")) {
+        } else if (interval.equals("12 hour")) {
             begin_time.add(Calendar.HOUR, -12);
-        } else if (interval.equals("1_day")) {
+        } else if (interval.equals("1 day")) {
             begin_time.add(Calendar.DATE, -1);
-        } else if (interval.equals("2_day")) {
+        } else if (interval.equals("2 day")) {
             begin_time.add(Calendar.DATE, -2);
-        } else if (interval.equals("7_day")) {
+        } else if (interval.equals("7 day")) {
             begin_time.add(Calendar.DATE, -7);
-        } else if (interval.equals("1_month")) {
+        } else if (interval.equals("1 month")) {
             begin_time.add(Calendar.DATE, -30);
-        } else if (interval.equals("3_month")) {
+        } else if (interval.equals("3 month")) {
             begin_time.add(Calendar.DATE, -90);
-        } else if (interval.equals("6_month")) {
+        } else if (interval.equals("6 month")) {
             begin_time.add(Calendar.DATE, -183);
-        } else if (interval.equals("1_year")) {
+        } else if (interval.equals("1 year")) {
             begin_time.add(Calendar.DATE, -365);
         } else {
             // From current time, lets zero out the small components
@@ -325,6 +327,16 @@ public class KSC_PerformanceReportFactory {
                 end_time.add(Calendar.DATE, 1);
             } else if (interval.equals("Yesterday")) {
                 begin_time.add(Calendar.DATE, -1);
+            } else if (interval.equals("Yesterday 8am-5pm")) {
+                begin_time.add(Calendar.DATE, -1);
+                begin_time.set(Calendar.HOUR_OF_DAY, 9);
+                end_time.add(Calendar.DATE, -1);
+                end_time.set(Calendar.HOUR_OF_DAY, 17);
+            } else if (interval.equals("Yesterday 5pm-10pm")) {
+                begin_time.add(Calendar.DATE, -1);
+                begin_time.set(Calendar.HOUR_OF_DAY, 17);
+                end_time.add(Calendar.DATE, -1);
+                end_time.set(Calendar.HOUR_OF_DAY, 22);
             } else if (interval.equals("This Week") || interval.equals("Last Week")) {
                 begin_time.set(Calendar.DAY_OF_WEEK, 1);
                 end_time.set(Calendar.DAY_OF_WEEK, 7);
