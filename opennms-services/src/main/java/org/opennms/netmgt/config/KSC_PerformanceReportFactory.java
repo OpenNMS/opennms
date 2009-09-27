@@ -327,7 +327,7 @@ public class KSC_PerformanceReportFactory {
                 end_time.add(Calendar.DATE, 1);
             } else if (interval.equals("Yesterday")) {
                 begin_time.add(Calendar.DATE, -1);
-            } else if (interval.equals("Yesterday 8am-5pm")) {
+            } else if (interval.equals("Yesterday 9am-5pm")) {
                 begin_time.add(Calendar.DATE, -1);
                 begin_time.set(Calendar.HOUR_OF_DAY, 9);
                 end_time.add(Calendar.DATE, -1);
