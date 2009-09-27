@@ -8955,7 +8955,7 @@
                <mevalue>3</mevalue>
            </maskelement>
        </mask>
-       <uei>uei.hersheymed.old/vendor/Cisco/traps/moduleUp</uei>
+       <uei>uei.opennms.org/vendor/Cisco/traps/moduleUp</uei>
        <event-label>CISCO-STACK-MIB defined trap event:
 moduleUp</event-label>
        <descr>&lt;p&gt;A moduleUp trap signifies that the
@@ -9016,7 +9016,7 @@ Up.&lt;/p&gt;</logmsg>
                <mevalue>4</mevalue>
            </maskelement>
        </mask>
-       <uei>uei.hersheymed.old/vendor/Cisco/traps/moduleDown</uei>
+       <uei>uei.opennms.org/vendor/Cisco/traps/moduleDown</uei>
        <event-label>CISCO-STACK-MIB defined trap event: moduleDown</event-label>
        <descr>&lt;p&gt;A moduleDown trap signifies that the
 	agent entity has detected that the moduleStatus object in this MIB has
