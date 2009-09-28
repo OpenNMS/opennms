@@ -1,6 +1,7 @@
 package org.opennms.client;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.util.*;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -8,13 +9,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *  This class is a thin facade for {@link org.apache.log4j.spi.LoggingEvent}
  *  log4j messages on the server side.
  */
-public class LoggingEvent implements IsSerializable{
-	public enum LogLevel { DEBUG, INFO, WARN, ERROR, FATAL }
-	
-	public LoggingEvent() {}
-	
-	public String getCategory() { return "Fake.Category"; }
-	public long getTimeStamp() { return new Date().getTime(); }
-	public LogLevel getLevel() { return LogLevel.INFO; }
-	public String getMessage() { return "Hello world."; }
+public class LoggingEvent implements Serializable, IsSerializable {
+    public enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL }
+
+    private String m_category;
+    private long m_timestamp;
+    private LogLevel m_level;
+    private String m_message;
+
+    /**
+     * Zero-argument constructor is necessary for GWT serialization
+     */
+    public LoggingEvent() {}
+
+    public LoggingEvent(String category, long timestamp, LogLevel level, String message) {
+        m_category = category;
+        m_timestamp = timestamp;
+        m_level = level;
+        m_message = message;
+    }
+
+    public String getCategory() { return m_category; }
+    public long getTimeStamp() { return m_timestamp; }
+    public LogLevel getLevel() { return m_level; }
+    public String getMessage() { return m_message; }
 }
