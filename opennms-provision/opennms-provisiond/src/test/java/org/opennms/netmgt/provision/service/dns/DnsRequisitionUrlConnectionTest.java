@@ -65,6 +65,7 @@ import org.springframework.core.io.UrlResource;
 public class DnsRequisitionUrlConnectionTest {
 
     private static final String TEST_URL = "dns://localhost/localhost";
+
     
     @Before
     public void registerFactory() {
@@ -78,29 +79,210 @@ public class DnsRequisitionUrlConnectionTest {
     }
     
     @Test
+    public void dwoValidateMultipathUrl() {
+        
+        MalformedURLException e = null;
+        
+        try {
+            DnsRequisitionUrlConnection c = new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms"));
+            Assert.assertEquals("opennms", c.getZone());
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNull(e);
+        
+        try {
+            DnsRequisitionUrlConnection c = new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms/raleigh"));
+            Assert.assertEquals("opennms", c.getZone());
+            Assert.assertEquals("raleigh", c.getForeignSource());
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNull(e);
+        
+        
+        try {
+            new DnsRequisitionUrlConnection(new URL("dns://localhost/org/opennms/raleigh"));
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNotNull(e);
+        Assert.assertEquals("The specified DNS URL contains invalid path: dns://localhost/org/opennms/raleigh", e.getLocalizedMessage());
+        
+    }
+
+    @Test
+    public void dwoParseZone() {
+        MalformedURLException e = null;
+        
+        URL url = null;
+        try {
+            url = new URL("dns://localhost/opennms");
+        } catch (MalformedURLException e2) {
+            e = e2;
+        }
+        Assert.assertNull(e);
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseZone(url));
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseForeignSource(url));
+        
+        
+        try {
+            url = new URL("dns://localhost/opennms/raleigh");
+        } catch (MalformedURLException e2) {
+            e = e2;
+        }
+        Assert.assertNull(e);
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseZone(url));
+        Assert.assertEquals("raleigh", DnsRequisitionUrlConnection.parseForeignSource(url));
+        
+        
+        try {
+            url = new URL("dns://localhost/opennms/?expression=abc[123]");
+        } catch (MalformedURLException e2) {
+            e = e2;
+        }
+        Assert.assertNull(e);
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseZone(url));
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseForeignSource(url));
+
+        
+        try {
+            url = new URL("dns://localhost/opennms/raleigh/?expression=abc[123]");
+        } catch (MalformedURLException e2) {
+            e = e2;
+        }
+        Assert.assertNull(e);
+        Assert.assertEquals("opennms", DnsRequisitionUrlConnection.parseZone(url));
+        Assert.assertEquals("raleigh", DnsRequisitionUrlConnection.parseForeignSource(url));
+    }
+    
+    
+    @Test
+    public void dwoValidateInvalidQueryParmInUrl() {
+        
+        MalformedURLException e = null;
+        
+        try {
+            new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms/?expression=abc[123]"));
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNull(e);
+        
+        
+        try {
+            new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms/raleigh/?expression=abc[123]"));
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNull(e);
+        
+        
+        try {
+            new DnsRequisitionUrlConnection(new URL("dns://localhost/opennms/?string=abc[123]"));
+        } catch (MalformedURLException e1) {
+            e = e1;
+        }
+        Assert.assertNotNull(e);
+        Assert.assertEquals("The specified DNS URL contains an invalid query string: dns://localhost/opennms/?string=abc[123]", e.getLocalizedMessage());
+        
+    }
+    
+    @Test
+    public void dwoParseUrlForMatchingExpression() throws MalformedURLException {
+        URL url = new URL("dns://localhost/localhost/?expression=abc[0-9]");
+        
+        String expression = url.getPath();
+        Assert.assertNotNull(expression);
+        Assert.assertEquals("/localhost/", expression);
+        Assert.assertEquals("expression=abc[0-9]", url.getQuery());
+        
+        String urlExpression = DnsRequisitionUrlConnection.determineExpressionFromUrl(url);
+        Assert.assertEquals("abc[0-9]", urlExpression);
+        
+    }
+    
+    @Test
     @Ignore
-    public void dwUrlAsResource() throws IOException, MarshalException, ValidationException, JAXBException {
-        Resource r = new UrlResource(TEST_URL);
+    public void dwoUrlAsResource() throws IOException, MarshalException, ValidationException, JAXBException {
+        Resource resource = new UrlResource(TEST_URL);
         
-        Assert.assertEquals(TEST_URL, r.getURL().toString());
-        
-        InputStream s = r.getInputStream();
+        Assert.assertEquals(TEST_URL, resource.getURL().toString());
         
         Requisition req = null;
-        Assert.assertNotNull(r);
-        InputStream resourceStream = r.getInputStream();
+        Assert.assertNotNull(resource);
+        InputStream resourceStream = resource.getInputStream();
         JAXBContext context = JAXBContext.newInstance(Requisition.class);
         Unmarshaller um = context.createUnmarshaller();
         um.setSchema(null);
         req = (Requisition) um.unmarshal(resourceStream);
         
         Assert.assertEquals(1, req.getNodeCount());
-        s.close();
+        resourceStream.close();
     }
     
+    @Test
+    @Ignore
+    public void dwoUrlAsResourceUsingMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+        String urlString = "dns://localhost/localhost/?expression=[Ll]ocal.*";
+        Resource resource = new UrlResource(urlString);
+        
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        
+        Requisition req = null;
+        Assert.assertNotNull(resource);
+        InputStream resourceStream = resource.getInputStream();
+        JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        Unmarshaller um = context.createUnmarshaller();
+        um.setSchema(null);
+        req = (Requisition) um.unmarshal(resourceStream);
+        
+        Assert.assertEquals(1, req.getNodeCount());
+        resourceStream.close();
+    }
 
     @Test
-    public void dwDnsRequisitionUrlConnection() throws MalformedURLException {
+    @Ignore
+    public void dwoUrlAsResourceUsingNonMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+        String urlString = "dns://localhost/localhost/?expression=Local.*";
+        Resource resource = new UrlResource(urlString);
+        
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        
+        Requisition req = null;
+        Assert.assertNotNull(resource);
+        InputStream resourceStream = resource.getInputStream();
+        JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        Unmarshaller um = context.createUnmarshaller();
+        um.setSchema(null);
+        req = (Requisition) um.unmarshal(resourceStream);
+        
+        Assert.assertEquals(0, req.getNodeCount());
+        resourceStream.close();
+    }
+    
+    @Test
+    @Ignore
+    public void dwoUrlAsResourceUsingComplexMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+        String urlString = "dns://localhost/localhost/?expression=(%3Fi)^LOCALH.*";
+        Resource resource = new UrlResource(urlString);
+        
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        
+        Requisition req = null;
+        Assert.assertNotNull(resource);
+        InputStream resourceStream = resource.getInputStream();
+        JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        Unmarshaller um = context.createUnmarshaller();
+        um.setSchema(null);
+        req = (Requisition) um.unmarshal(resourceStream);
+        
+        Assert.assertEquals(1, req.getNodeCount());
+        resourceStream.close();
+    }
+    
+    @Test
+    public void dwoDnsRequisitionUrlConnection() throws MalformedURLException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         Assert.assertNotNull(c);
     }
@@ -110,14 +292,14 @@ public class DnsRequisitionUrlConnectionTest {
      * @throws IOException
      */
     @Test
-    public void dwConnect() throws IOException {
+    public void dwoConnect() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         c.connect();
     }
 
     @Test
     @Ignore
-    public void dwGetInputStream() throws IOException {
+    public void dwoGetInputStream() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         InputStream s = c.getInputStream();
         Assert.assertNotNull(s);
@@ -125,7 +307,7 @@ public class DnsRequisitionUrlConnectionTest {
     }
 
     @Test
-    public void dwGetURL() throws MalformedURLException {
+    public void dwoGetURL() throws MalformedURLException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         Assert.assertEquals(53, c.getURL().getDefaultPort());
         Assert.assertEquals("localhost", c.getURL().getHost());
@@ -135,7 +317,7 @@ public class DnsRequisitionUrlConnectionTest {
     }
 
     @Test
-    public void dwToString() throws MalformedURLException {
+    public void dwoToString() throws MalformedURLException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         Assert.assertEquals(TEST_URL, c.getURL().toString());
     }

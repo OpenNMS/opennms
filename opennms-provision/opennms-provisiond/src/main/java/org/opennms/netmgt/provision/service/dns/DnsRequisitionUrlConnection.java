@@ -39,22 +39,33 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.io.IOExceptionWithCause;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.ProvisionPrefixContextResolver;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.springframework.util.StringUtils;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
@@ -72,6 +83,10 @@ import org.xbill.DNS.ZoneTransferIn;
  *
  */
 public class DnsRequisitionUrlConnection extends URLConnection {
+
+    private static final String EXPRESSION_ARG = "expression";
+
+    private static final String QUERY_ARG_SEPARATOR = "&";
 
     public static final String URL_SCHEME = "dns://";
     
@@ -91,15 +106,19 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private URL m_url;
 
     private int m_port;
-        
+
+    private String m_foreignSource;
+    
+    
     protected DnsRequisitionUrlConnection(URL url) throws MalformedURLException {
         super(url);
         
+        validateDnsUrl(url);
+        
         m_url = url;
-        
         m_port = url.getPort() == -1 ? 53 : url.getPort();
-        
         m_zone = parseZone(url);
+        m_foreignSource = parseForeignSource(url);
         
         if (m_zone == null) {
             throw new IllegalArgumentException("Specified Zone is null");
@@ -109,11 +128,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         m_fallback = Boolean.valueOf(false);
 
         m_key = null;
-
-    }
-
-    private String parseZone(URL url) {
-        return url.getPath().replaceAll("/", "");
+        
     }
 
     
@@ -130,16 +145,20 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * 
      */
     @Override
-    public InputStream getInputStream() {
+    public InputStream getInputStream() throws IOException {
         
         InputStream stream = null;
         
         try {
             Requisition r = buildRequisitionFromZoneTransfer();
             stream = new ByteArrayInputStream(jaxBMarshal(r).getBytes());
-            
+        } catch (IOException e) {
+            log().warn("getInputStream: Problem getting input stream: "+e, e);
+            throw e;
         } catch (Exception e) {
-            System.out.println(e);
+            String message = "Problem getting input stream: "+e;
+            log().warn(message, e);
+            throw new IOExceptionWithCause(message,e );
         }
         
         return stream;
@@ -156,7 +175,9 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @throws ZoneTransferException
      */
     private Requisition buildRequisitionFromZoneTransfer() throws IOException, ZoneTransferException {
+        
         //ZoneTransferIn xfer = ZoneTransferIn.newAXFR(new Name(m_zone), m_host, m_key);
+        
         ZoneTransferIn xfer = ZoneTransferIn.newIXFR(new Name(m_zone), 
                                       m_serial.longValue(), 
                                       m_fallback.booleanValue(), 
@@ -171,10 +192,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         if (records.size() > 0) {
             
             //for now, set the foreign source to the specified dns zone
-            r = new Requisition(m_zone);
+            r = new Requisition(getForeignSource());
             
             for (Record rec : records) {
-                if ("A".equals( Type.string(rec.getType()))) {
+                if (matchingRecord(rec)) {
                     r.insertNode(createRequisitionNode(rec));
                 }
             }
@@ -192,17 +213,20 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     private RequisitionNode createRequisitionNode(Record rec) {
         ARecord arec = (ARecord)rec;
-        String addr = StringUtils.trimLeadingCharacter(arec.getAddress().toString(), '/');
+        String addr = StringUtils.stripStart(arec.getAddress().toString(), "/");
 
         RequisitionNode n = new RequisitionNode();
+        
         String host = rec.getName().toString();
-        n.setBuilding(getZone());
-        String nodeLabel = StringUtils.trimTrailingCharacter(host, '.');
+        String nodeLabel = StringUtils.stripStart(host, ".");
+        
+        n.setBuilding(getForeignSource());
+        
         n.setForeignId(computeHashCode(nodeLabel));
         n.setNodeLabel(nodeLabel);
         
         RequisitionInterface i = new RequisitionInterface();
-        i.setDescr("DNS");
+        i.setDescr("DNS-A");
         i.setIpAddr(addr);
         i.setSnmpPrimary("P");
         i.setManaged(Boolean.valueOf(true));
@@ -214,6 +238,52 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         return n;
     }
+
+    /**
+     * Determines if the record is an A record and if the canonical name 
+     * matches the expression supplied in the URL, if one was supplied.
+     * 
+     * @param rec
+     * @return boolean if rec should be included in the import requisition
+     */
+    private boolean matchingRecord(Record rec) {
+        
+        log().info("matchingRecord: checking rec: "+rec+" to see if it should be imported...");
+
+        boolean matches = false;
+        
+        if ("A".equals(Type.string(rec.getType()))) {
+            
+            log().debug("matchingRecord: record is a an A record, continuing...");
+            
+            String expression = determineExpressionFromUrl(getUrl());
+            
+            if (expression != null) {
+
+                Pattern p = Pattern.compile(expression);
+                Matcher m = p.matcher(rec.getName().toString());
+
+                log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
+                if (m.matches()) {
+                    matches = true;
+                }
+                
+                log().debug("matchingRecord: record matches expression: "+matches);
+                
+            } else {
+                
+                log().debug("matchingRecord: on expression for this zone, returning valid match for this A record...");
+                
+                matches = true;
+            }
+
+        }
+        
+        log().info("matchingRecord: record: "+rec+" matches: "+matches);
+        
+        return matches;
+    }
+    
 
     /**
      * Created this in the case that we decide to every do something different with the hashing
@@ -291,6 +361,154 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     public URL getUrl() {
         return m_url;
     }
+
+    protected static String determineExpressionFromUrl(URL url) {
+        log().info("determineExpressionFromUrl: finding regex as parameter in query string of URL: "+url);
+        
+        if (url.getQuery() == null) {
+            return null;
+        }
+
+        //TODO: need to throw exception if query is null
+        String query = decodeQueryString(url);
+        
+        //TODO: need to handle exception
+        List<String> queryArgs = tokenizeQueryArgs(query);
+
+        Map<String, String> args = new HashMap<String, String>();
+        for (String queryArg : queryArgs) {
+            String[] argTokens = StringUtils.split(queryArg, '='); 
+
+            if (argTokens.length < 2) {
+                log().warn("determineExpressionFromUrl: syntax error in URL query string, missing '=' in query argument: "+queryArg);
+            } else {
+                args.put(argTokens[0].toLowerCase(), argTokens[1]);
+            }
+        }
+
+        return args.get(EXPRESSION_ARG);
+    }
+
+    private static List<String> tokenizeQueryArgs(String query) throws IllegalArgumentException {
+        
+        if (query == null) {
+            throw new IllegalArgumentException("The URL query is null");
+        }
+
+        List<String> queryArgs = new ArrayList<String>();
+        queryArgs = Arrays.asList(StringUtils.split(query, QUERY_ARG_SEPARATOR));
+
+        return queryArgs;
+    }
+
+    protected static String decodeQueryString(URL url) {
+        String query = null;
+        
+        if (url == null || url.getQuery() == null) {
+            throw new IllegalArgumentException("The URL or the URL query is null: "+url);
+        }
+        
+        try {
+            query = URLDecoder.decode(url.getQuery(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log().error("decodeQueryString: "+e, e);
+        }
+        
+        return query;
+    }
+
+    /**
+     * Validate the format is:
+     *   dns://<host>/<zone>/?expression=<regex>
+     *   
+     *   there should be only one arguement in the path
+     *   there should only be one query parameter
+     *   
+     * @param url
+     */
+    protected static void validateDnsUrl(URL url) throws MalformedURLException {
+        
+        String path = url.getPath();
+        path = StringUtils.removeStart(path, "/");
+        path = StringUtils.removeEnd(path, "/");
+        
+        if (path == null || StringUtils.countMatches(path, "/") > 1) {
+            throw new MalformedURLException("The specified DNS URL contains invalid path: "+url);
+        }
+        
+        String query = url.getQuery();
+        
+        if (query != null && determineExpressionFromUrl(url) == null) {
+            throw new MalformedURLException("The specified DNS URL contains an invalid query string: "+url);
+        }
+        
+    }
+
     
+    /**
+     * Zone should be the first path entity
+     * 
+     *   dns://<host>/<zone>[/<foreign source>][/<?expression=<regex>>
+     *   
+     * @param url
+     * @return
+     */
+    protected static String parseZone(URL url) {
+        
+        String path = url.getPath();
+        
+        path = StringUtils.removeStart(path, "/");
+        path = StringUtils.removeEnd(path, "/");
+
+        String zone = path;
+        
+        if (path != null && StringUtils.countMatches(path, "/") == 1) {
+            String[] paths = path.split("/");
+            zone = paths[0];
+        }
+        
+        return zone;
+    }
+    
+    
+    /**
+     * Foreign Source should be the second path entity, if it exists, otherwise it is
+     * set to the value of the zone.
+     * 
+     *   dns://<host>/<zone>[/<foreign source>][/<?expression=<regex>>
+     *   
+     * @param url
+     * @return
+     */
+    protected static String parseForeignSource(URL url) {
+        
+        String path = url.getPath();
+        
+        path = StringUtils.removeStart(path, "/");
+        path = StringUtils.removeEnd(path, "/");
+
+        String foreignSource = path;
+        
+        if (path != null && StringUtils.countMatches(path, "/") == 1) {
+            String[] paths = path.split("/");
+            foreignSource = paths[1];
+        }
+        
+        return foreignSource;
+    }
+    
+    private static Logger log() {
+        return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
+    }
+
+
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+    }
+
+
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
 
 }
