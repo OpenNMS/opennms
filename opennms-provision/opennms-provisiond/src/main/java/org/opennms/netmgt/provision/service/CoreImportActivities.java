@@ -86,7 +86,7 @@ public class CoreImportActivities {
 
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
-        info("Loading requisition from resource " + resource);
+        info("Loading requisition from resource %s", resource);
         Requisition specFile = m_provisionService.loadRequisition(resource);
         debug("Finished loading requisition.");
 
@@ -95,7 +95,7 @@ public class CoreImportActivities {
     
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
     public ImportOperationsManager auditNodes(Requisition specFile) {
-        info("Auditing nodes for requisition " + specFile);
+        info("Auditing nodes for requisition %s", specFile);
 
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
@@ -115,7 +115,7 @@ public class CoreImportActivities {
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
     public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
 
-        info("Scheduling nodes for phase " + currentPhase);
+        info("Scheduling nodes for phase %s", currentPhase);
         
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
@@ -134,7 +134,7 @@ public class CoreImportActivities {
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
     public void scanNode(ImportOperation operation) {
-        info("Running scan phase of " + operation);
+        info("Running scan phase of %s", operation);
         operation.scan();
 
         System.out.println("Finished Running scan phase of "+operation);
