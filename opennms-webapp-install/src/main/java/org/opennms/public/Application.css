@@ -37,3 +37,7 @@ body {
 .check-failure-icon { 
 	background: url('../images/redcross.gif') no-repeat center left !important; 
 }
+
+.check-progress-icon { 
+	background: url('../images/indicator.gif') no-repeat center left !important; 
+}

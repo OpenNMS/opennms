@@ -64,7 +64,7 @@ public class Application implements EntryPoint {
         VerticalPanel gxtWrapper = new VerticalPanel();
         gxtWrapper.setHorizontalAlignment(VerticalPanel.ALIGN_LEFT);
 
-        ContentPanel gxtPanel = new ContentPanel();
+        final ContentPanel gxtPanel = new ContentPanel();
         AccordionLayout gxtPanelLayout = new AccordionLayout();
         // gxtPanelLayout.setAutoWidth(true);
         gxtPanel.setLayout(gxtPanelLayout);
@@ -74,18 +74,49 @@ public class Application implements EntryPoint {
         gxtPanel.setBodyStyleName("transparent-background");
         // gxtPanel.setHorizontalAlignment(ContentPanel.);
 
-        ContentPanel verifyOwnership = new ContentPanel();
+        final ContentPanel verifyOwnership = new ContentPanel();
         verifyOwnership.setHeading("Verify ownership");
         // verifyOwnership.setLayout(new FitLayout());
         verifyOwnership.setIconStyle("check-success-icon");
         verifyOwnership.setBodyStyleName("accordion-panel");
-        verifyOwnership.addText("Add form controls here.");
+        // verifyOwnership.addText("Add form controls here.");
         verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
             }
         });
+        Button checkOwnershipButton = new Button("Check ownership file", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent e) {
+                // Start a spinner that indicates operation start
+                verifyOwnership.setIconStyle("check-progress-icon");
+                
+                final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+                installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            verifyOwnership.setIconStyle("check-success-icon");
+                            MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        } else {
+                            verifyOwnership.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        }
+                    }
 
-        ContentPanel setAdminPassword = new ContentPanel();
+                    public void onFailure(Throwable e) {
+                        verifyOwnership.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            }
+        });
+        verifyOwnership.add(checkOwnershipButton);
+
+        final ContentPanel setAdminPassword = new ContentPanel();
         setAdminPassword.setHeading("Set administrator password");
         setAdminPassword.setIconStyle("check-success-icon");
         setAdminPassword.setBodyStyleName("accordion-panel");
@@ -95,7 +126,7 @@ public class Application implements EntryPoint {
             }
         });
 
-        ContentPanel connectToDatabase = new ContentPanel();
+        final ContentPanel connectToDatabase = new ContentPanel();
         connectToDatabase.setHeading("Connect to database");
         connectToDatabase.setIconStyle("check-failure-icon");
         connectToDatabase.setBodyStyleName("accordion-panel");
@@ -125,7 +156,7 @@ public class Application implements EntryPoint {
             }
         });
 
-        ContentPanel checkStoredProcedures = new ContentPanel();
+        final ContentPanel checkStoredProcedures = new ContentPanel();
         checkStoredProcedures.setHeading("Check stored procedures");
         checkStoredProcedures.setIconStyle("check-failure-icon");
         checkStoredProcedures.setBodyStyleName("accordion-panel");
@@ -135,7 +166,7 @@ public class Application implements EntryPoint {
             }
         });
 
-        ContentPanel tips = new ContentPanel();
+        final ContentPanel tips = new ContentPanel();
         tips.setHeading("Additional tips");
         tips.setBodyStyleName("accordion-panel");
         tips.addText("Add additional tips here.");
