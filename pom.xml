@@ -1680,7 +1680,7 @@
       <dependency>
         <groupId>org.krupczak</groupId>
         <artifactId>Xmp</artifactId>
-        <version>0.1-40</version>
+        <version>1.1</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
