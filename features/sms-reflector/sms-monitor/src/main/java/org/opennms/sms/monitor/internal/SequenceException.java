@@ -1,4 +1,4 @@
-package org.opennms.sms.monitor.internal.config;
+package org.opennms.sms.monitor.internal;
 
 public class SequenceException extends Exception {
 	private static final long serialVersionUID = 1L;

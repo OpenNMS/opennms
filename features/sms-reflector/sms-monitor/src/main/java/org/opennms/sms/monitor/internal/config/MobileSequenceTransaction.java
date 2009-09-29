@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="transaction")
+@XmlType(propOrder={"request", "responses"})
 public class MobileSequenceTransaction implements Comparable<MobileSequenceTransaction> {
 	private String m_label;
 	private String m_gatewayId;
@@ -49,7 +53,8 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 		return m_gatewayId;
 	}
 
-	@XmlElementRef
+//	@XmlElementRef
+	@XmlAnyElement
 	public MobileSequenceRequest getRequest() {
 		return m_request;
 	}

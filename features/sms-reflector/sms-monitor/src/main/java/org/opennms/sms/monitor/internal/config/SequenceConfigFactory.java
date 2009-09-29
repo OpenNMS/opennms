@@ -11,6 +11,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.sms.monitor.internal.SequenceException;
 
 public class SequenceConfigFactory {
 	private static SequenceConfigFactory m_singleton = null;
