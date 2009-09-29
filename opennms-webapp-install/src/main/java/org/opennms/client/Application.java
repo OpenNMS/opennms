@@ -99,7 +99,27 @@ public class Application implements EntryPoint {
         connectToDatabase.setHeading("Connect to database");
         connectToDatabase.setIconStyle("check-failure-icon");
         connectToDatabase.setBodyStyleName("accordion-panel");
-        connectToDatabase.addText("Add form controls here.");
+        // connectToDatabase.addText("Add form controls here.");
+        Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent e) {
+                final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+                installService.updateDatabase(new AsyncCallback<Void>() {
+                    public void onSuccess(Void result) {
+                        // Start a spinner that will read the log messages from the installer
+                        // Start an interval that will monitor the installer thread
+                        MessageBox.alert("Update Started", "The database update has been started.", new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                            }
+                        });
+                    }
+
+                    public void onFailure(Throwable e) {
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            }
+        });
+        connectToDatabase.add(updateButton);
         connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
             }
@@ -136,7 +156,11 @@ public class Application implements EntryPoint {
                             public void handleEvent(MessageBoxEvent event) {
                                 installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
                                     public void onSuccess(List<LoggingEvent> result) {
-                                        MessageBox.alert("Alert", result.get(0).getMessage(), new Listener<MessageBoxEvent>() {
+                                        String message = "";
+                                        for (LoggingEvent event : result) {
+                                            message += event.getMessage().trim() + "\n";
+                                        }
+                                        MessageBox.alert("Alert", message, new Listener<MessageBoxEvent>() {
                                             public void handleEvent(MessageBoxEvent event) {
                                             }
                                         });

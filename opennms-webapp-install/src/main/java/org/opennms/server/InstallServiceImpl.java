@@ -8,6 +8,7 @@ import org.apache.log4j.Appender;
 
 import org.opennms.client.*;
 import org.opennms.client.LoggingEvent.LogLevel;
+import org.opennms.install.Installer;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -34,7 +35,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void setDatabaseConfig(String arguments){
-
     }
 
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
@@ -56,8 +56,21 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return retval;
     }
 
+    /**
+     * Initiate the installer class. This will generate log messages that will be
+     * relayed to the web UI by the log4j appender.
+     */
     public void updateDatabase() {
-
+        Thread thread = new Thread() {
+            public void run() {
+                try {
+                    Installer.main(new String[] { "-dis" });
+                } catch (Exception e) {
+                    Logger.getLogger(this.getClass()).error("Installation failed: " + e.getMessage(), e);
+                }
+            }
+        };
+        thread.start();
     }
 
     public boolean checkIpLike() {
