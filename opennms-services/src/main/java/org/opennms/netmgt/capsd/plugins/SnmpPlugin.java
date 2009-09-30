@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Sep 30: Integrated "table" patch from Jason Aras, bug 1596  - jeffg@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -48,6 +49,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -134,6 +136,8 @@ public class SnmpPlugin extends AbstractPlugin {
             String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
             String expectedValue = null;
+            String isTable = null;
+            
             if (qualifiers != null) {
                 // "port" parm
                 //
@@ -175,21 +179,43 @@ public class SnmpPlugin extends AbstractPlugin {
                 if (qualifiers.get("vbvalue") != null) {
                     expectedValue = (String) qualifiers.get("vbvalue");
                 }
+                
+                if(qualifiers.get("table") != null) {
+                	isTable = (String) qualifiers.get("table");
+                }
             }
             
-            String retrievedValue = getValue(agentConfig, oid);
+            if (isTable != null && isTable.equalsIgnoreCase("true")) {
+            	
+            	 SnmpObjId snmpObjId = SnmpObjId.get(oid);
+            	
+            	  Map<SnmpInstId, SnmpValue> table = SnmpUtils.getOidValues(agentConfig, "SnmpPlugin", snmpObjId);
+            	  for (Map.Entry<SnmpInstId, SnmpValue> e : table.entrySet()) { 
+                      if (e.getValue().toString().equals(expectedValue)) {	
+                      	return true;
+                      }    
+                  }
+            }
             
-            if (retrievedValue != null && expectedValue != null) {
-                return (Pattern.compile(expectedValue).matcher(retrievedValue).find());
-            } else {
-                return (retrievedValue != null);
+            else { 
+            	String retrievedValue = getValue(agentConfig, oid);
+            
+            	if (retrievedValue != null && expectedValue != null) {
+            		return (Pattern.compile(expectedValue).matcher(retrievedValue).find());
+            	} else {
+            		return (retrievedValue != null);
                 
                 //return (expectedValue == null ? true : retrievedValue.equals(expectedValue));
+            	}
+            
             }
             
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
         }
+        
+        // should never get here.
+        return false;
         
     }
 }
