@@ -1,6 +1,9 @@
 package org.opennms.server;
 
+import java.io.File;
 import java.util.*;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -14,16 +17,37 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
+    private final String OWNERSHIP_FILE_CONTEXT_ATTRIBUTE = "__install_ownership_file";
+
     public boolean checkOwnershipFileExists() {
-        return false;
+        ServletContext context = this.getServletContext();
+        String attribute = (String)context.getAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE);
+        if (attribute == null) {
+            return false;
+        } else {
+            // TODO: Figure out an API call to make that will fetch the OpenNMS install path
+            if (new File("/opt/opennms", attribute).isFile()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     public String getOwnershipFilename(){
-        return "fake_file_282829034.txt";
+        ServletContext context = this.getServletContext();
+        String attribute = (String)context.getAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE);
+        if (attribute == null) {
+            attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";
+            context.setAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE, attribute);
+        }
+        return attribute;
     }
 
     public void resetOwnershipFilename() {
-
+        ServletContext context = this.getServletContext();
+        String attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";
+        context.setAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE, attribute);
     }
 
     public void setAdminPassword(String password) {

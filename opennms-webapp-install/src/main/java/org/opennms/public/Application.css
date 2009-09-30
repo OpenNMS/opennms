@@ -7,16 +7,20 @@ button {
 }
 */
 
+P {
+	margin-bottom: 10px;
+}
+
 .widePanel {
   width: 100%
 }
 
-img {
+IMG {
   margin-top: 20px;
 }
 
 /* Provide a background image */
-body {
+BODY {
 	background-color: #c9dfc9;
 	background-image: url('../images/logo-background.gif');
 	background-repeat: repeat-x; 

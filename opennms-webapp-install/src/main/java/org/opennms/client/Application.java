@@ -30,6 +30,9 @@ public class Application implements EntryPoint {
      */
     public void onModuleLoad() {
 
+        // Create the RemoteServiceServlet that acts as the controller for this GWT view
+        final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
         // Create a Dock Panel
         DockPanel dock = new DockPanel();
         // dock.setStyleName("cw-DockPanel");
@@ -77,19 +80,29 @@ public class Application implements EntryPoint {
         final ContentPanel verifyOwnership = new ContentPanel();
         verifyOwnership.setHeading("Verify ownership");
         // verifyOwnership.setLayout(new FitLayout());
-        verifyOwnership.setIconStyle("check-success-icon");
+        verifyOwnership.setIconStyle("check-failure-icon");
         verifyOwnership.setBodyStyleName("accordion-panel");
         // verifyOwnership.addText("Add form controls here.");
+        final Html verifyOwnershipCaption = verifyOwnership.addText("");
         verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
+            }
+        });
+
+        installService.getOwnershipFilename(new AsyncCallback<String>() {
+            public void onSuccess(String result) {
+                verifyOwnershipCaption.setHtml("<p>To prove ownership of this appliance, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
+            }
+            public void onFailure(Throwable e) {
+                verifyOwnership.setIconStyle("check-failure-icon");
+                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
             }
         });
         Button checkOwnershipButton = new Button("Check ownership file", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
                 // Start a spinner that indicates operation start
                 verifyOwnership.setIconStyle("check-progress-icon");
-                
-                final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
                 installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
                     public void onSuccess(Boolean result) {
                         if (result) {
@@ -118,7 +131,7 @@ public class Application implements EntryPoint {
 
         final ContentPanel setAdminPassword = new ContentPanel();
         setAdminPassword.setHeading("Set administrator password");
-        setAdminPassword.setIconStyle("check-success-icon");
+        setAdminPassword.setIconStyle("check-failure-icon");
         setAdminPassword.setBodyStyleName("accordion-panel");
         setAdminPassword.addText("Add form controls here.");
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
@@ -133,7 +146,6 @@ public class Application implements EntryPoint {
         // connectToDatabase.addText("Add form controls here.");
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
-                final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
                 installService.updateDatabase(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
                         // Start a spinner that will read the log messages from the installer
@@ -180,7 +192,6 @@ public class Application implements EntryPoint {
         // ExtJS button
         Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
-                final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
                 installService.checkIpLike(new AsyncCallback<Boolean>() {
                     public void onSuccess(Boolean result) {
                         MessageBox.alert("Alert", "iplike installed correctly: " + result.toString(), new Listener<MessageBoxEvent>() {
