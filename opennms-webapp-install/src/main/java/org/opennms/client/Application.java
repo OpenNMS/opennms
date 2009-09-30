@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback; 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -13,9 +13,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
 
 import com.extjs.gxt.ui.client.widget.*;
-import com.extjs.gxt.ui.client.event.*; 
+import com.extjs.gxt.ui.client.event.*;
 import com.extjs.gxt.ui.client.widget.button.*;
-import com.extjs.gxt.ui.client.widget.layout.*; 
+import com.extjs.gxt.ui.client.widget.layout.*;
+import com.extjs.gxt.ui.client.widget.form.*;
 
 import org.apache.log4j.Logger;
 
@@ -133,11 +134,60 @@ public class Application implements EntryPoint {
         setAdminPassword.setHeading("Set administrator password");
         setAdminPassword.setIconStyle("check-failure-icon");
         setAdminPassword.setBodyStyleName("accordion-panel");
-        setAdminPassword.addText("Add form controls here.");
+
+        FormLayout setAdminPasswordFormLayout = new FormLayout();
+        setAdminPasswordFormLayout.setLabelPad(10);
+        setAdminPasswordFormLayout.setLabelWidth(120);
+        setAdminPasswordFormLayout.setDefaultWidth(150);
+        setAdminPassword.setLayout(setAdminPasswordFormLayout);
+
+        final TextField<String> passwd = new TextField<String>();
+        passwd.setFieldLabel("New admin password");
+        passwd.setAllowBlank(false);
+        passwd.setMinLength(6);
+        passwd.setPassword(true);
+        setAdminPassword.add(passwd);
+
+        final TextField<String> confirm = new TextField<String>();
+        confirm.setFieldLabel("Confirm password");
+        confirm.setAllowBlank(false);
+        // confirm.setMinLength(6);
+        confirm.setPassword(true);
+        setAdminPassword.add(confirm);
+
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
+                setAdminPassword.layout();
             }
         });
+
+        Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent e) {
+                if (!passwd.validate()) {
+                    MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
+                    return;
+                }
+                if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
+                    installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
+                        public void onSuccess(Void result) {
+                            // Start a spinner that will read the log messages from the installer
+                            // Start an interval that will monitor the installer thread
+                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        }
+
+                        public void onFailure(Throwable e) {
+                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        }
+                    });
+                } else {
+                    MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                }
+            }
+        });
+        setAdminPassword.add(updatePasswordButton);
 
         final ContentPanel connectToDatabase = new ContentPanel();
         connectToDatabase.setHeading("Connect to database");
