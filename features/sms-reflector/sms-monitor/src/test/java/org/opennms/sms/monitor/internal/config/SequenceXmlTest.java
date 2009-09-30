@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
@@ -17,8 +18,14 @@ import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
@@ -27,6 +34,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.test.FileAnticipator;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class SequenceXmlTest {
@@ -190,7 +198,7 @@ public class SequenceXmlTest {
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
     }
-    
+
     @Test
     public void validateXML() throws Exception {
         // Marshal the test object to an XML string
@@ -211,6 +219,28 @@ public class SequenceXmlTest {
         assertEquals("number of XMLUnit differences between the example XML and the mock object XML is 0", 0, myDiff.getAllDifferences().size());
     }
 
+    @Test
+    public void validateAgainstSchema() throws Exception {
+        File schemaFile = m_fileAnticipator.expecting("mobile-sequence.xsd");
+        m_context.generateSchema(new TestOutputResolver(schemaFile));
+        printFile(schemaFile);
+
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = factory.newSchema(schemaFile);
+        Validator validator = schema.newValidator();
+
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setNamespaceAware(true);
+        DocumentBuilder parser = dbFactory.newDocumentBuilder();
+        File sequenceFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
+        printFile(sequenceFile);
+        Document document = parser.parse(sequenceFile);
+        validator.validate(new DOMSource(document));
+        
+        if (m_fileAnticipator.isInitialized()) {
+            m_fileAnticipator.deleteExpected();
+        }
+    }
     @Test
     public void tryFactory() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());

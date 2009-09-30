@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -53,8 +51,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
 		return m_gatewayId;
 	}
 
-//	@XmlElementRef
-	@XmlAnyElement
+	@XmlElementRef
 	public MobileSequenceRequest getRequest() {
 		return m_request;
 	}
