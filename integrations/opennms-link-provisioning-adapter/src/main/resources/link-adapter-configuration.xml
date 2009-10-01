@@ -2,7 +2,7 @@
 <link-adapter-configuration>
 <!--
 	<for match="^link-(.*?)-to-(.*?)$">
-		<link>link-\2-to-\1</link>
+		<link>link-$2-to-$1</link>
 	</for>
 -->
 </link-adapter-configuration>
