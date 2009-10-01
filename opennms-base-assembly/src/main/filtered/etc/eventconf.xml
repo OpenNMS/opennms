@@ -959,6 +959,36 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkFailed</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Failed</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has failed.
+      &lt;/p&gt; &lt;p&gt;This event is generated when a link between two endpoints changes status to down.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Data Link Failed between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" alarm-type="1" auto-clean="false" />
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkRestored</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Restored</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has been restored.
+      &lt;/p&gt; &lt;p&gt;This event is generated when a link between two endpoints changes status to up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Data Link Restored between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data alarm-type="2" auto-clean="false"
+      reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"
+      clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" />
+  </event>
+  <event>
     <uei>uei.opennms.org/internal/poller/suspendPollingService</uei>
     <event-label>OpenNMS-defined poller event: suspendPollingService</event-label>
     <descr>

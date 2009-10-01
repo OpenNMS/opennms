@@ -264,7 +264,7 @@ doStart(){
 		echo "begin ulimit settings:" >> "$REDIRECT"
 		ulimit -a >> "$REDIRECT"
 		echo "end ulimit settings" >> "$REDIRECT"
-		CMD="$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
+		CMD="$JAVA_CMD -Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 		echo "Executing command: $CMD" >> "$REDIRECT"
 		$CMD >>"$REDIRECT" 2>&1 &
 		OPENNMS_PID=$!

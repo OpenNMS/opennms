@@ -63,6 +63,12 @@
 	             </artifactItem>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
+	               <artifactId>opennms-link-provisioning-adapter</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>xsds</classifier>
+	             </artifactItem>
+	             <artifactItem>
+	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-qosdaemon</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
@@ -263,6 +269,7 @@
       <artifactId>opennms-xmp</artifactId>
       <scope>compile</scope>
     </dependency>
+
 
 
     <!-- this is a runtime depdency we need at install time -->

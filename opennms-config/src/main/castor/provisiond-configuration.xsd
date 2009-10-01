@@ -46,7 +46,6 @@
       </sequence>
       <attribute name="import-url-resource" type="this:supported-protocols" use="required" />
       <attribute name="import-name" type="string" use="required" />
-      <attribute name="import-group-expression" type="string" use="optional" default=".*" />
     </complexType>
   </element>
   

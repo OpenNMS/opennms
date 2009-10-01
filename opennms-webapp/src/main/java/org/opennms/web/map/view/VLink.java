@@ -58,7 +58,7 @@ final public class VLink {
 	String id;
 
 	//the link status
-	String linkOperStatusString;
+	String linkStatusString;
 	
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
@@ -70,7 +70,11 @@ final public class VLink {
 		if (linkStatus == 0 ) return "up";
 		else if (linkStatus == 1 ) return "down";
 		else if (linkStatus == 2 ) return "admindown";
-        else if (linkStatus == 3 ) return "testing";	    
+        else if (linkStatus == 3 ) return "testing";
+        else if (linkStatus == 1001 ) return "good";
+        else if (linkStatus == 1002 ) return "bad";
+        else if (linkStatus == 1003 ) return "admindown";
+        else if (linkStatus == 1004 ) return "unknown";
 		else return "unknown";
 	}
 
@@ -149,7 +153,7 @@ final public class VLink {
 		return linkStatus;
 	}
 	
-	public void setLinkOperStatus(int operStatus) {
+	public void setLinkStatus(int operStatus) {
 		linkStatus = operStatus;
 	}
 	

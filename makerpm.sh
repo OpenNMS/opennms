@@ -24,7 +24,7 @@ else
 	RELEASE=$RELEASE_MAJOR
 fi
 
-VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' | head -n 1`
+VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | head -n 1`
 
 if [ -z $JAVA_HOME ]; then
 	# hehe
