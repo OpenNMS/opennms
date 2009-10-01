@@ -50,9 +50,9 @@ Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires:		opennms-webui     >= %{version}-%{release}
-Requires:		opennms-core      = %{version}-%{release}
-Requires:		postgresql-server >= 7.4
+Requires:		opennms-webui      >= %{version}-%{release}
+Requires:		opennms-core        = %{version}-%{release}
+Requires:		postgresql-server  >= 7.4
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 BuildRequires:		%{jdk}
@@ -148,6 +148,55 @@ Obsoletes:	opennms-webapp < 1.3.11
 %description webapp-standalone
 The web UI for OpenNMS.  This is the standalone version, suitable for
 use with Tomcat or another servlet container.
+
+%package plugins
+Summary:	All Plugins for OpenNMS
+Group:		Applications/System
+Requires:	opennms-plugin-provisioning-dns
+Requires:	opennms-plugin-provisioning-link
+Requires:	opennms-plugin-provisioning-map
+Requires:	opennms-plugin-provisioning-rancid
+Requires:	opennms-plugin-ticketer-centric
+
+%description plugins
+This installs all optional plugins for OpenNMS.
+
+%package plugin-provisioning-dns
+Summary:	DNS Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-dns
+The DNS provisioning adapter allows for provisioning nodes in OpenNMS based on a DNS
+zone transfer query.
+
+%package plugin-provisioning-link
+Summary:	Link Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-link
+The link provisioning adapter creates links between provisioned nodes based on naming
+conventions defined in the link-adapter-configuration.xml file.  It also updates the
+status of the map links based on data link events.
+
+%package plugin-provisioning-map
+Summary:	Map Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-map
+The map provisioning adapter will automatically create maps when nodes are provisioned
+in OpenNMS.
+
+%package plugin-provisioning-rancid
+Summary:	RANCID Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-rancid
+The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
+RANCID's device database when OpenNMS provisions nodes.
 
 %prep
 
@@ -290,6 +339,20 @@ find $RPM_BUILD_ROOT%{webappsdir} -type d | \
 
 popd
 
+# provisioning adapters
+
+cp integrations/opennms-dns-provisioning-adapter/target/*.jar  $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-link-provisioning-adapter/target/*.jar $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-map-provisioning-adapter/target/*.jar  $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-rancid/target/*.jar                    $RPM_BUILD_ROOT%{instprefix}/lib/
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-sources.jar
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-tests.jar
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-xsds.jar
+
+# config files, this should be more automated  :P
+cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
+cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   $RPM_BUILD_ROOT%{instprefix}/etc/
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -330,6 +393,22 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %config %{webappsdir}/%{servletdir}/WEB-INF/*.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/*.properties
+
+%files plugins
+
+%files plugin-provisioning-dns
+%attr(664,root,root) %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
+
+%files plugin-provisioning-link
+%attr(664,root,root) %{instprefix}/lib/opennms-link-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/link-adapter-configuration.xml
+
+%files plugin-provisioning-map
+%attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
+
+%files plugin-provisioning-rancid
+%attr(664,root,root) %{instprefix}/lib/opennms-rancid*.jar
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
@@ -445,6 +524,9 @@ if [ "$1" = 0 ]; then
 fi
 
 %changelog
+* Tue Sep 29 2009 Benjamin Reed <ranger@opennms.org>
+- Add provisioning adapters as optional packages.
+
 * Mon Oct 29 2007 Benjamin Reed <ranger@opennms.org>
 - Make sure the postinstall happens in opennms-core, not opennms.
 

@@ -1,6 +1,7 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
 --# Modifications:
+--# 2009 Sep 29: Added linkTypeId field in datalinkinterface table
 --# 2009 Mar 27: Added Users, Groups tables
 --# 2009 Jan 28: Added Acks tables - david@opennms.org
 --# 2007 Apr 10: Added statistics report tables - dj@opennms.org
@@ -1762,7 +1763,6 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#
 --# dataLinkInterface table -- This table maintains a record of data link info 
 --#                            among  the interfaces. 
---#                            Data is calculated using info from other tables
 --#
 --# This table provides the following information:
 --#
@@ -1775,19 +1775,24 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'A' - Active
 --#                      'N' - Not Active
 --#                      'D' - Deleted
---#                      'K' - Unknown
+--#                      'U' - Unknown
+--#                      'G' - Good
+--#                      'B' - Bad
+--#                      'X' - Admin Down
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#
 --########################################################################
 
 create table datalinkinterface (
-    id           integer default nextval('opennmsNxtId') not null,
-    nodeid	     integer not null,
+    id               integer default nextval('opennmsNxtId') not null,
+    nodeid	         integer not null,
     ifindex          integer not null,
     nodeparentid     integer not null,
 	parentIfIndex    integer not null,
-    status	     char(1) not null,
-    lastPollTime timestamp not null,
+    status	         char(1) not null,
+    linkTypeId       integer,
+    lastPollTime     timestamp not null,
 
     constraint pk_datalinkinterface primary key (nodeid,ifindex),
 	constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
