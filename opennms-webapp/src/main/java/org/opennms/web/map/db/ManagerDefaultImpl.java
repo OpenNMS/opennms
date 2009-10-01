@@ -1379,7 +1379,8 @@ public class ManagerDefaultImpl implements Manager {
      * @return the id corresponding to the link defined in configuration file. If there is no match, the default link id is returned.
      */
     private int getLinkTypeId(LinkInfo linkinfo) {
-    	return mapsPropertiesFactory.getLinkTypeId(linkinfo.snmpiftype, linkinfo.snmpifspeed);
+        if (linkinfo.linktypeid > 0 ) return linkinfo.linktypeid;
+        else return mapsPropertiesFactory.getLinkTypeId(linkinfo.snmpiftype, linkinfo.snmpifspeed);
     }
     
     private VLink[] getLinkArray(VElement[] elems) throws MapsException {
@@ -1413,25 +1414,25 @@ public class ManagerDefaultImpl implements Manager {
 	        	return null;
 	        }
     		
-	    	log.debug("----------Node2Element----------");
-	    	Iterator<Integer> it = node2Element.keySet().iterator();
-	    	while(it.hasNext()){
-	    		Integer nodeid=it.next();
-	    		log.debug("Node "+nodeid+" contained in Elements "+node2Element.get(nodeid).toString());
-	    	}
-	    	log.debug("----------End of Node2Element----------");
+//	    	log.debug("----------Node2Element----------");
+//	    	Iterator<Integer> it = node2Element.keySet().iterator();
+//	    	while(it.hasNext()){
+//	    		Integer nodeid=it.next();
+//	    		log.debug("Node "+nodeid+" contained in Elements "+node2Element.get(nodeid).toString());
+//	    	}
+//	    	log.debug("----------End of Node2Element----------");
 
-	    	log.debug("----------Link on Elements ----------");
+//	    	log.debug("----------Link on Elements ----------");
 	    	Set<LinkInfo> linkinfo = dbManager.getLinksOnElements(allNodes);
 	    	Iterator<LinkInfo> ite = linkinfo.iterator();
 	    	while(ite.hasNext()) {
 	    		LinkInfo linfo = ite.next();
-	    		log.debug(""+linfo.nodeid+"-"+linfo.nodeparentid);
-	    	}
-	    	log.debug("----------End of Link on Elements ----------");
-	    	ite = linkinfo.iterator();
-	    	while(ite.hasNext()) {
-	    		LinkInfo linfo = ite.next();
+	    		log.debug("Found link: node1:"+linfo.nodeid+" node2: "+linfo.nodeparentid);
+//	    	}
+//	    	log.debug("----------End of Link on Elements ----------");
+//	    	ite = linkinfo.iterator();
+//	    	while(ite.hasNext()) {
+//	    		LinkInfo linfo = ite.next();
 	    		log.debug("Getting linkinfo for nodeid "+linfo.nodeid);
 	    		Set<Integer> fE = node2Element.get(linfo.nodeid);
 	    		log.debug("Got "+fE);
@@ -1451,7 +1452,7 @@ public class ManagerDefaultImpl implements Manager {
                                     continue;
                                 }
 				    			VLink vlink = new VLink(first,second);
-				    			vlink.setLinkOperStatus(getLinkStatus(linfo));
+				    			vlink.setLinkStatus(getLinkStatus(linfo));
 				    			vlink.setLinkTypeId(getLinkTypeId(linfo));
 				    			int index = links.indexOf(vlink);
 				    			if(index!=-1){
@@ -1499,7 +1500,7 @@ public class ManagerDefaultImpl implements Manager {
                                         continue;
                                     }
 					    			VLink vlink = new VLink(first,second);
-					    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
+					    			vlink.setLinkStatus(linfo.snmpifoperstatus);
 					    			vlink.setLinkTypeId(getLinkTypeId(linfo));
 					    			int index = links.indexOf(vlink);
 					    			if(index!=-1){
@@ -1568,6 +1569,10 @@ public class ManagerDefaultImpl implements Manager {
     }
     
 	private int getLinkStatus(LinkInfo linfo) {
+	    if (linfo.status.equalsIgnoreCase("G")) return 1001;
+        if (linfo.status.equalsIgnoreCase("B")) return 1002;
+        if (linfo.status.equalsIgnoreCase("X")) return 1003;
+        if (linfo.status.equalsIgnoreCase("U")) return 1004;
 	    if (linfo.snmpifoperstatus==1 && linfo.snmpifadminstatus==1) return 0;
 	    if (linfo.snmpifoperstatus==2 && linfo.snmpifadminstatus==1) return 1;
 	    return linfo.snmpifadminstatus;

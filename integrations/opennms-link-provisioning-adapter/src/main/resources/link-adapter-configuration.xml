@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<link-adapter-configuration>
+<!--
+	<for match="^link-(.*?)-to-(.*?)$">
+		<link>link-\2-to-\1</link>
+	</for>
+-->
+</link-adapter-configuration>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<link-adapter-configuration xmlns="http://xmlns.opennms.org/xsd/config/map-link-adapter">
+	<for match="([a-z]{2})-([a-z]{3})([0-9]{4})-to-([a-z]{3})([0-9]{4})-dwave">
+		<link>$1-$4$5-to-$2$3-dwave</link>
+	</for>
+	<for match="before-(.*?)-after">
+		<link>middle-was-$1</link>
+	</for>
+	<for match="foo-(.*?)-baz">
+		<link>middle-was-$1</link>
+	</for>
+</link-adapter-configuration>

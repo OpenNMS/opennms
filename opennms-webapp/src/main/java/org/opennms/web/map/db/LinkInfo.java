@@ -40,19 +40,23 @@ package org.opennms.web.map.db;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 public class LinkInfo {
+    int id;
 	int nodeid;
 	int ifindex;
 	int nodeparentid;
 	int parentifindex;
+	int linktypeid;
 	int snmpiftype;
 	long snmpifspeed;
 	int snmpifoperstatus;
     int snmpifadminstatus;
+    String status;
 
 
 	
-	LinkInfo(int nodeid, int ifindex, int nodeparentid, int parentifindex, int snmpiftype, long snmpifspeed, int snmpifoperstatus, int snmpifadminstatus) {
+	LinkInfo(int id, int nodeid, int ifindex, int nodeparentid, int parentifindex, int snmpiftype, long snmpifspeed, int snmpifoperstatus, int snmpifadminstatus, String status, int linktypeid) {
 		super();
+		this.id = id;
 		this.nodeid = nodeid;
 		this.ifindex = ifindex;
 		this.nodeparentid = nodeparentid;
@@ -61,27 +65,21 @@ public class LinkInfo {
 		this.snmpifspeed = snmpifspeed;
 		this.snmpifoperstatus = snmpifoperstatus;
         this.snmpifadminstatus = snmpifadminstatus;
+        this.status = status;
+        this.linktypeid = linktypeid;
 	}
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof LinkInfo ) {
 			LinkInfo ol = (LinkInfo) obj;
 			return 
-			(ol.nodeid == this.nodeid 
-					&& ol.ifindex == this.ifindex 
-					&& ol.nodeparentid== this.nodeparentid 
-					&& ol.parentifindex == this.parentifindex
-					&& ol.snmpiftype == this.snmpiftype
-					&& ol.snmpifspeed == this.snmpifspeed
-					&& ol.snmpifoperstatus==this.snmpifoperstatus
-					&& ol.snmpifadminstatus==this.snmpifadminstatus);
-			
+			(ol.id == this.id);
 		} 
 		return false;
 	}
 	
 	public int hashCode() {
-		return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus)+(19*snmpifadminstatus);
+		return this.id;
 	}
 
 }

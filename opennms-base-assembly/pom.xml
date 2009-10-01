@@ -63,6 +63,12 @@
 	             </artifactItem>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
+	               <artifactId>opennms-link-provisioning-adapter</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>xsds</classifier>
+	             </artifactItem>
+	             <artifactItem>
+	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-qosdaemon</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>

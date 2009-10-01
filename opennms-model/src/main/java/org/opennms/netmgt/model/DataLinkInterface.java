@@ -50,10 +50,10 @@ import java.util.Date;
 @Entity
 @Table(name = "datalinkinterface")
 public class DataLinkInterface  implements Serializable {
-
-    private static final long serialVersionUID = -1940209159462647862L;
+    private static final long serialVersionUID = 5241963830563150843L;
 
     private Integer id;
+
     @Column(name="nodeid", nullable=false)
     private Integer nodeId;
     @Column(name="ifindex", nullable=false)
@@ -64,6 +64,8 @@ public class DataLinkInterface  implements Serializable {
     private Integer parentIfIndex;
     @Column(name="status", length=1, nullable=false)
     private String  status;
+    @Column(name="linktypeid", nullable=true)
+    private Integer linkTypeId;
     @Temporal(TemporalType.TIMESTAMP)
 	@Column(name="lastpolltime", nullable=false)
     private Date lastPollTime;
@@ -79,6 +81,7 @@ public class DataLinkInterface  implements Serializable {
         this.parentIfIndex = parentIfIndex;
         this.status = status;
         this.lastPollTime = lastPollTime;
+        this.linkTypeId = -1;
     }
 
     /**
@@ -156,6 +159,14 @@ public class DataLinkInterface  implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getLinkTypeId() {
+        return linkTypeId;
+    }
+
+    public void setLinkTypeId(Integer linkTypeId) {
+        this.linkTypeId = linkTypeId;
     }
 
     /**

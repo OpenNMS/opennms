@@ -45,6 +45,8 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(2, 2, 1, 1, "?", new Date());
+        dli.setLinkTypeId(101);
+//        Thread.sleep(300000);
         getDataLinkInterfaceDao().save(dli);
         getDataLinkInterfaceDao().flush();
     	getDataLinkInterfaceDao().clear();
@@ -61,6 +63,7 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
         assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());
         assertEquals(dli.getStatus(), dli2.getStatus());
+        assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
     }
 
