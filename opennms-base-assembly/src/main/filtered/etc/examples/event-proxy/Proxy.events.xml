@@ -3,21 +3,21 @@
         <uei>uei.opennms.org/internal/alarms/AlarmRaised</uei>
         <event-label>OpenNMS Alarm Raised</event-label>
         <descr>&lt;p&gt;An alarm has been raised.&lt;/p&gt;&lt;p&gt;</descr>
-        <logmsg dest='logndisplay'>%parm[nnmFormat]%</logmsg>
+        <logmsg dest='logonly'>%parm[nnmFormat]%</logmsg>
         <severity>Warning</severity>
     </event>
     <event>
         <uei>uei.opennms.org/internal/alarms/AlarmCleared</uei>
         <event-label>OpenNMS Alarm Cleared</event-label>
         <descr>&lt;p&gt;An alarm has been cleared.&lt;/p&gt;&lt;p&gt;</descr>
-        <logmsg dest='logndisplay'>%parm[nnmFormat]%</logmsg>
+        <logmsg dest='logonly'>%parm[nnmFormat]%</logmsg>
         <severity>Cleared</severity>
     </event>
     <event>
         <uei>uei.opennms.org/internal/alarms/NotificationAlarm</uei>
         <event-label>OpenNMS Notification Alarm</event-label>
         <descr>&lt;p&gt;An alarm has been notified.&lt;/p&gt;&lt;p&gt;</descr>
-        <logmsg dest='logndisplay'>%parm[nnmFormat]%</logmsg>
+        <logmsg dest='logonly'>%parm[nnmFormat]%</logmsg>
         <severity>Warning</severity>
     </event>
 </events>
