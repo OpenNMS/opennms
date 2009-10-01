@@ -23,12 +23,6 @@ public class SmsAsync implements Async<MobileMsgResponse> {
 		this.m_retries = retries;
 	}
 
-	public SmsAsync(MobileMsgTracker tracker, OutboundMessage msg, MobileMsgResponseMatcher responseMatcher) {
-		this.m_tracker = tracker;
-		this.m_message = msg;
-		this.m_responseMatcher = responseMatcher;
-	}
-
 	public void submit(final Callback<MobileMsgResponse> cb) {
 		MobileMsgResponseCallback mmrc = new MobileMsgCallbackAdapter(cb);
 

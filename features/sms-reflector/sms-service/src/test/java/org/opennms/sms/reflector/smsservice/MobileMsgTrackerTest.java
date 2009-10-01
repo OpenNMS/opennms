@@ -73,7 +73,8 @@ import org.smslib.USSDSessionStatus;
  */
 public class MobileMsgTrackerTest {
     
-	public static final String TMOBILE_RESPONSE = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
+	private static final String PHONE_NUMBER = "+19195551212";
+    public static final String TMOBILE_RESPONSE = "37.28 received on 08/31/09. For continued service through 10/28/09, please pay 79.56 by 09/28/09.    ";
     public static final String TMOBILE_USSD_MATCH = "^.*[\\d\\.]+ received on \\d\\d/\\d\\d/\\d\\d. For continued service through \\d\\d/\\d\\d/\\d\\d, please pay [\\d\\.]+ by \\d\\d/\\d\\d/\\d\\d.*$";
 
     private final class LatencyCallback implements Callback<MobileMsgResponse> {
@@ -277,7 +278,7 @@ public class MobileMsgTrackerTest {
     public void testPingTimeoutWithBuilder() throws Throwable {
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendSms("SMS Ping", "G", PHONE_NUMBER, "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
@@ -289,7 +290,7 @@ public class MobileMsgTrackerTest {
     public void testPingWithBuilder() throws Throwable {
         MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
 
-        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendSms("SMS Ping", "G", PHONE_NUMBER, "ping").expects(and(isSms(), textMatches("^pong$")));
         MobileMsgSequence sequence = builder.getSequence();
         System.err.println("sequence = " + sequence);
         assertNotNull(sequence);
@@ -297,7 +298,7 @@ public class MobileMsgTrackerTest {
         sequence.start(m_tracker, m_coordinator);
 
         Thread.sleep(500);
-        InboundMessage msg = new InboundMessage(new Date(), "+19192640655", "pong", 0, "0");
+        InboundMessage msg = new InboundMessage(new Date(), PHONE_NUMBER, "pong", 0, "0");
 		m_messenger.sendTestResponse(msg);
         
         Map<String,Number> timing = sequence.getLatency();
@@ -332,7 +333,7 @@ public class MobileMsgTrackerTest {
     public void testMultipleStepSequenceBuilder() throws Throwable {
     	MobileMsgSequenceBuilder builder = new MobileMsgSequenceBuilder();
     	
-        builder.sendSms("SMS Ping", "G", "+19192640655", "ping").expects(and(isSms(), textMatches("^pong$")));
+        builder.sendSms("SMS Ping", "G", PHONE_NUMBER, "ping").expects(and(isSms(), textMatches("^pong$")));
         builder.sendUssd("USSD request", "G", "#225#").expects(and(isUssd(), textMatches(TMOBILE_USSD_MATCH), ussdStatusIs(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)));
         MobileMsgSequence sequence = builder.getSequence();
         assertNotNull(sequence);
@@ -340,7 +341,7 @@ public class MobileMsgTrackerTest {
         sequence.start(m_tracker, m_coordinator);
 
         Thread.sleep(100);
-        InboundMessage msg = new InboundMessage(new Date(), "+19192640655", "pong", 0, "0");
+        InboundMessage msg = new InboundMessage(new Date(), PHONE_NUMBER, "pong", 0, "0");
 		m_messenger.sendTestResponse(msg);
 		
         Thread.sleep(100);
@@ -367,14 +368,13 @@ public class MobileMsgTrackerTest {
 
         LatencyCallback cb = new LatencyCallback(start);
 		final MobileMsgResponseMatcher responseMatcher = and(smsFromRecipient(), textMatches("^[Pp]ong$"));
-		final OutboundMessage msg = new OutboundMessage("+19192640655", "ping");
  
-		Async<MobileMsgResponse> async = new SmsAsync(m_tracker, msg, responseMatcher);
-
+        Async<MobileMsgResponse> async = new SmsAsync(m_tracker, "*", 1000L, 0,  PHONE_NUMBER, "ping", responseMatcher);
+                                        
         Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
         
-        InboundMessage responseMsg = createInboundMessage("+19192640655", "pong");
+        InboundMessage responseMsg = createInboundMessage(PHONE_NUMBER, "pong");
         
         Thread.sleep(500);
         m_messenger.sendTestResponse(responseMsg);
