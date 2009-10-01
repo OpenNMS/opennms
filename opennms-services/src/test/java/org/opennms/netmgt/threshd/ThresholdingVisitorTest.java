@@ -557,13 +557,6 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-bug3193.xml
      * 
      * Updated to reflect the fact that counter are treated as rates.
-     * 
-     * TODO Depending on Java Version used, thresholds.xml will be parsed different.
-     * This will affect thresholds order; so when adding expected events, me must
-     * check Java version:
-     * 
-     * For Java5, first add 'myCounter - 30' then 'myCounter'
-     * For Java6, first add 'myCounter' then 'myCounter - 30'
      */
     @Test
     public void testBug3193() throws Exception {
@@ -575,19 +568,12 @@ public class ThresholdingVisitorTest {
         MibObject mibObject = createMibObject("counter", "myCounter", "0");
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", "ignore"));
 
-        // Add Events (see note above)
-        if (System.getProperty("java.specification.version").equals("1.6")) {
-            addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
-            addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
-            addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);            
-            addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-        } else {
-            addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
-            addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
-            addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-            addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
-        }
-        
+        // Add Events
+        addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
+        addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
+        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);            
+
         // Collect Step 1 : First Data: Last should be NaN
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(2000));
