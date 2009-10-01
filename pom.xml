@@ -1109,6 +1109,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-jaxb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-spring</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1457,12 +1462,12 @@
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.0</version>
+        <version>99.99.99-use-opennms-jaxb</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.0.5</version>
+        <version>99.99.99-use-opennms-jaxb</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -1675,7 +1680,7 @@
       <dependency>
         <groupId>org.krupczak</groupId>
         <artifactId>Xmp</artifactId>
-        <version>0.1-40</version>
+        <version>1.1</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
@@ -1763,6 +1768,16 @@
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2</url>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.release</id>
+      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+      <url>http://repository.springsource.com/maven/bundles/release</url>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.external</id>
+      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+      <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
   </repositories>
   <pluginRepositories>
