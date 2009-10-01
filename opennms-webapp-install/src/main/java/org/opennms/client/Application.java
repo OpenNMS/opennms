@@ -275,7 +275,6 @@ public class Application implements EntryPoint {
         updateDatabase.setIconStyle("check-failure-icon");
         updateDatabase.setBodyStyleName("accordion-panel");
 
-        // connectToDatabase.addText("Add form controls here.");
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
                 installService.updateDatabase(new AsyncCallback<Void>() {
@@ -304,11 +303,36 @@ public class Application implements EntryPoint {
         checkStoredProcedures.setHeading("Check stored procedures");
         checkStoredProcedures.setIconStyle("check-failure-icon");
         checkStoredProcedures.setBodyStyleName("accordion-panel");
-        checkStoredProcedures.addText("Add form controls here.");
         checkStoredProcedures.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
             }
         });
+        Button checkStoredProceduresButton = new Button("Check stored procedures", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent e) {
+                installService.checkIpLike(new AsyncCallback<Boolean>() {
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            checkStoredProcedures.setIconStyle("check-success-icon");
+                            MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        } else {
+                            checkStoredProcedures.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            }
+        });
+        checkStoredProcedures.add(checkStoredProceduresButton);
 
         final ContentPanel tips = new ContentPanel();
         tips.setHeading("Additional tips");
