@@ -17,6 +17,7 @@ import com.extjs.gxt.ui.client.event.*;
 import com.extjs.gxt.ui.client.widget.button.*;
 import com.extjs.gxt.ui.client.widget.layout.*;
 import com.extjs.gxt.ui.client.widget.form.*;
+import com.extjs.gxt.ui.client.*; 
 
 import org.apache.log4j.Logger;
 
@@ -193,6 +194,87 @@ public class Application implements EntryPoint {
         connectToDatabase.setHeading("Connect to database");
         connectToDatabase.setIconStyle("check-failure-icon");
         connectToDatabase.setBodyStyleName("accordion-panel");
+        connectToDatabase.setScrollMode(Style.Scroll.AUTOY);
+
+        FormLayout connectToDatabaseLayout = new FormLayout();
+        connectToDatabaseLayout.setLabelPad(10);
+        connectToDatabaseLayout.setLabelWidth(120);
+        // Normally 150, but subtract 15 for the vertical scrollbar
+        connectToDatabaseLayout.setDefaultWidth(135);
+        connectToDatabase.setLayout(connectToDatabaseLayout);
+        
+        final TextField<String> dbName = new TextField<String>();
+        dbName.setFieldLabel("Database name");
+        dbName.setAllowBlank(false);
+        connectToDatabase.add(dbName);
+
+        final TextField<String> dbUser = new TextField<String>();
+        dbUser.setFieldLabel("Database user");
+        dbUser.setAllowBlank(false);
+        connectToDatabase.add(dbUser);
+
+        final TextField<String> dbPass = new TextField<String>();
+        dbPass.setFieldLabel("Database password");
+        dbPass.setAllowBlank(false);
+        dbPass.setPassword(true);
+        connectToDatabase.add(dbPass);
+        
+        final TextField<String> dbConfirm = new TextField<String>();
+        dbConfirm.setFieldLabel("Confirm password");
+        dbConfirm.setAllowBlank(false);
+        dbConfirm.setPassword(true);
+        connectToDatabase.add(dbConfirm);
+        
+        final TextField<String> dbDriver = new TextField<String>();
+        dbDriver.setFieldLabel("Database driver");
+        dbDriver.setAllowBlank(false);
+        dbDriver.setPassword(true);
+        connectToDatabase.add(dbDriver);
+        
+        final TextField<String> dbUrl = new TextField<String>();
+        dbUrl.setFieldLabel("Database URL");
+        dbUrl.setAllowBlank(false);
+        dbUrl.setPassword(true);
+        connectToDatabase.add(dbUrl);
+        
+        final TextField<String> dbBinDir = new TextField<String>();
+        dbBinDir.setFieldLabel("Database binary directory");
+        dbBinDir.setAllowBlank(false);
+        dbBinDir.setPassword(true);
+        connectToDatabase.add(dbBinDir);
+        
+        Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent e) {
+                installService.connectToDatabase(new AsyncCallback<Boolean>() {
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            connectToDatabase.setIconStyle("check-success-icon");
+                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        } else {
+                            connectToDatabase.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                }
+                            });
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            }
+        });
+        connectToDatabase.add(connectButton);
+        
+        final ContentPanel updateDatabase = new ContentPanel();
+        updateDatabase.setHeading("Update database");
+        updateDatabase.setIconStyle("check-failure-icon");
+        updateDatabase.setBodyStyleName("accordion-panel");
+        
         // connectToDatabase.addText("Add form controls here.");
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
@@ -212,8 +294,8 @@ public class Application implements EntryPoint {
                 });
             }
         });
-        connectToDatabase.add(updateButton);
-        connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+        updateDatabase.add(updateButton);
+        updateDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
             }
         });
@@ -236,6 +318,7 @@ public class Application implements EntryPoint {
         gxtPanel.add(verifyOwnership);
         gxtPanel.add(setAdminPassword);
         gxtPanel.add(connectToDatabase);
+        gxtPanel.add(updateDatabase);
         gxtPanel.add(checkStoredProcedures);
         gxtPanel.add(tips);
 
