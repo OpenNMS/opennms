@@ -164,15 +164,18 @@ public class Application implements EntryPoint {
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
+                // Start a spinner that indicates operation start
+                setAdminPassword.setIconStyle("check-progress-icon");
+
                 if (!passwd.validate()) {
+                    setAdminPassword.setIconStyle("check-failure-icon");
                     MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
                     return;
                 }
                 if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
                     installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
                         public void onSuccess(Void result) {
-                            // Start a spinner that will read the log messages from the installer
-                            // Start an interval that will monitor the installer thread
+                            setAdminPassword.setIconStyle("check-success-icon");
                             MessageBox.alert("Password Updated", "The administrator password has been updated.", new Listener<MessageBoxEvent>() {
                                 public void handleEvent(MessageBoxEvent event) {
                                 }
@@ -180,10 +183,12 @@ public class Application implements EntryPoint {
                         }
 
                         public void onFailure(Throwable e) {
+                            setAdminPassword.setIconStyle("check-failure-icon");
                             MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                         }
                     });
                 } else {
+                    setAdminPassword.setIconStyle("check-failure-icon");
                     MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
                 }
             }
@@ -245,6 +250,9 @@ public class Application implements EntryPoint {
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
+                // Start a spinner that indicates operation start
+                connectToDatabase.setIconStyle("check-progress-icon");
+
                 installService.connectToDatabase(new AsyncCallback<Boolean>() {
                     public void onSuccess(Boolean result) {
                         if (result) {
@@ -263,6 +271,7 @@ public class Application implements EntryPoint {
                     }
 
                     public void onFailure(Throwable e) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
@@ -277,10 +286,14 @@ public class Application implements EntryPoint {
 
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
+                // Start a spinner that indicates operation start
+                updateDatabase.setIconStyle("check-progress-icon");
+
                 installService.updateDatabase(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
                         // Start a spinner that will read the log messages from the installer
                         // Start an interval that will monitor the installer thread
+                        updateDatabase.setIconStyle("check-success-icon");
                         MessageBox.alert("Update Started", "The database update has been started.", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
                             }
@@ -288,6 +301,7 @@ public class Application implements EntryPoint {
                     }
 
                     public void onFailure(Throwable e) {
+                        updateDatabase.setIconStyle("check-failure-icon");
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
@@ -309,6 +323,9 @@ public class Application implements EntryPoint {
         });
         Button checkStoredProceduresButton = new Button("Check stored procedures", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
+                // Start a spinner that indicates operation start
+                checkStoredProcedures.setIconStyle("check-progress-icon");
+
                 installService.checkIpLike(new AsyncCallback<Boolean>() {
                     public void onSuccess(Boolean result) {
                         if (result) {
@@ -327,6 +344,7 @@ public class Application implements EntryPoint {
                     }
 
                     public void onFailure(Throwable e) {
+                        checkStoredProcedures.setIconStyle("check-failure-icon");
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
@@ -349,26 +367,14 @@ public class Application implements EntryPoint {
         // ExtJS button
         Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent e) {
-                installService.checkIpLike(new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        MessageBox.alert("Alert", "iplike installed correctly: " + result.toString(), new Listener<MessageBoxEvent>() {
+                installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
+                    public void onSuccess(List<LoggingEvent> result) {
+                        String message = "";
+                        for (LoggingEvent event : result) {
+                            message += event.getMessage().trim() + "\n";
+                        }
+                        MessageBox.alert("Alert", message, new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
-                                installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
-                                    public void onSuccess(List<LoggingEvent> result) {
-                                        String message = "";
-                                        for (LoggingEvent event : result) {
-                                            message += event.getMessage().trim() + "\n";
-                                        }
-                                        MessageBox.alert("Alert", message, new Listener<MessageBoxEvent>() {
-                                            public void handleEvent(MessageBoxEvent event) {
-                                            }
-                                        });
-                                    }
-
-                                    public void onFailure(Throwable e) {
-                                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                                    }
-                                });
                             }
                         });
                     }
@@ -377,7 +383,6 @@ public class Application implements EntryPoint {
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
-                // MessageBox.alert("Alert", "Button pressed on OpenNMS install wizard.", null);
             }
         });
         // continueButton.disable();
