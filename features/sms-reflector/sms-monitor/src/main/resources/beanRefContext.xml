@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
         
-  <bean id="mobileMessagePollerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="false">
+  <bean id="mobileMessagePollerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
          <value>classpath*:/META-INF/spring/bundle-context.xml</value>
