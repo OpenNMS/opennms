@@ -327,9 +327,37 @@ add_ld_path () {
 	Darwin)
 	    if echo "$DYLD_LIBRARY_PATH" | \
 		grep -v "$opennms_home/lib" >/dev/null; then
-		DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$opennms_home/lib"
+		DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$opennms_home/lib:$opennms_home/lib/mac"
 		export DYLD_LIBRARY_PATH
 	    fi
+	    return
+	    ;;
+
+	Linux)
+	    if echo "$LD_LIBRARY_PATH" | \
+		grep -v "$opennms_home/lib" >/dev/null; then
+		LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib"
+		export LD_LIBRARY_PATH
+	    fi
+
+            case "`uname -p`" in
+		x86_64)
+		    if echo "$LD_LIBRARY_PATH" | \
+			grep -v "$opennms_home/lib/linux64" >/dev/null; then
+			LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux64"
+			export LD_LIBRARY_PATH
+		    fi
+		    ;;
+
+		    *)
+		    if echo "$LD_LIBRARY_PATH" | \
+			grep -v "$opennms_home/lib/linux32" >/dev/null; then
+			LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux32"
+			export LD_LIBRARY_PATH
+		    fi
+		    ;;
+	    esac
+
 	    return
 	    ;;
 

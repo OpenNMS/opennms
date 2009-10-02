@@ -1,0 +1,146 @@
+This document is intended to give an overview of the design of the
+first milestone of MMTM. (Note:  There are other milestones for TIGO
+work but this document only discusses the first milestone)
+
+
+Objectives
+
+Based on the discussions our team had with you and Carlos we settled
+on the following design objectives for the first milestone:
+
+1.  Be able to verify that SMS messages are sent from one phone to another
+    and to track how long it takes to send these messages.
+
+2.  Be able to verify that interactions with the TIGO network via either
+    SMS or USSD are functioning correctly (an example of this would
+    be a gift SMS message or gifting account balance as defined in the
+    spreadsheet you sent to Jeff).  Time measurements will also be
+    valuable for this case.
+
+
+In addition to this, we thought it was important that we be able to
+place phones in different geographical locations to ensure that the
+entire network was tested.  
+
+
+Architectural Overview
+
+OpenNMS has a Poller that periodically tests various services like
+HTTP, SMTP, or ICMP periodically to ensure that these services are
+functioning and to collect latency data for them.  If one of these
+services fails to respond correctly, the poller will create an outage
+and send an event.  These events can be used with our notification
+mechanism to notify administrators of network failures.
+
+These service specific tests are provided to the poller through the use
+of a plugin architecture.  Each type of test is provided to the poller
+as a plugin known as a ServiceMonitor.  These plugins have the
+responsibility when asked to determine if the service they represent
+is functioning on the interface that is being tested. 
+
+In the OpenNMS GUI each of these monitors are represented as a service
+on an interface.  Latency data is displayed for them via Response Time
+graphs for the service and outages are represented in the outage table
+and as events and alarms.
+
+The MMTM requirements seem to fit this model well.  Each type of
+service will need to be periodically tested and measured for latency.
+In the event of outages these will need to be tracked and technicians
+will need to be notified.  Since this fit so well we decided to
+implement the requirements as two ServiceMonitors, the SMSPingMonitor
+and the SMSSequenceMonitor.
+
+Architectural Details
+
+Since SMS and USSD are quite different from existing protocols we use
+to do monitoring, quite a bit of additional infrastructure was needed
+to make the monitors work. 
+
+The finished milestone will include a set of libraries that adds modem
+support to Java and provides for the sending and receiving of SMS and
+USSD messages.
+
+Also included will be a program known as the sms-reflector.  It has
+the responsibility for receiving the messages sent by the monitors and
+responding appropriately.
+
+The monitors are called by the poller on a user defined schedule to
+verify that the systems are functioning correctly.
+
+The monitors and the other pieces of work we needed to do are
+described here.  A rough diagram of how these fit together is also
+included.
+
+
+OpenNMS
++-----------------------------------------------+
+|              OpenNMS Poller                   |             Remote System
++--------------------+--------------------------+             +-------------------------------+
+|   SmsPingMonitor   | MobileMsgSequenceMonitor |             |          sms-reflector        |
++--------------------+--------------------------+             +-------------------------------+
+|                 smslib                        |             |            smslib             |
++-----------------------------------------------+             +-------------------------------+
+|                  rxtx                         |             |             rxtx              |
++----------------------------------------------=+             +-------------------------------+
+                     ^                                                       ^
+                     |                                                       |
+                serial port                                             serial port
+                     |                                                       |
+                     v                                                       V
+             +----------------+                                      +-----------------+
+             |  modem/phone   |<- - - - - - - - - - - - - - - - - - >|   modem/phone   |
+             +----------------+                                      +-----------------+
+
+
+
+
+rxtx - Java does not natively provide access to the underlying serial
+ports in a system.  In order to talk directly to the modems attached
+to the system, a library was needed that knows how to communicate
+through the serial ports.  The rxtx project provides an implementation
+of a Java API that allows Java access to the serial ports.
+
+We have found a few issues related to the interaction of this library
+and the usb serial port driver on linux which took some time to debug
+and workaround.  But we now have these resolved.
+
+smslib - On top of access to the serial ports we needed code that
+understood the modem commands for sending and receiving SMS messages.
+We use the open source library smslib to process these.  Smslib did not
+have USSD support and we have added this to smslib in order to make
+use of it with our project.
+
+SmsPingMonitor - In order to verify basic Ping functionality to remote
+systems, we implemented an "SMS Pinger."  This allows us to sends an SMS
+message to a remote phone and have the phone respond with a simple
+response.  If we receive the response in the specified timeout then we
+mark the SMS service as up and save the latency data.  Otherwise, we
+mark the service as down.
+
+MobileMsgSequenceMonitor - This monitor is responsible for initiating a
+sequence of USSD/SMS Messages representing the kinds of exchange that
+a user would do.  This would include things like a balance request or
+a gift SMS.  The details of the sequence will be defined via
+configuration allowing it to be tailored to the needs of the specific
+services defined by your system.
+
+sms-reflector - This is a program intended to run on a system that can
+be geographically distant from the OpenNMS sytem.  When the
+SmsPingMonitor sends a 'ping' or the MobileMsgSequenceMonitor initiates
+a sequence, it often necessary for the owner of the destination phone
+to take some action as well.  The sms-reflector is a program that will
+run on a remote system to respond to pings or sequences initiated by
+one of the monitors.  This enables us to do things such as send an SMS
+from one geographic location to another and have the recipient
+respond.  This makes the monitoring code quite a bit easier because it
+can act as the 'initiator' in every case.
+
+
+modem/phone - Although I have represented only a single phone in the
+diagram, it is not clear how we will be able to deal with interleaving
+of different sequences while running in a multi-threaded high
+throughput environment.  It may be necessary to have multiple
+modems/phones connected to a system in order to ensure we can handle
+the desired capacity.  We will have determine this as we bring up more
+systems and measure that actual response tomes of the systems.
+

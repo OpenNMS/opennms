@@ -35,5 +35,15 @@
  	<includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
+    <moduleSet>
+      <includes>
+        <include>org.opennms:opennms-rxtx-assembly</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/lib</outputDirectory>
+        <unpack>true</unpack>
+ 	<includeDependencies>false</includeDependencies>
+      </binaries>      
+    </moduleSet>
   </moduleSets>
 </assembly>

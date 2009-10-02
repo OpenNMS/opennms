@@ -40,6 +40,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.mina.core.future.IoFutureListener;
+import org.opennms.core.tasks.Async;
+import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -63,8 +65,6 @@ import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
-import org.opennms.netmgt.provision.service.tasks.Async;
-import org.opennms.netmgt.provision.service.tasks.Callback;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;

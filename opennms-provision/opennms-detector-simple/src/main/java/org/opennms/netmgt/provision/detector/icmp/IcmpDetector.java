@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.detector.icmp;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.ping.PingConstants;
 import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
@@ -49,8 +50,8 @@ public class IcmpDetector extends AbstractDetector {
     }
     
     public void init() {
-        setTimeout(Pinger.DEFAULT_TIMEOUT);
-        setRetries(Pinger.DEFAULT_RETRIES);
+        setTimeout(PingConstants.DEFAULT_TIMEOUT);
+        setRetries(PingConstants.DEFAULT_RETRIES);
     }
     
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
@@ -103,13 +104,13 @@ public class IcmpDetector extends AbstractDetector {
           sb.append(false);
           sb.append(". Received an Interrupted exception.");
           log().debug(sb.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             sb.delete(0, sb.length());
             sb.append("isServiceDetected: ICMP based protocol for address: ");
             sb.append(address);
             sb.append(" is detected: ");
             sb.append(false);
-            sb.append(". Received an IO Exception.");
+            sb.append(". Received an Exception.");
             log().debug(sb.toString());
         } finally {
             

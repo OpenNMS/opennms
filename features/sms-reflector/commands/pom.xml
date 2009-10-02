@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.sms-reflector.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.7.5-SMS-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.opennms.features.sms.reflector.commands</bundle.symbolicName>
+    <bundle.namespace>org.opennms.sms.reflector.commands</bundle.namespace>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.sms-reflector</groupId>
+  <artifactId>commands</artifactId>
+
+  <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <!--
+     | uncomment to add all imported (non-local) bundles to your compilation classpath
+    <dependency>
+      <type>pom</type>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>provision</artifactId>
+      <optional>true</optional>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>osgi</artifactId>
+      <version>3.5.0.v20090520</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.opennms.features.sms-reflector</groupId>
+      <artifactId>sms-ping</artifactId>
+      <version>${pom.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.smslib</groupId>
+      <artifactId>smslib</artifactId>
+      <version>3.4.3-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms.features.sms-reflector</groupId>
+    	<artifactId>sms-service</artifactId>
+    	<version>${pom.version}</version>
+    	<scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.springframework.osgi</groupId>
+    	<artifactId>spring-osgi-core</artifactId>
+    	<version>1.2.0</version>
+    	<scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.shell</artifactId>
+      <version>1.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib</groupId>
+      <artifactId>org.opennms.lib.tracker</artifactId>
+      <version>0.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.tasks</artifactId>
+      <version>${pom.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms.core</groupId>
+    	<artifactId>org.opennms.core.lib</artifactId>
+    	<version>${pom.version}</version>
+    	<scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
+	">
+	
+    <!-- in order to make the tests independent I create a new registry for each test context
+    <onmsgi:default-registry />
+     -->
+    <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry" />
+	
+    <bean name="myProvider" class="org.opennms.core.soa.support.MyProvider" />
+    
+	<onmsgi:service id="simple" ref="myProvider" interface="org.opennms.core.soa.support.Hello" />
+	
+	<onmsgi:service id="nested" ref="myProvider">
+	  <onmsgi:interfaces>
+	    <value>org.opennms.core.soa.support.Hello</value>
+	    <value>org.opennms.core.soa.support.Goodbye</value>
+	  </onmsgi:interfaces>
+	</onmsgi:service>
+    
+    <onmsgi:reference id="hello" interface="org.opennms.core.soa.support.Hello"/>
+    
+    <bean id="helloListListener" class="org.opennms.core.soa.support.HelloListListener"/>
+    
+    <onmsgi:list id="helloList" interface="org.opennms.core.soa.support.Hello">
+    	<onmsgi:listener ref="helloListListener" bind-method="bind" unbind-method="unbind"/>
+    </onmsgi:list>
+    
+</beans>

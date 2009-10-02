@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    targetNamespace="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+   <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+
+   <xsd:element name="default-registry">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType" />
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="service">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+                <xsd:sequence minOccurs="0" maxOccurs="1">
+                    <xsd:element name="interfaces" type="beans:listOrSetType" minOccurs="0" maxOccurs="1" />
+                </xsd:sequence>
+               <xsd:attribute name="ref" type="xsd:string" use="required" />
+               <xsd:attribute name="interface" type="xsd:token" use="optional">
+                 <xsd:annotation>
+                   <xsd:documentation source="java:java.lang.Class"><![CDATA[
+                      The fully qualified name of the interface to be provided when registering the bean
+                ]]></xsd:documentation>
+            </xsd:annotation>
+               
+               </xsd:attribute>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:element name="reference">
+      <xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+            	<xsd:attribute name="interface" type="xsd:string" use="required"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:element name="list">
+		<xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+            	<xsd:choice minOccurs="0" maxOccurs="1">
+            		<xsd:element ref="listener"/>
+            	</xsd:choice>
+            	<xsd:attribute name="interface" type="xsd:string" use="required"/>
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="listener">
+		<xsd:complexType>
+         <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+            	<xsd:attribute name="ref" type="xsd:string" use="required" />
+            	<xsd:attribute name="bind-method" type="xsd:string" use="optional" />
+            	<xsd:attribute name="unbind-method" type="xsd:string" use="optional" />
+            </xsd:extension>
+         </xsd:complexContent>
+      </xsd:complexType>
+	</xsd:element>
+   
+</xsd:schema>
+

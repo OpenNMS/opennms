@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.sms-reflector.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.7.5-SMS-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.opennms.features.rxtx.test</bundle.symbolicName>
+    <bundle.namespace>org.opennms.rxtx.test</bundle.namespace>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.sms-reflector</groupId>
+  <artifactId>rxtx-commands</artifactId>
+
+  <name>${bundle.symbolicName}</name>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <!--
+     | uncomment to add all imported (non-local) bundles to your compilation classpath
+    <dependency>
+      <type>pom</type>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>provision</artifactId>
+      <optional>true</optional>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.rxtx</groupId>
+      <artifactId>rxtx-osgi</artifactId>
+      <version>2.2-pre2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>osgi</artifactId>
+      <version>3.3.0-v20070530</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.base</groupId>
+      <artifactId>ops4j-base-io</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

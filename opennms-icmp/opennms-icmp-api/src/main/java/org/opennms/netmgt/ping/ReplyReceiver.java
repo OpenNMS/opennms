@@ -72,7 +72,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * <p>
  * Received datagrams that pass the requirement of the receiver are added to the
  * reply queue for processing by the application. Only instances of the
- * {@link Reply Reply}class are added to the queue for processing.
+ * {@link PingReply Reply}class are added to the queue for processing.
  * </p>
  * 
  * @author <A HREF="sowmya@opennms.org">Sowmya </A>
@@ -90,7 +90,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
     /**
      * The queue to write the received replies
      */
-    private FifoQueue<Reply> m_replyQ;
+    private FifoQueue<PingReply> m_replyQ;
 
     /**
      * The connection to the icmp daemon.
@@ -136,7 +136,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
 
     /**
      * <p>
-     * Processes the received datagram and adds a new {@link Reply Reply}
+     * Processes the received datagram and adds a new {@link PingReply Reply}
      * instance to the reply queue. The recieved packet must pass the following
      * criteria:
      * </p>
@@ -164,9 +164,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
         }
 
         if (!doIt) {
-            Reply reply = null;
+            PingReply reply = null;
             try {
-                reply = Reply.create(pkt); // create a reply
+                reply = PingReply.create(pkt); // create a reply
             } catch (IllegalArgumentException iaE) {
                 // Throw by Reply.create if the packet
                 // is not of type Packet
@@ -210,7 +210,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      *            The ICMP Identity for matching.
      * 
      */
-    public ReplyReceiver(IcmpSocket portal, FifoQueue<Reply> replyQ, short filterID) {
+    public ReplyReceiver(IcmpSocket portal, FifoQueue<PingReply> replyQ, short filterID) {
         m_portal = portal;
         m_replyQ = replyQ;
         m_filterID = filterID;
