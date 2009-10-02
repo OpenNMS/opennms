@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.7.7-SNAPSHOT</version>
+    <version>1.7.5-SMS-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -10,20 +10,20 @@
   <name>OpenNMS Core Web</name>
   <packaging>war</packaging>
   
-  <build>
+<!--  <build>
 <!--  	<plugins>
   		<plugin>
 	      	<groupId>org.codehaus.cargo</groupId>
 	      	<artifactId>cargo-maven2-plugin</artifactId>
 	      	<version>1.0</version>
 	      	<extensions>true</extensions>-->
-<!--	      	<executions>-->
-<!--	      		<execution>-->
-<!--	      			<goals>-->
-<!--	      				<goal>uberwar</goal>-->
-<!--	      			</goals>-->
-<!--	      		</execution>-->
-<!--	      	</executions>-->
+	      	<executions>
+	      		<execution>
+	      			<goals>
+	      				<goal>uberwar</goal>
+	      			</goals>
+	      		</execution>
+	      	</executions>
 <!--	      	<configuration>
 	      		<descriptor>src/assemble/merge.xml</descriptor>
 	      		<container>
@@ -33,7 +33,7 @@
 	      	</configuration>
 	      </plugin>
   	</plugins>-->
-  </build>
+  </build>-->
   
   
 </project>

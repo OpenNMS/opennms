@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.7.7-SNAPSHOT</version>
+  <version>1.7.5-SMS-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -127,6 +127,12 @@
   <pluginManagement>
     <plugins>    
       <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.4.3</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
         <version>2.0-alpha1</version>
@@ -216,6 +222,11 @@
         <version>${maven.eclipse.plugin.version}</version>
       </plugin>
       <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>${maven.pax.plugin.version}</version>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
@@ -271,6 +282,10 @@
            </file>
          </additionalConfig>
        </configuration>
+     </plugin>
+     <plugin>
+       <groupId>org.ops4j</groupId>
+       <artifactId>maven-pax-plugin</artifactId>
      </plugin>
      <plugin>
        <inherited>false</inherited>
@@ -540,9 +555,13 @@
 
   <properties>
   
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     <!-- maven surefire version added here so it could be overridden -->
     <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
+    <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -789,6 +808,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.schema</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -796,6 +825,26 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.schema</artifactId>
         <classifier>liquibase</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.soa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.tasks</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.phonebook</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -817,6 +866,31 @@
         <groupId>org.opennms.features.provisioning</groupId>
         <artifactId>org.opennms.features.provisioning.lib</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-gateway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-ping</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.sms-reflector</groupId>
+        <artifactId>sms-monitor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.lib</groupId>
+        <artifactId>org.opennms.lib.tracker</artifactId>
+        <version>0.2</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib</groupId>
@@ -1606,6 +1680,22 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.5.6</version>
+      </dependency>
+      <dependency>
+        <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
+        <groupId>org.opennms.smslib</groupId>
+        <artifactId>smslib</artifactId>
+        <version>3.4.3-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.rxtx</groupId>
+        <artifactId>rxtx</artifactId>
+        <version>2.2-pre2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.rxtx</groupId>
+        <artifactId>rxtx-osgi</artifactId>
+        <version>2.2-pre2</version>
       </dependency>
       <dependency>
         <groupId>org.snmp4j</groupId>

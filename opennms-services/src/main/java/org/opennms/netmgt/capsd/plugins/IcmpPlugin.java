@@ -42,6 +42,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.opennms.netmgt.ping.PingConstants;
 import org.opennms.netmgt.ping.Pinger;
 
 /**
@@ -118,11 +119,11 @@ public final class IcmpPlugin extends AbstractPlugin {
 
     	try {
     		if (qualifiers != null) {
-    			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", Pinger.DEFAULT_RETRIES);
-    			timeout = ParameterMap.getKeyedLong(qualifiers, "timeout", Pinger.DEFAULT_TIMEOUT);
+    			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", PingConstants.DEFAULT_RETRIES);
+    			timeout = ParameterMap.getKeyedLong(qualifiers, "timeout", PingConstants.DEFAULT_TIMEOUT);
     		} else {
-    			retries = Pinger.DEFAULT_RETRIES;
-    			timeout = Pinger.DEFAULT_TIMEOUT;
+    			retries = PingConstants.DEFAULT_RETRIES;
+    			timeout = PingConstants.DEFAULT_TIMEOUT;
     		}
     		Long retval = Pinger.ping(address, timeout, retries);
     		if (retval != null) {

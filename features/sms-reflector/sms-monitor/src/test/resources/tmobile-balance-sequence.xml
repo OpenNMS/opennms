@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
+  <!-- this will test whether sequence vars are being replaced properly -->
+  <session-variable name="tmobileBalance" class="org.opennms.sms.monitor.session.TmobileBalance" />
+  <transaction label="ussd-balance" gatewayId="ACM0">
+    <ussd-request text="${tmobileBalance}" />
+    <ussd-response>
+      <matches>^.*[\d\.]+ received on \d\d/\d\d/\d\d. For continued service through \d\d/\d\d/\d\d, please pay [\d\.]+ by \d\d/\d\d/\d\d.*$</matches>
+      <session-status>0</session-status>
+    </ussd-response>
+  </transaction>
+ </mobile-sequence>

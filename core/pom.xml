@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.7-SNAPSHOT</version>
+    <version>1.7.5-SMS-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -27,6 +27,8 @@
     <module>lib</module>
     <module>runtime</module>
     <module>schema</module>
+    <module>soa</module>
+    <module>tasks</module>
     <!--<module>web</module>-->
     <module>doc</module>
   </modules>

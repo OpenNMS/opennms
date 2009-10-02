@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- regular spring configuration file defining the beans for this
+       bundle. We've kept the osgi definitions in a separate 
+       configuration file so that this file can easily be used
+       for integration testing outside of an OSGi environment -->
+
+
+    <bean id="smsPingMessenger" class="org.opennms.sms.ping.internal.SmsPingMessenger">
+        <property name="smsService" ref="smsService" />
+    </bean>
+    
+    <bean id="smsPonger" class="org.opennms.sms.ping.internal.SmsPonger" />
+
+    <bean id="smsPingTracker" class="org.opennms.sms.ping.internal.SmsPingTrackerImpl" init-method="start" destroy-method="stop">
+        <constructor-arg ref="smsPingMessenger" />
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.opennms.sms.ping.SmsPinger.setSmsPingTracker" />
+        <property name="arguments">
+          <list><ref bean="smsPingTracker"/></list>
+        </property>
+    </bean>
+    
+</beans>
