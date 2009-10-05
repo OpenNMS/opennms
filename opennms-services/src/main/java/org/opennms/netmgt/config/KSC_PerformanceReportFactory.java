@@ -92,6 +92,8 @@ public class KSC_PerformanceReportFactory {
             "1_year",
             "Today",
             "Yesterday",
+            "Yesterday 9am-5pm",
+            "Yesterday 5pm-10pm",
             "This Week",
             "Last Week",
             "This Month",
@@ -325,6 +327,16 @@ public class KSC_PerformanceReportFactory {
                 end_time.add(Calendar.DATE, 1);
             } else if (interval.equals("Yesterday")) {
                 begin_time.add(Calendar.DATE, -1);
+            } else if (interval.equals("Yesterday 9am-5pm")) {
+                begin_time.add(Calendar.DATE, -1);
+                begin_time.set(Calendar.HOUR_OF_DAY, 9);
+                end_time.add(Calendar.DATE, -1);
+                end_time.set(Calendar.HOUR_OF_DAY, 17);
+            } else if (interval.equals("Yesterday 5pm-10pm")) {
+                begin_time.add(Calendar.DATE, -1);
+                begin_time.set(Calendar.HOUR_OF_DAY, 17);
+                end_time.add(Calendar.DATE, -1);
+                end_time.set(Calendar.HOUR_OF_DAY, 22);
             } else if (interval.equals("This Week") || interval.equals("Last Week")) {
                 begin_time.set(Calendar.DAY_OF_WEEK, 1);
                 end_time.set(Calendar.DAY_OF_WEEK, 7);
