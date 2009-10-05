@@ -367,10 +367,16 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-   <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
+    <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-   </resourceType>
+    </resourceType>
+
+    <!-- Equallogic Instances -->
+    <resourceType name="EqVol" label="Equallogic Volume ID" resourceLabel="${EqVolName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <groups>
       <group name="cisco-frame-relay" ifType="all">
@@ -1084,6 +1090,20 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.12" instance="0" alias="cidsHlthUdpDualIpPt" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.13" instance="0" alias="cidsHlthIpDualIp" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
+      </group>
+
+      <!-- "Equallogic"-->
+      <group name="equallogic-volumes" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.14" instance="EqVol" alias="EqVolName"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.3" instance="EqVol" alias="EqVolTx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.4" instance="EqVol" alias="EqVolRx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.6" instance="EqVol" alias="EqVolReLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.7" instance="EqVol" alias="EqVolWrLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.8" instance="EqVol" alias="EqVolReOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.9" instance="EqVol" alias="EqVolWrOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.8"  instance="EqVol" alias="EqVolSize"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.27" instance="EqVol" alias="EqVolThnResPc" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.7.1.13" instance="EqVol" alias="EqVolAlloc"    type="integer" />
       </group>
 
       <group name="ipunity-as-call-scalars" ifType="ignore" >
@@ -3099,6 +3119,13 @@
           <includeGroup>netHealth-memory</includeGroup>
           <includeGroup>netHealth-sysstat</includeGroup>
           <includeGroup>netHealth-pgmon</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Equallogic SANs">
+        <sysoidMask>.1.3.6.1.4.1.12740.</sysoidMask>
+        <collect>
+         <includeGroup>equallogic-volumes</includeGroup>
         </collect>
       </systemDef>
 
