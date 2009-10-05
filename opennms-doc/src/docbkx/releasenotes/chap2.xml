@@ -161,6 +161,31 @@
 
 	</section>
 
+	<section id="opennms-1.6.7">
+		<title>Changes in OpenNMS 1.6.7</title>
+
+		<section id="opennms.1.6.7-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The Capsd SNMP Plugin can now scan an SNMP table value to determine the
+					existence of a service. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1596">#1596</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for Cisco moduleUp/moduleDown events was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3363">#3363</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.6.6">
 		<title>Changes in OpenNMS 1.6.6</title>
 		
