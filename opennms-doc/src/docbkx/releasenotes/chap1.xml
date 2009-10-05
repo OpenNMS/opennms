@@ -132,12 +132,35 @@
 		</para>
 	</section>
 
+	<section id="introduction-1.6.7">
+		<title>Release 1.6.7</title>
+		
+		<para>
+			Release 1.6.7 is a minor feature release in the 1.6 series.
+		</para>
+		
+		<para>
+			The codename for 1.6.7 is <emphasis>Bonnie</emphasis>.
+		</para>
+	</section>
+
+	<section id="introduction-1.6.6">
+		<title>Release 1.6.6</title>
+		
+		<para>
+			Release 1.6.6 is a bugfix release in the 1.6 series.  It is a recommended upgrade for all users.
+		</para>
+		
+		<para>
+			The codename for 1.6.6 is <emphasis>Helmethead</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.6.5">
 		<title>Release 1.6.5</title>
 		
 		<para>
-			Release 1.6.5 is a small bugfix release in the 1.6 series.  It is a
-			recommended upgrade for all users.
+			Release 1.6.5 is a small bugfix release in the 1.6 series.  It is a recommended upgrade for all users.
 		</para>
 		
 		<para>

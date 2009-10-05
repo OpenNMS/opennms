@@ -9001,108 +9001,127 @@
  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/lerAlarmOn:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.9.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Cisco/traps/moduleUp</uei>
- <event-label>CISCO-STACK-MIB defined trap event: moduleUp</event-label>
- <descr>&lt;p&gt;A moduleUp trap signifies that the agent entity
- has detected that the moduleStatus object in this
- MIB has transitioned to the ok(2) state for one of
- its modules.
- The generation of this trap can be controlled by the
- sysEnableModuleTraps object in this MIB.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- moduleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- other(1) empty(2) wsc1000(3) wsc1001(4) wsc1100(5) wsc1200(11) wsc1400(12) wsx1441(13) wsx1444(14) wsx1450(15) 
- wsx1483(16) wsx1454(17) wsx1455(18) wsx1431(19) wsx1465(20) wsx1436(21) wsx1434(22) wsx5009(23) wsx5013(24) 
- wsx5011(25) wsx5010(26) wsx5113(27) wsx5101(28) wsx5103(29) wsx5104(30) wsx5155(32) wsx5154(33) wsx5153(34) 
- wsx5111(35) wsx5213(36) wsx5020(37) wsx5006(38) wsx5005(39) wsx5509(40) wsx5506(41) wsx5505(42) wsx5156(43) 
- wsx5157(44) wsx5158(45) wsx5030(46) wsx5114(47) wsx5223(48) wsx5224(49) wsx5012(50) wsx5302(52) wsx5213a(53) 
- wsx5380(54) wsx5201(55) wsx5203(56) wsx5530(57) wsx5161(61) wsx5162(62) wsx5165(65) wsx5166(66) wsx5031(67) 
- wsx5410(68) wsx5403(69) wsx5201r(73) wsx5225r(74) wsx5014(75) wsx5015(76) wsx5236(77) wsx5540(78) wsx5234(79) 
- wsx5012a(81) wsx5167(82) wsx5239(83) wsx5168(84) wsx5305(85) wsx5550(87) wsf5541(88) wsx5534(91) wsx5536(92) 
- wsx5237(96) wsx6ksup12ge(200) wsx6408gbic(201) wsx6224mmmt(202) wsx6248rj45(203) wsx6248tel(204) wsx6302msm(206) 
- wsf6kmsfc(207) wsx6024mtrj(208) wsx6101oc12mmf(209) wsx6101oc12smf(210) wsx6416gemt(211) wsx6182pa(212) 
- wsx6ksup1a2ge(219) wsx6302amsm(220) wsx6416gbic(221) wsx6224ammmt(222) wsx6380nam(223) wsx6248arj45(224) 
- wsx6248atel(225) wsx6408agbic(226) wsx6608t1(229) wsx6608e1(230) wsx6624fxs(231) wsx6316getx(233) wsf6kmsfc2(234) 
- wsx6324mmmt(235) wsx6348rj45(236) wsx6ksup22ge(237) wsx6516gbic(239) wsx6381ids(244) wsc6500sfm(245) 
- wsx6548rj45(258) wsx6516getx(261) wsx6500sfm2(278) wsx6348rj21(281) wsx4012(300) wsx4148rj(301) wsx4232gbrj(302) 
- wsx4306gb(303) wsx4418gb(304) wsx44162gbtx(305) wsx4912gb(306) wsx2948gbrj(307) wsx2948(309) wsx4912(310) 
- wsx4424sxmt(311) wsx4232rjxx(312) wsx4148rj21(313) wsx4124fxmt(317) wsx4013(318) wsx4232l3(319) wsx4604gwy(320) 
- wsx44122Gbtx(321) wsx2980(322) wsx2980rj(323) wsx2980gbrj(324) wsx4019(325) wsx4148rj45v(326) wsx4424gbrj45(330) 
- wsx4148fxmt(331)&lt;/p&gt;
- &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Module Up.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Cisco/traps/moduleDown:%dpname%:%nodeid%:%parm[#1]%"/>
- </event>
+  <event>
+       <mask>
+           <maskelement>
+               <mename>id</mename>
+               <mevalue>.1.3.6.1.4.1.9.5</mevalue>
+           </maskelement>
+           <maskelement>
+               <mename>generic</mename>
+               <mevalue>6</mevalue>
+           </maskelement>
+           <maskelement>
+               <mename>specific</mename>
+               <mevalue>3</mevalue>
+           </maskelement>
+       </mask>
+       <uei>uei.opennms.org/vendor/Cisco/traps/moduleUp</uei>
+       <event-label>CISCO-STACK-MIB defined trap event:
+moduleUp</event-label>
+       <descr>&lt;p&gt;A moduleUp trap signifies that the
+agent entity has detected that the moduleStatus object in this MIB has
+transitioned to the ok(2) state for one of its modules. The generation
+of this trap can be controlled by the sysEnableModuleTraps object in
+this MIB.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]% &lt;/td&gt;
+&lt;td&gt;&lt;p&gt;Range [1-16]&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+moduleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+&lt;/td&gt;&lt;td&gt;&lt;p;&gt; other(1) empty(2) wsc1000(3) wsc1001(4)
+wsc1100(5) wsc1200(11) wsc1400(12) wsx1441(13) wsx1444(14) wsx1450(15)
+wsx1483(16) wsx1454(17) wsx1455(18) wsx1431(19) wsx1465(20) wsx1436(21)
+wsx1434(22) wsx5009(23) wsx5013(24) wsx5011(25) wsx5010(26) wsx5113(27)
+wsx5101(28) wsx5103(29) wsx5104(30) wsx5155(32) wsx5154(33) wsx5153(34)
+wsx5111(35) wsx5213(36) wsx5020(37) wsx5006(38) wsx5005(39) wsx5509(40)
+wsx5506(41) wsx5505(42) wsx5156(43) wsx5157(44) wsx5158(45) wsx5030(46)
+wsx5114(47) wsx5223(48) wsx5224(49) wsx5012(50) wsx5302(52) wsx5213a(53)
+wsx5380(54) wsx5201(55) wsx5203(56) wsx5530(57) wsx5161(61) wsx5162(62)
+wsx5165(65) wsx5166(66) wsx5031(67) wsx5410(68) wsx5403(69) wsx5201r(73)
+wsx5225r(74) wsx5014(75) wsx5015(76) wsx5236(77) wsx5540(78) wsx5234(79)
+wsx5012a(81) wsx5167(82) wsx5239(83) wsx5168(84) wsx5305(85) wsx5550(87)
+wsf5541(88) wsx5534(91) wsx5536(92) wsx5237(96) wsx6ksup12ge(200)
+wsx6408gbic(201) wsx6224mmmt(202) wsx6248rj45(203) wsx6248tel(204)
+wsx6302msm(206) wsf6kmsfc(207) wsx6024mtrj(208) wsx6101oc12mmf(209)
+wsx6101oc12smf(210) wsx6416gemt(211) wsx6182pa(212) wsx6ksup1a2ge(219)
+wsx6302amsm(220) wsx6416gbic(221) wsx6224ammmt(222) wsx6380nam(223)
+wsx6248arj45(224) wsx6248atel(225) wsx6408agbic(226) wsx6608t1(229)
+wsx6608e1(230) wsx6624fxs(231) wsx6316getx(233) wsf6kmsfc2(234)
+wsx6324mmmt(235) wsx6348rj45(236) wsx6ksup22ge(237) wsx6516gbic(239)
+wsx6381ids(244) wsc6500sfm(245) wsx6548rj45(258) wsx6516getx(261)
+wsx6500sfm2(278) wsx6348rj21(281) wsx4012(300) wsx4148rj(301)
+wsx4232gbrj(302) wsx4306gb(303) wsx4418gb(304) wsx44162gbtx(305)
+wsx4912gb(306) wsx2948gbrj(307) wsx2948(309) wsx4912(310)
+wsx4424sxmt(311) wsx4232rjxx(312) wsx4148rj21(313) wsx4124fxmt(317)
+wsx4013(318) wsx4232l3(319) wsx4604gwy(320) wsx44122Gbtx(321)
+wsx2980(322) wsx2980rj(323) wsx2980gbrj(324) wsx4019(325)
+wsx4148rj45v(326) wsx4424gbrj45(330) wsx4148fxmt(331)&lt;/p&gt;
+&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+       <logmsg dest="logndisplay">&lt;p&gt;Cisco Event: STACK Module
+Up.&lt;/p&gt;</logmsg>
+       <severity>Normal</severity>
+   </event>
 
+   <event>
+       <mask>
+           <maskelement>
+               <mename>id</mename>
+               <mevalue>.1.3.6.1.4.1.9.5</mevalue>
+           </maskelement>
+           <maskelement>
+               <mename>generic</mename>
+               <mevalue>6</mevalue>
+           </maskelement>
+           <maskelement>
+               <mename>specific</mename>
+               <mevalue>4</mevalue>
+           </maskelement>
+       </mask>
+       <uei>uei.opennms.org/vendor/Cisco/traps/moduleDown</uei>
+       <event-label>CISCO-STACK-MIB defined trap event: moduleDown</event-label>
+       <descr>&lt;p&gt;A moduleDown trap signifies that the
+	agent entity has detected that the moduleStatus object in this MIB has
+	transitioned out of the ok(2) state for one of its modules. The
+	generation of this trap can be controlled by the sysEnableModuleTraps
+	object in this MIB.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]% &lt;/td&gt;
+	&lt;td&gt;&lt;p&gt;Range [1-16]&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	moduleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+	&lt;/td&gt;&lt;td&gt;&lt;p&gt; other(1) empty(2) wsc1000(3) wsc1001(4)
+	wsc1100(5) wsc1200(11) wsc1400(12) wsx1441(13) wsx1444(14) wsx1450(15)
+	wsx1483(16) wsx1454(17) wsx1455(18) wsx1431(19) wsx1465(20) wsx1436(21)
+	wsx1434(22) wsx5009(23) wsx5013(24) wsx5011(25) wsx5010(26) wsx5113(27)
+	wsx5101(28) wsx5103(29) wsx5104(30) wsx5155(32) wsx5154(33) wsx5153(34)
+	wsx5111(35) wsx5213(36) wsx5020(37) wsx5006(38) wsx5005(39) wsx5509(40)
+	wsx5506(41) wsx5505(42) wsx5156(43) wsx5157(44) wsx5158(45) wsx5030(46)
+	wsx5114(47) wsx5223(48) wsx5224(49) wsx5012(50) wsx5302(52) wsx5213a(53)
+	wsx5380(54) wsx5201(55) wsx5203(56) wsx5530(57) wsx5161(61) wsx5162(62)
+	wsx5165(65) wsx5166(66) wsx5031(67) wsx5410(68) wsx5403(69) wsx5201r(73)
+	wsx5225r(74) wsx5014(75) wsx5015(76) wsx5236(77) wsx5540(78) wsx5234(79)
+	wsx5012a(81) wsx5167(82) wsx5239(83) wsx5168(84) wsx5305(85) wsx5550(87)
+	wsf5541(88) wsx5534(91) wsx5536(92) wsx5237(96) wsx6ksup12ge(200)
+	wsx6408gbic(201) wsx6224mmmt(202) wsx6248rj45(203) wsx6248tel(204)
+	wsx6302msm(206) wsf6kmsfc(207) wsx6024mtrj(208) wsx6101oc12mmf(209)
+	wsx6101oc12smf(210) wsx6416gemt(211) wsx6182pa(212) wsx6ksup1a2ge(219)
+	wsx6302amsm(220) wsx6416gbic(221) wsx6224ammmt(222) wsx6380nam(223)
+	wsx6248arj45(224) wsx6248atel(225) wsx6408agbic(226) wsx6608t1(229)
+	wsx6608e1(230) wsx6624fxs(231) wsx6316getx(233) wsf6kmsfc2(234)
+	wsx6324mmmt(235) wsx6348rj45(236) wsx6ksup22ge(237) wsx6516gbic(239)
+	wsx6381ids(244) wsc6500sfm(245) wsx6548rj45(258) wsx6516getx(261)
+	wsx6500sfm2(278) wsx6348rj21(281) wsx4012(300) wsx4148rj(301)
+	wsx4232gbrj(302) wsx4306gb(303) wsx4418gb(304) wsx44162gbtx(305)
+	wsx4912gb(306) wsx2948gbrj(307) wsx2948(309) wsx4912(310)
+	wsx4424sxmt(311) wsx4232rjxx(312) wsx4148rj21(313) wsx4124fxmt(317)
+	wsx4013(318) wsx4232l3(319) wsx4604gwy(320) wsx44122Gbtx(321)
+	wsx2980(322) wsx2980rj(323) wsx2980gbrj(324) wsx4019(325)
+	wsx4148rj45v(326) wsx4424gbrj45(330)
+	wsx4148fxmt(331)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+       <logmsg dest="logndisplay">&lt;p&gt;Cisco Event: STACK Module Down.&lt;/p&gt;</logmsg>
+       <severity>Minor</severity>
+   </event>
 <event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.9.5</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Cisco/traps/moduleDown</uei>
- <event-label>CISCO-STACK-MIB defined trap event: moduleDown</event-label>
- <descr>&lt;p&gt;A moduleDown trap signifies that the agent entity
- has detected that the moduleStatus object in this
- MIB has transitioned out of the ok(2) state for one
- of its modules.
- The generation of this trap can be controlled by the
- sysEnableModuleTraps object in this MIB.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- moduleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- other(1) empty(2) wsc1000(3) wsc1001(4) wsc1100(5) wsc1200(11) wsc1400(12) wsx1441(13) wsx1444(14) wsx1450(15) 
- wsx1483(16) wsx1454(17) wsx1455(18) wsx1431(19) wsx1465(20) wsx1436(21) wsx1434(22) wsx5009(23) wsx5013(24) 
- wsx5011(25) wsx5010(26) wsx5113(27) wsx5101(28) wsx5103(29) wsx5104(30) wsx5155(32) wsx5154(33) wsx5153(34) 
- wsx5111(35) wsx5213(36) wsx5020(37) wsx5006(38) wsx5005(39) wsx5509(40) wsx5506(41) wsx5505(42) wsx5156(43) 
- wsx5157(44) wsx5158(45) wsx5030(46) wsx5114(47) wsx5223(48) wsx5224(49) wsx5012(50) wsx5302(52) wsx5213a(53) 
- wsx5380(54) wsx5201(55) wsx5203(56) wsx5530(57) wsx5161(61) wsx5162(62) wsx5165(65) wsx5166(66) wsx5031(67) 
- wsx5410(68) wsx5403(69) wsx5201r(73) wsx5225r(74) wsx5014(75) wsx5015(76) wsx5236(77) wsx5540(78) wsx5234(79) 
- wsx5012a(81) wsx5167(82) wsx5239(83) wsx5168(84) wsx5305(85) wsx5550(87) wsf5541(88) wsx5534(91) wsx5536(92) 
- wsx5237(96) wsx6ksup12ge(200) wsx6408gbic(201) wsx6224mmmt(202) wsx6248rj45(203) wsx6248tel(204) wsx6302msm(206) 
- wsf6kmsfc(207) wsx6024mtrj(208) wsx6101oc12mmf(209) wsx6101oc12smf(210) wsx6416gemt(211) wsx6182pa(212) 
- wsx6ksup1a2ge(219) wsx6302amsm(220) wsx6416gbic(221) wsx6224ammmt(222) wsx6380nam(223) wsx6248arj45(224) 
- wsx6248atel(225) wsx6408agbic(226) wsx6608t1(229) wsx6608e1(230) wsx6624fxs(231) wsx6316getx(233) wsf6kmsfc2(234) 
- wsx6324mmmt(235) wsx6348rj45(236) wsx6ksup22ge(237) wsx6516gbic(239) wsx6381ids(244) wsc6500sfm(245) 
- wsx6548rj45(258) wsx6516getx(261) wsx6500sfm2(278) wsx6348rj21(281) wsx4012(300) wsx4148rj(301) wsx4232gbrj(302) 
- wsx4306gb(303) wsx4418gb(304) wsx44162gbtx(305) wsx4912gb(306) wsx2948gbrj(307) wsx2948(309) wsx4912(310) 
- wsx4424sxmt(311) wsx4232rjxx(312) wsx4148rj21(313) wsx4124fxmt(317) wsx4013(318) wsx4232l3(319) wsx4604gwy(320) 
- wsx44122Gbtx(321) wsx2980(322) wsx2980rj(323) wsx2980gbrj(324) wsx4019(325) wsx4148rj45v(326) wsx4424gbrj45(330) 
- wsx4148fxmt(331)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: STACK Module Down.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
-</event>
 
-<event>
  <mask>
   <maskelement>
    <mename>id</mename>

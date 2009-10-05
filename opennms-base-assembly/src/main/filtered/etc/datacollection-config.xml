@@ -367,10 +367,16 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-   <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
+    <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-   </resourceType>
+    </resourceType>
+
+    <!-- Equallogic Instances -->
+    <resourceType name="EqVol" label="Equallogic Volume ID" resourceLabel="${EqVolName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
 
     <groups>
       <group name="cisco-frame-relay" ifType="all">
@@ -751,6 +757,11 @@
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="swFCPortIndex" alias="swFCPortName"     type="string" />
       </group>
 
+      <!-- Cisco MIBs -->
+      <group  name="cisco-ap-stats" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.2.1.1" instance="1" alias="ciscoApAssoc" type="Gauge32" />
+      </group>
+
       <group name="cisco-bgp-peer-addr-family-prefix-stats" ifType="all">
         <!-- NB This gauge is a Counter32 that exhibits gauge semantics -->
         <mibObj oid=".1.3.6.1.4.1.9.9.187.1.2.4.1.1" instance="cbgpPeerAddrFamilyPrefixEntry" alias="cbgpPeerAcceptedPfx" type="gauge" />
@@ -838,13 +849,24 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.19" instance="0" alias="ccmRejVMailDev"      type="gauge32" />
       </group>
       <group name="cisco-css" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.2" instance="ciscoApCntIndex" alias="ciscoApCntName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.2"  instance="ciscoApCntIndex" alias="ciscoApCntName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.18" instance="ciscoApCntIndex" alias="ciscoApCntHits" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.19" instance="ciscoApCntIndex" alias="ciscoApCntRedirs" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.20" instance="ciscoApCntIndex" alias="ciscoApCntDrops" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.25" instance="ciscoApCntIndex" alias="ciscoApCntBytes" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.26" instance="ciscoApCntIndex" alias="ciscoApCntFrames" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.60" instance="ciscoApCntIndex" alias="ciscoApCntSorry" type="counter32" />
+      </group>
+      <group  name="cisco-docs-ext-ifmacchan" ifType="127">
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.4" instance="ifIndex" alias="MacCmTotal"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.5" instance="ifIndex" alias="MacCmActive" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.6" instance="ifIndex" alias="MacCmReg"    type="Integer32" />
+      </group>
+      <group  name="cisco-docs-ext-ifupchannel" ifType="129">
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.3" instance="ifIndex" alias="CmTotal"         type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.4" instance="ifIndex" alias="CmActive"        type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.5" instance="ifIndex" alias="CmRegistered"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.10.127.1.1.4.1.5"  instance="ifIndex" alias="intCabUpSNR"    type="Integer32" />
       </group>
       <group name="cisco-memory" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="1" alias="ciscoMemoryPoolUsed" type="gauge" />
@@ -1068,6 +1090,20 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.12" instance="0" alias="cidsHlthUdpDualIpPt" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.13" instance="0" alias="cidsHlthIpDualIp" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
+      </group>
+
+      <!-- "Equallogic"-->
+      <group name="equallogic-volumes" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.14" instance="EqVol" alias="EqVolName"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.3" instance="EqVol" alias="EqVolTx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.4" instance="EqVol" alias="EqVolRx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.6" instance="EqVol" alias="EqVolReLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.7" instance="EqVol" alias="EqVolWrLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.8" instance="EqVol" alias="EqVolReOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.9" instance="EqVol" alias="EqVolWrOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.8"  instance="EqVol" alias="EqVolSize"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.27" instance="EqVol" alias="EqVolThnResPc" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.7.1.13" instance="EqVol" alias="EqVolAlloc"    type="integer" />
       </group>
 
       <group name="ipunity-as-call-scalars" ifType="ignore" >
@@ -1416,6 +1452,15 @@
         <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.9" instance="0" alias="naV2cWrites"      type="Counter" />
         <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.7" instance="0" alias="naV3cReads"       type="Counter" />
         <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.8" instance="0" alias="naV3cWrites"      type="Counter" />
+      </group>
+
+      <group name="netapp-misc" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.16"      instance="0" alias="naMiscLowDiskReadBytes"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.18"      instance="0" alias="naMiscLowDiskWriteBytes"  type="Counter" />
+      </group>
+
+      <group name="netapp-sis" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.28" instance="naDfIndex" alias="naSisPercent"    type="integer" />
       </group>
 
       <!-- Colubris MIBs -->
@@ -2295,6 +2340,11 @@
         <mibObj oid=".1.3.6.1.4.1.43.2.13.3.1.1.5" instance="0" alias="a3sysMemSize" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.43.2.13.8.4"     instance="0" alias="a3sysCpuUtil" type="integer" />
       </group>
+
+      <!-- Trango MIBs -->
+      <group  name="trangolink45-rssi" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5454.1.40.2.12" instance="0" alias="trangoRssi" type="integer" />
+      </group>
       
       <!--  F5 MIBs -->
       <group name="bigip-ltmpool-stat" ifType="all">
@@ -2527,6 +2577,13 @@
         <sysoidMask>.1.3.6.1.4.1.9.9.</sysoidMask>
         <collect>
           <includeGroup>cisco-css</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco C1200">
+        <sysoid>.1.3.6.1.4.1.9.1.525</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-stats</includeGroup>
         </collect>
       </systemDef>
 
@@ -3027,6 +3084,8 @@
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>ietf-bgp4-peer-stats</includeGroup>
           <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
+          <includeGroup>cisco-docs-ext-ifupchannel</includeGroup>
+          <includeGroup>cisco-docs-ext-ifmacchan</includeGroup>
         </collect>
       </systemDef>
 
@@ -3069,6 +3128,13 @@
           <includeGroup>netHealth-memory</includeGroup>
           <includeGroup>netHealth-sysstat</includeGroup>
           <includeGroup>netHealth-pgmon</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Equallogic SANs">
+        <sysoidMask>.1.3.6.1.4.1.12740.</sysoidMask>
+        <collect>
+         <includeGroup>equallogic-volumes</includeGroup>
         </collect>
       </systemDef>
 
@@ -3138,6 +3204,16 @@
           <!-- <includeGroup>aix-physical-volume</includeGroup> -->
           <!-- Uncomment if you want AIX print queue stats -->
           <!-- <includeGroup>aix-print-queue</includeGroup> -->
+        </collect>
+      </systemDef>
+
+     <systemDef name="IBM-AS400">
+        <sysoid>.1.3.6.1.4.1.2.6.11</sysoid>
+        <collect>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-host-resources-processor</includeGroup>
         </collect>
       </systemDef>
 
@@ -3318,6 +3394,8 @@
         <collect>
           <includeGroup>netapp-dfEntry</includeGroup>
           <includeGroup>netapp-filer</includeGroup>
+          <includeGroup>netapp-misc</includeGroup>
+          <includeGroup>netapp-sis</includeGroup>
         </collect>
       </systemDef>
 
@@ -3326,6 +3404,8 @@
         <collect>
           <includeGroup>netapp-dfEntry</includeGroup>
           <includeGroup>netapp-filer</includeGroup>
+          <includeGroup>netapp-misc</includeGroup>
+          <includeGroup>netapp-sis</includeGroup>
         </collect>
       </systemDef>
 
@@ -3382,6 +3462,13 @@
         <collect>
           <includeGroup>3com-router-sys</includeGroup>
           <includeGroup>3com-router-perf</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "TrangoLink-45">
+        <sysoid>.1.3.6.1.4.1.5454.1.40</sysoid>
+        <collect>
+          <includeGroup>trangolink45-rssi</includeGroup>
         </collect>
       </systemDef>
 
