@@ -370,6 +370,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-web</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
