@@ -35,12 +35,14 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.List;
-
-import org.opennms.netmgt.config.databaseReports.ReportParm;
-
-public interface DatabaseReportDao {
+public interface OnmsDatabaseReportDao {
     
-    List<ReportParm> getParmsByName(String name);
+    String getPdfStylesheetLocation(String OnmsReportName);
     
+    String getSvgStylesheetLocation(String OnmsReportName);
+    
+    String getHtmlStylesheetLocation(String OnmsReportName);
+    
+    String getType(String OnmsReportName);
+
 }

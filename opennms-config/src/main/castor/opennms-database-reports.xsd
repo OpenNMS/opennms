@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+	elementFormDefault="qualified">
+
+	<element name="opennms-database-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for opennms legacy reports
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>report definition for legacy opennms availability reports</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<attribute name="report-name" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="type" type="string" use="required">
+				<annotation>
+					<documentation>type of this report (calendar/classic)</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="html-template" type="string" use="required">
+				<annotation>
+					<documentation>HTML template used to render this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="pdf-template" type="string" use="required">
+			<annotation>
+					<documentation>PDF template used to render this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="svg-template" type="string" use="required">
+			<annotation>
+					<documentation>PDF with embedded SVG template used to render this report</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>

@@ -3,12 +3,16 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 
+// October 5th, 2009 : Added report engine field
+//
+// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,9 +29,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
 //
 package org.opennms.netmgt.model;
 
@@ -67,6 +71,10 @@ public class AvailabilityReportLocator implements Serializable {
 	private String m_format;
 	
 	/** date report generated */
+	
+	private String m_engine;
+	
+	/** report engine to use for generating this report **/
 	
 	private Date m_date;
 	
@@ -133,6 +141,15 @@ public class AvailabilityReportLocator implements Serializable {
 	public void setType(String type) {
 		m_type = type;
 	}
+	
+	@Column(name="reportEngine", length=256)
+    public String getEngine() {
+        return m_engine;
+    }
+    
+    public void setEngine(String engine) {
+        m_engine = engine;
+    }
 
 	@Column(name="reportLocation", length=256)
 	public String getLocation() {

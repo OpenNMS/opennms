@@ -33,14 +33,30 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.castor;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-import org.opennms.netmgt.config.databaseReports.ReportParm;
+import java.io.InputStream;
 
-public interface DatabaseReportDao {
+import org.junit.Test;
+import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.InputStreamResource;
+
+public class DefaultOnmsDatabaseReportDaoTest {
     
-    List<ReportParm> getParmsByName(String name);
-    
+    private static final String NAME = "defaultCalendarReport";
+    private static final String TYPE = "calendar";
+
+    @Test
+    public void testGetType() throws Exception {
+        DefaultOnmsDatabaseReportDao dao = new DefaultOnmsDatabaseReportDao();
+        
+        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/opennms-database-reports.xml");
+        dao.setConfigResource(new InputStreamResource(in));
+        dao.afterPropertiesSet();
+        
+        assertEquals(dao.getType(NAME),TYPE);
+    }
+
 }

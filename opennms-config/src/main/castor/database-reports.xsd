@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/database-reports"
+	elementFormDefault="qualified">
+
+	<element name="database-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for database reports
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>A report definition</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report-parm" />
+			</sequence>
+			<attribute name="report-name" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report as defined in engine configuration</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="display-name" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report as displayed in the webui</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="engine-name" type="string" use="required">
+				<annotation>
+					<documentation>the name of the engine to use to process and render this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="description" type="string" use="required">
+				<annotation>
+					<documentation>report description</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+	
+	<element name="report-parm">
+		<annotation>
+			<documentation>
+				Parameters taken by this report
+			</documentation>
+		</annotation>
+		<complexType>
+					<attribute name="name" type="string" use="required">
+						<annotation>
+							<documentation>Key</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="display-name" type="string" use="required">
+						<annotation>
+							<documentation>the name of this parameter as displayed in the webui</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="type" use="required">
+						<simpleType>
+							<restriction base="string">
+								<pattern value="(date|reportCategory)" />
+							</restriction>
+						</simpleType>
+					</attribute>
+					<attribute name="value" type="string" use="optional">
+						<annotation>
+							<documentation>value</documentation>
+						</annotation>
+					</attribute>
+		</complexType>
+	</element>
+
+</schema>

@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 
+// Created: October 5th, 2009
+//
+// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,53 +35,34 @@
 //
 package org.opennms.netmgt.dao.castor;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import static org.junit.Assert.assertEquals;
+
+import java.io.InputStream;
 import java.util.List;
 
+import org.junit.Test;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
-import org.opennms.netmgt.config.databaseReports.legacy.LegacyDatabaseReports;
-import org.opennms.netmgt.config.databaseReports.legacy.Report;
-import org.opennms.netmgt.dao.DatabaseReportDao;
+import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.InputStreamResource;
 
-public class LegacyDatabaseReportDao extends AbstractCastorConfigDao<LegacyDatabaseReports, List<Report>>
-        implements DatabaseReportDao {
+public class DefaultDatabaseReportDaoTest {
     
-    public LegacyDatabaseReportDao() {
-        super(LegacyDatabaseReports.class, "Legacy Database Report Configuration");
-    }
+    private static final String NAME = "defaultCalendarReport";
 
-    
-    
-    @Override
-    public List<Report> translateConfig(LegacyDatabaseReports castorConfig) {
-        return Collections.unmodifiableList(castorConfig.getReportCollection());
-    }
-
-
-
-    public List<ReportParm> getParmsByName(String reportName) {
+    @Test
+    public void testGetParmsByName() throws Exception {
         
-        for (Report report : getContainer().getObject()) {
-            if (reportName.equals(report.getName())) {
-                return report.getReportParmCollection();
-            }
-        }
+        List<ReportParm> parms;
+        DefaultDatabaseReportDao dao = new DefaultDatabaseReportDao();
         
-        // Return an empty list if the report does not exist.
+        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/database-reports.xml");
+        dao.setConfigResource(new InputStreamResource(in));
+        dao.afterPropertiesSet();
         
-        return new ArrayList<ReportParm>();
+        parms = dao.getParmsByName(NAME);
         
-    }
-
-
-
-    public List<String> getNames() {
-        List<String> reports = new ArrayList<String>();
-        for (Report report : getContainer().getObject()) {
-            reports.add(report.getName());
-        }   
-        return reports;
+        assertEquals(parms.size(),2);
+        
     }
 
 }
