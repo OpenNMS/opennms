@@ -1,0 +1,474 @@
+<!-- Generated from MIB: I3IC-MIB version 1.1 (ININ Interaction Center servers version 2.0 and higher) -->
+<!-- additional information is available, it can be found at http://www.inin.com/Support/EventLogs/FindEntry.asp -->
+
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTrapRestart</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTrapRestart</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when an Interaction Center subsystem has 
+been restarted. See accompanying MIB variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapInfoSubsys&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notifier(1)
+		switchoverservice(2)
+		filemonitor(3)
+		dsserver(4)
+		mailaccountmonitor(5)
+		adminserver(6)
+		accserver(7)
+		postoffice(8)
+		recosubsystem(9)
+		compressormanager(10)
+		datamanager(11)
+		trackertranserver(12)
+		trackerserver(13)
+		recordertranserver(14)
+		recorderserver(15)
+		ipdbserver(16)
+		pagingserver(17)
+		hostserver(18)
+		statserver(19)
+		outofproccustomdll(20)
+		webprocessor(21)
+		clientservices(22)
+		acdserver(23)
+		alertserver(24)
+		ipserver(25)
+		vpimreceiver(26)
+		faxserver(27)
+		ip(28)
+		tsserver(29)
+		smsserver(30)
+		emsserver(31)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapInfoRestartReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		maintenance(1)
+		unknown(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTrapRestart trap received 
+			i3IcTrapInfoSubsys=%parm[#1]% 
+			i3IcTrapInfoRestartReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTrapInformationalEventLog</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTrapInformationalEventLog</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Interaction Center has 
+written an informational entry to the Event Log on the Interaction Center server
+		 See accompanying MIB variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapInfoEventLogSubsys&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapInfoEventLogMsgID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapInfoEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTrapInformationalEventLog trap received 
+			i3IcTrapInfoEventLogSubsys=%parm[#1]% 
+			i3IcTrapInfoEventLogMsgID=%parm[#2]% 
+			i3IcTrapInfoEventLogMsg=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTrapWarningEventLog</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTrapWarningEventLog</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Interaction Center has 
+written a warning entry to the Event Log on the Interaction Center server
+		 See accompanying MIB variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapWarningEventLogSubsys&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapWarningEventLogMsgID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapWarningEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTrapWarningEventLog trap received 
+			i3IcTrapWarningEventLogSubsys=%parm[#1]% 
+			i3IcTrapWarningEventLogMsgID=%parm[#2]% 
+			i3IcTrapWarningEventLogMsg=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTrapErrorEventLog</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTrapErrorEventLog</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Interaction Center has 
+written an error entry to the Event Log on the Interaction Center server
+		 See accompanying MIB variable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapErrorEventLogSubsys&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapErrorEventLogMsgID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapErrorEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTrapErrorEventLog trap received 
+			i3IcTrapErrorEventLogSubsys=%parm[#1]% 
+			i3IcTrapErrorEventLogMsgID=%parm[#2]% 
+			i3IcTrapErrorEventLogMsg=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcCommenceSwitchoverEvent</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcCommenceSwitchoverEvent</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the backup Interaction Center server is becoming active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcCommenceSwitchoverEvent trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTSInterfaceYellowAlarm</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTSInterfaceYellowAlarm</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when a telephony interface has a yellow alarm raised on it.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapYellowAlarmTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTSInterfaceYellowAlarm trap received 
+			i3IcTrapYellowAlarmTSInterface=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTSInterfaceRedAlarm</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTSInterfaceRedAlarm</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when a telephony interface has a red alarm raised on it.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapRedAlarmTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTSInterfaceRedAlarm trap received 
+			i3IcTrapRedAlarmTSInterface=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTSInterfaceAlarmCleared</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTSInterfaceAlarmCleared</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when a telephony interface has an alarm cleared.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapAlarmClearedTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTSInterfaceAlarmCleared trap received 
+			i3IcTrapAlarmClearedTSInterface=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTSInterfaceDChannelDown</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTSInterfaceDChannelDown</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when a telephony interface has a D channel go down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	i3IcTrapDChannelDownTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTSInterfaceDChannelDown trap received 
+			i3IcTrapDChannelDownTSInterface=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcDiscontinueSwitchoverEvent</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcDiscontinueSwitchoverEvent</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when the primary Interaction Center server is becoming inactive.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcDiscontinueSwitchoverEvent trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcHighLatencyState</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcHighLatencyState</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Interaction Center server is experiencing a high latency condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcHighLatencyState trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcHighLatencyStateClear</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcHighLatencyStateClear</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when Interaction Center server is no longer experiencing a high latency condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcHighLatencyStateClear trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTracingStoppedInsufficientDiskSpace</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTracingStoppedInsufficientDiskSpace</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when tracing was stopped due to insufficient disk space.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTracingStoppedInsufficientDiskSpace trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2793.2.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/inin/traps/i3IcTracingStoppedInsufficientDiskSpaceCleared</uei>
+	<event-label>I3IC-MIB defined trap event: i3IcTracingStoppedInsufficientDiskSpaceCleared</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when tracing is resumed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Interactive Intelligence: i3IcTracingStoppedInsufficientDiskSpaceCleared trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End data generated from MIB: I3IC-MIB -->
+
+</events>
