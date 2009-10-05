@@ -1,9 +1,13 @@
 package org.opennms.server;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 import javax.servlet.ServletContext;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -12,6 +16,10 @@ import org.apache.log4j.Appender;
 import org.opennms.client.*;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.dao.db.InstallerDb;
+import org.opennms.netmgt.dao.db.SimpleDataSource;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -54,7 +62,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
     }
 
-    public boolean connectToDatabase() {
+    public boolean connectToDatabase(String dbName, String user, String password, String driver, String url, String binaryDirectory) throws IllegalStateException {
+        InstallerDb db = new InstallerDb();
+        db.setDatabaseName(dbName);
+        db.setPostgresOpennmsUser(user);
+        db.setPostgresOpennmsPassword(password);
+        try {
+            db.setDataSource(new SimpleDataSource(driver, url, user, password));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
+        }
         return false;
     }
 

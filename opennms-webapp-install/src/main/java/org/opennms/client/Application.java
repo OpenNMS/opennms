@@ -101,7 +101,7 @@ public class Application implements EntryPoint {
             }
         });
         Button checkOwnershipButton = new Button("Check ownership file", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 verifyOwnership.setIconStyle("check-progress-icon");
 
@@ -163,7 +163,7 @@ public class Application implements EntryPoint {
         });
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 setAdminPassword.setIconStyle("check-progress-icon");
 
@@ -233,14 +233,15 @@ public class Application implements EntryPoint {
         final TextField<String> dbDriver = new TextField<String>();
         dbDriver.setFieldLabel("Database driver");
         dbDriver.setAllowBlank(false);
-        dbDriver.setPassword(true);
-        connectToDatabase.add(dbDriver);
+        dbDriver.setValue("org.postgresql.Driver");
+        dbDriver.hide();
+        // connectToDatabase.add(dbDriver);
 
         final TextField<String> dbUrl = new TextField<String>();
         dbUrl.setFieldLabel("Database URL");
         dbUrl.setAllowBlank(false);
-        dbUrl.setPassword(true);
-        connectToDatabase.add(dbUrl);
+        dbUrl.hide();
+        // connectToDatabase.add(dbUrl);
 
         final TextField<String> dbBinDir = new TextField<String>();
         dbBinDir.setFieldLabel("Database binary directory");
@@ -249,32 +250,66 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbBinDir);
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 connectToDatabase.setIconStyle("check-progress-icon");
 
-                installService.connectToDatabase(new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        if (result) {
-                            connectToDatabase.setIconStyle("check-success-icon");
-                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        } else {
-                            connectToDatabase.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        }
+                try {
+                    // Validation
+
+                    if (!dbName.validate()) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
+                        return;
+                    } else if (!dbUser.validate()) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
+                        return;
+                    } else if (!dbPass.validate()) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
+                        return;
+                    } else if (!dbDriver.validate()) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                        return;
                     }
 
-                    public void onFailure(Throwable e) {
+                    dbUrl.setValue("jdbc:postgresql://localhost:5432/" + dbName.getValue());
+
+                    // Make sure that the password and confirmation fields match
+                    if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
                         connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                        return;
                     }
-                });
+
+                    installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+                        public void onSuccess(Boolean result) {
+                            if (result) {
+                                connectToDatabase.setIconStyle("check-success-icon");
+                                MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
+                                    public void handleEvent(MessageBoxEvent event) {
+                                    }
+                                });
+                            } else {
+                                connectToDatabase.setIconStyle("check-failure-icon");
+                                MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", new Listener<MessageBoxEvent>() {
+                                    public void handleEvent(MessageBoxEvent event) {
+                                    }
+                                });
+                            }
+                        }
+
+                        public void onFailure(Throwable e) {
+                            connectToDatabase.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        }
+                    });
+                } catch (IllegalStateException e) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("PostgreSQL JDBC Driver Missing", "The PostgreSQL JDBC driver could not be found in the classpath.", null);
+                }
             }
         });
         connectToDatabase.add(connectButton);
@@ -285,7 +320,7 @@ public class Application implements EntryPoint {
         updateDatabase.setBodyStyleName("accordion-panel");
 
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 updateDatabase.setIconStyle("check-progress-icon");
 
@@ -322,7 +357,7 @@ public class Application implements EntryPoint {
             }
         });
         Button checkStoredProceduresButton = new Button("Check stored procedures", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 checkStoredProcedures.setIconStyle("check-progress-icon");
 
@@ -366,7 +401,7 @@ public class Application implements EntryPoint {
 
         // ExtJS button
         Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent e) {
+            public void componentSelected(ButtonEvent event) {
                 installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
                     public void onSuccess(List<LoggingEvent> result) {
                         String message = "";
