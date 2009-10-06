@@ -194,6 +194,9 @@ public class Capsd extends AbstractServiceDaemon {
     	// suspect scans that are in progress
     	SuspectEventProcessor.setQueuedSuspectsTracker(new HashSet<String>());
     	
+    	// Likewise, a separate Set for the RescanProcessor
+    	RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
+    	
 		// Start the suspect event and rescan thread pools
         log().debug("start: Starting runnable thread pools...");
 
