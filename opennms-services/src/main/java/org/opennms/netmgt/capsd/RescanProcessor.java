@@ -85,6 +85,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -222,6 +223,8 @@ public final class RescanProcessor implements Runnable {
     private PluginManager m_pluginManager;
 
     private int m_nodeId;
+    
+    private static Set<Integer> m_queuedRescanTracker;
 
     /**
      * Constructor.
@@ -242,6 +245,12 @@ public final class RescanProcessor implements Runnable {
         m_forceRescan = forceRescan;
         m_capsdDbSyncer = capsdDbSyncer;
         m_pluginManager = pluginManager;
+        
+        // Add the node ID of the node to be rescanned to the Set that tracks
+        // rescan requests
+        synchronized (m_queuedRescanTracker) {
+            m_queuedRescanTracker.add(nodeId);
+        }
     }
 
     /**
@@ -3006,6 +3015,11 @@ public final class RescanProcessor implements Runnable {
             } catch (SQLException e) {
                 log().error("Error closing connection: " + e, e);
             }
+            
+            // Remove the node we just scanned from the tracker set
+            synchronized (m_queuedRescanTracker) {
+                m_queuedRescanTracker.remove(getNodeId());
+            }
         }
 
         // Send events associcatd with the rescan
@@ -4388,6 +4402,31 @@ public final class RescanProcessor implements Runnable {
 
         if (log().isDebugEnabled()) {
             log().debug("createReinitializePrimarySnmpInterfaceEvent: successfully created reinitializePrimarySnmpInterface event for interface: " + primarySnmpIf.getHostAddress());
+        }
+    }
+    
+    
+    /** 
+     * Responsible for setting the Set used to track rescans that
+     * are already enqueued for processing.  Should be called once by Capsd
+     * at startup.
+     * 
+     * @param queuedRescanTracker
+     *          The synchronized Set to use
+     */
+    public static synchronized void setQueuedRescansTracker(Set<Integer> queuedRescanTracker) {
+        m_queuedRescanTracker = Collections.synchronizedSet(queuedRescanTracker);
+    }
+    
+    /**
+     * Is a rescan already enqueued for a given node ID?
+     * 
+     * @param ipAddr
+     *          The IP address of interest
+     */
+    public static boolean isRescanQueuedForNode(Integer nodeId) {
+        synchronized(m_queuedRescanTracker) {
+            return (m_queuedRescanTracker.contains(nodeId));
         }
     }
 
