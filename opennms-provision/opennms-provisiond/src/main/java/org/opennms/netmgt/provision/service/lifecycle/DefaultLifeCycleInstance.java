@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
-import org.opennms.netmgt.provision.service.tasks.SequenceTask;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.SequenceTask;
 
 class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance {
     

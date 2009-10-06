@@ -59,7 +59,6 @@
 			<title>New Features</title>
 			
 			<glosslist>
-				<!-- 
 				<glossentry>
 					<glossterm>Acknowledgement Daemon</glossterm>
 					<glossdef>
@@ -68,7 +67,6 @@
 						phone, IM, e-mail, and so on.</para>
 					</glossdef>
 				</glossentry>
-				-->
 				<glossentry>
 					<glossterm>Adobe AIR Client</glossterm>
 					<glossdef>
@@ -92,6 +90,26 @@
 						<para>This includes a highly-scalable, highly-parallelizable threading
 						architecture which will be used for other parts of OpenNMS in future
 						releases.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>DNS Importing</glossterm>
+					<glossdef>
+						<para>Provisiond is able to provision nodes based on a DNS zone transfer.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Automatic Map Creation</glossterm>
+					<glossdef>
+						<para>Provisiond can automatically create maps and link nodes together when they
+						are provisioned.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Mobile Sequence and SMS Ping Monitors</glossterm>
+					<glossdef>
+						<para>A new pair of monitors have been added that have the ability to perform
+						monitoring of cellular networks with phones attached to the OpenNMS server.</para>
 					</glossdef>
 				</glossentry>
 				<glossentry>

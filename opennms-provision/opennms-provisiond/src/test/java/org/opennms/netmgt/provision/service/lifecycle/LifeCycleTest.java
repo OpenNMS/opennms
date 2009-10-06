@@ -40,7 +40,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 
 
 /**

@@ -193,7 +193,7 @@ public class Discovery extends AbstractServiceDaemon {
             if (!isAlreadyDiscovered(address)) {
                 try {
                     Pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     debugf(e, "error pinging %s", address.getAddress());
                 }
             }

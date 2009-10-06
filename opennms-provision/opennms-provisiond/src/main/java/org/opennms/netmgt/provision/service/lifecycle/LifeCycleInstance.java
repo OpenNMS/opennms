@@ -34,7 +34,7 @@ package org.opennms.netmgt.provision.service.lifecycle;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 
 /**
  * LifeCycle

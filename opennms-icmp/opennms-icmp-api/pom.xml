@@ -11,12 +11,14 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jicmp-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib</groupId>
+      <artifactId>org.opennms.lib.tracker</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

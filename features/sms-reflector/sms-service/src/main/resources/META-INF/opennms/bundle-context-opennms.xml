@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
+	">
+	
+	
+	<onmsgi:list id="outboundList" interface="org.smslib.IOutboundMessageNotification"/>
+    <onmsgi:list id="inboundList" interface="org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification"/>
+    <onmsgi:list id="gatewayStatusList" interface="org.smslib.IGatewayStatusNotification"/>
+    <onmsgi:list id="ussdListeners" interface="org.smslib.IUSSDNotification"/>
+
+    <onmsgi:list id="gatewayGroupList" interface="org.opennms.sms.reflector.smsservice.GatewayGroup">
+    	<onmsgi:listener ref="gatewayGroupListener" bind-method="onGatewayGroupRegistered" unbind-method="onGatewayGroupUnRegistered"/>
+    </onmsgi:list>
+    
+	<bean id="smsServiceRegistrar" class="org.opennms.sms.reflector.smsservice.internal.OnmsSmsServiceRegistrar">
+		<property name="serviceRegistry" ref="serviceRegistry"/>
+	</bean>
+	
+	<onmsgi:service ref="smsMessenger">
+      <onmsgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification</value>
+        <value>org.smslib.IUSSDNotification</value>
+      </onmsgi:interfaces>
+    </onmsgi:service>
+    
+    <onmsgi:service ref="mobileMsgTracker">
+      <onmsgi:interfaces>
+        <value>org.opennms.sms.reflector.smsservice.MobileMsgTracker</value>
+      </onmsgi:interfaces>
+    </onmsgi:service>
+	
+</beans>

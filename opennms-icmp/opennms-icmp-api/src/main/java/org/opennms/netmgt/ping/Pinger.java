@@ -35,21 +35,15 @@
  */
 package org.opennms.netmgt.ping;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import static org.opennms.netmgt.ping.PingConstants.DEFAULT_RETRIES;
+import static org.opennms.netmgt.ping.PingConstants.DEFAULT_TIMEOUT;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-import org.opennms.netmgt.ping.PingRequest.RequestId;
-import org.opennms.protocols.icmp.IcmpSocket;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
+
+import org.opennms.protocols.rt.IDBasedRequestLocator;
+import org.opennms.protocols.rt.RequestTracker;
 
 /**
  * 
@@ -122,179 +116,22 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Pinger {
-    public static final int DEFAULT_TIMEOUT = 800;
-    public static final int DEFAULT_RETRIES = 2;
     
-    private static boolean s_initialized = false;
     
-    private static IcmpSocket s_icmpSocket = null;
-    private static Map<RequestId, PingRequest> s_pendingRequests;
-    private static LinkedBlockingQueue<Reply> s_pendingReplyQueue;
-    private static DelayQueue<PingRequest> s_timeoutQueue;
+    private static RequestTracker<PingRequest, PingReply> s_pingTracker;
     
-    private static Thread s_socketReader;
-    private static Thread s_replyProcessor;
-    private static Thread s_timeoutProcessor;
-    
-    /**
-     * Constructs a Pinger object.
-     * @throws IOException
-     */
-	public Pinger() throws IOException {
-		initialize();
-	}
-	
-	//FIXME: This should be private
 	/**
 	 * Initializes this singleton
 	 */
-	public synchronized static void initialize() throws IOException {   
-	    if (s_initialized) return;
-	    
-	    s_icmpSocket = new IcmpSocket();
-	    s_pendingRequests = Collections.synchronizedMap(new HashMap<RequestId, PingRequest>());
-	    s_pendingReplyQueue = new LinkedBlockingQueue<Reply>();
-	    s_timeoutQueue = new DelayQueue<PingRequest>();
-	    
-	    s_socketReader = new Thread("ICMP-Socket-Reader") {
-	        public void run() {
-	            try {
-	                processPackets();
-	            } catch (InterruptedException e) {
-                    errorf("Thread %s interrupted!", this);
-	            } catch (Throwable t) {
-                    errorf(t, "Unexpected exception on Thread %s!", this);
-	            }
-	        }
-	    };
-	    
-	    s_replyProcessor = new Thread("ICMP-Reply-Processor") {
-	        public void run() {
-	            try {
-	                processReplies();
-	            } catch (InterruptedException e) {
-                    errorf("Thread %s interrupted!", this);
-	            } catch (Throwable t) {
-                    errorf(t, "Unexpected exception on Thread %s!", this);
-	            }
-	        }
-	    };
-	    
-	    s_timeoutProcessor = new Thread("ICMP-Timeout-Processor") {
-	        public void run() {
-	            try {
-	                processTimeouts();
-	            } catch (InterruptedException e) {
-                    errorf("Thread %s interrupted!", this);
-	            } catch (Throwable t) {
-                    errorf(t, "Unexpected exception on Thread %s!", this);
-	            }
-	        }
-	    };
-	    
-	    s_timeoutProcessor.start();
-	    s_replyProcessor.start();
-	    s_socketReader.start();
-	    s_initialized = true;
+	public synchronized static void initialize() throws IOException {
+	    if (s_pingTracker != null) return;
+	    s_pingTracker = new RequestTracker<PingRequest, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
+	    s_pingTracker.start();
 	}
 
-    private static void ping(PingRequest request) throws IOException {
+    public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
-        synchronized(s_pendingRequests) {
-            PingRequest oldRequest = s_pendingRequests.get(request.getId());
-            if (oldRequest != null) {
-            	request.processError(new IllegalStateException("Duplicate ping request; keeping old request: "+oldRequest+"; removing new request: "+request));
-            	return;
-            }
-            s_pendingRequests.put(request.getId(), request);
-            request.sendRequest(s_icmpSocket);
-        }
-        debugf("Scheding timeout for request to %s in %d ms", request, request.getDelay(TimeUnit.MILLISECONDS));
-        s_timeoutQueue.offer(request);
-    }
-
-	private static void processReplies() throws InterruptedException {
-	    while (true) {
-	        Reply reply = s_pendingReplyQueue.take();
-            debugf("Found a reply to process: %s", reply);
-	        RequestId id = new RequestId(reply);
-	        debugf("Looking for request with Id: %s in map %s", id, s_pendingRequests);
-	        PingRequest request = s_pendingRequests.remove(id);
-	        if (request != null) {
-	            processReply(reply, request);
-	        } else {
-	            debugf("No request found for reply %s", reply);
-	        }
-	    }
-    }
-
-    private static void processReply(Reply reply, PingRequest request) {
-        try {
-            debugf("Processing reply %s for request %s", reply, request);
-            request.processResponse(reply.getPacket());
-        } catch (Throwable t) {
-            errorf(t, "Unexpected error processingResponse to request: %s, reply is %s", request, reply);
-        }
-    }
-
-	private static void processPackets() throws InterruptedException {
-        while (true) {
-            try {
-                DatagramPacket packet = s_icmpSocket.receive();
-
-                Reply reply = Reply.create(packet);
-                
-                if (reply.isEchoReply() && reply.getIdentity() == PingRequest.FILTER_ID) {
-                    debugf("Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
-                    s_pendingReplyQueue.offer(reply);
-                }
-            } catch (IOException e) {
-                errorf(e, "I/O Error occurred reading from ICMP Socket");
-            } catch (IllegalArgumentException e) {
-                // this is not an EchoReply so ignore it
-            } catch (IndexOutOfBoundsException e) {
-                // this packet is not a valid EchoReply ignore it
-            } catch (Throwable t) {
-                errorf(t, "Unexpect Exception processing reply packet!");
-            }
-            
-        }
-    }
-
-	private static void processTimeouts() throws InterruptedException {  
-	    while (true) {
-	        PingRequest timedOutRequest = s_timeoutQueue.take();
-            debugf("Found a possibly timedout request: %s", timedOutRequest);
-	        PingRequest pendingRequest = s_pendingRequests.remove(timedOutRequest.getId());
-            if (pendingRequest == timedOutRequest) {
-	            // then this request is still pending so we must time it out
-	            PingRequest retry = processTimeout(timedOutRequest);
-	            if (retry != null) {
-	                try {
-                        ping(retry);
-                    } catch (Exception e) {
-                        retry.processError(e);
-                    }
-	            }
-	        } else if (pendingRequest != null) {
-	            errorf("Uh oh! A pending request %s with the same id exists but is not the timout request %s from the queue!", pendingRequest, timedOutRequest);
-	        }
-	        
-	    }
-	}
-
-    private static PingRequest processTimeout(PingRequest request) {
-        try {
-            debugf("Processing timeout for: %s", request);
-            return request.processTimeout();
-        } catch (Throwable t) {
-            errorf(t, "Unexpected error processingTimout to request: %s", request);
-            return null;
-        }
-    }
-	
-    public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws IOException {
-    	ping(new PingRequest(host, sequenceId, timeout, retries, cb));
+        s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, cb));
 	}
 
     /**
@@ -313,12 +150,13 @@ public class Pinger {
      * @throws InterruptedException 
      * @throws IOException 
      */
-    public static Long ping(InetAddress host, long timeout, int retries) throws InterruptedException, IOException {
+    public static Long ping(InetAddress host, long timeout, int retries) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        ping(host, timeout, retries, (short) 1, cb);
+        Pinger.ping(host, timeout, retries, (short)1, cb);
         cb.waitFor();
         return cb.getResponseTime();
     }
+    
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
@@ -327,43 +165,29 @@ public class Pinger {
 	 * @throws IOException
 	 * @throws InterruptedException 
 	 */
-	public static Long ping(InetAddress host) throws IOException, InterruptedException {
-	    return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
+	public static Long ping(InetAddress host) throws Exception {
+        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
+        Pinger.ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, (short)1, cb);
+        cb.waitFor();
+        return cb.getResponseTime();
 	}
 
-	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws IOException, InterruptedException {
+	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
+	    initialize();
 	    ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
-	    
-	    if (timeout == 0) {
-	        timeout = DEFAULT_TIMEOUT;
-	    }
-	    
-	    for (int i = 0; i < count; i++) {
-	        PingRequest request = new PingRequest(host, (short) i, timeout, 0, cb);
-	        ping(request);
-	        Thread.sleep(pingInterval);
-	    }
-	    
-	    cb.waitFor();
-	    return cb.getResponseTimes();
-	}
-
-    private static Category log() {
-        return Logger.getLogger("Pinger");
-    }
-    
-    private static void debugf(String format, Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
+        
+        if (timeout == 0) {
+            timeout = DEFAULT_TIMEOUT;
         }
-    }
-
-    private static void errorf(String format, Object... args) {
-        log().error(String.format(format, args));
-    }
-
-    private static void errorf(Throwable t, String format, Object... args) {
-        log().error(String.format(format, args), t);
-    }
+        
+        for (int i = 0; i < count; i++) {
+            PingRequest request = new PingRequest(host, (short) i, timeout, 0, cb);
+            s_pingTracker.sendRequest(request);
+            Thread.sleep(pingInterval);
+        }
+        
+        cb.waitFor();
+        return cb.getResponseTimes();
+	}
 
 }
