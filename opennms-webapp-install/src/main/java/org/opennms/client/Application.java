@@ -26,6 +26,167 @@ import org.apache.log4j.Logger;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Application implements EntryPoint {
+    private final ContentPanel verifyOwnership = new ContentPanel();
+    private final ContentPanel connectToDatabase = new ContentPanel();
+    private final TextField<String> dbName = new TextField<String>();
+    private final TextField<String> dbUser = new TextField<String>();
+    private final TextField<String> dbPass = new TextField<String>();
+    private final TextField<String> dbConfirm = new TextField<String>();
+    private final TextField<String> dbDriver = new TextField<String>();
+    private final TextField<String> dbUrl = new TextField<String>();
+    private final TextField<String> dbBinDir = new TextField<String>();
+    private final ContentPanel setAdminPassword = new ContentPanel();
+    private final TextField<String> passwd = new TextField<String>();
+    private final TextField<String> confirm = new TextField<String>();
+
+    public interface InstallationCheck {
+        public void check();
+    }
+
+    private class OwnershipFileCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public OwnershipFileCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Start a spinner that indicates operation start
+            verifyOwnership.setIconStyle("check-progress-icon");
+
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
+                public void onSuccess(Boolean result) {
+                    if (result) {
+                        verifyOwnership.setIconStyle("check-success-icon");
+                        if (m_next != null) {
+                            m_next.check();
+                        }
+                    } else {
+                        verifyOwnership.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                            }
+                        });
+                    }
+                }
+
+                public void onFailure(Throwable e) {
+                    verifyOwnership.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                }
+            });
+        }
+    }
+
+    private class SetAdminPasswordCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public SetAdminPasswordCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Start a spinner that indicates operation start
+            setAdminPassword.setIconStyle("check-progress-icon");
+
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            if (!passwd.validate()) {
+                setAdminPassword.setIconStyle("check-failure-icon");
+                MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
+                return;
+            }
+            if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
+                installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
+                    public void onSuccess(Void result) {
+                        setAdminPassword.setIconStyle("check-success-icon");
+                        if (m_next != null) {
+                            m_next.check();
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        setAdminPassword.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            } else {
+                setAdminPassword.setIconStyle("check-failure-icon");
+                MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+            }
+
+        }
+    }
+
+    private class DatabaseConnectionCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public DatabaseConnectionCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Start a spinner that indicates operation start
+            connectToDatabase.setIconStyle("check-progress-icon");
+
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            try {
+                // Validation
+
+                if (!dbName.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
+                    return;
+                } else if (!dbUser.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
+                    return;
+                } else if (!dbPass.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
+                    return;
+                } else if (!dbDriver.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                    return;
+                }
+
+                dbUrl.setValue("jdbc:postgresql://localhost:5432/" + dbName.getValue());
+
+                // Make sure that the password and confirmation fields match
+                if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                    return;
+                }
+
+                installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            connectToDatabase.setIconStyle("check-success-icon");
+                            if (m_next != null) {
+                                m_next.check();
+                            }
+                        } else {
+                            connectToDatabase.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", null);
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            } catch (IllegalStateException e) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("PostgreSQL JDBC Driver Missing", "The PostgreSQL JDBC driver could not be found in the classpath.", null);
+            }
+        }
+    }
 
     /**
      * This is the entry point method.
@@ -75,16 +236,13 @@ public class Application implements EntryPoint {
         gxtPanel.setLayout(gxtPanelLayout);
         gxtPanel.setHeaderVisible(false);
         gxtPanel.setBodyBorder(false);
-        gxtPanel.setSize(300, 300);
+        gxtPanel.setSize(400, 400);
         gxtPanel.setBodyStyleName("transparent-background");
-        // gxtPanel.setHorizontalAlignment(ContentPanel.);
 
-        final ContentPanel verifyOwnership = new ContentPanel();
+        // final ContentPanel verifyOwnership = new ContentPanel();
         verifyOwnership.setHeading("Verify ownership");
-        // verifyOwnership.setLayout(new FitLayout());
         verifyOwnership.setIconStyle("check-failure-icon");
         verifyOwnership.setBodyStyleName("accordion-panel");
-        // verifyOwnership.addText("Add form controls here.");
         final Html verifyOwnershipCaption = verifyOwnership.addText("");
         verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
@@ -102,36 +260,16 @@ public class Application implements EntryPoint {
         });
         Button checkOwnershipButton = new Button("Check ownership file", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
-                // Start a spinner that indicates operation start
-                verifyOwnership.setIconStyle("check-progress-icon");
-
-                installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        if (result) {
-                            verifyOwnership.setIconStyle("check-success-icon");
-                            MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        } else {
-                            verifyOwnership.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        }
+                new OwnershipFileCheck(new InstallationCheck() {
+                    public void check() {
+                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", null);
                     }
-
-                    public void onFailure(Throwable e) {
-                        verifyOwnership.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                    }
-                });
+                }).check();
             }
         });
         verifyOwnership.add(checkOwnershipButton);
 
-        final ContentPanel setAdminPassword = new ContentPanel();
+        // final ContentPanel setAdminPassword = new ContentPanel();
         setAdminPassword.setHeading("Set administrator password");
         setAdminPassword.setIconStyle("check-failure-icon");
         setAdminPassword.setBodyStyleName("accordion-panel");
@@ -139,63 +277,45 @@ public class Application implements EntryPoint {
         FormLayout setAdminPasswordFormLayout = new FormLayout();
         setAdminPasswordFormLayout.setLabelPad(10);
         setAdminPasswordFormLayout.setLabelWidth(120);
-        setAdminPasswordFormLayout.setDefaultWidth(150);
+        setAdminPasswordFormLayout.setDefaultWidth(250);
         setAdminPassword.setLayout(setAdminPasswordFormLayout);
 
-        final TextField<String> passwd = new TextField<String>();
+        // final TextField<String> passwd = new TextField<String>();
         passwd.setFieldLabel("New admin password");
         passwd.setAllowBlank(false);
         passwd.setMinLength(6);
         passwd.setPassword(true);
         setAdminPassword.add(passwd);
 
-        final TextField<String> confirm = new TextField<String>();
+        // final TextField<String> confirm = new TextField<String>();
         confirm.setFieldLabel("Confirm password");
         confirm.setAllowBlank(false);
         // confirm.setMinLength(6);
         confirm.setPassword(true);
         setAdminPassword.add(confirm);
 
+        /*
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
                 setAdminPassword.layout();
             }
         });
+         */
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
-                // Start a spinner that indicates operation start
-                setAdminPassword.setIconStyle("check-progress-icon");
-
-                if (!passwd.validate()) {
-                    setAdminPassword.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
-                    return;
-                }
-                if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
-                    installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
-                        public void onSuccess(Void result) {
-                            setAdminPassword.setIconStyle("check-success-icon");
-                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
+                new OwnershipFileCheck(
+                    new SetAdminPasswordCheck(new InstallationCheck() {
+                        public void check() {
+                            MessageBox.alert("Password Updated", "The administrator password has been updated.", null);
                         }
-
-                        public void onFailure(Throwable e) {
-                            setAdminPassword.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                        }
-                    });
-                } else {
-                    setAdminPassword.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
-                }
+                    })
+                ).check();
             }
         });
         setAdminPassword.add(updatePasswordButton);
 
-        final ContentPanel connectToDatabase = new ContentPanel();
+        // final ContentPanel connectToDatabase = new ContentPanel();
         connectToDatabase.setHeading("Connect to database");
         connectToDatabase.setIconStyle("check-failure-icon");
         connectToDatabase.setBodyStyleName("accordion-panel");
@@ -205,45 +325,46 @@ public class Application implements EntryPoint {
         connectToDatabaseLayout.setLabelPad(10);
         connectToDatabaseLayout.setLabelWidth(120);
         // Normally 150, but subtract 15 for the vertical scrollbar
-        connectToDatabaseLayout.setDefaultWidth(135);
+        // Made the panel bigger, don't need a scrollbar any more
+        connectToDatabaseLayout.setDefaultWidth(250);
         connectToDatabase.setLayout(connectToDatabaseLayout);
 
-        final TextField<String> dbName = new TextField<String>();
+        // final TextField<String> dbName = new TextField<String>();
         dbName.setFieldLabel("Database name");
         dbName.setAllowBlank(false);
         connectToDatabase.add(dbName);
 
-        final TextField<String> dbUser = new TextField<String>();
+        // final TextField<String> dbUser = new TextField<String>();
         dbUser.setFieldLabel("Database user");
         dbUser.setAllowBlank(false);
         connectToDatabase.add(dbUser);
 
-        final TextField<String> dbPass = new TextField<String>();
+        // final TextField<String> dbPass = new TextField<String>();
         dbPass.setFieldLabel("Database password");
         dbPass.setAllowBlank(false);
         dbPass.setPassword(true);
         connectToDatabase.add(dbPass);
 
-        final TextField<String> dbConfirm = new TextField<String>();
+        // final TextField<String> dbConfirm = new TextField<String>();
         dbConfirm.setFieldLabel("Confirm password");
         dbConfirm.setAllowBlank(false);
         dbConfirm.setPassword(true);
         connectToDatabase.add(dbConfirm);
 
-        final TextField<String> dbDriver = new TextField<String>();
+        // final TextField<String> dbDriver = new TextField<String>();
         dbDriver.setFieldLabel("Database driver");
         dbDriver.setAllowBlank(false);
         dbDriver.setValue("org.postgresql.Driver");
         dbDriver.hide();
-        // connectToDatabase.add(dbDriver);
+        connectToDatabase.add(dbDriver);
 
-        final TextField<String> dbUrl = new TextField<String>();
+        // final TextField<String> dbUrl = new TextField<String>();
         dbUrl.setFieldLabel("Database URL");
         dbUrl.setAllowBlank(false);
         dbUrl.hide();
-        // connectToDatabase.add(dbUrl);
+        connectToDatabase.add(dbUrl);
 
-        final TextField<String> dbBinDir = new TextField<String>();
+        // final TextField<String> dbBinDir = new TextField<String>();
         dbBinDir.setFieldLabel("Database binary directory");
         dbBinDir.setAllowBlank(false);
         dbBinDir.setPassword(true);
@@ -251,65 +372,13 @@ public class Application implements EntryPoint {
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
-                // Start a spinner that indicates operation start
-                connectToDatabase.setIconStyle("check-progress-icon");
-
-                try {
-                    // Validation
-
-                    if (!dbName.validate()) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
-                        return;
-                    } else if (!dbUser.validate()) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
-                        return;
-                    } else if (!dbPass.validate()) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
-                        return;
-                    } else if (!dbDriver.validate()) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
-                        return;
-                    }
-
-                    dbUrl.setValue("jdbc:postgresql://localhost:5432/" + dbName.getValue());
-
-                    // Make sure that the password and confirmation fields match
-                    if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
-                        return;
-                    }
-
-                    installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
-                        public void onSuccess(Boolean result) {
-                            if (result) {
-                                connectToDatabase.setIconStyle("check-success-icon");
-                                MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
-                                    public void handleEvent(MessageBoxEvent event) {
-                                    }
-                                });
-                            } else {
-                                connectToDatabase.setIconStyle("check-failure-icon");
-                                MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", new Listener<MessageBoxEvent>() {
-                                    public void handleEvent(MessageBoxEvent event) {
-                                    }
-                                });
-                            }
+                new OwnershipFileCheck(
+                    new DatabaseConnectionCheck(new InstallationCheck() {
+                        public void check() {
+                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", null);
                         }
-
-                        public void onFailure(Throwable e) {
-                            connectToDatabase.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                        }
-                    });
-                } catch (IllegalStateException e) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("PostgreSQL JDBC Driver Missing", "The PostgreSQL JDBC driver could not be found in the classpath.", null);
-                }
+                    })
+                ).check();
             }
         });
         connectToDatabase.add(connectButton);

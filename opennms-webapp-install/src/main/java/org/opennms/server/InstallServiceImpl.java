@@ -59,7 +59,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void setAdminPassword(String password) {
-
+        // TODO: Figure out how to set the admin password
     }
 
     public boolean connectToDatabase(String dbName, String user, String password, String driver, String url, String binaryDirectory) throws IllegalStateException {
@@ -72,10 +72,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
-        return false;
+        
+        // TODO: Change this to an appropriate connection test
+        // Try to vacuum the database to test connectivity
+        try {
+            db.vacuumDatabase(false);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
-    public void setDatabaseConfig(String arguments){
+    protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory){
     }
 
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
@@ -115,7 +123,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean checkIpLike() {
-        Logger.getLogger(this.getClass()).info("InstallServiceImpl.checkIpLike()");
-        return false;
+        InstallerDb db = new InstallerDb();
+        // TODO: Fetch the database connection parameters from somewhere
+        return db.isIpLikeUsable();
     }
 }

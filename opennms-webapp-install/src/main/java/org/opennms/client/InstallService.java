@@ -13,7 +13,7 @@ public interface InstallService extends RemoteService {
 	public void resetOwnershipFilename();
 	public void setAdminPassword(String password);
 	public boolean connectToDatabase(String dbName, String user, String password, String driver, String url, String binaryDirectory) throws IllegalStateException;
-	public void setDatabaseConfig(String arguments);
+	// protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory);
 	public List<LoggingEvent> getDatabaseUpdateLogs(int offset);
 	public void updateDatabase();
 	public boolean checkIpLike();
