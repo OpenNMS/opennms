@@ -39,10 +39,10 @@ import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
 
 
 

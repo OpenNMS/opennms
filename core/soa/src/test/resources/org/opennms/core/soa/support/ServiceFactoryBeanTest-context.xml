@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+	">
+	
+    <!-- in order to make the tests independent I create a new registry for each test context
+    <util:constant id="serviceRegistry" static-field="org.opennms.core.soa.support.DefaultServiceRegistry.INSTANCE" />
+     -->
+    <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry" />
+	
+    <bean id="myProvider" class="org.opennms.core.soa.support.MyProvider" />
+    
+    <bean id="greeterRegistration" class="org.opennms.core.soa.support.ServiceFactoryBean">
+        <property name="serviceRegistry" ref="serviceRegistry" />
+        <property name="target" ref="myProvider" />
+        <property name="interfaces">
+          <list>
+            <value>org.opennms.core.soa.support.Hello</value>
+            <value>org.opennms.core.soa.support.Goodbye</value>
+          </list>
+        </property>
+    </bean>
+
+
+</beans>

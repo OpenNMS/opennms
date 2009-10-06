@@ -65,9 +65,9 @@ public class Ping {
             try {
                 while (true) {
                     DatagramPacket pkt = m_socket.receive();
-                    org.opennms.netmgt.ping.Reply reply;
+                    org.opennms.netmgt.ping.PingReply reply;
                     try {
-                        reply = org.opennms.netmgt.ping.Reply.create(pkt);
+                        reply = org.opennms.netmgt.ping.PingReply.create(pkt);
                     } catch (Throwable t) {
                         // do nothing but skip this packet
                         continue;

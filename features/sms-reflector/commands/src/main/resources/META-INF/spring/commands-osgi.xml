@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:osgi="http://www.springframework.org/schema/osgi" 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+      http://www.springframework.org/schema/osgi/spring-osgi.xsd
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+      
+    
+    <osgi:reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+
+    
+	<osgi:service ref="smsCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+	
+    <osgi:service ref="ussdCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+    
+    <osgi:service ref="msgTrackerCommands" interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+
+	<osgi:reference id="service" interface="org.opennms.sms.reflector.smsservice.SmsService"/>
+	
+    <osgi:reference id="mobileMsgTracker" interface="org.opennms.sms.reflector.smsservice.MobileMsgTracker" />
+
+	<osgi:service ref="ussdListener" interface="org.smslib.IUSSDNotification"/>
+	
+	<!-- Felix Command Service for the SMSPingCommand -->
+	<osgi:service ref="smsPingCommand" interface="org.apache.felix.shell.Command"/>
+</beans>

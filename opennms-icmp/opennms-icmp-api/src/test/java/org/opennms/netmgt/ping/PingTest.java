@@ -97,15 +97,15 @@ public class PingTest extends TestCase {
     }
 
     public void testParallelPing() throws Exception {
-        List<Number> items = Pinger.parallelPing(m_goodHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
+        List<Number> items = Pinger.parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        List<Number> items = Pinger.parallelPing(m_badHost, 20, Pinger.DEFAULT_TIMEOUT, 50);
-        Thread.sleep(Pinger.DEFAULT_TIMEOUT + 100);
+        List<Number> items = Pinger.parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+        Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) == 0);
     }

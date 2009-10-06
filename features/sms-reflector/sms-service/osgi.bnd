@@ -1,0 +1,6 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+Export-Package: org.opennms.sms.reflector.smsservice
+Import-Package: *,org.opennms.sms.phonebook

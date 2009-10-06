@@ -1,0 +1,1 @@
+http\://xmlns.opennms.org/xsd/spring/onms-osgi=org.opennms.core.soa.config.OnmSGINamespaceHandler

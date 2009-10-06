@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mobile-sequence xmlns="http://xmlns.opennms.org/xsd/config/mobile-sequence">
+  <transaction label="sms-ping">
+    <sms-request recipient="${recipient}" text="ping" />
+    <sms-response>
+      <from-recipient />
+      <matches>^[Pp]ong$</matches>
+    </sms-response>
+  </transaction>
+ </mobile-sequence>

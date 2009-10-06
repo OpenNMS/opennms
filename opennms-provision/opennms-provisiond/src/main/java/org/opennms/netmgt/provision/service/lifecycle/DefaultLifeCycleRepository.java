@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 
 public class DefaultLifeCycleRepository implements LifeCycleRepository {
     

@@ -68,7 +68,7 @@
     <constructor-arg ref="rescanThreads" />
   </bean>
   
-  <bean id="taskCoordinator" class="org.opennms.netmgt.provision.service.tasks.DefaultTaskCoordinator">
+  <bean id="taskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
   	<property name="defaultExecutor" value="scan" />
   	<property name="executors">
   		<map>
