@@ -663,7 +663,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         // instead
         if (isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
             // there are no other ifs for this node so delete the node
-            doDeleteNode(dbConn, source, nodeid, txNo);
+            eventsToSend = doDeleteNode(dbConn, source, nodeid, txNo);
         } else {
             eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
             eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
