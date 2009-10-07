@@ -11,13 +11,23 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.Window;
+// import com.google.gwt.user.client.Window;
 
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.*;
+import com.extjs.gxt.ui.client.data.BaseListLoader;
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.BeanModelReader;
+import com.extjs.gxt.ui.client.data.ListLoadResult;
+import com.extjs.gxt.ui.client.data.ListLoader;
+import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.event.*;
 import com.extjs.gxt.ui.client.widget.button.*;
 import com.extjs.gxt.ui.client.widget.layout.*;
 import com.extjs.gxt.ui.client.widget.form.*;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.*; 
 
 import org.apache.log4j.Logger;
@@ -540,28 +550,8 @@ public class Application implements EntryPoint {
         gxtPanel.add(checkStoredProcedures);
         gxtPanel.add(tips);
 
-        // ExtJS button
         Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
-                /*
-                installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
-                    public void onSuccess(List<LoggingEvent> result) {
-                        String message = "";
-                        for (LoggingEvent event : result) {
-                            message += event.getMessage().trim() + "\n";
-                        }
-                        MessageBox.alert("Alert", message, new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                            }
-                        });
-                    }
-
-                    public void onFailure(Throwable e) {
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                    }
-                });
-                 */
-                
                 // Go through all of the installation checks before forwarding the user to
                 // the main OpenNMS web UI.
                 //
@@ -571,7 +561,7 @@ public class Application implements EntryPoint {
                         new DatabaseConnectionCheck(
                             new StoredProceduresCheck(new InstallationCheck() {
                                 public void check() {
-                                    Window.Location.replace("/opennms");
+                                    com.google.gwt.user.client.Window.Location.replace("/opennms");
                                 }
                             })
                         )
@@ -582,6 +572,60 @@ public class Application implements EntryPoint {
         // continueButton.disable();
         gxtPanel.addButton(continueButton);
         // vertical.add(continueButton);
+
+        Button logButton = new Button("Show Log Messages", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent event) {
+
+                final Window w = new Window();
+                w.setHeading("Database Update Logs");
+                w.setModal(true);
+                w.setSize(600, 400);
+                // w.setMaximizable(true);
+
+                // Use RpcProxy to fetch the list of LoggingEvent objects
+                RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
+                    public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
+                        installService.getDatabaseUpdateLogs(-1, callback);
+                    }
+                };
+
+                // Create a loader that will load results for a Store. The BeanModelReader
+                // will automatically introspect objects that implement BeanModelTag.
+                ListLoader<ListLoadResult<LoggingEvent>> loader = new BaseListLoader<ListLoadResult<LoggingEvent>>(proxy, new BeanModelReader());
+                ListStore<BeanModel> store = new ListStore<BeanModel>(loader);
+
+                // Arguments to this are passed as loadConfig to the RpcProxy
+                loader.load();
+
+                // These column configs will automagically be converted into
+                // bean accessor calls by the BeanModelReader. So getCategory(), 
+                // getTimestamp(), ... end up being called on the list members.
+                List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+                columns.add(new ColumnConfig("category", "Category", 200));
+                columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
+                columns.add(new ColumnConfig("message", "Message", 300));
+                ColumnModel cm = new ColumnModel(columns);
+
+                Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
+                grid.setAutoExpandColumn("message");
+                // grid.setWidth(400);
+                grid.setAutoHeight(true);
+                grid.setBorders(true);
+
+                w.add(grid);
+
+                Button closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
+                    public void componentSelected(ButtonEvent event) {
+                        w.hide();
+                        w.removeAll();
+                    }
+                });
+                w.addButton(closeLogWindowButton);
+
+                w.show();
+            }
+        });
+        gxtPanel.addButton(logButton);
 
         gxtWrapper.add(gxtPanel);
         vertical.add(gxtWrapper);

@@ -3,13 +3,14 @@ package org.opennms.client;
 import java.io.Serializable;
 import java.util.*;
 
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  *  This class is a thin facade for {@link org.apache.log4j.spi.LoggingEvent}
  *  log4j messages on the server side.
  */
-public class LoggingEvent implements Serializable, IsSerializable {
+public class LoggingEvent implements BeanModelTag, Serializable, IsSerializable {
     public enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL }
 
     private String m_category;
