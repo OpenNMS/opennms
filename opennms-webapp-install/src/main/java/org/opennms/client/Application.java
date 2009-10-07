@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.Window;
 
 import com.extjs.gxt.ui.client.widget.*;
 import com.extjs.gxt.ui.client.event.*;
@@ -38,6 +39,10 @@ public class Application implements EntryPoint {
     private final ContentPanel setAdminPassword = new ContentPanel();
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
+    private final ContentPanel checkStoredProcedures = new ContentPanel();
+
+    // Create the RemoteServiceServlet that acts as the controller for this GWT view
+    final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
     public interface InstallationCheck {
         public void check();
@@ -54,7 +59,7 @@ public class Application implements EntryPoint {
             verifyOwnership.setIconStyle("check-progress-icon");
 
             // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
             installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
                 public void onSuccess(Boolean result) {
@@ -69,12 +74,47 @@ public class Application implements EntryPoint {
                             public void handleEvent(MessageBoxEvent event) {
                             }
                         });
+                        verifyOwnership.expand();
                     }
                 }
 
                 public void onFailure(Throwable e) {
                     verifyOwnership.setIconStyle("check-failure-icon");
                     MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    verifyOwnership.expand();
+                }
+            });
+        }
+    }
+
+    private class AdminPasswordCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public AdminPasswordCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            installService.isAdminPasswordSet(new AsyncCallback<Boolean>() {
+                public void onSuccess(Boolean result) {
+                    if (result) {
+                        setAdminPassword.setIconStyle("check-success-icon");
+                        if (m_next != null) {
+                            m_next.check();
+                        }
+                    } else {
+                        setAdminPassword.setIconStyle("check-failure-icon");
+                        // MessageBox.alert("Failure", "The administrator password is not set yet.", null);
+                        setAdminPassword.expand();
+                    }
+                }
+
+                public void onFailure(Throwable e) {
+                    setAdminPassword.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    setAdminPassword.expand();
                 }
             });
         }
@@ -91,7 +131,7 @@ public class Application implements EntryPoint {
             setAdminPassword.setIconStyle("check-progress-icon");
 
             // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
             if (!passwd.validate()) {
                 setAdminPassword.setIconStyle("check-failure-icon");
@@ -110,11 +150,13 @@ public class Application implements EntryPoint {
                     public void onFailure(Throwable e) {
                         setAdminPassword.setIconStyle("check-failure-icon");
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        setAdminPassword.expand();
                     }
                 });
             } else {
                 setAdminPassword.setIconStyle("check-failure-icon");
                 MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                setAdminPassword.expand();
             }
 
         }
@@ -131,7 +173,7 @@ public class Application implements EntryPoint {
             connectToDatabase.setIconStyle("check-progress-icon");
 
             // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
             try {
                 // Validation
@@ -173,18 +215,64 @@ public class Application implements EntryPoint {
                         } else {
                             connectToDatabase.setIconStyle("check-failure-icon");
                             MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", null);
+                            connectToDatabase.expand();
                         }
                     }
 
                     public void onFailure(Throwable e) {
                         connectToDatabase.setIconStyle("check-failure-icon");
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        connectToDatabase.expand();
                     }
                 });
             } catch (IllegalStateException e) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("PostgreSQL JDBC Driver Missing", "The PostgreSQL JDBC driver could not be found in the classpath.", null);
+                connectToDatabase.expand();
             }
+        }
+    }
+
+    private class StoredProceduresCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public StoredProceduresCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Start a spinner that indicates operation start
+            checkStoredProcedures.setIconStyle("check-progress-icon");
+
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            try {
+                installService.checkIpLike(new AsyncCallback<Boolean>() {
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            checkStoredProcedures.setIconStyle("check-success-icon");
+                            if (m_next != null) {
+                                m_next.check();
+                            }
+                        } else {
+                            checkStoredProcedures.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", null);
+                            checkStoredProcedures.expand();
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        checkStoredProcedures.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        checkStoredProcedures.expand();
+                    }
+                });
+            } catch (IllegalStateException e) {
+                MessageBox.alert("Failure", e.getMessage(), null);
+                // Since this is always database-related, send them back to the database settings panel
+                connectToDatabase.expand();
+            }
+
         }
     }
 
@@ -194,7 +282,7 @@ public class Application implements EntryPoint {
     public void onModuleLoad() {
 
         // Create the RemoteServiceServlet that acts as the controller for this GWT view
-        final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+        // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
         // Create a Dock Panel
         DockPanel dock = new DockPanel();
@@ -258,6 +346,7 @@ public class Application implements EntryPoint {
                 MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
             }
         });
+
         Button checkOwnershipButton = new Button("Check ownership file", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(new InstallationCheck() {
@@ -294,13 +383,12 @@ public class Application implements EntryPoint {
         confirm.setPassword(true);
         setAdminPassword.add(confirm);
 
-        /*
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
-                setAdminPassword.layout();
+                // Check to see if the admin password is already set
+                new AdminPasswordCheck(null).check();
             }
         });
-         */
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
@@ -417,7 +505,7 @@ public class Application implements EntryPoint {
             }
         });
 
-        final ContentPanel checkStoredProcedures = new ContentPanel();
+        // final ContentPanel checkStoredProcedures = new ContentPanel();
         checkStoredProcedures.setHeading("Check stored procedures");
         checkStoredProcedures.setIconStyle("check-failure-icon");
         checkStoredProcedures.setBodyStyleName("accordion-panel");
@@ -427,31 +515,15 @@ public class Application implements EntryPoint {
         });
         Button checkStoredProceduresButton = new Button("Check stored procedures", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
-                // Start a spinner that indicates operation start
-                checkStoredProcedures.setIconStyle("check-progress-icon");
-
-                installService.checkIpLike(new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        if (result) {
-                            checkStoredProcedures.setIconStyle("check-success-icon");
-                            MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        } else {
-                            checkStoredProcedures.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                }
-                            });
-                        }
-                    }
-
-                    public void onFailure(Throwable e) {
-                        checkStoredProcedures.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                    }
-                });
+                new OwnershipFileCheck(
+                    new DatabaseConnectionCheck(
+                        new StoredProceduresCheck(new InstallationCheck() {
+                            public void check() {
+                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", null);
+                            }
+                        })
+                    )
+                ).check();
             }
         });
         checkStoredProcedures.add(checkStoredProceduresButton);
@@ -471,6 +543,7 @@ public class Application implements EntryPoint {
         // ExtJS button
         Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
+                /*
                 installService.getDatabaseUpdateLogs(-1, new AsyncCallback<List<LoggingEvent>>() {
                     public void onSuccess(List<LoggingEvent> result) {
                         String message = "";
@@ -487,6 +560,23 @@ public class Application implements EntryPoint {
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
+                 */
+                
+                // Go through all of the installation checks before forwarding the user to
+                // the main OpenNMS web UI.
+                //
+                // TODO: Tie this to a Jetty server command to deploy/restart the webapp?
+                new OwnershipFileCheck(
+                    new AdminPasswordCheck(
+                        new DatabaseConnectionCheck(
+                            new StoredProceduresCheck(new InstallationCheck() {
+                                public void check() {
+                                    Window.Location.replace("/opennms");
+                                }
+                            })
+                        )
+                    )
+                ).check();
             }
         });
         // continueButton.disable();
