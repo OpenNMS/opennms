@@ -37,6 +37,7 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 
 import junit.framework.TestCase;
 
@@ -54,6 +55,7 @@ public class RescanProcessorTest extends TestCase {
         int nodeId = 1;
         int ifIndex = 10;
 
+        RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
         RescanProcessor processor = new RescanProcessor(nodeId, false, null, null);
         
         IfTableEntry ifTableEntry = new IfTableEntry();
