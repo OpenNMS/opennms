@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
@@ -26,6 +27,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
     private final String OWNERSHIP_FILE_CONTEXT_ATTRIBUTE = "__install_ownership_file";
+    private final String DATABASE_SETTINGS_CONTEXT_ATTRIBUTE = "__install_database_settings";
+
+    private static boolean m_updateIsInProgress = false;
 
     public boolean checkOwnershipFileExists() {
         ServletContext context = this.getServletContext();
@@ -58,6 +62,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         context.setAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE, attribute);
     }
 
+    public boolean isAdminPasswordSet() {
+        return true;
+    }
+
     public void setAdminPassword(String password) {
         // TODO: Figure out how to set the admin password
     }
@@ -72,7 +80,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
-        
+
         // TODO: Change this to an appropriate connection test
         // Try to vacuum the database to test connectivity
         try {
@@ -84,6 +92,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory){
+        this.getServletContext().setAttribute(DATABASE_SETTINGS_CONTEXT_ATTRIBUTE, new String[] {
+            dbName,
+            user,
+            password,
+            driver,
+            url,
+            binaryDirectory
+        });
     }
 
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
@@ -112,19 +128,42 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     public void updateDatabase() {
         Thread thread = new Thread() {
             public void run() {
+                // Don't need synchronized blocks when updating a boolean primitive
+                m_updateIsInProgress = true;
                 try {
                     Installer.main(new String[] { "-dis" });
                 } catch (Exception e) {
                     Logger.getLogger(this.getClass()).error("Installation failed: " + e.getMessage(), e);
+                } finally {
+                    m_updateIsInProgress = false;
                 }
             }
         };
         thread.start();
     }
 
-    public boolean checkIpLike() {
+    public boolean isUpdateInProgress() {
+        // Don't need synchronized blocks when accessing a boolean primitive
+        return m_updateIsInProgress;
+    }
+
+    public boolean checkIpLike() throws IllegalStateException {
         InstallerDb db = new InstallerDb();
-        // TODO: Fetch the database connection parameters from somewhere
+        String[] dbSettings = (String[])this.getServletContext().getAttribute(DATABASE_SETTINGS_CONTEXT_ATTRIBUTE);
+        if (dbSettings == null || dbSettings.length != 6) {
+            throw new IllegalStateException("Database settings have not been specified yet.");
+        }
+
+        // TODO: Replace indices with constants
+        db.setDatabaseName(dbSettings[0]);
+        db.setPostgresOpennmsUser(dbSettings[1]);
+        db.setPostgresOpennmsPassword(dbSettings[2]);
+        try {
+            db.setDataSource(new SimpleDataSource(dbSettings[3], dbSettings[4], dbSettings[1], dbSettings[2]));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
+        }
+
         return db.isIpLikeUsable();
     }
 }
