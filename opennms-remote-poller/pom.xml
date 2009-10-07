@@ -25,16 +25,16 @@
         </executions>
       </plugin>
       <plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<executions>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
           <execution>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
           </execution>
-	</executions>
-	<configuration>
+        </executions>
+        <configuration>
           <archive>
             <manifest>
               <mainClass>org.opennms.poller.remote.Main</mainClass>
@@ -44,12 +44,12 @@
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
           <tarLongFileMode>gnu</tarLongFileMode>
-	</configuration>
+        </configuration>
       </plugin>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>build-helper-maven-plugin</artifactId>
-	<executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
           <execution>
             <id>add-groovy-source</id>
             <phase>generate-sources</phase>
@@ -58,15 +58,15 @@
             </goals>
             <configuration>
               <sources>
-		<source>src/main/groovy</source>
+                <source>src/main/groovy</source>
               </sources>
             </configuration>
           </execution>
-	</executions>
+        </executions>
       </plugin>
       <plugin>
-	<artifactId>maven-eclipse-plugin</artifactId>
-	<configuration>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
           <additionalBuildcommands>
             <buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
           </additionalBuildcommands>
@@ -83,10 +83,10 @@
 eclipse.preferences.version=1
 groovy.compiler.output.path=target/classes
 ]]>
-	      </content>
+              </content>
             </file>
           </additionalConfig>
-	</configuration>
+        </configuration>
       </plugin>
     </plugins>
   </build>
