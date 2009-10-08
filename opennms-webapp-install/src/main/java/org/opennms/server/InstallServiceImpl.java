@@ -38,6 +38,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             return false;
         } else {
             // TODO: Figure out an API call to make that will fetch the OpenNMS install path
+            // possibly by sniffing the current context directory. We probably shouldn't prompt 
+            // the user for the information since it could possibly lead to privilege escalation
+            // (maybe?).
             if (new File("/opt/opennms", attribute).isFile()) {
                 return true;
             } else {
@@ -63,6 +66,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean isAdminPasswordSet() {
+        // TODO: Figure out a call that will tell us if the password has been set yet
         return true;
     }
 
@@ -164,6 +168,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
 
+        // TODO: Are there additional tests that we need to perform on the database?
         return db.isIpLikeUsable();
     }
 }

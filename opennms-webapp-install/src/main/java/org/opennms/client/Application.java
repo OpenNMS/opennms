@@ -37,6 +37,8 @@ import org.apache.log4j.Logger;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Application implements EntryPoint {
+    // TODO: Figure out if there are any issues with having these components being
+    // global inside the class.
     private final ContentPanel verifyOwnership = new ContentPanel();
     private final ContentPanel connectToDatabase = new ContentPanel();
     private final TextField<String> dbName = new TextField<String>();
@@ -52,6 +54,7 @@ public class Application implements EntryPoint {
     private final ContentPanel checkStoredProcedures = new ContentPanel();
 
     // Create the RemoteServiceServlet that acts as the controller for this GWT view
+    // TODO: Make sure that it is OK to have a global instance of this service
     final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
     public interface InstallationCheck {
@@ -90,6 +93,7 @@ public class Application implements EntryPoint {
 
                 public void onFailure(Throwable e) {
                     verifyOwnership.setIconStyle("check-failure-icon");
+                    // TODO: Figure out better error handling for GWT-level failures
                     MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     verifyOwnership.expand();
                 }
@@ -123,6 +127,7 @@ public class Application implements EntryPoint {
 
                 public void onFailure(Throwable e) {
                     setAdminPassword.setIconStyle("check-failure-icon");
+                    // TODO: Figure out better error handling for GWT-level failures
                     MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     setAdminPassword.expand();
                 }
@@ -159,6 +164,7 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         setAdminPassword.setIconStyle("check-failure-icon");
+                        // TODO: Figure out better error handling for GWT-level failures
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                         setAdminPassword.expand();
                     }
@@ -231,6 +237,7 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         connectToDatabase.setIconStyle("check-failure-icon");
+                        // TODO: Figure out better error handling for GWT-level failures
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                         connectToDatabase.expand();
                     }
@@ -273,6 +280,7 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         checkStoredProcedures.setIconStyle("check-failure-icon");
+                        // TODO: Figure out better error handling for GWT-level failures
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                         checkStoredProcedures.expand();
                     }
@@ -341,18 +349,17 @@ public class Application implements EntryPoint {
         verifyOwnership.setHeading("Verify ownership");
         verifyOwnership.setIconStyle("check-failure-icon");
         verifyOwnership.setBodyStyleName("accordion-panel");
+        // Create an empty caption for the panel that will be filled by an RPC call
         final Html verifyOwnershipCaption = verifyOwnership.addText("");
-        verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent e) {
-            }
-        });
 
+        // Add a caption that shows the user the ownership filename.
         installService.getOwnershipFilename(new AsyncCallback<String>() {
             public void onSuccess(String result) {
                 verifyOwnershipCaption.setHtml("<p>To prove ownership of this appliance, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
             }
             public void onFailure(Throwable e) {
                 verifyOwnership.setIconStyle("check-failure-icon");
+                // TODO: Figure out better error handling for GWT-level failures
                 MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
             }
         });
@@ -395,12 +402,14 @@ public class Application implements EntryPoint {
 
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent e) {
-                // Check to see if the admin password is already set
+                // Check to see if the admin password is already set and if so, update the icon
                 new AdminPasswordCheck(null).check();
             }
         });
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
+            // Check the ownership file before allowing updates to the admin password
+            // TODO: We should probably perform that check server-side
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
                     new SetAdminPasswordCheck(new InstallationCheck() {
@@ -454,13 +463,11 @@ public class Application implements EntryPoint {
         dbDriver.setAllowBlank(false);
         dbDriver.setValue("org.postgresql.Driver");
         dbDriver.hide();
-        connectToDatabase.add(dbDriver);
 
         // final TextField<String> dbUrl = new TextField<String>();
         dbUrl.setFieldLabel("Database URL");
         dbUrl.setAllowBlank(false);
         dbUrl.hide();
-        connectToDatabase.add(dbUrl);
 
         // final TextField<String> dbBinDir = new TextField<String>();
         dbBinDir.setFieldLabel("Database binary directory");
@@ -469,6 +476,8 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbBinDir);
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
+            // Check the ownership file before allowing updates to the database configuration
+            // TODO: We should probably perform that check server-side
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
                     new DatabaseConnectionCheck(new InstallationCheck() {
@@ -480,6 +489,10 @@ public class Application implements EntryPoint {
             }
         });
         connectToDatabase.add(connectButton);
+
+        // Add hidden panels under the button so they don't mess up the layout
+        connectToDatabase.add(dbDriver);
+        connectToDatabase.add(dbUrl);
 
         final ContentPanel updateDatabase = new ContentPanel();
         updateDatabase.setHeading("Update database");
@@ -493,8 +506,9 @@ public class Application implements EntryPoint {
 
                 installService.updateDatabase(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
-                        // Start a spinner that will read the log messages from the installer
-                        // Start an interval that will monitor the installer thread
+                        // TODO: Spawn the log message window
+                        // TODO: Start an interval that will read the log messages from the installer
+                        // TODO: Start an interval that will monitor the installer thread
                         updateDatabase.setIconStyle("check-success-icon");
                         MessageBox.alert("Update Started", "The database update has been started.", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
@@ -504,25 +518,18 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         updateDatabase.setIconStyle("check-failure-icon");
+                        // TODO: Figure out better error handling for GWT-level failures
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                     }
                 });
             }
         });
         updateDatabase.add(updateButton);
-        updateDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent e) {
-            }
-        });
 
         // final ContentPanel checkStoredProcedures = new ContentPanel();
         checkStoredProcedures.setHeading("Check stored procedures");
         checkStoredProcedures.setIconStyle("check-failure-icon");
         checkStoredProcedures.setBodyStyleName("accordion-panel");
-        checkStoredProcedures.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent e) {
-            }
-        });
         Button checkStoredProceduresButton = new Button("Check stored procedures", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
@@ -555,12 +562,13 @@ public class Application implements EntryPoint {
                 // Go through all of the installation checks before forwarding the user to
                 // the main OpenNMS web UI.
                 //
-                // TODO: Tie this to a Jetty server command to deploy/restart the webapp?
+                // TODO: Tie this to a Jetty server command to deploy/restart OpenNMS and the main webapp
                 new OwnershipFileCheck(
                     new AdminPasswordCheck(
                         new DatabaseConnectionCheck(
                             new StoredProceduresCheck(new InstallationCheck() {
                                 public void check() {
+                                    // TODO: Figure out best way to redirect, make it equivalent to clicking a link
                                     com.google.gwt.user.client.Window.Location.replace("/opennms");
                                 }
                             })
@@ -573,6 +581,7 @@ public class Application implements EntryPoint {
         gxtPanel.addButton(continueButton);
         // vertical.add(continueButton);
 
+        // TODO: Link log message display to database update button action
         Button logButton = new Button("Show Log Messages", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
 
@@ -583,6 +592,8 @@ public class Application implements EntryPoint {
                 // w.setMaximizable(true);
 
                 // Use RpcProxy to fetch the list of LoggingEvent objects
+                // {@link http://www.extjs.com/blog/2008/07/14/preview-java-bean-support-with-ext-gwt/ }
+                // {@link http://www.extjs.com/blog/category/tutorials/ }
                 RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
                     public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
                         installService.getDatabaseUpdateLogs(-1, callback);
@@ -601,7 +612,8 @@ public class Application implements EntryPoint {
                 // bean accessor calls by the BeanModelReader. So getCategory(), 
                 // getTimestamp(), ... end up being called on the list members.
                 List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-                columns.add(new ColumnConfig("category", "Category", 200));
+                columns.add(new ColumnConfig("category", "Category", 150));
+                columns.add(new ColumnConfig("level", "Severity", 50));
                 columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
                 columns.add(new ColumnConfig("message", "Message", 300));
                 ColumnModel cm = new ColumnModel(columns);
