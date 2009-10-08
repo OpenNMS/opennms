@@ -40,7 +40,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             // TODO: Figure out an API call to make that will fetch the OpenNMS install path
             // possibly by sniffing the current context directory. We probably shouldn't prompt 
             // the user for the information since it could possibly lead to privilege escalation
-            // (maybe?).
+            // (maybe?). Maybe we can set a context attribute in Jetty when we run the webapp that
+            // contains the directory name? That's probably the most secure thing to do. That way, the
+            // person who starts the webapp has control over the value.
+            //
             if (new File("/opt/opennms", attribute).isFile()) {
                 return true;
             } else {
@@ -95,6 +98,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /**
+     * TODO: Figure out if we always want to persist database connection settings directly
+     * to the opennms-datasources.xml file or if we should wait until the end to write to
+     * the configuration files.
+     */
     protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory){
         this.getServletContext().setAttribute(DATABASE_SETTINGS_CONTEXT_ATTRIBUTE, new String[] {
             dbName,

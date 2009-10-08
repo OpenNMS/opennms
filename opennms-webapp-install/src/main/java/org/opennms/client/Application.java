@@ -48,11 +48,13 @@ public class Application implements EntryPoint {
     private final TextField<String> dbConfirm = new TextField<String>();
     private final TextField<String> dbDriver = new TextField<String>();
     private final TextField<String> dbUrl = new TextField<String>();
-    private final TextField<String> dbBinDir = new TextField<String>();
+    // private final TextField<String> dbBinDir = new TextField<String>();
     private final ContentPanel setAdminPassword = new ContentPanel();
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
+    private final ContentPanel updateDatabase = new ContentPanel();
     private final ContentPanel checkStoredProcedures = new ContentPanel();
+    private final Button continueButton = new Button();
 
     ListLoader<ListLoadResult<LoggingEvent>> m_logLoader = null;
     Button m_closeLogWindowButton = null;
@@ -225,7 +227,8 @@ public class Application implements EntryPoint {
                     return;
                 }
 
-                installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+                // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+                installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), "", new AsyncCallback<Boolean>() {
                     public void onSuccess(Boolean result) {
                         if (result) {
                             connectToDatabase.setIconStyle("check-success-icon");
@@ -421,7 +424,7 @@ public class Application implements EntryPoint {
         // Add a caption that shows the user the ownership filename.
         installService.getOwnershipFilename(new AsyncCallback<String>() {
             public void onSuccess(String result) {
-                verifyOwnershipCaption.setHtml("<p>To prove ownership of this appliance, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
+                verifyOwnershipCaption.setHtml("<p>To prove your ownership of this OpenNMS installation, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
             }
             public void onFailure(Throwable e) {
                 verifyOwnership.setIconStyle("check-failure-icon");
@@ -434,7 +437,11 @@ public class Application implements EntryPoint {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(new InstallationCheck() {
                     public void check() {
-                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", null);
+                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new SelectionListener<MessageBoxEvent>() {
+                            public void componentSelected(MessageBoxEvent event) {
+                                setAdminPassword.expand();
+                            }
+                        });
                     }
                 }).check();
             }
@@ -462,7 +469,7 @@ public class Application implements EntryPoint {
         // final TextField<String> confirm = new TextField<String>();
         confirm.setFieldLabel("Confirm password");
         confirm.setAllowBlank(false);
-        // confirm.setMinLength(6);
+        confirm.setMinLength(6);
         confirm.setPassword(true);
         setAdminPassword.add(confirm);
 
@@ -480,7 +487,11 @@ public class Application implements EntryPoint {
                 new OwnershipFileCheck(
                     new SetAdminPasswordCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Password Updated", "The administrator password has been updated.", null);
+                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new SelectionListener<MessageBoxEvent>() {
+                                public void componentSelected(MessageBoxEvent event) {
+                                    connectToDatabase.expand();
+                                }
+                            });
                         }
                     })
                 ).check();
@@ -535,11 +546,12 @@ public class Application implements EntryPoint {
         dbUrl.setAllowBlank(false);
         dbUrl.hide();
 
+        /*
         // final TextField<String> dbBinDir = new TextField<String>();
         dbBinDir.setFieldLabel("Database binary directory");
         dbBinDir.setAllowBlank(false);
-        dbBinDir.setPassword(true);
         connectToDatabase.add(dbBinDir);
+        */
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             // Check the ownership file before allowing updates to the database configuration
@@ -548,7 +560,11 @@ public class Application implements EntryPoint {
                 new OwnershipFileCheck(
                     new DatabaseConnectionCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", null);
+                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new SelectionListener<MessageBoxEvent>() {
+                                public void componentSelected(MessageBoxEvent event) {
+                                    updateDatabase.expand();
+                                }
+                            });
                         }
                     })
                 ).check();
@@ -560,7 +576,7 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbDriver);
         connectToDatabase.add(dbUrl);
 
-        final ContentPanel updateDatabase = new ContentPanel();
+        // final ContentPanel updateDatabase = new ContentPanel();
         updateDatabase.setHeading("Update database");
         updateDatabase.setIconStyle("check-failure-icon");
         updateDatabase.setBodyStyleName("accordion-panel");
@@ -574,7 +590,9 @@ public class Application implements EntryPoint {
                     public void onSuccess(Void result) {
                         installService.updateDatabase(new AsyncCallback<Void>() {
                             public void onSuccess(Void result) {
-                                spawnLogMessageWindow();
+                                final Window logWindow = spawnLogMessageWindow();
+                                logWindow.setIconStyle("check-progress-icon");
+
                                 final Timer logTimer = new Timer() {
                                     public void run() {
                                         installService.isUpdateInProgress(new AsyncCallbackWithReference<Timer,Boolean>(this) {
@@ -590,8 +608,10 @@ public class Application implements EntryPoint {
                                                     m_logLoader.load();
                                                     // Enable the window close button
                                                     m_closeLogWindowButton.enable();
+
                                                     // TODO: Determine whether the operation was a success so that the icon is updated properly
                                                     // Change the panel icon to a success icon
+                                                    logWindow.setIconStyle("check-success-icon");
                                                     updateDatabase.setIconStyle("check-success-icon");
                                                 }
                                             }
@@ -640,7 +660,11 @@ public class Application implements EntryPoint {
                     new DatabaseConnectionCheck(
                         new StoredProceduresCheck(new InstallationCheck() {
                             public void check() {
-                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", null);
+                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new SelectionListener<MessageBoxEvent>() {
+                                    public void componentSelected(MessageBoxEvent event) {
+                                        continueButton.focus();
+                                    }
+                                });
                             }
                         })
                     )
@@ -661,7 +685,8 @@ public class Application implements EntryPoint {
         gxtPanel.add(checkStoredProcedures);
         gxtPanel.add(tips);
 
-        Button continueButton = new Button("Continue &#0187;", new SelectionListener<ButtonEvent>() {
+        continueButton.setText("Continue &#0187;");
+        continueButton.addListener(Events.Select, new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
                 // Go through all of the installation checks before forwarding the user to
                 // the main OpenNMS web UI.
