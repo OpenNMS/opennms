@@ -124,10 +124,17 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     private MockSnmpAgent m_snmpAgent;
+    private SnmpAgentConfig m_config;
+    
     
     @Before
-    public void setup() throws InterruptedException {
-        
+    public void setup() throws InterruptedException, UnknownHostException {
+        if(m_config == null) {
+            m_config = new SnmpAgentConfig();
+            m_config.setAddress(InetAddress.getLocalHost());
+            m_config.setPort(9161);
+            m_config.setReadCommunity("public");
+        }
     }
     
     @After
@@ -138,53 +145,40 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     @Test
     public void dwoTestSnmpUpdateMIBProperty() throws UnknownHostException {
         assertNotNull(m_snmpAgent);
-        SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(InetAddress.getLocalHost());
-        config.setPort(9161);
-        config.setReadCommunity("public");
         
-        String modSyncValue = getValue(config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
+        String modSyncValue = getValue(m_config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
         assertNotNull(modSyncValue);
         assertEquals(1, Integer.parseInt(modSyncValue));
         
         m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.3.1.0", 2);
         
-        modSyncValue = getValue(config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
+        modSyncValue = getValue(m_config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
         assertNotNull(modSyncValue);
         assertEquals(2, Integer.parseInt(modSyncValue));
     }
     
     @Test
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
-        SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(InetAddress.getLocalHost());
-        config.setPort(9161);
-        config.setReadCommunity("public");
+        assertNotNull(m_snmpAgent);
         
         m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.3.1.0", 1);
         m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.2.3.0", 1);
         
         LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(".1.3.6.1.4.1.7262.1.19.3.1.0", matchIntegerValue(1)));
-        monitor.addValidation(new EndPointServiceStatusValidator("1.3.6.1.4.1.7262.1.19.2.3.0", matchIntegerValue(1)));
-        assertTrue("Status should up, but its not", monitor.isStatusUp(config));
+        monitor.addValidation(new EndPointServiceStatusValidator(".1.3.6.1.4.1.7262.1.19.3.1.0", matchValue("^1$")));
+        monitor.addValidation(new EndPointServiceStatusValidator("1.3.6.1.4.1.7262.1.19.2.3.0", matchValue("^1$")));
+        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
         
         m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.3.1.0", 2);
         
-        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(config));
+        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(m_config));
     }
     
-    private PropertyMatcher matchIntegerValue(final int matcher) {
+    private PropertyMatcher matchValue(final String matcher) {
         return new PropertyMatcher() {
 
             public boolean validate(String value) {
-                int parsedValue = Integer.parseInt(value);
-                
-                if(matcher == parsedValue) {
-                    return true;
-                }else{
-                    return false;
-                }
+                return value.matches(matcher);
             }
             
         };
