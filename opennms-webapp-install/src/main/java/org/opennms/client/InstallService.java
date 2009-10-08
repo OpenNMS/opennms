@@ -61,6 +61,11 @@ public interface InstallService extends RemoteService {
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset);
 
     /**
+     * Flush all of the accumulated log entries to start over with a blank list of log entries.
+     */
+    public void clearDatabaseUpdateLogs();
+
+    /**
      * Run the OpenNMS installer code to update the database schema.
      * This method will spawn a new thread to perform the updates and 
      * while the thread runs, the return value of {@link #updateDatabase()}

@@ -39,10 +39,14 @@ public class ListAppender extends AppenderSkeleton implements Appender {
         }
     }
 
-    public void close() {
+    public void clear() {
         synchronized(m_list){
             m_list.clear();
         }
+    }
+
+    public void close() {
+        this.clear();
     }
 
     public boolean requiresLayout() {

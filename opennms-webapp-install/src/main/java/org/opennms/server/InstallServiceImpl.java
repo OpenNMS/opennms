@@ -125,6 +125,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return retval;
     }
 
+    public void clearDatabaseUpdateLogs(){
+        ListAppender appender = ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED"));
+        appender.clear();
+    }
+
     /**
      * Initiate the installer class. This will generate log messages that will be
      * relayed to the web UI by the log4j appender.

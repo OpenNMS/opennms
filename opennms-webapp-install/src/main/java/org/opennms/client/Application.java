@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTML;
 // import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Timer;
 
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.*;
@@ -52,6 +53,9 @@ public class Application implements EntryPoint {
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
     private final ContentPanel checkStoredProcedures = new ContentPanel();
+
+    ListLoader<ListLoadResult<LoggingEvent>> m_logLoader = null;
+    Button m_closeLogWindowButton = null;
 
     // Create the RemoteServiceServlet that acts as the controller for this GWT view
     // TODO: Make sure that it is OK to have a global instance of this service
@@ -294,6 +298,68 @@ public class Application implements EntryPoint {
         }
     }
 
+    private abstract class AsyncCallbackWithReference<R,T> implements AsyncCallback<T> {
+        protected final R m_reference;
+        public AsyncCallbackWithReference(R o) {
+            m_reference = o;
+        }
+    }
+
+    private Window spawnLogMessageWindow() {
+        final Window w = new Window();
+        w.setHeading("Database Update Logs");
+        w.setModal(true);
+        w.setSize(600, 400);
+        // w.setMaximizable(true);
+
+        // Use RpcProxy to fetch the list of LoggingEvent objects
+        // {@link http://www.extjs.com/blog/2008/07/14/preview-java-bean-support-with-ext-gwt/ }
+        // {@link http://www.extjs.com/blog/category/tutorials/ }
+        RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
+            public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
+                installService.getDatabaseUpdateLogs(-1, callback);
+            }
+        };
+
+        // Create a loader that will load results for a Store. The BeanModelReader
+        // will automatically introspect objects that implement BeanModelTag.
+        m_logLoader = new BaseListLoader<ListLoadResult<LoggingEvent>>(proxy, new BeanModelReader());
+        ListStore<BeanModel> store = new ListStore<BeanModel>(m_logLoader);
+
+        // Arguments to this are passed as loadConfig to the RpcProxy
+        m_logLoader.load();
+
+        // These column configs will automagically be converted into
+        // bean accessor calls by the BeanModelReader. So getCategory(), 
+        // getTimestamp(), ... end up being called on the list members.
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+        columns.add(new ColumnConfig("category", "Category", 150));
+        columns.add(new ColumnConfig("level", "Severity", 50));
+        columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
+        columns.add(new ColumnConfig("message", "Message", 300));
+        ColumnModel cm = new ColumnModel(columns);
+
+        Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
+        grid.setAutoExpandColumn("message");
+        // grid.setWidth(400);
+        grid.setAutoHeight(true);
+        grid.setBorders(true);
+
+        w.add(grid);
+
+        m_closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent event) {
+                w.hide();
+                w.removeAll();
+            }
+        });
+        m_closeLogWindowButton.disable();
+        w.addButton(m_closeLogWindowButton);
+
+        w.show();
+        return w;
+    }
+
     /**
      * This is the entry point method.
      */
@@ -504,14 +570,52 @@ public class Application implements EntryPoint {
                 // Start a spinner that indicates operation start
                 updateDatabase.setIconStyle("check-progress-icon");
 
-                installService.updateDatabase(new AsyncCallback<Void>() {
+                installService.clearDatabaseUpdateLogs(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
-                        // TODO: Spawn the log message window
-                        // TODO: Start an interval that will read the log messages from the installer
-                        // TODO: Start an interval that will monitor the installer thread
-                        updateDatabase.setIconStyle("check-success-icon");
-                        MessageBox.alert("Update Started", "The database update has been started.", new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
+                        installService.updateDatabase(new AsyncCallback<Void>() {
+                            public void onSuccess(Void result) {
+                                spawnLogMessageWindow();
+                                final Timer logTimer = new Timer() {
+                                    public void run() {
+                                        installService.isUpdateInProgress(new AsyncCallbackWithReference<Timer,Boolean>(this) {
+                                            public void onSuccess(Boolean result) {
+                                                if (result) {
+                                                    // The installer is still in progress, just update the logs
+                                                    m_logLoader.load();
+                                                } else {
+                                                    // The installer has completed! 
+                                                    // Cancel the timer
+                                                    m_reference.cancel();
+                                                    // Load the final log entries
+                                                    m_logLoader.load();
+                                                    // Enable the window close button
+                                                    m_closeLogWindowButton.enable();
+                                                    // TODO: Determine whether the operation was a success so that the icon is updated properly
+                                                    // Change the panel icon to a success icon
+                                                    updateDatabase.setIconStyle("check-success-icon");
+                                                }
+                                            }
+
+                                            public void onFailure(Throwable e) {
+                                                updateDatabase.setIconStyle("check-failure-icon");
+                                                // TODO: Figure out better error handling for GWT-level failures
+                                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                            }
+                                        });
+                                    }
+                                };
+                                logTimer.scheduleRepeating(2000);
+
+                                /*
+                                updateDatabase.setIconStyle("check-success-icon");
+                                MessageBox.alert("Update Started", "The database update has been started.", null);
+                                 */
+                            }
+
+                            public void onFailure(Throwable e) {
+                                updateDatabase.setIconStyle("check-failure-icon");
+                                // TODO: Figure out better error handling for GWT-level failures
+                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                             }
                         });
                     }
@@ -580,64 +684,6 @@ public class Application implements EntryPoint {
         // continueButton.disable();
         gxtPanel.addButton(continueButton);
         // vertical.add(continueButton);
-
-        // TODO: Link log message display to database update button action
-        Button logButton = new Button("Show Log Messages", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent event) {
-
-                final Window w = new Window();
-                w.setHeading("Database Update Logs");
-                w.setModal(true);
-                w.setSize(600, 400);
-                // w.setMaximizable(true);
-
-                // Use RpcProxy to fetch the list of LoggingEvent objects
-                // {@link http://www.extjs.com/blog/2008/07/14/preview-java-bean-support-with-ext-gwt/ }
-                // {@link http://www.extjs.com/blog/category/tutorials/ }
-                RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
-                    public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
-                        installService.getDatabaseUpdateLogs(-1, callback);
-                    }
-                };
-
-                // Create a loader that will load results for a Store. The BeanModelReader
-                // will automatically introspect objects that implement BeanModelTag.
-                ListLoader<ListLoadResult<LoggingEvent>> loader = new BaseListLoader<ListLoadResult<LoggingEvent>>(proxy, new BeanModelReader());
-                ListStore<BeanModel> store = new ListStore<BeanModel>(loader);
-
-                // Arguments to this are passed as loadConfig to the RpcProxy
-                loader.load();
-
-                // These column configs will automagically be converted into
-                // bean accessor calls by the BeanModelReader. So getCategory(), 
-                // getTimestamp(), ... end up being called on the list members.
-                List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-                columns.add(new ColumnConfig("category", "Category", 150));
-                columns.add(new ColumnConfig("level", "Severity", 50));
-                columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
-                columns.add(new ColumnConfig("message", "Message", 300));
-                ColumnModel cm = new ColumnModel(columns);
-
-                Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
-                grid.setAutoExpandColumn("message");
-                // grid.setWidth(400);
-                grid.setAutoHeight(true);
-                grid.setBorders(true);
-
-                w.add(grid);
-
-                Button closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
-                    public void componentSelected(ButtonEvent event) {
-                        w.hide();
-                        w.removeAll();
-                    }
-                });
-                w.addButton(closeLogWindowButton);
-
-                w.show();
-            }
-        });
-        gxtPanel.addButton(logButton);
 
         gxtWrapper.add(gxtPanel);
         vertical.add(gxtWrapper);
