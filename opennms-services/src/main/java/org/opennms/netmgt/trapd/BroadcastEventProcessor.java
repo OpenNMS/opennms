@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: Fix minor logic error. - ayres@opennms.org
 // 2008 Jan 26: Dependency inject TrapdIpMgr and implement InitializingBean and DisposableBean interfaces. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -140,10 +141,10 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             if (event.getInterface() != null) {
                 m_trapdIpMgr.removeNodeId(event.getInterface());
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("Removed " + event.getInterface()
-                    + " from known node list");
+                if (log.isDebugEnabled()) {
+                    log.debug("Removed " + event.getInterface()
+                        + " from known node list");
+                }
             }
         } else {
             log.warn("Received an unexpected event with UEI of \""

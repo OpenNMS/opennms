@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: correct minor logic error. - ayres@opennms.org
 // 2003 Oct 07: Corrected issue with selecting non-IP interface SNMP data.
 // 2003 Sep 25: Fixed SNMP Performance link issue.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -164,7 +165,7 @@ function doDelete() {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
-      <input type="hidden" name="ifindex" value="<%=(ifIndex != -1 ? "" : ifIndex)%>"/>
+      <input type="hidden" name="ifindex" value="<%=(ifIndex == -1 ? "" : ifIndex)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
       <%
       }
