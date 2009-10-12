@@ -1,12 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2009 Oct 01: Add ability to update database when an interface is deleted. - ayres@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -113,6 +117,8 @@ public interface QueryManager {
     public void storeDiscoveryLink(DiscoveryLink discoveryLink) throws SQLException;
     
     public void update(int nodeid, char action) throws SQLException;
+    
+    public void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
     
     /**
      * @param connectionFactory

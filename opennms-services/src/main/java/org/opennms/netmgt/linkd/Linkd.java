@@ -1,12 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2009 Oct 01: Add ability to update database when an interface is deleted. - ayres@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -354,6 +358,35 @@ public class Linkd extends AbstractServiceDaemon {
 			}
 			
 		}
+
+		// database changed need reload packageiplist
+		m_linkdConfig.createPackageIpListMap();
+
+	}
+	
+	/**
+	 * Update database when an interface is deleted
+	 * 
+	 * @param nodeid
+	 *            the nodeid for the node
+	 * @param ipAddr
+	 *            the ip address of the interface
+	 * @param ifIndex
+	 *            the ifIndex of the interface
+	 */
+	void deleteInterface(int nodeid, String ipAddr, int ifIndex) {
+
+		if (log().isDebugEnabled())
+			log().debug("deleteInterface: marking table entries as deleted for node "
+				+ nodeid + ", with ip address " + (ipAddr != null ? ipAddr : "null")
+				+ ", and ifIndex "+ (ifIndex > -1 ? ifIndex : "N/A"));
+
+		try {
+			m_queryMgr.updateForInterface(nodeid, ipAddr, ifIndex, QueryManager.ACTION_DELETE);
+		} catch (SQLException sqlE) {
+			log().error("deleteInterface: " +
+				"SQL Exception while updating database.",sqlE);
+		} 
 
 		// database changed need reload packageiplist
 		m_linkdConfig.createPackageIpListMap();

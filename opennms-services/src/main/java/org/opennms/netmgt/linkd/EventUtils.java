@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: Add ability to update database when an interface is deleted. - ayres@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // Aug 24, 2004: Created this file.
 //
@@ -109,6 +110,42 @@ public class EventUtils {
 
         if (e.getInterface() == null || e.getInterface().length() == 0) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
+    }
+    
+    /**
+     * Is the given interface a non-IP interface
+     * 
+     * @param intf
+     *            the interface
+     *            
+     * @return true/false
+     *
+     */
+    static public boolean isNonIpInterface(String intf) {
+        if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
+            return true;
+        }
+        return false;
+    }
+   
+    
+    /**
+     * Ensures the given event has an interface or ifIndex
+     * 
+     * @param e
+     *            the event
+     * @throws InsufficientInformationException
+     *             if  neither an interface nor an ifIndex is available
+     */
+    static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
+        if (e == null)
+            throw new NullPointerException("e is null");
+
+        if (e.getInterface() == null || e.getInterface().length() == 0) {
+            if (!e.hasIfIndex()) {
+                throw new InsufficientInformationException("Both ipaddr and ifIndex for event are unavailable");
+            }
         }
     }
 
