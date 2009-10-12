@@ -384,15 +384,28 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private String getSuitableIpForRancid(OnmsNode node){
+        log().debug("getSuitableIpForRancid: node: " + node.getNodeId() + " Foreign Source: " + node.getForeignSource());
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
-        
+        String ipaddr = "127.0.0.1";
         if (primaryInterface == null) {
+            log().debug("getSuitableIpForRancid: found null Snmp Primary Interface, getting interfaces");
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                    return onmsIpInterface.getIpAddress();
+                log().debug("getSuitableIpForRancid: trying Interface with id: " + onmsIpInterface.getId());
+                if (onmsIpInterface.getIpAddress() != null) 
+                    ipaddr = onmsIpInterface.getIpAddress();
+                else 
+                    log().debug("getSuitableIpForRancid: found null ip address on Interface with id: " + onmsIpInterface.getId());
+
             }
+        } else {        
+            log().debug("getSuitableIpForRancid: found Snmp Primary Interface");
+            if (primaryInterface.getIpAddress() != null )
+                ipaddr = primaryInterface.getIpAddress();
+            else 
+                log().debug("getSuitableIpForRancid: found null ip address on Primary Interface");
         }
-        return primaryInterface.getIpAddress();
+        return ipaddr;
     }
 
     private String getSuitableIpForRancid(Integer nodeId) {
