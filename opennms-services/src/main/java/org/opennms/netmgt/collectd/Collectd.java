@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -13,6 +13,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: Add delete capability for non-ip interface. - ayres@opennms.org
 // 2008 Feb 09: Remove outage calendar from CollectionSpecification. - dj@opennms.org
 // 2007 Jun 30: Java 5 generics, log when we do match a specification. - dj@oopennms.org
 // 2006 Aug 15: Remove old, incorrect comment. Fix up log message. -
@@ -782,12 +783,16 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleInterfaceDeleted(Event event)
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
-        EventUtils.checkInterface(event);
 
         Category log = log();
+        
+        String ipAddr = event.getInterface();
+        if(EventUtils.isNonIpInterface(ipAddr) ) {
+            log().debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
+            return;
+        }
 
         int nodeId = (int) event.getNodeid();
-        String ipAddr = event.getInterface();
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion

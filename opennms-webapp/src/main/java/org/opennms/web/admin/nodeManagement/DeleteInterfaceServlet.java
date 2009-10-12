@@ -1,7 +1,7 @@
 //
 //This file is part of the OpenNMS(R) Application.
 //
-//OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+//OpenNMS(R) is Copyright (C) 2005-2009 The OpenNMS Group, Inc.  All rights reserved.
 //OpenNMS(R) is a derivative work, containing both original code, included code and modified
 //code that was published under the GNU General Public License. Copyrights for modified 
 //and included code are below.
@@ -10,6 +10,7 @@
 //
 //Modifications:
 //
+// 2009 Oct 01: Add delete capability for non-ip interface. - ayres@opennms.org
 //2007 Jun 24: Remove unused variables. - dj@opennms.org
 //2004 Oct 04: Created File.
 //
@@ -71,11 +72,12 @@ public class DeleteInterfaceServlet extends HttpServlet {
 
         long nodeId = WebSecurityUtils.safeParseLong(request.getParameter("node"));
         String ipAddr = request.getParameter("intf");
+        int ifIndex = -1;
+        if (request.getParameter("ifindex") != null && request.getParameter("ifindex").length() != 0) {
+            ifIndex = WebSecurityUtils.safeParseInt(request.getParameter("ifindex"));
+        }
 
-        // TODO provide a way to delete an interface that has a non-unique
-        // ipAddr
-
-        Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.WebUI", nodeId, ipAddr, -1L);
+        Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.WebUI", nodeId, ipAddr, ifIndex, -1L);
         sendEvent(e);
 
         // forward the request for proper display
@@ -95,13 +97,14 @@ public class DeleteInterfaceServlet extends HttpServlet {
     public void checkParameters(HttpServletRequest request) {
         String nodeIdString = request.getParameter("node");
         String ipAddr = request.getParameter("intf");
+        String ifIndex = request.getParameter("ifindex");
 
         if (nodeIdString == null) {
-            throw new org.opennms.web.MissingParameterException("node", new String[] { "node", "intf", "ifindex?" });
+            throw new org.opennms.web.MissingParameterException("node", new String[] { "node", "intf or ifindex" });
         }
 
-        if (ipAddr == null) {
-            throw new org.opennms.web.MissingParameterException("intf", new String[] { "node", "intf", "ifindex?" });
+        if (ipAddr == null && ifIndex == null) {
+            throw new org.opennms.web.MissingParameterException("intf or ifindex", new String[] { "node", "intf or ifindex" });
         }
 
     }

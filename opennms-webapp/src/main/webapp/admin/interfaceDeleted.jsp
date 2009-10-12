@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 10: Add parameter ifIndex - ayres@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -54,13 +55,14 @@
 	
     String nodeIdString = request.getParameter( "node" );
     String ipAddr = request.getParameter( "intf" );
+    String ifIndexString = request.getParameter("ifindex");
 
     if( nodeIdString == null ) {
-        throw new MissingParameterException( "node", new String[] { "node", "intf" } );
+        throw new MissingParameterException( "node", new String[] { "node", "intf or ifindex" } );
     }
 
-    if( ipAddr == null ) {
-        throw new MissingParameterException( "intf", new String[] { "node", "intf" } );
+    if( ipAddr == null && ifIndexString == null ) {
+        throw new MissingParameterException( "intf or ifindex", new String[] { "node", "intf or ifindex" } );
     }
 
     int nodeId = -1;
@@ -71,6 +73,17 @@
     catch( NumberFormatException e ) {
         //throw new WrongParameterDataTypeException
         throw new ServletException( "Wrong data type, should be integer but got '"+nodeIdString+"'", e );
+    }
+    
+    int ifIndex = -1;
+    if (ifIndexString != null && ifIndexString.length() != 0) {
+        try {
+            ifIndex = WebSecurityUtils.safeParseInt( ifIndexString );
+        }
+        catch( NumberFormatException e ) {
+            //throw new WrongParameterDataTypeException
+            throw new ServletException( "Wrong data type, should be integer but got '"+ifIndexString+"'", e );
+        }
     }
 	
 %>
@@ -87,8 +100,13 @@
   <jsp:param name="breadcrumb" value="Interface Deleted" />
 </jsp:include>
 
+<% if (ifIndex == -1) { %>
 <h3>Finished Deleting Interface <%= ipAddr %></h3>
-
+<% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
+<h3>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
+<% } else { %>
+<h3>Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
+<% } %>
 <p>
   OpenNMS should not need to be restarted, but it may take a moment for
   the Categories to be updated.
