@@ -334,6 +334,7 @@ public class ManagerDefaultImpl implements Manager {
         		elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
         		elem.setRtc(mapsPropertiesFactory.getDisabledAvail().getMin());
         		// here we must add all the stuff required
+        		log.debug("openMap: adding element to map with label: " + elem.getLabel());
         		retVMap.addElement(elem);
             }
         }

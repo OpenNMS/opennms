@@ -266,21 +266,22 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                         for (Cmap cmap: cmaps) {
                             OnmsMap onmsMap = getSuitableMap(cmap.getMapName());
 
-                            log().debug("syncMaps: adding new automated map: " + onmsMap.getName());
-
-                            onmsMap.setOwner(cmap.getMapOwner());
-                            onmsMap.setUserLastModifies(cmap.getMapOwner());
-                            onmsMap.setMapGroup(cmap.getMapGroup());
-                            onmsMap.setAccessMode(cmap.getMapAccess());
-                            onmsMap.setBackground(cmap.getMapBG());
-                            onmsMap.setHeight(cmap.getMapHeight());
-                            onmsMap.setWidth(cmap.getMapWidth());
-                            onmsMap.setLastModifiedTime(now);
-
-                            m_onmsMapDao.saveOrUpdate(onmsMap);
-
+                            if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                                log().debug("syncMaps: adding new automated map: " + onmsMap.getName());
+    
+                                onmsMap.setOwner(cmap.getMapOwner());
+                                onmsMap.setUserLastModifies(cmap.getMapOwner());
+                                onmsMap.setMapGroup(cmap.getMapGroup());
+                                onmsMap.setAccessMode(cmap.getMapAccess());
+                                onmsMap.setBackground(cmap.getMapBG());
+                                onmsMap.setHeight(cmap.getMapHeight());
+                                onmsMap.setWidth(cmap.getMapWidth());
+                                onmsMap.setLastModifiedTime(now);
+    
+                                m_onmsMapDao.saveOrUpdate(onmsMap);
+    
+                            }
                             m_mapNameMapSizeListMap.put(cmap.getMapName(),0);
-
                         }
                         m_onmsMapDao.flush();
                         m_onmsMapDao.clear();
@@ -457,7 +458,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 OnmsMap onmsMap = getSuitableMap(mapName);
                 if (onmsMap.isNew()) {
                     throw new Exception("Error adding element. Automated map does not exist in database: " + mapName);
-                } else {
+                } else if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
                     log().debug("addOrUpdate: container automated map: " + mapName + " has mapId: " + onmsMap.getId() );
                     if (onmsMap.getMapElements().size() == 0) {
                         log().debug("addOrUpdate: automated map: " + mapName + " has no elements");
@@ -491,6 +492,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     m_onmsMapDao.update(onmsMap);
                     m_onmsMapDao.flush();
                     elems.add(mapElement);
+                } else {
+                    log().debug("addOrUpdate: map: " + mapName + " has mapId: " + onmsMap.getId() + " Type: " + onmsMap.getType());                    
                 }
             }
             m_onmsMapElementDao.clear();
@@ -506,18 +509,19 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     try {
 
                         for (OnmsMapElement elem : m_onmsNodeMapElementToDelete) {
-                            log().debug("doAddOrUpdate: deleting element with label: '" + elem.getLabel() + "' from automated map: '" + elem.getMap().getName()+ "'");
                             Integer mapId = elem.getMap().getId();
-                            m_onmsMapElementDao.delete(elem);
-                            m_onmsMapElementDao.flush();
                             OnmsMap onmsMap = m_onmsMapDao.findMapById(mapId);
-                            onmsMap.setLastModifiedTime(new Date());
-                            m_onmsMapDao.update(onmsMap);
-                            m_onmsMapDao.flush();
-                            if (onmsMap.getMapElements().size() == 0)
-                                removeEmptySubmap(onmsMap);
-                            
-
+                            if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                                
+                                log().debug("doAddOrUpdate: deleting element with label: '" + elem.getLabel() + "' from automated map: '" + elem.getMap().getName()+ "'");
+                                m_onmsMapElementDao.delete(elem);
+                                m_onmsMapElementDao.flush();
+                                onmsMap.setLastModifiedTime(new Date());
+                                m_onmsMapDao.update(onmsMap);
+                                m_onmsMapDao.flush();
+                                if (onmsMap.getMapElements().size() == 0)
+                                    removeEmptySubmap(onmsMap);
+                            }                            
                         }
                         m_onmsMapElementDao.clear();
                         m_onmsMapDao.clear();
@@ -590,12 +594,19 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         if (maps.size()>0) {
             onmsMap = maps.iterator().next();
             onmsMap.setNew(false);
-            log().debug("getSuitableMap: found map with mapid #" + onmsMap.getMapId() + " for map name:" + mapName );
+            log().debug("getSuitableMap: found auto map with mapid #" + onmsMap.getMapId() + " for map name:" + mapName );
         } else {
-            log().debug("getSuitableMap: no map found for name:" + mapName + ". Creating a new map.");
-            onmsMap = new OnmsMap();
-            onmsMap.setName(mapName);
-            onmsMap.setType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+            Collection<OnmsMap> savedmaps = m_onmsMapDao.findMapsByNameAndType(mapName, OnmsMap.AUTOMATIC_SAVED_MAP);
+            if (savedmaps.size()>0) {
+                onmsMap = savedmaps.iterator().next();
+                onmsMap.setNew(false);
+                log().debug("getSuitableMap: found auto saved map with mapid #" + onmsMap.getMapId() + " for map name:" + mapName );
+            } else {
+                log().debug("getSuitableMap: no map found for name:" + mapName + ". Creating a new map.");
+                onmsMap = new OnmsMap();
+                onmsMap.setName(mapName);
+                onmsMap.setType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+            }
         }
         return onmsMap;
 
