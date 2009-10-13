@@ -42,6 +42,8 @@ public class Application implements EntryPoint {
     // global inside the class.
     private final ContentPanel verifyOwnership = new ContentPanel();
     private final ContentPanel connectToDatabase = new ContentPanel();
+    private final TextField<String> dbHost = new TextField<String>();
+    private final NumberField dbPort = new NumberField();
     private final TextField<String> dbName = new TextField<String>();
     private final TextField<String> dbUser = new TextField<String>();
     private final TextField<String> dbPass = new TextField<String>();
@@ -109,8 +111,10 @@ public class Application implements EntryPoint {
 
     private class AdminPasswordCheck implements InstallationCheck {
         private final InstallationCheck m_next;
-        public AdminPasswordCheck(InstallationCheck nextInChain) {
+        private final boolean m_alertOnThrow;
+        public AdminPasswordCheck(InstallationCheck nextInChain, boolean alertOnThrow) {
             m_next = nextInChain;
+            m_alertOnThrow = alertOnThrow;
         }
 
         public void check() {
@@ -134,7 +138,9 @@ public class Application implements EntryPoint {
                 public void onFailure(Throwable e) {
                     setAdminPassword.setIconStyle("check-failure-icon");
                     // TODO: Figure out better error handling for GWT-level failures
-                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    if (m_alertOnThrow) {
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
                     setAdminPassword.expand();
                 }
             });
@@ -200,7 +206,15 @@ public class Application implements EntryPoint {
             try {
                 // Validation
 
-                if (!dbName.validate()) {
+                if (!dbHost.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", null);
+                    return;
+                } else if (!dbPort.validate()) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
+                    return;
+                } else if (!dbName.validate()) {
                     connectToDatabase.setIconStyle("check-failure-icon");
                     MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
                     return;
@@ -218,7 +232,7 @@ public class Application implements EntryPoint {
                     return;
                 }
 
-                dbUrl.setValue("jdbc:postgresql://localhost:5432/" + dbName.getValue());
+                dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/" + dbName.getValue());
 
                 // Make sure that the password and confirmation fields match
                 if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
@@ -474,9 +488,9 @@ public class Application implements EntryPoint {
         setAdminPassword.add(confirm);
 
         setAdminPassword.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
-            public void handleEvent(ComponentEvent e) {
+            public void handleEvent(ComponentEvent event) {
                 // Check to see if the admin password is already set and if so, update the icon
-                new AdminPasswordCheck(null).check();
+                new AdminPasswordCheck(null, false).check();
             }
         });
 
@@ -512,6 +526,16 @@ public class Application implements EntryPoint {
         // Made the panel bigger, don't need a scrollbar any more
         connectToDatabaseLayout.setDefaultWidth(250);
         connectToDatabase.setLayout(connectToDatabaseLayout);
+
+        // final TextField<String> dbName = new TextField<String>();
+        dbHost.setFieldLabel("Hostname/IP address");
+        dbHost.setAllowBlank(false);
+        connectToDatabase.add(dbHost);
+
+        // final TextField<String> dbName = new TextField<String>();
+        dbPort.setFieldLabel("Port");
+        dbPort.setAllowBlank(false);
+        connectToDatabase.add(dbPort);
 
         // final TextField<String> dbName = new TextField<String>();
         dbName.setFieldLabel("Database name");
@@ -551,7 +575,7 @@ public class Application implements EntryPoint {
         dbBinDir.setFieldLabel("Database binary directory");
         dbBinDir.setAllowBlank(false);
         connectToDatabase.add(dbBinDir);
-        */
+         */
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             // Check the ownership file before allowing updates to the database configuration
@@ -606,13 +630,30 @@ public class Application implements EntryPoint {
                                                     m_reference.cancel();
                                                     // Load the final log entries
                                                     m_logLoader.load();
+
+                                                    // Check to see if the installer operation succeeded
+                                                    installService.didLastUpdateSucceed(new AsyncCallback<Boolean>() {
+                                                        public void onSuccess(Boolean result) {
+                                                            if (result) {
+                                                                // Change the panel icon to a success icon
+                                                                logWindow.setIconStyle("check-success-icon");
+                                                                updateDatabase.setIconStyle("check-success-icon");
+                                                            } else {
+                                                                logWindow.setIconStyle("check-failure-icon");
+                                                                updateDatabase.setIconStyle("check-failure-icon");
+                                                            }
+                                                        }
+
+                                                        public void onFailure(Throwable e) {
+                                                            logWindow.setIconStyle("check-failure-icon");
+                                                            updateDatabase.setIconStyle("check-failure-icon");
+                                                            // TODO: Figure out better error handling for GWT-level failures
+                                                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                        }
+                                                    });
+
                                                     // Enable the window close button
                                                     m_closeLogWindowButton.enable();
-
-                                                    // TODO: Determine whether the operation was a success so that the icon is updated properly
-                                                    // Change the panel icon to a success icon
-                                                    logWindow.setIconStyle("check-success-icon");
-                                                    updateDatabase.setIconStyle("check-success-icon");
                                                 }
                                             }
 
@@ -701,7 +742,8 @@ public class Application implements EntryPoint {
                                     com.google.gwt.user.client.Window.Location.replace("/opennms");
                                 }
                             })
-                        )
+                        ),
+                        true
                     )
                 ).check();
             }

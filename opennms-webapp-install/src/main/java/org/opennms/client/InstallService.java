@@ -80,6 +80,12 @@ public interface InstallService extends RemoteService {
     public boolean isUpdateInProgress();
 
     /**
+     * @return True if the thread spawned by {@link #updateDatabase()} completed 
+     * successfully, false otherwise
+     */
+    public boolean didLastUpdateSucceed();
+
+    /**
      * Check to see if the <code>IPLIKE</code> database procedure is working
      * properly on the currently configured database connection.
      */

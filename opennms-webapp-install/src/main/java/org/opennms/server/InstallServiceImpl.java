@@ -1,6 +1,8 @@
 package org.opennms.server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,17 +10,25 @@ import java.util.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Appender;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.client.*;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.config.users.Userinfo;
+import org.opennms.netmgt.config.users.Users;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 
@@ -26,25 +36,31 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
-    private final String OWNERSHIP_FILE_CONTEXT_ATTRIBUTE = "__install_ownership_file";
-    private final String DATABASE_SETTINGS_CONTEXT_ATTRIBUTE = "__install_database_settings";
+    private static final String OWNERSHIP_FILE_SESSION_ATTRIBUTE = "__install_ownership_file";
+    private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
 
     private static boolean m_updateIsInProgress = false;
+    private static boolean m_lastUpdateSucceeded = false;
+
+    /**
+     * TODO: Figure out an API call to make that will fetch the OpenNMS install
+     * path possibly by sniffing the current context directory. We probably
+     * shouldn't prompt the user for the information since it could possibly
+     * lead to privilege escalation (maybe?). Maybe we can set a context
+     * attribute in Jetty when we run the webapp that contains the directory
+     * name? That's probably the most secure thing to do. That way, the person
+     * who starts the webapp has control over the value.
+     */
+    protected String getOpennmsInstallPath() {
+        return "/opt/opennms";
+    }
 
     public boolean checkOwnershipFileExists() {
-        ServletContext context = this.getServletContext();
-        String attribute = (String)context.getAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE);
+        String attribute = (String)this.getThreadLocalRequest().getSession(true).getAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE);
         if (attribute == null) {
             return false;
         } else {
-            // TODO: Figure out an API call to make that will fetch the OpenNMS install path
-            // possibly by sniffing the current context directory. We probably shouldn't prompt 
-            // the user for the information since it could possibly lead to privilege escalation
-            // (maybe?). Maybe we can set a context attribute in Jetty when we run the webapp that
-            // contains the directory name? That's probably the most secure thing to do. That way, the
-            // person who starts the webapp has control over the value.
-            //
-            if (new File("/opt/opennms", attribute).isFile()) {
+            if (new File(this.getOpennmsInstallPath(), attribute).isFile()) {
                 return true;
             } else {
                 return false;
@@ -53,23 +69,54 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public String getOwnershipFilename(){
-        ServletContext context = this.getServletContext();
-        String attribute = (String)context.getAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE);
+        HttpSession session = this.getThreadLocalRequest().getSession(true);
+        String attribute = (String)session.getAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE);
         if (attribute == null) {
             attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";
-            context.setAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE, attribute);
+            session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
         }
         return attribute;
     }
 
     public void resetOwnershipFilename() {
-        ServletContext context = this.getServletContext();
+        HttpSession session = this.getThreadLocalRequest().getSession(true);
         String attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";
-        context.setAttribute(OWNERSHIP_FILE_CONTEXT_ATTRIBUTE, attribute);
+        session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
     }
 
-    public boolean isAdminPasswordSet() {
-        // TODO: Figure out a call that will tell us if the password has been set yet
+    public boolean isAdminPasswordSet() throws IllegalStateException {
+        Userinfo userinfo = null;
+        try {
+            userinfo = (Userinfo)Unmarshaller.unmarshal(Userinfo.class, 
+                new FileReader(
+                    new File(
+                        new File(this.getOpennmsInstallPath(), "etc"), 
+                        "users.xml"
+                    )
+                )
+            );
+        } catch (MarshalException e) {
+            throw new IllegalStateException("<code>users.xml<code> file cannot be read properly.");
+        } catch (ValidationException e) {
+            throw new IllegalStateException("<code>users.xml<code> file is invalid and cannot be read.");
+        } catch (FileNotFoundException e) {
+            throw new IllegalStateException("<code>users.xml<code> file cannot be found in the OpenNMS home directory.");
+        }
+
+        for(User user : userinfo.getUsers().getUser()) {
+            if ("admin".equals(user.getUserId())) {
+                if (user.getPassword() == null || "".equals(user.getPassword().trim())) {
+                    // If the password is null or blank, return false
+                    return false;
+                } else if ("21232F297A57A5A743894A0E4A801FC3".equals(user.getPassword())) {
+                    // If the password is still set to the default value, return false
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        // If there is no "admin" entry in users.xml, return false
         return true;
     }
 
@@ -104,7 +151,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * the configuration files.
      */
     protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory){
-        this.getServletContext().setAttribute(DATABASE_SETTINGS_CONTEXT_ATTRIBUTE, new String[] {
+        HttpSession session = this.getThreadLocalRequest().getSession(true);
+        session.setAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE, new String[] {
             dbName,
             user,
             password,
@@ -149,8 +197,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 m_updateIsInProgress = true;
                 try {
                     Installer.main(new String[] { "-dis" });
+                    m_lastUpdateSucceeded = true;
                 } catch (Exception e) {
                     Logger.getLogger(this.getClass()).error("Installation failed: " + e.getMessage(), e);
+                    m_lastUpdateSucceeded = false;
                 } finally {
                     m_updateIsInProgress = false;
                 }
@@ -164,9 +214,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_updateIsInProgress;
     }
 
+    public boolean didLastUpdateSucceed() {
+        // Don't need synchronized blocks when accessing a boolean primitive
+        return m_lastUpdateSucceeded;
+    }
+
     public boolean checkIpLike() throws IllegalStateException {
         InstallerDb db = new InstallerDb();
-        String[] dbSettings = (String[])this.getServletContext().getAttribute(DATABASE_SETTINGS_CONTEXT_ATTRIBUTE);
+        HttpSession session = this.getThreadLocalRequest().getSession(true);
+        String[] dbSettings = (String[])session.getAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE);
         if (dbSettings == null || dbSettings.length != 6) {
             throw new IllegalStateException("Database settings have not been specified yet.");
         }
