@@ -290,6 +290,7 @@
              		<parameter key="protocol" value="tcp"/><!-- UDP also supported -->
              		<parameter key="port" value="37"/>
              		<parameter key="allowed-skew" value="300"/><!-- Seconds, i.e. 5 minutes -->
+             		<parameter key="persist-skew" value="true"/><!-- If true, return a multi-valued PollStatus with skew included -->
 		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
