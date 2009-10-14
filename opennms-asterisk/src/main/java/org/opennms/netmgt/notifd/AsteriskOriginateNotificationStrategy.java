@@ -101,7 +101,11 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
             } else if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_NODE => " + arg.getValue());
                 ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(arg.getValue()).getLabel());
+                try {
+                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(arg.getValue()).getLabel());
+                } catch (Exception e) {
+                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, null);
+                }
             } else if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) {
                 log().debug("Found: PARAM_INTERFACE => " + arg.getValue());
                 ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_INTERFACE, arg.getValue());
