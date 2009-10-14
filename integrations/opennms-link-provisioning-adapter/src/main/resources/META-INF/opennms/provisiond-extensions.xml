@@ -7,9 +7,9 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
   
-  <bean name="lpa" class="org.opennms.netmgt.provision.LinkProvisioningAdapter" />
+  <bean name="lpa" class="org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter" />
   
-  <bean id="nodeLinkService" class="org.opennms.netmgt.provision.DefaultNodeLinkService"/>
+  <bean id="nodeLinkService" class="org.opennms.netmgt.provision.adapters.link.DefaultNodeLinkService"/>
   
   <bean id="linkAdapterConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/link-adapter-configuration.xml" />
@@ -19,7 +19,7 @@
     <property name="configResource" ref="linkAdapterConfigResourceLocation" />
   </bean>
   
-  <bean name="linkMatchResolver" class="org.opennms.netmgt.provision.DefaultLinkMatchResolverImpl" />
+  <bean name="linkMatchResolver" class="org.opennms.netmgt.provision.adapters.link.DefaultLinkMatchResolverImpl" />
   
   <bean name="lpaEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="lpa" />
