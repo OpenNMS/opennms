@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.config.linkadapter;
+package org.opennms.netmgt.provision.adapters.link.config.linkadapter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

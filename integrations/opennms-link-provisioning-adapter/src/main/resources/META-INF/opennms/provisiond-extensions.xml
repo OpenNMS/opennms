@@ -15,7 +15,7 @@
     <constructor-arg value="file:${opennms.home}/etc/link-adapter-configuration.xml" />
   </bean>
   
-  <bean id="linkAdapterConfigDao" class="org.opennms.netmgt.provision.config.dao.DefaultLinkAdapterConfigurationDao">
+  <bean id="linkAdapterConfigDao" class="org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao">
     <property name="configResource" ref="linkAdapterConfigResourceLocation" />
   </bean>
   

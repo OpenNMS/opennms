@@ -3,7 +3,7 @@ package org.opennms.netmgt.provision;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.opennms.netmgt.provision.config.linkadapter.LinkPattern;
+import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 
 public class LinkPatternTest {
 
