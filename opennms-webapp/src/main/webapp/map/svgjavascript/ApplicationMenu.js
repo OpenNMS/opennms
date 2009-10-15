@@ -1055,6 +1055,10 @@ function showMapInfo(){
 
 function writeMapInfo(){
 	clearMapInfo();
+	var hasHideNodeText = '';
+	if (hasHideNodes) {
+		hasHideNodeText = ' : map has hide Nodes'
+	}
 	var mapInfo= document.getElementById("MapInfo");
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
@@ -1063,7 +1067,7 @@ function writeMapInfo(){
 	tspan.setAttributeNS(null, "id","MapInfoTitle");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
 	
-	var tspanContent = document.createTextNode("Map Info");
+	var tspanContent = document.createTextNode("Map Info"+hasHideNodeText);
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
 

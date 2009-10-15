@@ -141,7 +141,6 @@ function handleLoadNodesResponse(data) {
 		for(var k=0;k<st.length;k++){
 			var nodeToken = st[k];
 			var nodeST = nodeToken.split("+");
-			var counter=0;
 			var id =nodeST[0];
 			var label = nodeST[1];
 			var tmpNode = new Node(id,label);
@@ -427,6 +426,9 @@ function handleDeleteNodeResponse(data) {
 
 function newMap(){
 
+	hideNodes = [" "];
+	hasHideNodes = false;
+
 	map.clear();
 	
 	loading++;
@@ -504,6 +506,9 @@ function handleLoadingNewMap(data) {
 }
 
 function close(){
+
+	hideNodes = [" "];
+	hasHideNodes = false;
 
 	map.clear();
 
@@ -591,6 +596,8 @@ function handleLoadingMap(data) {
 			return;
 	}
 
+	hideNodes = [" "];
+	hasHideNodes = false;
 	var st = str.split("&");
 	for(var k=0;k<st.length;k++){
 		var nodeToken = st[k];
@@ -638,9 +645,16 @@ function handleLoadingMap(data) {
 			status=nodeST[6];
 			severity=nodeST[7];
 			
-			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
-			var semaphoreFlash = getSemaphoreFlash(severity,avail);
-			map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			var testHideNode = id.indexOf('H');
+			if ( testHideNode == -1 ) {
+			   var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
+			   var semaphoreFlash = getSemaphoreFlash(severity,avail);
+			   map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			} else {
+				var tmpNode = new Node(id,labelText);
+				hideNodes.push(tmpNode);
+				hasHideNodes = true;
+			}
 		}
 		if (k>0 && nodeST.length == 4) {
 			var id1,id2,typology, status;
