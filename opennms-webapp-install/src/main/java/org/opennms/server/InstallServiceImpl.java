@@ -3,11 +3,13 @@ package org.opennms.server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -18,6 +20,9 @@ import org.opennms.client.InstallService;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.dao.db.InstallerDb;
@@ -75,6 +80,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean isAdminPasswordSet() throws IllegalStateException {
+        /*
         Userinfo userinfo = null;
         try {
             userinfo = (Userinfo)Unmarshaller.unmarshal(Userinfo.class, 
@@ -108,10 +114,36 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
         // If there is no "admin" entry in users.xml, return false
         return true;
+        */
+        
+        UserManager manager = UserFactory.getInstance();
+        try {
+            User user = manager.getUser("admin");
+            if (user == null) {
+                throw new IllegalStateException("There is no <code>admin</code> user in the <code>users.xml</code> file.");
+            } else {
+                if (user.getPassword() == null || "".equals(user.getPassword().trim())) {
+                    // If the password is null or blank, return false
+                    return false;
+                } else if ("21232F297A57A5A743894A0E4A801FC3".equals(user.getPassword().trim())) {
+                    // If the password is still set to the default value, return false
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not store password: " + e.getMessage());
+        }
     }
 
     public void setAdminPassword(String password) {
-        // TODO: Figure out how to set the admin password
+        UserManager manager = UserFactory.getInstance();
+        try {
+            manager.setUnencryptedPassword("admin", password);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Could not store password: " + e.getMessage());
+        }
     }
 
     public boolean connectToDatabase(String dbName, String user, String password, String driver, String url, String binaryDirectory) throws IllegalStateException {

@@ -188,6 +188,12 @@
       <version>1.6.7-testing-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <version>1.6.7-testing-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <properties>
     <gwtVersion>1.7.0</gwtVersion>
