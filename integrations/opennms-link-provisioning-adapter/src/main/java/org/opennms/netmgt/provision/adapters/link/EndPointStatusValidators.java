@@ -9,20 +9,20 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 public abstract class EndPointStatusValidators {
     
-    public static EndPointStatusValidator ping(final SnmpAgentConfig agentConfig, final String oid) {
+    public static EndPointStatusValidator ping(final String oid) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentConfig agentConfig) throws UnknownHostException {
                 
                 return getValue(agentConfig, oid) != null ? true : false;
             }
         };
     }
     
-    public static EndPointStatusValidator match(final SnmpAgentConfig agentConfig, final String oid, final String regex) {
+    public static EndPointStatusValidator match(final String oid, final String regex) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentConfig agentConfig) throws UnknownHostException {
                 String value = getValue(agentConfig, oid);
                 if(value != null) {
                     return value.matches(regex);
@@ -41,9 +41,9 @@ public abstract class EndPointStatusValidators {
         
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentConfig agentConfig) throws UnknownHostException {
                 for(EndPointStatusValidator validator : validators) {
-                    if(!validator.validate()) {
+                    if(!validator.validate(agentConfig)) {
                         return false;
                     }
                 }
@@ -72,9 +72,9 @@ public abstract class EndPointStatusValidators {
     public static EndPointStatusValidator or(final EndPointStatusValidator... validators) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentConfig agentConfig) throws UnknownHostException {
                 for(EndPointStatusValidator validator : validators) {
-                    if(validator.validate()) {
+                    if(validator.validate(agentConfig)) {
                         return true;
                     }
                 }
