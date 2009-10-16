@@ -66,10 +66,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
-    public interface EndPointStatusValidatorFactory{
-        public EndPointStatusValidator getEndPointStatusValidatorFor(String sysOid);
-    }
-    
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
     private static final String AIR_PAIR_R3_DUPLEX_MISMATCH = ".1.3.6.1.4.1.7262.1.19.2.3.0";
     private static final String AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";

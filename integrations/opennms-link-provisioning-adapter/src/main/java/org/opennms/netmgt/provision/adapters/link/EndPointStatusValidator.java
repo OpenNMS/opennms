@@ -1,9 +1,7 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import java.net.UnknownHostException;
-
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.provision.LinkMonitorValidatorTest.SnmpAgentValueGetter;
 
 public interface EndPointStatusValidator{
-   public boolean validate(SnmpAgentConfig agentConfig) throws UnknownHostException;
+   public boolean validate(SnmpAgentValueGetter valueGetter);
 }

@@ -122,7 +122,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
+      <scope>org.opennms.lib</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms.lib.snmp</groupId>
+        <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
+    	<version>2.0.1-SNAPSHOT</version>
+    	<scope>test</scope>
     </dependency>
   </dependencies>
 </project>

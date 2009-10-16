@@ -1,9 +1,9 @@
 package org.opennms.netmgt.provision.adapters.link;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.exolab.castor.types.OperationNotSupportedException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
@@ -12,7 +12,6 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.monitors.IPv4Monitor;
-import org.opennms.netmgt.provision.LinkMonitoringSnmpTest.EndPointStatusValidatorFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -50,27 +49,27 @@ public class LinkStatusMonitor extends IPv4Monitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
-        
-        String sysOid = getValue(agentConfig, ".1.3.6.1.2.1.1.2.0");
-        
-        EndPointStatusValidator validator;
-        try {
-            validator = m_endPointValidatorFactory.getEndPointStatusValidatorFor(sysOid);
-        }catch(Exception e) {
-            
-            return PollStatus.unavailable("Could not retreive endPoint configuration for EndPoint");
-        }
-        
-        try {
-            if(validator!= null && validator.validate(agentConfig)) {
-                return PollStatus.available();
-            }else {
-                return PollStatus.unavailable();
-            }
-        } catch (UnknownHostException e) {
-            return PollStatus.unavailable();
-        }
+//        SnmpAgentValueGetter agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+//        
+//        String sysOid = getValue(agentConfig, ".1.3.6.1.2.1.1.2.0");
+//        
+//        EndPointStatusValidator validator;
+//        try {
+//            validator = m_endPointValidatorFactory.getEndPointStatusValidatorFor(sysOid);
+//        }catch(Exception e) {
+//            
+//            return PollStatus.unavailable("Could not retreive endPoint configuration for EndPoint");
+//        }
+        throw new OperationNotSupportedException("Fix this class not working needs to work, its Friday");
+//        try {
+//            if(validator!= null && validator.validate(agentConfig)) {
+//                return PollStatus.available();
+//            }else {
+//                return PollStatus.unavailable();
+//            }
+//        } catch (UnknownHostException e) {
+//            return PollStatus.unavailable();
+//        }
         
     } 
     
