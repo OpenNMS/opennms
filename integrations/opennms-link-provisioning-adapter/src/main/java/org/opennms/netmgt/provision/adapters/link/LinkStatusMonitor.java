@@ -3,7 +3,6 @@ package org.opennms.netmgt.provision.adapters.link;
 import java.io.IOException;
 import java.util.Map;
 
-import org.exolab.castor.types.OperationNotSupportedException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
@@ -49,9 +48,10 @@ public class LinkStatusMonitor extends IPv4Monitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
-//        SnmpAgentValueGetter agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+//        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+//        SnmpAgentValueGetter valueGetter = new SnmpAgentValueGetter(agentConfig); 
 //        
-//        String sysOid = getValue(agentConfig, ".1.3.6.1.2.1.1.2.0");
+//        String sysOid = valueGetter.getSysOid();
 //        
 //        EndPointStatusValidator validator;
 //        try {
@@ -60,9 +60,9 @@ public class LinkStatusMonitor extends IPv4Monitor {
 //            
 //            return PollStatus.unavailable("Could not retreive endPoint configuration for EndPoint");
 //        }
-        throw new OperationNotSupportedException("Fix this class not working needs to work, its Friday");
+        throw new UnsupportedOperationException("Not yet implemented");
 //        try {
-//            if(validator!= null && validator.validate(agentConfig)) {
+//            if(validator!= null && validator.validate(valueGetter)) {
 //                return PollStatus.available();
 //            }else {
 //                return PollStatus.unavailable();
