@@ -911,7 +911,7 @@ public class ManagerDefaultImpl implements Manager {
             throw new MapsException("No current session map: cannot delete map with id "+mapId);
         }
     	if (dbManager.deleteMap(mapId) == 0) {
-            throw new MapNotFoundException("Map with id "+mapId+" doesn't exist.");
+            throw new MapNotFoundException("Map with id "+mapId+" doesn't exist or is automatic map");
         }
     	sessionMap=null;
     }
