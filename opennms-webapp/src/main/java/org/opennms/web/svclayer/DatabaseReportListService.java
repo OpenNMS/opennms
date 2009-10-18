@@ -33,43 +33,17 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.dao.castor;
+package org.opennms.web.svclayer;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.config.databaseReports.ReportParm;
-import org.opennms.netmgt.config.databaseReports.DatabaseReports;
-import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.dao.DatabaseReportDao;
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.web.svclayer.support.DatabaseReportDescription;
 
-public class DefaultDatabaseReportDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
-        implements DatabaseReportDao {
-  
-    public DefaultDatabaseReportDao() {
-        super(DatabaseReports.class, "Database Report Configuration");
-    }
-
+public interface DatabaseReportListService {
     
+    List<DatabaseReportDescription> getAll();
     
-    @Override
-    public List<Report> translateConfig(DatabaseReports castorConfig) {
-        return Collections.unmodifiableList(castorConfig.getReportCollection());
-    }
-
-
-    public List<ReportParm> getParmsByName(String name) {
-        
-        for(Report report : getContainer().getObject()) {
-            if (name.equals(report.getReportName())) {
-                return report.getReportParmCollection();
-            }
-        }
-        
-        return new ArrayList<ReportParm>();
-        
-    }
-
+    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
 }

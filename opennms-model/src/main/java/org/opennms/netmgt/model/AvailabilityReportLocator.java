@@ -142,7 +142,7 @@ public class AvailabilityReportLocator implements Serializable {
 		m_type = type;
 	}
 	
-	@Column(name="reportEngine", length=256)
+//	@Column(name="reportEngine", length=256)
     public String getEngine() {
         return m_engine;
     }

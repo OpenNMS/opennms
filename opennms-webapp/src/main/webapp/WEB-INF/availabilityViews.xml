@@ -14,6 +14,20 @@
   		</property>
   	</bean>
   	
+  	<!-- 
+  	<bean name="/report/availability/htmlreportviewer" class="org.springframework.web.servlet.view.xslt.XsltView">
+ 		<property name="url">
+  			<value>file:${opennms.home}/etc/AvailabilityReports.xsl</value>
+  		</property>
+  		<property name="root">
+  			<value>report</value>
+  		</property>
+  		<property name="sourceKey">
+  			<value>source</value>
+  		</property>
+  	</bean>
+  	-->
+  	
   	<!-- PDF Reports -->
   	
   	<bean name="/report/availability/pdfreportviewer" class="org.opennms.web.view.FoAvailabilityReportView">

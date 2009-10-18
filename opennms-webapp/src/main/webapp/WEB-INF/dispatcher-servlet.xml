@@ -20,7 +20,14 @@
     </property>
   </bean>
 
-  <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+  <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+  	    <property name="order" value="0"/>
+  </bean>
+  
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+    <property name="flowRegistry" ref="flowRegistry"/>
+    <property name="order" value="1"/>
+  </bean>
 
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
@@ -33,6 +40,19 @@
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basename"><value>/WEB-INF/messages</value></property>
     <property name="cacheSeconds"><value>2</value></property>
+  </bean>
+  
+  <!-- Dispatches requests mapped to org.springframework.web.servlet.mvc.Controller implementations -->
+  <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+  
+  <!-- Enables FlowHandler URL mapping -->
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+    <property name="flowExecutor" ref="flowExecutor" />
+  </bean>
+  
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+    <property name="flowRegistry" ref="flowRegistry"/>
+    <property name="order" value="1"/>
   </bean>
 
   <!-- Home Page -->
@@ -478,6 +498,14 @@
     <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
     <property name="pageSize" value="10"/>
     <property name="successView" value="redirect:/report/availability/manage.htm" />
+  </bean>
+  
+  <!-- Database Reports -->
+  
+  <bean name="/report/database/list.htm"
+  		class="org.opennms.web.controller.DatabaseReportListController">
+  	<property name="databaseReportListService" ref="databaseReportListService"/>
+  	<property name="pageSize" value="10"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">

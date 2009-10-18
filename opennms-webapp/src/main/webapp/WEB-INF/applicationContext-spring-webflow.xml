@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/webflow-config
+           http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">		
+
+	<webflow:flow-executor id="flowExecutor" />
+	
+    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/flows">
+       <webflow:flow-location-pattern value="/**/*-flow.xml" />
+	</webflow:flow-registry>
+	
+</beans>

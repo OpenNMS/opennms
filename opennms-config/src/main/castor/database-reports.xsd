@@ -24,21 +24,29 @@
 	<element name="report">
 		<complexType>
 			<sequence>
-				<element maxOccurs="unbounded" minOccurs="0" ref="this:report-parm" />
+				<element name="date" maxOccurs="unbounded" minOccurs="0"
+					type="this:report-parm" />
+				<element name="report-category" maxOccurs="unbounded" minOccurs="0"
+					type="this:report-parm" />
+				<element name="logo" maxOccurs="1" minOccurs="0"
+					type="this:report-parm" />
 			</sequence>
 			<attribute name="report-name" type="string" use="required">
 				<annotation>
-					<documentation>the name of this report as defined in engine configuration</documentation>
+					<documentation>the name of this report as defined in engine
+						configuration</documentation>
 				</annotation>
 			</attribute>
 			<attribute name="display-name" type="string" use="required">
 				<annotation>
-					<documentation>the name of this report as displayed in the webui</documentation>
+					<documentation>the name of this report as displayed in the webui
+					</documentation>
 				</annotation>
 			</attribute>
 			<attribute name="engine-name" type="string" use="required">
 				<annotation>
-					<documentation>the name of the engine to use to process and render this report</documentation>
+					<documentation>the name of the engine to use to process and
+						render this report</documentation>
 				</annotation>
 			</attribute>
 			<attribute name="description" type="string" use="required">
@@ -48,37 +56,29 @@
 			</attribute>
 		</complexType>
 	</element>
-	
-	<element name="report-parm">
+
+	<complexType name="report-parm">
 		<annotation>
 			<documentation>
 				Parameters taken by this report
 			</documentation>
 		</annotation>
-		<complexType>
-					<attribute name="name" type="string" use="required">
-						<annotation>
-							<documentation>Key</documentation>
-						</annotation>
-					</attribute>
-					<attribute name="display-name" type="string" use="required">
-						<annotation>
-							<documentation>the name of this parameter as displayed in the webui</documentation>
-						</annotation>
-					</attribute>
-					<attribute name="type" use="required">
-						<simpleType>
-							<restriction base="string">
-								<pattern value="(date|reportCategory)" />
-							</restriction>
-						</simpleType>
-					</attribute>
-					<attribute name="value" type="string" use="optional">
-						<annotation>
-							<documentation>value</documentation>
-						</annotation>
-					</attribute>
-		</complexType>
-	</element>
+		<attribute name="name" type="string" use="required">
+			<annotation>
+				<documentation>the name of this parameter as passed to the report engine</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="display-name" type="string" use="required">
+			<annotation>
+				<documentation>the name of this parameter as displayed in the
+					webui</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="default-value" type="string" use="optional">
+			<annotation>
+				<documentation>value</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
 
 </schema>
