@@ -30,5 +30,7 @@
 	<!-- no schema changes in 1.7.2 -->
 	<include file="1.7.3/changelog.xml" /> 
 	<!-- no schema changes in 1.7.4 so far -->
+	<!-- my report locator changes -->
+	<include file="1.7.7/changelog.xml" /> 
 
 </databaseChangeLog>

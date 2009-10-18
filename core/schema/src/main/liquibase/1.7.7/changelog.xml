@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+        <changeSet author="jsartin" id="1.7.7-report-engine">
+                <addColumn tableName="reportlocator">
+                        <column name="reportengine" type="varchar(256)"/>
+                </addColumn>
+                <addDefaultValue tableName="reportlocator"
+    				columnName="reportengine"
+    				defaultValue="opennms"/>
+        </changeSet>
+        
+</databaseChangeLog>
