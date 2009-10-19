@@ -68,14 +68,6 @@
             <param>--platform=equinox</param>
           </provision>
         </configuration>
-        <executions>
-          <execution>
-            <id>ide-support</id>
-            <goals>
-              <goal>eclipse</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
