@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.adapters.link.endpoint;
+package org.opennms.netmgt.provision.adapters.link;
 
 public class EndPointStatusException extends Exception {
     private static final long serialVersionUID = 1L;
