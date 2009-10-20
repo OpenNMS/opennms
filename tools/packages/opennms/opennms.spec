@@ -167,8 +167,8 @@ Group:		Applications/System
 Requires:	opennms-core = %{version}-%{release}
 
 %description plugin-provisioning-dns
-The DNS provisioning adapter allows for provisioning nodes in OpenNMS based on a DNS
-zone transfer query.
+The DNS provisioning adapter allows for updating dynamic DNS records based on
+provisioned nodes.
 
 %package plugin-provisioning-link
 Summary:	Link Provisioning Adapter for OpenNMS
