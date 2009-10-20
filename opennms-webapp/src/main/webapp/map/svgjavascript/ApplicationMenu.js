@@ -170,7 +170,7 @@ function instantiateNodeGroup() {
 	nodeMenu.addElement(id, "Delete", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, deleteMapElementList,null);
 	if (hasHideNodes) {
 		id = "AddHides";
-		nodeMenu.addElement(id, "Add Hides", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
+		nodeMenu.addElement(id, "Add Hidden", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
 	}
 }
 
@@ -1079,7 +1079,7 @@ function writeMapInfo(){
 	clearMapInfo();
 	var hasHideNodeText = '';
 	if (hasHideNodes) {
-		hasHideNodeText = ' : map has hide Nodes';
+		hasHideNodeText = ' : map has hidden Nodes';
 	}
 	var mapType="Unknown";
 	
