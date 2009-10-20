@@ -3,18 +3,43 @@
  */
 package org.opennms.netmgt.provision.adapters.link.endpoint;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
 
+@XmlRootElement(name="endpoint-type")
+@XmlAccessorType(value=XmlAccessType.FIELD)
 public class EndPointType {
+    @XmlAttribute(name="name")
+    private String m_name;
     
+    @XmlElement(name="sysoid-mask")
     private String m_sysOid;
-    private EndPointValidationExpression m_validator;
     
-    public EndPointType(String sysOid, EndPointValidationExpression validator) {
+    @XmlElementRef
+    private EndPointValidationExpressionImpl m_validator;
+
+    public EndPointType() {
+    }
+
+    public EndPointType(String sysOid, EndPointValidationExpressionImpl validator) {
         setSysOid(sysOid);
         setValidator(validator);
+    }
+
+    public String getName() {
+        return m_name;
+    }
+    
+    public void setName(String name) {
+        m_name = name;
     }
 
     public EndPointValidationExpression getValidator() {
@@ -22,7 +47,7 @@ public class EndPointType {
     }
 
 
-    public void setValidator(EndPointValidationExpression validator) {
+    public void setValidator(EndPointValidationExpressionImpl validator) {
         m_validator = validator;
     }
 
