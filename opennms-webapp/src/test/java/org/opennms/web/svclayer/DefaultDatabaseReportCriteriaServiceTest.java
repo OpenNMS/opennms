@@ -66,7 +66,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
         m_dao.afterPropertiesSet();
         
         m_criteriaService = new DefaultDatabaseReportCriteriaService();
-        m_criteriaService.setDatabaseReportDao(m_dao);
+        m_criteriaService.setDatabaseReportConfigDao(m_dao);
         
     }
     
@@ -79,6 +79,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
         assertEquals(criteria.getLogo(),"logo");
         assertEquals(criteria.getDates().size(),1);
         assertEquals(criteria.getDates().get(0).getDisplayName(),DATE_DISPLAY_NAME);
+        assertEquals(criteria.getDates().get(0).getName(),DATE_NAME);
         
     }
 

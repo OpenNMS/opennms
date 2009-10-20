@@ -42,6 +42,6 @@ public interface DatabaseReportCriteriaService {
     
     DatabaseReportCriteria getCriteria(String reportId);
     
-    void setDatabaseReportDao(DatabaseReportConfigDao dao);
+    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
 }

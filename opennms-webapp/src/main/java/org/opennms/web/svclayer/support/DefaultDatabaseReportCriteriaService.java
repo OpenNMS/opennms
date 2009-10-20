@@ -61,11 +61,10 @@ public class DefaultDatabaseReportCriteriaService implements
             ArrayList<DatabaseReportDateParm> dateParms = new ArrayList<DatabaseReportDateParm>();;
             for (int i = 0 ; i < dates.length ; i++ ) {
                 DatabaseReportDateParm dateParm = new DatabaseReportDateParm();
+                //dateParm.setDisplayName(dates[i].getDisplayName());
                 dateParm.setDisplayName(dates[i].getDisplayName());
-                dateParm.setName(dates[i].getDisplayName());
+                dateParm.setName(dates[i].getName());
                 Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                //cal.add(Calendar.YEAR, -1);
                 dateParm.setDate(cal.getTime());
                 dateParms.add(dateParm);
 
@@ -81,6 +80,7 @@ public class DefaultDatabaseReportCriteriaService implements
                 DatabaseReportCategoryParm catParm = new DatabaseReportCategoryParm();
                 catParm.setDisplayName(categories[i].getDisplayName());
                 catParm.setName(categories[i].getName());
+                catParm.setCategory("network interfaces");
                 catParms.add(catParm);
             }
             criteria.setCategories(catParms);
@@ -94,7 +94,7 @@ public class DefaultDatabaseReportCriteriaService implements
         return criteria;
     }
     
-    public void setDatabaseReportDao(DatabaseReportConfigDao databaseReportDao) {
+    public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportDao) {
         m_dao = databaseReportDao;
     }
 

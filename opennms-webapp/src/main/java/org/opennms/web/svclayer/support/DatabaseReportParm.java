@@ -35,14 +35,14 @@
 //
 package org.opennms.web.svclayer.support;
 
-public class DatabaseReportParm {
+import java.io.Serializable;
 
+public class DatabaseReportParm implements Serializable {
+
+    private static final long serialVersionUID = -7987984390575422836L;
+    
     String m_name;
     String m_displayName;
-
-    public DatabaseReportParm() {
-        super();
-    }
 
     public String getName() {
         return m_name;

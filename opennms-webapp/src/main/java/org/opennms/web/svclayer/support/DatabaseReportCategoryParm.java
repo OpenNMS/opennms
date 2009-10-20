@@ -35,9 +35,18 @@
 //
 package org.opennms.web.svclayer.support;
 
-public class DatabaseReportCategoryParm extends DatabaseReportParm {
+import java.io.Serializable;
+
+public class DatabaseReportCategoryParm extends DatabaseReportParm implements Serializable {
+    
+    
+    private static final long serialVersionUID = -2057597127243217834L;
     
     String m_category;
+    
+    public DatabaseReportCategoryParm() {
+      super();
+    }
     
     public String getCategory() {
         return m_category;

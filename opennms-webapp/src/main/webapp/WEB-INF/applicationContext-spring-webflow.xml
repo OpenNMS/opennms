@@ -10,8 +10,12 @@
 
 	<webflow:flow-executor id="flowExecutor" />
 	
-    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/flows">
+    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/flows" flow-builder-services="flowBuilderServices">
        <webflow:flow-location-pattern value="/**/*-flow.xml" />
 	</webflow:flow-registry>
+	
+	<webflow:flow-builder-services id="flowBuilderServices" conversion-service="conversionService" />
+	
+	<bean id="conversionService" class="org.opennms.web.svclayer.ApplicationConversionService" />
 	
 </beans>

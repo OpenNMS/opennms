@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 20th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,26 +33,19 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer.support;
+package org.opennms.web.svclayer;
 
-import java.io.Serializable;
-import java.util.Date;
+import org.springframework.binding.convert.converters.StringToDate;
+import org.springframework.binding.convert.service.DefaultConversionService;
 
-public class DatabaseReportDateParm extends DatabaseReportParm implements Serializable {
+public class ApplicationConversionService extends DefaultConversionService {
 
-    private static final long serialVersionUID = -8528562178984136887L;
-    
-    Date m_date;
-    
-    public DatabaseReportDateParm() {
-        super();
+    @Override
+    protected void addDefaultConverters() {
+    super.addDefaultConverters();
+    StringToDate dateConverter = new StringToDate();
+    dateConverter.setPattern("MM-dd-yyyy");
+    addConverter("shortDate", dateConverter);
     }
-    
-    public Date getDate() {
-        return m_date;
-    }
-    public void setDate(Date date) {
-        m_date = date;
-    } 
 
 }

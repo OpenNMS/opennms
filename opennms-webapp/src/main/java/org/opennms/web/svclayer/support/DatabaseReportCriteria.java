@@ -35,9 +35,12 @@
 //
 package org.opennms.web.svclayer.support;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class DatabaseReportCriteria {
+public class DatabaseReportCriteria implements Serializable {
+
+        private static final long serialVersionUID = -3848794546173077375L;
 
         private String m_reportId;
 

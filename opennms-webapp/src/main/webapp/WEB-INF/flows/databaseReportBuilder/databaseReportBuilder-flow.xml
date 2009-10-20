@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+
+	<input name="reportId" required="true" />
+	
+	<on-start>
+		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId)" result="flowScope.criteria" />
+	</on-start>
+	
+	<view-state id="reportParameters" model="criteria">
+		<binder>
+			<binding property="dates.date" converter="shortDate" required="true" />
+			<binding property="categories.category" required="true" />
+		</binder>
+		<transition on="proceed" to="enterReportDelivery" />
+		<transition on="cancel" to="reportCancelled" bind="false" />
+	</view-state>
+
+	<view-state id="enterReportDelivery" model="criteria">
+		<binder>
+			<binding property="sendMail" required="true" />
+			<binding property="mailTo" />
+			<binding property="mailFormat" />
+			<binding property="persist" required="true"/>
+		</binder>
+		<transition on="proceed" to="reviewReport" />
+		<transition on="revise" to="enterReportCriteria" />
+		<transition on="cancel" to="reportCancelled" />
+	</view-state>
+	
+	<view-state id="reviewReport" model="criteria">
+		<transition on="proceed" to="submitReport" />
+		<transition on="revise" to="enterReportCrieria" />
+		<transition on="cancel" to="reportCancelled" />
+	</view-state>
+
+	<end-state id="submitReport" />
+
+	<end-state id="reportCancelled" />
+
+</flow>
