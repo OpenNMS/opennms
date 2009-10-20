@@ -1,8 +1,10 @@
 package org.opennms.server;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.client.DatabaseDoesNotExistException;
 import org.opennms.client.InstallService;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.LoggingEvent.LogLevel;
@@ -23,6 +26,8 @@ import org.opennms.install.Installer;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.dao.db.InstallerDb;
@@ -33,6 +38,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
     private static final String OWNERSHIP_FILE_SESSION_ATTRIBUTE = "__install_ownership_file";
     private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
+    private static final String OPENNMS_DATASOURCE_NAME = "opennms";
+    private static final String OPENNMS_ADMIN_DATASOURCE_NAME = "opennms-admin";
+    private static final String OPENNMS_DB_USERNAME = "opennms";
+    private static final String OPENNMS_DB_PASSWORD = "opennms";
 
     private static boolean m_updateIsInProgress = false;
     private static boolean m_lastUpdateSucceeded = false;
@@ -114,8 +123,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
         // If there is no "admin" entry in users.xml, return false
         return true;
-        */
-        
+         */
+
         UserManager manager = UserFactory.getInstance();
         try {
             User user = manager.getUser("admin");
@@ -146,24 +155,71 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public boolean connectToDatabase(String dbName, String user, String password, String driver, String url, String binaryDirectory) throws IllegalStateException {
+    public void connectToDatabase(String dbName, String user, String password, String driver, String adminUrl, String url) throws IllegalStateException {
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
-        db.setPostgresOpennmsUser(user);
-        db.setPostgresOpennmsPassword(password);
+        // Only used when creating an OpenNMS user in the database
+        db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
+        db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
         try {
-            db.setDataSource(new SimpleDataSource(driver, url, user, password));
+            db.setAdminDataSource(new SimpleDataSource(driver, adminUrl, user, password));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
 
-        // TODO: Change this to an appropriate connection test
-        // Try to vacuum the database to test connectivity
+        boolean databaseExists = false;
         try {
-            db.vacuumDatabase(false);
-            return true;
+            databaseExists = db.databaseDBExists();
         } catch (SQLException e) {
-            return false;
+            throw new IllegalStateException("Could not check database list: " + e.getMessage());
+        }
+
+        if (databaseExists) {
+            // TODO: Change this to an appropriate connection test
+            // Try to vacuum the database to test connectivity
+            try {
+                db.vacuumDatabase(false);
+                // If the test completes, then store the database connectivity information
+                this.setDatabaseConfig(dbName, user, password, driver, adminUrl, url);
+            } catch (SQLException e) {
+                throw new IllegalArgumentException("Database connection failed: " + e.getMessage());
+            }
+        } else {
+            throw new DatabaseDoesNotExistException();
+        }
+    }
+
+    public void createDatabase(String dbName, String user, String password, String driver, String adminUrl) throws DatabaseDoesNotExistException, IllegalStateException {
+        InstallerDb db = new InstallerDb();
+        db.setDatabaseName(dbName);
+        // Only used when creating an OpenNMS user in the database
+        db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
+        db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
+        try {
+            db.setAdminDataSource(new SimpleDataSource(driver, adminUrl, user, password));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
+        }
+
+        // Sanity check to make sure that the database doesn't already exist
+        boolean databaseExists = true;
+        try {
+            databaseExists = db.databaseDBExists();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not check database list: " + e.getMessage());
+        }
+
+        if (databaseExists) {
+            throw new IllegalStateException("Database already exists.");
+        } else {
+            try {
+                db.databaseAddUser();
+                db.databaseAddDB();
+            } catch (SQLException e) {
+                throw new IllegalStateException(e.getMessage());
+            } catch (Exception e) {
+                throw new IllegalStateException(e.getMessage());
+            }
         }
     }
 
@@ -172,7 +228,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * to the opennms-datasources.xml file or if we should wait until the end to write to
      * the configuration files.
      */
-    protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory){
+    protected void setDatabaseConfig(String dbName, String user, String password, String driver, String adminUrl, String url) throws IllegalStateException, IllegalArgumentException {
+        /*
         HttpSession session = this.getThreadLocalRequest().getSession(true);
         session.setAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE, new String[] {
             dbName,
@@ -182,6 +239,41 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             url,
             binaryDirectory
         });
+         */
+
+        JdbcDataSource adminDs = new JdbcDataSource();
+        adminDs.setClassName(driver);
+        adminDs.setDatabaseName(dbName);
+        adminDs.setName(OPENNMS_ADMIN_DATASOURCE_NAME);
+        adminDs.setPassword(password);
+        adminDs.setUrl(url);
+        adminDs.setUserName(user);
+
+        JdbcDataSource opennmsDs = new JdbcDataSource();
+        opennmsDs.setClassName(driver);
+        opennmsDs.setDatabaseName(dbName);
+        opennmsDs.setName(OPENNMS_DATASOURCE_NAME);
+        opennmsDs.setPassword(OPENNMS_DB_PASSWORD);
+        opennmsDs.setUrl(url);
+        opennmsDs.setUserName(OPENNMS_DB_USERNAME);
+
+        DataSourceConfiguration config = new DataSourceConfiguration();
+        config.addJdbcDataSource(opennmsDs);
+        config.addJdbcDataSource(adminDs);
+        File configFile = new File(new File(this.getOpennmsInstallPath(), "etc"), "opennms-datasources.xml");
+        if (configFile.canWrite()) {
+            try {
+                config.marshal(new FileWriter(configFile));
+            } catch (MarshalException e) {
+                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "<code>: " + e.getMessage());
+            } catch (ValidationException e) {
+                throw new IllegalArgumentException("Invalid configuration data specified: " + e.getMessage());
+            } catch (IOException e) {
+                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "<code>: " + e.getMessage());
+            }
+        } else {
+            throw new IllegalStateException("Location <code>" + configFile.getPath() + "<code> is not writable.");
+        }
     }
 
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
@@ -242,6 +334,25 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean checkIpLike() throws IllegalStateException {
+        // We should have a proper opennms-datasources.xml stored at this point so try to load it
+        // by using the normal {@link org.opennms.netmgt.config.DataSourceFactory} class.
+        try {
+            DataSourceFactory.init();
+        } catch (MarshalException e) {
+            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+        } catch (ValidationException e) {
+            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("PostgreSQL driver could not be loaded: " + e.getMessage());
+        } catch (PropertyVetoException e) {
+            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+        }
+
+        /*
         InstallerDb db = new InstallerDb();
         HttpSession session = this.getThreadLocalRequest().getSession(true);
         String[] dbSettings = (String[])session.getAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE);
@@ -251,14 +362,21 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
         // TODO: Replace indices with constants
         db.setDatabaseName(dbSettings[0]);
-        db.setPostgresOpennmsUser(dbSettings[1]);
-        db.setPostgresOpennmsPassword(dbSettings[2]);
+        db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
+        db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
         try {
-            db.setDataSource(new SimpleDataSource(dbSettings[3], dbSettings[4], dbSettings[1], dbSettings[2]));
+            db.setAdminDataSource(new SimpleDataSource(dbSettings[3], dbSettings[4], dbSettings[1], dbSettings[2]));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
 
+        // TODO: Are there additional tests that we need to perform on the database?
+        return db.isIpLikeUsable();
+         */
+
+        InstallerDb db = new InstallerDb();
+        db.setAdminDataSource(DataSourceFactory.getInstance(OPENNMS_ADMIN_DATASOURCE_NAME));
+        db.setDataSource(DataSourceFactory.getInstance(OPENNMS_DATASOURCE_NAME));
         // TODO: Are there additional tests that we need to perform on the database?
         return db.isIpLikeUsable();
     }

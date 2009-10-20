@@ -18,6 +18,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
@@ -54,6 +55,7 @@ public class Application implements EntryPoint {
     private final TextField<String> dbPass = new TextField<String>();
     private final TextField<String> dbConfirm = new TextField<String>();
     private final TextField<String> dbDriver = new TextField<String>();
+    private final TextField<String> dbAdminUrl = new TextField<String>();
     private final TextField<String> dbUrl = new TextField<String>();
     // private final TextField<String> dbBinDir = new TextField<String>();
     private final ContentPanel setAdminPassword = new ContentPanel();
@@ -208,71 +210,84 @@ public class Application implements EntryPoint {
             // Create the RemoteServiceServlet that acts as the controller for this GWT view
             // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
-            try {
-                // Validation
+            final DatabaseConnectionCheck thisCheck = this;
 
-                if (!dbHost.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", null);
-                    return;
-                } else if (!dbPort.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
-                    return;
-                } else if (!dbName.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
-                    return;
-                } else if (!dbUser.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
-                    return;
-                } else if (!dbPass.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
-                    return;
-                } else if (!dbDriver.validate()) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
-                    return;
-                }
+            // Validation
+            if (!dbHost.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", null);
+                return;
+            } else if (!dbPort.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
+                return;
+            } else if (!dbName.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
+                return;
+            } else if (!dbUser.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
+                return;
+            } else if (!dbPass.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
+                return;
+            } else if (!dbDriver.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                return;
+            }
 
-                dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/" + dbName.getValue());
+            // TODO: Should we hard-code the value of the admin database?
+            dbAdminUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/template1");
+            dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/" + dbName.getValue());
 
-                // Make sure that the password and confirmation fields match
-                if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
-                    connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
-                    return;
-                }
+            // Make sure that the password and confirmation fields match
+            if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                return;
+            }
 
-                // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
-                installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), "", new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        if (result) {
-                            connectToDatabase.setIconStyle("check-success-icon");
-                            if (m_next != null) {
-                                m_next.check();
-                            }
-                        } else {
-                            connectToDatabase.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Failure", "Could not connect to the database with the specified parameters.", null);
-                            connectToDatabase.expand();
-                        }
+            // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+            installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), dbUrl.getValue(), new AsyncCallback<Void>() {
+                public void onSuccess(Void result) {
+                    connectToDatabase.setIconStyle("check-success-icon");
+                    if (m_next != null) {
+                        m_next.check();
                     }
+                }
 
-                    public void onFailure(Throwable e) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
-                        // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                public void onFailure(Throwable e) {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+
+                    if (e instanceof DatabaseDoesNotExistException) {
+                        MessageBox.confirm("Database Does Not Exist", "The database does not exist yet. Would you like to create it?", new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                                if (Dialog.YES.equals((event.getButtonClicked().getItemId()))) {
+                                    installService.createDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
+                                        public void onSuccess(Void result) {
+                                            // Re-run the check now that the database has been created
+                                            thisCheck.check();
+                                        }
+
+                                        public void onFailure(Throwable e) {
+                                            MessageBox.alert("Failure", "The database could not be created: " + e.getMessage(), null);
+                                        }
+                                    });
+                                } else {
+                                    // Don't do anything, just fall back to the failed panel
+                                    connectToDatabase.expand();
+                                }
+                            }
+                        });
+                    } else {
+                        MessageBox.alert("Failure", "Could not connect to the database with the specified parameters: " + e.getMessage(), null);
                         connectToDatabase.expand();
                     }
-                });
-            } catch (IllegalStateException e) {
-                connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("PostgreSQL JDBC Driver Missing", "The PostgreSQL JDBC driver could not be found in the classpath.", null);
-                connectToDatabase.expand();
-            }
+                }
+            });
         }
     }
 
@@ -530,10 +545,10 @@ public class Application implements EntryPoint {
 
         FormLayout connectToDatabaseLayout = new FormLayout();
         connectToDatabaseLayout.setLabelPad(10);
-        connectToDatabaseLayout.setLabelWidth(120);
+        connectToDatabaseLayout.setLabelWidth(150);
         // Normally 150, but subtract 15 for the vertical scrollbar
         // Made the panel bigger, don't need a scrollbar any more
-        connectToDatabaseLayout.setDefaultWidth(250);
+        connectToDatabaseLayout.setDefaultWidth(220);
         connectToDatabase.setLayout(connectToDatabaseLayout);
 
         // final TextField<String> dbName = new TextField<String>();
@@ -552,18 +567,18 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbName);
 
         // final TextField<String> dbUser = new TextField<String>();
-        dbUser.setFieldLabel("Database user");
+        dbUser.setFieldLabel("Database admin user");
         dbUser.setAllowBlank(false);
         connectToDatabase.add(dbUser);
 
         // final TextField<String> dbPass = new TextField<String>();
-        dbPass.setFieldLabel("Database password");
+        dbPass.setFieldLabel("Database admin password");
         dbPass.setAllowBlank(false);
         dbPass.setPassword(true);
         connectToDatabase.add(dbPass);
 
         // final TextField<String> dbConfirm = new TextField<String>();
-        dbConfirm.setFieldLabel("Confirm password");
+        dbConfirm.setFieldLabel("Confirm admin password");
         dbConfirm.setAllowBlank(false);
         dbConfirm.setPassword(true);
         connectToDatabase.add(dbConfirm);
@@ -573,6 +588,11 @@ public class Application implements EntryPoint {
         dbDriver.setAllowBlank(false);
         dbDriver.setValue("org.postgresql.Driver");
         dbDriver.hide();
+
+        // final TextField<String> dbAdminUrl = new TextField<String>();
+        dbAdminUrl.setFieldLabel("Database admin URL");
+        dbAdminUrl.setAllowBlank(false);
+        dbAdminUrl.hide();
 
         // final TextField<String> dbUrl = new TextField<String>();
         dbUrl.setFieldLabel("Database URL");
@@ -607,6 +627,7 @@ public class Application implements EntryPoint {
 
         // Add hidden panels under the button so they don't mess up the layout
         connectToDatabase.add(dbDriver);
+        connectToDatabase.add(dbAdminUrl);
         connectToDatabase.add(dbUrl);
 
         // final ContentPanel updateDatabase = new ContentPanel();
