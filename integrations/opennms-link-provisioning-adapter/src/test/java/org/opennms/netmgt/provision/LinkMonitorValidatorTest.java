@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
-import org.opennms.netmgt.provision.adapters.link.EndPointTypeValidatorFactory;
-import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue;

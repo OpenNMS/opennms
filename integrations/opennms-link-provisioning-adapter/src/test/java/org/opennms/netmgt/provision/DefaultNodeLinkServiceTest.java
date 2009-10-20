@@ -41,7 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/provisiond-extensions.xml",
-        "classpath:/linkTestContext.xml"
+        "classpath:/testConfigContext.xml"
 })
 @JUnitTemporaryDatabase()
 public class DefaultNodeLinkServiceTest {
