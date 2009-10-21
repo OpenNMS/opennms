@@ -61,15 +61,19 @@
 		<%-- // date fields --%>
 		<c:forEach items="${criteria.dates}" var="date" varStatus="dateParmRow">
 			<tr>
-				<td>${date.displayName}</td>
+				<td><c:out value="${date.displayName}"/></td>
 				<td><form:input path="dates[${dateParmRow.index}].date" />(yyyy-MM-dd)</td>
 			</tr>
 		</c:forEach>
 		<%-- // category fields --%>
 		<c:forEach items="${criteria.categories}" var="category" varStatus="categoryParmRow">
 			<tr>
-				<td><c:out value="${category.displayName}" /></td>
-				<td><form:input path="categories[${categoryParmRow.index}].category" /></td>
+				<td><c:out value="${category.displayName}"/></td>
+                <td>
+	                <form:select path="categories[${categoryParmRow.index}].category">
+	                <form:options items="${categories}"/>
+	                </form:select>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>

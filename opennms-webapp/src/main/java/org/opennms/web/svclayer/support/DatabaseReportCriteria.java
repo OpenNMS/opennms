@@ -38,6 +38,10 @@ package org.opennms.web.svclayer.support;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.binding.validation.ValidationContext;
+
 public class DatabaseReportCriteria implements Serializable {
 
         private static final long serialVersionUID = -3848794546173077375L;
@@ -57,6 +61,19 @@ public class DatabaseReportCriteria implements Serializable {
         private Boolean m_sendMail;
         
         private String m_mailFormat;
+        
+        public void validateReportDeliveryOptions(ValidationContext context) {
+            MessageContext messages = context.getMessageContext();
+            if ((m_persist == null) && (m_sendMail == null)) {
+                messages.addMessage(new MessageBuilder().error().source("Persist").
+                    defaultText("At least one of the these options must be set").build());
+                messages.addMessage(new MessageBuilder().error().source("sendMail").
+                    defaultText("At least one of the these options must be set").build());
+            } else if (m_persist && (m_mailTo == null)) {
+                messages.addMessage(new MessageBuilder().error().source("mailTo").
+                    defaultText("require an email address for delivery").build());
+            }
+        }
 
         public String getLogo() {
             return m_logo;

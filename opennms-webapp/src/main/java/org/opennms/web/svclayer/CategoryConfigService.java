@@ -11,6 +11,8 @@
  * Modifications:
  * 
  * Created: February 21, 2007
+ * 
+ * October 22, 2009: added getCategoriesList method jonathan@opennms.org
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,6 +37,7 @@
 package org.opennms.web.svclayer;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
 
@@ -45,5 +48,7 @@ import org.opennms.netmgt.config.categories.Category;
 public interface CategoryConfigService {
 
     Collection<Category> getCategories();
+    
+    List<String> getCategoriesList();
 
 }
