@@ -9,8 +9,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class GwtTestExampleA extends GWTTestCase {
-
+public class GwtApplicationTestCase extends GWTTestCase {
+    
     public String getModuleName() {
         return "org.opennms.Application";
     }
