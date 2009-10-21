@@ -1038,20 +1038,23 @@ function handleRefreshNodesResponse(data) {
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 
-			if(reloadMap){
-				posx=nodeST[6];
-				posy=nodeST[7];
-				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
-			}else{
-				var mapElem = map.mapElements[id];
-				var x=mapElem.x;
-				var y=mapElem.y;
-				var deleted = map.deleteMapElement(id);
-				if (deleted){
-					map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			var testHideNode = id.indexOf('H');
+			if ( testHideNode == -1 ) {
+
+				if(reloadMap){
+					posx=nodeST[6];
+					posy=nodeST[7];
+					map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
+				}else{
+					var mapElem = map.mapElements[id];
+					var x=mapElem.x;
+					var y=mapElem.y;
+					var deleted = map.deleteMapElement(id);
+					if (deleted){
+						map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+					}
 				}
 			}
-			
 		}
 		// Links
 		
