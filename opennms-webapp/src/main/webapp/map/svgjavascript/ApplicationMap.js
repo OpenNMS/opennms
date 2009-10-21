@@ -1010,6 +1010,8 @@ function handleRefreshNodesResponse(data) {
 	if(reloadMap)
 		map.clear();
 
+	hideNodesIds = "";
+	hasHideNodes = false;
 	for(var k=1;k<st.length;k++){
 		var nodeToken = st[k];
 		var nodeST = nodeToken.split("+");
@@ -1054,6 +1056,13 @@ function handleRefreshNodesResponse(data) {
 						map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
 					}
 				}
+			} else {
+				var nodeid = id.substring(0,testHideNode);
+				if (hideNodesIds == "")
+					hideNodesIds=nodeid;
+				else 
+					hideNodesIds=hideNodesIds+','+nodeid;
+				hasHideNodes = true;
 			}
 		}
 		// Links
