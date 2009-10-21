@@ -57,6 +57,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean checkOwnershipFileExists() {
+        // return true;
         HttpServletRequest request = this.getThreadLocalRequest();
         if (request == null) {
             throw new IllegalStateException("No HTTP request object available.");
@@ -117,11 +118,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 )
             );
         } catch (MarshalException e) {
-            throw new IllegalStateException("<code>users.xml<code> file cannot be read properly.");
+            throw new IllegalStateException("<code>users.xml</code> file cannot be read properly.");
         } catch (ValidationException e) {
-            throw new IllegalStateException("<code>users.xml<code> file is invalid and cannot be read.");
+            throw new IllegalStateException("<code>users.xml</code> file is invalid and cannot be read.");
         } catch (FileNotFoundException e) {
-            throw new IllegalStateException("<code>users.xml<code> file cannot be found in the OpenNMS home directory.");
+            throw new IllegalStateException("<code>users.xml</code> file cannot be found in the OpenNMS home directory.");
         }
 
         for(User user : userinfo.getUsers().getUser()) {
@@ -158,7 +159,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not store password: " + e.getMessage());
+            throw new IllegalArgumentException("Could not check password: " + e.getMessage());
         }
     }
 
@@ -179,6 +180,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
         try {
             db.setAdminDataSource(new SimpleDataSource(driver, adminUrl, user, password));
+            db.setDataSource(new SimpleDataSource(driver, url, OPENNMS_DB_USERNAME, OPENNMS_DB_PASSWORD));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
@@ -281,14 +283,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             try {
                 config.marshal(new FileWriter(configFile));
             } catch (MarshalException e) {
-                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "<code>: " + e.getMessage());
+                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             } catch (ValidationException e) {
                 throw new IllegalArgumentException("Invalid configuration data specified: " + e.getMessage());
             } catch (IOException e) {
-                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "<code>: " + e.getMessage());
+                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             }
         } else {
-            throw new IllegalStateException("Location <code>" + configFile.getPath() + "<code> is not writable.");
+            throw new IllegalStateException("Location <code>" + configFile.getPath() + "</code> is not writable.");
         }
     }
 
