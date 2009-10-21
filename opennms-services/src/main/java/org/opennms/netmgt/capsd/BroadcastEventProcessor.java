@@ -663,7 +663,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         // instead
         if (isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
             // there are no other ifs for this node so delete the node
-            doDeleteNode(dbConn, source, nodeid, txNo);
+            eventsToSend = doDeleteNode(dbConn, source, nodeid, txNo);
         } else {
             eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
             eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
@@ -1530,10 +1530,17 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         if (nodeid == -1) {
             log().error("handleForceRescan: Nodeid retrieval for interface " + event.getInterface() + " failed.  Unable to perform rescan.");
-        } else {
-            // Rescan the node.
-            m_scheduler.forceRescan(nodeid);
+            return;
         }
+        
+        // discard this forceRescan if one is already enqueued for the same node ID
+        if (RescanProcessor.isRescanQueuedForNode(nodeid)) {
+            log().info("Ignoring forceRescan event for node " + nodeid + " because a forceRescan for that node already exists in the queue");
+            return;
+        }
+        
+        // Rescan the node.
+        m_scheduler.forceRescan(nodeid);
     }
 
     /**
