@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.provision;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -251,16 +252,30 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
                         List<Cmap> cmaps = m_mapsAdapterConfig.getAllMaps();
                         m_mapNameMapSizeListMap = new ConcurrentHashMap<String, Integer>(cmaps.size());
+                        List<String> mapNames= new ArrayList<String>(cmaps.size());
+                        for (Cmap cmap: cmaps) {
+                            mapNames.add(cmap.getMapName());
+                        }
 
                         List<OnmsNode> nodes = m_onmsNodeDao.findAllProvisionedNodes();
 
                         Date now = new Date();
                         log().debug("syncMaps: sync automated maps in database with configuration");
                         
-                        for (OnmsMap onmsMap : m_onmsMapDao.findAutoMaps()) {
-                            log().debug("syncMaps: deleting old automated map: " + onmsMap.getName());
-                            m_onmsMapDao.delete(onmsMap);
-                            m_onmsMapDao.flush();
+                        for (OnmsMap onmsMap : m_onmsMapDao.findAutoMaps()) {  
+                            if (mapNames.contains(onmsMap.getName())) {
+                                log().debug("syncMaps: deleting element from automated existing map: " + onmsMap.getName());
+                                m_onmsMapElementDao.deleteElementsByMapId(onmsMap);
+                                m_onmsMapElementDao.flush();                                
+                            } else {
+                                log().debug("syncMaps: deleting old automated map: " + onmsMap.getName());
+                                log().debug("syncMaps: removing as map Element from all maps.");
+                                m_onmsMapElementDao.deleteElementsByElementIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
+                                m_onmsMapElementDao.flush();                                
+                                log().debug("syncMaps: removing from map table.");
+                                m_onmsMapDao.delete(onmsMap);
+                                m_onmsMapDao.flush();
+                            }
                         }
 
                         for (Cmap cmap: cmaps) {
