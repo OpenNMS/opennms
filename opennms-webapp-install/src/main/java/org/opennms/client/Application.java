@@ -538,7 +538,7 @@ public class Application implements EntryPoint {
         setAdminPassword.add(updatePasswordButton);
 
         // final ContentPanel connectToDatabase = new ContentPanel();
-        connectToDatabase.setHeading("Connect to database");
+        connectToDatabase.setHeading("Verify database connection");
         connectToDatabase.setIconStyle("check-failure-icon");
         connectToDatabase.setBodyStyleName("accordion-panel");
         connectToDatabase.setScrollMode(Style.Scroll.AUTOY);
@@ -631,7 +631,7 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbUrl);
 
         // final ContentPanel updateDatabase = new ContentPanel();
-        updateDatabase.setHeading("Update database");
+        updateDatabase.setHeading("Initialize database");
         updateDatabase.setIconStyle("check-failure-icon");
         updateDatabase.setBodyStyleName("accordion-panel");
 
