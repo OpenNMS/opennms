@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * GWT entry point classes define {@link #onModuleLoad()}.</code>.
  */
 public class Application implements EntryPoint {
     // TODO: Figure out if there are any issues with having these components being
@@ -503,14 +503,14 @@ public class Application implements EntryPoint {
         // final TextField<String> passwd = new TextField<String>();
         passwd.setFieldLabel("New admin password");
         passwd.setAllowBlank(false);
-        passwd.setMinLength(6);
+        // passwd.setMinLength(6);
         passwd.setPassword(true);
         setAdminPassword.add(passwd);
 
         // final TextField<String> confirm = new TextField<String>();
         confirm.setFieldLabel("Confirm password");
         confirm.setAllowBlank(false);
-        confirm.setMinLength(6);
+        // confirm.setMinLength(6);
         confirm.setPassword(true);
         setAdminPassword.add(confirm);
 
@@ -576,13 +576,13 @@ public class Application implements EntryPoint {
 
         // final TextField<String> dbPass = new TextField<String>();
         dbPass.setFieldLabel("Database admin password");
-        dbPass.setAllowBlank(false);
+        // dbPass.setAllowBlank(false);
         dbPass.setPassword(true);
         connectToDatabase.add(dbPass);
 
         // final TextField<String> dbConfirm = new TextField<String>();
         dbConfirm.setFieldLabel("Confirm admin password");
-        dbConfirm.setAllowBlank(false);
+        // dbConfirm.setAllowBlank(false);
         dbConfirm.setPassword(true);
         connectToDatabase.add(dbConfirm);
 
