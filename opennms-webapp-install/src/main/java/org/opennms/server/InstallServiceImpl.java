@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
@@ -23,6 +24,7 @@ import org.opennms.client.InstallService;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
@@ -47,20 +49,25 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     private static boolean m_lastUpdateSucceeded = false;
 
     /**
-     * TODO: Figure out an API call to make that will fetch the OpenNMS install
-     * path possibly by sniffing the current context directory. We probably
-     * shouldn't prompt the user for the information since it could possibly
-     * lead to privilege escalation (maybe?). Maybe we can set a context
-     * attribute in Jetty when we run the webapp that contains the directory
-     * name? That's probably the most secure thing to do. That way, the person
-     * who starts the webapp has control over the value.
+     * Fetch the OpenNMS home directory, as set in the <code>opennms.home</code>
+     * system property.
      */
     protected String getOpennmsInstallPath() {
-        return "/opt/opennms";
+        return ConfigFileConstants.getHome();
     }
 
     public boolean checkOwnershipFileExists() {
-        String attribute = (String)this.getThreadLocalRequest().getSession(true).getAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE);
+        HttpServletRequest request = this.getThreadLocalRequest();
+        if (request == null) {
+            throw new IllegalStateException("No HTTP request object available.");
+        }
+
+        HttpSession session = request.getSession(true);
+        if (session == null) {
+            throw new IllegalStateException("No HTTP session object available.");
+        }
+
+        String attribute = (String)session.getAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE);
         if (attribute == null) {
             return false;
         } else {
@@ -73,7 +80,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public String getOwnershipFilename(){
-        HttpSession session = this.getThreadLocalRequest().getSession(true);
+        HttpServletRequest request = this.getThreadLocalRequest();
+        if (request == null) {
+            throw new IllegalStateException("No HTTP request object available.");
+        }
+
+        HttpSession session = request.getSession(true);
+        if (session == null) {
+            throw new IllegalStateException("No HTTP session object available.");
+        }
+
         String attribute = (String)session.getAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE);
         if (attribute == null) {
             attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";

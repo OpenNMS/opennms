@@ -19,6 +19,17 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>opennms.home</name>
+              <value>${project.build.outputDirectory}</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>1.2-SNAPSHOT</version>
@@ -36,7 +47,7 @@
           </compileTargets>
           <runTarget>org.opennms.Application/Application.html</runTarget>
           <logLevel>INFO</logLevel>
-          <style>DETAILED</style>
+          <style>OBFUSCATED</style>
           <noServer>false</noServer>
           <extraJvmArgs>-Xmx512m</extraJvmArgs>
           <gwtVersion>${gwtVersion}</gwtVersion>
