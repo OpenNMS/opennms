@@ -240,8 +240,8 @@ public class Application implements EntryPoint {
             }
 
             // TODO: Should we hard-code the value of the admin database?
-            dbAdminUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/template1");
-            dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + dbPort.getValue() + "/" + dbName.getValue());
+            dbAdminUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/template1");
+            dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/" + dbName.getValue());
 
             // Make sure that the password and confirmation fields match
             if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
@@ -266,6 +266,7 @@ public class Application implements EntryPoint {
                         MessageBox.confirm("Database Does Not Exist", "The database does not exist yet. Would you like to create it?", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
                                 if (Dialog.YES.equals((event.getButtonClicked().getItemId()))) {
+                                    connectToDatabase.setIconStyle("check-progress-icon");
                                     installService.createDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
                                         public void onSuccess(Void result) {
                                             // Re-run the check now that the database has been created
@@ -273,7 +274,9 @@ public class Application implements EntryPoint {
                                         }
 
                                         public void onFailure(Throwable e) {
+                                            connectToDatabase.setIconStyle("check-failure-icon");
                                             MessageBox.alert("Failure", "The database could not be created: " + e.getMessage(), null);
+                                            connectToDatabase.expand();
                                         }
                                     });
                                 } else {
@@ -475,8 +478,8 @@ public class Application implements EntryPoint {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(new InstallationCheck() {
                     public void check() {
-                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new SelectionListener<MessageBoxEvent>() {
-                            public void componentSelected(MessageBoxEvent event) {
+                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
                                 setAdminPassword.expand();
                             }
                         });
@@ -525,8 +528,8 @@ public class Application implements EntryPoint {
                 new OwnershipFileCheck(
                     new SetAdminPasswordCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new SelectionListener<MessageBoxEvent>() {
-                                public void componentSelected(MessageBoxEvent event) {
+                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
                                     connectToDatabase.expand();
                                 }
                             });
@@ -613,8 +616,8 @@ public class Application implements EntryPoint {
                 new OwnershipFileCheck(
                     new DatabaseConnectionCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new SelectionListener<MessageBoxEvent>() {
-                                public void componentSelected(MessageBoxEvent event) {
+                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
                                     updateDatabase.expand();
                                 }
                             });
@@ -731,8 +734,8 @@ public class Application implements EntryPoint {
                     new DatabaseConnectionCheck(
                         new StoredProceduresCheck(new InstallationCheck() {
                             public void check() {
-                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new SelectionListener<MessageBoxEvent>() {
-                                    public void componentSelected(MessageBoxEvent event) {
+                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new Listener<MessageBoxEvent>() {
+                                    public void handleEvent(MessageBoxEvent event) {
                                         continueButton.focus();
                                     }
                                 });
