@@ -70,6 +70,18 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 		this.setFlash(true);
 }
 
+Link.prototype.getId = function() {
+	return this.id;
+}
+
+Link.prototype.getMapElement1 = function() {
+	return this.mapElement1;
+}
+
+Link.prototype.getMapElement2 = function() {
+	return this.mapElement2;
+}
+
 Link.prototype.getTypology = function() {
 	return this.typology;
 }

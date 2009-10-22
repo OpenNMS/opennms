@@ -34,6 +34,8 @@ function onClickMapElement(evt)
 			var y = mapElement.getY() ;
 			
 			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			cm.addItem("base",label, ciao);
+			cm.addItem(label+"00","-----------------------",ciao);
 			for(var index in CM_COMMANDS){
 				if(CM_COMMANDS[index]=="-"){
 					cm.addItem(label+index,"-----------------------",ciao);
@@ -212,12 +214,61 @@ function onMouseDownOnLink(evt)
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
+		// close other menus
+		windowsClean();
+
 		clearDownInfo();
 		clearActionsStarted();
 		
 		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
 		writeTopInfoText(mapLink.getInfo());
-		
+		if (evt.detail == 2)
+		{
+			var x=evt.clientX + 2;
+			var y=evt.clientY + 4;
+
+			var mapElement = mapLink.getMapElement1();
+			var hasOneMenu=false;
+			
+			if(mapElement.isNode())
+			{
+				hasOneMenu=true;
+				var nodeid = mapElement.getNodeId();
+				var label = mapElement.getLabel();
+					
+				var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+				cm.addItem("base",label, ciao);
+				cm.addItem(label+"00","-----------------------",ciao);
+				for(var index in CM_COMMANDS){
+					if(CM_COMMANDS[index]=="-"){
+						cm.addItem(label+index,"-----------------------",ciao);
+					}else{
+						var commandLabel = unescape(CM_COMMANDS[index]);
+						cm.addItem(index,commandLabel,execSelectedCMAction);
+					}
+				}			
+			}
+			mapElement = mapLink.getMapElement2();
+			if(mapElement.isNode())
+			{
+				var nodeid = mapElement.getNodeId();
+				var label = mapElement.getLabel();
+				if (hasOneMenu) {
+					x = x + cmwidth + 2;
+				}
+				var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+				cm.addItem("base",label, ciao);
+				cm.addItem(label+"00","-----------------------",ciao);
+				for(var index in CM_COMMANDS){
+					if(CM_COMMANDS[index]=="-"){
+						cm.addItem(label+index,"-----------------------",ciao);
+					}else{
+						var commandLabel = unescape(CM_COMMANDS[index]);
+						cm.addItem(index,commandLabel,execSelectedCMAction);
+					}
+				}			
+			}
+		}
 	}		
 }
 
