@@ -44,6 +44,8 @@ public class Map {
     public static final String USER_GENERATED_MAP = "U";
 
     public static final String AUTOMATICALLY_GENERATED_MAP = "A";
+    
+    public static final String AUTOMATIC_SAVED_MAP = "S";
 
     public static final String DELETED_MAP = "D"; //for future use
 

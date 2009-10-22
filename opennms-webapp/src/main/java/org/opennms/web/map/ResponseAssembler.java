@@ -241,7 +241,7 @@ public class ResponseAssembler {
 			strToSend +="+" + role + "+"
 				+ map.getName() + "+" + map.getOwner() + "+"
 				+ map.getUserLastModifies() + "+" + createTime
-				+ "+" + lastModTime;
+				+ "+" + lastModTime+ "+" + map.getType();
 				
 			VElement[] elems = map.getAllElements();
 			if (elems != null) {

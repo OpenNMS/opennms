@@ -618,19 +618,13 @@ public class DBManager extends Manager {
         log.debug("deleting map...");
         Connection conn = startSession();
         final String sqlDeleteMap = "DELETE FROM " + mapTable
-                + " WHERE mapid = ?";
-        final String sqlDeleteElemMap = "DELETE FROM " + elementTable
-                + " WHERE elementid = ? AND elementtype = ?";
+                + " WHERE mapid = ? AND maptype != ? ";
         int countDelete = 0;
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDeleteMap);
             statement.setInt(1, id);
+            statement.setString(2, Map.AUTOMATICALLY_GENERATED_MAP);
             countDelete = statement.executeUpdate();
-            statement.close();
-            statement = conn.prepareStatement(sqlDeleteElemMap);
-            statement.setInt(1, id);
-            statement.setString(2, Element.MAP_TYPE);
-            statement.executeUpdate();
             statement.close();
             return countDelete;
         } catch (SQLException e) {

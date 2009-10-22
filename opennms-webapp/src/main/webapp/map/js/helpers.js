@@ -204,7 +204,7 @@ function openLink( link, params){
 	   	var appdomain = uriObj.protocol+"://"+uriObj.authority;
        		open(appdomain+appContext+unescape(link), '', params);	
            } else {
-		if ( uriObj.protocol =='telnet' ) {
+		if ( uriObj.protocol =='telnet' || uriObj.protocol == 'ssh' ) {
 			window.location=unescape(link);
 		} else {
        			open(unescape(link), '', params);	

@@ -168,6 +168,10 @@ function instantiateNodeGroup() {
 	nodeMenu.addElement(id, "Set Icon", menuDeltaX,8*menuDeltaY,menuWidth,menuHeight, addIconList,null);
 	id = "DelNode";
 	nodeMenu.addElement(id, "Delete", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, deleteMapElementList,null);
+	if (hasHideNodes) {
+		id = "AddHides";
+		nodeMenu.addElement(id, "Add Hidden", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
+	}
 }
 
 function instantiateViewGroup() {
@@ -266,7 +270,7 @@ function closeSetUp() {
 // Rename Map
 function addRenameMapBox(){
 	closeAllMenu();
-	if(currentMapId!=MAP_NOT_OPENED){
+	if(currentMapType == "U" && currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
 		hidePickColor();
@@ -275,7 +279,11 @@ function addRenameMapBox(){
 		//first a few styling parameters:
 		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
- 	}else{
+ 	} else if (currentMapType == "A") {
+		alert('Cannot rename automatic map');
+ 	} else if (currentMapType == "S") {
+		alert('Cannot rename static map');
+	}else{
 		alert('No maps opened');
     }
 }
@@ -299,16 +307,17 @@ function deleteMapSetUp() {
 	clearDownInfo();
 	hidePickColor();
 	resetFlags();
-	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
+	if(currentMapType == "U" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
 	    if(confirm('Are you sure to delete the map?')==true){ 
 	 		disableMenu();
 			deleteMap();
-    	} else {
-    	return;
     	}
+ 	} else if (currentMapType == "A") {
+		alert('Cannot delete automatic map');
+ 	} else if (currentMapType == "S") {
+		alert('Cannot delete static map');
 	}else{
 		alert('No maps to delete found');
-		return;
     }	
 }
 
@@ -467,6 +476,20 @@ function refreshNodesSetUp() {
 }
 
 // *****************Functions Called by  Node Menu **********************
+// Add Hide Nodes function
+function addHideNodes()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	addMapElement(hideNodesIds);
+	hideNodesIds = "";
+	hasHideNodes = false;
+
+}
+
 // Add Node function
 function addMapElementList()
 {
@@ -498,10 +521,10 @@ function addMapElementSetUp() {
 	if(selectedMapElemInList==0 ){
 		return;
 	}
-	addMapElement(nodeSortAss[selectedMapElemInList].id);	
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addMapElement(nodeSortAss[selectedMapElemInList].id);	
 }
 
 // Add Node by Category
@@ -531,10 +554,10 @@ function addNodesByCategorySetUp() {
 	if(selectedCategoryInList==0 )  {
 		return;
 	}
-	addNodesByCategory(categorySortAss[selectedCategoryInList]);	
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addNodesByCategory(categorySortAss[selectedCategoryInList]);	
 }
 
 // Add node using nodelabel
@@ -560,10 +583,10 @@ function addNodesByLabelSetUp() {
 		alert('Invalid Label (must not be blank)');
 		return;
 	}
-	addNodesByLabel(label);
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addNodesByLabel(label);
 }
 
 
@@ -590,10 +613,10 @@ function addRangeOfNodesSetUp() {
 		alert('Range not valid!');
 		return;
 	}
-	addRangeOfNodes(range);
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addRangeOfNodes(range);
 }
 
 // Add Map using neighbor
@@ -648,10 +671,10 @@ function addMapElementWithNeighborsSetUp() {
 	if(selectedMapElemInList==0 )  {
 		return;
 	}
-	addMapElementWithNeighbors(nodeSortAss[selectedMapElemInList].id);
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();		
+	addMapElementWithNeighbors(nodeSortAss[selectedMapElemInList].id);
 }
 
 // Add Map as a Node Functions
@@ -682,11 +705,10 @@ function addMapAsNodeSetUp() {
 		writeDownInfo("Cannot add map to itself");		
 		return;
 	}
-	addMapAsNode(mapId);
-
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addMapAsNode(mapId);
 }
 
 // Add icons List function
@@ -1055,6 +1077,19 @@ function showMapInfo(){
 
 function writeMapInfo(){
 	clearMapInfo();
+	var hasHideNodeText = '';
+	if (hasHideNodes) {
+		hasHideNodeText = ' : map has hidden Nodes';
+	}
+	var mapType="Unknown";
+	
+	if (currentMapType == "U") {
+		mapType="User";
+	} else if (currentMapType == "A") {
+		mapType="Automatic"
+	}  else if (currentMapType == "S") {
+		mapType="Static"
+	}
 	var mapInfo= document.getElementById("MapInfo");
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
@@ -1063,13 +1098,13 @@ function writeMapInfo(){
 	tspan.setAttributeNS(null, "id","MapInfoTitle");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
 	
-	var tspanContent = document.createTextNode("Map Info");
+	var tspanContent = document.createTextNode("Map Info"+hasHideNodeText);
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","25");
+	tspan.setAttributeNS(null, "dy","20");
 	tspan.setAttributeNS(null, "id","mapName");
 	
 	var tspanContent = document.createTextNode("Name: "+currentMapName+" ");
@@ -1078,7 +1113,7 @@ function writeMapInfo(){
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapOwner");
 	
 	var tspanContent = document.createTextNode("Owner: "+currentMapOwner+" ");
@@ -1087,7 +1122,7 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapUserLast");
 	
 	var tspanContent = document.createTextNode("User last modified: "+currentMapUserlast+" ");
@@ -1096,7 +1131,7 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapCreateTime");
 	
 	var tspanContent = document.createTextNode("Create time: "+currentMapCreatetime+" ");
@@ -1105,13 +1140,22 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","25");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapLastModTime");
 	
 	var tspanContent = document.createTextNode("Last modified time: "+currentMapLastmodtime+" ");
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "id","mapType");
 	
+	var tspanContent = document.createTextNode("Map Type: "+mapType+" ");
+	tspan.appendChild(tspanContent);
+	mapInfo.appendChild(tspan);
+
 	mapInfo.setAttributeNS(null,'display', 'inline');
 }
 
@@ -1135,6 +1179,9 @@ function clearMapInfo(){
    var mapLastModTimeNode=document.getElementById("mapLastModTime");
    if(mapLastModTimeNode!=null)
            mapLastModTimeNode.parentNode.removeChild(mapLastModTimeNode);          
+   var mapType=document.getElementById("mapType");
+   if(mapType!=null)
+       mapType.parentNode.removeChild(mapType);          
 }
 
 //Assert loading..

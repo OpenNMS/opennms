@@ -101,11 +101,9 @@ Map.prototype.setBG = function() {
 
 Map.prototype.resetBackground = function() {
 	this.rect.setAttributeNS(null,"fill", this.defaultbackgroundcolor);
-	if (!this.backgroundiscolor) {
-		this.image.setAttributeNS(null,"display", "none");	
-		this.rect.setAttributeNS(null,"display", "inline");
-		this.backgroundiscolor = true;
-	}
+	this.image.setAttributeNS(null,"display", "none");	
+	this.rect.setAttributeNS(null,"display", "inline");
+	this.backgroundiscolor = true;
 }
 
 Map.prototype.setBackgroundColor = function(color){

@@ -75,6 +75,39 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         assertEquals(mapElement.getY(), mapElement2.getY());
     }
 
+    public void testSaveOnmsMapElement1() {
+        // Create a new map and save it.
+        OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap1", "admin");
+        getOnmsMapDao().save(map);
+        getOnmsMapDao().flush();
+        getOnmsMapDao().clear();
+
+        // then a map element
+        OnmsMapElement mapElement = new OnmsMapElement(map, 2,
+                OnmsMapElement.NODE_HIDE_TYPE,
+                "Test Node Two",
+                OnmsMapElement.defaultNodeIcon,
+                0,
+                10);
+        getOnmsMapElementDao().save(mapElement);
+        getOnmsMapElementDao().flush();
+        getOnmsMapElementDao().clear();
+
+        // Now pull it back up and make sure it saved.
+        Object [] args = { mapElement.getId() };
+        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from element where id = ?", args));
+
+        OnmsMapElement mapElement2 = getOnmsMapElementDao().findMapElementById(mapElement.getId());
+        assertNotSame(mapElement, mapElement2);
+        assertEquals(mapElement.getMap().getId(), mapElement2.getMap().getId());
+        assertEquals(mapElement.getElementId(), mapElement2.getElementId());
+        assertEquals(mapElement.getType(), mapElement2.getType());
+        assertEquals(mapElement.getLabel(), mapElement2.getLabel());
+        assertEquals(mapElement.getIconName(), mapElement2.getIconName());
+        assertEquals(mapElement.getX(), mapElement2.getX());
+        assertEquals(mapElement.getY(), mapElement2.getY());
+    }
+
     public void testFindById() {
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
@@ -141,6 +174,16 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
 
     public void testFindElementsByElementIdAndType4() {
         Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(2, OnmsMapElement.MAP_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testFindElementsByElementIdAndType5() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(1, OnmsMapElement.NODE_HIDE_TYPE);
+        assertEquals(0,elems.size());
+    }
+
+    public void testFindElementsByElementIdAndType6() {
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByElementIdAndType(2, OnmsMapElement.NODE_HIDE_TYPE);
         assertEquals(0,elems.size());
     }
 

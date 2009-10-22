@@ -57,7 +57,7 @@ var textbox1;
 
 // *********** Variables used by selectionList SVG Object in TopInfo SVG box ******
 
-// variables fo NODE --- nodes are loaded by LoadNodes()
+// variables for NODE --- nodes are loaded by LoadNodes()
 var selectedMapElemInList=0;
 var selNodes; 
 
@@ -67,6 +67,9 @@ var nodeSortAss;
 var mynodesResult;
 var nodesLoaded = false;
 
+//variables for NODE --- nodes are loaded by LoadNodes()
+var hideNodesIds = "";
+var hasHideNodes = false;
 // variables for MAP ---maps are loaded by LoadMaps()
 var selectedMapInList=0;
 var selMaps;
@@ -183,7 +186,7 @@ var mapHistoryIndex = 0;
 // current map variables
 var currentMapId;
 var currentMapBackGround="";
-var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="";
+var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="", currentMapType="";
 
 //vars for set background color
 var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_bleu=128,pick_prefixe="pickColor",node,cible;
