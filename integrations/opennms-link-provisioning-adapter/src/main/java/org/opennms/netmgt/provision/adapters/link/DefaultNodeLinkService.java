@@ -3,13 +3,14 @@ package org.opennms.netmgt.provision.adapters.link;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,18 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Autowired
     DataLinkInterfaceDao m_dataLinkDao;
     
+    @Autowired
+    LinkStateDao m_linkStateDao;
+    
+    @Transactional
+    public void saveLinkState(OnmsLinkState state) {
+        m_linkStateDao.save(state);
+        m_linkStateDao.flush();
+    }
+    
     @Transactional
     public void createLink(int nodeParentId, int nodeId) {
-        log().info(String.format("adding link between node: %d and node: %d", nodeParentId, nodeId));
+        LogUtils.infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
         OnmsNode parentNode = m_nodeDao.get(nodeParentId);
         Assert.notNull(parentNode, "node with id: " + nodeParentId + " does not exist");
         
@@ -49,11 +59,10 @@ public class DefaultNodeLinkService implements NodeLinkService {
             
             m_dataLinkDao.save(dataLink);
             m_dataLinkDao.flush();
-            log().info(String.format("successfully added link into db for nodes %d and %d", nodeParentId, nodeId));
-        }else {
-           log().info(String.format("link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId));  
+            LogUtils.infof(this, "successfully added link into db for nodes %d and %d", nodeParentId, nodeId);
+        } else {
+            LogUtils.infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
         }
-        
     }
     
     private int getPrimaryIfIndexForNode(OnmsNode node) {
@@ -81,6 +90,20 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
+        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.or(
+            Restrictions.eq("nodeId", nodeId),
+            Restrictions.eq("nodeParentId", nodeId)
+        ));
+        
+        return m_dataLinkDao.findMatching(criteria);
+    }
+
+    public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface) {
+        return m_linkStateDao.findByDataLinkInterfaceId(dataLinkInterface.getId());
+    }
+    
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeId", nodeId));
@@ -97,8 +120,4 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
     }
     
-    private static Category log() {
-        return ThreadCategory.getInstance(LinkProvisioningAdapter.class);
-    }
-
 }

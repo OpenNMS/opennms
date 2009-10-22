@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.adapters.link;
 
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
