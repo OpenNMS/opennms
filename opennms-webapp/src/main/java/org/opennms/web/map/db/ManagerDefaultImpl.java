@@ -334,6 +334,7 @@ public class ManagerDefaultImpl implements Manager {
         		elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
         		elem.setRtc(mapsPropertiesFactory.getDisabledAvail().getMin());
         		// here we must add all the stuff required
+        		log.debug("openMap: adding element to map with label: " + elem.getLabel());
         		retVMap.addElement(elem);
             }
         }
@@ -910,7 +911,7 @@ public class ManagerDefaultImpl implements Manager {
             throw new MapsException("No current session map: cannot delete map with id "+mapId);
         }
     	if (dbManager.deleteMap(mapId) == 0) {
-            throw new MapNotFoundException("Map with id "+mapId+" doesn't exist.");
+            throw new MapNotFoundException("Map with id "+mapId+" doesn't exist or is automatic map");
         }
     	sessionMap=null;
     }
