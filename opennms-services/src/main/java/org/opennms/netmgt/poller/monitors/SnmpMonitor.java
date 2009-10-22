@@ -14,8 +14,7 @@
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2003 Jan 29: Added response times to certain monitors.
 // 2009 Mar 29: Added reason code template feature for enhancement bug #3065. - jeffg@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// 2009 Oct 22: Removed Agent configuration caching
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,19 +86,10 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
     private static final String SERVICE_NAME = "SNMP";
 
     /**
-     * Default object to collect if "oid" property not available.
+     * Default object to collect if "oid" property not available. (SysObjectID)
      */
-    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0"; // MIB-II
-                                                                                // System
-                                                                                // Object
-                                                                                // Id
-
-    /**
-     * Interface attribute key used to store the interface's SnmpAgentConfig
-     * object.
-     */
-    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-
+    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0";
+    
     private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
 
     /**
@@ -156,30 +146,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      */
     public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-        // Log4j category
-        //
-        // Get interface address from NetworkInterface
-        //
         super.initialize(svc);
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
-        }
-
-        // Add the snmp config object as an attribute of the interface
-        //
-        if (log().isDebugEnabled())
-            log().debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
-
-        iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
-
-        log().debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
-
-        return;
     }
 
     /**
@@ -202,12 +169,12 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         NetworkInterface iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = (InetAddress) iface.getAddress();
 
-        // Retrieve this interface's SNMP peer object
-        //
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
+        if (agentConfig == null) {
+            throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipAddr);
+        }
 
         // Get configuration parameters
         //
