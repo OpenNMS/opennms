@@ -47,6 +47,8 @@ public class DatabaseReportCriteria implements Serializable {
         private static final long serialVersionUID = -3848794546173077375L;
 
         private String m_reportId;
+        
+        private String m_displayName;
 
         private List <DatabaseReportCategoryParm> m_categories;
 
@@ -137,6 +139,14 @@ public class DatabaseReportCriteria implements Serializable {
 
         public String getReportId() {
             return m_reportId;
+        }
+
+        public void setDisplayName(String displayName) {
+            m_displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return m_displayName;
         }
 
 }

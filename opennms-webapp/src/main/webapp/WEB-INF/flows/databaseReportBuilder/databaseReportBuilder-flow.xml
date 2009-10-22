@@ -32,7 +32,7 @@
 			<binding property="mailFormat" />
 		</binder>
 		<transition on="proceed" to="reviewReport" />
-		<transition on="revise" to="enterReportCriteria" />
+		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 	

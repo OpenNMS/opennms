@@ -51,10 +51,12 @@ public class DefaultDatabaseReportCriteriaService implements
        
         DatabaseReportCriteria criteria = new DatabaseReportCriteria();
         
+        criteria.setDisplayName(m_dao.getDisplayName(id));
         criteria.setLogo("logo");
         criteria.setMailFormat("SVG");
         criteria.setPersist(true);
         criteria.setSendMail(true);
+        
         
         ReportParm[] dates = m_dao.getDates(id);
         if (dates.length > 0) {

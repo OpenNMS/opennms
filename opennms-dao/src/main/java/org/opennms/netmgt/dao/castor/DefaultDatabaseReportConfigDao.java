@@ -118,6 +118,18 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         }
         
     }
+    
+    public String getDisplayName(String name) {
+        
+        Report report = getReport(name);
+        
+        if(report != null){
+            return report.getDisplayName();
+        } else {
+        return new String();
+        }
+        
+    }
 
     public Report getReport(String name) {
         

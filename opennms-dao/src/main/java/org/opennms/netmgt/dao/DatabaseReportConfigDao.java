@@ -51,6 +51,8 @@ public interface DatabaseReportConfigDao {
     
     Map <String,String> getReportMap(); 
     
-    String getEngine(String name);    
+    String getEngine(String id);
+    
+    String getDisplayName(String id);
     
 }
