@@ -13,18 +13,19 @@ import org.apache.log4j.spi.LoggingEvent;
 public class ListAppender extends AppenderSkeleton implements Appender {
     private List<LoggingEvent> m_list = new ArrayList<LoggingEvent>();
 
-    private int m_counter = 0;
+    // private int m_counter = 0;
 
     public void resetCounter() {
         // Integer operation, sync not necessary
-        m_counter = 0;
+        // m_counter = 0;
     }
 
     public List<LoggingEvent> getEvents(int offset, int count) {
         List<LoggingEvent> retval = null;
 
         synchronized(m_list) {
-            int toIndex = (count > 0) ? (offset + count) : m_list.size();
+            // int toIndex = (count > 0) ? (offset + count) : m_list.size();
+
             // Wrap the collection in an unmodifiable facade
             // retval = Collections.unmodifiableList(m_list.subList((offset > 0) ? offset : 0, toIndex));
             retval = Collections.unmodifiableList(m_list.subList(0, m_list.size()));
