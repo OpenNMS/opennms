@@ -139,7 +139,9 @@ public class LinkAdapterEventListenerTest {
         correlator.setEventForwarder(m_eventIpcManager);
         correlator.setNodeLinkService(m_nodeLinkService);
         correlator.setEndPointConfigDao(m_endPointConfigDao);
-
+        
+        expect(m_nodeLinkService.getPrimaryAddress(1)).andStubReturn("192.168.0.1");
+        
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_BOTH_DOWN));

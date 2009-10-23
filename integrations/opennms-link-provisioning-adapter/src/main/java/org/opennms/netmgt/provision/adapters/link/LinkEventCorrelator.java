@@ -42,13 +42,18 @@ public class LinkEventCorrelator {
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId); 
+        }
+        
     }
 
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void handleInterfaceUp(Event e) {
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)
@@ -57,7 +62,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_RESPONSIVE_EVENT_UEI)
@@ -66,7 +73,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
@@ -75,7 +84,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
@@ -84,7 +95,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
@@ -93,7 +106,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
@@ -102,7 +117,9 @@ public class LinkEventCorrelator {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     private void linkDown(int nodeId) {
@@ -151,6 +168,14 @@ public class LinkEventCorrelator {
             linkStateObj.setLinkState(linkState);
             m_nodeLinkService.saveLinkState(linkStateObj);
         }
+    }
+    
+    public boolean isSnmpPrimary(int nodeId, String ipAddr) {
+        String primaryAddress = m_nodeLinkService.getPrimaryAddress(nodeId);
+        if(primaryAddress != null) {
+            return primaryAddress.equals(ipAddr);
+        }
+        return false;
     }
 
     public void updateLinkStatus(Event e) {
