@@ -5,4 +5,5 @@ package org.opennms.client;
  * been created in the database.
  */
 public class DatabaseDoesNotExistException extends IllegalStateException {
+    private static final long serialVersionUID = 4078366981102852326L;
 }

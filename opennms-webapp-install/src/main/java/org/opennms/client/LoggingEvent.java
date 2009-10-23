@@ -1,7 +1,6 @@
 package org.opennms.client;
 
 import java.io.Serializable;
-import java.util.*;
 
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -11,6 +10,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *  log4j messages on the server side.
  */
 public class LoggingEvent implements BeanModelTag, Serializable, IsSerializable {
+    private static final long serialVersionUID = -701344411706799165L;
+
     public enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL }
 
     private String m_category;
