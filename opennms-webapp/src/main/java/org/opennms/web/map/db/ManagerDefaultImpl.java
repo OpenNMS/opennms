@@ -75,8 +75,10 @@ import org.opennms.web.map.view.VMapInfo;
 
 /**
  * @author maurizio
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *  
  */ 
+
 public class ManagerDefaultImpl implements Manager {
     
 	private class AlarmInfo {
@@ -242,27 +244,6 @@ public class ManagerDefaultImpl implements Manager {
     	throw new MapNotFoundException();
     }
 
-    /*
-     * Start the session: only operations made in the block between start and
-     * end session will be saved correctly.
-     * 
-     * @throws MapsException
-     * @see endSession
-     
-    public void startSession() throws MapsException {
-            dbManager.startSession();
-    }*/
-
-    /*
-     * Close the block open by startSession() method.
-     * 
-     * @throws MapsException
-     * @see startSession()
-     
-    synchronized public void endSession() throws MapsException {
-    		dbManager.endSession();
-    }*/
-
     /**
      * Create a new empty VMap and return it.
      * 
@@ -353,7 +334,7 @@ public class ManagerDefaultImpl implements Manager {
         
         log.debug("Starting adding links for map with id "+id);
         log.debug("Starting getLinks");
-        //VLink[] vls = null;
+
         VLink[] vls = getLinks(retVMap.getAllElements()).toArray(new VLink[0]);
         log.debug("Ending getLinks");
         log.debug("Starting addLinks");
@@ -1031,7 +1012,6 @@ public class ManagerDefaultImpl implements Manager {
      */
     public VMap reloadMap(VMap map)throws MapsException{
     	
-		//VElement[] velems = localRefreshElements((map.getAllElements()));
     	Element[] elems = dbManager.getElementsOfMap(map.getId());
     	VElement[] velems = new VElement[elems.length];
     	for(int i=0; i<elems.length;i++) {
@@ -1385,186 +1365,67 @@ public class ManagerDefaultImpl implements Manager {
     }
     
     private VLink[] getLinkArray(VElement[] elems) throws MapsException {
-    	String multilinkStatus = mapsPropertiesFactory.getMultilinkStatus();
+    	if (elems == null) return null;
+        String multilinkStatus = mapsPropertiesFactory.getMultilinkStatus();
     	List<VLink> links = new ArrayList<VLink>();
         
-    	// this is the list of nodes set related to Element
-    	//java.util.List<Set<Integer>> elemNodes = new java.util.ArrayList<Set<Integer>>();
-    	java.util.Map<Integer,Set<Integer>> node2Element = new HashMap<Integer,Set<Integer>>();
+    	java.util.Map<Integer,Set<VElement>> node2Element = new HashMap<Integer,Set<VElement>>();
     	
     	HashSet<Integer> allNodes = new HashSet<Integer>();
-		try {
-	    	if (elems != null) {
-	        	for (int i = 0; i < elems.length; i++) {
-	        			        		
-	                Set<Integer> nodeids = getNodeidsOnElement(elems[i]);
-	                allNodes.addAll(nodeids);
-	                //elemNodes.add(nodeids);
-	                Iterator<Integer> ite = nodeids.iterator();
-	    	    	while(ite.hasNext()) {
-	    	    		Integer nodeid = ite.next();
-	    	    		Set<Integer> elements = node2Element.get(nodeid);
-	    	    		if (elements == null) {
-                            elements = new java.util.HashSet<Integer>();
-                        }
-	    	    		elements.add(new Integer(i));
-	    	    		node2Element.put(nodeid,elements);
-	    	    	}
-	    	    }
-	        }else{
-	        	return null;
-	        }
-    		
-//	    	log.debug("----------Node2Element----------");
-//	    	Iterator<Integer> it = node2Element.keySet().iterator();
-//	    	while(it.hasNext()){
-//	    		Integer nodeid=it.next();
-//	    		log.debug("Node "+nodeid+" contained in Elements "+node2Element.get(nodeid).toString());
-//	    	}
-//	    	log.debug("----------End of Node2Element----------");
 
-//	    	log.debug("----------Link on Elements ----------");
-	    	Set<LinkInfo> linkinfo = dbManager.getLinksOnElements(allNodes);
-	    	Iterator<LinkInfo> ite = linkinfo.iterator();
-	    	while(ite.hasNext()) {
-	    		LinkInfo linfo = ite.next();
-	    		log.debug("Found link: node1:"+linfo.nodeid+" node2: "+linfo.nodeparentid);
-//	    	}
-//	    	log.debug("----------End of Link on Elements ----------");
-//	    	ite = linkinfo.iterator();
-//	    	while(ite.hasNext()) {
-//	    		LinkInfo linfo = ite.next();
-	    		log.debug("Getting linkinfo for nodeid "+linfo.nodeid);
-	    		Set<Integer> fE = node2Element.get(linfo.nodeid);
-	    		log.debug("Got "+fE);
-	    		if(fE!=null){
-		    		Iterator<Integer> firstElements = fE.iterator();
-		    		while (firstElements.hasNext()) {
-			    		log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-		    			Set<Integer> sE=node2Element.get(linfo.nodeparentid);
-		    			log.debug("Got "+sE);
-		    			Integer firstNext = firstElements.next();
-		    			if(sE!=null){
-				    		Iterator<Integer> secondElements = sE.iterator();
-				    		VElement first = elems[firstNext.intValue()]; 
-				    		while (secondElements.hasNext()) {
-				    			VElement second = elems[secondElements.next().intValue()];
-				    			if (first.hasSameIdentifier(second)) {
-                                    continue;
-                                }
-				    			VLink vlink = new VLink(first,second);
-				    			vlink.setLinkStatus(getLinkStatus(linfo));
-				    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-				    			int index = links.indexOf(vlink);
-				    			if(index!=-1){
-				    				VLink alreadyIn = links.get(index);
-				    				if(alreadyIn.equals(vlink)){
-				    					if(multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS)){
-				    						if(vlink.getLinkOperStatus()<alreadyIn.getLinkOperStatus()){
-				    							log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-				    							links.remove(index);
-				    							links.add(vlink);
-				    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-				    						}
-				    					}else if(vlink.getLinkOperStatus()>alreadyIn.getLinkOperStatus()){
-				    						log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-			    							links.remove(index);
-			    							links.add(vlink);
-			    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-			    						}
-				    				}
-				    			}else{
-					    			log.debug("adding link ("+vlink.hashCode()+") "+vlink.getFirst().getId()+"-"+vlink.getSecond().getId());
-					    			links.add(vlink);
-				    			}
-				    		}
-		    			}
-		    			
-		    		}
-	    		}else{ 
-	    			log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-		    		Set<Integer> ffE = node2Element.get(linfo.nodeparentid);
-		    		log.debug("Got "+ffE);
-	    			if(ffE!=null){
-			    		Iterator<Integer> firstElements = ffE.iterator();
-			    		while (firstElements.hasNext()) {
-				    		log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
-			    			Set<Integer> sE=node2Element.get(linfo.nodeparentid);
-			    			log.debug("Got "+sE);
-			    			Integer firstNext = firstElements.next();
-			    			if(sE!=null){
-					    		Iterator<Integer> secondElements = sE.iterator();
-					    		VElement first = elems[firstNext.intValue()]; 
-					    		while (secondElements.hasNext()) {
-					    			VElement second = elems[secondElements.next().intValue()];
-					    			if (first.hasSameIdentifier(second)) {
-                                        continue;
-                                    }
-					    			VLink vlink = new VLink(first,second);
-					    			vlink.setLinkStatus(linfo.snmpifoperstatus);
-					    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-					    			int index = links.indexOf(vlink);
-					    			if(index!=-1){
-					    				VLink alreadyIn = links.get(index);
-					    				if(alreadyIn.equals(vlink)){
-					    					if(multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS)){
-					    						if(vlink.getLinkOperStatus()<alreadyIn.getLinkOperStatus()){
-					    							log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-					    							links.remove(index);
-					    							links.add(vlink);
-					    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-					    						}
-					    					}else if(vlink.getLinkOperStatus()>alreadyIn.getLinkOperStatus()){
-					    						log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
-				    							links.remove(index);
-				    							links.add(vlink);
-				    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
-				    						}
-					    				}
-					    			}else{
-						    			log.debug("adding link ("+vlink.hashCode()+") "+vlink.getFirst().getId()+"-"+vlink.getSecond().getId());
-						    			links.add(vlink);
-					    			}
-					    		}
-			    			}
-			    			
-			    		}
-	    			}
-	    		}
-	    		
+    	for (int i = 0; i < elems.length; i++) {
+    		for (Integer nodeid: getNodeidsOnElement(elems[i])) {	        		
+         	    allNodes.add(nodeid);
+	    		Set<VElement> elements = node2Element.get(nodeid);
+	    		if (elements == null) {
+                    elements = new java.util.HashSet<VElement>();
+                }
+	    		elements.add(elems[i]);
+	    		node2Element.put(nodeid,elements);
 	    	}
-	    	log.debug("Exit...");
-	    	/* old method to restore if new is slower
-	        Iterator ite = elemNodes.iterator();
-	        int firstelemcount = 0;
-	        while (ite.hasNext()) {
-	        	Set firstelemnodes = (TreeSet) ite.next();
-	        	Set<LinkInfo> firstlinkednodes = getLinkedNodeidInfosOnNodes(firstelemnodes);
-	            int secondelemcount = firstelemcount +1;
-	            Iterator sub_ite = elemNodes.subList(secondelemcount,elemNodes.size()).iterator(); 
-	        	while (sub_ite.hasNext()) {
-	        		Iterator node_ite = ((TreeSet) sub_ite.next()).iterator();
-	        		while (node_ite.hasNext()) {
-	        			Integer curNodeId = (Integer) node_ite.next();
-	        			if (firstlinkednodes.contains(curNodeId)) {
-	        				VLink vlink = new VLink(elems[firstelemcount],elems[secondelemcount]);
-	        				vlink.setLinkOperStatus(getLinkOperStatus(vlink));
-	        				vlink.setLinkTypeId(getLinkTypeId(vlink));
-	        				if(!links.contains(vlink)){
-	        					log.debug("adding link "+vlink.getFirst().getId()+vlink.getFirst().getType()+"-"+vlink.getSecond().getId()+vlink.getSecond().getType());
-	        					links.add(vlink);
-	        				}
-	        			}
-	        		}
-	        		secondelemcount++;
-				}
-				firstelemcount++;
-			}
-			*/
-	    	
-    	}catch(Exception e){
-    		log.error(e,e);
-    		throw new MapsException(e);
+	    }
+		
+    	for (LinkInfo linfo: dbManager.getLinksOnElements(allNodes)) {
+    		log.debug("Found link: node1:"+linfo.nodeid+" node2: "+linfo.nodeparentid);
+    		log.debug("Getting linkinfo for nodeid "+linfo.nodeid);
+    		if (!node2Element.containsKey(linfo.nodeid)) 
+    		    continue;
+            if (!node2Element.containsKey(linfo.nodeparentid)) 
+                continue;
+    		for (VElement first: node2Element.get(linfo.nodeid)) {
+	    		log.debug("Getting linkinfo for nodeid "+linfo.nodeparentid);
+	            for (VElement second: node2Element.get(linfo.nodeparentid)) {
+	    			if (first.hasSameIdentifier(second)) {
+                        continue;
+                    }
+	    			VLink vlink = new VLink(first,second);
+	    			vlink.setLinkStatus(getLinkStatus(linfo));
+	    			vlink.setLinkTypeId(getLinkTypeId(linfo));
+	    			vlink.setLinkInfo(linfo);
+	    			int index = links.indexOf(vlink);
+	    			if(index!=-1){
+	    				VLink alreadyIn = links.get(index);
+	    				if(alreadyIn.equals(vlink)){
+	    					if(multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS)){
+	    						if(vlink.getLinkOperStatus()<alreadyIn.getLinkOperStatus()){
+	    							log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
+	    							links.remove(index);
+	    							links.add(vlink);
+	    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
+	    						}
+	    					}else if(vlink.getLinkOperStatus()>alreadyIn.getLinkOperStatus()){
+	    						log.debug("removing to the array link "+alreadyIn.toString()+ " with status "+alreadyIn.getLinkOperStatus());
+    							links.remove(index);
+    							links.add(vlink);
+    							log.debug("adding to the array link "+vlink.toString()+ " with status "+vlink.getLinkOperStatus());
+    						}
+	    				}
+	    			}else{
+		    			log.debug("adding link ("+vlink.hashCode()+") "+vlink.getFirst().getId()+"-"+vlink.getSecond().getId());
+		    			links.add(vlink);
+	    			}
+	    		}   			
+    		}
     	}
         return links.toArray(new VLink[0]);
     }
@@ -1591,38 +1452,6 @@ public class ManagerDefaultImpl implements Manager {
  		}
  		listOfElems.add(elem);
  		return getLinkArray(listOfElems.toArray(new VElement[0]));
- 		/*
- 		
-    	HashSet<VLink> links = new HashSet<VLink>();
-        
-    	// this is the list of nodes set related to Element
-    	Set<LinkInfo> linkinfo = null;
-		if (elem != null) {
-            linkinfo = getLinkedNodeidInfosOnNodes(getNodeidsOnElement(elem));
-        } else {
-        	return null;
-        }
-        
-        if (elems != null && linkinfo != null) {
-    		
-        	for (int i = 0; i < elems.length; i++) {
-	    		Iterator node_ite = getNodeidsOnElement(elems[i]).iterator();
-	    		while (node_ite.hasNext()) {
-	    			Integer elemNodeId = (Integer) node_ite.next();
-	    	    	Iterator<LinkInfo> ite = linkinfo.iterator();
-	    	    	while(ite.hasNext()) {
-	    	    		LinkInfo linfo = ite.next();
-	    	    		if (linfo.nodeid != elemNodeId && linfo.nodeparentid != elemNodeId) continue;
-	    				VLink vlink = new VLink(elems[i],elem);
-		    			vlink.setLinkOperStatus(linfo.snmpifoperstatus);
-		    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-		    			log.debug("adding "+vlink.hashCode());
-		    			log.debug(links.toString()+" "+links.add(vlink));
-		       		}
-	    		}
-	    	}
-        }
-        return links.toArray(new VLink[0]);*/
     }    
 	
 	private   String unescapeHtmlChars(String input) {
