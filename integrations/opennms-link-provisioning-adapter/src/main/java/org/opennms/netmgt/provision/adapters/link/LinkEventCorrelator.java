@@ -10,16 +10,17 @@ import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkStateTransition;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.xml.event.Event;
 
+@EventListener(name="LinkEventCorrelator")
 public class LinkEventCorrelator {
     private EventForwarder m_forwarder;
     private NodeLinkService m_nodeLinkService;
     private EndPointTypeValidator m_endPointTypeValidator;
 
-    public LinkEventCorrelator() {
-    }
+    public LinkEventCorrelator() {}
     
     public boolean isLinkUp(Event e) {
         return false;

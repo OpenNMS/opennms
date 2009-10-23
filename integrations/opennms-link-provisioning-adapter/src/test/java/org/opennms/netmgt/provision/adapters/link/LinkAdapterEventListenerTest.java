@@ -20,8 +20,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.provision.adapters.link.LinkEventCorrelator;
-import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
@@ -70,7 +68,7 @@ public class LinkAdapterEventListenerTest {
         expect(m_nodeLinkService.getLinkContainingNodeId(1)).andStubReturn(dlis);
         expect(m_nodeLinkService.getLinkContainingNodeId(2)).andStubReturn(dlis);
         
-        OnmsLinkState ls = new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_UP);
+        OnmsLinkState ls = new OnmsLinkState( m_dataLinkInterface, LinkState.LINK_UP);
         expect(m_nodeLinkService.getLinkStateForInterface(m_dataLinkInterface)).andStubReturn(ls);
         
         expect(m_nodeLinkService.getNodeLabel(1)).andStubReturn("pittsboro-1");
@@ -87,10 +85,10 @@ public class LinkAdapterEventListenerTest {
         correlator.setEndPointTypeValidator(m_endPointTypeValidator);
         
         m_anticipator.anticipateEvent(m_failedEvent);
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
         
         replay();
-
+        
         correlator.handleNodeDown(e);
 
         //verify that the event was successful 
@@ -111,7 +109,7 @@ public class LinkAdapterEventListenerTest {
 
 
         m_anticipator.anticipateEvent(m_failedEvent);
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState( m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
 
         replay();
         
@@ -144,12 +142,12 @@ public class LinkAdapterEventListenerTest {
         correlator.setNodeLinkService(m_nodeLinkService);
         correlator.setEndPointTypeValidator(m_endPointTypeValidator);
 
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_BOTH_DOWN));
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_NODE_DOWN));
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_NODE_DOWN));
-        m_nodeLinkService.saveLinkState(new OnmsLinkState(1, m_dataLinkInterface, LinkState.LINK_UP));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_BOTH_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_NODE_DOWN));
+        m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_UP));
 
         replay();
         

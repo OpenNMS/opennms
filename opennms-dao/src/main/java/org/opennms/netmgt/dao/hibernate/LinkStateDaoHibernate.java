@@ -32,7 +32,7 @@ public class LinkStateDaoHibernate extends AbstractDaoHibernate<OnmsLinkState, I
     }
 
     public OnmsLinkState findByDataLinkInterfaceId(final Integer interfaceId) {
-        return findUnique("from OnmsLinkState as ls where ls.datalinkinterfaceid = ?", interfaceId);
+        return findUnique("from OnmsLinkState as ls where ls.dataLinkInterface.id = ?", interfaceId);
     }
 
     public Collection<OnmsLinkState> findByNodeId(Integer nodeId) {

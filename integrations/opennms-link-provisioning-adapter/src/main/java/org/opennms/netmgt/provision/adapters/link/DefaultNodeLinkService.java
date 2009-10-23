@@ -29,7 +29,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
-        m_linkStateDao.save(state);
+        m_linkStateDao.saveOrUpdate(state);
         m_linkStateDao.flush();
     }
     
