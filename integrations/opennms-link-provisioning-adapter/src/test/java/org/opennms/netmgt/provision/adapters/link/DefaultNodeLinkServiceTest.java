@@ -38,6 +38,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
@@ -194,7 +195,6 @@ public class DefaultNodeLinkServiceTest {
     
     @Test
     public void dwoTestGetLinkStateForInterface() {
-        int parentNodeId = END_POINT1_ID;
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
@@ -215,7 +215,6 @@ public class DefaultNodeLinkServiceTest {
     
     @Test
     public void dwoTestSaveLinkState() {
-        int parentNodeId = END_POINT1_ID;
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);

@@ -12,13 +12,14 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
 
 @EventListener(name="LinkEventCorrelator")
 public class LinkEventCorrelator {
     private EventForwarder m_forwarder;
     private NodeLinkService m_nodeLinkService;
-    private EndPointTypeValidator m_endPointTypeValidator;
+    private EndPointConfigurationDao m_endPointConfigDao;
 
     public LinkEventCorrelator() {}
     
@@ -52,7 +53,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)
     public void handleServiceUnresponsive(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -61,7 +62,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.SERVICE_RESPONSIVE_EVENT_UEI)
     public void handleServiceResponsive(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -70,7 +71,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void handleNodeGainedService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -79,7 +80,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -88,7 +89,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void handleNodeRegainedService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -97,7 +98,7 @@ public class LinkEventCorrelator {
 
     @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
     public void handleServiceUnmanaged(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -164,7 +165,11 @@ public class LinkEventCorrelator {
         m_nodeLinkService = nodeLinkService;
     }
 
-    public void setEndPointTypeValidator(EndPointTypeValidator endPointTypeValidator) {
-        m_endPointTypeValidator = endPointTypeValidator;
+    public void setEndPointConfigDao(EndPointConfigurationDao endPointConfigDao) {
+        m_endPointConfigDao = endPointConfigDao;
+    }
+
+    private EndPointTypeValidator getEndPointTypeValidator() {
+        return m_endPointConfigDao.getValidator();
     }
 }

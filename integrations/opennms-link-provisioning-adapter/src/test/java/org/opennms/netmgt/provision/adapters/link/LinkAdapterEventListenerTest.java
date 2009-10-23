@@ -20,7 +20,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -40,8 +39,8 @@ public class LinkAdapterEventListenerTest {
     private MockEventIpcManager m_eventIpcManager;
     private EventAnticipator m_anticipator;
     private NodeLinkService m_nodeLinkService;
-    private EndPointTypeValidator m_endPointTypeValidator;
     private DataLinkInterface m_dataLinkInterface;
+    private DefaultEndPointConfigurationDao m_endPointConfigDao;
 
     @Before
     public void setUp() {
@@ -49,10 +48,9 @@ public class LinkAdapterEventListenerTest {
         m_eventIpcManager = new MockEventIpcManager();
         m_anticipator = m_eventIpcManager.getEventAnticipator();
 
-        DefaultEndPointConfigurationDao dao = new DefaultEndPointConfigurationDao();
-        dao.setConfigResource(new ClassPathResource("/test-endpoint-configuration.xml"));
-        dao.afterPropertiesSet();
-        m_endPointTypeValidator = dao.getValidator();
+        m_endPointConfigDao = new DefaultEndPointConfigurationDao();
+        m_endPointConfigDao.setConfigResource(new ClassPathResource("/test-endpoint-configuration.xml"));
+        m_endPointConfigDao.afterPropertiesSet();
 
         m_network = new MockNetwork();
         m_node1 = new MockNode(m_network, 1, "pittsboro-1");
@@ -82,7 +80,7 @@ public class LinkAdapterEventListenerTest {
         LinkEventCorrelator correlator = new LinkEventCorrelator();
         correlator.setEventForwarder(m_eventIpcManager);
         correlator.setNodeLinkService(m_nodeLinkService);
-        correlator.setEndPointTypeValidator(m_endPointTypeValidator);
+        correlator.setEndPointConfigDao(m_endPointConfigDao);
         
         m_anticipator.anticipateEvent(m_failedEvent);
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
@@ -105,7 +103,7 @@ public class LinkAdapterEventListenerTest {
         LinkEventCorrelator correlator = new LinkEventCorrelator();
         correlator.setEventForwarder(m_eventIpcManager);
         correlator.setNodeLinkService(m_nodeLinkService);
-        correlator.setEndPointTypeValidator(m_endPointTypeValidator);
+        correlator.setEndPointConfigDao(m_endPointConfigDao);
 
 
         m_anticipator.anticipateEvent(m_failedEvent);
@@ -140,7 +138,7 @@ public class LinkAdapterEventListenerTest {
         LinkEventCorrelator correlator = new LinkEventCorrelator();
         correlator.setEventForwarder(m_eventIpcManager);
         correlator.setNodeLinkService(m_nodeLinkService);
-        correlator.setEndPointTypeValidator(m_endPointTypeValidator);
+        correlator.setEndPointConfigDao(m_endPointConfigDao);
 
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
         m_nodeLinkService.saveLinkState(new OnmsLinkState(m_dataLinkInterface, LinkState.LINK_PARENT_NODE_DOWN));
