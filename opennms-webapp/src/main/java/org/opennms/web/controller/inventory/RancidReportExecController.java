@@ -28,22 +28,37 @@ public class RancidReportExecController extends SimpleFormController {
         log().debug("RancidReportExecController ModelAndView type" + bean.getReporttype());
         log().debug("RancidReportExecController ModelAndView type" + bean.getFieldhas());
 
-        
+        ModelAndView mav = new ModelAndView(getSuccessView());
+
         if (bean.getReporttype().compareTo("rancidlist") == 0){
             log().debug("RancidReportExecController rancidlist report ");
-            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype());
+            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail());
+            mav.addObject("type", "Rancid List");
             if (!done){
                 log().debug("RancidReportExecController error ");
             }
         } else if (bean.getReporttype().compareTo("inventory") == 0){
-            boolean done = m_inventoryService.runNodeBaseInventoryReport(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype());
+            log().debug("RancidReportExecController inventory report ");
+            boolean done = m_inventoryService.runNodeBaseInventoryReport(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype(),bean.getReportemail());
+            mav.addObject("type", "Inventory Report");
             if (!done){
                 log().debug("RancidReportExecController error ");
             }
         }
-        String redirectURL = request.getHeader("Referer");
-        response.sendRedirect(redirectURL);
-        return super.onSubmit(request, response, command, errors);
+        mav.addObject("date", bean.getDate());
+        mav.addObject("searchfield", bean.getFieldhas());
+        if( bean.getReportfiletype().compareTo("pdftype") == 0){
+            mav.addObject("reportformat", "PDF");
+        } else {
+            mav.addObject("reportformat", "HTML");
+        }
+        
+        return mav;
+
+        
+//        String redirectURL = request.getHeader("Referer");
+//        response.sendRedirect(redirectURL);
+//        return super.onSubmit(request, response, command, errors);
     }
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         log().debug("RancidReportExecController initBinder");
