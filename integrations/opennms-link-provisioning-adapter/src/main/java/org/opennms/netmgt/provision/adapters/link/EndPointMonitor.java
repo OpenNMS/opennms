@@ -6,6 +6,7 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -21,6 +22,7 @@ public class EndPointMonitor extends IPv4Monitor {
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
     private EndPointConfigurationDao m_configDao;
     private NodeDao m_nodeDao;
+    private SnmpAgentConfigFactory m_agentConfigFactory;
 
     public EndPointMonitor() {}
     
@@ -29,20 +31,13 @@ public class EndPointMonitor extends IPv4Monitor {
         ClassPathXmlApplicationContext appContext = BeanUtils.getFactory("linkAdapterPollerContext", ClassPathXmlApplicationContext.class);
         m_configDao = (EndPointConfigurationDao) appContext.getBean("endPointConfigDao");
         m_nodeDao = (NodeDao) appContext.getBean("nodeDao");
+        m_agentConfigFactory = (SnmpAgentConfigFactory) appContext.getBean("snmpPeerFactory", SnmpAgentConfigFactory.class);
                
-        try {
-            SnmpPeerFactory.init();
-        } catch (Exception e) {
-            LogUtils.debugf(this, e, "Unable to initialize SNMP peer factory");
-        }
-        
-        return;
     }
     
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(svc.getAddress());
         EndPointTypeValidator validator = m_configDao.getValidator();
 
         EndPointImpl ep = new EndPointImpl(svc.getAddress(), agentConfig);
