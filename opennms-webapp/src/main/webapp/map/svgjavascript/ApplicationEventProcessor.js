@@ -222,52 +222,72 @@ function onMouseDownOnLink(evt)
 		
 		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
 		writeTopInfoText(mapLink.getInfo());
+		
 		if (evt.detail == 2)
 		{
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
-
+			var nodeid,label,maplabel,cm;
+			
 			var mapElement = mapLink.getMapElement1();
-			var hasOneMenu=false;
+			var isMap = false;
 			
 			if(mapElement.isNode())
 			{
-				hasOneMenu=true;
-				var nodeid = mapElement.getNodeId();
-				var label = mapElement.getLabel();
+				nodeid = mapElement.getNodeId();
+				label = mapElement.getLabel();
 					
-				var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
-				cm.addItem("base",label, ciao);
-				cm.addItem(label+"00","-----------------------",ciao);
-				for(var index in CM_COMMANDS){
-					if(CM_COMMANDS[index]=="-"){
-						cm.addItem(label+index,"-----------------------",ciao);
-					}else{
-						var commandLabel = unescape(CM_COMMANDS[index]);
-						cm.addItem(index,commandLabel,execSelectedCMAction);
-					}
-				}			
+			} else {
+				nodeid = mapLink.getFirstNodeId();
+								
+				label = nodeidSortAss[nodeid].getLabel();
+				maplabel = mapElement.getLabel();
+				isMap=true;
 			}
+			
+			cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			if (isMap)
+				cm.addItem("Mapbase","Map: " + maplabel, ciao);
+			cm.addItem("base",label, ciao);
+			cm.addItem(label+"00","-----------------------",ciao);
+			for(var index in CM_COMMANDS){
+				if(CM_COMMANDS[index]=="-"){
+					cm.addItem(label+index,"-----------------------",ciao);
+				}else{
+					var commandLabel = unescape(CM_COMMANDS[index]);
+					cm.addItem(index,commandLabel,execSelectedCMAction);
+				}
+			}			
+
 			mapElement = mapLink.getMapElement2();
+			isMap=false;
+			x = x + cmwidth + 2;
 			if(mapElement.isNode())
 			{
-				var nodeid = mapElement.getNodeId();
-				var label = mapElement.getLabel();
-				if (hasOneMenu) {
-					x = x + cmwidth + 2;
-				}
-				var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
-				cm.addItem("base",label, ciao);
-				cm.addItem(label+"00","-----------------------",ciao);
-				for(var index in CM_COMMANDS){
-					if(CM_COMMANDS[index]=="-"){
-						cm.addItem(label+index,"-----------------------",ciao);
-					}else{
-						var commandLabel = unescape(CM_COMMANDS[index]);
-						cm.addItem(index,commandLabel,execSelectedCMAction);
-					}
-				}			
+				nodeid = mapElement.getNodeId();
+				label = mapElement.getLabel();
+					
+			} else {
+				nodeid = mapLink.getFirstNodeId();
+				label = nodeidSortAss[nodeid].getLabel();
+				maplabel = mapElement.getLabel();
+				isMap=true;
 			}
+
+			cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			if (isMap)
+				cm.addItem("Mapbase","Map: " + maplabel, ciao);
+			cm.addItem("base",label, ciao);
+			cm.addItem(label+"00","-----------------------",ciao);
+			for(var index in CM_COMMANDS){
+				if(CM_COMMANDS[index]=="-"){
+					cm.addItem(label+index,"-----------------------",ciao);
+				}else{
+					var commandLabel = unescape(CM_COMMANDS[index]);
+					cm.addItem(index,commandLabel,execSelectedCMAction);
+				}
+			}			
+
 		}
 	}		
 }
