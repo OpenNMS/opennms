@@ -20,14 +20,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class LinkStatusMonitor extends IPv4Monitor {
     
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-    private EndPointStatusValidatorFactory m_endPointValidatorFactory;
+    private EndPointTypeValidatorFactory m_endPointValidatorFactory;
 
     public LinkStatusMonitor() {}
     
     @Override
     public void initialize(Map<String, Object> parameters) {
         ClassPathXmlApplicationContext appContext = BeanUtils.getFactory("linkAdapterPollerContext", ClassPathXmlApplicationContext.class);
-        m_endPointValidatorFactory = (EndPointStatusValidatorFactory) appContext.getBean("endPointStatusValidatorFactory");
+        m_endPointValidatorFactory = (EndPointTypeValidatorFactory) appContext.getBean("endPointStatusValidatorFactory");
                
         try {
             SnmpPeerFactory.init();
