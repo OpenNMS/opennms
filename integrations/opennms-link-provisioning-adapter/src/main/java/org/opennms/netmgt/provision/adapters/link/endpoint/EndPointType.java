@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
@@ -63,6 +64,10 @@ public class EndPointType {
 
 
     public boolean matches(EndPoint ep) {
+        if (ep == null) {
+            LogUtils.debugf(this, "EndPoint is null!");
+            return false;
+        }
         if (ep.getSysOid().equals(getSysOid())) {
             return true;
         }
