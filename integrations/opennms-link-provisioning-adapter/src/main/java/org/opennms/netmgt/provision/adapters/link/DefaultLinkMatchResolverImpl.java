@@ -1,7 +1,7 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.opennms.netmgt.provision.config.dao.DefaultLinkAdapterConfigurationDao;
-import org.opennms.netmgt.provision.config.linkadapter.LinkPattern;
+import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao;
+import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultLinkMatchResolverImpl implements LinkMatchResolver {

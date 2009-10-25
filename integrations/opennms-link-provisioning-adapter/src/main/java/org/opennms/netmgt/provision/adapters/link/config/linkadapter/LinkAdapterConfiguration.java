@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.config.linkadapter;
+package org.opennms.netmgt.provision.adapters.link.config.linkadapter;
 
 import java.util.HashSet;
 import java.util.Set;

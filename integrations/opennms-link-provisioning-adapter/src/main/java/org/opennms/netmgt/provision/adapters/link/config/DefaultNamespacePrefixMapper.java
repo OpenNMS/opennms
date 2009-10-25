@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.config;
+package org.opennms.netmgt.provision.adapters.link.config;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
