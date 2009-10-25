@@ -1,10 +1,11 @@
 package org.opennms.netmgt.provision.adapters.link;
 
+import static org.opennms.core.utils.LogUtils.*;
+
 import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+@Transactional
 public class DefaultNodeLinkService implements NodeLinkService {
     
     @Autowired
@@ -30,13 +32,14 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
+        debugf(this, "saving LinkState %s", state.getLinkState());
         m_linkStateDao.saveOrUpdate(state);
         m_linkStateDao.flush();
     }
     
     @Transactional
     public void createLink(int nodeParentId, int nodeId) {
-        LogUtils.infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
+        infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
         OnmsNode parentNode = m_nodeDao.get(nodeParentId);
         Assert.notNull(parentNode, "node with id: " + nodeParentId + " does not exist");
         
@@ -60,9 +63,9 @@ public class DefaultNodeLinkService implements NodeLinkService {
             
             m_dataLinkDao.save(dataLink);
             m_dataLinkDao.flush();
-            LogUtils.infof(this, "successfully added link into db for nodes %d and %d", nodeParentId, nodeId);
+            infof(this, "successfully added link into db for nodes %d and %d", nodeParentId, nodeId);
         } else {
-            LogUtils.infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
+            infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
         }
     }
     
@@ -74,6 +77,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
     }
 
+    @Transactional(readOnly=true)
     public Integer getNodeId(String endPoint) {
         Collection<OnmsNode> nodes = m_nodeDao.findByLabel(endPoint);
         
@@ -83,6 +87,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    @Transactional(readOnly=true)
     public String getNodeLabel(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         if(node != null){
@@ -91,6 +96,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    @Transactional(readOnly=true)
     public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.or(
@@ -101,10 +107,12 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return m_dataLinkDao.findMatching(criteria);
     }
 
+    @Transactional(readOnly=true)
     public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface) {
         return m_linkStateDao.findByDataLinkInterfaceId(dataLinkInterface.getId());
     }
     
+    @Transactional
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeId", nodeId));
@@ -121,6 +129,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
     }
 
+    @Transactional(readOnly=true)
     public String getPrimaryAddress(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
