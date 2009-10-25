@@ -50,8 +50,9 @@ import org.opennms.web.map.db.LinkInfo;
 final public class VLink {
 	private VElement elem1;
 	private VElement elem2;
-	private LinkInfo linkInfo;
 	
+	private int nodeid1;
+	private int nodeid2;
     //the link typology defined in the map properties file
 	private int linkTypeId;
 
@@ -176,13 +177,20 @@ final public class VLink {
 		return id;
 	}
 
-    public LinkInfo getLinkInfo() {
-        return linkInfo;
+    public int getFirstNodeid() {
+        return nodeid1;
     }
 
-    public void setLinkInfo(LinkInfo linkInfo) {
-        this.linkInfo = linkInfo;
+    public void setFirstNodeid(int nodeid) {
+        this.nodeid1 =nodeid;
     }
 
+    public int getSecondNodeid() {
+        return nodeid2;
+    }
+
+    public void setSecondNodeid(int nodeid) {
+        this.nodeid2 =nodeid;
+    }
 
 }
