@@ -60,7 +60,6 @@
         <value>org.opennms.netmgt.model.OnmsMapElement</value>
         <value>org.opennms.netmgt.model.DataLinkInterface</value>
         <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
-        <value>org.opennms.netmgt.model.OnmsLinkState</value>
         <!--
         <value>org.opennms.netmgt.model.OnmsUser</value>
         <value>org.opennms.netmgt.model.OnmsGroup</value>
@@ -135,10 +134,6 @@
   </bean>
 
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-  
-  <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
