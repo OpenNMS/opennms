@@ -50,7 +50,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpressions;
-import org.opennms.netmgt.provision.adapters.link.LinkStatusMonitor;
+import org.opennms.netmgt.provision.adapters.link.EndPointMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -106,7 +106,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
         
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match( AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( AIR_PAIR_R3_DUPLEX_MISMATCH, "^1$" )));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -126,7 +126,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, 1);
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match( AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$")));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -145,7 +145,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match(  HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( HORIZON_COMPACT_ETHERNET_LINK_DOWN, "^1$")));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -167,7 +167,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
 
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match(  HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -191,7 +191,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -211,7 +211,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
@@ -229,7 +229,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         
-        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        EndPointMonitor monitor = new EndPointMonitor();
         //monitor.setEndPointValidator(ping( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL ));
         
         assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));

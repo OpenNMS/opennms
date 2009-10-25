@@ -11,12 +11,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
+import org.opennms.netmgt.model.OnmsLinkState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
@@ -60,6 +62,9 @@ public class DefaultNodeLinkServiceTest {
     
     @Autowired
     NodeDao m_nodeDao;
+    
+    @Autowired
+    LinkStateDao m_linkStateDao;
     
     @Autowired
     DataLinkInterfaceDao m_dataLinkDao;    
@@ -176,6 +181,64 @@ public class DefaultNodeLinkServiceTest {
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
         assertEquals("B", dataLinks.iterator().next().getStatus());
+    }
+    
+    @Test
+    public void dwoTestGetLinkContainingNodeId() {
+        int parentNodeId = END_POINT1_ID;
+        
+        Collection<DataLinkInterface> datalinks = m_nodeLinkService.getLinkContainingNodeId(parentNodeId);
+        
+        assertEquals(3, datalinks.size());
+        
+    }
+    
+    @Test
+    public void dwoTestGetLinkStateForInterface() {
+        int nodeId = END_POINT2_ID;
+        
+        Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
+        DataLinkInterface dli = dlis.iterator().next();
+        assertNotNull(dli);
+        
+        OnmsLinkState linkState = new OnmsLinkState();
+        linkState.setDataLinkInterface(dli);
+        
+        m_linkStateDao.save(linkState);
+        m_linkStateDao.flush();
+        
+        linkState = m_nodeLinkService.getLinkStateForInterface(dli);
+        
+        assertNotNull("linkState was null", linkState);
+        assertEquals(OnmsLinkState.LinkState.LINK_UP, linkState.getLinkState());
+    }
+    
+    @Test
+    public void dwoTestSaveLinkState() {
+        int nodeId = END_POINT2_ID;
+        
+        Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
+        DataLinkInterface dli = dlis.iterator().next();
+        
+        OnmsLinkState linkState = new OnmsLinkState();
+        linkState.setDataLinkInterface(dli);
+        
+        m_linkStateDao.save(linkState);
+        m_linkStateDao.flush();
+        
+        OnmsLinkState linkState2 = m_nodeLinkService.getLinkStateForInterface(dli);
+        
+        assertNotNull("linkState was null", linkState2);
+        assertEquals(OnmsLinkState.LinkState.LINK_UP, linkState2.getLinkState());
+        
+        linkState2.setLinkState(linkState2.getLinkState().LINK_NODE_DOWN);
+        
+        m_nodeLinkService.saveLinkState(linkState2);
+        
+        OnmsLinkState linkState3 = m_nodeLinkService.getLinkStateForInterface(dli);
+        
+        assertEquals(OnmsLinkState.LinkState.LINK_NODE_DOWN, linkState3.getLinkState());
+        
     }
     
 }

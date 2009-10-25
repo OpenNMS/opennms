@@ -103,15 +103,14 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
         }
     }
 
-    private int m_id;
+    private Integer m_id;
     private DataLinkInterface m_dataLinkInterface;
-    private LinkState m_linkState;
+    private LinkState m_linkState = LinkState.LINK_UP;
 
     public OnmsLinkState() {
     }
 
-    public OnmsLinkState(int id, DataLinkInterface dataLinkInterface, LinkState linkState) {
-        m_id = id;
+    public OnmsLinkState(DataLinkInterface dataLinkInterface, LinkState linkState) {
         m_dataLinkInterface = dataLinkInterface;
         m_linkState = linkState;
     }
@@ -119,11 +118,11 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
-    public int getId() {
+    public Integer getId() {
         return m_id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         m_id = id;
     }
     

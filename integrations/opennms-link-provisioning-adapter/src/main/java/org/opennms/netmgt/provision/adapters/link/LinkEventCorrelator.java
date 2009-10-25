@@ -10,16 +10,18 @@ import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkStateTransition;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
 
+@EventListener(name="LinkEventCorrelator")
 public class LinkEventCorrelator {
     private EventForwarder m_forwarder;
     private NodeLinkService m_nodeLinkService;
-    private EndPointTypeValidator m_endPointTypeValidator;
+    private EndPointConfigurationDao m_endPointConfigDao;
 
-    public LinkEventCorrelator() {
-    }
+    public LinkEventCorrelator() {}
     
     public boolean isLinkUp(Event e) {
         return false;
@@ -40,67 +42,84 @@ public class LinkEventCorrelator {
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId); 
+        }
+        
     }
 
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void handleInterfaceUp(Event e) {
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)
     public void handleServiceUnresponsive(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_RESPONSIVE_EVENT_UEI)
     public void handleServiceResponsive(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void handleNodeGainedService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkDown(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void handleNodeRegainedService(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId);
+        }
     }
 
     @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
     public void handleServiceUnmanaged(Event e) {
-        if (e.getService() != null && !e.getService().equals(m_endPointTypeValidator.getServiceName())) {
+        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
             return;
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            linkUp(nodeId); 
+        }
     }
 
     private void linkDown(int nodeId) {
@@ -150,6 +169,14 @@ public class LinkEventCorrelator {
             m_nodeLinkService.saveLinkState(linkStateObj);
         }
     }
+    
+    public boolean isSnmpPrimary(int nodeId, String ipAddr) {
+        String primaryAddress = m_nodeLinkService.getPrimaryAddress(nodeId);
+        if(primaryAddress != null) {
+            return primaryAddress.equals(ipAddr);
+        }
+        return false;
+    }
 
     public void updateLinkStatus(Event e) {
         throw new UnsupportedOperationException("boo!");
@@ -163,7 +190,11 @@ public class LinkEventCorrelator {
         m_nodeLinkService = nodeLinkService;
     }
 
-    public void setEndPointTypeValidator(EndPointTypeValidator endPointTypeValidator) {
-        m_endPointTypeValidator = endPointTypeValidator;
+    public void setEndPointConfigDao(EndPointConfigurationDao endPointConfigDao) {
+        m_endPointConfigDao = endPointConfigDao;
+    }
+
+    private EndPointTypeValidator getEndPointTypeValidator() {
+        return m_endPointConfigDao.getValidator();
     }
 }

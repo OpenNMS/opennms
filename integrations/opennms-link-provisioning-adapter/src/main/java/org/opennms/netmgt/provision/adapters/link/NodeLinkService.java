@@ -14,5 +14,6 @@ public interface NodeLinkService {
     public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId);
     public void updateLinkStatus(int nodeParentId, int nodeId, String status);
     public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface);
+    public String getPrimaryAddress(int nodeId);
 
 }
