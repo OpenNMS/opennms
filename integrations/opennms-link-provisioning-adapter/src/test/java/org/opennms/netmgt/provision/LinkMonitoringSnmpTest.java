@@ -48,8 +48,8 @@ import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidator;
-import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators;
+import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
+import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpressions;
 import org.opennms.netmgt.provision.adapters.link.LinkStatusMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ClassPathResource;
@@ -165,7 +165,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
         
-        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
+        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
 
         LinkStatusMonitor monitor = new LinkStatusMonitor();
         //monitor.setEndPointValidator( and( match(  HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
@@ -189,7 +189,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
         
-        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
+        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
         
         LinkStatusMonitor monitor = new LinkStatusMonitor();
         //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
@@ -209,7 +209,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
         
-        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
+        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
         
         LinkStatusMonitor monitor = new LinkStatusMonitor();
         //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
@@ -239,19 +239,19 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
     }
     
-    private EndPointStatusValidator horizonDuoComplexValidator() {
-        EndPointStatusValidator complexValidator = EndPointStatusValidators.or(
-               EndPointStatusValidators.and(
-                                  EndPointStatusValidators.match( HORIZON_DUO_SYSTEM_CAPACITY, "^1$"),
-                                  EndPointStatusValidators.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1", "^1$")),
+    private EndPointValidationExpression horizonDuoComplexValidator() {
+        EndPointValidationExpression complexValidator = EndPointValidationExpressions.or(
+               EndPointValidationExpressions.and(
+                                  EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^1$"),
+                                  EndPointValidationExpressions.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1", "^1$")),
                
-               EndPointStatusValidators.and(
-                                  EndPointStatusValidators.or(
-                                                  EndPointStatusValidators.and(EndPointStatusValidators.match( HORIZON_DUO_SYSTEM_CAPACITY, "^2$")),
-                                                  EndPointStatusValidators.and(EndPointStatusValidators.match( HORIZON_DUO_SYSTEM_CAPACITY, "^3$"))
+               EndPointValidationExpressions.and(
+                                  EndPointValidationExpressions.or(
+                                                  EndPointValidationExpressions.and(EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^2$")),
+                                                  EndPointValidationExpressions.and(EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^3$"))
                                                   )
                                             ),
-                                  EndPointStatusValidators.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.2", "^1$" )
+                                  EndPointValidationExpressions.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.2", "^1$" )
                    
         );
         return complexValidator;
