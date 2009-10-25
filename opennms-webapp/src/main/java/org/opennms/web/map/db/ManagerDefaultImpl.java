@@ -1401,7 +1401,8 @@ public class ManagerDefaultImpl implements Manager {
 	    			VLink vlink = new VLink(first,second);
 	    			vlink.setLinkStatus(getLinkStatus(linfo));
 	    			vlink.setLinkTypeId(getLinkTypeId(linfo));
-	    			vlink.setLinkInfo(linfo);
+	    			vlink.setFirstNodeid(linfo.nodeid);
+                    vlink.setSecondNodeid(linfo.nodeparentid);
 	    			int index = links.indexOf(vlink);
 	    			if(index!=-1){
 	    				VLink alreadyIn = links.get(index);

@@ -3,9 +3,9 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink)
+function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
 {
-	if (arguments.length >= 6) {
+	if (arguments.length >= 8) {
 		var idSplitted = id.split("-");
 		
 		if(mapElement1.id==idSplitted[1]){
@@ -17,8 +17,12 @@ function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash
 		this.typology=typology;
 		this.animateTag = null;
 		this.id = id;
+		
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
+		
+		this.nodeid1=nodeid1;
+		this.nodeid2=nodeid2;
 
 //		var heightCapacity=this.mapElement1.height/deltaLink;		
 //		var widthCapacity=this.mapElement1.width/deltaLink;		
@@ -130,6 +134,16 @@ Link.prototype.getSecondElementId = function()
 {
      var ids = this.id.split('-');
      return ids[1];
+}
+
+Link.prototype.getFirstNodeId = function()
+{
+	return this.nodeid1;
+}
+
+Link.prototype.getSecondNodeId = function()
+{
+	return this.nodeid2;
 }
 
 // update link

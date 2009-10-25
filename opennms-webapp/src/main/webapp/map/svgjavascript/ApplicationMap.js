@@ -83,8 +83,8 @@ function handleLoadMapsResponse(data) {
 		loading--;	
 		assertLoading();			
 	}
-	maps = [" "];
-    mapSorts = [null];
+	mapLabels = [" "];
+    var mapSorts = [null];
     var st = str.split("&");
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
@@ -94,16 +94,16 @@ function handleLoadMapsResponse(data) {
 				id=nodeST[0];
 			name=nodeST[1];
 			owner=nodeST[2];
-			var tempStr = maps.join(".");
+			var tempStr = mapLabels.join(".");
 			while(	tempStr.indexOf(name) != -1 ){
 				name=name+" ";
 			}
 			var tmpMap = new ElemMap(id, name, owner);
-			maps.push(name);
+			mapLabels.push(name);
 			mapSorts.push(tmpMap);
 		}
 	}
-	mapSortAss = assArrayPopulate(maps,mapSorts);	
+	mapSortAss = assArrayPopulate(mapLabels,mapSorts);	
 
 	loading--;	
 	assertLoading();
@@ -135,8 +135,9 @@ function handleLoadNodesResponse(data) {
 		return;
 	}
 	var st = str.split("&");
-	nodes = [" "];
-       nodeSorts = [null];
+	nodeLabels = [" "];
+    var nodeSorts = [null];
+    var nodeids = [null];
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
 			var nodeToken = st[k];
@@ -144,12 +145,14 @@ function handleLoadNodesResponse(data) {
 			var id =nodeST[0];
 			var label = nodeST[1];
 			var tmpNode = new Node(id,label);
-			nodes.push(label);
+			nodeids.push(id);
+			nodeLabels.push(label);
 			nodeSorts.push(tmpNode);
 		}
 	}
 		
-	nodeSortAss = assArrayPopulate(nodes,nodeSorts);	
+	nodeSortAss = assArrayPopulate(nodeLabels,nodeSorts);	
+	nodeidSortAss = assArrayPopulate(nodeids,nodeSorts);	
 	loading--;
 	assertLoading();
 	nodesLoaded=true;
@@ -264,7 +267,7 @@ function handleAddElementResponse(data) {
 			}
 		}
 		//MapElement
-		if (nodeST.length > 4) {
+		if (nodeST.length > 6) {
 
 			var id,iconName=DEFAULT_ICON,labelText="",avail=100,status=0,severity=0;
 			//read the information of the map (id, name, ecc.)
@@ -284,14 +287,16 @@ function handleAddElementResponse(data) {
 
 		}
 		// Links
-		if (nodeST.length == 4) { // when find links into server response...
+		if (nodeST.length == 6) { // when find links into server response...
 
-			var id1,id2, typology, status;
+			var id1,id2, typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			var linkToAdd = id1+"-"+id2+"-"+typology+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status];
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+			var linkToAdd = id1+"-"+id2+"-"+typology+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status]+"+"+nodeid1+"+"+nodeid2;
 			linksToAdd.push(linkToAdd);
 			
 		}
@@ -351,7 +356,9 @@ function handleAddElementResponse(data) {
 		var width = params[2];
 		var da = params[3];
 		var flash = params[4];
-		map.addLink(id1,id2,typo,color,width,da,flash,deltaLink);
+		var nodeid1 = params[5];
+		var nodeid2 = params[6];
+		map.addLink(id1,id2,typo,color,width,da,flash,deltaLink,nodeid1,nodeid2);
 	}	
 	
 	map.render();
@@ -638,7 +645,7 @@ function handleLoadingMap(data) {
 			else currentMapType="";
 
 		}	
-		if (k>0 && nodeST.length > 4) {
+		if (k>0 && nodeST.length > 6) {
 			var id,x,y,iconName,labelText,avail,status,severity;
 			
 			id=nodeST[0];
@@ -664,13 +671,16 @@ function handleLoadingMap(data) {
 				hasHideNodes = true;
 			}
 		}
-		if (k>0 && nodeST.length == 4) {
-			var id1,id2,typology, status;
+		if (k>0 && nodeST.length == 6) {
+			var id1,id2, typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 		}
 	}
 	
@@ -726,7 +736,7 @@ function saveMap() {
 		query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
 		
 		count++;
-		}
+	}
 
 	query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
 	if(splitInPackets==true){
@@ -1026,7 +1036,7 @@ function handleRefreshNodesResponse(data) {
 			}
 		}
 		//MapElement
-		if (nodeST.length > 4) {
+		if (nodeST.length > 6) {
 
 			var id,iconName,labelText,avail,status,severity,posx,posy;
 			
@@ -1067,13 +1077,16 @@ function handleRefreshNodesResponse(data) {
 		}
 		// Links
 		
-		if (nodeST.length == 4) {
-			var id1,id2,typology, status;
+		if (nodeST.length == 6) {
+			var id1,id2,typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+			
+			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 		}
 		
 	}

@@ -61,9 +61,9 @@ var textbox1;
 var selectedMapElemInList=0;
 var selNodes; 
 
-var nodes = [" "];
-var nodeSorts = [null]; 
+var nodeLabels = [" "];
 var nodeSortAss;
+var nodeidSortAss;
 var mynodesResult;
 var nodesLoaded = false;
 
@@ -74,8 +74,7 @@ var hasHideNodes = false;
 var selectedMapInList=0;
 var selMaps;
 
-var maps = [" "];
-var mapSorts = [null];
+var mapLabels = [" "];
 var mapSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
