@@ -292,8 +292,8 @@ Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_widt
 
 
 		var link = new Link(id, typology, status, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
-
-
+//		alert("first: "+first.getLabel()+" nodeid1:" + nodeid1 +"---second: " + second.getLabel() + "nodeid2:" + nodeid2);
+		
 		this.mapLinks[id] = link;
 		this.mapLinkSize++;
 		linkAdded = true;

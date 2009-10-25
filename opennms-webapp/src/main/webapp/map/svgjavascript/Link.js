@@ -12,6 +12,9 @@ function Link(id, typology, status, mapElement1, mapElement2, stroke, stroke_wid
 			var tmp = mapElement1;
 			mapElement1=mapElement2;
 			mapElement2=tmp;
+			tmp = nodeid1;
+			nodeid1 = nodeid2;
+			nodeid2 = tmp;
 		}
 		
 		this.typology=typology;
