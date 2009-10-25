@@ -68,7 +68,11 @@ public class EndPointType {
             LogUtils.debugf(this, "EndPoint is null!");
             return false;
         }
-        if (ep.getSysOid().equals(getSysOid())) {
+        if (ep.getSysOid() == null) {
+            LogUtils.debugf(this, "sysObjectId for endpoint %s is null", ep);
+            return false;
+        }
+        if (ep.getSysOid().startsWith(getSysOid())) {
             return true;
         }
         return false;
