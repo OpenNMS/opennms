@@ -44,6 +44,13 @@ public interface InstallService extends RemoteService {
     public void setAdminPassword(String password);
 
     /**
+     * Fetch the current database settings from the <code>opennms-datasources.xml</code>
+     * configuration file. This call is used to prepopulate the database settings form
+     * with default or existing data.
+     */
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException;
+
+    /**
      * Attempt to connect to the database and perform a lightweight database
      * test to ensure that our database connection parameters are successfully
      * connecting to a proper OpenNMS database. This method will throw exceptions

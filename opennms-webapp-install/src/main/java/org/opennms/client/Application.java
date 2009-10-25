@@ -13,6 +13,7 @@ import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -194,6 +195,41 @@ public class Application implements EntryPoint {
                 setAdminPassword.expand();
             }
 
+        }
+    }
+
+    private DatabaseConnectionSettings m_databaseConnectionSettings = null;
+
+    private class GetDatabaseConnectionSettingsCheck implements InstallationCheck {
+        private final InstallationCheck m_next;
+        public GetDatabaseConnectionSettingsCheck(InstallationCheck nextInChain) {
+            m_next = nextInChain;
+        }
+
+        public void check() {
+            // Create the RemoteServiceServlet that acts as the controller for this GWT view
+            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+
+            installService.getDatabaseConnectionSettings(new AsyncCallback<DatabaseConnectionSettings>() {
+                public void onSuccess(DatabaseConnectionSettings result) {
+                    m_databaseConnectionSettings = result;
+                    if (m_databaseConnectionSettings.getAdminPassword() != null) dbPass.setValue(m_databaseConnectionSettings.getAdminPassword());
+                    if (m_databaseConnectionSettings.getAdminUrl() != null) dbAdminUrl.setValue(m_databaseConnectionSettings.getAdminUrl());
+                    if (m_databaseConnectionSettings.getAdminUser() != null) dbUser.setValue(m_databaseConnectionSettings.getAdminUser());
+                    if (m_databaseConnectionSettings.getDbName() != null) dbName.setValue(m_databaseConnectionSettings.getDbName());
+                    // TODO: Probably should always use the hard-coded database driver value
+                    // if (m_databaseConnectionSettings.getDriver() != null) dbDriver.setValue(m_databaseConnectionSettings.getDriver());
+                    if (m_databaseConnectionSettings.getUrl() != null) dbUrl.setValue(m_databaseConnectionSettings.getUrl());
+
+                    if (m_next != null) {
+                        m_next.check();
+                    }
+                }
+
+                public void onFailure(Throwable e) {
+                    // TODO: Figure out what to do here, if anything
+                }
+            });
         }
     }
 
@@ -557,21 +593,65 @@ public class Application implements EntryPoint {
         // final TextField<String> dbName = new TextField<String>();
         dbHost.setFieldLabel("Hostname/IP address");
         dbHost.setAllowBlank(false);
+        dbHost.addListener(Events.Change, new Listener<FieldEvent>() {
+            public void handleEvent(FieldEvent event) {
+                if ("127.0.0.1".equals(dbHost.getValue()) || "localhost".equals(dbHost.getValue())) {
+                    dbHost.removeStyleName("font-style-normal");
+                    dbHost.addStyleName("font-style-italic");
+                } else { 
+                    dbHost.removeStyleName("font-style-italic");
+                    dbHost.addStyleName("font-style-normal");
+                }
+            }
+        });
         connectToDatabase.add(dbHost);
 
         // final TextField<String> dbName = new TextField<String>();
         dbPort.setFieldLabel("Port");
         dbPort.setAllowBlank(false);
+        dbPort.addListener(Events.Change, new Listener<FieldEvent>() {
+            public void handleEvent(FieldEvent event) {
+                if (dbPort.getValue().intValue() == 5432) {
+                    dbPort.removeStyleName("font-style-normal");
+                    dbPort.addStyleName("font-style-italic");
+                } else { 
+                    dbPort.removeStyleName("font-style-italic");
+                    dbPort.addStyleName("font-style-normal");
+                }
+            }
+        });
         connectToDatabase.add(dbPort);
 
         // final TextField<String> dbName = new TextField<String>();
         dbName.setFieldLabel("Database name");
         dbName.setAllowBlank(false);
+        dbName.addListener(Events.Change, new Listener<FieldEvent>() {
+            public void handleEvent(FieldEvent event) {
+                if ("opennms".equals(dbName.getValue())) {
+                    dbName.removeStyleName("font-style-normal");
+                    dbName.addStyleName("font-style-italic");
+                } else { 
+                    dbName.removeStyleName("font-style-italic");
+                    dbName.addStyleName("font-style-normal");
+                }
+            }
+        });
         connectToDatabase.add(dbName);
 
         // final TextField<String> dbUser = new TextField<String>();
         dbUser.setFieldLabel("Database admin user");
         dbUser.setAllowBlank(false);
+        dbUser.addListener(Events.Change, new Listener<FieldEvent>() {
+            public void handleEvent(FieldEvent event) {
+                if ("postgres".equals(dbUser.getValue())) {
+                    dbUser.removeStyleName("font-style-normal");
+                    dbUser.addStyleName("font-style-italic");
+                } else { 
+                    dbUser.removeStyleName("font-style-italic");
+                    dbUser.addStyleName("font-style-normal");
+                }
+            }
+        });
         connectToDatabase.add(dbUser);
 
         // final TextField<String> dbPass = new TextField<String>();
@@ -608,6 +688,13 @@ public class Application implements EntryPoint {
         dbBinDir.setAllowBlank(false);
         connectToDatabase.add(dbBinDir);
          */
+
+        connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent event) {
+                // Fetch the current database settings (if any)
+                new GetDatabaseConnectionSettingsCheck(null).check();
+            }
+        });
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             // Check the ownership file before allowing updates to the database configuration

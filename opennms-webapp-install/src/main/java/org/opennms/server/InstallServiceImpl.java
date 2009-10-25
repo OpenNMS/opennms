@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.client.DatabaseConnectionSettings;
 import org.opennms.client.DatabaseDoesNotExistException;
 import org.opennms.client.InstallService;
 import org.opennms.client.LoggingEvent;
@@ -170,6 +171,46 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         } catch (Exception e) {
             throw new IllegalArgumentException("Could not store password: " + e.getMessage());
         }
+    }
+
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException {
+        String dbName = null;
+        String adminUser = null;
+        String adminPassword = null;
+        String driver = null;
+        String adminUrl = null;
+        String url = null;
+
+        File configFile = new File(new File(this.getOpennmsInstallPath(), "etc"), "opennms-datasources.xml");
+        DataSourceConfiguration config = null;
+        if (configFile.canRead()) {
+            try {
+                config = DataSourceConfiguration.unmarshal(new FileReader(configFile));
+            } catch (MarshalException e) {
+                throw new IllegalStateException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+            } catch (ValidationException e) {
+                throw new IllegalArgumentException("Invalid configuration data in <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+            } catch (IOException e) {
+                throw new IllegalStateException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+            }
+        } else {
+            throw new IllegalStateException("Location <code>" + configFile.getPath() + "</code> is not readable.");
+        }
+
+        for (JdbcDataSource ds : config.getJdbcDataSource()) {
+            if (OPENNMS_DATASOURCE_NAME.equals(ds.getName())) {
+                url = ds.getUrl();
+                // TODO: Fetch username and password of opennms user
+            } else if (OPENNMS_ADMIN_DATASOURCE_NAME.equals(ds.getName())) {
+                dbName = ds.getDatabaseName();
+                adminUser = ds.getUserName();
+                adminPassword = ds.getPassword();
+                driver = ds.getClassName();
+                adminUrl = ds.getUrl();
+            }
+        }
+
+        return new DatabaseConnectionSettings(dbName, adminUser, adminPassword, driver, adminUrl, url);
     }
 
     public void connectToDatabase(String dbName, String user, String password, String driver, String adminUrl, String url) throws IllegalStateException {

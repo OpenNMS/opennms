@@ -34,6 +34,14 @@ BODY {
 	padding: 10px;
 }
 
+.font-style-italic {
+	font-style: italic;
+}
+
+.font-style-normal {
+	font-style: normal;
+}
+
 .check-success-icon { 
 	background: url('../images/greentick.gif') no-repeat center left !important; 
 }
