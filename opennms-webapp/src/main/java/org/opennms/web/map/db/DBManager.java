@@ -111,7 +111,6 @@ public class DBManager extends Manager {
 
     Connection createConnection() throws MapsException {
 
-        log.debug("creating connection");
         if (m_factory != null) {
             try {
                 return m_factory.getConnection();
@@ -130,7 +129,6 @@ public class DBManager extends Manager {
     }
 
     void releaseConnection(Connection conn) throws MapsException {
-        log.debug("releasing connection");
         try {
             if (conn != null && !conn.isClosed()) {
                 if (m_factory != null) {
@@ -1733,7 +1731,7 @@ public class DBManager extends Manager {
                 + " (datalinkinterface.nodeid IN ("
                 + nodelist
                 + ")"
-                + " OR nodeparentid in ("
+                + " AND nodeparentid in ("
                 + nodelist
                 + ")) "
                 + "AND status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex";
@@ -1830,7 +1828,7 @@ public class DBManager extends Manager {
                     + " (datalinkinterface.nodeid IN ("
                     + nodelist
                     + ")"
-                    + " OR nodeparentid in ("
+                    + " AND nodeparentid in ("
                     + nodelist
                     + ")) "
                     + "AND status != 'D' and datalinkinterface.ifindex = snmpinterface.snmpifindex";
@@ -1920,7 +1918,7 @@ public class DBManager extends Manager {
             sql = "SELECT "
                     + "id,nodeid, ifindex,nodeparentid, parentifindex, status, linktypeid "
                     + "FROM datalinkinterface " + "WHERE" + " (nodeid IN ("
-                    + nodelist + ")" + " OR nodeparentid in (" + nodelist
+                    + nodelist + ")" + " AND nodeparentid in (" + nodelist
                     + ")) " + "AND status != 'D'";
 
             log.debug("getLinksOnElements: executing query:\n" + sql);
