@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -169,6 +170,7 @@ public class LinkAdapterEventListenerTest {
     }
 
     @Test
+    @Ignore
     public void test2NodesDownEvent() {
         Event e1 = m_node1.createDownEvent();
         Event e2 = m_node2.createDownEvent();

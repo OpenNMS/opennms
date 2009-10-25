@@ -1,8 +1,8 @@
-package org.opennms.netmgt.provision.config.dao;
+package org.opennms.netmgt.provision.adapters.link.config.dao;
 
 import java.util.Set;
 
-import org.opennms.netmgt.provision.config.linkadapter.LinkPattern;
+import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 
 public interface LinkAdapterConfigurationDao {
 
