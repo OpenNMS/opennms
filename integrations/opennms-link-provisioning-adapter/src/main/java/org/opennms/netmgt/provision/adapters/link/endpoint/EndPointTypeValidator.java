@@ -39,6 +39,15 @@ public class EndPointTypeValidator {
         }
     }
 
+    public boolean hasMatch(EndPoint ep) {
+        for (EndPointType config : m_endPointConfigs) {
+            if (config.matches(ep)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void validate(EndPoint ep) throws EndPointStatusException {
         for (EndPointType config : m_endPointConfigs) {
             if (config.matches(ep)) {
