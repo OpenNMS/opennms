@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators.and;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidator;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidatorFactory;
+import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointStatusException;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -27,19 +29,19 @@ import org.opennms.test.mock.EasyMockUtils;
 
 public class LinkMonitorValidatorTest {
     
-    public class DefaultValidatorTestFactory implements EndPointStatusValidatorFactory{
+    public static class DefaultValidatorTestFactory implements EndPointStatusValidatorFactory {
         
         EndPointTypeConfigContainer m_container = new EndPointTypeConfigContainer();
         
         public DefaultValidatorTestFactory(){}
         
-        public EndPointStatusValidator getEndPointStatusValidatorFor(String sysOid) {
-            return m_container.getConfigForSysOid(sysOid).getValidator();
+        public EndPointTypeConfigContainer getContainer() {
+            return m_container;
         }
         
     }
     
-    public abstract class EndPointImpl implements EndPoint{
+    public static abstract class EndPointImpl implements EndPoint {
         
         public SnmpValue get(String oid) {
             throw new UnsupportedOperationException("Not yet implemented");
@@ -49,7 +51,7 @@ public class LinkMonitorValidatorTest {
             throw new UnsupportedOperationException("Not yet implemented");
         }
 
-        public SnmpValue getSysOid() {
+        public String getSysOid() {
             throw new UnsupportedOperationException("Not yet implemented");
         }
 
@@ -59,8 +61,8 @@ public class LinkMonitorValidatorTest {
         
     }
     
-    public class SnmpEndPoint extends EndPointImpl{
-        SnmpAgentConfig m_agentConfig;
+    public static class SnmpEndPoint extends EndPointImpl {
+        private SnmpAgentConfig m_agentConfig;
         
         public SnmpEndPoint(SnmpAgentConfig agentConfig) {
             m_agentConfig = agentConfig;
@@ -78,14 +80,14 @@ public class LinkMonitorValidatorTest {
         }
 
         @Override
-        public SnmpValue getSysOid() {
+        public String getSysOid() {
             return super.getSysOid();
         }
 
 
     }
     
-    public class PingableEndPoint extends EndPointImpl{
+    public static class PingableEndPoint extends EndPointImpl {
 
         @Override
         public boolean ping() {
@@ -95,18 +97,15 @@ public class LinkMonitorValidatorTest {
         
     }
     
-    public class EndPointFactory{
+    public static class EndPointFactory {
         public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
         public EndPoint createEndPoint(MonitoredService svc) {
-            
-            //SnmpAgentConfig agentConfig = (SnmpAgentConfig) svc.getNetInterface().getAttribute(SNMP_AGENTCONFIG_KEY);
-            
             return m_mockEndPoint;
             
         }
     }
     
-    public class EndPointTypeConfigContainer{
+    public static class EndPointTypeConfigContainer {
         List<EndPointTypeConfig> m_endPointConfigs = new ArrayList<EndPointTypeConfig>();
         
         public EndPointTypeConfigContainer() {
@@ -116,18 +115,20 @@ public class LinkMonitorValidatorTest {
             m_endPointConfigs.add(new EndPointTypeConfig(".1.3.6.1.4.1.7262.2.3", and( match(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$"), match(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$") )));
             m_endPointConfigs.add(new EndPointTypeConfig(".1.2.3.4", ping()));
         }
-        
-        public EndPointTypeConfig getConfigForSysOid(String sysOid) {
-            for(EndPointTypeConfig config : m_endPointConfigs) {
-                if(config.getSysOid().equals(sysOid)) {
-                    return config;
+
+        public boolean validate(EndPoint ep) throws EndPointStatusException {
+            
+            for (EndPointTypeConfig config : m_endPointConfigs) {
+                if (config.matches(ep)) {
+                    config.validate(ep);
+                    return true;
                 }
             }
-            return null;
+            return false;
         }
     }
     
-    public class EndPointTypeConfig {
+    public static class EndPointTypeConfig {
         
         private String m_sysOid;
         private EndPointStatusValidator m_validator;
@@ -136,7 +137,6 @@ public class LinkMonitorValidatorTest {
             setSysOid(sysOid);
             setValidator(validator);
         }
-
 
         public EndPointStatusValidator getValidator() {
             return m_validator;
@@ -157,17 +157,30 @@ public class LinkMonitorValidatorTest {
             m_sysOid = sysOid;
         }
 
+
+        public boolean matches(EndPoint ep) {
+            if (ep.getSysOid().equals(getSysOid())) {
+                return true;
+            }
+            return false;
+        }
+
+        public void validate(EndPoint ep) throws EndPointStatusException {
+            m_validator.validate(ep);
+        }
+
+
     }
     
-    public interface SnmpAgentValueGetter{
+    public static interface SnmpAgentValueGetter{
         public SnmpValue get(String oid);
     }
     
-    public interface EndPoint{
+    public static interface EndPoint {
         public SnmpValue get(String oid);
-        public SnmpValue getSysOid();
+        public String getSysOid();
         public InetAddress getAddress();
-        public boolean ping();
+        public boolean ping() throws EndPointStatusException;
     }
     
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
@@ -179,7 +192,7 @@ public class LinkMonitorValidatorTest {
     private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2";
     
     EasyMockUtils m_easyMock = new EasyMockUtils();
-    EndPoint m_mockEndPoint;
+    static EndPoint m_mockEndPoint;
     DefaultValidatorTestFactory m_defaultValidatorFactory;
     
     
@@ -196,61 +209,61 @@ public class LinkMonitorValidatorTest {
     }
     
     @Test
-    public void dwoTestAirPair3Validator(){
+    public void dwoTestAirPair3Validator() throws Exception {
         expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
         expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
-        
-        EndPointStatusValidator validator = m_defaultValidatorFactory.getEndPointStatusValidatorFor(".1.3.6.1.4.1.7262.1");
-        
+        expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
+
         replay();
-        
-        assertTrue(validator.validate(m_mockEndPoint));
+
+        assertTrue(m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint));
         
         verify();
     }
     
     @Test
-    public void dwoTestAirPair3FailingValidator(){
+    public void dwoTestAirPair3FailingValidator() throws Exception {
         expect(m_mockEndPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 2"));
         expect(m_mockEndPoint.get(AIR_PAIR_R3_DUPLEX_MISMATCH)).andStubReturn(TestSnmpValue.parseMibValue("STRING: 1"));
-        
-        EndPointStatusValidator validator = m_defaultValidatorFactory.getEndPointStatusValidatorFor(".1.3.6.1.4.1.7262.1");
+        expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.3.6.1.4.1.7262.1");
         
         replay();
-        
-        assertFalse(validator.validate(m_mockEndPoint));
+
+        try {
+            m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "");
+        }
         
         verify();
     }
     
     @Test
-    public void dwoTestPingEndPointFailed() {
+    public void dwoTestPingEndPointFailed() throws Exception {
+        expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.2.3.4");
         expect(m_mockEndPoint.ping()).andReturn(false);
         
-        EndPointStatusValidator validator = m_defaultValidatorFactory.getEndPointStatusValidatorFor(".1.2.3.4");
-        
         replay();
-        
-        assertFalse(validator.validate(m_mockEndPoint));
+
+        m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
         
         verify();
     }
     
     @Test
-    public void dwoTestPingEndPointSuccess() {
-        expect(m_mockEndPoint.ping()).andReturn(true);
-        
-        EndPointStatusValidator validator = m_defaultValidatorFactory.getEndPointStatusValidatorFor(".1.2.3.4");
+    public void dwoTestPingEndPointSuccess() throws Exception {
+        expect(m_mockEndPoint.getSysOid()).andStubReturn(".1.2.3.4");
+        expect(m_mockEndPoint.ping()).andReturn(false);
         
         replay();
         
-        assertTrue(validator.validate(m_mockEndPoint));
+        m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
         
         verify();
     }
     
     @Test
-    public void dwoTestFactory() {
+    public void dwoTestFactory() throws Exception {
         
     }
     
