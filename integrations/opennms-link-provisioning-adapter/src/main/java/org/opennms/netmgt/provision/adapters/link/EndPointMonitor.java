@@ -16,13 +16,13 @@ import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigura
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class LinkStatusMonitor extends IPv4Monitor {
+public class EndPointMonitor extends IPv4Monitor {
     
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
     private EndPointConfigurationDao m_configDao;
     private NodeDao m_nodeDao;
 
-    public LinkStatusMonitor() {}
+    public EndPointMonitor() {}
     
     @Override
     public void initialize(Map<String, Object> parameters) {

@@ -9,6 +9,12 @@
   
   <bean name="lpa" class="org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter" />
   
+  <bean name="linkEventCorrelator" class="org.opennms.netmgt.provision.adapters.link.LinkEventCorrelator">
+    <property name="eventForwarder" ref="eventForwarder"/>
+    <property name="nodeLinkService" ref="nodeLinkService"/>
+    <property name="endPointConfigDao" ref="endPointConfigDao"/>
+  </bean>
+  
   <bean id="nodeLinkService" class="org.opennms.netmgt.provision.adapters.link.DefaultNodeLinkService"/>
   
   <bean id="linkAdapterConfigResourceLocation" class="java.lang.String">
@@ -23,6 +29,11 @@
   
   <bean name="lpaEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="lpa" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+  
+  <bean name="lecEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="linkEventCorrelator" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
   

@@ -10,6 +10,7 @@ import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
-        m_linkStateDao.save(state);
+        m_linkStateDao.saveOrUpdate(state);
         m_linkStateDao.flush();
     }
     
@@ -118,6 +119,17 @@ public class DefaultNodeLinkService implements NodeLinkService {
             m_dataLinkDao.update(dataLink);
             m_dataLinkDao.flush();
         }
+    }
+
+    public String getPrimaryAddress(int nodeId) {
+        OnmsNode node = m_nodeDao.get(nodeId);
+        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+        
+        if(node != null && primaryInterface != null) {
+            return primaryInterface.getIpAddress();
+        }
+        
+        return null;
     }
     
 }
