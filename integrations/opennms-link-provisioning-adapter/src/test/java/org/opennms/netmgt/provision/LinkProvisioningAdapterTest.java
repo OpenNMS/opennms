@@ -47,6 +47,9 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.adapters.link.LinkMatchResolver;
+import org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter;
+import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
 import org.opennms.test.mock.EasyMockUtils;
 
 /**
