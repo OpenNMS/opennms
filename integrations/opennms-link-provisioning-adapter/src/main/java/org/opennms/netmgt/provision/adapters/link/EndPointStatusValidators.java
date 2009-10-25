@@ -1,29 +1,24 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import java.net.UnknownHostException;
-
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.provision.LinkMonitorValidatorTest.SnmpAgentValueGetter;
 
 public abstract class EndPointStatusValidators {
     
-    public static EndPointStatusValidator ping(final SnmpAgentConfig agentConfig, final String oid) {
+    public static EndPointStatusValidator ping(final String oid) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentValueGetter valueGetter) {
                 
-                return getValue(agentConfig, oid) != null ? true : false;
+                return valueGetter.get(oid) != null ? true : false;
             }
         };
     }
     
-    public static EndPointStatusValidator match(final SnmpAgentConfig agentConfig, final String oid, final String regex) {
+    public static EndPointStatusValidator match(final String oid, final String regex) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
-                String value = getValue(agentConfig, oid);
+            public boolean validate(SnmpAgentValueGetter valueGetter) {
+                String value = valueGetter.get(oid).toString();
                 if(value != null) {
                     return value.matches(regex);
                 }else{
@@ -41,9 +36,9 @@ public abstract class EndPointStatusValidators {
         
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentValueGetter valueGetter) {
                 for(EndPointStatusValidator validator : validators) {
-                    if(!validator.validate()) {
+                    if(!validator.validate(valueGetter)) {
                         return false;
                     }
                 }
@@ -66,15 +61,16 @@ public abstract class EndPointStatusValidators {
                 
                 return sb.toString();
             }
+
         };
     }
     
     public static EndPointStatusValidator or(final EndPointStatusValidator... validators) {
         return new EndPointStatusValidator() {
             
-            public boolean validate() throws UnknownHostException {
+            public boolean validate(SnmpAgentValueGetter valueGetter) {
                 for(EndPointStatusValidator validator : validators) {
-                    if(validator.validate()) {
+                    if(validator.validate(valueGetter)) {
                         return true;
                     }
                 }
@@ -100,12 +96,13 @@ public abstract class EndPointStatusValidators {
         };
     }
     
-    private static String getValue(SnmpAgentConfig agentConfig, String oid) {
-        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-        if(val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
-            return null;
-        }else {
-            return val.toString();
-        }
-    }
+//    private static String getValue(SnmpAgentConfig agentConfig, String oid) {       
+//        
+//        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
+//        if(val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
+//            return null;
+//        }else {
+//            return val.toString();
+//        }
+//    }
 }

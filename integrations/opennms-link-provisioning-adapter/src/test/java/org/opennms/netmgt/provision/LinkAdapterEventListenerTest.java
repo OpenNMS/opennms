@@ -25,18 +25,19 @@ public class LinkAdapterEventListenerTest {
 
     public class TestLinkEventHandler implements LinkEventHandler {
         public void receiveEvent(Event e) {
-            if (m_correlator.isLinkUp(e)) {
-                getEventForwarder().sendNow(new EventBuilder(m_regainedEvent).addParam("endPoint1", "pittsboro-1").addParam("endPoint2", "pittsboro-2").getEvent());
-            } else {
-                getEventForwarder().sendNow(new EventBuilder(m_failedEvent).addParam("endPoint1", "pittsboro-1").addParam("endPoint2", "pittsboro-2").getEvent());
-            }
+//            if (m_correlator.isLinkUp(e)) {
+//                getEventForwarder().sendNow(new EventBuilder(m_regainedEvent).addParam("endPoint1", "pittsboro-1").addParam("endPoint2", "pittsboro-2").getEvent());
+//            } else {
+//                getEventForwarder().sendNow(new EventBuilder(m_failedEvent).addParam("endPoint1", "pittsboro-1").addParam("endPoint2", "pittsboro-2").getEvent());
+//            }
+            m_correlator.updateLinkStatus(e);
         }
 
     }
     
     public interface State {
         public static final State UP_STATE = new Up();
-        public static final State DOWN_STATE = new BothDown();
+        public static final State BOTH_DOWN_STATE = new BothDown();
         public static final State END_POINT_1_DOWN_STATE = new EndPoint1Down();
         public static final State END_POINT_2_DOWN_STATE = new EndPoint2Down();
         public State endPoint1Down();
@@ -46,6 +47,9 @@ public class LinkAdapterEventListenerTest {
     }
     
     public static abstract class AbstractState implements State {
+        
+        public static final String DATALINK_FAILED_EVENT = "datalinkFailed";
+        public static final String DATALINK_RESTORE_EVENT = "datalinkRestored";
         
         public State endPoint1Down() {
             return this;
@@ -64,7 +68,11 @@ public class LinkAdapterEventListenerTest {
         }
         
         protected void sendEvent(String event) {
-            //dispatch event 
+            if(event.equalsIgnoreCase(DATALINK_FAILED_EVENT)) {
+                
+            }else if(event.equalsIgnoreCase(DATALINK_RESTORE_EVENT)) {
+                
+            }
         }
 
     }
@@ -93,13 +101,24 @@ public class LinkAdapterEventListenerTest {
 
         @Override
         public State endPoint2Down() {
-            return State.DOWN_STATE;
+            return State.BOTH_DOWN_STATE;
         }
         
     }
     
     public static class EndPoint2Down extends AbstractState{
-        //TODO: Store initial state by scanning. 
+
+        @Override
+        public State endPoint1Down() {
+            return State.BOTH_DOWN_STATE;
+        }
+
+        @Override
+        public State endPoint2Up() {
+            return State.UP_STATE;
+        }
+        //TODO: Store initial state by scanning.
+        
     }
     
     public static class Up extends AbstractState {
@@ -123,8 +142,28 @@ public class LinkAdapterEventListenerTest {
 
     public interface EventCorrelator {
         public boolean isLinkUp(Event e);
+        public void updateLinkStatus(Event e);
     }
     
+    public class DefaultEventCorrelator implements EventCorrelator{
+        
+        public boolean isLinkUp(Event e) {
+            return false;
+        }
+
+        public void updateLinkStatus(Event e) {
+            
+        }
+        
+    }
+    
+    public class LinkStatus{
+        private int m_datalinkId;
+        private String m_endPoint1;
+        private String m_endPoint2;
+        private State m_state;
+    }
+        
     TestLinkEventHandler m_linkEventHandler;
     EventCorrelator m_correlator;
     
@@ -154,7 +193,8 @@ public class LinkAdapterEventListenerTest {
     public void testNodeDownEvent() {
         Event e = m_node1.createDownEvent();
         
-        expect(m_correlator.isLinkUp(e)).andStubReturn(false);
+        m_correlator.updateLinkStatus(e);
+        
         m_anticipator.anticipateEvent(m_failedEvent);
         
         replay();
