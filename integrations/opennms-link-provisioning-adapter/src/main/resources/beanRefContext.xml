@@ -4,11 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
     <bean id="linkAdapterPollerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+    	<!--
         <constructor-arg>
 	       <list>
-	         <value>classpath*:/META-INF/opennms/applicationContext-link-adapter.xml</value>
+	         <value>classpath*:/META-INF/opennms/component-dao.xml</value>
 	       </list>
 	     </constructor-arg>
+	     -->
 	     <constructor-arg ref="daoContext" />
     </bean>
 
