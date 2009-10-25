@@ -521,10 +521,10 @@ function addMapElementSetUp() {
 	if(selectedMapElemInList==0 ){
 		return;
 	}
-	clearTopInfo();
+	
 	clearDownInfo();
 	disableMenu();
-	addMapElement(nodeSortAss[selectedMapElemInList].id);	
+	addMapElement(nodeSortAss[selectedMapElemInList].getId());	
 }
 
 // Add Node by Category

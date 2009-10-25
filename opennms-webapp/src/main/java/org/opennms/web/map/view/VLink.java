@@ -37,28 +37,27 @@
  */
 package org.opennms.web.map.view;
 
+import org.opennms.web.map.db.LinkInfo;
+
 
 
 
 /**
  * @author antonio
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
+
 final public class VLink {
-	VElement elem1;
-	VElement elem2;
+	private VElement elem1;
+	private VElement elem2;
+	private LinkInfo linkInfo;
 	
-	//the link typology defined in the map properties file
-	int linkTypeId;
+    //the link typology defined in the map properties file
+	private int linkTypeId;
 
-	int linkStatus;
+	private int linkStatus;
 	
-	String id;
-
-	//the link status
-	String linkStatusString;
+	private String id;
 	
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
@@ -120,19 +119,6 @@ final public class VLink {
 		return (3*elem1.getId())+(5*elem2.getId())+(7*(linkTypeId+1))*molt1*molt2;
 	}
 
-	/*
-	 * public boolean hasElement(VElement elem) { if (isFirstElement(elem) ||
-	 * isSecondElement(elem)) return true; return false; }
-	 * 
-	 * private boolean isFirstElement(VElement elem) { if ( elem.getId() ==
-	 * elem1.getId() && ( ( elem.isNode() && elem1.isNode() ) || (
-	 * elem.isSubmap() && elem1.isSubmap()) )) return true; return false; }
-	 * 
-	 * private boolean isSecondElement(VElement elem) { if ( elem.getId() ==
-	 * elem2.getId() && ( ( elem.isNode() && elem2.isNode() ) || (
-	 * elem.isSubmap() && elem2.isSubmap()) )) return true; return false; }
-	 */
-
 	public VElement getFirst() {
 		return elem1;
 	}
@@ -189,5 +175,14 @@ final public class VLink {
     public String getId() {
 		return id;
 	}
+
+    public LinkInfo getLinkInfo() {
+        return linkInfo;
+    }
+
+    public void setLinkInfo(LinkInfo linkInfo) {
+        this.linkInfo = linkInfo;
+    }
+
 
 }

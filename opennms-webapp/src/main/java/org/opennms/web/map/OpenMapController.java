@@ -56,6 +56,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * @author mmigliore
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * 
  * this class provides to create, manage and delete 
  * proper session objects to use when working with maps
