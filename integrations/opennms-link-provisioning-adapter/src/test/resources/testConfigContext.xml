@@ -10,8 +10,11 @@
 	<context:annotation-config/>
 	
 	<tx:annotation-driven/>
-	
-  	
+
+	<bean id="endPointConfigResourceLocation" class="java.lang.String">
+		<constructor-arg value="classpath:/test-endpoint-configuration.xml" />
+	</bean>
+
 	<bean id="linkAdapterConfigResourceLocation" class="java.lang.String">
 	  <constructor-arg value="classpath:/test-link-adapter-configuration.xml" />
 	</bean>

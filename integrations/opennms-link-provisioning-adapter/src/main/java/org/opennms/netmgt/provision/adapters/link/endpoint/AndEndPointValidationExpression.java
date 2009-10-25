@@ -3,6 +3,10 @@
  */
 package org.opennms.netmgt.provision.adapters.link.endpoint;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -11,12 +15,17 @@ import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
 
 @XmlRootElement(name="and")
-public class AndEndPointValidationExpression extends AbstractEndPointValidationExpression {
+public class AndEndPointValidationExpression extends EndPointValidationExpressionImpl {
     @XmlElementRef
-    private final EndPointValidationExpression[] m_validators;
+    private List<EndPointValidationExpressionImpl> m_validators = Collections.synchronizedList(new ArrayList<EndPointValidationExpressionImpl>());
 
-    public AndEndPointValidationExpression(EndPointValidationExpression[] validators) {
-        m_validators = validators;
+    public AndEndPointValidationExpression() {
+    }
+
+    public AndEndPointValidationExpression(EndPointValidationExpressionImpl[] validators) {
+        for (EndPointValidationExpressionImpl e : validators) {
+            m_validators.add(e);
+        }
     }
 
     public void validate(EndPoint endPoint) throws EndPointStatusException {

@@ -32,11 +32,16 @@
           <verbose>false</verbose>
           <includes>
             <include>org/opennms/netmgt/provision/config/linkadapter/*.java</include>
+            <include>org/opennms/netmgt/provision/adapters/link/endpoint/*.java</include>
           </includes>
           <schemas>
             <schema>
               <namespace>http://xmlns.opennms.org/xsd/config/map-link-adapter</namespace>
               <file>map-link-adapter.xsd</file>
+            </schema>
+            <schema>
+              <namespace>http://xmlns.opennms.org/xsd/config/endpoint-types</namespace>
+              <file>endpoint-types</file>
             </schema>
           </schemas>
         </configuration>
