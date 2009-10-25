@@ -55,8 +55,8 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 		this.svgNode.setAttributeNS(null,"stroke-dasharray", dash_array);
 	}
 	this.svgNode.setAttributeNS(null,"style", "z-index:0");
+	this.svgNode.setAttributeNS(null,"cursor", "pointer");
 	this.svgNode.addEventListener("click", this.onClick, false);
-
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "stroke");	
 	this.animateTag.setAttributeNS(null,"from", stroke);	
@@ -68,6 +68,18 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.flash=false;
 	if(flash!=undefined && flash==true)
 		this.setFlash(true);
+}
+
+Link.prototype.getId = function() {
+	return this.id;
+}
+
+Link.prototype.getMapElement1 = function() {
+	return this.mapElement1;
+}
+
+Link.prototype.getMapElement2 = function() {
+	return this.mapElement2;
 }
 
 Link.prototype.getTypology = function() {
@@ -196,4 +208,3 @@ Link.prototype.onRepeat = function(evt)
 }
 
 Link.prototype.onClick = onMouseDownOnLink;
-Link.prototype.onMouseUp = onMouseUp;
