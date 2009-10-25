@@ -156,6 +156,17 @@ public class DefaultNodeLinkService implements NodeLinkService {
             m_dataLinkDao.flush();
         }
     }
+
+    public String getPrimaryAddress(int nodeId) {
+        OnmsNode node = m_nodeDao.get(nodeId);
+        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+        
+        if(node != null && primaryInterface != null) {
+            return primaryInterface.getIpAddress();
+        }
+        
+        return null;
+    }
     
     @Transactional(readOnly=true)
     public boolean nodeHasEndPointService(int nodeId) {
