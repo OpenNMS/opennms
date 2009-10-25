@@ -21,9 +21,11 @@ public class LinkAdapterConfiguration {
         return m_patterns;
     }
     
-    public synchronized void setPatterns(Set<LinkPattern> patterns) {
-        m_patterns.clear();
-        m_patterns.addAll(patterns);
+    public void setPatterns(Set<LinkPattern> patterns) {
+        synchronized(m_patterns) {
+            m_patterns.clear();
+            m_patterns.addAll(patterns);
+        }
     }
     
     public String toString() {
