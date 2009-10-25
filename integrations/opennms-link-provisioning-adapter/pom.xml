@@ -124,11 +124,12 @@
       <artifactId>mock-snmp-agent</artifactId>
       <scope>test</scope>
     </dependency>
+    
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
+    	<groupId>org.opennms.lib.snmp</groupId>
+        <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
+    	<type>test-jar</type>
+    	<scope>test</scope>
     </dependency>
   </dependencies>
 </project>

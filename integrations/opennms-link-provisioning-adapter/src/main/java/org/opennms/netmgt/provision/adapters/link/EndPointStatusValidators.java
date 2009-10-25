@@ -1,15 +1,14 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.opennms.netmgt.provision.LinkMonitorValidatorTest.SnmpAgentValueGetter;
+import org.opennms.netmgt.provision.LinkMonitorValidatorTest.EndPoint;
 
 public abstract class EndPointStatusValidators {
     
-    public static EndPointStatusValidator ping(final String oid) {
+    public static EndPointStatusValidator ping() {
         return new EndPointStatusValidator() {
             
-            public boolean validate(SnmpAgentValueGetter valueGetter) {
-                
-                return valueGetter.get(oid) != null ? true : false;
+            public boolean validate(EndPoint endPoint) {
+                   return endPoint.ping();
             }
         };
     }
@@ -17,8 +16,8 @@ public abstract class EndPointStatusValidators {
     public static EndPointStatusValidator match(final String oid, final String regex) {
         return new EndPointStatusValidator() {
             
-            public boolean validate(SnmpAgentValueGetter valueGetter) {
-                String value = valueGetter.get(oid).toString();
+            public boolean validate(EndPoint endPoint) {
+                String value = endPoint.get(oid).toString();
                 if(value != null) {
                     return value.matches(regex);
                 }else{
@@ -36,9 +35,9 @@ public abstract class EndPointStatusValidators {
         
         return new EndPointStatusValidator() {
             
-            public boolean validate(SnmpAgentValueGetter valueGetter) {
+            public boolean validate(EndPoint endPoint) {
                 for(EndPointStatusValidator validator : validators) {
-                    if(!validator.validate(valueGetter)) {
+                    if(!validator.validate(endPoint)) {
                         return false;
                     }
                 }
@@ -68,9 +67,9 @@ public abstract class EndPointStatusValidators {
     public static EndPointStatusValidator or(final EndPointStatusValidator... validators) {
         return new EndPointStatusValidator() {
             
-            public boolean validate(SnmpAgentValueGetter valueGetter) {
+            public boolean validate(EndPoint endPoint) {
                 for(EndPointStatusValidator validator : validators) {
-                    if(validator.validate(valueGetter)) {
+                    if(validator.validate(endPoint)) {
                         return true;
                     }
                 }
@@ -96,13 +95,4 @@ public abstract class EndPointStatusValidators {
         };
     }
     
-//    private static String getValue(SnmpAgentConfig agentConfig, String oid) {       
-//        
-//        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-//        if(val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
-//            return null;
-//        }else {
-//            return val.toString();
-//        }
-//    }
 }
