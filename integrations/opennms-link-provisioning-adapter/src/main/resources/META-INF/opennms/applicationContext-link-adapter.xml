@@ -3,6 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-    
-    
+  <bean id="endPointConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/endpoint-configuration.xml" />
+  </bean>  
+
+  <bean id="endPointConfigDao" class="org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao">
+    <property name="configResource" ref="endPointConfigResourceLocation" />
+  </bean>
+  
 </beans>
