@@ -26,8 +26,10 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.provision.config.DefaultNamespacePrefixMapper;
-import org.opennms.netmgt.provision.config.dao.DefaultLinkAdapterConfigurationDao;
+import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
+import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao;
+import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
+import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +50,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 })
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
-        "classpath:/linkTestContext.xml"
+        "classpath:/testConfigContext.xml"
 })
 @JUnitTemporaryDatabase()
 public class LinkAdapterConfigurationTest {

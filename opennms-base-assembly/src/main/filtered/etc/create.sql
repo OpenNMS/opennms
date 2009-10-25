@@ -1794,7 +1794,7 @@ create table datalinkinterface (
     linkTypeId       integer,
     lastPollTime     timestamp not null,
 
-    constraint pk_datalinkinterface primary key (nodeid,ifindex),
+    constraint pk_datalinkinterface primary key (id),
 	constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE
 );
@@ -1803,6 +1803,41 @@ create index dlint_id_idx on datalinkinterface(id);
 create index dlint_node_idx on datalinkinterface(nodeid);
 create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
 create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
+
+--########################################################################
+--#
+--# linkState table -- This table maintains the state of the link. 
+--#
+--# This table provides the following information:
+--#
+--#  nodeid            : Unique integer identifier for the linked node 
+--#  IfIndex           : SNMP index of interface connected to the link on the node, 
+--#                      is -1 if it doesn't support SNMP.
+--#  nodeparentid      : Unique integer identifier for linking node
+--#  parentIfIndex     : SNMP index of interface linked on the parent node.
+--#  status            : Flag indicating the status of the entry.
+--#                      'A' - Active
+--#                      'N' - Not Active
+--#                      'D' - Deleted
+--#                      'U' - Unknown
+--#                      'G' - Good
+--#                      'B' - Bad
+--#                      'X' - Admin Down
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
+--#  lastPollTime      : The last time when this information was retrived
+--#
+--########################################################################
+
+create table linkstate (
+    id                      integer default nextval('opennmsNxtId') not null,
+    datalinkinterfaceid     integer not null, 
+    linkstate               varchar(24) default 'LINK_UP' not null,
+
+    constraint pk_linkstate primary key (id),
+    constraint fk_linkstate_datalinkinterface_id foreign key (datalinkinterfaceid) references datalinkinterface (id) on delete cascade
+);
+
+create unique index linkstate_datalinkinterfaceid_index on linkstate (datalinkinterfaceid);
 
 --########################################################################
 --#
