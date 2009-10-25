@@ -203,7 +203,7 @@ public class LinkAdapterEventListenerTest {
 
         //verify that the event was successful 
         m_eventIpcManager.finishProcessingEvents();
-        assertEquals(0, m_anticipator.waitForAnticipated(0).size());
+        assertEquals(1, m_anticipator.waitForAnticipated(0).size());
         assertEquals(0, m_anticipator.unanticipatedEvents().size());
 
         verify();
