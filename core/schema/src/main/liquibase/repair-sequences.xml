@@ -15,6 +15,7 @@
 		<tableExists tableName="element" />
 		<tableExists tableName="ifservices" />
 		<tableExists tableName="ipinterface" />
+		<tableExists tableName="linkstate" />
 		<tableExists tableName="map" />
 		<tableExists tableName="resourcereference" />
 		<tableExists tableName="snmpinterface" />
@@ -32,6 +33,7 @@
 				(SELECT max(id)    AS id FROM element              LIMIT 1) UNION
 				(SELECT max(id)    AS id FROM ifservices           LIMIT 1) UNION
 				(SELECT max(id)    AS id FROM ipinterface          LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM linkstate            LIMIT 1) UNION
 				(SELECT max(mapid) AS id FROM map                  LIMIT 1) UNION
 				(SELECT max(id)    AS id FROM resourcereference    LIMIT 1) UNION
 				(SELECT max(id)    AS id FROM snmpinterface        LIMIT 1) UNION

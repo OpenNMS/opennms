@@ -6,9 +6,8 @@ import static org.opennms.core.utils.LogUtils.infof;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -51,7 +50,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Transactional
     public void createLink(int nodeParentId, int nodeId) {
-        log().info(String.format("adding link between node: %d and node: %d", nodeParentId, nodeId));
+        LogUtils.infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
         OnmsNode parentNode = m_nodeDao.get(nodeParentId);
         Assert.notNull(parentNode, "node with id: " + nodeParentId + " does not exist");
         
@@ -101,7 +100,6 @@ public class DefaultNodeLinkService implements NodeLinkService {
         } else {
             infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
         }
-        
     }
     
     private int getPrimaryIfIndexForNode(OnmsNode node) {
@@ -129,6 +127,20 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
+        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.or(
+            Restrictions.eq("nodeId", nodeId),
+            Restrictions.eq("nodeParentId", nodeId)
+        ));
+        
+        return m_dataLinkDao.findMatching(criteria);
+    }
+
+    public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface) {
+        return m_linkStateDao.findByDataLinkInterfaceId(dataLinkInterface.getId());
+    }
+    
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeId", nodeId));

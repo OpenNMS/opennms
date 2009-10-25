@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision.adapters.link;
 import static org.opennms.core.utils.LogUtils.debugf;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -125,7 +126,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     }
 
     private void updateLinkStatus(String method, Event event, String newStatus) {
-        infof("%s: received event %s", method, event.getUei());
+        LogUtils.infof(this, "%s: received event %s", method, event.getUei());
         String endPoint1 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT1);
         String endPoint2 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT2);
         
@@ -138,10 +139,10 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
         
         if(nodeId != null && parentNodeId != null) {
-            infof("%s: updated link nodeLabel: %s, nodeId: %d, parentLabel: %s, parentId: %d ", method, nodeLabel, nodeId, parentNodeLabel, parentNodeId);
+            LogUtils.infof(this, "%s: updated link nodeLabel: %s, nodeId: %d, parentLabel: %s, parentId: %d ", method, nodeLabel, nodeId, parentNodeLabel, parentNodeId);
             m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, newStatus);
         }else {
-            infof("%s: found no link with parent: %s and node %s", method, parentNodeLabel, nodeLabel);
+            LogUtils.infof(this, "%s: found no link with parent: %s and node %s", method, parentNodeLabel, nodeLabel);
         }
     }
     
@@ -168,7 +169,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     }
     
     
-    private String max(String string1, String string2) {
+    public static String max(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {
             return string2;
         }else {
@@ -176,7 +177,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
-    private String min(String string1, String string2) {
+    public static String min(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {
             return string1;
         }else {
@@ -200,13 +201,4 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         m_nodeLinkService = nodeLinkService;
     }
     
-    private void infof(String format, Object... args) {
-        log().info(String.format(format, args));
-    }
-    
-    private void debugf(String format, Object... args) {
-        log().debug(String.format(format, args));
-    }
-    
-
 }
