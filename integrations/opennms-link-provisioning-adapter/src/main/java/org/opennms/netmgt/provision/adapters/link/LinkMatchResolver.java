@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.adapters.link;
 
 /**
  * LinkMatchResolver

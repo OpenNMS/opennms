@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.adapters.link;
 
 public interface NodeLinkService {
     

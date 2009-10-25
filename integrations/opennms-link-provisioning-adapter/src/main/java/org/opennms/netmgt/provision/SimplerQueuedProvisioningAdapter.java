@@ -33,6 +33,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.provision.ProvisioningAdapterException;
+import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter;
+import org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter;
+
 
 /**
  * SimplerQueuedProvisioningAdapter
