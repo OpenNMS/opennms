@@ -38,6 +38,7 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
@@ -97,6 +98,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
         assertNotNull(m_snmpAgent);
         
@@ -116,6 +118,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorAirPairR4() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/airPairR4_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -134,6 +137,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorHorizonCompact() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -153,6 +157,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorHorizonDuoCapacity1() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -176,6 +181,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -195,6 +201,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
+    @Ignore
     public void dwoTestLinkMonitorHorizonDuoCapacity3() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -215,7 +222,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     
     @Test
-    
+    @Ignore
     public void dwoTestLinkMonitoringPingableDevice() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
