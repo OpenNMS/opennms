@@ -1,4 +1,4 @@
-<endpoint-types xmlns="http://xmlns.opennms.org/xsd/config/endpoint-types">
+<endpoint-types xmlns="http://xmlns.opennms.org/xsd/config/endpoint-types" endpoint-service-name="EndPoint">
 	<endpoint-type name="AirPair_R3">
 		<sysoid-mask>.1.3.6.1.4.1.7262.1</sysoid-mask>
 		<and>

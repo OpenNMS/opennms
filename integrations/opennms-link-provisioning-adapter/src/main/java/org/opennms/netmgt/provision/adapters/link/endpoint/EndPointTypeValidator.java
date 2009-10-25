@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -15,17 +16,21 @@ import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 
 @XmlRootElement(name="endpoint-types")
 public class EndPointTypeValidator {
+    @XmlAttribute(name="endpoint-service-name")
+    String m_endPointServiceName = "EndPoint";
+    
     @XmlElement(name="endpoint-type")
     List<EndPointType> m_endPointConfigs = Collections.synchronizedList(new ArrayList<EndPointType>());
     
     public EndPointTypeValidator() {
-        /*
-        m_endPointConfigs.add(new EndPointType(".1.3.6.1.4.1.7262.1", and( match(LinkMonitorValidatorTest.AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$"), match(LinkMonitorValidatorTest.AIR_PAIR_R3_DUPLEX_MISMATCH, "^1$") )));
-        m_endPointConfigs.add(new EndPointType(".1.3.6.1.4.1.7262.1", and( match(LinkMonitorValidatorTest.AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$"), match(LinkMonitorValidatorTest.AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$") )));
-        m_endPointConfigs.add(new EndPointType(".1.3.6.1.4.1.7262.2.2", and( match(LinkMonitorValidatorTest.HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, "^1$"), match(LinkMonitorValidatorTest.AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$") )));
-        m_endPointConfigs.add(new EndPointType(".1.3.6.1.4.1.7262.2.3", and( match(LinkMonitorValidatorTest.AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$"), match(LinkMonitorValidatorTest.AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$") )));
-        m_endPointConfigs.add(new EndPointType(".1.2.3.4", ping()));
-        */
+    }
+
+    public String getServiceName() {
+        return m_endPointServiceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        m_endPointServiceName = serviceName;
     }
 
     public List<EndPointType> getConfigs() {
