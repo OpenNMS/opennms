@@ -51,14 +51,18 @@ public class Application implements EntryPoint {
     private final ContentPanel connectToDatabase = new ContentPanel();
     private final TextField<String> dbHost = new TextField<String>();
     private final NumberField dbPort = new NumberField();
-    private final TextField<String> dbName = new TextField<String>();
-    private final TextField<String> dbUser = new TextField<String>();
-    private final TextField<String> dbPass = new TextField<String>();
-    private final TextField<String> dbConfirm = new TextField<String>();
     private final TextField<String> dbDriver = new TextField<String>();
+    private final TextField<String> dbName = new TextField<String>();
+    private final TextField<String> dbAdminUser = new TextField<String>();
+    private final TextField<String> dbAdminPass = new TextField<String>();
+    private final TextField<String> dbAdminConfirm = new TextField<String>();
     private final TextField<String> dbAdminUrl = new TextField<String>();
-    private final TextField<String> dbUrl = new TextField<String>();
+    private final TextField<String> dbNmsUser = new TextField<String>();
+    private final TextField<String> dbNmsPass = new TextField<String>();
+    private final TextField<String> dbNmsConfirm = new TextField<String>();
+    private final TextField<String> dbNmsUrl = new TextField<String>();
     // private final TextField<String> dbBinDir = new TextField<String>();
+
     private final ContentPanel setAdminPassword = new ContentPanel();
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
@@ -213,13 +217,13 @@ public class Application implements EntryPoint {
             installService.getDatabaseConnectionSettings(new AsyncCallback<DatabaseConnectionSettings>() {
                 public void onSuccess(DatabaseConnectionSettings result) {
                     m_databaseConnectionSettings = result;
-                    if (m_databaseConnectionSettings.getAdminPassword() != null) dbPass.setValue(m_databaseConnectionSettings.getAdminPassword());
+                    if (m_databaseConnectionSettings.getAdminPassword() != null) dbAdminPass.setValue(m_databaseConnectionSettings.getAdminPassword());
                     if (m_databaseConnectionSettings.getAdminUrl() != null) dbAdminUrl.setValue(m_databaseConnectionSettings.getAdminUrl());
-                    if (m_databaseConnectionSettings.getAdminUser() != null) dbUser.setValue(m_databaseConnectionSettings.getAdminUser());
+                    if (m_databaseConnectionSettings.getAdminUser() != null) dbAdminUser.setValue(m_databaseConnectionSettings.getAdminUser());
                     if (m_databaseConnectionSettings.getDbName() != null) dbName.setValue(m_databaseConnectionSettings.getDbName());
                     // TODO: Probably should always use the hard-coded database driver value
                     // if (m_databaseConnectionSettings.getDriver() != null) dbDriver.setValue(m_databaseConnectionSettings.getDriver());
-                    if (m_databaseConnectionSettings.getUrl() != null) dbUrl.setValue(m_databaseConnectionSettings.getUrl());
+                    if (m_databaseConnectionSettings.getUrl() != null) dbNmsUrl.setValue(m_databaseConnectionSettings.getUrl());
 
                     if (m_next != null) {
                         m_next.check();
@@ -261,11 +265,11 @@ public class Application implements EntryPoint {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
                 return;
-            } else if (!dbUser.validate()) {
+            } else if (!dbAdminUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
                 return;
-            } else if (!dbPass.validate()) {
+            } else if (!dbAdminPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
                 return;
@@ -277,17 +281,17 @@ public class Application implements EntryPoint {
 
             // TODO: Should we hard-code the value of the admin database?
             dbAdminUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/template1");
-            dbUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/" + dbName.getValue());
+            dbNmsUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/" + dbName.getValue());
 
             // Make sure that the password and confirmation fields match
-            if (dbPass.getValue() == null || !dbPass.getValue().equals(dbConfirm.getValue())) {
+            if (dbAdminPass.getValue() == null || !dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
                 return;
             }
 
-            // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
-            installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), dbUrl.getValue(), new AsyncCallback<Void>() {
+            // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
+            installService.connectToDatabase(dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
                 public void onSuccess(Void result) {
                     connectToDatabase.setIconStyle("check-success-icon");
                     if (m_next != null) {
@@ -303,7 +307,7 @@ public class Application implements EntryPoint {
                             public void handleEvent(MessageBoxEvent event) {
                                 if (Dialog.YES.equals((event.getButtonClicked().getItemId()))) {
                                     connectToDatabase.setIconStyle("check-progress-icon");
-                                    installService.createDatabase(dbName.getValue(), dbUser.getValue(), dbPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
+                                    installService.createDatabase(dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
                                         public void onSuccess(Void result) {
                                             // Re-run the check now that the database has been created
                                             thisCheck.check();
@@ -488,7 +492,7 @@ public class Application implements EntryPoint {
         gxtPanel.setLayout(gxtPanelLayout);
         gxtPanel.setHeaderVisible(false);
         gxtPanel.setBodyBorder(false);
-        gxtPanel.setSize(400, 400);
+        gxtPanel.setSize(400, 500);
         gxtPanel.setBodyStyleName("transparent-background");
 
         // final ContentPanel verifyOwnership = new ContentPanel();
@@ -584,10 +588,10 @@ public class Application implements EntryPoint {
 
         FormLayout connectToDatabaseLayout = new FormLayout();
         connectToDatabaseLayout.setLabelPad(10);
-        connectToDatabaseLayout.setLabelWidth(150);
+        connectToDatabaseLayout.setLabelWidth(170);
         // Normally 150, but subtract 15 for the vertical scrollbar
         // Made the panel bigger, don't need a scrollbar any more
-        connectToDatabaseLayout.setDefaultWidth(220);
+        connectToDatabaseLayout.setDefaultWidth(200);
         connectToDatabase.setLayout(connectToDatabaseLayout);
 
         // final TextField<String> dbName = new TextField<String>();
@@ -639,48 +643,76 @@ public class Application implements EntryPoint {
         connectToDatabase.add(dbName);
 
         // final TextField<String> dbUser = new TextField<String>();
-        dbUser.setFieldLabel("Database admin user");
-        dbUser.setAllowBlank(false);
-        dbUser.addListener(Events.Change, new Listener<FieldEvent>() {
+        dbAdminUser.setFieldLabel("Admin user");
+        dbAdminUser.setAllowBlank(false);
+        dbAdminUser.addListener(Events.Change, new Listener<FieldEvent>() {
             public void handleEvent(FieldEvent event) {
-                if ("postgres".equals(dbUser.getValue())) {
-                    dbUser.removeStyleName("font-style-normal");
-                    dbUser.addStyleName("font-style-italic");
+                if ("postgres".equals(dbAdminUser.getValue())) {
+                    dbAdminUser.removeStyleName("font-style-normal");
+                    dbAdminUser.addStyleName("font-style-italic");
                 } else { 
-                    dbUser.removeStyleName("font-style-italic");
-                    dbUser.addStyleName("font-style-normal");
+                    dbAdminUser.removeStyleName("font-style-italic");
+                    dbAdminUser.addStyleName("font-style-normal");
                 }
             }
         });
-        connectToDatabase.add(dbUser);
+        connectToDatabase.add(dbAdminUser);
 
-        // final TextField<String> dbPass = new TextField<String>();
-        dbPass.setFieldLabel("Database admin password");
-        // dbPass.setAllowBlank(false);
-        dbPass.setPassword(true);
-        connectToDatabase.add(dbPass);
+        // final TextField<String> dbAdminPass = new TextField<String>();
+        dbAdminPass.setFieldLabel("Admin password");
+        // dbAdminPass.setAllowBlank(false);
+        dbAdminPass.setPassword(true);
+        connectToDatabase.add(dbAdminPass);
 
         // final TextField<String> dbConfirm = new TextField<String>();
-        dbConfirm.setFieldLabel("Confirm admin password");
+        dbAdminConfirm.setFieldLabel("Confirm admin password");
         // dbConfirm.setAllowBlank(false);
-        dbConfirm.setPassword(true);
-        connectToDatabase.add(dbConfirm);
+        dbAdminConfirm.setPassword(true);
+        connectToDatabase.add(dbAdminConfirm);
+
+        // final TextField<String> dbAdminUrl = new TextField<String>();
+        dbAdminUrl.setFieldLabel("Admin URL");
+        dbAdminUrl.setAllowBlank(false);
+        dbAdminUrl.hide();
+
+        // final TextField<String> dbUser = new TextField<String>();
+        dbNmsUser.setFieldLabel("OpenNMS user");
+        dbNmsUser.setAllowBlank(false);
+        dbNmsUser.addListener(Events.Change, new Listener<FieldEvent>() {
+            public void handleEvent(FieldEvent event) {
+                if ("postgres".equals(dbNmsUser.getValue())) {
+                    dbNmsUser.removeStyleName("font-style-normal");
+                    dbNmsUser.addStyleName("font-style-italic");
+                } else { 
+                    dbNmsUser.removeStyleName("font-style-italic");
+                    dbNmsUser.addStyleName("font-style-normal");
+                }
+            }
+        });
+        connectToDatabase.add(dbNmsUser);
+
+        // final TextField<String> dbAdminPass = new TextField<String>();
+        dbNmsPass.setFieldLabel("OpenNMS password");
+        // dbNmsPass.setAllowBlank(false);
+        dbNmsPass.setPassword(true);
+        connectToDatabase.add(dbNmsPass);
+
+        // final TextField<String> dbConfirm = new TextField<String>();
+        dbNmsConfirm.setFieldLabel("Confirm OpenNMS password");
+        // dbConfirm.setAllowBlank(false);
+        dbNmsConfirm.setPassword(true);
+        connectToDatabase.add(dbNmsConfirm);
+
+        // final TextField<String> dbUrl = new TextField<String>();
+        dbNmsUrl.setFieldLabel("OpenNMS URL");
+        dbNmsUrl.setAllowBlank(false);
+        dbNmsUrl.hide();
 
         // final TextField<String> dbDriver = new TextField<String>();
         dbDriver.setFieldLabel("Database driver");
         dbDriver.setAllowBlank(false);
         dbDriver.setValue("org.postgresql.Driver");
         dbDriver.hide();
-
-        // final TextField<String> dbAdminUrl = new TextField<String>();
-        dbAdminUrl.setFieldLabel("Database admin URL");
-        dbAdminUrl.setAllowBlank(false);
-        dbAdminUrl.hide();
-
-        // final TextField<String> dbUrl = new TextField<String>();
-        dbUrl.setFieldLabel("Database URL");
-        dbUrl.setAllowBlank(false);
-        dbUrl.hide();
 
         /*
         // final TextField<String> dbBinDir = new TextField<String>();
@@ -718,7 +750,7 @@ public class Application implements EntryPoint {
         // Add hidden panels under the button so they don't mess up the layout
         connectToDatabase.add(dbDriver);
         connectToDatabase.add(dbAdminUrl);
-        connectToDatabase.add(dbUrl);
+        connectToDatabase.add(dbNmsUrl);
 
         // final ContentPanel updateDatabase = new ContentPanel();
         updateDatabase.setHeading("Initialize database");
