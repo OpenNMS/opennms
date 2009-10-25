@@ -5,6 +5,8 @@ import java.util.Map;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -18,6 +20,7 @@ public class LinkStatusMonitor extends IPv4Monitor {
     
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
     private EndPointConfigurationDao m_configDao;
+    private NodeDao m_nodeDao;
 
     public LinkStatusMonitor() {}
     
@@ -25,6 +28,7 @@ public class LinkStatusMonitor extends IPv4Monitor {
     public void initialize(Map<String, Object> parameters) {
         ClassPathXmlApplicationContext appContext = BeanUtils.getFactory("linkAdapterPollerContext", ClassPathXmlApplicationContext.class);
         m_configDao = (EndPointConfigurationDao) appContext.getBean("endPointConfigDao");
+        m_nodeDao = (NodeDao) appContext.getBean("nodeDao");
                
         try {
             SnmpPeerFactory.init();
@@ -39,8 +43,11 @@ public class LinkStatusMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
         SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
-        EndPointImpl ep = new EndPointImpl(svc.getAddress(), agentConfig);
         EndPointTypeValidator validator = m_configDao.getValidator();
+
+        EndPointImpl ep = new EndPointImpl(svc.getAddress(), agentConfig);
+        OnmsNode node = m_nodeDao.get(svc.getNodeId());
+        ep.setSysOid(node.getSysObjectId());
 
         try {
             validator.validate(ep);
