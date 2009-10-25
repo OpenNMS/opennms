@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.provision;
+package org.opennms.netmgt.provision.adapters.link;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 
@@ -43,6 +43,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;

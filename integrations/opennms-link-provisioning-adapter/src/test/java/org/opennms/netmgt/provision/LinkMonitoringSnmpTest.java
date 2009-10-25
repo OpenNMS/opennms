@@ -31,14 +31,13 @@
 package org.opennms.netmgt.provision;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators.and;
+import static org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators.match;
+import static org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators.ping;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,10 +47,11 @@ import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
+import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidator;
+import org.opennms.netmgt.provision.adapters.link.EndPointStatusValidators;
+import org.opennms.netmgt.provision.adapters.link.LinkStatusMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -67,130 +67,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
-    interface PropertyMatcher{
-        public boolean validate(String value);
-    }
-    
-    interface EndPointStatusValidator{
-       public boolean validate() throws UnknownHostException;
-    }
-    
-    class DefaultEndPointStatusValidator implements EndPointStatusValidator{
-        
-        
-        private String getValue(SnmpAgentConfig agentConfig, String oid) {
-            SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-            if(val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
-                return null;
-            }else {
-                return val.toString();
-            }
-        }
-
-        public boolean validate() throws UnknownHostException {
-            return false;
-        }
-    }
-    
-    class ComplexEndPointStatusValidator extends DefaultEndPointStatusValidator{
-        
-        private String m_storedOID;
-        private String m_oidTemplate;
-        private PropertyMatcher m_propertyMatcher;
-        
-        @Override
-        public boolean validate() throws UnknownHostException {
-            SnmpAgentConfig config = new SnmpAgentConfig();
-            config.setAddress(InetAddress.getLocalHost());
-            config.setPort(9161);
-            config.setReadCommunity("public");
-            
-            String value = getValue(config, m_storedOID);
-            value = checkAcceptableRange(value);
-            
-            String oid = applyToTemplate(value);
-            value = getValue(config, oid);
-            return m_propertyMatcher.validate(value);
-        }
-        
-        private String checkAcceptableRange(String value){
-            Integer intVal = Integer.parseInt(value);
-            if(intVal == 1) {
-                return value;
-            }else if(intVal > 1 && intVal <=3) {
-                return "2";
-            }
-            return null;
-        }
-        
-        private String applyToTemplate(String index) {
-            String retVal = m_oidTemplate.replace("<storedValue>", index);
-            return retVal;
-        }
-
-        public void checkAndStoreValue(String sysOID) {
-            m_storedOID = sysOID;
-        }
-
-        public void verifyStatus(String template, PropertyMatcher matchValue) {
-            m_oidTemplate = template;
-            m_propertyMatcher = matchValue;            
-        }
-        
-    }
-    
-    class EndPointServiceStatusValidator extends DefaultEndPointStatusValidator{
-        
-        private String m_oid;
-        private PropertyMatcher m_matcher;
-        public EndPointServiceStatusValidator(String oid, PropertyMatcher matcher) {
-            m_oid = oid;
-            m_matcher = matcher;
-        }
-        
-        @Override
-        public boolean validate() throws UnknownHostException {
-            SnmpAgentConfig config = new SnmpAgentConfig();
-            config.setAddress(InetAddress.getLocalHost());
-            config.setPort(9161);
-            config.setReadCommunity("public");
-            
-            return m_matcher.validate(getValue(config, m_oid)) ? true :false; 
-            
-        }
-        
-    }
-    
-    class PingableEndPointStatusValidator{
-        
-        public PingableEndPointStatusValidator(String string) {
-            // TODO Auto-generated constructor stub
-        }
-        
-    }
-    
-    class LinkMonitor{
-        
-        private List<EndPointStatusValidator> m_validators = new ArrayList<EndPointStatusValidator>();
-        
-        public boolean isStatusUp(SnmpAgentConfig config) throws UnknownHostException {
-            boolean retVal = true;
-            
-            for(EndPointStatusValidator validator : m_validators) {
-                if(!validator.validate()) {
-                    retVal = false;
-                    break;
-                }
-            }
-            
-            return retVal;            
-        }
-
-        public void addValidation(EndPointStatusValidator validator) {
-            m_validators.add(validator);
-        }        
-    }
-    
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
     private static final String AIR_PAIR_R3_DUPLEX_MISMATCH = ".1.3.6.1.4.1.7262.1.19.2.3.0";
     private static final String AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
@@ -200,15 +76,15 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2";
     
     private MockSnmpAgent m_snmpAgent;
-    private SnmpAgentConfig m_config;
+    private SnmpAgentConfig m_agentConfig;
     
     @Before
     public void setup() throws InterruptedException, UnknownHostException {
-        if(m_config == null) {
-            m_config = new SnmpAgentConfig();
-            m_config.setAddress(InetAddress.getLocalHost());
-            m_config.setPort(9161);
-            m_config.setReadCommunity("public");
+        if(m_agentConfig == null) {
+            m_agentConfig = new SnmpAgentConfig();
+            m_agentConfig.setAddress(InetAddress.getLocalHost());
+            m_agentConfig.setPort(9161);
+            m_agentConfig.setReadCommunity("public");
         }
     }
     
@@ -218,35 +94,22 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
-    public void dwoTestSnmpUpdateMIBProperty() throws UnknownHostException {
-        assertNotNull(m_snmpAgent);
-        
-        String modSyncValue = getValue(m_config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
-        assertNotNull(modSyncValue);
-        assertEquals(1, Integer.parseInt(modSyncValue));
-        
-        m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.3.1.0", 2);
-        
-        modSyncValue = getValue(m_config, ".1.3.6.1.4.1.7262.1.19.3.1.0");
-        assertNotNull(modSyncValue);
-        assertEquals(2, Integer.parseInt(modSyncValue));
-    }
-    
-    @Test
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
         assertNotNull(m_snmpAgent);
         
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(new EndPointServiceStatusValidator(AIR_PAIR_R3_DUPLEX_MISMATCH, matchValue("^1$")));
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( m_agentConfig, AIR_PAIR_R3_DUPLEX_MISMATCH, "^1$" )));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
         
-        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(m_config));
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
+        
     }
     
     @Test
@@ -257,15 +120,14 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, 1);
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(new EndPointServiceStatusValidator(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match(m_agentConfig, AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$")));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
         
-        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(m_config));
-        
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
     }
     
     @Test
@@ -276,14 +138,14 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(new EndPointServiceStatusValidator(HORIZON_COMPACT_ETHERNET_LINK_DOWN, matchValue("^1$")));
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, "^1$" ), match(m_agentConfig, HORIZON_COMPACT_ETHERNET_LINK_DOWN, "^1$")));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 2);
         
-        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(m_config));
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
         
     }
     
@@ -293,19 +155,22 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateValuesFromResource(resource);
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
         
-        ComplexEndPointStatusValidator complexValidator = new ComplexEndPointStatusValidator();
-        complexValidator.checkAndStoreValue(HORIZON_DUO_SYSTEM_CAPACITY);
-        complexValidator.verifyStatus(".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.<storedValue>", matchValue("^1$"));
+        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
+
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(complexValidator);
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        assertFalse("Status should be down", monitor.isStatusUp(m_config));
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2000);
+        
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
+        
     }
+
+    
     
     @Test
     public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException {
@@ -315,17 +180,15 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
         
-        ComplexEndPointStatusValidator complexValidator = new ComplexEndPointStatusValidator();
-        complexValidator.checkAndStoreValue(HORIZON_DUO_SYSTEM_CAPACITY);
-        complexValidator.verifyStatus(".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.<storedValue>", matchValue("^1$"));
+        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(complexValidator);
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        assertFalse("Status should be down", monitor.isStatusUp(m_config));
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
     }
     
     @Test
@@ -336,66 +199,54 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
         
-        ComplexEndPointStatusValidator complexValidator = new ComplexEndPointStatusValidator();
-        complexValidator.checkAndStoreValue(HORIZON_DUO_SYSTEM_CAPACITY);
-        complexValidator.verifyStatus(".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.<storedValue>", matchValue("^1$"));
+        EndPointStatusValidator complexValidator = horizonDuoComplexValidator();
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, matchValue("^1$")));
-        monitor.addValidation(complexValidator);
-        assertTrue("Status should up, but its not", monitor.isStatusUp(m_config));
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator( and( match( m_agentConfig, HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        assertFalse("Status should be down", monitor.isStatusUp(m_config));
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
     }
     
     
     @Test
+    
     public void dwoTestLinkMonitoringPingableDevice() throws UnknownHostException {
-        m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.3.1.0", 1);
-        m_snmpAgent.updateCounter32Value(".1.3.6.1.4.1.7262.1.19.2.3.0", 1);
+        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
+        m_snmpAgent.updateValuesFromResource(resource);
         
-        LinkMonitor monitor = new LinkMonitor();
-        monitor.addValidation(new EndPointServiceStatusValidator(".1.3.6.1.4.1.1000.1.19.3.1.0", pingableValue()));
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         
-        assertFalse("Status has been changed and is now down, should return false", monitor.isStatusUp(m_config));
+        LinkStatusMonitor monitor = new LinkStatusMonitor();
+        monitor.setEndPointValidator(ping(m_agentConfig, HORIZON_DUO_MODEM_LOSS_OF_SIGNAL));
+        
+        assertEquals(PollStatus.up(), monitor.poll(null, null));
+        
+        m_snmpAgent.stop();
+        
+        assertEquals(PollStatus.down(), monitor.poll(null, null));
     }
     
-    
-    
-    private PropertyMatcher matchValue(final String matcher) {
-        return new PropertyMatcher() {
-
-            public boolean validate(String value) {
-                if(value != null) {
-                    return value.matches(matcher);
-                }else {
-                    return false;
-                }
-            }
-            
-        };
+    private EndPointStatusValidator horizonDuoComplexValidator() {
+        EndPointStatusValidator complexValidator = EndPointStatusValidators.or(
+               EndPointStatusValidators.and(
+                                  EndPointStatusValidators.match(m_agentConfig, HORIZON_DUO_SYSTEM_CAPACITY, "^1$"),
+                                  EndPointStatusValidators.match(m_agentConfig, ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1", "^1$")),
+               
+               EndPointStatusValidators.and(
+                                  EndPointStatusValidators.or(
+                                                  EndPointStatusValidators.and(EndPointStatusValidators.match(m_agentConfig, HORIZON_DUO_SYSTEM_CAPACITY, "^2$")),
+                                                  EndPointStatusValidators.and(EndPointStatusValidators.match(m_agentConfig, HORIZON_DUO_SYSTEM_CAPACITY, "^3$"))
+                                                  )
+                                            ),
+                                  EndPointStatusValidators.match(m_agentConfig, ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.2", "^1$")
+                   
+        );
+        return complexValidator;
     }
     
-    private PropertyMatcher pingableValue() {
-        return new PropertyMatcher() {
-
-            public boolean validate(String value) {
-                return value != null ? true : false;
-            }
-            
-        };
-    }
-    
-    private String getValue(SnmpAgentConfig agentConfig, String oid) {
-        SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
-        if(val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
-            return null;
-        }else {
-            return val.toString();
-        }
-    }
-
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_snmpAgent = agent;
     }
