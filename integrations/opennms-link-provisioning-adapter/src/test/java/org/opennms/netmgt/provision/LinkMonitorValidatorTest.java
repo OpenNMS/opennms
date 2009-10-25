@@ -2,32 +2,19 @@ package org.opennms.netmgt.provision;
 
 import static org.easymock.EasyMock.expect;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
-import org.opennms.netmgt.provision.adapters.link.EndPointTypeValidatorFactory;
-import org.opennms.netmgt.provision.adapters.link.endpoint.AbstractEndPointValidationExpression;
-import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.core.io.ClassPathResource;
 
 public class LinkMonitorValidatorTest {
-    
-    public static class DefaultValidatorTestFactory implements EndPointTypeValidatorFactory {
-        
-        EndPointTypeValidator m_container = new EndPointTypeValidator();
-        
-        public DefaultValidatorTestFactory(){}
-        
-        public EndPointTypeValidator getContainer() {
-            return m_container;
-        }
-        
-    }
     
     public static class EndPointFactory {
         public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
@@ -47,12 +34,15 @@ public class LinkMonitorValidatorTest {
     
     EasyMockUtils m_easyMock = new EasyMockUtils();
     static EndPoint m_mockEndPoint;
-    DefaultValidatorTestFactory m_defaultValidatorFactory;
-    
+    EndPointConfigurationDao m_configDao;
     
     @Before
     public void setup() {
-        m_defaultValidatorFactory = new DefaultValidatorTestFactory();
+        DefaultEndPointConfigurationDao dao = new DefaultEndPointConfigurationDao();
+        dao.setConfigResource(new ClassPathResource("/test-endpoint-configuration.xml"));
+        dao.afterPropertiesSet();
+        m_configDao = dao;
+        
         m_mockEndPoint = createMock(EndPoint.class);
 
     }
@@ -70,7 +60,7 @@ public class LinkMonitorValidatorTest {
 
         replay();
 
-        m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
+        m_configDao.getValidator().validate(m_mockEndPoint);
         
         verify();
     }
@@ -84,7 +74,7 @@ public class LinkMonitorValidatorTest {
         replay();
 
         try {
-            m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
+            m_configDao.getValidator().validate(m_mockEndPoint);
         } finally {
             verify();
         }
@@ -98,7 +88,7 @@ public class LinkMonitorValidatorTest {
         replay();
 
         try {
-            m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
+            m_configDao.getValidator().validate(m_mockEndPoint);
         } finally {
             verify();
         }
@@ -111,7 +101,7 @@ public class LinkMonitorValidatorTest {
         
         replay();
         
-        m_defaultValidatorFactory.getContainer().validate(m_mockEndPoint);
+        m_configDao.getValidator().validate(m_mockEndPoint);
         
         verify();
     }
