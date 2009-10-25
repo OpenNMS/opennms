@@ -3,7 +3,7 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
+function Link(id, typology, status, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
 {
 	if (arguments.length >= 8) {
 		var idSplitted = id.split("-");
@@ -15,6 +15,7 @@ function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash
 		}
 		
 		this.typology=typology;
+		this.status=status;
 		this.animateTag = null;
 		this.id = id;
 		
@@ -88,6 +89,10 @@ Link.prototype.getMapElement2 = function() {
 
 Link.prototype.getTypology = function() {
 	return this.typology;
+}
+
+Link.prototype.getStatus = function() {
+	return this.status;
 }
 
 Link.prototype.getStroke = function() {
@@ -174,28 +179,37 @@ Link.prototype.getInfo = function(evt)
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","30");
-	var tspanContent = document.createTextNode(" links: " + this.mapElement1.label.text);
+	tspan.setAttributeNS(null, "dy","20");
+	var tspanContent = document.createTextNode(" From: " + nodeidSortAss[this.nodeid1].getLabel());
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode("    to: "+this.mapElement2.label.text);
-	tspan.appendChild(tspanContent);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode(" type: "+LINK_TEXT[this.typology]);
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode("    To: " + nodeidSortAss[this.nodeid2].getLabel());
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode(" speed: "+LINK_SPEED[this.typology]);
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",LINKSTATUS_COLOR[this.status]);
+	tspanContent = document.createTextNode(" Status: "+this.status);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[this.typology]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[this.typology]);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 	
