@@ -44,16 +44,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "datalinkinterface")
-public class DataLinkInterface  implements Serializable, Comparable<DataLinkInterface> {
+public class DataLinkInterface  implements Serializable {
     private static final long serialVersionUID = 5241963830563150843L;
 
     private Integer id;
@@ -186,29 +182,4 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         this.lastPollTime = lastPollTime;
     }
 
-    public int compareTo(DataLinkInterface o) {
-        return new CompareToBuilder()
-            .append(getId(), o.getId())
-            .append(getNodeId(), o.getNodeId())
-            .append(getIfIndex(), o.getIfIndex())
-            .append(getNodeParentId(), o.getNodeParentId())
-            .append(getParentIfIndex(), o.getParentIfIndex())
-            .append(getStatus(), o.getStatus())
-            .append(getLastPollTime(), o.getLastPollTime())
-            .append(getLinkTypeId(), o.getLinkTypeId())
-            .toComparison();
-    }
-
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .append(getId())
-            .append(getNodeId())
-            .append(getIfIndex())
-            .append(getNodeParentId())
-            .append(getParentIfIndex())
-            .append(getStatus())
-            .append(getLastPollTime())
-            .append(getLinkTypeId())
-            .toHashCode();
-    }
 }

@@ -62,7 +62,6 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
-    private LinkStateDao m_linkStateDao;
     
     private DatabasePopulator m_populator;
     
@@ -295,13 +294,5 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public void setPopulator(DatabasePopulator populator) {
         m_populator = populator;
-    }
-
-    public void setLinkStateDao(LinkStateDao linkStateDao) {
-        m_linkStateDao = linkStateDao;
-    }
-
-    public LinkStateDao getLinkStateDao() {
-        return m_linkStateDao;
     }
 }

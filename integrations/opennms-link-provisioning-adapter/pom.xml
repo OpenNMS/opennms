@@ -32,16 +32,11 @@
           <verbose>false</verbose>
           <includes>
             <include>org/opennms/netmgt/provision/config/linkadapter/*.java</include>
-            <include>org/opennms/netmgt/provision/adapters/link/endpoint/*.java</include>
           </includes>
           <schemas>
             <schema>
               <namespace>http://xmlns.opennms.org/xsd/config/map-link-adapter</namespace>
               <file>map-link-adapter.xsd</file>
-            </schema>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/config/endpoint-types</namespace>
-              <file>endpoint-types</file>
             </schema>
           </schemas>
         </configuration>
@@ -81,10 +76,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-simple</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
     <dependency>
@@ -115,6 +106,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -127,18 +119,6 @@
       <artifactId>xmlunit</artifactId>
       <version>1.2</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>mock-snmp-agent</artifactId>
-      <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-    	<groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-    	<type>test-jar</type>
-    	<scope>test</scope>
     </dependency>
   </dependencies>
 </project>
