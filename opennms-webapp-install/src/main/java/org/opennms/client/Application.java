@@ -306,7 +306,7 @@ public class Application implements EntryPoint {
             }
 
             // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
-            installService.connectToDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
+            installService.connectToDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), dbNmsUser.getValue(), dbNmsPass.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
                 public void onSuccess(Void result) {
                     connectToDatabase.setIconStyle("check-success-icon");
                     if (m_next != null) {

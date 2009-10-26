@@ -211,7 +211,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, adminUser, adminPassword, adminUrl, url);
     }
 
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException {
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException {
         validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUrl));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);

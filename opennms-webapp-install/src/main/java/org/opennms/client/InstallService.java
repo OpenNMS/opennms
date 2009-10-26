@@ -56,7 +56,7 @@ public interface InstallService extends RemoteService {
      * connecting to a proper OpenNMS database. This method will throw exceptions
      * if the connection failed or the parameters cannot be stored.
      */
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException;
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException;
 
     /**
      * Attempt to connect to the database and perform a lightweight database
