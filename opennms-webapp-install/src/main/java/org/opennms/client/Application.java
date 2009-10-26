@@ -362,34 +362,33 @@ public class Application implements EntryPoint {
             // Create the RemoteServiceServlet that acts as the controller for this GWT view
             // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
-            try {
-                installService.checkIpLike(new AsyncCallback<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        if (result) {
-                            checkStoredProcedures.setIconStyle("check-success-icon");
-                            if (m_next != null) {
-                                m_next.check();
-                            }
-                        } else {
-                            checkStoredProcedures.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", null);
-                            checkStoredProcedures.expand();
+            installService.checkIpLike(new AsyncCallback<Boolean>() {
+                public void onSuccess(Boolean result) {
+                    if (result) {
+                        checkStoredProcedures.setIconStyle("check-success-icon");
+                        if (m_next != null) {
+                            m_next.check();
                         }
-                    }
-
-                    public void onFailure(Throwable e) {
+                    } else {
                         checkStoredProcedures.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", null);
+                        checkStoredProcedures.expand();
+                    }
+                }
+
+                public void onFailure(Throwable e) {
+                    checkStoredProcedures.setIconStyle("check-failure-icon");
+                    if (e instanceof IllegalStateException) {
+                        MessageBox.alert("Failure", e.getMessage(), null);
+                        // Since this is always database-related, send them back to the database settings panel
+                        connectToDatabase.expand();
+                    } else {
                         // TODO: Figure out better error handling for GWT-level failures
                         MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                         checkStoredProcedures.expand();
                     }
-                });
-            } catch (IllegalStateException e) {
-                MessageBox.alert("Failure", e.getMessage(), null);
-                // Since this is always database-related, send them back to the database settings panel
-                connectToDatabase.expand();
-            }
-
+                }
+            });
         }
     }
 
@@ -695,7 +694,7 @@ public class Application implements EntryPoint {
         dbNmsUser.setAllowBlank(false);
         dbNmsUser.addListener(Events.Change, new Listener<FieldEvent>() {
             public void handleEvent(FieldEvent event) {
-                if ("postgres".equals(dbNmsUser.getValue())) {
+                if ("opennms".equals(dbNmsUser.getValue())) {
                     dbNmsUser.removeStyleName("font-style-normal");
                     dbNmsUser.addStyleName("font-style-italic");
                 } else { 
