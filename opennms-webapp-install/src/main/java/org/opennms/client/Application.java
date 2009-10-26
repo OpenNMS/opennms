@@ -322,7 +322,7 @@ public class Application implements EntryPoint {
                             public void handleEvent(MessageBoxEvent event) {
                                 if (Dialog.YES.equals((event.getButtonClicked().getItemId()))) {
                                     connectToDatabase.setIconStyle("check-progress-icon");
-                                    installService.createDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
+                                    installService.createDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), dbNmsUser.getValue(), dbNmsPass.getValue(), new AsyncCallback<Void>() {
                                         public void onSuccess(Void result) {
                                             // Re-run the check now that the database has been created
                                             thisCheck.check();
