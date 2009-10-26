@@ -208,11 +208,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             }
         }
 
-        return new DatabaseConnectionSettings(dbName, adminUser, adminPassword, driver, adminUrl, url);
+        return new DatabaseConnectionSettings(driver, dbName, adminUser, adminPassword, adminUrl, url);
     }
 
-    public void connectToDatabase(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException {
-        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, dbNmsUrl));
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException {
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUrl));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
@@ -247,8 +247,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public void createDatabase(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl) throws DatabaseDoesNotExistException, IllegalStateException {
-        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, null));
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl) throws DatabaseDoesNotExistException, IllegalStateException {
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, null));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
@@ -288,7 +288,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * the configuration files.
      */
     protected void setDatabaseConfig(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException {
-        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, dbNmsUrl));
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUrl));
         /*
         HttpSession session = this.getThreadLocalRequest().getSession(true);
         session.setAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE, new String[] {

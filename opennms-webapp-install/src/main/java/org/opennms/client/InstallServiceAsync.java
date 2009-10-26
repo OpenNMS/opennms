@@ -11,8 +11,8 @@ public interface InstallServiceAsync {
 	public void isAdminPasswordSet(AsyncCallback<Boolean> callback);
 	public void setAdminPassword(String password, AsyncCallback<Void> callback);
 	public void getDatabaseConnectionSettings(AsyncCallback<DatabaseConnectionSettings> callback) throws IllegalStateException;
-	public void connectToDatabase(String dbName, String user, String password, String driver, String adminUrl, String url, AsyncCallback<Void> callback) throws IllegalStateException;
-	public void createDatabase(String dbName, String user, String password, String driver, String adminUrl, AsyncCallback<Void> callback) throws IllegalStateException;
+	public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUrl, AsyncCallback<Void> callback) throws IllegalStateException;
+	public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, AsyncCallback<Void> callback) throws IllegalStateException;
 	// protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory, AsyncCallback<Void> callback);
 	public void getDatabaseUpdateLogs(int offset, AsyncCallback<List<LoggingEvent>> callback);
 	public void clearDatabaseUpdateLogs(AsyncCallback<Void> callback);

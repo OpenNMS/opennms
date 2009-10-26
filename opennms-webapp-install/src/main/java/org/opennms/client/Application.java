@@ -306,7 +306,7 @@ public class Application implements EntryPoint {
             }
 
             // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
-            installService.connectToDatabase(dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
+            installService.connectToDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
                 public void onSuccess(Void result) {
                     connectToDatabase.setIconStyle("check-success-icon");
                     if (m_next != null) {
@@ -322,7 +322,7 @@ public class Application implements EntryPoint {
                             public void handleEvent(MessageBoxEvent event) {
                                 if (Dialog.YES.equals((event.getButtonClicked().getItemId()))) {
                                     connectToDatabase.setIconStyle("check-progress-icon");
-                                    installService.createDatabase(dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
+                                    installService.createDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), new AsyncCallback<Void>() {
                                         public void onSuccess(Void result) {
                                             // Re-run the check now that the database has been created
                                             thisCheck.check();

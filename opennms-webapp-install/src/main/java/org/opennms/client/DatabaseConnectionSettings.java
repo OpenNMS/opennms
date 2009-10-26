@@ -24,7 +24,7 @@ public class DatabaseConnectionSettings implements BeanModelTag, Serializable, I
      */
     public DatabaseConnectionSettings() {}
 
-    public DatabaseConnectionSettings(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) {
+    public DatabaseConnectionSettings(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUrl) {
         m_dbName = dbName; 
         m_adminUser = dbAdminUser;
         m_adminPassword = dbAdminPassword;
