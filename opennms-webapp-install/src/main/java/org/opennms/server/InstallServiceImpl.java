@@ -171,11 +171,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
     public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException {
         String dbName = null;
-        String adminUser = null;
-        String adminPassword = null;
+        String dbAdminUser = null;
+        String dbAdminPassword = null;
         String driver = null;
-        String adminUrl = null;
-        String url = null;
+        String dbAdminUrl = null;
+        String dbNmsUser = null;
+        String dbNmsPassword = null;
+        String dbNmsUrl = null;
 
         File configFile = new File(new File(this.getOpennmsInstallPath(), "etc"), "opennms-datasources.xml");
         DataSourceConfiguration config = null;
@@ -195,22 +197,23 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
         for (JdbcDataSource ds : config.getJdbcDataSource()) {
             if (OPENNMS_DATASOURCE_NAME.equals(ds.getName())) {
-                url = ds.getUrl();
-                // TODO: Fetch username and password of opennms user
+                dbNmsUser = ds.getUserName();
+                dbNmsPassword = ds.getPassword();
+                dbNmsUrl = ds.getUrl();
             } else if (OPENNMS_ADMIN_DATASOURCE_NAME.equals(ds.getName())) {
                 dbName = ds.getDatabaseName();
-                adminUser = ds.getUserName();
-                adminPassword = ds.getPassword();
+                dbAdminUser = ds.getUserName();
+                dbAdminPassword = ds.getPassword();
                 driver = ds.getClassName();
-                adminUrl = ds.getUrl();
+                dbAdminUrl = ds.getUrl();
             }
         }
 
-        return new DatabaseConnectionSettings(driver, dbName, adminUser, adminPassword, adminUrl, url);
+        return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
     public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException {
-        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUrl));
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
@@ -246,7 +249,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException {
-        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, null));
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, null));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
@@ -280,13 +283,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    /**
-     * TODO: Figure out if we always want to persist database connection settings directly
-     * to the opennms-datasources.xml file or if we should wait until the end to write to
-     * the configuration files.
-     */
     protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException {
-        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUrl));
+        validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl));
         /*
         HttpSession session = this.getThreadLocalRequest().getSession(true);
         session.setAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE, new String[] {
@@ -394,6 +392,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     public boolean checkIpLike() throws IllegalStateException {
         // We should have a proper opennms-datasources.xml stored at this point so try to load it
         // by using the normal {@link org.opennms.netmgt.config.DataSourceFactory} class.
+        // TODO: Throw specific exceptions to provide better UI feedback
         try {
             DataSourceFactory.init();
         } catch (MarshalException e) {
@@ -410,28 +409,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
         }
 
-        /*
-        InstallerDb db = new InstallerDb();
-        HttpSession session = this.getThreadLocalRequest().getSession(true);
-        String[] dbSettings = (String[])session.getAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE);
-        if (dbSettings == null || dbSettings.length != 6) {
-            throw new IllegalStateException("Database settings have not been specified yet.");
-        }
-
-        // TODO: Replace indices with constants
-        db.setDatabaseName(dbSettings[0]);
-        db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
-        db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
-        try {
-            db.setAdminDataSource(new SimpleDataSource(dbSettings[3], dbSettings[4], dbSettings[1], dbSettings[2]));
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
-        }
-
-        // TODO: Are there additional tests that we need to perform on the database?
-        return db.isIpLikeUsable();
-         */
-
         InstallerDb db = new InstallerDb();
         db.setAdminDataSource(DataSourceFactory.getInstance(OPENNMS_ADMIN_DATASOURCE_NAME));
         db.setDataSource(DataSourceFactory.getInstance(OPENNMS_DATASOURCE_NAME));
@@ -439,6 +416,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return db.isIpLikeUsable();
     }
 
+    /**
+     * Perform validation on database settings. The driver class, usernames, and URLs must be
+     * non-null and non-blank, but the passwords can be blank.
+     */
     protected static void validateDbParameters(DatabaseConnectionSettings settings) throws IllegalArgumentException {
         if (settings.getDbName() == null || "".equals(settings.getDbName().trim())) {
             throw new IllegalArgumentException("Database name cannot be blank.");
@@ -446,8 +427,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             throw new IllegalArgumentException("Driver class cannot be blank.");
         } else if (settings.getAdminUser() == null || "".equals(settings.getAdminUser().trim())) {
             throw new IllegalArgumentException("Admin user cannot be blank.");
-        } else if (settings.getAdminPassword() == null || "".equals(settings.getAdminPassword().trim())) {
-            throw new IllegalArgumentException("Admin password cannot be blank.");
+        } else if ("".equals(settings.getAdminUrl() == null ? null : settings.getAdminUrl().trim())) {
+            throw new IllegalArgumentException("Admin JDBC URL cannot be blank.");
+        } else if (settings.getNmsUser() == null || "".equals(settings.getNmsUser().trim())) {
+            throw new IllegalArgumentException("OpenNMS user cannot be blank.");
+        } else if ("".equals(settings.getNmsUrl() == null ? null : settings.getNmsUrl().trim())) {
+            throw new IllegalArgumentException("OpenNMS JDBC URL cannot be blank.");
         }
     }
 }
