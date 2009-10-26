@@ -17,20 +17,20 @@ public class DatabaseConnectionSettings implements BeanModelTag, Serializable, I
     private String m_adminPassword;
     private String m_driver;
     private String m_adminUrl;
-    private String m_url;
+    private String m_nmsUrl;
 
     /**
      * Zero-argument constructor is necessary for GWT serialization
      */
     public DatabaseConnectionSettings() {}
 
-    public DatabaseConnectionSettings(String dbName, String adminUser, String adminPassword, String driver, String adminUrl, String url) {
+    public DatabaseConnectionSettings(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) {
         m_dbName = dbName; 
-        m_adminUser = adminUser;
-        m_adminPassword = adminPassword;
+        m_adminUser = dbAdminUser;
+        m_adminPassword = dbAdminPassword;
         m_driver = driver;
-        m_adminUrl = adminUrl;
-        m_url = url;
+        m_adminUrl = dbAdminUrl;
+        m_nmsUrl = dbNmsUrl;
     }
 
     public String getDbName() { return m_dbName; }
@@ -38,5 +38,5 @@ public class DatabaseConnectionSettings implements BeanModelTag, Serializable, I
     public String getAdminPassword() { return m_adminPassword; }
     public String getDriver() { return m_driver; }
     public String getAdminUrl() { return m_adminUrl; }
-    public String getUrl() { return m_url; }
+    public String getNmsUrl() { return m_nmsUrl; }
 }

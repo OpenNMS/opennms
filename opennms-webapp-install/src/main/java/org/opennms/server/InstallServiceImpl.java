@@ -2,7 +2,6 @@ package org.opennms.server;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,12 +11,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.client.DatabaseConnectionSettings;
 import org.opennms.client.DatabaseDoesNotExistException;
@@ -32,15 +29,16 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
+    private static final long serialVersionUID = 7921657972081359016L;
+
     private static final String OWNERSHIP_FILE_SESSION_ATTRIBUTE = "__install_ownership_file";
-    private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
+    // private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
     private static final String OPENNMS_DATASOURCE_NAME = "opennms";
     private static final String OPENNMS_ADMIN_DATASOURCE_NAME = "opennms-admin";
     private static final String OPENNMS_DB_USERNAME = "opennms";
@@ -213,15 +211,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(dbName, adminUser, adminPassword, driver, adminUrl, url);
     }
 
-    public void connectToDatabase(String dbName, String user, String password, String driver, String adminUrl, String url) throws IllegalStateException {
+    public void connectToDatabase(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException {
+        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, dbNmsUrl));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
         db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
         db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
         try {
-            db.setAdminDataSource(new SimpleDataSource(driver, adminUrl, user, password));
-            db.setDataSource(new SimpleDataSource(driver, url, OPENNMS_DB_USERNAME, OPENNMS_DB_PASSWORD));
+            db.setAdminDataSource(new SimpleDataSource(driver, dbAdminUrl, dbAdminUser, dbAdminPassword));
+            db.setDataSource(new SimpleDataSource(driver, dbNmsUrl, OPENNMS_DB_USERNAME, OPENNMS_DB_PASSWORD));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
@@ -239,7 +238,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             try {
                 db.vacuumDatabase(false);
                 // If the test completes, then store the database connectivity information
-                this.setDatabaseConfig(dbName, user, password, driver, adminUrl, url);
+                this.setDatabaseConfig(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, dbNmsUrl);
             } catch (SQLException e) {
                 throw new IllegalArgumentException("Database connection failed: " + e.getMessage());
             }
@@ -248,14 +247,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public void createDatabase(String dbName, String user, String password, String driver, String adminUrl) throws DatabaseDoesNotExistException, IllegalStateException {
+    public void createDatabase(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl) throws DatabaseDoesNotExistException, IllegalStateException {
+        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, null));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
         // Only used when creating an OpenNMS user in the database
         db.setPostgresOpennmsUser(OPENNMS_DB_USERNAME);
         db.setPostgresOpennmsPassword(OPENNMS_DB_PASSWORD);
         try {
-            db.setAdminDataSource(new SimpleDataSource(driver, adminUrl, user, password));
+            db.setAdminDataSource(new SimpleDataSource(driver, dbAdminUrl, dbAdminUser, dbAdminPassword));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
         }
@@ -287,7 +287,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * to the opennms-datasources.xml file or if we should wait until the end to write to
      * the configuration files.
      */
-    protected void setDatabaseConfig(String dbName, String user, String password, String driver, String adminUrl, String url) throws IllegalStateException, IllegalArgumentException {
+    protected void setDatabaseConfig(String dbName, String dbAdminUser, String dbAdminPassword, String driver, String dbAdminUrl, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException {
+        validateDbParameters(new DatabaseConnectionSettings(dbName, dbAdminUser, dbAdminPassword, driver, dbAdminUrl, dbNmsUrl));
         /*
         HttpSession session = this.getThreadLocalRequest().getSession(true);
         session.setAttribute(DATABASE_SETTINGS_SESSION_ATTRIBUTE, new String[] {
@@ -304,16 +305,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         adminDs.setClassName(driver);
         adminDs.setDatabaseName(dbName);
         adminDs.setName(OPENNMS_ADMIN_DATASOURCE_NAME);
-        adminDs.setPassword(password);
-        adminDs.setUrl(url);
-        adminDs.setUserName(user);
+        adminDs.setPassword(dbAdminPassword);
+        adminDs.setUrl(dbNmsUrl);
+        adminDs.setUserName(dbAdminUser);
 
         JdbcDataSource opennmsDs = new JdbcDataSource();
         opennmsDs.setClassName(driver);
         opennmsDs.setDatabaseName(dbName);
         opennmsDs.setName(OPENNMS_DATASOURCE_NAME);
         opennmsDs.setPassword(OPENNMS_DB_PASSWORD);
-        opennmsDs.setUrl(url);
+        opennmsDs.setUrl(dbNmsUrl);
         opennmsDs.setUserName(OPENNMS_DB_USERNAME);
 
         DataSourceConfiguration config = new DataSourceConfiguration();
@@ -438,5 +439,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         db.setDataSource(DataSourceFactory.getInstance(OPENNMS_DATASOURCE_NAME));
         // TODO: Are there additional tests that we need to perform on the database?
         return db.isIpLikeUsable();
+    }
+
+    protected static void validateDbParameters(DatabaseConnectionSettings settings) throws IllegalArgumentException {
+        if (settings.getDbName() == null || "".equals(settings.getDbName().trim())) {
+            throw new IllegalArgumentException("Database name cannot be blank.");
+        } else if (settings.getDriver() == null || "".equals(settings.getDriver().trim())) {
+            throw new IllegalArgumentException("Driver class cannot be blank.");
+        } else if (settings.getAdminUser() == null || "".equals(settings.getAdminUser().trim())) {
+            throw new IllegalArgumentException("Admin user cannot be blank.");
+        } else if (settings.getAdminPassword() == null || "".equals(settings.getAdminPassword().trim())) {
+            throw new IllegalArgumentException("Admin password cannot be blank.");
+        }
     }
 }

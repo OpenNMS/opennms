@@ -223,7 +223,7 @@ public class Application implements EntryPoint {
                     if (m_databaseConnectionSettings.getDbName() != null) dbName.setValue(m_databaseConnectionSettings.getDbName());
                     // TODO: Probably should always use the hard-coded database driver value
                     // if (m_databaseConnectionSettings.getDriver() != null) dbDriver.setValue(m_databaseConnectionSettings.getDriver());
-                    if (m_databaseConnectionSettings.getUrl() != null) dbNmsUrl.setValue(m_databaseConnectionSettings.getUrl());
+                    if (m_databaseConnectionSettings.getNmsUrl() != null) dbNmsUrl.setValue(m_databaseConnectionSettings.getNmsUrl());
 
                     if (m_next != null) {
                         m_next.check();
@@ -261,21 +261,29 @@ public class Application implements EntryPoint {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
                 return;
+            } else if (!dbDriver.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                return;
             } else if (!dbName.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
                 return;
             } else if (!dbAdminUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database User", "The database username cannot be left blank.", null);
+                MessageBox.alert("Invalid Admin User", "The admin username cannot be left blank.", null);
                 return;
             } else if (!dbAdminPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Password", "The database password cannot be left blank.", null);
+                MessageBox.alert("Invalid Admin Password", "The admin password cannot be left blank.", null);
                 return;
-            } else if (!dbDriver.validate()) {
+            } else if (!dbNmsUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                MessageBox.alert("Invalid OpenNMS User", "The OpenNMS username cannot be left blank.", null);
+                return;
+            } else if (!dbNmsPass.validate()) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("Invalid OpenNMS Password", "The OpenNMS password cannot be left blank.", null);
                 return;
             }
 
@@ -286,7 +294,14 @@ public class Application implements EntryPoint {
             // Make sure that the password and confirmation fields match
             if (dbAdminPass.getValue() == null || !dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
+                MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                return;
+            }
+
+            // Make sure that the password and confirmation fields match
+            if (dbNmsPass.getValue() == null || !dbNmsPass.getValue().equals(dbNmsConfirm.getValue())) {
+                connectToDatabase.setIconStyle("check-failure-icon");
+                MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
                 return;
             }
 
