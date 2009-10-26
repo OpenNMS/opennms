@@ -20,6 +20,7 @@ import org.opennms.client.DatabaseConnectionSettings;
 import org.opennms.client.DatabaseDoesNotExistException;
 import org.opennms.client.InstallService;
 import org.opennms.client.LoggingEvent;
+import org.opennms.client.OwnershipNotConfirmedException;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -103,6 +104,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean isAdminPasswordSet() throws IllegalStateException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         /*
         Userinfo userinfo = null;
         try {
@@ -161,6 +165,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void setAdminPassword(String password) {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         UserManager manager = UserFactory.getInstance();
         try {
             manager.setUnencryptedPassword("admin", password);
@@ -170,6 +177,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         String dbName = null;
         String dbAdminUser = null;
         String dbAdminPassword = null;
@@ -213,6 +223,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
@@ -249,6 +262,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, null));
         InstallerDb db = new InstallerDb();
         db.setDatabaseName(dbName);
@@ -284,6 +300,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl));
         /*
         HttpSession session = this.getThreadLocalRequest().getSession(true);
@@ -333,6 +352,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         List<LoggingEvent> retval = new ArrayList<LoggingEvent>();
         for (org.apache.log4j.spi.LoggingEvent event : ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED")).getEvents(offset, 200)) {
             LogLevel level = null;
@@ -352,6 +374,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void clearDatabaseUpdateLogs(){
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         ListAppender appender = ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED"));
         appender.clear();
     }
@@ -361,6 +386,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * relayed to the web UI by the log4j appender.
      */
     public void updateDatabase() {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         Thread thread = new Thread() {
             public void run() {
                 // Don't need synchronized blocks when updating a boolean primitive
@@ -380,16 +408,25 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public boolean isUpdateInProgress() {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         // Don't need synchronized blocks when accessing a boolean primitive
         return m_updateIsInProgress;
     }
 
     public boolean didLastUpdateSucceed() {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         // Don't need synchronized blocks when accessing a boolean primitive
         return m_lastUpdateSucceeded;
     }
 
     public boolean checkIpLike() throws IllegalStateException {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
         // We should have a proper opennms-datasources.xml stored at this point so try to load it
         // by using the normal {@link org.opennms.netmgt.config.DataSourceFactory} class.
         // TODO: Throw specific exceptions to provide better UI feedback
