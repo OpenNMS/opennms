@@ -48,7 +48,7 @@ public class ImportJobFactory implements JobFactory {
     public Job newJob(TriggerFiredBundle bundle) throws SchedulerException {
 
         JobDetail jobDetail = bundle.getJobDetail();
-        Class<ImportJob> jobClass = (Class<ImportJob>)jobDetail.getJobClass();
+        Class<ImportJob> jobClass = getJobClass(jobDetail);
         
         ImportJob job = null;
         
@@ -61,6 +61,11 @@ public class ImportJobFactory implements JobFactory {
                                                            e.getLocalizedMessage(), e);
             throw se;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<ImportJob> getJobClass(JobDetail jobDetail) {
+        return (Class<ImportJob>)jobDetail.getJobClass();
     }
 
     public void setProvisioner(Provisioner provisioner) {

@@ -185,7 +185,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                                       m_port,
                                       m_key);
 
-        List<Record> records = xfer.run();
+        List<Record> records = getRecords(xfer);
         
         Requisition r = null;
         
@@ -202,6 +202,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         }
         
         return r;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private List<Record> getRecords(ZoneTransferIn xfer) throws IOException, ZoneTransferException {
+        return (List<Record>) xfer.run();
     }
 
     /**
