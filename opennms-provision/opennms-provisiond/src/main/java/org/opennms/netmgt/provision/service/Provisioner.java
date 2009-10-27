@@ -167,7 +167,7 @@ public class Provisioner implements SpringServiceDaemon {
     
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
         log().warn("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_lifeCycleRepository, m_providers);
+        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_lifeCycleRepository, m_providers);
     }
 
     //Helper functions for the schedule

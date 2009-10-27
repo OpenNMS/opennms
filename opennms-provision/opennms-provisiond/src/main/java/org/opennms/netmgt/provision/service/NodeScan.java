@@ -43,8 +43,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
@@ -54,6 +57,7 @@ public class NodeScan implements Runnable {
     private String m_foreignSource;
     private String m_foreignId;
     private ProvisionService m_provisionService;
+    private EventForwarder m_eventForwarder;
     private LifeCycleRepository m_lifeCycleRepository;
     private List<Object> m_providers;
     
@@ -62,7 +66,7 @@ public class NodeScan implements Runnable {
     
     private OnmsNode m_node;
 
-    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -89,6 +93,23 @@ public class NodeScan implements Runnable {
 
     public boolean isAborted() {
         return m_aborted;
+    }
+    
+    public void abort(String reason) {
+        m_aborted = true;
+        
+        log().info(String.format("Aborting Scan of node %d for the following reason: %s", m_nodeId, reason));
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_ABORTED_UEI, "Provisiond");
+        if (m_nodeId != null) {
+            bldr.setNodeid(m_nodeId);
+        }
+        bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, m_foreignSource);
+        bldr.addParam(EventConstants.PARM_FOREIGN_ID, m_foreignId);
+        bldr.addParam(EventConstants.PARM_REASON, reason);
+        
+        m_eventForwarder.sendNow(bldr.getEvent());
+        
     }
 
     public void run() {
@@ -120,8 +141,7 @@ public class NodeScan implements Runnable {
     public void doLoadNode(Phase loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
-            log().warn(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
-            m_aborted = true;
+            abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
         }
     }
 
@@ -244,11 +264,11 @@ public class NodeScan implements Runnable {
         }
 
         public boolean isAborted() {
-            return m_aborted;
+            return NodeScan.this.isAborted();
         }
 
-        public void abort() {
-            m_aborted = true;
+        public void abort(String reason) {
+            NodeScan.this.abort(reason);
         }
 
         public String getForeignSource() {
