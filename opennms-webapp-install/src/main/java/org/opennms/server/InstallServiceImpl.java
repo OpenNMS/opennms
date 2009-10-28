@@ -7,11 +7,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
@@ -19,6 +21,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.client.DatabaseConnectionSettings;
 import org.opennms.client.DatabaseDoesNotExistException;
 import org.opennms.client.InstallService;
+import org.opennms.client.InstallerProgressItem;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.OwnershipNotConfirmedException;
 import org.opennms.client.LoggingEvent.LogLevel;
@@ -40,11 +43,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
     private static final String OWNERSHIP_FILE_SESSION_ATTRIBUTE = "__install_ownership_file";
     // private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
-    private static final String OPENNMS_DATASOURCE_NAME = "opennms";
-    private static final String OPENNMS_ADMIN_DATASOURCE_NAME = "opennms-admin";
 
     private static boolean m_updateIsInProgress = false;
     private static boolean m_lastUpdateSucceeded = false;
+
+    private Installer m_installer = null;
+    private final InstallerProgressManager m_progressManager = new InstallerProgressManager();
 
     /**
      * Fetch the OpenNMS home directory, as set in the <code>opennms.home</code>
@@ -206,11 +210,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
 
         for (JdbcDataSource ds : config.getJdbcDataSource()) {
-            if (OPENNMS_DATASOURCE_NAME.equals(ds.getName())) {
+            if (Installer.OPENNMS_DATA_SOURCE_NAME.equals(ds.getName())) {
                 dbNmsUser = ds.getUserName();
                 dbNmsPassword = ds.getPassword();
                 dbNmsUrl = ds.getUrl();
-            } else if (OPENNMS_ADMIN_DATASOURCE_NAME.equals(ds.getName())) {
+            } else if (Installer.ADMIN_DATA_SOURCE_NAME.equals(ds.getName())) {
                 dbName = ds.getDatabaseName();
                 dbAdminUser = ds.getUserName();
                 dbAdminPassword = ds.getPassword();
@@ -319,7 +323,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         JdbcDataSource adminDs = new JdbcDataSource();
         adminDs.setClassName(driver);
         adminDs.setDatabaseName(dbName);
-        adminDs.setName(OPENNMS_ADMIN_DATASOURCE_NAME);
+        adminDs.setName(Installer.ADMIN_DATA_SOURCE_NAME);
         adminDs.setPassword(dbAdminPassword);
         adminDs.setUrl(dbNmsUrl);
         adminDs.setUserName(dbAdminUser);
@@ -327,7 +331,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         JdbcDataSource opennmsDs = new JdbcDataSource();
         opennmsDs.setClassName(driver);
         opennmsDs.setDatabaseName(dbName);
-        opennmsDs.setName(OPENNMS_DATASOURCE_NAME);
+        opennmsDs.setName(Installer.OPENNMS_DATA_SOURCE_NAME);
         opennmsDs.setPassword(dbNmsPassword);
         opennmsDs.setUrl(dbNmsUrl);
         opennmsDs.setUserName(dbNmsUser);
@@ -373,6 +377,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return retval;
     }
 
+    /**
+     * Delegate to {@link m_progressManager} to fetch the list of {@link InstallerProgressItem} 
+     * classes to track the progress of the {@link Installer} execution.
+     */
+    public Collection<InstallerProgressItem> getDatabaseUpdateProgress() {
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
+        return m_progressManager.getProgressItems();
+    }
+
     public void clearDatabaseUpdateLogs(){
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -394,7 +409,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 // Don't need synchronized blocks when updating a boolean primitive
                 m_updateIsInProgress = true;
                 try {
-                    Installer.main(new String[] { "-dis" });
+                    // Create a new Installer
+                    m_installer = new Installer();
+                    // Run BasicConfigurator as a precondition of running the install
+                    BasicConfigurator.configure();
+                    // Clear any progress tracking items currently stored in the InstallerProgressManager instance
+                    m_progressManager.clearItems();
+                    // Inject the InstallerProgressManager into the Installer instance
+                    m_installer.setProgressManager(m_progressManager);
+                    // Run the install
+                    m_installer.install(new String[] { "-dis" });
+                    // Mark the install as successful
                     m_lastUpdateSucceeded = true;
                 } catch (Exception e) {
                     Logger.getLogger(this.getClass()).error("Installation failed: " + e.getMessage(), e);
@@ -447,8 +472,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
 
         InstallerDb db = new InstallerDb();
-        db.setAdminDataSource(DataSourceFactory.getInstance(OPENNMS_ADMIN_DATASOURCE_NAME));
-        db.setDataSource(DataSourceFactory.getInstance(OPENNMS_DATASOURCE_NAME));
+        db.setAdminDataSource(DataSourceFactory.getInstance(Installer.ADMIN_DATA_SOURCE_NAME));
+        db.setDataSource(DataSourceFactory.getInstance(Installer.OPENNMS_DATA_SOURCE_NAME));
         // TODO: Are there additional tests that we need to perform on the database?
         return db.isIpLikeUsable();
     }
