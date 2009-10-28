@@ -16,7 +16,7 @@ public interface InstallServiceAsync {
 	public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, AsyncCallback<Void> callback) throws IllegalStateException;
 	// protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory, AsyncCallback<Void> callback);
 	public void getDatabaseUpdateLogs(int offset, AsyncCallback<List<LoggingEvent>> callback);
-	public void getDatabaseUpdateProgress(AsyncCallback<Collection<InstallerProgressItem>> callback);
+	public void getDatabaseUpdateProgress(AsyncCallback<List<InstallerProgressItem>> callback);
 	public void clearDatabaseUpdateLogs(AsyncCallback<Void> callback);
 	public void updateDatabase(AsyncCallback<Void> callback);
 	public void isUpdateInProgress(AsyncCallback<Boolean> callback);

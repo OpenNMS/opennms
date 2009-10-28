@@ -1,6 +1,7 @@
 package org.opennms.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.extjs.gxt.ui.client.Style;
@@ -20,7 +21,9 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Header;
 import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.IconSupport;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -31,6 +34,8 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
+import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.extjs.gxt.ui.client.widget.toolbar.LabelToolItem;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -39,6 +44,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -709,6 +715,7 @@ public class Application implements EntryPoint {
         updateDatabase.setIconStyle("check-failure-icon");
         updateDatabase.setBodyStyleName("accordion-panel");
 
+        /*
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
@@ -849,6 +856,98 @@ public class Application implements EntryPoint {
             }
         });
         updateDatabase.add(updateButton);
+         */
+
+        final VerticalPanel dbProgressPanel = new VerticalPanel();
+        updateDatabase.add(dbProgressPanel);
+
+        Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent event) {
+                // Start a spinner that indicates operation start
+                updateDatabase.setIconStyle("check-progress-icon");
+
+                installService.clearDatabaseUpdateLogs(new AsyncCallback<Void>() {
+                    public void onSuccess(Void result) {
+                        installService.updateDatabase(new AsyncCallback<Void>() {
+                            public void onSuccess(Void result) {
+                                final Timer logTimer = new Timer() {
+                                    public void run() {
+                                        installService.getDatabaseUpdateProgress(new AsyncCallbackWithReference<Timer,List<InstallerProgressItem>>(this) {
+                                            public void onSuccess(List<InstallerProgressItem> result) {
+                                                populateVerticalPanelWithProgress(dbProgressPanel, result);
+                                                installService.isUpdateInProgress(new AsyncCallbackWithReference<Timer,Boolean>(m_reference) {
+                                                    public void onSuccess(Boolean result) {
+                                                        if (result) {
+                                                            // Do nothing; the Timer continues to execute
+                                                        } else {
+                                                            // The installer has completed! 
+                                                            // Cancel the timer
+                                                            m_reference.cancel();
+                                                            // Load the final log entries
+                                                            markInProgressHeadersAsSucceeded(dbProgressPanel);
+
+                                                            // Check to see if the installer operation succeeded
+                                                            installService.didLastUpdateSucceed(new AsyncCallback<Boolean>() {
+                                                                public void onSuccess(Boolean result) {
+                                                                    if (result) {
+                                                                        // Change the panel icon to a success icon
+                                                                        updateDatabase.setIconStyle("check-success-icon");
+                                                                        MessageBox.alert("Update Succeeded", "The database update succeeded.", null);
+                                                                    } else {
+                                                                        markInProgressHeadersAsFailed(dbProgressPanel);
+                                                                        updateDatabase.setIconStyle("check-failure-icon");
+                                                                        MessageBox.alert("Update Failed", "The database update failed. Please check the log messages for more details.", null);
+                                                                    }
+                                                                }
+
+                                                                public void onFailure(Throwable e) {
+                                                                    updateDatabase.setIconStyle("check-failure-icon");
+                                                                    markInProgressHeadersAsFailed(dbProgressPanel);
+                                                                    // TODO: Figure out better error handling for GWT-level failures
+                                                                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+
+                                                    public void onFailure(Throwable e) {
+                                                        updateDatabase.setIconStyle("check-failure-icon");
+                                                        markInProgressHeadersAsFailed(dbProgressPanel);
+                                                        // TODO: Figure out better error handling for GWT-level failures
+                                                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                    }
+                                                });
+                                            }
+                                            public void onFailure(Throwable e) {
+                                                updateDatabase.setIconStyle("check-failure-icon");
+                                                markInProgressHeadersAsFailed(dbProgressPanel);
+                                                // TODO: Figure out better error handling for GWT-level failures
+                                                MessageBox.alert("MY BOX", "Something failed: " + e.getMessage().trim(), null);
+                                            }
+                                        });
+
+                                    }
+                                };
+                                logTimer.scheduleRepeating(2000);
+                            }
+
+                            public void onFailure(Throwable e) {
+                                updateDatabase.setIconStyle("check-failure-icon");
+                                // TODO: Figure out better error handling for GWT-level failures
+                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                            }
+                        });
+                    }
+
+                    public void onFailure(Throwable e) {
+                        updateDatabase.setIconStyle("check-failure-icon");
+                        // TODO: Figure out better error handling for GWT-level failures
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+            }
+        });
+        updateDatabase.add(updateButton);
 
         // final ContentPanel checkStoredProcedures = new ContentPanel();
         checkStoredProcedures.setHeading("Check stored procedures");
@@ -919,5 +1018,49 @@ public class Application implements EntryPoint {
         //dock.add(new HTML(), DockPanel.EAST);
 
         RootPanel.get().add(dock);
+    }
+
+    private static void populateVerticalPanelWithProgress(VerticalPanel panel, Collection<InstallerProgressItem> progressItems) {
+        panel.clear();
+        for (InstallerProgressItem item : progressItems) {
+            Header header = new Header();
+            header.setText(item.getName());
+            if (Progress.COMPLETE.equals(item.getProgress())) {
+                header.setIconStyle("check-success-icon");
+            } else if (Progress.IN_PROGRESS.equals(item.getProgress())) {
+                header.setIconStyle("check-progress-icon");
+            } else if (Progress.INCOMPLETE.equals(item.getProgress())) {
+                header.setIconStyle("check-failure-icon");
+            } else if (Progress.INDETERMINATE.equals(item.getProgress())) {
+                header.setIconStyle("check-failure-icon");
+            }
+            panel.add(header);
+        }
+    }
+
+    private static void markInProgressHeadersAsFailed(VerticalPanel panel) {
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            Widget widget = panel.getWidget(i);
+            if (widget instanceof IconSupport) {
+                IconSupport iconSupport = (IconSupport)widget;
+                // TODO: This test doesn't work!!!
+                if (widget.getStyleName().contains("check-progress-icon")) {
+                    iconSupport.setIconStyle("check-failure-icon");
+                }
+            }
+        }
+    }
+
+    private static void markInProgressHeadersAsSucceeded(VerticalPanel panel) {
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            Widget widget = panel.getWidget(i);
+            if (widget instanceof IconSupport) {
+                IconSupport iconSupport = (IconSupport)widget;
+                // TODO: This test doesn't work!!!
+                if (widget.getStyleName().contains("check-progress-icon")) {
+                    iconSupport.setIconStyle("check-success-icon");
+                }
+            }
+        }
     }
 }

@@ -77,7 +77,7 @@ public interface InstallService extends RemoteService {
     /**
      * Fetch the progress of the database installer subtasks.
      */
-    public Collection<InstallerProgressItem> getDatabaseUpdateProgress();
+    public List<InstallerProgressItem> getDatabaseUpdateProgress();
 
     /**
      * Flush all of the accumulated log entries to start over with a blank list of log entries.

@@ -1,7 +1,8 @@
 package org.opennms.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -15,7 +16,7 @@ public class InstallerProgressManager implements ProgressManager<Installer.Progr
      * This map holds a set of progress indicators that will be exposed via
      * the {@link #getProgressItems()} call.
      */
-    private final Map<Installer.ProgressItemKey,InstallerProgressItem> m_progressItems = Collections.synchronizedSortedMap(new TreeMap<Installer.ProgressItemKey,InstallerProgressItem>());
+    private final Map<Installer.ProgressItemKey,InstallerProgressItem> m_progressItems = new TreeMap<Installer.ProgressItemKey,InstallerProgressItem>();
 
     public synchronized void addItem(Installer.ProgressItemKey key, String name){
         m_progressItems.put(key, new InstallerProgressItem(name));
@@ -40,8 +41,12 @@ public class InstallerProgressManager implements ProgressManager<Installer.Progr
     public synchronized void clearItems() {
         m_progressItems.clear();
     }
-    
-    public synchronized Collection<InstallerProgressItem> getProgressItems() {
-        return m_progressItems.values();
+
+    public synchronized List<InstallerProgressItem> getProgressItems() {
+        // We have to add all of the items to a new ArrayList so that GWT
+        // serialization works. It fails when just returning {@link TreeMap.values()}.
+        List<InstallerProgressItem> retval = new ArrayList<InstallerProgressItem>();
+        retval.addAll(m_progressItems.values());
+        return retval;
     }
 }
