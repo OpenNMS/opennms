@@ -7,8 +7,9 @@ button {
 }
 */
 
-P {
-	margin-bottom: 10px;
+/* Add a margin over the buttons to separate them from the rest of the controls */
+.x-btn {
+	margin-top: 10px;
 }
 
 .widePanel {
