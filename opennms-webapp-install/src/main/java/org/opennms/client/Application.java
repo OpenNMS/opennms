@@ -70,12 +70,9 @@ public class Application implements EntryPoint {
     private final ContentPanel checkStoredProcedures = new ContentPanel();
     private final Button continueButton = new Button();
 
-    ListLoader<ListLoadResult<LoggingEvent>> m_logLoader = null;
-    Button m_closeLogWindowButton = null;
-
     // Create the RemoteServiceServlet that acts as the controller for this GWT view
     // TODO: Make sure that it is OK to have a global instance of this service
-    final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
+    private final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
     public interface InstallationCheck {
         public void check();
@@ -400,65 +397,6 @@ public class Application implements EntryPoint {
     }
 
     /**
-     * TODO: Make sure that this UI can handle a large amount of log messages properly.
-     * TODO: Update look and feel to hide category and maybe color-code the messages
-     */
-    private Window spawnLogMessageWindow() {
-        final Window w = new Window();
-        w.setHeading("Database Update Logs");
-        w.setModal(true);
-        w.setSize(600, 400);
-        // w.setMaximizable(true);
-
-        // Use RpcProxy to fetch the list of LoggingEvent objects
-        // {@link http://www.extjs.com/blog/2008/07/14/preview-java-bean-support-with-ext-gwt/ }
-        // {@link http://www.extjs.com/blog/category/tutorials/ }
-        RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
-            public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
-                installService.getDatabaseUpdateLogs(-1, callback);
-            }
-        };
-
-        // Create a loader that will load results for a Store. The BeanModelReader
-        // will automatically introspect objects that implement BeanModelTag.
-        m_logLoader = new BaseListLoader<ListLoadResult<LoggingEvent>>(proxy, new BeanModelReader());
-        ListStore<BeanModel> store = new ListStore<BeanModel>(m_logLoader);
-
-        // Arguments to this are passed as loadConfig to the RpcProxy
-        m_logLoader.load();
-
-        // These column configs will automagically be converted into
-        // bean accessor calls by the BeanModelReader. So getCategory(), 
-        // getTimestamp(), ... end up being called on the list members.
-        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-        columns.add(new ColumnConfig("category", "Category", 150));
-        columns.add(new ColumnConfig("level", "Severity", 50));
-        columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
-        columns.add(new ColumnConfig("message", "Message", 300));
-        ColumnModel cm = new ColumnModel(columns);
-
-        Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
-        grid.setAutoExpandColumn("message");
-        // grid.setWidth(400);
-        grid.setAutoHeight(true);
-        grid.setBorders(true);
-
-        w.add(grid);
-
-        m_closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
-            public void componentSelected(ButtonEvent event) {
-                w.hide();
-                w.removeAll();
-            }
-        });
-        m_closeLogWindowButton.disable();
-        w.addButton(m_closeLogWindowButton);
-
-        w.show();
-        return w;
-    }
-
-    /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
@@ -779,6 +717,66 @@ public class Application implements EntryPoint {
                 installService.clearDatabaseUpdateLogs(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
                         installService.updateDatabase(new AsyncCallback<Void>() {
+                            private ListLoader<ListLoadResult<LoggingEvent>> m_logLoader = null;
+                            private Button m_closeLogWindowButton = null;
+
+                            // TODO: Make sure that this UI can handle a large amount of log messages properly.
+                            // TODO: Update look and feel to hide category and maybe color-code the messages
+                            private Window spawnLogMessageWindow() {
+                                final Window w = new Window();
+                                w.setHeading("Database Update Logs");
+                                w.setModal(true);
+                                w.setSize(600, 400);
+                                // w.setMaximizable(true);
+
+                                // Use RpcProxy to fetch the list of LoggingEvent objects
+                                // {@link http://www.extjs.com/blog/2008/07/14/preview-java-bean-support-with-ext-gwt/ }
+                                // {@link http://www.extjs.com/blog/category/tutorials/ }
+                                RpcProxy<List<LoggingEvent>> proxy = new RpcProxy<List<LoggingEvent>>() {
+                                    public void load(Object loadConfig, AsyncCallback<List<LoggingEvent>> callback) {
+                                        installService.getDatabaseUpdateLogs(-1, callback);
+                                    }
+                                };
+
+                                // Create a loader that will load results for a Store. The BeanModelReader
+                                // will automatically introspect objects that implement BeanModelTag.
+                                m_logLoader = new BaseListLoader<ListLoadResult<LoggingEvent>>(proxy, new BeanModelReader());
+                                ListStore<BeanModel> store = new ListStore<BeanModel>(m_logLoader);
+
+                                // Arguments to this are passed as loadConfig to the RpcProxy
+                                m_logLoader.load();
+
+                                // These column configs will automagically be converted into
+                                // bean accessor calls by the BeanModelReader. So getCategory(), 
+                                // getTimestamp(), ... end up being called on the list members.
+                                List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+                                columns.add(new ColumnConfig("category", "Category", 150));
+                                columns.add(new ColumnConfig("level", "Severity", 50));
+                                columns.add(new ColumnConfig("timestamp", "Timestamp", 100));
+                                columns.add(new ColumnConfig("message", "Message", 300));
+                                ColumnModel cm = new ColumnModel(columns);
+
+                                Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
+                                grid.setAutoExpandColumn("message");
+                                // grid.setWidth(400);
+                                grid.setAutoHeight(true);
+                                grid.setBorders(true);
+
+                                w.add(grid);
+
+                                m_closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
+                                    public void componentSelected(ButtonEvent event) {
+                                        w.hide();
+                                        w.removeAll();
+                                    }
+                                });
+                                m_closeLogWindowButton.disable();
+                                w.addButton(m_closeLogWindowButton);
+
+                                w.show();
+                                return w;
+                            }
+
                             public void onSuccess(Void result) {
                                 final Window logWindow = spawnLogMessageWindow();
                                 logWindow.setIconStyle("check-progress-icon");
@@ -832,11 +830,6 @@ public class Application implements EntryPoint {
                                     }
                                 };
                                 logTimer.scheduleRepeating(2000);
-
-                                /*
-                                updateDatabase.setIconStyle("check-success-icon");
-                                MessageBox.alert("Update Started", "The database update has been started.", null);
-                                 */
                             }
 
                             public void onFailure(Throwable e) {
