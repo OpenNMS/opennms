@@ -7,7 +7,8 @@
 BODY {
 	background-color: #c9dfc9;
 	background-image: url('../images/logo-background.gif');
-	background-repeat: repeat-x; 
+	background-repeat: repeat-x;
+	font-family: arial, tahoma, verdana, helvetica;
 }
 
 .transparent-background {
@@ -36,4 +37,12 @@ BODY {
 
 .check-progress-icon { 
 	background: url('../images/indicator.gif') no-repeat center left !important; 
+}
+
+.progress-panel {
+	margin-top: 10px;
+}
+
+.progress-header {
+	font-size: 11px;
 }

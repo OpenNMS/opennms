@@ -147,8 +147,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return true;
          */
 
-        UserManager manager = UserFactory.getInstance();
         try {
+            UserFactory.init();
+            UserManager manager = UserFactory.getInstance();
             User user = manager.getUser("admin");
             if (user == null) {
                 throw new IllegalStateException("There is no <code>admin</code> user in the <code>users.xml</code> file.");
@@ -164,7 +165,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not check password: " + e.getMessage());
+            throw new IllegalArgumentException("Could not check password: " + e.getMessage(), e);
         }
     }
 
@@ -176,7 +177,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         try {
             manager.setUnencryptedPassword("admin", password);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not store password: " + e.getMessage());
+            throw new IllegalArgumentException("Could not store password: " + e.getMessage(), e);
         }
     }
 
@@ -258,7 +259,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 // If the test completes, then store the database connectivity information
                 this.setDatabaseConfig(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
             } catch (SQLException e) {
-                throw new IllegalArgumentException("Database connection failed: " + e.getMessage());
+                throw new IllegalArgumentException("Database connection failed: " + e.getMessage(), e);
             }
         } else {
             throw new DatabaseDoesNotExistException();
@@ -375,6 +376,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             retval.add(new LoggingEvent(event.getLoggerName(), event.getTimeStamp(), level, event.getMessage().toString()));
         }
         return retval;
+    }
+
+    public List<String> getDatabaseUpdateLogsAsStrings(){
+        if (!this.checkOwnershipFileExists()) {
+            throw new OwnershipNotConfirmedException();
+        }
+        return ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED")).getEventsAsStrings();
     }
 
     /**

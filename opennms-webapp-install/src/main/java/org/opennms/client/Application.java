@@ -27,6 +27,7 @@ import com.extjs.gxt.ui.client.widget.IconSupport;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -858,14 +859,20 @@ public class Application implements EntryPoint {
         updateDatabase.add(updateButton);
          */
 
+        final FieldSet progressFields = new FieldSet();
+        // progressFields.setExpanded(false);
+        progressFields.hide();
+        progressFields.setHeading("Database update progress");
+        progressFields.addStyleName("progress-panel");
+
         final VerticalProgressPanel dbProgressPanel = new VerticalProgressPanel();
         dbProgressPanel.setWidth("100%");
-        updateDatabase.add(dbProgressPanel);
 
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 updateDatabase.setIconStyle("check-progress-icon");
+                progressFields.show();
 
                 installService.clearDatabaseUpdateLogs(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
@@ -892,12 +899,29 @@ public class Application implements EntryPoint {
                                                                         dbProgressPanel.markInProgressHeadersAsSucceeded();
                                                                         // Change the panel icon to a success icon
                                                                         updateDatabase.setIconStyle("check-success-icon");
-                                                                        MessageBox.alert("Update Succeeded", "The database update succeeded.", null);
+                                                                        MessageBox.alert("Update Succeeded", "The database update succeeded.", new Listener<MessageBoxEvent>() {
+                                                                            public void handleEvent(MessageBoxEvent event) {
+                                                                                // Expand the next panel
+                                                                                checkStoredProcedures.expand();
+                                                                                // Hide any collected progress items
+                                                                                progressFields.hide();
+                                                                                // Clear all of the bullet items from the panel
+                                                                                dbProgressPanel.clear();
+                                                                            }
+                                                                        });
                                                                     } else {
                                                                         // Update all of the progress icons with failure icons
                                                                         dbProgressPanel.markInProgressHeadersAsFailed();
+                                                                        // Change the panel icon to a failure icon
                                                                         updateDatabase.setIconStyle("check-failure-icon");
-                                                                        MessageBox.alert("Update Failed", "The database update failed. Please check the log messages for more details.", null);
+                                                                        MessageBox.alert("Update Failed", "The database update failed. Please check the log messages for more details.", new Listener<MessageBoxEvent>() {
+                                                                            public void handleEvent(MessageBoxEvent event) {
+                                                                                // Hide any collected progress items
+                                                                                progressFields.hide();
+                                                                                // Clear all of the bullet items from the panel
+                                                                                dbProgressPanel.clear();
+                                                                            }
+                                                                        });
                                                                     }
                                                                 }
 
@@ -926,7 +950,6 @@ public class Application implements EntryPoint {
                                                 MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
                                             }
                                         });
-
                                     }
                                 };
                                 logTimer.scheduleRepeating(2000);
@@ -948,7 +971,58 @@ public class Application implements EntryPoint {
                 });
             }
         });
+
+        Button showLogsButton = new Button("Show log messages", new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent event) {
+                installService.getDatabaseUpdateLogsAsStrings(new AsyncCallback<List<String>>() {
+                    public void onSuccess(List<String> result) {
+                        if (result == null || result.size() == 0) {
+                            MessageBox.alert("No Log Messages", "There are no log messages to display.", null);
+                        } else {
+                            final StringBuffer html = new StringBuffer();
+                            html.append("<pre>\n");
+
+                            for (String message : result) {
+                                html.append(message + "\n");
+                            }
+
+                            html.append("</pre>");
+
+                            final Window w = new Window();
+                            w.setHeading("Database Update Logs");
+                            w.setModal(true);
+                            w.setSize(600, 400);
+                            // w.setMaximizable(true);
+
+                            w.addText(html.toString());
+
+                            w.show();
+                        }
+                    }
+
+                    public void onFailure(Throwable e) {
+                        // TODO: Figure out better error handling for GWT-level failures
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                    }
+                });
+
+                /*
+                Button closeLogWindowButton = new Button("Close Window", new SelectionListener<ButtonEvent>() {
+                    public void componentSelected(ButtonEvent event) {
+                        w.hide();
+                        w.removeAll();
+                    }
+                });
+                closeLogWindowButton.disable();
+                w.addButton(closeLogWindowButton);
+                 */
+            }
+        });
+
         updateDatabase.add(updateButton);
+        updateDatabase.add(showLogsButton);
+        progressFields.add(dbProgressPanel);
+        updateDatabase.add(progressFields);
 
         // final ContentPanel checkStoredProcedures = new ContentPanel();
         checkStoredProcedures.setHeading("Check stored procedures");
@@ -1024,14 +1098,38 @@ public class Application implements EntryPoint {
     private static class VerticalProgressPanel extends VerticalPanel {
         private final List<InstallerProgressItem> m_items = new ArrayList<InstallerProgressItem>();
 
-        public void updateProgress(Collection<InstallerProgressItem> progressItems) {
+        public VerticalProgressPanel() {
             this.clear();
+        }
+
+        /**
+         * Clear the widgets attached to the panel and the internal list of progress items
+         * that each correspond to one widget in the panel.
+         */
+        public void clear() {
+            this.clear(true);
+        }
+
+        public void clear(boolean addCaption) {
+            super.clear();
             m_items.clear();
-            
+            if (addCaption) {
+                Header header = new Header();
+                header.setText("Loading progress items...");
+                header.setTextStyle("progress-header");
+                header.setIconStyle("check-progress-icon");
+                this.add(header);
+            }
+        }
+
+        public void updateProgress(Collection<InstallerProgressItem> progressItems) {
+            this.clear(false);
+
             for (InstallerProgressItem item : progressItems) {
                 m_items.add(item);
                 Header header = new Header();
                 header.setText(item.getName());
+                header.setTextStyle("progress-header");
                 if (Progress.COMPLETE.equals(item.getProgress())) {
                     header.setIconStyle("check-success-icon");
                 } else if (Progress.IN_PROGRESS.equals(item.getProgress())) {
@@ -1043,31 +1141,44 @@ public class Application implements EntryPoint {
                 }
                 this.add(header);
             }
+
+            // Clear, and add a default caption
+            if (m_items.size() == 0) {
+                this.clear();
+            }
         }
 
         public void markInProgressHeadersAsFailed() {
-            if (this.getWidgetCount() != m_items.size()) {
-                throw new IllegalStateException("Panel items are inconsistent: " + this.getWidgetCount() + " != " + m_items.size());
-            }
-            int i = 0;
-            for (InstallerProgressItem item : m_items) {
-                if (Progress.IN_PROGRESS.equals(item.getProgress())) {
-                    ((IconSupport)this.getWidget(i)).setIconStyle("check-failure-icon");
+            if (m_items.size() == 0) {
+                // Nothing to do
+            } else { 
+                if (this.getWidgetCount() != m_items.size()) {
+                    throw new IllegalStateException("Panel items are inconsistent: " + this.getWidgetCount() + " != " + m_items.size());
                 }
-                i++;
+                int i = 0;
+                for (InstallerProgressItem item : m_items) {
+                    if (Progress.IN_PROGRESS.equals(item.getProgress())) {
+                        ((IconSupport)this.getWidget(i)).setIconStyle("check-failure-icon");
+                    }
+                    i++;
+                }
             }
         }
 
         public void markInProgressHeadersAsSucceeded() {
-            if (this.getWidgetCount() != m_items.size()) {
-                throw new IllegalStateException("Panel items are inconsistent: " + this.getWidgetCount() + " != " + m_items.size());
-            }
-            int i = 0;
-            for (InstallerProgressItem item : m_items) {
-                if (Progress.IN_PROGRESS.equals(item.getProgress())) {
-                    ((IconSupport)this.getWidget(i)).setIconStyle("check-success-icon");
+            if (m_items.size() == 0) {
+                // Nothing to do
+            } else { 
+                if (this.getWidgetCount() != m_items.size()) {
+                    throw new IllegalStateException("Panel items are inconsistent: " + this.getWidgetCount() + " != " + m_items.size());
                 }
-                i++;
+                int i = 0;
+                for (InstallerProgressItem item : m_items) {
+                    if (Progress.IN_PROGRESS.equals(item.getProgress())) {
+                        ((IconSupport)this.getWidget(i)).setIconStyle("check-success-icon");
+                    }
+                    i++;
+                }
             }
             /*
             for (int i = 0; i < panel.getWidgetCount(); i++) {
@@ -1080,7 +1191,7 @@ public class Application implements EntryPoint {
                     }
                 }
             }
-            */
+             */
         }
     }
 }

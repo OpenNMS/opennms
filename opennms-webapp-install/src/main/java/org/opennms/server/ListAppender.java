@@ -1,9 +1,12 @@
 package org.opennms.server;
 
+import java.sql.Time;
+import java.text.DateFormat;
 import java.util.*;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 /** 
@@ -29,6 +32,37 @@ public class ListAppender extends AppenderSkeleton implements Appender {
             // Wrap the collection in an unmodifiable facade
             // retval = Collections.unmodifiableList(m_list.subList((offset > 0) ? offset : 0, toIndex));
             retval = Collections.unmodifiableList(m_list.subList(0, m_list.size()));
+        }
+
+        return retval;
+    }
+
+    public List<String> getEventsAsStrings() {
+        List<String> retval = new ArrayList<String>();
+
+        synchronized(m_list) {
+            for (LoggingEvent event : m_list) {
+                StringBuffer buffer = new StringBuffer();
+                buffer.append(DateFormat.getDateInstance().format(new Date(event.getTimeStamp())));
+                if (event.getLevel().equals(Level.TRACE)) {
+                    buffer.append(" TRACE ");
+                } else if (event.getLevel().equals(Level.DEBUG)) {
+                    buffer.append(" DEBUG  ");
+                } else if (event.getLevel().equals(Level.INFO)) {
+                    buffer.append(" INFO  ");
+                } else if (event.getLevel().equals(Level.WARN)) {
+                    buffer.append(" WARN  ");
+                } else if (event.getLevel().equals(Level.ERROR)) {
+                    buffer.append(" ERROR ");
+                } else if (event.getLevel().equals(Level.FATAL)) {
+                    buffer.append(" FATAL ");
+                } else {
+                    // Ignore events with any other priority
+                    continue;
+                }
+                buffer.append(event.getRenderedMessage());
+                retval.add(buffer.toString());
+            }
         }
 
         return retval;
