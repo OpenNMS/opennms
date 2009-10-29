@@ -1,23 +1,6 @@
-/** Add css rules here for your application. */
-/*
-button {
-  display: block;
-  font-size: 16pt;
-  margin-top: 10px;
-}
-*/
-
 /* Add a margin over the buttons to separate them from the rest of the controls */
 .x-btn {
 	margin-top: 10px;
-}
-
-.widePanel {
-  width: 100%
-}
-
-IMG {
-  margin-top: 20px;
 }
 
 /* Provide a background image */
