@@ -1985,11 +1985,23 @@
      <severity>Normal</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/internal/provisiond/nodeScanAborted</uei>
+    <event-label>OpenNMS-defined Provisiond Event</event-label>
+    <descr>
+      A message from the Provisiond NodeScan lifecycle that a NodeScan has Aborted:
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay' >
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+     <severity>Warning</severity>
+  </event>
+  <event>
     <uei>DISCARD-MATCHING-MESSAGES</uei>
     <event-label>OpenNMS-defined DISCARD-MATCHING-MESSAGES</event-label>
     <descr>
-		DISCARD-MATCHING-MESSAGES is used in the syslogd to generate events that 
-		have no matching events. This event is not persisted by default.
+        DISCARD-MATCHING-MESSAGES is used in the syslogd to generate events that 
+        have no matching events. This event is not persisted by default.
     </descr>
     <logmsg dest='donotpersist' >
       &lt;p&gt;DISCARD-MATCHING-MESSAGES.&lt;/p&gt;

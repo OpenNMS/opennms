@@ -212,21 +212,30 @@ public class CoreScanActivities {
         
         walker.waitFor();
         
-        systemGroup.updateSnmpDataForNode(agentScan.getNode());
-        
-        List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
-        
-        OnmsNode node = agentScan.getNode();
-        for(NodePolicy policy : nodePolicies) {
-            if (node != null) {
-                node = policy.apply(node);
-            }
+        if (walker.timedOut()) {
+            agentScan.abort("Aborting node scan : Agent timedout while scanning the system table");
         }
-        
-        if (node == null) {
-            agentScan.abort();
+        else if (walker.failed()) {
+            agentScan.abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
         } else {
-            agentScan.setNode(node);
+        
+            systemGroup.updateSnmpDataForNode(agentScan.getNode());
+
+            List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
+
+            OnmsNode node = agentScan.getNode();
+            for(NodePolicy policy : nodePolicies) {
+                if (node != null) {
+                    node = policy.apply(node);
+                }
+            }
+
+            if (node == null) {
+                agentScan.abort("Aborted scan of node due to configured policy");
+            } else {
+                agentScan.setNode(node);
+            }
+        
         }
     }
 
@@ -277,7 +286,15 @@ public class CoreScanActivities {
         walker.start();
         walker.waitFor();
 
-        debug("Finished phase " + currentPhase);
+        if (walker.timedOut()) {
+            agentScan.abort("Aborting node scan : Agent timedout while scanning the interfaces table");
+        }
+        else if (walker.failed()) {
+            agentScan.abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
+        }
+        else {
+            debug("Finished phase " + currentPhase);
+        }
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
@@ -330,18 +347,29 @@ public class CoreScanActivities {
         walker.start();
         walker.waitFor();
         
-        // After processing the snmp provided interfaces then we need to scan any that 
-        // were provisioned but missing from the ip table
-        for(String ipAddr : provisionedIps) {
-            OnmsIpInterface iface = agentScan.getNode().getIpInterfaceByIpAddress(ipAddr);
-            iface.setIpLastCapsdPoll(agentScan.getScanStamp());
-            iface.setIsManaged("M");
-            
-            currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
-            
+        if (walker.timedOut()) {
+            agentScan.abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
         }
-        
-        debug("Finished phase " + currentPhase);
+        else if (walker.failed()) {
+            agentScan.abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
+        }
+        else {
+
+
+            // After processing the snmp provided interfaces then we need to scan any that 
+            // were provisioned but missing from the ip table
+            for(String ipAddr : provisionedIps) {
+                OnmsIpInterface iface = agentScan.getNode().getIpInterfaceByIpAddress(ipAddr);
+                iface.setIpLastCapsdPoll(agentScan.getScanStamp());
+                iface.setIsManaged("M");
+
+                currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
+
+            }
+
+            debug("Finished phase " + currentPhase);
+
+        }
     }
     
     @Activity( lifecycle = "agentScan", phase = "deleteObsoleteResources", schedulingHint="write")
@@ -517,6 +545,8 @@ public class CoreScanActivities {
         };
         return r;
     }
+    
+    
 
     
     @SuppressWarnings("unused")
