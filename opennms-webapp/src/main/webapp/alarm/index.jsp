@@ -71,17 +71,20 @@
   <div class="TwoColRight">
     <h3>Outstanding and acknowledged alarms</h3>
     <div class="boxWrapper">
-      <p>Alarms can be <em>acknowledged</em>, or removed from the view of other users, by
-        selecting the alarm in the <em>Ack</em> check box and clicking the <em>Acknowledge
-        Selected Alarms</em> at the bottom of the page.  Acknowledging an alarm gives
+      <p>Alarms can be <em>acknowledged</em>, or removed from the default view of all users, by
+        selecting the alarms' <em>Ack</em> check box and clicking the <em>Acknowledge Selected
+        Alarms</em> at the bottom of the page.  Acknowledging an alarm gives
         users the ability to take personal responsibility for addressing a network
         or systems-related issue.  Any alarm that has not been acknowledged is
-        active in all users' browsers and is considered <em>outstanding</em>.
+        active in the default alarms view of all users' browsers and is considered outstanding.
       </p>
             
-      <p>If an alarm has been acknowledged in error, you can select the 
-        <em>View all acknowledged alarms</em> link, find the alarm, and <em>unacknowledge</em> it,
-        making it available again to all users' views.
+      <p>To view acknowledged alarms, go to the <em>All Alarms</em> (<em>summary</em> or <em>details</em>) list and
+         click the minus sign next to the <em>alarm is outstanding</em> search constraint.
+      </p>
+
+      <p>If an alarm has been acknowledged in error, find the alarm and <em>unacknowledge</em>
+         it, making it available again to all users' default alarm views.
       </p>
         
       <p>If you have a specific alarm identifier for which you want a detailed alarm
