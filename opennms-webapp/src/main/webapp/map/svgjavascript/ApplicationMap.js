@@ -83,8 +83,8 @@ function handleLoadMapsResponse(data) {
 		loading--;	
 		assertLoading();			
 	}
-	maps = [" "];
-    mapSorts = [null];
+	mapLabels = [" "];
+    var mapSorts = [null];
     var st = str.split("&");
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
@@ -94,16 +94,16 @@ function handleLoadMapsResponse(data) {
 				id=nodeST[0];
 			name=nodeST[1];
 			owner=nodeST[2];
-			var tempStr = maps.join(".");
+			var tempStr = mapLabels.join(".");
 			while(	tempStr.indexOf(name) != -1 ){
 				name=name+" ";
 			}
 			var tmpMap = new ElemMap(id, name, owner);
-			maps.push(name);
+			mapLabels.push(name);
 			mapSorts.push(tmpMap);
 		}
 	}
-	mapSortAss = assArrayPopulate(maps,mapSorts);	
+	mapSortAss = assArrayPopulate(mapLabels,mapSorts);	
 
 	loading--;	
 	assertLoading();
@@ -135,22 +135,24 @@ function handleLoadNodesResponse(data) {
 		return;
 	}
 	var st = str.split("&");
-	nodes = [" "];
-       nodeSorts = [null];
+	nodeLabels = [" "];
+    var nodeSorts = [null];
+    var nodeids = [null];
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
 			var nodeToken = st[k];
 			var nodeST = nodeToken.split("+");
-			var counter=0;
 			var id =nodeST[0];
 			var label = nodeST[1];
 			var tmpNode = new Node(id,label);
-			nodes.push(label);
+			nodeids.push(id);
+			nodeLabels.push(label);
 			nodeSorts.push(tmpNode);
 		}
 	}
 		
-	nodeSortAss = assArrayPopulate(nodes,nodeSorts);	
+	nodeSortAss = assArrayPopulate(nodeLabels,nodeSorts);	
+	nodeidSortAss = assArrayPopulate(nodeids,nodeSorts);	
 	loading--;
 	assertLoading();
 	nodesLoaded=true;
@@ -233,7 +235,7 @@ function handleAddElementResponse(data) {
 									alert('Adding Element(s) failed');
 									loading--;
 									assertLoading();
-									enableManu();
+									enableMenu();
 									return;
 								}
 							}								
@@ -265,7 +267,7 @@ function handleAddElementResponse(data) {
 			}
 		}
 		//MapElement
-		if (nodeST.length > 4) {
+		if (nodeST.length > 6) {
 
 			var id,iconName=DEFAULT_ICON,labelText="",avail=100,status=0,severity=0;
 			//read the information of the map (id, name, ecc.)
@@ -285,14 +287,16 @@ function handleAddElementResponse(data) {
 
 		}
 		// Links
-		if (nodeST.length == 4) { // when find links into server response...
+		if (nodeST.length == 6) { // when find links into server response...
 
-			var id1,id2, typology, status;
+			var id1,id2, typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			var linkToAdd = id1+"-"+id2+"-"+typology+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status];
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+			var linkToAdd = id1+"-"+id2+"-"+typology+"+"+LINKSTATUS_COLOR[status]+"+"+ LINK_WIDTH[typology]+"+"+LINK_DASHARRAY[typology]+"+"+LINKSTATUS_FLASH[status]+"+"+nodeid1+"+"+nodeid2+"+"+status;
 			linksToAdd.push(linkToAdd);
 			
 		}
@@ -352,7 +356,10 @@ function handleAddElementResponse(data) {
 		var width = params[2];
 		var da = params[3];
 		var flash = params[4];
-		map.addLink(id1,id2,typo,color,width,da,flash,deltaLink);
+		var nodeid1 = params[5];
+		var nodeid2 = params[6];
+		var status = params[7];
+		map.addLink(id1,id2,typo,status,color,width,da,flash,deltaLink,nodeid1,nodeid2);
 	}	
 	
 	map.render();
@@ -427,6 +434,9 @@ function handleDeleteNodeResponse(data) {
 
 function newMap(){
 
+	hideNodesIds = "";
+	hasHideNodes = false;
+
 	map.clear();
 	
 	loading++;
@@ -484,7 +494,8 @@ function handleLoadingNewMap(data) {
 		currentMapLastmodtime=nodeST[7];
 	else currentMapLastmodtime="";
 
-			
+	currentMapType="U"
+		
 	//save the map in the map history
 	map.setBGvalue(currentMapBackGround);
 	map.render();
@@ -504,6 +515,9 @@ function handleLoadingNewMap(data) {
 }
 
 function close(){
+
+	hideNodesIds = "";
+	hasHideNodes = false;
 
 	map.clear();
 
@@ -543,7 +557,7 @@ function handleLoadingCloseMap(data) {
 	currentMapUserlast="";
 	currentMapCreatetime="";
 	currentMapLastmodtime="";
-
+	currentMapType="";
 	savedMapString=getMapString();
 	mapHistory=new Array();
 	mapHistoryName=new Array();
@@ -591,6 +605,8 @@ function handleLoadingMap(data) {
 			return;
 	}
 
+	hideNodesIds = "";
+	hasHideNodes = false;
 	var st = str.split("&");
 	for(var k=0;k<st.length;k++){
 		var nodeToken = st[k];
@@ -625,8 +641,12 @@ function handleLoadingMap(data) {
 				currentMapLastmodtime=nodeST[7];
 			else currentMapLastmodtime="";
 
+			if(nodeST[8] !="null")
+				currentMapType=nodeST[8];
+			else currentMapType="";
+
 		}	
-		if (k>0 && nodeST.length > 4) {
+		if (k>0 && nodeST.length > 6) {
 			var id,x,y,iconName,labelText,avail,status,severity;
 			
 			id=nodeST[0];
@@ -638,17 +658,30 @@ function handleLoadingMap(data) {
 			status=nodeST[6];
 			severity=nodeST[7];
 			
-			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
-			var semaphoreFlash = getSemaphoreFlash(severity,avail);
-			map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			var testHideNode = id.indexOf('H');
+			if ( testHideNode == -1 ) {
+			   var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
+			   var semaphoreFlash = getSemaphoreFlash(severity,avail);
+			   map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			} else {
+				var nodeid = id.substring(0,testHideNode);
+				if (hideNodesIds == "")
+					hideNodesIds=nodeid;
+				else 
+					hideNodesIds=hideNodesIds+','+nodeid;
+				hasHideNodes = true;
+			}
 		}
-		if (k>0 && nodeST.length == 4) {
-			var id1,id2,typology, status;
+		if (k>0 && nodeST.length == 6) {
+			var id1,id2, typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+
+			map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 		}
 	}
 	
@@ -704,7 +737,7 @@ function saveMap() {
 		query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
 		
 		count++;
-		}
+	}
 
 	query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
 	if(splitInPackets==true){
@@ -784,7 +817,9 @@ function handleSaveResponse(data) {
 		currentMapOwner=answerST[4];
 		currentMapUserlast=answerST[5];
 		currentMapCreatetime=answerST[6];
-		currentMapLastmodtime=answerST[7];		
+		currentMapLastmodtime=answerST[7];
+		if (currentMapType == "A")
+			currentMapType="S";
 	} else {
 		saveMap2(packet, totalPackets);
 		return
@@ -986,6 +1021,8 @@ function handleRefreshNodesResponse(data) {
 	if(reloadMap)
 		map.clear();
 
+	hideNodesIds = "";
+	hasHideNodes = false;
 	for(var k=1;k<st.length;k++){
 		var nodeToken = st[k];
 		var nodeST = nodeToken.split("+");
@@ -1000,7 +1037,7 @@ function handleRefreshNodesResponse(data) {
 			}
 		}
 		//MapElement
-		if (nodeST.length > 4) {
+		if (nodeST.length > 6) {
 
 			var id,iconName,labelText,avail,status,severity,posx,posy;
 			
@@ -1014,30 +1051,43 @@ function handleRefreshNodesResponse(data) {
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 
-			if(reloadMap){
-				posx=nodeST[6];
-				posy=nodeST[7];
-				map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
-			}else{
-				var mapElem = map.mapElements[id];
-				var x=mapElem.x;
-				var y=mapElem.y;
-				var deleted = map.deleteMapElement(id);
-				if (deleted){
-					map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+			var testHideNode = id.indexOf('H');
+			if ( testHideNode == -1 ) {
+
+				if(reloadMap){
+					posx=nodeST[6];
+					posy=nodeST[7];
+					map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
+				}else{
+					var mapElem = map.mapElements[id];
+					var x=mapElem.x;
+					var y=mapElem.y;
+					var deleted = map.deleteMapElement(id);
+					if (deleted){
+						map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+					}
 				}
+			} else {
+				var nodeid = id.substring(0,testHideNode);
+				if (hideNodesIds == "")
+					hideNodesIds=nodeid;
+				else 
+					hideNodesIds=hideNodesIds+','+nodeid;
+				hasHideNodes = true;
 			}
-			
 		}
 		// Links
 		
-		if (nodeST.length == 4) {
-			var id1,id2,typology, status;
+		if (nodeST.length == 6) {
+			var id1,id2,typology, status,nodeid1,nodeid2;
 			id1=nodeST[0];
 			id2=nodeST[1];
 			typology=nodeST[2];
 			status=nodeST[3];
-			map.addLink(id1,id2,typology,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink);
+			nodeid1=nodeST[4];
+			nodeid2=nodeST[5];
+			
+			map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 		}
 		
 	}

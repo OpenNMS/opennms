@@ -111,7 +111,6 @@ public class DBManager extends Manager {
 
     Connection createConnection() throws MapsException {
 
-        log.debug("creating connection");
         if (m_factory != null) {
             try {
                 return m_factory.getConnection();
@@ -130,7 +129,6 @@ public class DBManager extends Manager {
     }
 
     void releaseConnection(Connection conn) throws MapsException {
-        log.debug("releasing connection");
         try {
             if (conn != null && !conn.isClosed()) {
                 if (m_factory != null) {
@@ -618,19 +616,13 @@ public class DBManager extends Manager {
         log.debug("deleting map...");
         Connection conn = startSession();
         final String sqlDeleteMap = "DELETE FROM " + mapTable
-                + " WHERE mapid = ?";
-        final String sqlDeleteElemMap = "DELETE FROM " + elementTable
-                + " WHERE elementid = ? AND elementtype = ?";
+                + " WHERE mapid = ? AND maptype != ? ";
         int countDelete = 0;
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDeleteMap);
             statement.setInt(1, id);
+            statement.setString(2, Map.AUTOMATICALLY_GENERATED_MAP);
             countDelete = statement.executeUpdate();
-            statement.close();
-            statement = conn.prepareStatement(sqlDeleteElemMap);
-            statement.setInt(1, id);
-            statement.setString(2, Element.MAP_TYPE);
-            statement.executeUpdate();
             statement.close();
             return countDelete;
         } catch (SQLException e) {
@@ -1739,7 +1731,7 @@ public class DBManager extends Manager {
                 + " (datalinkinterface.nodeid IN ("
                 + nodelist
                 + ")"
-                + " OR nodeparentid in ("
+                + " AND nodeparentid in ("
                 + nodelist
                 + ")) "
                 + "AND status != 'D' and datalinkinterface.parentifindex = snmpinterface.snmpifindex";
@@ -1836,7 +1828,7 @@ public class DBManager extends Manager {
                     + " (datalinkinterface.nodeid IN ("
                     + nodelist
                     + ")"
-                    + " OR nodeparentid in ("
+                    + " AND nodeparentid in ("
                     + nodelist
                     + ")) "
                     + "AND status != 'D' and datalinkinterface.ifindex = snmpinterface.snmpifindex";
@@ -1926,7 +1918,7 @@ public class DBManager extends Manager {
             sql = "SELECT "
                     + "id,nodeid, ifindex,nodeparentid, parentifindex, status, linktypeid "
                     + "FROM datalinkinterface " + "WHERE" + " (nodeid IN ("
-                    + nodelist + ")" + " OR nodeparentid in (" + nodelist
+                    + nodelist + ")" + " AND nodeparentid in (" + nodelist
                     + ")) " + "AND status != 'D'";
 
             log.debug("getLinksOnElements: executing query:\n" + sql);
