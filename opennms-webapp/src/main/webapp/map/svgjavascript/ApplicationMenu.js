@@ -281,8 +281,15 @@ function addRenameMapBox(){
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
  	} else if (currentMapType == "A") {
 		alert('Cannot rename automatic map');
- 	} else if (currentMapType == "S") {
-		alert('Cannot rename static map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED) {
+		clearTopInfo();
+		clearDownInfo();
+		hidePickColor();
+		resetFlags();
+
+		//first a few styling parameters:
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
 	}else{
 		alert('No maps opened');
     }
@@ -314,8 +321,11 @@ function deleteMapSetUp() {
     	}
  	} else if (currentMapType == "A") {
 		alert('Cannot delete automatic map');
- 	} else if (currentMapType == "S") {
-		alert('Cannot delete static map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP ) {
+	    if(confirm('Are you sure to delete static the map?')==true){ 
+	 		disableMenu();
+			deleteMap();
+    	}
 	}else{
 		alert('No maps to delete found');
     }	
