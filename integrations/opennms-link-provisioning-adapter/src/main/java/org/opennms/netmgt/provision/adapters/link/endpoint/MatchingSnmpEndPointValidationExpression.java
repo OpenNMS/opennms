@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 @XmlRootElement(name="match-oid")
 public class MatchingSnmpEndPointValidationExpression extends EndPointValidationExpressionImpl {
@@ -23,7 +24,11 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
     }
 
     public void validate(EndPoint endPoint) throws EndPointStatusException {
-        String value = endPoint.get(m_oid).toString();
+        SnmpValue snmpValue = endPoint.get(m_oid);
+        if(snmpValue == null) {
+            throw new EndPointStatusException("unable to validate endpoint " + endPoint + ": could not retreive a value from snmp agent that matches " + m_value);
+        }
+        String value = snmpValue.toString();
         if(value != null && value.matches(m_value)) {
             return;
         }

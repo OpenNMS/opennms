@@ -26,7 +26,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
-public class LinkAdapterEventListenerTest {
+public class LinkEventCorrelatorTest {
     
     private Event m_failedEvent = new EventBuilder(EventConstants.DATA_LINK_FAILED_EVENT_UEI, "Test").getEvent();
     private Event m_regainedEvent = new EventBuilder(EventConstants.DATA_LINK_RESTORED_EVENT_UEI, "Test").getEvent();
@@ -55,6 +55,7 @@ public class LinkAdapterEventListenerTest {
         m_network = new MockNetwork();
         m_node1 = new MockNode(m_network, 1, "pittsboro-1");
         m_node1.addInterface("192.168.0.1");
+        m_node1.getInterface("192.168.0.1").addService("EndPoint", 1);
         m_node2 = new MockNode(m_network, 2, "pittsboro-2");
         m_node2.addInterface("192.168.0.2");
         
@@ -63,6 +64,7 @@ public class LinkAdapterEventListenerTest {
         Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
         m_dataLinkInterface = new DataLinkInterface(2, 1, 1, 1, "A", new Date());
         dlis.add(m_dataLinkInterface);
+        
         expect(m_nodeLinkService.getLinkContainingNodeId(1)).andStubReturn(dlis);
         expect(m_nodeLinkService.getLinkContainingNodeId(2)).andStubReturn(dlis);
         
@@ -76,6 +78,7 @@ public class LinkAdapterEventListenerTest {
     @Test
     public void testNodeDownEvent() {
         Event e = m_node1.createDownEvent();
+        e.setService("EndPoint");
         
         LinkEventCorrelator correlator = new LinkEventCorrelator();
         correlator.setEventForwarder(m_eventIpcManager);
@@ -99,6 +102,7 @@ public class LinkAdapterEventListenerTest {
     @Test
     public void testCorrelator1NodeDown() {
         Event e = m_node1.createDownEvent();
+        e.setService("EndPoint");
 
         LinkEventCorrelator correlator = new LinkEventCorrelator();
         correlator.setEventForwarder(m_eventIpcManager);
