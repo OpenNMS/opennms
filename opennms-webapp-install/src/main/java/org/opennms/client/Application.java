@@ -971,8 +971,6 @@ public class Application implements EntryPoint {
                                                                                 checkStoredProcedures.expand();
                                                                                 // Hide any collected progress items
                                                                                 progressFields.el().fadeOut(new FxConfig(300));
-                                                                                // Clear all of the bullet items from the panel
-                                                                                //dbProgressPanel.clear();
                                                                             }
                                                                         });
                                                                     } else {
@@ -984,8 +982,6 @@ public class Application implements EntryPoint {
                                                                             public void handleEvent(MessageBoxEvent event) {
                                                                                 // Hide any collected progress items
                                                                                 progressFields.el().fadeOut(new FxConfig(300));
-                                                                                // Clear all of the bullet items from the panel
-                                                                                // dbProgressPanel.clear();
                                                                             }
                                                                         });
                                                                     }
@@ -995,7 +991,12 @@ public class Application implements EntryPoint {
                                                                     updateDatabase.setIconStyle("check-failure-icon");
                                                                     dbProgressPanel.markInProgressHeadersAsFailed();
                                                                     // TODO: Figure out better error handling for GWT-level failures
-                                                                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                                                                        public void handleEvent(MessageBoxEvent event) {
+                                                                            // Hide any collected progress items
+                                                                            progressFields.el().fadeOut(new FxConfig(300));
+                                                                        }
+                                                                    });
                                                                 }
                                                             });
                                                         }
@@ -1005,7 +1006,12 @@ public class Application implements EntryPoint {
                                                         updateDatabase.setIconStyle("check-failure-icon");
                                                         dbProgressPanel.markInProgressHeadersAsFailed();
                                                         // TODO: Figure out better error handling for GWT-level failures
-                                                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                                                            public void handleEvent(MessageBoxEvent event) {
+                                                                // Hide any collected progress items
+                                                                progressFields.el().fadeOut(new FxConfig(300));
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
@@ -1013,7 +1019,12 @@ public class Application implements EntryPoint {
                                                 updateDatabase.setIconStyle("check-failure-icon");
                                                 dbProgressPanel.markInProgressHeadersAsFailed();
                                                 // TODO: Figure out better error handling for GWT-level failures
-                                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                                                    public void handleEvent(MessageBoxEvent event) {
+                                                        // Hide any collected progress items
+                                                        progressFields.el().fadeOut(new FxConfig(300));
+                                                    }
+                                                });
                                             }
                                         });
                                     }
@@ -1024,7 +1035,12 @@ public class Application implements EntryPoint {
                             public void onFailure(Throwable e) {
                                 updateDatabase.setIconStyle("check-failure-icon");
                                 // TODO: Figure out better error handling for GWT-level failures
-                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                                    public void handleEvent(MessageBoxEvent event) {
+                                        // Hide any collected progress items
+                                        progressFields.el().fadeOut(new FxConfig(300));
+                                    }
+                                });
                             }
                         });
                     }
@@ -1032,7 +1048,12 @@ public class Application implements EntryPoint {
                     public void onFailure(Throwable e) {
                         updateDatabase.setIconStyle("check-failure-icon");
                         // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                                // Hide any collected progress items
+                                progressFields.el().fadeOut(new FxConfig(300));
+                            }
+                        });
                     }
                 });
             }
