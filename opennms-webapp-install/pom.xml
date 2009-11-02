@@ -21,6 +21,10 @@
               <name>opennms.home</name>
               <value>${project.build.testOutputDirectory}</value>
             </systemProperty>
+            <systemProperty>
+              <name>install.dir</name>
+              <value>${project.build.testOutputDirectory}</value>
+            </systemProperty>
           </systemProperties>
         </configuration>
       </plugin>
@@ -30,6 +34,10 @@
           <systemProperties>
             <property>
               <name>opennms.home</name>
+              <value>${project.build.testOutputDirectory}</value>
+            </property>
+            <property>
+              <name>install.dir</name>
               <value>${project.build.testOutputDirectory}</value>
             </property>
           </systemProperties>
