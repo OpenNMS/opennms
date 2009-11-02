@@ -6,6 +6,6 @@ package org.opennms.client;
  * saving database settings, etc.) and the ownership touchfile has not been
  * detected in the OpenNMS home directory.
  */
-public class OwnershipNotConfirmedException extends IllegalStateException {
+public class OwnershipNotConfirmedException extends Exception {
 
 }

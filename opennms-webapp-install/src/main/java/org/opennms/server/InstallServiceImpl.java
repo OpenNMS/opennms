@@ -227,7 +227,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, OwnershipNotConfirmedException {
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }

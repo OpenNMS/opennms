@@ -56,7 +56,7 @@ public interface InstallService extends RemoteService {
      * connecting to a proper OpenNMS database. This method will throw exceptions
      * if the connection failed or the parameters cannot be stored.
      */
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, OwnershipNotConfirmedException;
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException;
 
     /**
      * Attempt to connect to the database and perform a lightweight database
@@ -64,7 +64,7 @@ public interface InstallService extends RemoteService {
      * connecting to a proper OpenNMS database. This method will throw exceptions
      * if the connection failed or the parameters cannot be stored.
      */
-    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws IllegalStateException, OwnershipNotConfirmedException;
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException, OwnershipNotConfirmedException;
 
     // protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory);
 
