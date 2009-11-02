@@ -212,11 +212,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
         for (JdbcDataSource ds : config.getJdbcDataSource()) {
             if (Installer.OPENNMS_DATA_SOURCE_NAME.equals(ds.getName())) {
+                dbName = ds.getDatabaseName();
                 dbNmsUser = ds.getUserName();
                 dbNmsPassword = ds.getPassword();
                 dbNmsUrl = ds.getUrl();
             } else if (Installer.ADMIN_DATA_SOURCE_NAME.equals(ds.getName())) {
-                dbName = ds.getDatabaseName();
                 dbAdminUser = ds.getUserName();
                 dbAdminPassword = ds.getPassword();
                 driver = ds.getClassName();
@@ -230,6 +230,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
+        }
+        // Blank passwords are legal but must be represented by empty strings, not null values
+        if (dbAdminPassword == null) {
+            dbAdminPassword = "";
+        }
+        if (dbNmsPassword == null) {
+            dbNmsPassword = "";
         }
         validateDbParameters(new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl));
         InstallerDb db = new InstallerDb();

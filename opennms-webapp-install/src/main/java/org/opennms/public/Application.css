@@ -1,6 +1,7 @@
 /* Add a margin over the buttons to separate them from the rest of the controls */
 .x-btn {
 	margin-top: 10px;
+	margin-right: 10px;
 }
 
 /* Provide a background image */
@@ -35,6 +36,10 @@ BODY {
 	background: url('../images/redcross.gif') no-repeat center left !important; 
 }
 
+.check-incomplete-icon { 
+	background: url('../images/circle.png') no-repeat center left !important; 
+}
+
 .check-progress-icon { 
 	background: url('../images/indicator.gif') no-repeat center left !important; 
 }
@@ -45,4 +50,9 @@ BODY {
 
 .progress-header {
 	font-size: 11px;
+}
+
+.log-message {
+	font-family: 'courier new', courier;
+	font-size: small;
 }

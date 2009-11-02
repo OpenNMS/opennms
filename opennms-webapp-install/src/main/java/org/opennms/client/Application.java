@@ -18,11 +18,13 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.fx.FxConfig;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Header;
 import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.IconSupport;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
@@ -221,13 +223,38 @@ public class Application implements EntryPoint {
             installService.getDatabaseConnectionSettings(new AsyncCallback<DatabaseConnectionSettings>() {
                 public void onSuccess(DatabaseConnectionSettings result) {
                     m_databaseConnectionSettings = result;
-                    if (m_databaseConnectionSettings.getAdminPassword() != null) dbAdminPass.setValue(m_databaseConnectionSettings.getAdminPassword());
-                    if (m_databaseConnectionSettings.getAdminUrl() != null) dbAdminUrl.setValue(m_databaseConnectionSettings.getAdminUrl());
-                    if (m_databaseConnectionSettings.getAdminUser() != null) dbAdminUser.setValue(m_databaseConnectionSettings.getAdminUser());
-                    if (m_databaseConnectionSettings.getDbName() != null) dbName.setValue(m_databaseConnectionSettings.getDbName());
+                    if (m_databaseConnectionSettings.getAdminPassword() != null) {
+                        dbAdminPass.setValue(m_databaseConnectionSettings.getAdminPassword());
+                        dbAdminPass.fireEvent(Events.Change);
+                    }
+                    if (m_databaseConnectionSettings.getAdminUrl() != null) {
+                        dbAdminUrl.setValue(m_databaseConnectionSettings.getAdminUrl());
+                        dbAdminUrl.fireEvent(Events.Change);
+                    }
+                    if (m_databaseConnectionSettings.getAdminUser() != null) {
+                        dbAdminUser.setValue(m_databaseConnectionSettings.getAdminUser());
+                        dbAdminUser.fireEvent(Events.Change);
+                    }
+                    if (m_databaseConnectionSettings.getDbName() != null) {
+                        dbName.setValue(m_databaseConnectionSettings.getDbName());
+                        dbName.fireEvent(Events.Change);
+                    }
                     // TODO: Probably should always use the hard-coded database driver value
                     // if (m_databaseConnectionSettings.getDriver() != null) dbDriver.setValue(m_databaseConnectionSettings.getDriver());
-                    if (m_databaseConnectionSettings.getNmsUrl() != null) dbNmsUrl.setValue(m_databaseConnectionSettings.getNmsUrl());
+
+                    if (m_databaseConnectionSettings.getNmsUser() != null) {
+                        dbNmsUser.setValue(m_databaseConnectionSettings.getNmsUser());
+                        dbNmsUser.fireEvent(Events.Change);
+                    }
+                    if (m_databaseConnectionSettings.getNmsUrl() != null) {
+                        dbNmsUrl.setValue(m_databaseConnectionSettings.getNmsUrl());
+                        dbNmsUrl.fireEvent(Events.Change);
+                        // Extract the server name and port number from the URL
+                        dbHost.setValue(getServerFromUrl(m_databaseConnectionSettings.getNmsUrl()));
+                        dbHost.fireEvent(Events.Change);
+                        dbPort.setValue(getPortFromUrl(m_databaseConnectionSettings.getNmsUrl()));
+                        dbPort.fireEvent(Events.Change);
+                    }
 
                     if (m_next != null) {
                         m_next.check();
@@ -238,6 +265,21 @@ public class Application implements EntryPoint {
                     // TODO: Figure out what to do here, if anything
                 }
             });
+        }
+        
+        private String getServerFromUrl(String url) {
+            // jdbc:postgresql://localhost:5432/opennms
+            String retval = url.split("//")[1];
+            retval = retval.split(":")[0];
+            return retval;
+        }
+        
+        private int getPortFromUrl(String url) {
+            // jdbc:postgresql://localhost:5432/opennms
+            String retval = url.split("//")[1];
+            retval = retval.split(":")[1];
+            retval = retval.split("/")[0];
+            return Integer.parseInt(retval);
         }
     }
 
@@ -296,14 +338,34 @@ public class Application implements EntryPoint {
             dbNmsUrl.setValue("jdbc:postgresql://" + dbHost.getValue() + ":" + String.valueOf(dbPort.getValue().intValue()) + "/" + dbName.getValue());
 
             // Make sure that the password and confirmation fields match
-            if (dbAdminPass.getValue() == null || !dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
+            if (dbAdminPass.getValue() == null) {
+                if (dbAdminConfirm.getValue() == null) {
+                    // Valid case: both passwords are blank
+                } else {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                    return;
+                }
+            } else if (dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
+                // Password entries match
+            } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
                 return;
             }
 
             // Make sure that the password and confirmation fields match
-            if (dbNmsPass.getValue() == null || !dbNmsPass.getValue().equals(dbNmsConfirm.getValue())) {
+            if (dbNmsPass.getValue() == null) {
+                if (dbNmsConfirm.getValue() == null) {
+                    // Valid case: both passwords are blank
+                } else {
+                    connectToDatabase.setIconStyle("check-failure-icon");
+                    MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                    return;
+                }
+            } else if (dbNmsPass.getValue().equals(dbNmsConfirm.getValue())) {
+                // Password entries match
+            } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
                 return;
@@ -860,7 +922,6 @@ public class Application implements EntryPoint {
          */
 
         final FieldSet progressFields = new FieldSet();
-        // progressFields.setExpanded(false);
         progressFields.hide();
         progressFields.setHeading("Database update progress");
         progressFields.addStyleName("progress-panel");
@@ -872,7 +933,12 @@ public class Application implements EntryPoint {
             public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 updateDatabase.setIconStyle("check-progress-icon");
+                // Clear all of the bullet items from the panel
+                dbProgressPanel.clear();
+                // Display the bullet items if they are not yet visible
                 progressFields.show();
+                // Fade in the bullet items if they have been faded out
+                progressFields.el().fadeIn(new FxConfig(300));
 
                 installService.clearDatabaseUpdateLogs(new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
@@ -904,9 +970,9 @@ public class Application implements EntryPoint {
                                                                                 // Expand the next panel
                                                                                 checkStoredProcedures.expand();
                                                                                 // Hide any collected progress items
-                                                                                progressFields.hide();
+                                                                                progressFields.el().fadeOut(new FxConfig(300));
                                                                                 // Clear all of the bullet items from the panel
-                                                                                dbProgressPanel.clear();
+                                                                                //dbProgressPanel.clear();
                                                                             }
                                                                         });
                                                                     } else {
@@ -917,9 +983,9 @@ public class Application implements EntryPoint {
                                                                         MessageBox.alert("Update Failed", "The database update failed. Please check the log messages for more details.", new Listener<MessageBoxEvent>() {
                                                                             public void handleEvent(MessageBoxEvent event) {
                                                                                 // Hide any collected progress items
-                                                                                progressFields.hide();
+                                                                                progressFields.el().fadeOut(new FxConfig(300));
                                                                                 // Clear all of the bullet items from the panel
-                                                                                dbProgressPanel.clear();
+                                                                                // dbProgressPanel.clear();
                                                                             }
                                                                         });
                                                                     }
@@ -980,21 +1046,30 @@ public class Application implements EntryPoint {
                             MessageBox.alert("No Log Messages", "There are no log messages to display.", null);
                         } else {
                             final StringBuffer html = new StringBuffer();
-                            html.append("<pre>\n");
+                            html.append("<div>\n");
 
                             for (String message : result) {
-                                html.append(message + "\n");
+                                html.append("<p class=\"log-message\">" + message + "</p>\n");
                             }
 
-                            html.append("</pre>");
+                            html.append("</div>");
 
                             final Window w = new Window();
                             w.setHeading("Database Update Logs");
                             w.setModal(true);
                             w.setSize(600, 400);
+                            w.setScrollMode(Style.Scroll.AUTO);
                             // w.setMaximizable(true);
 
-                            w.addText(html.toString());
+                            final Html text = w.addText(html.toString());
+
+                            /* Doesn't work
+                            w.addButton(new Button("Select all", new SelectionListener<ButtonEvent>() {
+                                public void componentSelected(ButtonEvent event) {
+                                    text.focus();
+                                }
+                            }));
+                            */
 
                             w.show();
                         }
@@ -1019,8 +1094,10 @@ public class Application implements EntryPoint {
             }
         });
 
-        updateDatabase.add(updateButton);
-        updateDatabase.add(showLogsButton);
+        HorizontalPanel buttonPanel = new HorizontalPanel();
+        buttonPanel.add(updateButton);
+        buttonPanel.add(showLogsButton);
+        updateDatabase.add(buttonPanel);
         progressFields.add(dbProgressPanel);
         updateDatabase.add(progressFields);
 
@@ -1135,9 +1212,9 @@ public class Application implements EntryPoint {
                 } else if (Progress.IN_PROGRESS.equals(item.getProgress())) {
                     header.setIconStyle("check-progress-icon");
                 } else if (Progress.INCOMPLETE.equals(item.getProgress())) {
-                    header.setIconStyle("check-failure-icon");
+                    header.setIconStyle("check-incomplete-icon");
                 } else if (Progress.INDETERMINATE.equals(item.getProgress())) {
-                    header.setIconStyle("check-failure-icon");
+                    header.setIconStyle("check-incomplete-icon");
                 }
                 this.add(header);
             }
@@ -1180,18 +1257,6 @@ public class Application implements EntryPoint {
                     i++;
                 }
             }
-            /*
-            for (int i = 0; i < panel.getWidgetCount(); i++) {
-                Widget widget = panel.getWidget(i);
-                if (widget instanceof IconSupport) {
-                    IconSupport iconSupport = (IconSupport)widget;
-                    // TODO: This test doesn't work!!!
-                    if (widget.getStyleName().contains("check-progress-icon")) {
-                        iconSupport.setIconStyle("check-success-icon");
-                    }
-                }
-            }
-             */
         }
     }
 }
