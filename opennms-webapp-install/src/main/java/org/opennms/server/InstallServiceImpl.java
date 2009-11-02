@@ -173,8 +173,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
-        UserManager manager = UserFactory.getInstance();
         try {
+            UserFactory.init();
+            UserManager manager = UserFactory.getInstance();
             manager.setUnencryptedPassword("admin", password);
         } catch (Exception e) {
             throw new IllegalArgumentException("Could not store password: " + e.getMessage(), e);
