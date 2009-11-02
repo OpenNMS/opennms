@@ -2,6 +2,7 @@ package org.opennms.server;
 
 import java.sql.Time;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.log4j.Appender;
@@ -43,7 +44,8 @@ public class ListAppender extends AppenderSkeleton implements Appender {
         synchronized(m_list) {
             for (LoggingEvent event : m_list) {
                 StringBuffer buffer = new StringBuffer();
-                buffer.append(DateFormat.getDateInstance().format(new Date(event.getTimeStamp())));
+                // Emulates the log4j date format: 2009-11-02 10:57:55,875
+                buffer.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(event.getTimeStamp())));
                 if (event.getLevel().equals(Level.TRACE)) {
                     buffer.append(" TRACE ");
                 } else if (event.getLevel().equals(Level.DEBUG)) {
