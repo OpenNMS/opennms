@@ -107,7 +107,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
     }
 
-    public boolean isAdminPasswordSet() throws IllegalStateException {
+    public boolean isAdminPasswordSet() throws IllegalStateException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -169,7 +169,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public void setAdminPassword(String password) {
+    public void setAdminPassword(String password) throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -181,7 +181,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException {
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -227,7 +227,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException {
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -273,7 +273,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException {
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -311,7 +311,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException {
+    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -363,7 +363,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public List<LoggingEvent> getDatabaseUpdateLogs(int offset){
+    public List<LoggingEvent> getDatabaseUpdateLogs(int offset) throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -385,7 +385,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return retval;
     }
 
-    public List<String> getDatabaseUpdateLogsAsStrings(){
+    public List<String> getDatabaseUpdateLogsAsStrings() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -403,7 +403,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_progressManager.getProgressItems();
     }
 
-    public void clearDatabaseUpdateLogs(){
+    public void clearDatabaseUpdateLogs() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -415,7 +415,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
      * Initiate the installer class. This will generate log messages that will be
      * relayed to the web UI by the log4j appender.
      */
-    public void updateDatabase() {
+    public void updateDatabase() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -447,7 +447,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         thread.start();
     }
 
-    public boolean isUpdateInProgress() {
+    public boolean isUpdateInProgress() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -455,7 +455,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_updateIsInProgress;
     }
 
-    public boolean didLastUpdateSucceed() {
+    public boolean didLastUpdateSucceed() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -463,7 +463,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_lastUpdateSucceeded;
     }
 
-    public boolean checkIpLike() throws IllegalStateException {
+    public boolean checkIpLike() throws IllegalStateException, OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }

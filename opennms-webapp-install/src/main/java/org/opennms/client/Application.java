@@ -111,9 +111,9 @@ public class Application implements EntryPoint {
                         verifyOwnership.setIconStyle("check-failure-icon");
                         MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
+                                verifyOwnership.expand();
                             }
                         });
-                        verifyOwnership.expand();
                     }
                 }
 
@@ -1047,13 +1047,23 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         updateDatabase.setIconStyle("check-failure-icon");
-                        // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                // Hide any collected progress items
-                                progressFields.el().fadeOut(new FxConfig(300));
-                            }
-                        });
+                        if (e instanceof OwnershipNotConfirmedException) {
+                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    // Hide any collected progress items
+                                    progressFields.el().fadeOut(new FxConfig(300));
+                                    verifyOwnership.expand();
+                                }
+                            });
+                        } else {
+                            // TODO: Figure out better error handling for GWT-level failures
+                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    // Hide any collected progress items
+                                    progressFields.el().fadeOut(new FxConfig(300));
+                                }
+                            });
+                        }
                     }
                 });
             }
@@ -1097,8 +1107,16 @@ public class Application implements EntryPoint {
                     }
 
                     public void onFailure(Throwable e) {
-                        // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        if (e instanceof OwnershipNotConfirmedException) {
+                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    verifyOwnership.expand();
+                                }
+                            });
+                        } else {
+                            // TODO: Figure out better error handling for GWT-level failures
+                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        }
                     }
                 });
 
