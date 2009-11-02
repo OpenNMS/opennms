@@ -297,6 +297,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         m_configDao.getValidator().validate(endPoint);
     }
+   
     
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_snmpAgent = agent;
