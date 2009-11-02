@@ -16,6 +16,12 @@
         <configuration>
           <stopPort>8081</stopPort>
           <stopKey>stopme</stopKey>
+          <systemProperties>
+            <systemProperty>
+              <name>opennms.home</name>
+              <value>${project.build.testOutputDirectory}</value>
+            </systemProperty>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>
@@ -24,7 +30,7 @@
           <systemProperties>
             <property>
               <name>opennms.home</name>
-              <value>${project.build.outputDirectory}</value>
+              <value>${project.build.testOutputDirectory}</value>
             </property>
           </systemProperties>
         </configuration>
