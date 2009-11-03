@@ -45,18 +45,25 @@ import org.springframework.core.io.InputStreamResource;
 
 public class DefaultOnmsDatabaseReportDaoTest {
     
-    private static final String NAME = "defaultCalendarReport";
+    private static final String ID = "defaultCalendarReport";
     private static final String TYPE = "calendar";
+    private static final String SVG_TEMPLATE = "SVGAvailReport.xsl";
+    private static final String PDF_TEMPLATE = "PDFAvailReport.xsl";
+    private static final String HTML_TEMPLATE = "AvailabilityReports.xsl";
+    
 
     @Test
     public void testGetType() throws Exception {
-        DefaultOnmsDatabaseReportDao dao = new DefaultOnmsDatabaseReportDao();
+        DefaultOnmsDatabaseReportConfigDao dao = new DefaultOnmsDatabaseReportConfigDao();
         
         InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/opennms-database-reports.xml");
         dao.setConfigResource(new InputStreamResource(in));
         dao.afterPropertiesSet();
         
-        assertEquals(dao.getType(NAME),TYPE);
+        assertEquals(dao.getType(ID),TYPE);
+        assertEquals(dao.getSvgStylesheetLocation(ID), SVG_TEMPLATE);
+        assertEquals(dao.getPdfStylesheetLocation(ID), PDF_TEMPLATE);
+        assertEquals(dao.getHtmlStylesheetLocation(ID), HTML_TEMPLATE);
     }
 
 }

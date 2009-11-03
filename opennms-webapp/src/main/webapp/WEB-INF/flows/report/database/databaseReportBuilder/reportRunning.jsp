@@ -1,5 +1,4 @@
 <%--
-
 /*
  * This file is part of the OpenNMS(R) Application.
  *
@@ -12,7 +11,7 @@
  *
  * Modifications:
  *
- * 2009 Oct 18: Created
+ * 2009 October 28: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -35,60 +34,30 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Availability Reports" />
-  <jsp:param name="headTitle" value="Availability Reports" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
-		value="<a href='report/database/index.htm'>Database<a>" />
-	<jsp:param name="breadcrumb" value="List" />
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Database Reports" />
+  <jsp:param name="headTitle" value="Database Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" 
+		value="<a href='report/database/index.htm'>Database</a>" />
+  <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<jsp:useBean id="pagedListHolder" scope="request"
-	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/availability/list.htm" var="pagedLink">
-	<c:param name="p" value="~" />
-</c:url>
+<h3>Report Running</h3>
 
-
-<c:choose>
-	<c:when test="${empty pagedListHolder.pageList}">
-		<p>None found.</p>
-	</c:when>
-
-	<c:otherwise>
-		<element:pagedList pagedListHolder="${pagedListHolder}"
-			pagedLink="${pagedLink}" />
-
-		<div class="spacer"><!--  --></div>
-		<table>
-			<thead>
-				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>execute report</th>
-				</tr>
-			</thead>
-			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="report">
-				<tr>
-					<td>${report.displayName}</td>
-					<td>${report.description}</td>
-					<td> <a href="report/database/databaseReportBuilder.htm?reportId=${report.id}">Execute Report</a></td>
-				</tr>
-			</c:forEach>
-		</table>
-	</c:otherwise>
-</c:choose>
+      <p>
+        Your report is now being run.
+      </p>
+      
+<form:form>  
+    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+</form:form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

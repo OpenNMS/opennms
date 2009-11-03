@@ -74,7 +74,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testDatabaseReportService() throws Exception {
         
-        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID);
+        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID, "admin");
         
         assertEquals(criteria.getLogo(),"logo");
         assertEquals(criteria.getDates().size(),1);

@@ -4,18 +4,20 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
 
+	<secured attributes="ROLE_USER" />
 
 	<input name="reportId" required="true" />
 	
 	<on-start>
-		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId)" result="flowScope.criteria" />
+		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId, currentUser.name)" result="flowScope.criteria" />
 	</on-start>
 	
 	<view-state id="reportParameters" model="criteria">
-		<binder>
-			<binding property="dates.date" converter="shortDate" required="true" />
-			<binding property="categories.category" required="true" />
-		</binder>
+		<!--<binder>
+			<binding property="dates" converter="shortDate" required="true" />
+			<binding property="categories" required="true" />
+			<binding property="logo" required="true" />
+		</binder>-->
 		<on-render>
         	<evaluate expression="categoryConfigService.getCategoriesList()"
                   result="viewScope.categories" />
@@ -38,12 +40,25 @@
 	
 	<view-state id="reviewReport" model="criteria">
 		<transition on="proceed" to="submitReport" />
-		<transition on="revise" to="enterReportCrieria" />
+		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 
-	<end-state id="submitReport" />
+	<action-state id="submitReport">
+		<evaluate expression="onmsDatabaseReportService.execute(criteria, flowRequestContext)" />
+		<transition on="success" to="reportRunning" />
+		<transition on="error" to="reportError" />
+	</action-state>
+
+	<view-state id="reportError">
+		<transition on="proceed" to="reportCancelled" />
+	</view-state>
+	
+	<view-state id="reportRunning">
+		<transition on="proceed" to="reportComplete" />
+	</view-state>
 
 	<end-state id="reportCancelled" />
+	<end-state id="reportComplete" />
 
 </flow>

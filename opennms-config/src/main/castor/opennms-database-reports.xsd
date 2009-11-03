@@ -23,7 +23,7 @@
 
 	<element name="report">
 		<complexType>
-			<attribute name="report-name" type="string" use="required">
+			<attribute name="id" type="string" use="required">
 				<annotation>
 					<documentation>the name of this report</documentation>
 				</annotation>

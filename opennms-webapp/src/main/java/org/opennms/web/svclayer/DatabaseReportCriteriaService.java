@@ -40,7 +40,7 @@ import org.opennms.web.svclayer.support.DatabaseReportCriteria;
 
 public interface DatabaseReportCriteriaService {
     
-    DatabaseReportCriteria getCriteria(String reportId);
+    DatabaseReportCriteria getCriteria(String reportId, String UserId);
     
     void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 

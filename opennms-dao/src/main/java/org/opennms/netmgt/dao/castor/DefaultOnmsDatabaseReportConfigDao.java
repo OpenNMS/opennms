@@ -40,33 +40,33 @@ import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.opennms.Report;
 import org.opennms.netmgt.config.databaseReports.opennms.OpennmsDatabaseReports;
-import org.opennms.netmgt.dao.OnmsDatabaseReportDao;
+import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
 
-public class DefaultOnmsDatabaseReportDao extends AbstractCastorConfigDao<OpennmsDatabaseReports, List<Report>>
-implements OnmsDatabaseReportDao {
+public class DefaultOnmsDatabaseReportConfigDao extends AbstractCastorConfigDao<OpennmsDatabaseReports, List<Report>>
+implements OnmsDatabaseReportConfigDao {
     
-    public DefaultOnmsDatabaseReportDao() {
+    public DefaultOnmsDatabaseReportConfigDao() {
         super(OpennmsDatabaseReports.class, "Database Report Configuration");
     }
 
-    public String getHtmlStylesheetLocation(String OnmsReportName) {
-        Report report = getReport(OnmsReportName);
+    public String getHtmlStylesheetLocation(String id) {
+        Report report = getReport(id);
         if (report != null) {
             return report.getHtmlTemplate();
         }
         return null;
     }
 
-    public String getPdfStylesheetLocation(String OnmsReportName) {
-        Report report = getReport(OnmsReportName);
+    public String getPdfStylesheetLocation(String id) {
+        Report report = getReport(id);
         if (report != null) {
             return report.getPdfTemplate();
         }
         return null;
     }
 
-    public String getSvgStylesheetLocation(String OnmsReportName) {
-        Report report = getReport(OnmsReportName);
+    public String getSvgStylesheetLocation(String id) {
+        Report report = getReport(id);
         if (report != null) {
             return report.getSvgTemplate();
         }
@@ -78,17 +78,17 @@ implements OnmsDatabaseReportDao {
         return Collections.unmodifiableList(castorConfig.getReportCollection());
     }
 
-    public String getType(String OnmsReportName) {
-        Report report = getReport(OnmsReportName);
+    public String getType(String id) {
+        Report report = getReport(id);
         if (report != null) {
             return report.getType();
         }
         return null;
     }
     
-    private Report getReport(String OnmsReportName) {
+    private Report getReport(String id) {
         for (Report report : getContainer().getObject()) {
-            if (OnmsReportName.equals(report.getReportName())) {
+            if (id.equals(report.getId())) {
                 return report;
             }
         }

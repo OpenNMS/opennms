@@ -67,7 +67,6 @@ public class AvailabilityReportLocatorDaoTest extends AbstractTransactionalDaoTe
 		locator.setFormat("HTML");
 		locator.setType("Random String");
 		locator.setLocation("down the back of the sofa");
-		locator.setEngine("opennms");
 		
 		getAvailabilityReportLocatorDao().save(locator);
 		
@@ -77,7 +76,6 @@ public class AvailabilityReportLocatorDaoTest extends AbstractTransactionalDaoTe
 		assertEquals(retrieved.getId(), locator.getId());
 		assertEquals(retrieved.getAvailable(), locator.getAvailable());
 		assertEquals(retrieved.getCategory(), locator.getCategory());
-		assertEquals(retrieved.getEngine(), locator.getEngine());
 	}
 	
 }

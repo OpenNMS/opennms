@@ -35,14 +35,14 @@
 //
 package org.opennms.netmgt.dao;
 
-public interface OnmsDatabaseReportDao {
+public interface OnmsDatabaseReportConfigDao {
     
-    String getPdfStylesheetLocation(String OnmsReportName);
+    String getPdfStylesheetLocation(String id);
     
-    String getSvgStylesheetLocation(String OnmsReportName);
+    String getSvgStylesheetLocation(String id);
     
-    String getHtmlStylesheetLocation(String OnmsReportName);
+    String getHtmlStylesheetLocation(String id);
     
-    String getType(String OnmsReportName);
+    String getType(String id);
 
 }

@@ -35,9 +35,14 @@
 //
 package org.opennms.web.svclayer.support;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.svclayer.DatabaseReportCriteriaService;
@@ -47,10 +52,11 @@ public class DefaultDatabaseReportCriteriaService implements
     
     DatabaseReportConfigDao m_dao;
 
-    public DatabaseReportCriteria getCriteria(String id) {
+    public DatabaseReportCriteria getCriteria(String id, String userId) {
        
         DatabaseReportCriteria criteria = new DatabaseReportCriteria();
         
+        criteria.setReportId(id);
         criteria.setDisplayName(m_dao.getDisplayName(id));
         criteria.setLogo("logo");
         criteria.setMailFormat("SVG");
@@ -82,7 +88,7 @@ public class DefaultDatabaseReportCriteriaService implements
                 DatabaseReportCategoryParm catParm = new DatabaseReportCategoryParm();
                 catParm.setDisplayName(categories[i].getDisplayName());
                 catParm.setName(categories[i].getName());
-                catParm.setCategory("network interfaces");
+                catParm.setCategory("Network Interfaces");
                 catParms.add(catParm);
             }
             criteria.setCategories(catParms);
@@ -91,6 +97,19 @@ public class DefaultDatabaseReportCriteriaService implements
 //        UserFactory.init();
 //        UserManager userFactory = UserFactory.getInstance();
 //        criteria.setEmail(userFactory.getEmail(request.getRemoteUser()));
+        UserManager userFactory = UserFactory.getInstance();
+        try {
+            criteria.setMailTo(userFactory.getEmail(userId));
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 
         return criteria;

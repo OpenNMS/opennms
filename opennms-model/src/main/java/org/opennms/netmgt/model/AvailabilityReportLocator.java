@@ -72,10 +72,6 @@ public class AvailabilityReportLocator implements Serializable {
 	
 	/** date report generated */
 	
-	private String m_engine;
-	
-	/** report engine to use for generating this report **/
-	
 	private Date m_date;
 	
 	/** location on disk */
@@ -141,15 +137,6 @@ public class AvailabilityReportLocator implements Serializable {
 	public void setType(String type) {
 		m_type = type;
 	}
-	
-//	@Column(name="reportEngine", length=256)
-    public String getEngine() {
-        return m_engine;
-    }
-    
-    public void setEngine(String engine) {
-        m_engine = engine;
-    }
 
 	@Column(name="reportLocation", length=256)
 	public String getLocation() {

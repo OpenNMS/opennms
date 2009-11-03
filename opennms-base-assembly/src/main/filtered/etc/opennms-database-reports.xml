@@ -3,13 +3,13 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
-	<report report-name="defaultCalendarReport" 
+	<report id="defaultCalendarReport" 
 		type="calendar"
 		svg-template="SVGAvailReport.xsl"
 		pdf-template="PDFAvailReport.xsl"
 		html-template="AvailabilityReports.xsl">
 	</report>
-	<report report-name="defaultClassicReport" 
+	<report id="defaultClassicReport" 
 		type="classic"
 		svg-template="SVGAvailReport.xsl"
 		pdf-template="PDFAvailReport.xsl"

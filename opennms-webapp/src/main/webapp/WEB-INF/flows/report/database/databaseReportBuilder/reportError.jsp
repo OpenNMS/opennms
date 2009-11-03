@@ -12,7 +12,7 @@
  *
  * Modifications:
  *
- * 2009 October 19: Created jonathan@opennms.org
+ * 2009 October 28: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -52,36 +52,14 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Database Reports</h3>
+<h3>Database Report Error</h3>
 
-
-<form:form commandName="criteria">
-	
-	<table>
-		<%-- // date fields --%>
-		<c:forEach items="${criteria.dates}" var="date" varStatus="dateParmRow">
-			<tr>
-				<td><c:out value="${date.displayName}"/></td>
-				<td><form:input path="dates[${dateParmRow.index}].date" />(yyyy-MM-dd)</td>
-			</tr>
-		</c:forEach>
-		<%-- // category fields --%>
-		<c:forEach items="${criteria.categories}" var="category" varStatus="categoryParmRow">
-			<tr>
-				<td><c:out value="${category.displayName}"/></td>
-                <td>
-	                <form:select path="categories[${categoryParmRow.index}].category">
-	                <form:options items="${categories}"/>
-	                </form:select>
-				</td>
-			</tr>
-		</c:forEach>
-	</table>
-  
- 	<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
-	
- </form:form>
-  
+      <p>
+        It has not been possible to execute your report.
+      </p>
+      
+<form:form>  
+    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+</form:form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -36,6 +36,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.binding.message.MessageBuilder;
@@ -66,15 +67,36 @@ public class DatabaseReportCriteria implements Serializable {
         
         public void validateReportDeliveryOptions(ValidationContext context) {
             MessageContext messages = context.getMessageContext();
-            if ((m_persist == null) && (m_sendMail == null)) {
+            if ((m_persist == false) && (m_sendMail == false)) {
                 messages.addMessage(new MessageBuilder().error().source("Persist").
                     defaultText("At least one of the these options must be set").build());
                 messages.addMessage(new MessageBuilder().error().source("sendMail").
                     defaultText("At least one of the these options must be set").build());
-            } else if (m_persist && (m_mailTo == null)) {
+            } else if (m_persist && (m_mailTo.equals(""))) {
                 messages.addMessage(new MessageBuilder().error().source("mailTo").
                     defaultText("require an email address for delivery").build());
             }
+        }
+        
+        public void validateReportParameters(ValidationContext context) {
+            MessageContext messages = context.getMessageContext();
+            
+            for (Iterator<DatabaseReportDateParm> dates = m_dates.iterator(); dates.hasNext();) {
+                DatabaseReportDateParm dateParm = dates.next();
+                if (dateParm.getDate() == null) {
+                    messages.addMessage(new MessageBuilder().error().source("dates").
+                                        defaultText("cannot have null date field" + dateParm.getDisplayName()).build());
+                }
+            }
+            
+            for (Iterator<DatabaseReportCategoryParm> categories = m_categories.iterator(); categories.hasNext();) {
+                DatabaseReportCategoryParm catParm = categories.next();
+                if (catParm.getCategory() == "" ) {
+                    messages.addMessage(new MessageBuilder().error().source("categories").
+                                        defaultText("cannot have empty category field " + catParm.getDisplayName()).build());
+                }
+            }
+            
         }
 
         public String getLogo() {

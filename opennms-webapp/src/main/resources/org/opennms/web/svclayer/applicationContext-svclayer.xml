@@ -236,6 +236,11 @@
   <bean id="databaseReportCriteriaService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportCriteriaService">
     <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
+  
+  <bean id="onmsDatabaseReportService" class="org.opennms.web.svclayer.support.OnmsDatabaseReportService">
+    <property name="onmsDatabaseReportConfigDao" ref="onmsDatabaseReportConfigDao" />
+    <property name="reportRunner" ref="availabilityReportRunner" />
+  </bean>
 
   <!-- Node List page -->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
