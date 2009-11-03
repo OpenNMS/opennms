@@ -21,7 +21,7 @@ function onClickMapElement(evt)
 	
 	// view info node
 	clearDownInfo();			
-	writeTopInfoText(mapElement.getInfo());
+	writeTopInfoText(getInfoOnMapElement(mapElement));
 
 	if (evt.detail == 2)
 	{
@@ -92,7 +92,7 @@ function onMouseDownOnMapElement(evt)
 		if(map.selectedObjects.length==1){
 			// view info node
 			clearDownInfo();			
-			writeTopInfoText(mapElement.getInfo());
+			writeTopInfoText(getInfoOnMapElement(mapElement));
 		}
 		map.draggableObject =  evt.target.parentNode;
 		// get the relative position
@@ -221,7 +221,7 @@ function onMouseDownOnLink(evt)
 		clearActionsStarted();
 		
 		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
-		writeTopInfoText(mapLink.getInfo());
+		writeTopInfoText(getInfoOnLink(mapLink));
 		
 		if (evt.detail == 2)
 		{			
@@ -402,5 +402,3 @@ function onMouseUp(evt)
 		
 	}
 }
-
-

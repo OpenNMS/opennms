@@ -137,94 +137,22 @@ MapElement.prototype.move = function(x, y)
 
 MapElement.prototype.getLabel = function()
 {
-return this.label.text;
+	return this.label.text;
 }
 
-MapElement.prototype.getInfo = function()
+MapElement.prototype.getSeverity = function()
 {
+	return this.severity;
+}
 
-    var severityColor=getSeverityColor(this.severity)
-	var statusColor=getStatusColor(this.status);
+MapElement.prototype.getStatus = function()
+{
+	return this.status;
+}
 
-    var severityLabel = SEVERITIES_LABEL[this.severity];
-	var status = STATUSES_TEXT[this.status];
-	
-	var availColor = getAvailColor(this.avail);
-
-	var avail;
-
-	if(this.avail<0){
-		avail="Unknown";
-	}else{	
-		avail = (""+this.avail).substring(0,6)+"%";
-	}
-
-	if(availColor=='white')
-		availColor='black';
-	if(statusColor=='white')
-		statusColor='black';		
-
-	var text = document.createElementNS(svgNS,"text");
-	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "dy","15");
-	text.setAttributeNS(null, "id","topInfoTextTitle");
-	
-	var textLabel = document.createTextNode("Map Element info");
-	text.appendChild(textLabel);
-	
-	var tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
-	
-	var tspanContent = document.createTextNode(this.label.text);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-
-	if(this.isMap()){
-		tspan = document.createElementNS(svgNS,"tspan");
-		tspan.setAttributeNS(null, "x","3");
-		tspan.setAttributeNS(null, "dy","15");
-		tspanContent = document.createTextNode("Id: "+ this.getMapId() + "  (Map)");
-		tspan.appendChild(tspanContent);
-		text.appendChild(tspan);
-	}
-
-	if(this.isNode()){
-		tspan = document.createElementNS(svgNS,"tspan");
-		tspan.setAttributeNS(null, "x","3");
-		tspan.setAttributeNS(null, "dy","15");
-		tspan.setAttributeNS(null, "id","TopInfoLabelText");
-		tspanContent = document.createTextNode("Id: "+ this.getNodeId() + "  (Node)");
-		tspan.appendChild(tspanContent);
-		text.appendChild(tspan);	
-	}
-
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "fill",statusColor);
-	tspanContent = document.createTextNode("Status: " + status);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-		
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "fill",availColor);
-	tspanContent = document.createTextNode("Availability: " + avail );
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "fill",severityColor);
-	tspanContent = document.createTextNode("Severity: " + severityLabel );
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);		
-
-	// get info 	
-	return text;
+MapElement.prototype.getAvail = function()
+{
+	return this.avail;
 }
 
 MapElement.prototype.getNumberOfLink = function()
