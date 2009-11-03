@@ -281,8 +281,15 @@ function addRenameMapBox(){
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
  	} else if (currentMapType == "A") {
 		alert('Cannot rename automatic map');
- 	} else if (currentMapType == "S") {
-		alert('Cannot rename static map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED) {
+		clearTopInfo();
+		clearDownInfo();
+		hidePickColor();
+		resetFlags();
+
+		//first a few styling parameters:
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
 	}else{
 		alert('No maps opened');
     }
@@ -314,8 +321,11 @@ function deleteMapSetUp() {
     	}
  	} else if (currentMapType == "A") {
 		alert('Cannot delete automatic map');
- 	} else if (currentMapType == "S") {
-		alert('Cannot delete static map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP ) {
+	    if(confirm('Are you sure to delete static the map?')==true){ 
+	 		disableMenu();
+			deleteMap();
+    	}
 	}else{
 		alert('No maps to delete found');
     }	
@@ -1444,3 +1454,142 @@ function showPickColor() {
 	add_pick_color("pickColor");
 	document.getElementById("pickColor").setAttributeNS(null,'display', 'inline');
 }
+
+function getInfoOnMapElement(mapElement)
+{
+
+    //var severityColor=getSeverityColor(mapElement.getSeverity())
+	var severityColor='black';
+    var severityLabel = SEVERITIES_LABEL[mapElement.getSeverity()];
+
+    //var statusColor=getStatusColor(mapElement.getStatus());
+	var statusColor='black'
+	var status = STATUSES_TEXT[mapElement.getStatus()];
+	
+	var avail=mapElement.getAvail();
+	var availColor='black';
+	//var availColor = getAvailColor(avail);
+
+
+
+	if(avail<0){
+		avail="Unknown";
+	}else{	
+		avail = (""+avail).substring(0,6)+"%";
+	}
+
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	
+	var textLabel = document.createTextNode("Map Element info");
+	text.appendChild(textLabel);
+	
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	
+	var tspanContent = document.createTextNode(mapElement.getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+
+	if(mapElement.isMap()){
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode("Id: "+ mapElement.getMapId() + "  (Map)");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);
+	}
+
+	if(mapElement.isNode()){
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspan.setAttributeNS(null, "id","TopInfoLabelText");
+		tspanContent = document.createTextNode("Id: "+ mapElement.getNodeId() + "  (Node)");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",statusColor);
+	tspanContent = document.createTextNode("Status: " + status);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+		
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",availColor);
+	tspanContent = document.createTextNode("Availability: " + avail );
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",severityColor);
+	tspanContent = document.createTextNode("Severity: " + severityLabel );
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);		
+
+	// get info 	
+	return text;
+}
+
+function getInfoOnLink(link) 
+{
+	//var statusColor = LINKSTATUS_COLOR[link.getStatus()];
+	var statusColor = 'black';
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var textLabel = document.createTextNode("Link info");
+	text.appendChild(textLabel);
+	
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	var tspanContent = document.createTextNode(" From: " + nodeidSortAss[link.getFirstNodeId()].getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode("    To: " + nodeidSortAss[link.getSecondNodeId()].getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",statusColor);
+	tspanContent = document.createTextNode(" Status: "+link.getStatus());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[link.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[link.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+	
+	return text;
+}
+

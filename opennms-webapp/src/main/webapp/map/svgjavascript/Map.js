@@ -360,10 +360,10 @@ Map.prototype.render = function()
 	
 	this.setBG();
     
-	for ( var elemToRender in this.mapElements) //render mapElement
-		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 	for (var linkToRender in this.mapLinks) //render links
 		this.svgNode.appendChild(this.mapLinks[linkToRender].getSvgNode());
+	for ( var elemToRender in this.mapElements) //render mapElement
+		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 }
 
 // delete all nodes and links from map view

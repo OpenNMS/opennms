@@ -169,56 +169,6 @@ Link.prototype.update = function()
 	this.svgNode.setAttributeNS(null,"y2", y2);	
 }
 
-Link.prototype.getInfo = function(evt)
-{
-	var text = document.createElementNS(svgNS,"text");
-	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "dy","15");
-	text.setAttributeNS(null, "id","topInfoTextTitle");
-	text.setAttributeNS(null, "font-size",titleFontSize);
-	
-	var textLabel = document.createTextNode("Link info");
-	text.appendChild(textLabel);
-	
-	var tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","20");
-	var tspanContent = document.createTextNode(" From: " + nodeidSortAss[this.nodeid1].getLabel());
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode("    To: " + nodeidSortAss[this.nodeid2].getLabel());
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspan.setAttributeNS(null, "fill",LINKSTATUS_COLOR[this.status]);
-	tspanContent = document.createTextNode(" Status: "+this.status);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[this.typology]);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[this.typology]);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-	
-	return text;
-}
-
 /*
 	OnRepeat event handler
 */
