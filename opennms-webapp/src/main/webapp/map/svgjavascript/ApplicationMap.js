@@ -29,7 +29,7 @@ var SAVEMAP_ACTION = "SaveMap";
 function loadDefaultMap(){
 	loading++;
 	assertLoading();
-	postMapRequest ( "LoadDefaultMap."+suffix+"?action="+LOADDEFAULTMAP_ACTION, null, handleLoadDefaultMapResponse, "text/xml", null );	
+	getMapRequest ( "LoadDefaultMap."+suffix+"?action="+LOADDEFAULTMAP_ACTION, null, handleLoadDefaultMapResponse, "text/xml", null );	
 }
 
 function handleLoadDefaultMapResponse(data) {
@@ -65,7 +65,7 @@ function handleLoadDefaultMapResponse(data) {
 function loadMaps(){
 	loading++;
 	assertLoading();
-	postMapRequest ( "LoadMaps."+suffix+"?action="+LOADMAPS_ACTION, null, handleLoadMapsResponse, "text/xml", null );
+	getMapRequest ( "LoadMaps."+suffix+"?action="+LOADMAPS_ACTION, null, handleLoadMapsResponse, "text/xml", null );
 }
 
 function handleLoadMapsResponse(data) {
@@ -113,7 +113,7 @@ function handleLoadMapsResponse(data) {
 function loadNodes(){
 	loading++;
 	assertLoading();
-	postMapRequest ("LoadNodes."+suffix+"?action="+LOADNODES_ACTION , null, handleLoadNodesResponse, "text/xml", null );
+	getMapRequest ("LoadNodes."+suffix+"?action="+LOADNODES_ACTION , null, handleLoadNodesResponse, "text/xml", null );
 }
 
 function handleLoadNodesResponse(data) {
@@ -162,47 +162,47 @@ function addMapElement(id){
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addRangeOfNodes(range){
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDRANGE_ACTION+"&elems="+range, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addNodesByLabel(label){
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_BY_LABEL_ACTION+"&elems="+label, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_BY_LABEL_ACTION+"&elems="+label, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addNodesByCategory(catLabel){
 	loading++;
 	assertLoading();
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_BY_CATEGORY_ACTION+"&elems="+escape(catLabel), null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_BY_CATEGORY_ACTION+"&elems="+escape(catLabel), null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElemNeigh(id){
 	loading++;
 	assertLoading();
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_NEIG_ACTION+"&elems="+id, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapElementWithNeighbors(elem){
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddNodes."+suffix+"?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
 function addMapAsNode(mapId){ 
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "AddMaps."+suffix+"?action="+ADDMAPS_ACTION+"&elems="+mapId, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( "AddMaps."+suffix+"?action="+ADDMAPS_ACTION+"&elems="+mapId, null, handleAddElementResponse, "text/xml", null );
 }
 
 function handleAddElementResponse(data) {
@@ -390,7 +390,7 @@ function deleteMapElement(elemMap)
 		ACTION = DELETENODES_ACTION;
 		id = elemMap.getNodeId();
 	}
-	postMapRequest ( "DeleteElements."+suffix+"?action="+ACTION+"&elems="+id, null, handleDeleteNodeResponse, "text/xml", null );
+	getMapRequest ( "DeleteElements."+suffix+"?action="+ACTION+"&elems="+id, null, handleDeleteNodeResponse, "text/xml", null );
 }
 
 function handleDeleteNodeResponse(data) {
@@ -442,7 +442,7 @@ function newMap(){
 	loading++;
 	assertLoading();
 	
-	postMapRequest (  "NewMap."+suffix+"?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight, null, handleLoadingNewMap, "text/xml", null );
+	getMapRequest (  "NewMap."+suffix+"?action="+NEWMAP_ACTION+"&MapId="+NEW_MAP+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight, null, handleLoadingNewMap, "text/xml", null );
 }
 
 function handleLoadingNewMap(data) {
@@ -526,7 +526,7 @@ function close(){
 
 	stopCountdown=true;
 
-	postMapRequest ( "CloseMap."+suffix+"?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingCloseMap, "text/xml", null );
+	getMapRequest ( "CloseMap."+suffix+"?action="+CLOSEMAP_ACTION+"&MapId="+MAP_NOT_OPENED+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight(), null, handleLoadingCloseMap, "text/xml", null );
 }
 
 function handleLoadingCloseMap(data) {
@@ -581,7 +581,7 @@ function openMap(mapId){
 	loading++;
 	assertLoading();
 
-	postMapRequest ( "OpenMap."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapId+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&adminMode="+isAdminMode, null, handleLoadingMap, "text/xml", null );
+	getMapRequest ( "OpenMap."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapId+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&adminMode="+isAdminMode, null, handleLoadingMap, "text/xml", null );
 }
 
 function handleLoadingMap(data) {
@@ -707,23 +707,15 @@ function handleLoadingMap(data) {
 }
 
 function saveMap() {
-	var query="Nodes=";
-	var count=0;
-	
-	//construct the query to post to the servlet. 
-	//the map is formatted as follows: id,x,y,image,type
-	var splitInPackets = false;
-	var totalPackets = parseInt(map.getMapElementsSize()/70)+1;
-	//alert(totalPackets);
-	if(totalPackets>1){
-		splitInPackets = true;
-	}
+	var data="Nodes";
+	var firstItem=true;
 	for (elemToRender in map.mapElements){
-		if(count>70){
-			break;
-			}
-		if(count>0)
-			query+="*"; //  '*' = nodes delimiter char
+		if ( firstItem ) {
+			data+="=";
+			firstItem=false;
+		} else {
+			data+="*";
+		}
 		var elem = map.mapElements[elemToRender];
 		var type = NODE_TYPE;
 		var id = "";
@@ -734,57 +726,13 @@ function saveMap() {
 			id = elem.getNodeId();
 		}
 
-		query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
+		data+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
 		
-		count++;
 	}
 
-	query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
-	if(splitInPackets==true){
-		query+="&packet=1&totalPackets="+totalPackets;
-	}
-		
-	postMapRequest ( "SaveMap."+suffix+"?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
+	var query="MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
+	postMapRequest ( "SaveMap."+suffix+"?action="+SAVEMAP_ACTION+"&"+query, data, handleSaveResponse, "text/xml", null );
 }
-
-
-//save map with a lot of elements. If the elements are more than 70, packets (of 70 nodes) are required.
-function saveMap2(packet, totalPackets) {
-
-	var query="Nodes=";
-	var count=0;
-	
-	//construct the query to post to the servlet. 
-	//the map is formatted as follows: id,x,y,image,type
-	var base=packet*70;
-	for (elemToRender in map.mapElements){
-		if(count>base){
-			if(count>(base+70)){
-				break;				
-			}
-			if(count>0)
-				query+="*"; //  '*' = nodes delimiter char
-			var elem = map.mapElements[elemToRender];
-			var type = NODE_TYPE;
-			var id = "";
-			if (elem.isMap()) {
-				type=MAP_TYPE;
-				id = elem.getMapId();
-			} else {
-				id = elem.getNodeId();
-			}
-
-			query+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
-		}
-		count++;
-	}
-	var packetInt = parseInt(packet) +1;
-	query+="&MapId="+currentMapId+"&MapName="+currentMapName+"&MapBackground="+currentMapBackGround+"&MapWidth="+map.getWidth()+"&MapHeight="+map.getHeight();
-	query+="&packet="+packetInt+"&totalPackets="+totalPackets;
-		
-	postMapRequest ( "SaveMap."+suffix+"?action="+SAVEMAP_ACTION+"&"+query, null, handleSaveResponse, "text/xml", null );
-}
-
 
 function handleSaveResponse(data) {
 	var failed = true;
@@ -805,25 +753,16 @@ function handleSaveResponse(data) {
 	}		
 	var answerST = str.split("+");
 
-	var packet = answerST[8];
-	var totalPackets = answerST[9];
-
-	if(packet==totalPackets){
-
-		currentMapId=parseInt(answerST[0]);
-		currentMapBackGround=answerST[1];
-		currentMapAccess=answerST[2];
-		currentMapName=answerST[3];
-		currentMapOwner=answerST[4];
-		currentMapUserlast=answerST[5];
-		currentMapCreatetime=answerST[6];
-		currentMapLastmodtime=answerST[7];
-		if (currentMapType == "A")
-			currentMapType="S";
-	} else {
-		saveMap2(packet, totalPackets);
-		return
-	}
+	currentMapId=parseInt(answerST[0]);
+	currentMapBackGround=answerST[1];
+	currentMapAccess=answerST[2];
+	currentMapName=answerST[3];
+	currentMapOwner=answerST[4];
+	currentMapUserlast=answerST[5];
+	currentMapCreatetime=answerST[6];
+	currentMapLastmodtime=answerST[7];
+	if (currentMapType == "A")
+		currentMapType="S";
 
 	loadMaps();
 	
@@ -839,7 +778,7 @@ function handleSaveResponse(data) {
 }
 
 function deleteMap(){
-	postMapRequest ( "DeleteMap."+suffix+"?action="+DELETEMAP_ACTION, null, handleDeleteResponse, "text/xml", null );
+	getMapRequest ( "DeleteMap."+suffix+"?action="+DELETEMAP_ACTION, null, handleDeleteResponse, "text/xml", null );
 }
 
 function handleDeleteResponse(data) {
@@ -895,7 +834,7 @@ function clearMap(){
    	loading++;
 	assertLoading();
 
-    postMapRequest ("ClearMap."+suffix+"?action="+CLEAR_ACTION+"&elems=", null, handleClearMapResponse, "text/xml", null );
+    getMapRequest ("ClearMap."+suffix+"?action="+CLEAR_ACTION+"&elems=", null, handleClearMapResponse, "text/xml", null );
 
 }
 
@@ -932,7 +871,7 @@ function handleClearMapResponse(data) {
 }
 
 function switchRole(){
-	postMapRequest ( "SwitchRole."+suffix+"?action="+SWITCH_MODE_ACTION+"&adminMode="+isAdminMode, null, handleSwitchRole, "text/xml", null );
+	getMapRequest ( "SwitchRole."+suffix+"?action="+SWITCH_MODE_ACTION+"&adminMode="+isAdminMode, null, handleSwitchRole, "text/xml", null );
 }
 
 
@@ -976,9 +915,9 @@ function refreshNodes(){
 	    assertRefreshing(1);
 	    
 		if(reloadMap){
-			postMapRequest ( "RefreshMap."+suffix+"?action="+RELOAD_ACTION,  null, handleRefreshNodesResponse, "text/xml", null );
+			getMapRequest ( "RefreshMap."+suffix+"?action="+RELOAD_ACTION,  null, handleRefreshNodesResponse, "text/xml", null );
 		}else{
-			postMapRequest ( "RefreshMap."+suffix+"?action="+REFRESH_ACTION, null, handleRefreshNodesResponse, "text/xml", null );
+			getMapRequest ( "RefreshMap."+suffix+"?action="+REFRESH_ACTION, null, handleRefreshNodesResponse, "text/xml", null );
 		}
 	}
 }
