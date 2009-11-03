@@ -86,10 +86,13 @@ function parseUri(sourceUri){
     return uri;
 }
 
-function postMapRequest(url,data,handler,type,enc){
-	postMapRequestAll(url,"GET", data,handler,type,enc, true);
+function getMapRequest(url,data,handler,type,enc){
+	postMapRequestAll(url,"GET", "",handler,type,enc, true);
 }
 
+function postMapRequest(url,data,handler,type,enc){
+	postMapRequestAll(url,"POST", data,handler,type,enc, true);
+}
 function postMapRequestAll(url,method,data,handler,type,enc,async){
 	   var uriObj = parseUri(document.URL);
 	   var appdomain = uriObj.protocol+"://"+uriObj.authority;
@@ -98,6 +101,11 @@ function postMapRequestAll(url,method,data,handler,type,enc,async){
        if (xmlhttp) {
            try{
 	            xmlhttp.open(method, appContext+url, async);
+	            if (method == 'POST') {
+	            	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	            	xmlhttp.setRequestHeader("Content-length", data.length);
+	            	xmlhttp.setRequestHeader("Connection", "close");
+	            }
 	            xmlhttp.onreadystatechange = function() {
 	                if (xmlhttp.readyState == 4) {
 	                    handler({status:xmlhttp.status, content:xmlhttp.responseText, contentType:xmlhttp.getResponseHeader("Content-Type")});

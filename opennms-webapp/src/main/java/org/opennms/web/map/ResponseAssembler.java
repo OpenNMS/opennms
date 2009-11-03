@@ -192,7 +192,7 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
-	protected static String getSaveMapResponse(String action,VMap map, String currPacket, String totalPackets){
+	protected static String getSaveMapResponse(String action,VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
 		SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
@@ -212,8 +212,7 @@ public class ResponseAssembler {
 				.getCreateTime()) : "")
 		+ "+"
 		+ ((map.getLastModifiedTime() != null) ? formatter
-				.format(map.getLastModifiedTime()) : "") + "+"
-		+ currPacket + "+" + totalPackets;
+				.format(map.getLastModifiedTime()) : "");
 		log.debug("getSaveMapResponse: String assembled: "+strToSend);
 	 return strToSend;
 	}
