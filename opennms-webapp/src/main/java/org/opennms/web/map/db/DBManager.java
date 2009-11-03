@@ -156,7 +156,6 @@ public class DBManager extends Manager {
     private Connection startSession() throws MapsException {
         try {
             Connection conn = createConnection();
-            log.debug("setting AutoCommit false db connection...");
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             return conn;
@@ -169,7 +168,6 @@ public class DBManager extends Manager {
     synchronized private void endSession(Connection conn)
             throws MapsException {
         try {
-            log.debug("ending session");
             conn.commit();
             conn.setAutoCommit(true);
             releaseConnection(conn);
@@ -401,7 +399,7 @@ public class DBManager extends Manager {
 
     private synchronized void saveElementInSession(Element e, Connection conn)
             throws MapsException {
-        log.debug("saving element");
+        log.debug("saving element: " +e.getId()+e.getType());
 
         final String sqlSelectQuery = "SELECT COUNT(*) FROM " + elementTable
                 + " WHERE elementid = ? AND MAPID = ? AND elementtype = ?";
