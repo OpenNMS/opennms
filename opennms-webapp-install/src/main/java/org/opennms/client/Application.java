@@ -223,10 +223,6 @@ public class Application implements EntryPoint {
             installService.getDatabaseConnectionSettings(new AsyncCallback<DatabaseConnectionSettings>() {
                 public void onSuccess(DatabaseConnectionSettings result) {
                     m_databaseConnectionSettings = result;
-                    if (m_databaseConnectionSettings.getAdminPassword() != null) {
-                        dbAdminPass.setValue(m_databaseConnectionSettings.getAdminPassword());
-                        dbAdminPass.fireEvent(Events.Change);
-                    }
                     if (m_databaseConnectionSettings.getAdminUrl() != null) {
                         dbAdminUrl.setValue(m_databaseConnectionSettings.getAdminUrl());
                         dbAdminUrl.fireEvent(Events.Change);
