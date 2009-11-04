@@ -25,6 +25,10 @@
               <name>install.dir</name>
               <value>${project.build.testOutputDirectory}</value>
             </systemProperty>
+            <systemProperty>
+              <name>install.etc.dir</name>
+              <value>${project.build.testOutputDirectory}/etc</value>
+            </systemProperty>
           </systemProperties>
         </configuration>
       </plugin>
@@ -39,6 +43,10 @@
             <property>
               <name>install.dir</name>
               <value>${project.build.testOutputDirectory}</value>
+            </property>
+            <property>
+              <name>install.etc.dir</name>
+              <value>${project.build.testOutputDirectory}/etc</value>
             </property>
           </systemProperties>
         </configuration>
