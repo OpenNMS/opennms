@@ -49,7 +49,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * GWT entry point classes define {@link #onModuleLoad()}.</code>.
  */
@@ -108,12 +107,7 @@ public class Application implements EntryPoint {
                             m_next.check();
                         }
                     } else {
-                        verifyOwnership.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                verifyOwnership.expand();
-                            }
-                        });
+                        handleOwnershipNotConfirmed();
                     }
                 }
 
@@ -406,8 +400,27 @@ public class Application implements EntryPoint {
 
                                         public void onFailure(Throwable e) {
                                             connectToDatabase.setIconStyle("check-failure-icon");
-                                            MessageBox.alert("Failure", "The database could not be created: " + e.getMessage(), null);
-                                            connectToDatabase.expand();
+                                            if (e instanceof OwnershipNotConfirmedException) {
+                                                handleOwnershipNotConfirmed();
+                                            } else if (e instanceof DatabaseDriverException) {
+                                                MessageBox.alert("Database Driver Missing", "The database driver could not be loaded: " + e.getMessage(), null);
+                                                connectToDatabase.expand();
+                                            } else if (e instanceof DatabaseAccessException) {
+                                                MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), null);
+                                                connectToDatabase.expand();
+                                            } else if (e instanceof DatabaseAlreadyExistsException) {
+                                                MessageBox.alert("Database Already Exists", "The database already exists. Please retry your connection to the database.", null);
+                                                connectToDatabase.expand();
+                                            } else if (e instanceof DatabaseUserCreationException) {
+                                                MessageBox.alert("User Creation Error", "The database user for OpenNMS could not be created: " + e.getMessage(), null);
+                                                connectToDatabase.expand();
+                                            } else if (e instanceof DatabaseCreationException) {
+                                                MessageBox.alert("Database Creation Error", "The OpenNMS database could not be created: " + e.getMessage(), null);
+                                                connectToDatabase.expand();
+                                            } else {
+                                                MessageBox.alert("Unexpected Failure", "The OpenNMS database could not be created: " + e.getMessage(), null);
+                                                connectToDatabase.expand();
+                                            }
                                         }
                                     });
                                 } else {
@@ -1058,11 +1071,10 @@ public class Application implements EntryPoint {
                     public void onFailure(Throwable e) {
                         updateDatabase.setIconStyle("check-failure-icon");
                         if (e instanceof OwnershipNotConfirmedException) {
-                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+                            handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
                                 public void handleEvent(MessageBoxEvent event) {
                                     // Hide any collected progress items
                                     progressFields.el().fadeOut(new FxConfig(300));
-                                    verifyOwnership.expand();
                                 }
                             });
                         } else {
@@ -1118,11 +1130,7 @@ public class Application implements EntryPoint {
 
                     public void onFailure(Throwable e) {
                         if (e instanceof OwnershipNotConfirmedException) {
-                            MessageBox.alert("Failure", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    verifyOwnership.expand();
-                                }
-                            });
+                            handleOwnershipNotConfirmed();
                         } else {
                             // TODO: Figure out better error handling for GWT-level failures
                             MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
@@ -1219,6 +1227,22 @@ public class Application implements EntryPoint {
         //dock.add(new HTML(), DockPanel.EAST);
 
         RootPanel.get().add(dock);
+    }
+    
+    private void handleOwnershipNotConfirmed(final Listener<MessageBoxEvent> beforeHandle) {
+        verifyOwnership.setIconStyle("check-failure-icon");
+        MessageBox.alert("Ownership Not Confirmed", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent event) {
+                if (beforeHandle != null) {
+                    beforeHandle.handleEvent(event);
+                }
+                verifyOwnership.expand();
+            }
+        });
+    }
+    
+    private void handleOwnershipNotConfirmed() {
+        handleOwnershipNotConfirmed(null);
     }
 
     private static class VerticalProgressPanel extends VerticalPanel {
