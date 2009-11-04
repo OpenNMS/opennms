@@ -36,12 +36,14 @@ public interface InstallService extends RemoteService {
      * 
      * @return True if the password is not null, false otherwise
      */
-    public boolean isAdminPasswordSet() throws IllegalStateException, OwnershipNotConfirmedException;
+    public boolean isAdminPasswordSet() throws OwnershipNotConfirmedException;
 
     /**
      * Update the admin password to the specified value.
+     * @throws UserUpdateException 
+     * @throws UserConfigFileException 
      */
-    public void setAdminPassword(String password) throws OwnershipNotConfirmedException;
+    public void setAdminPassword(String password) throws OwnershipNotConfirmedException, UserConfigFileException, UserUpdateException;
 
     /**
      * Fetch the current database settings from the <code>opennms-datasources.xml</code>

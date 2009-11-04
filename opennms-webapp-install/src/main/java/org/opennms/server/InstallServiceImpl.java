@@ -2,6 +2,7 @@ package org.opennms.server;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,6 +29,8 @@ import org.opennms.client.InstallService;
 import org.opennms.client.InstallerProgressItem;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.OwnershipNotConfirmedException;
+import org.opennms.client.UserConfigFileException;
+import org.opennms.client.UserUpdateException;
 import org.opennms.client.LoggingEvent.LogLevel;
 import org.opennms.install.Installer;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -120,7 +123,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
     }
 
-    public boolean isAdminPasswordSet() throws IllegalStateException, OwnershipNotConfirmedException {
+    public boolean isAdminPasswordSet() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -129,7 +132,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             UserManager manager = UserFactory.getInstance();
             User user = manager.getUser("admin");
             if (user == null) {
-                throw new IllegalStateException("There is no <code>admin</code> user in the <code>users.xml</code> file.");
+                return false;
             } else {
                 if (user.getPassword() == null || "".equals(user.getPassword().trim())) {
                     // If the password is null or blank, return false
@@ -141,12 +144,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                     return true;
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not check password: " + e.getMessage(), e);
+        } catch (MarshalException e) {
+            return false;
+        } catch (ValidationException e) {
+            return false;
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
         }
     }
 
-    public void setAdminPassword(String password) throws OwnershipNotConfirmedException {
+    public void setAdminPassword(String password) throws OwnershipNotConfirmedException, UserConfigFileException, UserUpdateException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -154,8 +163,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             UserFactory.init();
             UserManager manager = UserFactory.getInstance();
             manager.setUnencryptedPassword("admin", password);
+        } catch (MarshalException e) {
+            throw new UserConfigFileException();
+        } catch (ValidationException e) {
+            throw new UserConfigFileException();
+        } catch (FileNotFoundException e) {
+            throw new UserConfigFileException();
+        } catch (IOException e) {
+            throw new UserConfigFileException();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not store password: " + e.getMessage(), e);
+            throw new UserUpdateException();
         }
     }
 

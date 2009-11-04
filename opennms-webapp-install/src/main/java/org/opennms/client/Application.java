@@ -112,10 +112,7 @@ public class Application implements EntryPoint {
                 }
 
                 public void onFailure(Throwable e) {
-                    verifyOwnership.setIconStyle("check-failure-icon");
-                    // TODO: Figure out better error handling for GWT-level failures
-                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                    verifyOwnership.expand();
+                    handleUnexpectedExceptionInPanel(e, verifyOwnership);
                 }
             });
         }
@@ -148,12 +145,12 @@ public class Application implements EntryPoint {
                 }
 
                 public void onFailure(Throwable e) {
-                    setAdminPassword.setIconStyle("check-failure-icon");
-                    // TODO: Figure out better error handling for GWT-level failures
                     if (m_alertOnThrow) {
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                        handleUnexpectedExceptionInPanel(e, setAdminPassword);
+                    } else {
+                        setAdminPassword.setIconStyle("check-failure-icon");
+                        setAdminPassword.expand();
                     }
-                    setAdminPassword.expand();
                 }
             });
         }
@@ -190,10 +187,25 @@ public class Application implements EntryPoint {
                     }
 
                     public void onFailure(Throwable e) {
-                        setAdminPassword.setIconStyle("check-failure-icon");
-                        // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                        setAdminPassword.expand();
+                        if (e instanceof OwnershipNotConfirmedException) {
+                            handleOwnershipNotConfirmed();
+                        } else if (e instanceof UserConfigFileException) {
+                            setAdminPassword.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Config File Error", "One of the user configuration files (<code>groups.xml</code>, <code>users.xml</code>) is corrupt or missing.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    setAdminPassword.expand();
+                                }
+                            });
+                        } else if (e instanceof UserUpdateException) {
+                            setAdminPassword.setIconStyle("check-failure-icon");
+                            MessageBox.alert("Error Storing Admin User", "The updated <code>admin</code> user could not be stored.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    setAdminPassword.expand();
+                                }
+                            });
+                        } else {
+                            handleUnexpectedExceptionInPanel(e, setAdminPassword);
+                        }
                     }
                 });
             } else {
@@ -258,14 +270,14 @@ public class Application implements EntryPoint {
                 }
             });
         }
-        
+
         private String getServerFromUrl(String url) {
             // jdbc:postgresql://localhost:5432/opennms
             String retval = url.split("//")[1];
             retval = retval.split(":")[0];
             return retval;
         }
-        
+
         private int getPortFromUrl(String url) {
             // jdbc:postgresql://localhost:5432/opennms
             String retval = url.split("//")[1];
@@ -418,8 +430,7 @@ public class Application implements EntryPoint {
                                                 MessageBox.alert("Database Creation Error", "The OpenNMS database could not be created: " + e.getMessage(), null);
                                                 connectToDatabase.expand();
                                             } else {
-                                                MessageBox.alert("Unexpected Failure", "The OpenNMS database could not be created: " + e.getMessage(), null);
-                                                connectToDatabase.expand();
+                                                handleUnexpectedExceptionInPanel(e, connectToDatabase);
                                             }
                                         }
                                     });
@@ -1122,7 +1133,7 @@ public class Application implements EntryPoint {
                                     text.focus();
                                 }
                             }));
-                            */
+                             */
 
                             w.show();
                         }
@@ -1228,7 +1239,11 @@ public class Application implements EntryPoint {
 
         RootPanel.get().add(dock);
     }
-    
+
+    private void handleOwnershipNotConfirmed() {
+        handleOwnershipNotConfirmed(null);
+    }
+
     private void handleOwnershipNotConfirmed(final Listener<MessageBoxEvent> beforeHandle) {
         verifyOwnership.setIconStyle("check-failure-icon");
         MessageBox.alert("Ownership Not Confirmed", "The ownership file does not exist. Please create the ownership file in the OpenNMS home directory to prove ownership of this installation.", new Listener<MessageBoxEvent>() {
@@ -1240,9 +1255,14 @@ public class Application implements EntryPoint {
             }
         });
     }
-    
-    private void handleOwnershipNotConfirmed() {
-        handleOwnershipNotConfirmed(null);
+
+    private void handleUnexpectedExceptionInPanel(final Throwable e, final ContentPanel panel) {
+        panel.setIconStyle("check-failure-icon");
+        MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + e.getMessage(), new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent event) {
+                panel.expand();
+            }
+        });
     }
 
     private static class VerticalProgressPanel extends VerticalPanel {
