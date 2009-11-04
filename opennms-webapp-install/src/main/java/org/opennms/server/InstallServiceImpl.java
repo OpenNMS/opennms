@@ -106,7 +106,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     public void resetOwnershipFilename() {
-        HttpSession session = this.getThreadLocalRequest().getSession(true);
+        HttpServletRequest request = this.getThreadLocalRequest();
+        if (request == null) {
+            throw new IllegalStateException("No HTTP request object available.");
+        }
+
+        HttpSession session = request.getSession(true);
+        if (session == null) {
+            throw new IllegalStateException("No HTTP session object available.");
+        }
+
         String attribute = "opennms_" + Math.round(Math.random() * (double)100000000) + ".txt";
         session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
     }
@@ -268,8 +277,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
         // Sanity check to make sure that the database doesn't already exist
         boolean databaseExists = true;
+        boolean userExists = true;
         try {
             databaseExists = db.databaseDBExists();
+            userExists = db.databaseUserExists();
         } catch (SQLException e) {
             throw new DatabaseAccessException("Could not check database list: " + e.getMessage(), e);
         }
@@ -277,12 +288,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         if (databaseExists) {
             throw new DatabaseAlreadyExistsException();
         } else {
-            try {
-                db.databaseAddUser();
-            } catch (SQLException e) {
-                throw new DatabaseUserCreationException(e.getMessage(), e);
-            } catch (Throwable e) {
-                throw new DatabaseUserCreationException(e.getMessage(), e);
+            // If there is not already an OpenNMS database user, go ahead and create one
+            if (!userExists) {
+                try {
+                    db.databaseAddUser();
+                } catch (SQLException e) {
+                    throw new DatabaseUserCreationException(e.getMessage(), e);
+                } catch (Throwable e) {
+                    throw new DatabaseUserCreationException(e.getMessage(), e);
+                }
             }
 
             try {
