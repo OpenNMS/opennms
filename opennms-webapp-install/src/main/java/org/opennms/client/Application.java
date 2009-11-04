@@ -181,9 +181,12 @@ public class Application implements EntryPoint {
             if (!passwd.validate()) {
                 setAdminPassword.setIconStyle("check-failure-icon");
                 MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
-                return;
-            }
-            if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
+                setAdminPassword.expand();
+            } else if ("admin".equals(passwd.getValue())) {
+                setAdminPassword.setIconStyle("check-failure-icon");
+                MessageBox.alert("Password Validation Failed", "You entered the default admin user password. Please enter a new password.", null);
+                setAdminPassword.expand();
+            } else if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
                 installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
                         setAdminPassword.setIconStyle("check-success-icon");
@@ -204,7 +207,6 @@ public class Application implements EntryPoint {
                 MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
                 setAdminPassword.expand();
             }
-
         }
     }
 
@@ -1100,9 +1102,9 @@ public class Application implements EntryPoint {
                             w.setScrollMode(Style.Scroll.AUTO);
                             // w.setMaximizable(true);
 
+                            /* Doesn't work
                             final Html text = w.addText(html.toString());
 
-                            /* Doesn't work
                             w.addButton(new Button("Select all", new SelectionListener<ButtonEvent>() {
                                 public void componentSelected(ButtonEvent event) {
                                     text.focus();

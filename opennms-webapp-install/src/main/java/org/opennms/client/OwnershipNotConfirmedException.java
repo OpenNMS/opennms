@@ -7,5 +7,5 @@ package org.opennms.client;
  * detected in the OpenNMS home directory.
  */
 public class OwnershipNotConfirmedException extends Exception {
-
+    private static final long serialVersionUID = 1504250595088693606L;
 }
