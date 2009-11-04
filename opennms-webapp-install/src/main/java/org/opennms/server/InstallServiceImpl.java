@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +17,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.client.DatabaseAccessException;
+import org.opennms.client.DatabaseAlreadyExistsException;
 import org.opennms.client.DatabaseConnectionSettings;
+import org.opennms.client.DatabaseCreationException;
 import org.opennms.client.DatabaseDoesNotExistException;
+import org.opennms.client.DatabaseDriverException;
+import org.opennms.client.DatabaseUserCreationException;
 import org.opennms.client.InstallService;
 import org.opennms.client.InstallerProgressItem;
 import org.opennms.client.LoggingEvent;
@@ -111,42 +115,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
-        /*
-        Userinfo userinfo = null;
-        try {
-            userinfo = (Userinfo)Unmarshaller.unmarshal(Userinfo.class, 
-                new FileReader(
-                    new File(
-                        new File(this.getOpennmsInstallPath(), "etc"), 
-                        "users.xml"
-                    )
-                )
-            );
-        } catch (MarshalException e) {
-            throw new IllegalStateException("<code>users.xml</code> file cannot be read properly.");
-        } catch (ValidationException e) {
-            throw new IllegalStateException("<code>users.xml</code> file is invalid and cannot be read.");
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException("<code>users.xml</code> file cannot be found in the OpenNMS home directory.");
-        }
-
-        for(User user : userinfo.getUsers().getUser()) {
-            if ("admin".equals(user.getUserId())) {
-                if (user.getPassword() == null || "".equals(user.getPassword().trim())) {
-                    // If the password is null or blank, return false
-                    return false;
-                } else if ("21232F297A57A5A743894A0E4A801FC3".equals(user.getPassword())) {
-                    // If the password is still set to the default value, return false
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        }
-        // If there is no "admin" entry in users.xml, return false
-        return true;
-         */
-
         try {
             UserFactory.init();
             UserManager manager = UserFactory.getInstance();
@@ -165,7 +133,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not check password: " + e.getMessage(), e);
+            throw new IllegalStateException("Could not check password: " + e.getMessage(), e);
         }
     }
 
@@ -274,7 +242,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException, OwnershipNotConfirmedException {
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) 
+    throws 
+    OwnershipNotConfirmedException,
+    DatabaseDriverException,
+    DatabaseAccessException,
+    DatabaseAlreadyExistsException,
+    DatabaseUserCreationException,
+    DatabaseCreationException
+    {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -287,7 +263,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         try {
             db.setAdminDataSource(new SimpleDataSource(driver, dbAdminUrl, dbAdminUser, dbAdminPassword));
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
+            throw new DatabaseDriverException("PostgreSQL driver could not be loaded.", e);
         }
 
         // Sanity check to make sure that the database doesn't already exist
@@ -295,19 +271,26 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         try {
             databaseExists = db.databaseDBExists();
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not check database list: " + e.getMessage());
+            throw new DatabaseAccessException("Could not check database list: " + e.getMessage(), e);
         }
 
         if (databaseExists) {
-            throw new IllegalStateException("Database already exists.");
+            throw new DatabaseAlreadyExistsException();
         } else {
             try {
                 db.databaseAddUser();
+            } catch (SQLException e) {
+                throw new DatabaseUserCreationException(e.getMessage(), e);
+            } catch (Throwable e) {
+                throw new DatabaseUserCreationException(e.getMessage(), e);
+            }
+
+            try {
                 db.databaseAddDB();
             } catch (SQLException e) {
-                throw new IllegalStateException(e.getMessage());
-            } catch (Exception e) {
-                throw new IllegalStateException(e.getMessage());
+                throw new DatabaseCreationException(e.getMessage(), e);
+            } catch (Throwable e) {
+                throw new DatabaseCreationException(e.getMessage(), e);
             }
         }
     }
@@ -472,7 +455,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         // by using the normal {@link org.opennms.netmgt.config.DataSourceFactory} class.
         // TODO: Throw specific exceptions to provide better UI feedback
         try {
-            DataSourceFactory.init();
+            // Init both required datasources
+            DataSourceFactory.init(Installer.ADMIN_DATA_SOURCE_NAME);
+            DataSourceFactory.init(Installer.OPENNMS_DATA_SOURCE_NAME);
         } catch (MarshalException e) {
             throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
         } catch (ValidationException e) {

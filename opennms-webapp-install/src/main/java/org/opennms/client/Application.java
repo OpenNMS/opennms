@@ -298,34 +298,42 @@ public class Application implements EntryPoint {
             if (!dbHost.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbPort.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbDriver.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbName.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbAdminUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Admin User", "The admin username cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbAdminPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid Admin Password", "The admin password cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbNmsUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid OpenNMS User", "The OpenNMS username cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             } else if (!dbNmsPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Invalid OpenNMS Password", "The OpenNMS password cannot be left blank.", null);
+                connectToDatabase.expand();
                 return;
             }
 
@@ -340,6 +348,7 @@ public class Application implements EntryPoint {
                 } else {
                     connectToDatabase.setIconStyle("check-failure-icon");
                     MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                    connectToDatabase.expand();
                     return;
                 }
             } else if (dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
@@ -347,6 +356,7 @@ public class Application implements EntryPoint {
             } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                connectToDatabase.expand();
                 return;
             }
 
@@ -357,6 +367,7 @@ public class Application implements EntryPoint {
                 } else {
                     connectToDatabase.setIconStyle("check-failure-icon");
                     MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                    connectToDatabase.expand();
                     return;
                 }
             } else if (dbNmsPass.getValue().equals(dbNmsConfirm.getValue())) {
@@ -364,6 +375,7 @@ public class Application implements EntryPoint {
             } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
                 MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
+                connectToDatabase.expand();
                 return;
             }
 

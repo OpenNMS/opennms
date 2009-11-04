@@ -63,8 +63,13 @@ public interface InstallService extends RemoteService {
      * test to ensure that our database connection parameters are successfully
      * connecting to a proper OpenNMS database. This method will throw exceptions
      * if the connection failed or the parameters cannot be stored.
+     * @throws DatabaseCreationException 
+     * @throws DatabaseUserCreationException 
+     * @throws DatabaseAlreadyExistsException 
+     * @throws DatabaseAccessException 
+     * @throws DatabaseDriverException 
      */
-    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws DatabaseDoesNotExistException, IllegalStateException, OwnershipNotConfirmedException;
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseAlreadyExistsException, DatabaseUserCreationException, DatabaseCreationException;
 
     // protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory);
 
