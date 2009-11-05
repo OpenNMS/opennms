@@ -260,8 +260,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             throw new DatabaseAccessException("Could not check to see if the OpenNMS user exists: " + e.getMessage(), e);
         }
 
-        if (userExists) {
-            if (databaseExists) {
+        if (databaseExists) {
+            if (userExists) {
                 try {
                     // TODO: Change this to an appropriate connection test
                     // Try to vacuum the database to test connectivity
@@ -272,10 +272,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 // If the test completes, then store the database connectivity information
                 this.setDatabaseConfig(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
             } else {
-                throw new DatabaseDoesNotExistException();
+                throw new DatabaseAccessException("The OpenNMS database user does not exist. Please create this user with <code>CREATEDB</code> and <code>CREATEUSER</code> permissions.");
             }
         } else {
-            throw new DatabaseAccessException("The OpenNMS database user does not exist. Please create this user with <code>CREATEDB</code> and <code>CREATEUSER</code> permissions.");
+            throw new DatabaseDoesNotExistException();
         }
     }
 
