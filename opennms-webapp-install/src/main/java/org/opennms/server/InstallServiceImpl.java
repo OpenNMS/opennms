@@ -20,6 +20,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.client.DatabaseAccessException;
 import org.opennms.client.DatabaseAlreadyExistsException;
+import org.opennms.client.DatabaseConfigFileException;
 import org.opennms.client.DatabaseConnectionSettings;
 import org.opennms.client.DatabaseCreationException;
 import org.opennms.client.DatabaseDoesNotExistException;
@@ -46,7 +47,7 @@ import org.opennms.netmgt.dao.db.SimpleDataSource;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
-    private static final long serialVersionUID = 7921657972081359016L;
+    private static final long serialVersionUID = 3125272519349298486L;
 
     private static final String OWNERSHIP_FILE_SESSION_ATTRIBUTE = "__install_ownership_file";
     // private static final String DATABASE_SETTINGS_SESSION_ATTRIBUTE = "__install_database_settings";
@@ -176,7 +177,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException, OwnershipNotConfirmedException {
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws OwnershipNotConfirmedException, DatabaseConfigFileException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -195,14 +196,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             try {
                 config = DataSourceConfiguration.unmarshal(new FileReader(configFile));
             } catch (MarshalException e) {
-                throw new IllegalStateException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+                throw new DatabaseConfigFileException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             } catch (ValidationException e) {
-                throw new IllegalArgumentException("Invalid configuration data in <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+                throw new DatabaseConfigFileException("Invalid configuration data in <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             } catch (IOException e) {
-                throw new IllegalStateException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+                throw new DatabaseConfigFileException("Cannot read from <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             }
         } else {
-            throw new IllegalStateException("Location <code>" + configFile.getPath() + "</code> is not readable.");
+            throw new DatabaseConfigFileException("Location <code>" + configFile.getPath() + "</code> is not readable.");
         }
 
         for (JdbcDataSource ds : config.getJdbcDataSource()) {
@@ -222,7 +223,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException {
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -243,28 +244,38 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             db.setAdminDataSource(new SimpleDataSource(driver, dbAdminUrl, dbAdminUser, dbAdminPassword));
             db.setDataSource(new SimpleDataSource(driver, dbNmsUrl, dbNmsUser, dbNmsPassword));
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("PostgreSQL driver could not be loaded.", e);
+            throw new DatabaseDriverException();
         }
 
         boolean databaseExists = false;
+        boolean userExists = false;
         try {
             databaseExists = db.databaseDBExists();
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not check database list: " + e.getMessage());
+            throw new DatabaseAccessException("Could not check to see if database exists: " + e.getMessage(), e);
+        }
+        try {
+            userExists = db.databaseUserExists();
+        } catch (SQLException e) {
+            throw new DatabaseAccessException("Could not check to see if the OpenNMS user exists: " + e.getMessage(), e);
         }
 
-        if (databaseExists) {
-            // TODO: Change this to an appropriate connection test
-            // Try to vacuum the database to test connectivity
-            try {
-                db.vacuumDatabase(false);
+        if (userExists) {
+            if (databaseExists) {
+                try {
+                    // TODO: Change this to an appropriate connection test
+                    // Try to vacuum the database to test connectivity
+                    db.vacuumDatabase(false);
+                } catch (SQLException e) {
+                    throw new DatabaseAccessException("Database test failed: " + e.getMessage(), e);
+                }
                 // If the test completes, then store the database connectivity information
                 this.setDatabaseConfig(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
-            } catch (SQLException e) {
-                throw new IllegalArgumentException("Database connection failed: " + e.getMessage(), e);
+            } else {
+                throw new DatabaseDoesNotExistException();
             }
         } else {
-            throw new DatabaseDoesNotExistException();
+            throw new DatabaseAccessException("The OpenNMS database user does not exist. Please create this user with <code>CREATEDB</code> and <code>CREATEUSER</code> permissions.");
         }
     }
 
@@ -297,9 +308,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         boolean userExists = true;
         try {
             databaseExists = db.databaseDBExists();
+        } catch (SQLException e) {
+            throw new DatabaseAccessException("Could not check to see if the database exists: " + e.getMessage(), e);
+        }
+        try {
             userExists = db.databaseUserExists();
         } catch (SQLException e) {
-            throw new DatabaseAccessException("Could not check database list: " + e.getMessage(), e);
+            throw new DatabaseAccessException("Could not check to see if the OpenNMS database user exists: " + e.getMessage(), e);
         }
 
         if (databaseExists) {
@@ -326,7 +341,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, IllegalArgumentException, OwnershipNotConfirmedException {
+    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws OwnershipNotConfirmedException, DatabaseConfigFileException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -367,14 +382,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             try {
                 config.marshal(new FileWriter(configFile));
             } catch (MarshalException e) {
-                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+                throw new DatabaseConfigFileException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             } catch (ValidationException e) {
-                throw new IllegalArgumentException("Invalid configuration data specified: " + e.getMessage());
+                throw new DatabaseConfigFileException("Invalid configuration data specified: " + e.getMessage());
             } catch (IOException e) {
-                throw new IllegalStateException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
+                throw new DatabaseConfigFileException("Cannot write to <code>" + configFile.getPath() + "</code>: " + e.getMessage());
             }
         } else {
-            throw new IllegalStateException("Location <code>" + configFile.getPath() + "</code> is not writable.");
+            throw new DatabaseConfigFileException("Location <code>" + configFile.getPath() + "</code> is not writable.");
         }
     }
 

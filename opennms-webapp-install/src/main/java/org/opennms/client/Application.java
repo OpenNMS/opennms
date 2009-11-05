@@ -267,6 +267,10 @@ public class Application implements EntryPoint {
 
                 public void onFailure(Throwable e) {
                     // TODO: Figure out what to do here, if anything
+                    if (e instanceof OwnershipNotConfirmedException) {
+                    } else if (e instanceof DatabaseConfigFileException) {
+                    } else {
+                    }
                 }
             });
         }
@@ -399,6 +403,7 @@ public class Application implements EntryPoint {
                 public void onFailure(Throwable e) {
                     connectToDatabase.setIconStyle("check-failure-icon");
 
+                    // If the database does not exist, give the user the option of creating the database
                     if (e instanceof DatabaseDoesNotExistException) {
                         MessageBox.confirm("Database Does Not Exist", "The database does not exist yet. Would you like to create it?", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
@@ -415,8 +420,7 @@ public class Application implements EntryPoint {
                                             if (e instanceof OwnershipNotConfirmedException) {
                                                 handleOwnershipNotConfirmed();
                                             } else if (e instanceof DatabaseDriverException) {
-                                                MessageBox.alert("Database Driver Missing", "The database driver could not be loaded: " + e.getMessage(), null);
-                                                connectToDatabase.expand();
+                                                handleDatabaseDriverException(e);
                                             } else if (e instanceof DatabaseAccessException) {
                                                 MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), null);
                                                 connectToDatabase.expand();
@@ -440,9 +444,26 @@ public class Application implements EntryPoint {
                                 }
                             }
                         });
+                    } else if (e instanceof OwnershipNotConfirmedException) {
+                        handleOwnershipNotConfirmed();
+                    } else if (e instanceof DatabaseDriverException) {
+                        handleDatabaseDriverException(e);
+                    } else if (e instanceof DatabaseAccessException) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Error Accessing Database", "The database could not be accessed: " + e.getMessage(), new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                                connectToDatabase.expand();
+                            }
+                        });
+                    } else if (e instanceof DatabaseConfigFileException) {
+                        connectToDatabase.setIconStyle("check-failure-icon");
+                        MessageBox.alert("Error Storing Database Settings", "The database configuration could not be stored.", new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                                connectToDatabase.expand();
+                            }
+                        });
                     } else {
-                        MessageBox.alert("Failure", "Could not connect to the database with the specified parameters: " + e.getMessage(), null);
-                        connectToDatabase.expand();
+                        handleUnexpectedExceptionInPanel(e, connectToDatabase);
                     }
                 }
             });
@@ -715,13 +736,13 @@ public class Application implements EntryPoint {
 
         // final TextField<String> dbAdminPass = new TextField<String>();
         dbAdminPass.setFieldLabel("Admin password");
-        // dbAdminPass.setAllowBlank(false);
+        dbAdminPass.setAllowBlank(false);
         dbAdminPass.setPassword(true);
         connectToDatabase.add(dbAdminPass);
 
-        // final TextField<String> dbConfirm = new TextField<String>();
+        // final TextField<String> dbAdminConfirm = new TextField<String>();
         dbAdminConfirm.setFieldLabel("Confirm admin password");
-        // dbConfirm.setAllowBlank(false);
+        dbAdminConfirm.setAllowBlank(false);
         dbAdminConfirm.setPassword(true);
         connectToDatabase.add(dbAdminConfirm);
 
@@ -746,15 +767,15 @@ public class Application implements EntryPoint {
         });
         connectToDatabase.add(dbNmsUser);
 
-        // final TextField<String> dbAdminPass = new TextField<String>();
+        // final TextField<String> dbNmsPass = new TextField<String>();
         dbNmsPass.setFieldLabel("OpenNMS password");
-        // dbNmsPass.setAllowBlank(false);
+        dbNmsPass.setAllowBlank(false);
         dbNmsPass.setPassword(true);
         connectToDatabase.add(dbNmsPass);
 
-        // final TextField<String> dbConfirm = new TextField<String>();
+        // final TextField<String> dbNmsConfirm = new TextField<String>();
         dbNmsConfirm.setFieldLabel("Confirm OpenNMS password");
-        // dbConfirm.setAllowBlank(false);
+        dbNmsConfirm.setAllowBlank(false);
         dbNmsConfirm.setPassword(true);
         connectToDatabase.add(dbNmsConfirm);
 
@@ -1261,6 +1282,15 @@ public class Application implements EntryPoint {
         MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + e.getMessage(), new Listener<MessageBoxEvent>() {
             public void handleEvent(MessageBoxEvent event) {
                 panel.expand();
+            }
+        });
+    }
+
+    private void handleDatabaseDriverException(final Throwable e) {
+        connectToDatabase.setIconStyle("check-failure-icon");
+        MessageBox.alert("Database Driver Missing", "The database driver could not be loaded: " + e.getMessage(), new Listener<MessageBoxEvent>() {
+            public void handleEvent(MessageBoxEvent event) {
+                connectToDatabase.expand();
             }
         });
     }

@@ -49,16 +49,20 @@ public interface InstallService extends RemoteService {
      * Fetch the current database settings from the <code>opennms-datasources.xml</code>
      * configuration file. This call is used to prepopulate the database settings form
      * with default or existing data.
+     * @throws DatabaseConfigFileException 
      */
-    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException, OwnershipNotConfirmedException;
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() throws IllegalStateException, OwnershipNotConfirmedException, DatabaseConfigFileException;
 
     /**
      * Attempt to connect to the database and perform a lightweight database
      * test to ensure that our database connection parameters are successfully
      * connecting to a proper OpenNMS database. This method will throw exceptions
      * if the connection failed or the parameters cannot be stored.
+     * @throws DatabaseDriverException 
+     * @throws DatabaseAccessException 
+     * @throws DatabaseConfigFileException 
      */
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException;
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException;
 
     /**
      * Attempt to connect to the database and perform a lightweight database

@@ -8,6 +8,10 @@ public class DatabaseAccessException extends Exception {
         super();
     }
 
+    public DatabaseAccessException(String string) {
+        super(string);
+    }
+
     public DatabaseAccessException(String string, Throwable e) {
         super(string, e);
     }
