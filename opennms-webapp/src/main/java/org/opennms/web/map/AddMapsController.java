@@ -96,50 +96,55 @@ public class AddMapsController implements Controller {
 			if(log.isDebugEnabled())
 				log.debug("Got map from manager "+map);
 			
-			Integer[] mapids = null;
 			String type = VElement.MAP_TYPE;
-
-			boolean actionfound = false;
 			
-			if (action.equals(MapsConstants.ADDMAPS_ACTION)) {
-				log.debug("Adding maps by id: "+ elems);
-				actionfound = true;
-				String[] smapids = elems.split(",");
-				mapids = new Integer[smapids.length];
-				for (int i = 0; i<smapids.length;i++) {
-					mapids[i] = new Integer(smapids[i]);
-				}
+			if (! action.equals(MapsConstants.ADDMAPS_ACTION))
+                throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
+			log.debug("Adding maps by id: "+ elems);
+			String[] smapids = elems.split(",");
+	         List<Integer> mapids = new ArrayList<Integer>(smapids.length);			
+			for (int i = 0; i<smapids.length;i++) {
+				mapids.add(new Integer(smapids[i]));
 			}
 			
 			List<VElement> velems = new ArrayList<VElement>();
 			List<VLink> links = new ArrayList<VLink>();
 			// response for addElement
 			List<Integer> mapsWithLoop = new ArrayList<Integer>();
-			if (actionfound) {
 				
-				for (int i = 0; i < mapids.length; i++) {
-					int elemId = mapids[i].intValue();
-					if (map.containsElement(elemId, type)) {
-						log.debug("Action: " + action + " . Map Contains Element: " + elemId+type);
-						continue;
-						
-					}
-					boolean foundLoop = manager.foundLoopOnMaps(map,elemId);
+			for (Integer id : mapids) {
+				if (map.containsElement(id, type)) {
+					log.debug("Action: " + action + " . Map Contains Element: " + id+type);
+					continue;
+					
+				}
+				boolean foundLoop = manager.foundLoopOnMaps(map,id);
 					
 
-					if(foundLoop)
-						mapsWithLoop.add(elemId);
-					else
-						velems.add(manager.newElement(elemId, type));
-				} // end for
+				if(foundLoop) {
+					mapsWithLoop.add(id);
+				} else {
+				    VElement ve = manager.newElement(id, type);;
+	                try {
+	                    VElement hve = manager.getElement(map.getId(), id, VElement.MAP_HIDE_TYPE);
+	                    if (hve.getLabel() != null) {
+	                        ve.setLabel(hve.getLabel());
+	                        log.debug("preserving label map is hidden: label found: " + hve.getLabel());
+	                    }
+	                } catch (Exception e) {
+	                   log.debug("No Hidden Map found for id: " +id); 
+                    }
+	                log.debug("adding map element to map with id: " +id+type);
+					velems.add(ve);
+				}
+			} // end for
 
 				//get links and add elements to map
-				if (velems != null) {
-					map.addElements(velems);
-					links = manager.getLinks(map.getAllElements());
-				}
-				log.debug("After getting/adding links");
-			} 				
+			if (velems != null) {
+				map.addElements(velems);
+				links = manager.getLinks(map.getAllElements());
+			}
+			log.debug("After getting/adding links");
 			bw.write(ResponseAssembler.getAddMapsResponse(action, mapsWithLoop,velems, links));
 		} catch (Exception e) {
 			log.error("Error while adding Maps for action: "+action,e);

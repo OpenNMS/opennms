@@ -67,9 +67,10 @@ var nodeidSortAss;
 var mynodesResult;
 var nodesLoaded = false;
 
-//variables for NODE --- nodes are loaded by LoadNodes()
+//variables for Hide NODE
 var hideNodesIds = "";
 var hasHideNodes = false;
+
 // variables for MAP ---maps are loaded by LoadMaps()
 var selectedMapInList=0;
 var selMaps;
@@ -81,6 +82,10 @@ var mapsLoaded = false;
 
 // variable to support the default map
 var defaultMap;
+
+//variables for Hide Maps
+var hideMapsIds = "";
+var hasHideMaps = false;
 
 // variables for CATEGORIES --- categories are loaded by init()
 var selectedCategoryInList=0;

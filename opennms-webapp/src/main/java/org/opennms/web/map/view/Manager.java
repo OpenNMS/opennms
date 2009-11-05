@@ -220,6 +220,16 @@ public interface Manager {
             MapNotFoundException, MapsException ;
     
     /**
+     * Get a map element.
+     * 
+     * @param mapId
+     * @param elementId
+     * @param type the node type
+     * @return the new VElement
+     * @throws MapsException
+     */
+    public VElement getElement(int mapId, int elementId, String type) throws MapsException ;    
+    /**
      * Create a new (not child) empty Submap with the identifier setted to id.
      * 
      * @param mapId
