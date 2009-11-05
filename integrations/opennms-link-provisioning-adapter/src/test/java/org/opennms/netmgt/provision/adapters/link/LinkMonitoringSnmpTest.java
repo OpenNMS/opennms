@@ -46,8 +46,6 @@ import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
-import org.opennms.netmgt.mock.MockMonitoredService;
-import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -81,7 +79,6 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
     private MockSnmpAgent m_snmpAgent;
     private SnmpAgentConfig m_agentConfig;
-    private MonitoredService m_monitoredService;
     private DefaultEndPointConfigurationDao m_configDao;
     
     @Before
@@ -100,7 +97,6 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         dao.afterPropertiesSet();
         m_configDao = dao;
         
-        m_monitoredService = new MockMonitoredService(1, "node1", InetAddress.getLocalHost().getHostAddress(), "EndPoint");
         
     }
     
@@ -167,8 +163,6 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         }catch (EndPointStatusException e) {
             assertTrue("An EndPointStatusException was caught resulting in a failed test",false);
         }
-        
-        //m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
         
     }
     

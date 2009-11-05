@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.*;
+import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
 
 import java.util.Collection;
 import java.util.Date;
@@ -8,12 +9,15 @@ import java.util.Date;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -26,6 +30,12 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Autowired
     DataLinkInterfaceDao m_dataLinkDao;
+    
+    @Autowired
+    MonitoredServiceDao m_monitoredServiceDao;
+    
+    @Autowired
+    EndPointConfigurationDao m_endPointConfigDao;
     
     @Autowired
     LinkStateDao m_linkStateDao;
@@ -58,7 +68,11 @@ public class DefaultNodeLinkService implements NodeLinkService {
             dataLink.setNodeParentId(nodeParentId);
             dataLink.setIfIndex(getPrimaryIfIndexForNode(node));
             dataLink.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
-            dataLink.setStatus("G");
+            if(nodeHasEndPointService(nodeParentId) && nodeHasEndPointService(nodeId)) {
+                dataLink.setStatus("G");
+            }else {
+                dataLink.setStatus("U");
+            }
             dataLink.setLastPollTime(new Date());
             
             m_dataLinkDao.save(dataLink);
@@ -139,6 +153,14 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
         
         return null;
+    }
+    
+    @Transactional(readOnly=true)
+    public boolean nodeHasEndPointService(int nodeId) {
+        
+        OnmsMonitoredService endPointService = m_monitoredServiceDao.getPrimaryService(nodeId, m_endPointConfigDao.getValidator().getServiceName());
+        
+        return endPointService == null ? false : true;
     }
     
 }

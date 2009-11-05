@@ -23,10 +23,15 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     }
     
     public void onLinkDown() {
+        sendDataLinkEvent(EventConstants.DATA_LINK_FAILED_EVENT_UEI);
+    }
+
+    private void sendDataLinkEvent(String uei) {
         String endPoint1 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeId());
         String endPoint2 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeParentId());
         
-        Event e = new EventBuilder(EventConstants.DATA_LINK_FAILED_EVENT_UEI, "EventCorrelator")
+        
+        Event e = new EventBuilder(uei, "EventCorrelator")
             .addParam(EventConstants.PARM_ENDPOINT1, LinkProvisioningAdapter.min(endPoint1, endPoint2))
             .addParam(EventConstants.PARM_ENDPOINT2, LinkProvisioningAdapter.max(endPoint1, endPoint2))
             .getEvent();
@@ -34,14 +39,12 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     }
 
     public void onLinkUp() {
-        String endPoint1 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeId());
-        String endPoint2 = m_nodeLinkService.getNodeLabel(m_dataLinkInterface.getNodeParentId());
-
-        Event e = new EventBuilder(EventConstants.DATA_LINK_RESTORED_EVENT_UEI, "EventCorrelator")
-            .addParam(EventConstants.PARM_ENDPOINT1, LinkProvisioningAdapter.min(endPoint1, endPoint2))
-            .addParam(EventConstants.PARM_ENDPOINT2, LinkProvisioningAdapter.max(endPoint1, endPoint2))
-            .getEvent();
-        m_eventForwarder.sendNow(e);
+        sendDataLinkEvent(EventConstants.DATA_LINK_RESTORED_EVENT_UEI);
     }
+
+    public void onLinkUnknown() {
+        sendDataLinkEvent(EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI);
+    }
+    
     
 }

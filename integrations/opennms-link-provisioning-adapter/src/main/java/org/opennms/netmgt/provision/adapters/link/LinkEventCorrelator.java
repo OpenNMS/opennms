@@ -3,7 +3,7 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.*;
+import static org.opennms.core.utils.LogUtils.debugf;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -37,21 +37,27 @@ public class LinkEventCorrelator {
     public void handleNodeDown(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(nodeHasEndPointService(nodeId)) {
+            linkDown(nodeId);
+        }
+         
     }
 
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void handleNodeUp(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(nodeHasEndPointService(nodeId)) {
+            linkUp(nodeId);
+        }
+         
     }
 
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
+        if(nodeHasEndPointService(nodeId)){
             linkDown(nodeId); 
         }
         else {
@@ -64,11 +70,11 @@ public class LinkEventCorrelator {
     public void handleInterfaceUp(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
+        if(nodeHasEndPointService(nodeId)){
             linkUp(nodeId); 
         }
         else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
 
@@ -174,7 +180,7 @@ public class LinkEventCorrelator {
             linkUp(nodeId); 
         }
         else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
 
@@ -233,6 +239,10 @@ public class LinkEventCorrelator {
             return primaryAddress.equals(ipAddr);
         }
         return false;
+    }
+
+    public boolean nodeHasEndPointService(int nodeId) {
+        return m_nodeLinkService.nodeHasEndPointService(nodeId);
     }
 
     public void updateLinkStatus(Event e) {

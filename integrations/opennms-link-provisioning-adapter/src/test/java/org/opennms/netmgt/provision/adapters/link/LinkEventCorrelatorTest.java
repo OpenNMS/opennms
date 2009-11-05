@@ -73,6 +73,9 @@ public class LinkEventCorrelatorTest {
         
         expect(m_nodeLinkService.getNodeLabel(1)).andStubReturn("pittsboro-1");
         expect(m_nodeLinkService.getNodeLabel(2)).andStubReturn("pittsboro-2");
+        
+        expect(m_nodeLinkService.nodeHasEndPointService(1)).andStubReturn(true);
+        expect(m_nodeLinkService.nodeHasEndPointService(2)).andStubReturn(true);
     }
     
     @Test
