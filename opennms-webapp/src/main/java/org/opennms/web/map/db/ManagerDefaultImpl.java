@@ -1467,5 +1467,10 @@ public class ManagerDefaultImpl implements Manager {
         m_groupDao = groupDao;
     }
 
+    public VElement getElement(int mapId, int elementId, String type)
+            throws MapsException {
+        return new VElement(dbManager.getElement(elementId, mapId, type));
+    }
+
 
 }

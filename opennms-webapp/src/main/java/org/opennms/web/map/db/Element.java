@@ -63,6 +63,8 @@ public class Element implements Cloneable {
 
     public static final String MAP_TYPE = "M";
 
+    public static final String MAP_HIDE_TYPE = "W";
+
     public static final String NODE_TYPE = "N";
 
     public static final String NODE_HIDE_TYPE = "H";
@@ -164,7 +166,7 @@ public class Element implements Cloneable {
      *            The type to set.
      */
     public void setType(String type) throws MapsException {
-        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE))  this.type = type;
+        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE) || type.equals(MAP_HIDE_TYPE))  this.type = type;
         new MapsException("Cannot create an Element with type " + type);
     }
 
@@ -207,6 +209,16 @@ public class Element implements Cloneable {
     public boolean isNode() {
     	if (type.equals(NODE_TYPE)) return true;
     	return false;
+    }
+
+    public boolean isHideMap() {
+        if (type.equals(MAP_HIDE_TYPE)) return true;
+        return false;
+    }
+
+    public boolean isHideNode() {
+        if (type.equals(NODE_HIDE_TYPE)) return true;
+        return false;
     }
 
 }
