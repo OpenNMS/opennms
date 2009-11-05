@@ -437,6 +437,9 @@ function newMap(){
 	hideNodesIds = "";
 	hasHideNodes = false;
 
+	hideMapsIds = "";
+	hasHideMaps = false;
+
 	map.clear();
 	
 	loading++;
@@ -518,6 +521,9 @@ function close(){
 
 	hideNodesIds = "";
 	hasHideNodes = false;
+
+	hideMapsIds = "";
+	hasHideMaps = false;
 
 	map.clear();
 
@@ -607,6 +613,9 @@ function handleLoadingMap(data) {
 
 	hideNodesIds = "";
 	hasHideNodes = false;
+	hideMapsIds = "";
+	hasHideMaps = false;
+
 	var st = str.split("&");
 	for(var k=0;k<st.length;k++){
 		var nodeToken = st[k];
@@ -659,17 +668,26 @@ function handleLoadingMap(data) {
 			severity=nodeST[7];
 			
 			var testHideNode = id.indexOf('H');
-			if ( testHideNode == -1 ) {
+			var testHideMap = id.indexOf('W');
+			if ( testHideNode == -1 && testHideMap == -1 ) {
 			   var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			   var semaphoreFlash = getSemaphoreFlash(severity,avail);
 			   map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
-			} else {
+			} else if (testHideMap == -1 ) {
 				var nodeid = id.substring(0,testHideNode);
 				if (hideNodesIds == "")
 					hideNodesIds=nodeid;
 				else 
 					hideNodesIds=hideNodesIds+','+nodeid;
 				hasHideNodes = true;
+			} else {
+				var mapid = id.substring(0,testHideMap);
+				if (hideMapsIds == "")
+					hideMapsIds=mapid;
+				else 
+					hideMapsIds=hideMapsIds+','+mapid;
+				hasHideMaps = true;
+				
 			}
 		}
 		if (k>0 && nodeST.length == 6) {
@@ -962,6 +980,10 @@ function handleRefreshNodesResponse(data) {
 
 	hideNodesIds = "";
 	hasHideNodes = false;
+	
+	hideMapsIds = "";
+	hasHideMaps = false;
+	
 	for(var k=1;k<st.length;k++){
 		var nodeToken = st[k];
 		var nodeST = nodeToken.split("+");
@@ -991,7 +1013,8 @@ function handleRefreshNodesResponse(data) {
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
 
 			var testHideNode = id.indexOf('H');
-			if ( testHideNode == -1 ) {
+			var testHideMap = id.indexOf('W');
+			if ( testHideNode == -1 && testHideMap == -1 ) {
 
 				if(reloadMap){
 					posx=nodeST[6];
@@ -1006,13 +1029,20 @@ function handleRefreshNodesResponse(data) {
 						map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
 					}
 				}
-			} else {
+			} else if (testHideMap == -1 ){
 				var nodeid = id.substring(0,testHideNode);
 				if (hideNodesIds == "")
 					hideNodesIds=nodeid;
 				else 
 					hideNodesIds=hideNodesIds+','+nodeid;
 				hasHideNodes = true;
+			} else {
+				var mapid = id.substring(0,testHideMap);
+				if (hideMapsIds == "")
+					hideMapsIds=mapid;
+				else 
+					hideMapsIds=hideMapsIds+','+mapid;
+				hasHideMaps = true;				
 			}
 		}
 		// Links

@@ -322,12 +322,26 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                         continue;
                                     }
                                     if (onmsSubMap.getMapElements().size() == 0 && csubmap.getAddwithoutelements()) {
-                                        addSubMap(onmsMap,csubmap,onmsSubMap);
+                                        addSubMap(onmsMap,csubmap,onmsSubMap,OnmsMapElement.MAP_TYPE);
                                         onmsMap.setLastModifiedTime(new Date());
                                         m_onmsMapDao.update(onmsMap);
                                         m_onmsMapDao.flush();
                                     }
                                 }
+                            } else if (onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
+                                log().debug("syncMaps: adding hidden submaps to automatic map: " + mapName);
+                                for (Csubmap csubmap : mapnameSubmapMap.get(mapName)) {
+                                    OnmsMap onmsSubMap = getSuitableMap(csubmap.getName());
+                                    if (onmsSubMap.isNew()) {
+                                        log().error("syncMap: add SubMaps: the submap does not exist: " + csubmap.getName());
+                                        continue;
+                                    }
+                                    if (onmsSubMap.getMapElements().size() == 0 && csubmap.getAddwithoutelements()) {
+                                        addSubMap(onmsMap,csubmap,onmsSubMap,OnmsMapElement.MAP_HIDE_TYPE);
+                                        onmsMap.setLastModifiedTime(new Date());
+                                        m_onmsMapDao.update(onmsMap);
+                                        m_onmsMapDao.flush();
+                                    }                                }
                             } else {
                                 log().debug("syncMaps: cannot add submaps to map: " + mapName);
                                 log().debug("syncMaps: map type: " + onmsMap.getType());
@@ -347,13 +361,14 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }
 
-    private void addSubMap(OnmsMap onmsMap, Csubmap csubmap, OnmsMap onmsSubMap) {
+    private void addSubMap(OnmsMap onmsMap, Csubmap csubmap, OnmsMap onmsSubMap, String type) {
         log().debug("addSubMap: adding automated submap: " + onmsSubMap.getName() + " to map: " + onmsMap.getName());
         if (!onmsMap.getMapElements().isEmpty()) {
             log().debug("addSubMap: looping on elements of not empty map: " + onmsMap.getName());
             for (OnmsMapElement elem: onmsMap.getMapElements()) {
                 log().debug("addSubMap: checking element with id: " + elem.getElementId() + " and type" + elem.getType());
-                if (elem.getType().equals(OnmsMapElement.MAP_TYPE) && elem.getElementId() == onmsSubMap.getId()) {
+                if (elem.getElementId() == onmsSubMap.getId() && 
+                        (elem.getType().equals(OnmsMapElement.MAP_TYPE) || elem.getType().equals(OnmsMapElement.MAP_HIDE_TYPE))) {
                     log().debug("addSubMap: still exists in map skipping");
                     return;
                 }
@@ -371,7 +386,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
         
         OnmsMapElement mapElement = 
-                new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_TYPE,csubmap.getLabel(),csubmap.getIcon(),xy.getX(),xy.getY());
+                new OnmsMapElement(onmsMap,onmsSubMap.getId(),type,csubmap.getLabel(),csubmap.getIcon(),xy.getX(),xy.getY());
         
         m_onmsMapElementDao.saveOrUpdate(mapElement);
  
@@ -567,17 +582,24 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         Map<String,Csubmap> csubmaps = m_mapsAdapterConfig.getContainerMaps(submapName);
         for(String mapName:csubmaps.keySet()) {
             OnmsMap onmsMap = getSuitableMap(mapName);
-            if (!onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
-                log().debug("add SubMaps: nothink to do becouse the container map is : " + onmsMap.getType());
-                continue;               
+            String elementType=null;
+            log().debug("add SubMaps: the container map is : " + onmsMap.getType());
+                        
+            if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                elementType=OnmsMapElement.MAP_TYPE;
+            } else if (onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
+                elementType=OnmsMapElement.MAP_HIDE_TYPE;                
+            } else {
+                log().debug("add SubMaps: skipping....");
+                continue;                               
             }
             Csubmap csubmap = csubmaps.get(mapName);
             OnmsMap onmsSubMap = getSuitableMap(csubmap.getName());
             if (onmsSubMap.isNew()) {
-                log().error("add SubMaps: the submap doen not exists: " + csubmap.getName());
+                log().error("add SubMaps: the submap does not exists: " + csubmap.getName());
                 continue;
             }
-            addSubMap(onmsMap, csubmap, onmsSubMap);
+            addSubMap(onmsMap, csubmap, onmsSubMap,elementType);
             onmsMap.setLastModifiedTime(new Date());
             m_onmsMapDao.update(onmsMap);
             m_onmsMapDao.flush();

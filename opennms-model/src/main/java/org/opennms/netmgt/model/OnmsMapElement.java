@@ -54,6 +54,7 @@ public class OnmsMapElement implements Serializable {
     private static final long serialVersionUID = 1594163211618494443L;
     
     public static final String MAP_TYPE = "M";
+    public static final String MAP_HIDE_TYPE = "W";
     public static final String NODE_TYPE = "N";
     public static final String NODE_HIDE_TYPE = "H";
     public static final String defaultNodeIcon = "unspecified";
@@ -145,7 +146,7 @@ public class OnmsMapElement implements Serializable {
     }
 
     public void setType(String type) {
-        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE))
+        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE) || type.equals(MAP_HIDE_TYPE))
             this.type = type;
     }
 

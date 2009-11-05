@@ -169,8 +169,12 @@ function instantiateNodeGroup() {
 	id = "DelNode";
 	nodeMenu.addElement(id, "Delete", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, deleteMapElementList,null);
 	if (hasHideNodes) {
-		id = "AddHides";
-		nodeMenu.addElement(id, "Add Hidden", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
+		id = "AddHidesNodes";
+		nodeMenu.addElement(id, "Add Hidden Nodes", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
+	}
+	if (hasHideMaps) {
+		id = "AddHidesMaps";
+		nodeMenu.addElement(id, "Add Hidden Maps", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideMaps,null);
 	}
 }
 
@@ -500,6 +504,19 @@ function addHideNodes()
 
 }
 
+//Add Hide Nodes function
+function addHideMaps()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	addMapAsNode(hideMapsIds);
+	hideMapsIds = "";
+	hasHideMaps = false;
+
+}
 // Add Node function
 function addMapElementList()
 {
@@ -1086,9 +1103,13 @@ function showMapInfo(){
 
 function writeMapInfo(){
 	clearMapInfo();
-	var hasHideNodeText = '';
-	if (hasHideNodes) {
-		hasHideNodeText = ' : map has hidden Nodes';
+	var hasHideText = '';
+	if (hasHideNodes && hasHideMaps) {
+		hasHideText = ' : map has hidden Nodes and Maps';
+	} else if (hasHideNodes) {
+		hasHideText = ' : map has hidden Nodes';
+	} else if (hasHideMaps) {
+		hasHideText = ' : map has hidden Maps';		
 	}
 	var mapType="Unknown";
 	
@@ -1107,7 +1128,7 @@ function writeMapInfo(){
 	tspan.setAttributeNS(null, "id","MapInfoTitle");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
 	
-	var tspanContent = document.createTextNode("Map Info"+hasHideNodeText);
+	var tspanContent = document.createTextNode("Map Info"+hasHideText);
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
 
