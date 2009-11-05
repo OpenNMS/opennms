@@ -26,6 +26,7 @@ import org.opennms.client.DatabaseCreationException;
 import org.opennms.client.DatabaseDoesNotExistException;
 import org.opennms.client.DatabaseDriverException;
 import org.opennms.client.DatabaseUserCreationException;
+import org.opennms.client.IllegalDatabaseArgumentException;
 import org.opennms.client.InstallService;
 import org.opennms.client.InstallerProgressItem;
 import org.opennms.client.LoggingEvent;
@@ -223,7 +224,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException {
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException, IllegalDatabaseArgumentException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -286,7 +287,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     DatabaseAccessException,
     DatabaseAlreadyExistsException,
     DatabaseUserCreationException,
-    DatabaseCreationException
+    DatabaseCreationException, 
+    IllegalDatabaseArgumentException
     {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -341,7 +343,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws OwnershipNotConfirmedException, DatabaseConfigFileException {
+    protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws OwnershipNotConfirmedException, DatabaseConfigFileException, IllegalDatabaseArgumentException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -526,22 +528,26 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     /**
-     * Perform validation on database settings. The driver class, usernames, and URLs must be
-     * non-null and non-blank, but the passwords can be blank.
+     * Perform validation on database settings. The driver class, usernames, and passwords must be
+     * non-null and non-blank. URLs can be null but not blank.
      */
-    protected static void validateDbParameters(DatabaseConnectionSettings settings) throws IllegalArgumentException {
+    protected static void validateDbParameters(DatabaseConnectionSettings settings) throws IllegalDatabaseArgumentException {
         if (settings.getDbName() == null || "".equals(settings.getDbName().trim())) {
-            throw new IllegalArgumentException("Database name cannot be blank.");
+            throw new IllegalDatabaseArgumentException("Database name cannot be blank.");
         } else if (settings.getDriver() == null || "".equals(settings.getDriver().trim())) {
-            throw new IllegalArgumentException("Driver class cannot be blank.");
+            throw new IllegalDatabaseArgumentException("Driver class cannot be blank.");
         } else if (settings.getAdminUser() == null || "".equals(settings.getAdminUser().trim())) {
-            throw new IllegalArgumentException("Admin user cannot be blank.");
+            throw new IllegalDatabaseArgumentException("Admin user cannot be blank.");
+        } else if (settings.getAdminPassword() == null || "".equals(settings.getAdminPassword().trim())) {
+            throw new IllegalDatabaseArgumentException("Admin password cannot be blank.");
         } else if ("".equals(settings.getAdminUrl() == null ? null : settings.getAdminUrl().trim())) {
-            throw new IllegalArgumentException("Admin JDBC URL cannot be blank.");
+            throw new IllegalDatabaseArgumentException("Admin JDBC URL cannot be blank.");
         } else if (settings.getNmsUser() == null || "".equals(settings.getNmsUser().trim())) {
-            throw new IllegalArgumentException("OpenNMS user cannot be blank.");
+            throw new IllegalDatabaseArgumentException("OpenNMS user cannot be blank.");
+        } else if (settings.getNmsPassword() == null || "".equals(settings.getNmsPassword().trim())) {
+            throw new IllegalDatabaseArgumentException("OpenNMS password cannot be blank.");
         } else if ("".equals(settings.getNmsUrl() == null ? null : settings.getNmsUrl().trim())) {
-            throw new IllegalArgumentException("OpenNMS JDBC URL cannot be blank.");
+            throw new IllegalDatabaseArgumentException("OpenNMS JDBC URL cannot be blank.");
         }
     }
 }

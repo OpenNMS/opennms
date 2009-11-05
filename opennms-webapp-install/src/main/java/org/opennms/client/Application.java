@@ -391,7 +391,6 @@ public class Application implements EntryPoint {
                 return;
             }
 
-            // installService.connectToDatabase(dbName.getValue(), dbUser.getValue(), dbAdminPass.getValue(), dbDriver.getValue(), dbUrl.getValue(), dbBinDir.getValue(), new AsyncCallback<Boolean>() {
             installService.connectToDatabase(dbDriver.getValue(), dbName.getValue(), dbAdminUser.getValue(), dbAdminPass.getValue(), dbAdminUrl.getValue(), dbNmsUser.getValue(), dbNmsPass.getValue(), dbNmsUrl.getValue(), new AsyncCallback<Void>() {
                 public void onSuccess(Void result) {
                     connectToDatabase.setIconStyle("check-success-icon");
@@ -421,6 +420,12 @@ public class Application implements EntryPoint {
                                                 handleOwnershipNotConfirmed();
                                             } else if (e instanceof DatabaseDriverException) {
                                                 handleDatabaseDriverException(e);
+                                            } else if (e instanceof IllegalDatabaseArgumentException) {
+                                                MessageBox.alert("Invalid Database Parameter", e.getMessage(), new Listener<MessageBoxEvent>() {
+                                                    public void handleEvent(MessageBoxEvent event) {
+                                                        connectToDatabase.expand();
+                                                    }
+                                                });
                                             } else if (e instanceof DatabaseAccessException) {
                                                 MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), null);
                                                 connectToDatabase.expand();
@@ -448,15 +453,20 @@ public class Application implements EntryPoint {
                         handleOwnershipNotConfirmed();
                     } else if (e instanceof DatabaseDriverException) {
                         handleDatabaseDriverException(e);
+                    } else if (e instanceof IllegalDatabaseArgumentException) {
+                        // Check for server-side validation errors
+                        MessageBox.alert("Invalid Database Parameter", e.getMessage(), new Listener<MessageBoxEvent>() {
+                            public void handleEvent(MessageBoxEvent event) {
+                                connectToDatabase.expand();
+                            }
+                        });
                     } else if (e instanceof DatabaseAccessException) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
                         MessageBox.alert("Error Accessing Database", "The database could not be accessed: " + e.getMessage(), new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
                                 connectToDatabase.expand();
                             }
                         });
                     } else if (e instanceof DatabaseConfigFileException) {
-                        connectToDatabase.setIconStyle("check-failure-icon");
                         MessageBox.alert("Error Storing Database Settings", "The database configuration could not be stored.", new Listener<MessageBoxEvent>() {
                             public void handleEvent(MessageBoxEvent event) {
                                 connectToDatabase.expand();

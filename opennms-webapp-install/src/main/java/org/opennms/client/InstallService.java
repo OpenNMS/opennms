@@ -61,8 +61,9 @@ public interface InstallService extends RemoteService {
      * @throws DatabaseDriverException 
      * @throws DatabaseAccessException 
      * @throws DatabaseConfigFileException 
+     * @throws IllegalDatabaseArgumentException 
      */
-    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException;
+    public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws IllegalStateException, DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException, IllegalDatabaseArgumentException;
 
     /**
      * Attempt to connect to the database and perform a lightweight database
@@ -74,8 +75,9 @@ public interface InstallService extends RemoteService {
      * @throws DatabaseAlreadyExistsException 
      * @throws DatabaseAccessException 
      * @throws DatabaseDriverException 
+     * @throws IllegalDatabaseArgumentException 
      */
-    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseAlreadyExistsException, DatabaseUserCreationException, DatabaseCreationException;
+    public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) throws OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseAlreadyExistsException, DatabaseUserCreationException, DatabaseCreationException, IllegalDatabaseArgumentException;
 
     // protected void setDatabaseConfig(String dbName, String user, String password, String driver, String url, String binaryDirectory);
 
