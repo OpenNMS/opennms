@@ -1045,13 +1045,21 @@ public class Application implements EntryPoint {
                                                                 public void onFailure(Throwable e) {
                                                                     updateDatabase.setIconStyle("check-failure-icon");
                                                                     dbProgressPanel.markInProgressHeadersAsFailed();
-                                                                    // TODO: Figure out better error handling for GWT-level failures
-                                                                    MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
-                                                                        public void handleEvent(MessageBoxEvent event) {
-                                                                            // Hide any collected progress items
-                                                                            progressFields.el().fadeOut(new FxConfig(300));
-                                                                        }
-                                                                    });
+                                                                    if (e instanceof OwnershipNotConfirmedException) {
+                                                                        handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
+                                                                            public void handleEvent(MessageBoxEvent event) {
+                                                                                // Hide any collected progress items
+                                                                                progressFields.el().fadeOut(new FxConfig(300));
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
+                                                                            public void handleEvent(MessageBoxEvent event) {
+                                                                                // Hide any collected progress items
+                                                                                progressFields.el().fadeOut(new FxConfig(300));
+                                                                            }
+                                                                        });
+                                                                    }
                                                                 }
                                                             });
                                                         }
@@ -1060,26 +1068,43 @@ public class Application implements EntryPoint {
                                                     public void onFailure(Throwable e) {
                                                         updateDatabase.setIconStyle("check-failure-icon");
                                                         dbProgressPanel.markInProgressHeadersAsFailed();
-                                                        // TODO: Figure out better error handling for GWT-level failures
-                                                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
-                                                            public void handleEvent(MessageBoxEvent event) {
-                                                                // Hide any collected progress items
-                                                                progressFields.el().fadeOut(new FxConfig(300));
-                                                            }
-                                                        });
+                                                        if (e instanceof OwnershipNotConfirmedException) {
+                                                            handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
+                                                                public void handleEvent(MessageBoxEvent event) {
+                                                                    // Hide any collected progress items
+                                                                    progressFields.el().fadeOut(new FxConfig(300));
+                                                                }
+                                                            });
+                                                        } else {
+                                                            handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
+                                                                public void handleEvent(MessageBoxEvent event) {
+                                                                    // Hide any collected progress items
+                                                                    progressFields.el().fadeOut(new FxConfig(300));
+                                                                }
+                                                            });
+                                                        }
                                                     }
                                                 });
                                             }
+
                                             public void onFailure(Throwable e) {
                                                 updateDatabase.setIconStyle("check-failure-icon");
                                                 dbProgressPanel.markInProgressHeadersAsFailed();
-                                                // TODO: Figure out better error handling for GWT-level failures
-                                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
-                                                    public void handleEvent(MessageBoxEvent event) {
-                                                        // Hide any collected progress items
-                                                        progressFields.el().fadeOut(new FxConfig(300));
-                                                    }
-                                                });
+                                                if (e instanceof OwnershipNotConfirmedException) {
+                                                    handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
+                                                        public void handleEvent(MessageBoxEvent event) {
+                                                            // Hide any collected progress items
+                                                            progressFields.el().fadeOut(new FxConfig(300));
+                                                        }
+                                                    });
+                                                } else {
+                                                    handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
+                                                        public void handleEvent(MessageBoxEvent event) {
+                                                            // Hide any collected progress items
+                                                            progressFields.el().fadeOut(new FxConfig(300));
+                                                        }
+                                                    });
+                                                }
                                             }
                                         });
                                     }
@@ -1089,19 +1114,29 @@ public class Application implements EntryPoint {
 
                             public void onFailure(Throwable e) {
                                 updateDatabase.setIconStyle("check-failure-icon");
-                                // TODO: Figure out better error handling for GWT-level failures
-                                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
-                                    public void handleEvent(MessageBoxEvent event) {
-                                        // Hide any collected progress items
-                                        progressFields.el().fadeOut(new FxConfig(300));
-                                    }
-                                });
+                                dbProgressPanel.markInProgressHeadersAsFailed();
+                                if (e instanceof OwnershipNotConfirmedException) {
+                                    handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
+                                        public void handleEvent(MessageBoxEvent event) {
+                                            // Hide any collected progress items
+                                            progressFields.el().fadeOut(new FxConfig(300));
+                                        }
+                                    });
+                                } else {
+                                    handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
+                                        public void handleEvent(MessageBoxEvent event) {
+                                            // Hide any collected progress items
+                                            progressFields.el().fadeOut(new FxConfig(300));
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
 
                     public void onFailure(Throwable e) {
                         updateDatabase.setIconStyle("check-failure-icon");
+                        dbProgressPanel.markInProgressHeadersAsFailed();
                         if (e instanceof OwnershipNotConfirmedException) {
                             handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
                                 public void handleEvent(MessageBoxEvent event) {
@@ -1110,8 +1145,7 @@ public class Application implements EntryPoint {
                                 }
                             });
                         } else {
-                            // TODO: Figure out better error handling for GWT-level failures
-                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), new Listener<MessageBoxEvent>() {
+                            handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
                                 public void handleEvent(MessageBoxEvent event) {
                                     // Hide any collected progress items
                                     progressFields.el().fadeOut(new FxConfig(300));
@@ -1164,8 +1198,7 @@ public class Application implements EntryPoint {
                         if (e instanceof OwnershipNotConfirmedException) {
                             handleOwnershipNotConfirmed();
                         } else {
-                            // TODO: Figure out better error handling for GWT-level failures
-                            MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                            handleUnexpectedException(e);
                         }
                     }
                 });
@@ -1277,9 +1310,17 @@ public class Application implements EntryPoint {
         });
     }
 
+    private void handleUnexpectedException(final Throwable e) {
+        handleUnexpectedException(e, null);
+    }
+
+    private void handleUnexpectedException(final Throwable e, Listener<MessageBoxEvent> listener) {
+        MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + e.getMessage(), listener);
+    }
+
     private void handleUnexpectedExceptionInPanel(final Throwable e, final ContentPanel panel) {
         panel.setIconStyle("check-failure-icon");
-        MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + e.getMessage(), new Listener<MessageBoxEvent>() {
+        handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
             public void handleEvent(MessageBoxEvent event) {
                 panel.expand();
             }
