@@ -985,6 +985,28 @@ public class Application implements EntryPoint {
         dbProgressPanel.setWidth("100%");
 
         Button updateButton = new Button("Update database", new SelectionListener<ButtonEvent>() {
+            private void handleDatabaseUpdateFailure(Throwable e) {
+                // Update the panel with a failure icon
+                updateDatabase.setIconStyle("check-failure-icon");
+                // Mark any in-progress tasks as failed
+                dbProgressPanel.markInProgressHeadersAsFailed();
+                if (e instanceof OwnershipNotConfirmedException) {
+                    handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent event) {
+                            // Hide any collected progress items
+                            progressFields.el().fadeOut(new FxConfig(300));
+                        }
+                    });
+                } else {
+                    handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent event) {
+                            // Hide any collected progress items
+                            progressFields.el().fadeOut(new FxConfig(300));
+                        }
+                    });
+                }
+            };
+
             public void componentSelected(ButtonEvent event) {
                 // Start a spinner that indicates operation start
                 updateDatabase.setIconStyle("check-progress-icon");
@@ -1043,68 +1065,20 @@ public class Application implements EntryPoint {
                                                                 }
 
                                                                 public void onFailure(Throwable e) {
-                                                                    updateDatabase.setIconStyle("check-failure-icon");
-                                                                    dbProgressPanel.markInProgressHeadersAsFailed();
-                                                                    if (e instanceof OwnershipNotConfirmedException) {
-                                                                        handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
-                                                                            public void handleEvent(MessageBoxEvent event) {
-                                                                                // Hide any collected progress items
-                                                                                progressFields.el().fadeOut(new FxConfig(300));
-                                                                            }
-                                                                        });
-                                                                    } else {
-                                                                        handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
-                                                                            public void handleEvent(MessageBoxEvent event) {
-                                                                                // Hide any collected progress items
-                                                                                progressFields.el().fadeOut(new FxConfig(300));
-                                                                            }
-                                                                        });
-                                                                    }
+                                                                    handleDatabaseUpdateFailure(e);
                                                                 }
                                                             });
                                                         }
                                                     }
 
                                                     public void onFailure(Throwable e) {
-                                                        updateDatabase.setIconStyle("check-failure-icon");
-                                                        dbProgressPanel.markInProgressHeadersAsFailed();
-                                                        if (e instanceof OwnershipNotConfirmedException) {
-                                                            handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
-                                                                public void handleEvent(MessageBoxEvent event) {
-                                                                    // Hide any collected progress items
-                                                                    progressFields.el().fadeOut(new FxConfig(300));
-                                                                }
-                                                            });
-                                                        } else {
-                                                            handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
-                                                                public void handleEvent(MessageBoxEvent event) {
-                                                                    // Hide any collected progress items
-                                                                    progressFields.el().fadeOut(new FxConfig(300));
-                                                                }
-                                                            });
-                                                        }
+                                                        handleDatabaseUpdateFailure(e);
                                                     }
                                                 });
                                             }
 
                                             public void onFailure(Throwable e) {
-                                                updateDatabase.setIconStyle("check-failure-icon");
-                                                dbProgressPanel.markInProgressHeadersAsFailed();
-                                                if (e instanceof OwnershipNotConfirmedException) {
-                                                    handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
-                                                        public void handleEvent(MessageBoxEvent event) {
-                                                            // Hide any collected progress items
-                                                            progressFields.el().fadeOut(new FxConfig(300));
-                                                        }
-                                                    });
-                                                } else {
-                                                    handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
-                                                        public void handleEvent(MessageBoxEvent event) {
-                                                            // Hide any collected progress items
-                                                            progressFields.el().fadeOut(new FxConfig(300));
-                                                        }
-                                                    });
-                                                }
+                                                handleDatabaseUpdateFailure(e);
                                             }
                                         });
                                     }
@@ -1113,45 +1087,13 @@ public class Application implements EntryPoint {
                             }
 
                             public void onFailure(Throwable e) {
-                                updateDatabase.setIconStyle("check-failure-icon");
-                                dbProgressPanel.markInProgressHeadersAsFailed();
-                                if (e instanceof OwnershipNotConfirmedException) {
-                                    handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
-                                        public void handleEvent(MessageBoxEvent event) {
-                                            // Hide any collected progress items
-                                            progressFields.el().fadeOut(new FxConfig(300));
-                                        }
-                                    });
-                                } else {
-                                    handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
-                                        public void handleEvent(MessageBoxEvent event) {
-                                            // Hide any collected progress items
-                                            progressFields.el().fadeOut(new FxConfig(300));
-                                        }
-                                    });
-                                }
+                                handleDatabaseUpdateFailure(e);
                             }
                         });
                     }
 
                     public void onFailure(Throwable e) {
-                        updateDatabase.setIconStyle("check-failure-icon");
-                        dbProgressPanel.markInProgressHeadersAsFailed();
-                        if (e instanceof OwnershipNotConfirmedException) {
-                            handleOwnershipNotConfirmed(new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    // Hide any collected progress items
-                                    progressFields.el().fadeOut(new FxConfig(300));
-                                }
-                            });
-                        } else {
-                            handleUnexpectedException(e, new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    // Hide any collected progress items
-                                    progressFields.el().fadeOut(new FxConfig(300));
-                                }
-                            });
-                        }
+                        handleDatabaseUpdateFailure(e);
                     }
                 });
             }
