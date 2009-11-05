@@ -302,7 +302,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         try {
             db.setAdminDataSource(new SimpleDataSource(driver, dbAdminUrl, dbAdminUser, dbAdminPassword));
         } catch (ClassNotFoundException e) {
-            throw new DatabaseDriverException("PostgreSQL driver could not be loaded.", e);
+            throw new DatabaseDriverException();
         }
 
         // Sanity check to make sure that the database doesn't already exist
@@ -495,29 +495,30 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_lastUpdateSucceeded;
     }
 
-    public boolean checkIpLike() throws IllegalStateException, OwnershipNotConfirmedException {
+    public boolean checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
         // We should have a proper opennms-datasources.xml stored at this point so try to load it
         // by using the normal {@link org.opennms.netmgt.config.DataSourceFactory} class.
-        // TODO: Throw specific exceptions to provide better UI feedback
         try {
             // Init both required datasources
             DataSourceFactory.init(Installer.ADMIN_DATA_SOURCE_NAME);
             DataSourceFactory.init(Installer.OPENNMS_DATA_SOURCE_NAME);
         } catch (MarshalException e) {
-            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+            throw new DatabaseConfigFileException("Could not load database configuration: " + e.getMessage());
         } catch (ValidationException e) {
-            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+            throw new DatabaseConfigFileException("Could not load database configuration: " + e.getMessage());
         } catch (IOException e) {
-            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+            throw new DatabaseConfigFileException("Could not load database configuration: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("PostgreSQL driver could not be loaded: " + e.getMessage());
+            throw new DatabaseDriverException();
         } catch (PropertyVetoException e) {
-            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+            // This basically means that the DB connection pool cannot
+            // be initialized.
+            throw new DatabaseAccessException("Cannot connect to the database: " + e.getMessage());
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not load database configuration: " + e.getMessage());
+            throw new DatabaseAccessException("Error while accessing the database: " + e.getMessage());
         }
 
         InstallerDb db = new InstallerDb();

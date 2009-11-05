@@ -127,6 +127,9 @@ public interface InstallService extends RemoteService {
     /**
      * Check to see if the <code>IPLIKE</code> database procedure is working
      * properly on the currently configured database connection.
+     * @throws DatabaseConfigFileException 
+     * @throws DatabaseDriverException 
+     * @throws DatabaseAccessException 
      */
-    public boolean checkIpLike() throws OwnershipNotConfirmedException;
+    public boolean checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException;
 }

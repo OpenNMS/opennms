@@ -57,11 +57,17 @@ public class Application implements EntryPoint {
     // global inside the class.
     private final ContentPanel verifyOwnership = new ContentPanel();
     private final ContentPanel connectToDatabase = new ContentPanel();
+
+    /**
+     * MessageBox listener that can be used to expand the connectToDatabase panel
+     * when database-related exceptions are thrown.
+     */ 
     private final Listener<MessageBoxEvent> expandConnectToDatabase = new Listener<MessageBoxEvent>() {
         public void handleEvent(MessageBoxEvent event) {
             connectToDatabase.expand();
         }
     };
+
     private final TextField<String> dbHost = new TextField<String>();
     private final NumberField dbPort = new NumberField();
     private final TextField<String> dbDriver = new TextField<String>();
@@ -77,11 +83,17 @@ public class Application implements EntryPoint {
     // private final TextField<String> dbBinDir = new TextField<String>();
 
     private final ContentPanel setAdminPassword = new ContentPanel();
+
+    /**
+     * MessageBox listener that can be used to expand the setAdminPassword panel
+     * when password-related exceptions are thrown.
+     */ 
     private final Listener<MessageBoxEvent> expandSetAdminPassword = new Listener<MessageBoxEvent>() {
         public void handleEvent(MessageBoxEvent event) {
             setAdminPassword.expand();
         }
     };
+
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
     private final ContentPanel updateDatabase = new ContentPanel();
@@ -111,9 +123,6 @@ public class Application implements EntryPoint {
             // Start a spinner that indicates operation start
             verifyOwnership.setIconStyle("check-progress-icon");
 
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
-
             installService.checkOwnershipFileExists(new AsyncCallback<Boolean>() {
                 public void onSuccess(Boolean result) {
                     if (result) {
@@ -142,9 +151,6 @@ public class Application implements EntryPoint {
         }
 
         public void check() {
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
-
             installService.isAdminPasswordSet(new AsyncCallback<Boolean>() {
                 public void onSuccess(Boolean result) {
                     if (result) {
@@ -180,9 +186,6 @@ public class Application implements EntryPoint {
         public void check() {
             // Start a spinner that indicates operation start
             setAdminPassword.setIconStyle("check-progress-icon");
-
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
             if (!passwd.validate()) {
                 setAdminPassword.setIconStyle("check-failure-icon");
@@ -229,9 +232,6 @@ public class Application implements EntryPoint {
         }
 
         public void check() {
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
-
             installService.getDatabaseConnectionSettings(new AsyncCallback<DatabaseConnectionSettings>() {
                 public void onSuccess(DatabaseConnectionSettings result) {
                     m_databaseConnectionSettings = result;
@@ -304,9 +304,6 @@ public class Application implements EntryPoint {
         public void check() {
             // Start a spinner that indicates operation start
             connectToDatabase.setIconStyle("check-progress-icon");
-
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
             final DatabaseConnectionCheck thisCheck = this;
 
@@ -462,9 +459,6 @@ public class Application implements EntryPoint {
             // Start a spinner that indicates operation start
             checkStoredProcedures.setIconStyle("check-progress-icon");
 
-            // Create the RemoteServiceServlet that acts as the controller for this GWT view
-            // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
-
             installService.checkIpLike(new AsyncCallback<Boolean>() {
                 public void onSuccess(Boolean result) {
                     if (result) {
@@ -474,21 +468,23 @@ public class Application implements EntryPoint {
                         }
                     } else {
                         checkStoredProcedures.setIconStyle("check-failure-icon");
-                        MessageBox.alert("Failure", "Could not find the <code>iplike</code> stored procedure in the database.", null);
+                        MessageBox.alert("<code>iplike</code> Not Found", "Could not find the <code>iplike</code> stored procedure in the database.", null);
                         checkStoredProcedures.expand();
                     }
                 }
 
                 public void onFailure(Throwable e) {
                     checkStoredProcedures.setIconStyle("check-failure-icon");
-                    if (e instanceof IllegalStateException) {
-                        MessageBox.alert("Failure", e.getMessage(), null);
-                        // Since this is always database-related, send them back to the database settings panel
-                        connectToDatabase.expand();
+                    if (e instanceof OwnershipNotConfirmedException) {
+                        handleOwnershipNotConfirmed();
+                    } else if (e instanceof DatabaseDriverException) {
+                        handleDatabaseDriverException(e);
+                    } else if (e instanceof DatabaseConfigFileException) {
+                        MessageBox.alert("Error Reading Database Settings", "The database configuration could not be read.", expandConnectToDatabase);
+                    } else if (e instanceof DatabaseAccessException) {
+                        MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), expandConnectToDatabase);
                     } else {
-                        // TODO: Figure out better error handling for GWT-level failures
-                        MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
-                        checkStoredProcedures.expand();
+                        handleUnexpectedExceptionInPanel(e, checkStoredProcedures);
                     }
                 }
             });
@@ -506,10 +502,6 @@ public class Application implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-
-        // Create the RemoteServiceServlet that acts as the controller for this GWT view
-        // final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
-
         // Create a Dock Panel
         DockPanel dock = new DockPanel();
         // dock.setStyleName("cw-DockPanel");
