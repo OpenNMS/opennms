@@ -57,6 +57,11 @@ public class Application implements EntryPoint {
     // global inside the class.
     private final ContentPanel verifyOwnership = new ContentPanel();
     private final ContentPanel connectToDatabase = new ContentPanel();
+    private final Listener<MessageBoxEvent> expandConnectToDatabase = new Listener<MessageBoxEvent>() {
+        public void handleEvent(MessageBoxEvent event) {
+            connectToDatabase.expand();
+        }
+    };
     private final TextField<String> dbHost = new TextField<String>();
     private final NumberField dbPort = new NumberField();
     private final TextField<String> dbDriver = new TextField<String>();
@@ -72,9 +77,19 @@ public class Application implements EntryPoint {
     // private final TextField<String> dbBinDir = new TextField<String>();
 
     private final ContentPanel setAdminPassword = new ContentPanel();
+    private final Listener<MessageBoxEvent> expandSetAdminPassword = new Listener<MessageBoxEvent>() {
+        public void handleEvent(MessageBoxEvent event) {
+            setAdminPassword.expand();
+        }
+    };
     private final TextField<String> passwd = new TextField<String>();
     private final TextField<String> confirm = new TextField<String>();
     private final ContentPanel updateDatabase = new ContentPanel();
+    private final Listener<MessageBoxEvent> expandUpdateDatabase = new Listener<MessageBoxEvent>() {
+        public void handleEvent(MessageBoxEvent event) {
+            updateDatabase.expand();
+        }
+    };
     private final ContentPanel checkStoredProcedures = new ContentPanel();
     private final Button continueButton = new Button();
 
@@ -171,12 +186,10 @@ public class Application implements EntryPoint {
 
             if (!passwd.validate()) {
                 setAdminPassword.setIconStyle("check-failure-icon");
-                MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", null);
-                setAdminPassword.expand();
+                MessageBox.alert("Password Validation Failed", "Blank passwords are not allowed. Please enter a new password.", expandSetAdminPassword);
             } else if ("admin".equals(passwd.getValue())) {
                 setAdminPassword.setIconStyle("check-failure-icon");
-                MessageBox.alert("Password Validation Failed", "You entered the default admin user password. Please enter a new password.", null);
-                setAdminPassword.expand();
+                MessageBox.alert("Password Validation Failed", "You entered the default admin user password. Please enter a new password.", expandSetAdminPassword);
             } else if (passwd.getValue() != null && passwd.getValue().equals(confirm.getValue())) {
                 installService.setAdminPassword(passwd.getValue(), new AsyncCallback<Void>() {
                     public void onSuccess(Void result) {
@@ -191,18 +204,10 @@ public class Application implements EntryPoint {
                             handleOwnershipNotConfirmed();
                         } else if (e instanceof UserConfigFileException) {
                             setAdminPassword.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Config File Error", "One of the user configuration files (<code>groups.xml</code>, <code>users.xml</code>) is corrupt or missing.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    setAdminPassword.expand();
-                                }
-                            });
+                            MessageBox.alert("Config File Error", "One of the user configuration files (<code>groups.xml</code>, <code>users.xml</code>) is corrupt or missing.", expandSetAdminPassword);
                         } else if (e instanceof UserUpdateException) {
                             setAdminPassword.setIconStyle("check-failure-icon");
-                            MessageBox.alert("Error Storing Admin User", "The updated <code>admin</code> user could not be stored.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    setAdminPassword.expand();
-                                }
-                            });
+                            MessageBox.alert("Error Storing Admin User", "The updated <code>admin</code> user could not be stored.", expandSetAdminPassword);
                         } else {
                             handleUnexpectedExceptionInPanel(e, setAdminPassword);
                         }
@@ -210,8 +215,7 @@ public class Application implements EntryPoint {
                 });
             } else {
                 setAdminPassword.setIconStyle("check-failure-icon");
-                MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", null);
-                setAdminPassword.expand();
+                MessageBox.alert("Password Entries Do Not Match", "The password and confirmation fields do not match. Please enter the new password in both fields again.", expandSetAdminPassword);
             }
         }
     }
@@ -309,43 +313,35 @@ public class Application implements EntryPoint {
             // Validation
             if (!dbHost.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Database Host", "The database host cannot be left blank. Please type in an IP address or hostname.", expandConnectToDatabase);
                 return;
             } else if (!dbPort.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Database Port", "The database port value cannot be left blank.", expandConnectToDatabase);
                 return;
             } else if (!dbDriver.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Database Driver", "Please choose a database driver from the list.", expandConnectToDatabase);
                 return;
             } else if (!dbName.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Database Name", "The database name cannot be left blank.", expandConnectToDatabase);
                 return;
             } else if (!dbAdminUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Admin User", "The admin username cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Admin User", "The admin username cannot be left blank.", expandConnectToDatabase);
                 return;
             } else if (!dbAdminPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid Admin Password", "The admin password cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid Admin Password", "The admin password cannot be left blank.", expandConnectToDatabase);
                 return;
             } else if (!dbNmsUser.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid OpenNMS User", "The OpenNMS username cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid OpenNMS User", "The OpenNMS username cannot be left blank.", expandConnectToDatabase);
                 return;
             } else if (!dbNmsPass.validate()) {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Invalid OpenNMS Password", "The OpenNMS password cannot be left blank.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Invalid OpenNMS Password", "The OpenNMS password cannot be left blank.", expandConnectToDatabase);
                 return;
             }
 
@@ -359,16 +355,14 @@ public class Application implements EntryPoint {
                     // Valid case: both passwords are blank
                 } else {
                     connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
-                    connectToDatabase.expand();
+                    MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", expandConnectToDatabase);
                     return;
                 }
             } else if (dbAdminPass.getValue().equals(dbAdminConfirm.getValue())) {
                 // Password entries match
             } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("Admin Password Entries Do Not Match", "The admin password and confirmation fields do not match. Please enter the password in both fields again.", expandConnectToDatabase);
                 return;
             }
 
@@ -378,16 +372,14 @@ public class Application implements EntryPoint {
                     // Valid case: both passwords are blank
                 } else {
                     connectToDatabase.setIconStyle("check-failure-icon");
-                    MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
-                    connectToDatabase.expand();
+                    MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", expandConnectToDatabase);
                     return;
                 }
             } else if (dbNmsPass.getValue().equals(dbNmsConfirm.getValue())) {
                 // Password entries match
             } else {
                 connectToDatabase.setIconStyle("check-failure-icon");
-                MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", null);
-                connectToDatabase.expand();
+                MessageBox.alert("OpenNMS Password Entries Do Not Match", "The OpenNMS password and confirmation fields do not match. Please enter the password in both fields again.", expandConnectToDatabase);
                 return;
             }
 
@@ -421,23 +413,15 @@ public class Application implements EntryPoint {
                                             } else if (e instanceof DatabaseDriverException) {
                                                 handleDatabaseDriverException(e);
                                             } else if (e instanceof IllegalDatabaseArgumentException) {
-                                                MessageBox.alert("Invalid Database Parameter", e.getMessage(), new Listener<MessageBoxEvent>() {
-                                                    public void handleEvent(MessageBoxEvent event) {
-                                                        connectToDatabase.expand();
-                                                    }
-                                                });
+                                                MessageBox.alert("Invalid Database Parameter", e.getMessage(), expandConnectToDatabase);
                                             } else if (e instanceof DatabaseAccessException) {
-                                                MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), null);
-                                                connectToDatabase.expand();
+                                                MessageBox.alert("Could Not Access Database", "The database could not be accessed: " + e.getMessage(), expandConnectToDatabase);
                                             } else if (e instanceof DatabaseAlreadyExistsException) {
-                                                MessageBox.alert("Database Already Exists", "The database already exists. Please retry your connection to the database.", null);
-                                                connectToDatabase.expand();
+                                                MessageBox.alert("Database Already Exists", "The database already exists. Please retry your connection to the database.", expandConnectToDatabase);
                                             } else if (e instanceof DatabaseUserCreationException) {
-                                                MessageBox.alert("User Creation Error", "The database user for OpenNMS could not be created: " + e.getMessage(), null);
-                                                connectToDatabase.expand();
+                                                MessageBox.alert("User Creation Error", "The database user for OpenNMS could not be created: " + e.getMessage(), expandConnectToDatabase);
                                             } else if (e instanceof DatabaseCreationException) {
-                                                MessageBox.alert("Database Creation Error", "The OpenNMS database could not be created: " + e.getMessage(), null);
-                                                connectToDatabase.expand();
+                                                MessageBox.alert("Database Creation Error", "The OpenNMS database could not be created: " + e.getMessage(), expandConnectToDatabase);
                                             } else {
                                                 handleUnexpectedExceptionInPanel(e, connectToDatabase);
                                             }
@@ -455,23 +439,11 @@ public class Application implements EntryPoint {
                         handleDatabaseDriverException(e);
                     } else if (e instanceof IllegalDatabaseArgumentException) {
                         // Check for server-side validation errors
-                        MessageBox.alert("Invalid Database Parameter", e.getMessage(), new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                connectToDatabase.expand();
-                            }
-                        });
+                        MessageBox.alert("Invalid Database Parameter", e.getMessage(), expandConnectToDatabase);
                     } else if (e instanceof DatabaseAccessException) {
-                        MessageBox.alert("Error Accessing Database", "The database could not be accessed: " + e.getMessage(), new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                connectToDatabase.expand();
-                            }
-                        });
+                        MessageBox.alert("Error Accessing Database", "The database could not be accessed: " + e.getMessage(), expandConnectToDatabase);
                     } else if (e instanceof DatabaseConfigFileException) {
-                        MessageBox.alert("Error Storing Database Settings", "The database configuration could not be stored.", new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                connectToDatabase.expand();
-                            }
-                        });
+                        MessageBox.alert("Error Storing Database Settings", "The database configuration could not be stored.", expandConnectToDatabase);
                     } else {
                         handleUnexpectedExceptionInPanel(e, connectToDatabase);
                     }
@@ -594,9 +566,7 @@ public class Application implements EntryPoint {
                 verifyOwnershipCaption.setHtml("<p>To prove your ownership of this OpenNMS installation, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
             }
             public void onFailure(Throwable e) {
-                verifyOwnership.setIconStyle("check-failure-icon");
-                // TODO: Figure out better error handling for GWT-level failures
-                MessageBox.alert("Alert", "Something failed: " + e.getMessage().trim(), null);
+                handleUnexpectedException(e);
             }
         });
 
@@ -604,11 +574,7 @@ public class Application implements EntryPoint {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(new InstallationCheck() {
                     public void check() {
-                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent event) {
-                                setAdminPassword.expand();
-                            }
-                        });
+                        MessageBox.alert("Success", "The ownership file exists. You have permission to update the admin password and database settings.", expandSetAdminPassword);
                     }
                 }).check();
             }
@@ -649,16 +615,11 @@ public class Application implements EntryPoint {
 
         Button updatePasswordButton = new Button("Update password", new SelectionListener<ButtonEvent>() {
             // Check the ownership file before allowing updates to the admin password
-            // TODO: We should probably perform that check server-side
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
                     new SetAdminPasswordCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Password Updated", "The administrator password has been updated.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    connectToDatabase.expand();
-                                }
-                            });
+                            MessageBox.alert("Password Updated", "The administrator password has been updated.", expandConnectToDatabase);
                         }
                     })
                 ).check();
@@ -816,16 +777,11 @@ public class Application implements EntryPoint {
 
         Button connectButton = new Button("Connect to database", new SelectionListener<ButtonEvent>() {
             // Check the ownership file before allowing updates to the database configuration
-            // TODO: We should probably perform that check server-side
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
                     new DatabaseConnectionCheck(new InstallationCheck() {
                         public void check() {
-                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", new Listener<MessageBoxEvent>() {
-                                public void handleEvent(MessageBoxEvent event) {
-                                    updateDatabase.expand();
-                                }
-                            });
+                            MessageBox.alert("Success", "The connection to the database with the specified parameters was successful.", expandUpdateDatabase);
                         }
                     })
                 ).check();
@@ -1281,11 +1237,7 @@ public class Application implements EntryPoint {
 
     private void handleDatabaseDriverException(final Throwable e) {
         connectToDatabase.setIconStyle("check-failure-icon");
-        MessageBox.alert("Database Driver Missing", "The database driver could not be loaded: " + e.getMessage(), new Listener<MessageBoxEvent>() {
-            public void handleEvent(MessageBoxEvent event) {
-                connectToDatabase.expand();
-            }
-        });
+        MessageBox.alert("Database Driver Missing", "The database driver could not be loaded: " + e.getMessage(), expandConnectToDatabase);
     }
 
     private static class VerticalProgressPanel extends VerticalPanel {
