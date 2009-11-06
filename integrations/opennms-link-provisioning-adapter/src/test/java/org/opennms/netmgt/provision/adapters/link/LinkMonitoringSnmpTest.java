@@ -32,6 +32,7 @@ package org.opennms.netmgt.provision.adapters.link;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,13 +46,10 @@ import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.mock.snmp.MockSnmpAgentAware;
-import org.opennms.netmgt.mock.MockMonitoredService;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
-import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpressions;
-import org.opennms.netmgt.provision.adapters.link.EndPointMonitor;
+import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -67,20 +65,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     
+    private static final String AIR_PAIR_R3_SYS_OID = ".1.3.6.1.4.1.7262.1";
     private static final String AIR_PAIR_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
     private static final String AIR_PAIR_R3_DUPLEX_MISMATCH = ".1.3.6.1.4.1.7262.1.19.2.3.0";
+    private static final String AIR_PAIR_R4_SYS_OID = ".1.3.6.1.4.1.7262.1";
     private static final String AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.1.19.3.1.0";
+    private static final String HORIZON_COMPACT_SYS_OID = ".1.3.6.1.4.1.7262.2.2";
     private static final String HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.2.8.4.4.1.0";
     private static final String HORIZON_COMPACT_ETHERNET_LINK_DOWN = ".1.3.6.1.4.1.7262.2.2.8.3.1.9.0";
+    private static final String HORIZON_DUO_SYS_OID = ".1.3.6.1.4.1.7262.2.3";
     private static final String HORIZON_DUO_SYSTEM_CAPACITY = ".1.3.6.1.4.1.7262.2.3.1.1.5.0";
-    private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2";
+    private static final String HORIZON_DUO_MODEM_LOSS_OF_SIGNAL = ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1";
     
     private MockSnmpAgent m_snmpAgent;
     private SnmpAgentConfig m_agentConfig;
-    private MonitoredService m_monitoredService;
+    private DefaultEndPointConfigurationDao m_configDao;
     
     @Before
     public void setup() throws InterruptedException, UnknownHostException {
+        
         if(m_agentConfig == null) {
             m_agentConfig = new SnmpAgentConfig();
             m_agentConfig.setAddress(InetAddress.getLocalHost());
@@ -88,7 +91,12 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
             m_agentConfig.setReadCommunity("public");
         }
         
-        m_monitoredService = new MockMonitoredService(1, "node1", InetAddress.getLocalHost().getHostAddress(), "EndPoint");
+        
+        DefaultEndPointConfigurationDao dao = new DefaultEndPointConfigurationDao();
+        dao.setConfigResource(new ClassPathResource("/testDWO-configuration.xml"));
+        dao.afterPropertiesSet();
+        m_configDao = dao;
+        
         
     }
     
@@ -98,22 +106,44 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
     
     @Test
-    @Ignore
+    public void dwoTestEndPointImplGetOid() throws UnknownHostException {
+        EndPointImpl endPoint = getEndPoint(null);
+        SnmpValue snmpVal = endPoint.get(AIR_PAIR_MODEM_LOSS_OF_SIGNAL);
+        assertNotNull(snmpVal);
+        assertEquals("1", snmpVal.toString());
+    }
+
+    private EndPointImpl getEndPoint(String sysOid) throws UnknownHostException {
+        EndPointImpl endPoint = new EndPointImpl(InetAddress.getLocalHost(), m_agentConfig);
+        endPoint.setSysOid(sysOid);
+        return endPoint;
+    }
+    
+    @Test
     public void dwoTestLinkMonitorAirPairR3() throws UnknownHostException {
         assertNotNull(m_snmpAgent);
         
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
         
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match( AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( AIR_PAIR_R3_DUPLEX_MISMATCH, "^1$" )));
-        
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
-        
+        EndPointTypeValidator validator = m_configDao.getValidator();
+        try {
+            validator.validate(endPoint);
+        }catch (EndPointStatusException e) {
+            assertTrue(false);
+        }
+    }
+    
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorAirPair3DownLossOfSignal() throws UnknownHostException, EndPointStatusException {
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
+        m_snmpAgent.updateCounter32Value(AIR_PAIR_R3_DUPLEX_MISMATCH, 1);
         
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R3_SYS_OID);
+        
+        m_configDao.getValidator().validate(endPoint);
         
     }
     
@@ -126,18 +156,17 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, 1);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match( AIR_PAIR_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( AIR_PAIR_R4_MODEM_LOSS_OF_SIGNAL, "^1$")));
+        EndPointImpl endPoint = getEndPoint(AIR_PAIR_R4_SYS_OID);
         
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
+        try {
+           m_configDao.getValidator().validate(endPoint); 
+        }catch (EndPointStatusException e) {
+            assertTrue("An EndPointStatusException was caught resulting in a failed test",false);
+        }
         
-        m_snmpAgent.updateCounter32Value(AIR_PAIR_MODEM_LOSS_OF_SIGNAL, 2);
-        
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
     }
     
     @Test
-    @Ignore
     public void dwoTestLinkMonitorHorizonCompact() throws UnknownHostException {
         ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
@@ -145,120 +174,128 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match(  HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, "^1$" ), match( HORIZON_COMPACT_ETHERNET_LINK_DOWN, "^1$")));
+        EndPointImpl endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
         
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 2);
-        
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        try {
+            m_configDao.getValidator().validate(endPoint);
+        } catch (Exception e) {
+            assertTrue("An EndPointStatusException was thrown which shouldn't have and thats why the test failed", false);
+        }
         
     }
     
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorHorizonCompactDownLossOfSignal() throws EndPointStatusException, UnknownHostException {
+        ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
+        m_snmpAgent.updateValuesFromResource(resource);
+        
+        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 2);
+        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 1);
+        
+        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
+        
+        m_configDao.getValidator().validate(endPoint);
+    }
+    
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorHorizonCompactDownEthernetLinkDown() throws EndPointStatusException, UnknownHostException {
+        ClassPathResource resource = new ClassPathResource("/horizon_compact_walk.properties");
+        m_snmpAgent.updateValuesFromResource(resource);
+        
+        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_MODEM_LOSS_OF_SIGNAL, 1);
+        m_snmpAgent.updateCounter32Value(HORIZON_COMPACT_ETHERNET_LINK_DOWN, 2);
+        
+        EndPoint endPoint = getEndPoint(HORIZON_COMPACT_SYS_OID);
+        
+        m_configDao.getValidator().validate(endPoint);
+    }
+    
     @Test
-    @Ignore
-    public void dwoTestLinkMonitorHorizonDuoCapacity1() throws UnknownHostException {
+    public void dwoTestLinkMonitorHorizonDuoCapacity1() throws UnknownHostException, EndPointStatusException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
         
-        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
-
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match(  HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
+        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2000);
-        
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        m_configDao.getValidator().validate(endPoint);
         
     }
-
     
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorHorizonDuoCapacity1DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
+        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
+        m_snmpAgent.updateValuesFromResource(resource);
+        
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 1);
+        
+        EndPointImpl endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        
+        m_configDao.getValidator().validate(endPoint);
+        
+    }
     
     @Test
-    @Ignore
-    public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException {
+    public void dwoTestLinkMonitorHorizonDuoCapacity2() throws UnknownHostException, EndPointStatusException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
         
-        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
+        m_configDao.getValidator().validate(endPoint);
         
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
+    }
+    
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorHorizonDuoCapacity2DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
+        ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
+        m_snmpAgent.updateValuesFromResource(resource);
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 2);
+        
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
+        
+        m_configDao.getValidator().validate(endPoint);
+        
     }
     
     @Test
-    @Ignore
-    public void dwoTestLinkMonitorHorizonDuoCapacity3() throws UnknownHostException {
+    public void dwoTestLinkMonitorHorizonDuoCapacity3() throws UnknownHostException, EndPointStatusException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
         
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
         m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
         
-        EndPointValidationExpression complexValidator = horizonDuoComplexValidator();
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator( and( match( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, "^1$" ), complexValidator));
-        
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
-        
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        m_configDao.getValidator().validate(endPoint);
     }
     
-    
-    @Test
-    @Ignore
-    public void dwoTestLinkMonitoringPingableDevice() throws UnknownHostException {
+    @Test(expected=EndPointStatusException.class)
+    public void dwoTestLinkMonitorHorizonDuoCapacity3DownModemLossSignal() throws UnknownHostException, EndPointStatusException {
         ClassPathResource resource = new ClassPathResource("/horizon_duo_walk.properties");
         m_snmpAgent.updateValuesFromResource(resource);
         
-        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 1);
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_MODEM_LOSS_OF_SIGNAL, 2);
+        m_snmpAgent.updateCounter32Value(HORIZON_DUO_SYSTEM_CAPACITY, 3);
         
-        EndPointMonitor monitor = new EndPointMonitor();
-        //monitor.setEndPointValidator(ping( HORIZON_DUO_MODEM_LOSS_OF_SIGNAL ));
+        EndPoint endPoint = getEndPoint(HORIZON_DUO_SYS_OID);
         
-        assertEquals(PollStatus.up(), monitor.poll(m_monitoredService, null));
-        
-        m_snmpAgent.stop();
-        
-        assertEquals(PollStatus.down(), monitor.poll(m_monitoredService, null));
+        m_configDao.getValidator().validate(endPoint);
     }
-    
-    private EndPointValidationExpression horizonDuoComplexValidator() {
-        EndPointValidationExpression complexValidator = EndPointValidationExpressions.or(
-               EndPointValidationExpressions.and(
-                                  EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^1$"),
-                                  EndPointValidationExpressions.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.1", "^1$")),
-               
-               EndPointValidationExpressions.and(
-                                  EndPointValidationExpressions.or(
-                                                  EndPointValidationExpressions.and(EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^2$")),
-                                                  EndPointValidationExpressions.and(EndPointValidationExpressions.match( HORIZON_DUO_SYSTEM_CAPACITY, "^3$"))
-                                                  )
-                                            ),
-                                  EndPointValidationExpressions.match( ".1.3.6.1.4.1.7262.2.3.7.4.1.1.1.2.2", "^1$" )
-                   
-        );
-        return complexValidator;
-    }
+   
     
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_snmpAgent = agent;
     }
+
 
 }

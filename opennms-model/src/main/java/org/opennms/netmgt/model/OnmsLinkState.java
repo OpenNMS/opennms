@@ -27,6 +27,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     public interface LinkStateTransition {
         public void onLinkUp();
         public void onLinkDown();
+        public void onLinkUnknown();
     }
 
     private static final long serialVersionUID = 1L;
@@ -38,10 +39,23 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
                 transition.onLinkDown();
                 return LINK_NODE_DOWN;
             }
+            
             @Override
             public LinkState parentNodeDown(LinkStateTransition transition) {
                 transition.onLinkDown();
                 return LINK_PARENT_NODE_DOWN;
+            }
+            
+            @Override
+            public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_NODE_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_PARENT_NODE_UNMANAGED;
             }
         },
         LINK_NODE_DOWN {
@@ -54,6 +68,18 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
             @Override
             public LinkState parentNodeDown(LinkStateTransition transition) {
                 return LINK_BOTH_DOWN;
+            }
+            
+            @Override
+            public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_NODE_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_PARENT_NODE_UNMANAGED;
             }
         },
         LINK_PARENT_NODE_DOWN {
@@ -69,6 +95,18 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
                 return LINK_UP;
             }
             
+            @Override
+            public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_NODE_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_PARENT_NODE_UNMANAGED;
+            }
+            
         },
         LINK_BOTH_DOWN {
 
@@ -81,7 +119,61 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
             public LinkState parentNodeUp(LinkStateTransition transition) {
                 return LINK_NODE_DOWN;
             }
+            
+            @Override
+            public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_NODE_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+                transition.onLinkUnknown();
+                return LINK_PARENT_NODE_UNMANAGED;
+            }
+        },
+        LINK_BOTH_UNMANAGED{
+            @Override
+            public LinkState nodeEndPointFound(LinkStateTransition transition) {
+                return LINK_PARENT_NODE_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState parentNodeEndPointFound(LinkStateTransition transition) {
+                return LINK_NODE_UNMANAGED;
+            }
+        },
+        LINK_PARENT_NODE_UNMANAGED{
+          
+            @Override
+            public LinkState parentNodeEndPointFound(LinkStateTransition transition) {
+                transition.onLinkUp();
+                return LINK_UP;
+            }
+            
+            @Override
+            public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+                return LINK_BOTH_UNMANAGED;
+            }
+             
+            
+        },
+        LINK_NODE_UNMANAGED{
+            
+            @Override
+            public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+                return LINK_BOTH_UNMANAGED;
+            }
+            
+            @Override
+            public LinkState nodeEndPointFound(LinkStateTransition transition) {
+                transition.onLinkUp();
+                return LINK_UP;
+            }
+            
         };
+        
+        
         
         public LinkState nodeDown(LinkStateTransition transition) {
             return this;
@@ -100,6 +192,19 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
         }
         public LinkState up(boolean isParent, LinkStateTransition transition) {
             return isParent? parentNodeUp(transition) : nodeUp(transition);
+        }
+        public LinkState nodeEndPointFound(LinkStateTransition transition) {
+            return this;
+        }
+        public LinkState parentNodeEndPointFound(LinkStateTransition transition) {
+            return this;
+        }
+        public LinkState parentNodeEndPointDeleted(LinkStateTransition transition) {
+            return this;
+            
+        }
+        public LinkState nodeEndPointDeleted(LinkStateTransition transition) {
+            return this;
         }
     }
 

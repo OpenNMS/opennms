@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.*;
+import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
 
 import java.util.Collection;
 import java.util.Date;
@@ -8,12 +9,16 @@ import java.util.Date;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsLinkState.LinkState;
+import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -26,6 +31,12 @@ public class DefaultNodeLinkService implements NodeLinkService {
     
     @Autowired
     DataLinkInterfaceDao m_dataLinkDao;
+    
+    @Autowired
+    MonitoredServiceDao m_monitoredServiceDao;
+    
+    @Autowired
+    EndPointConfigurationDao m_endPointConfigDao;
     
     @Autowired
     LinkStateDao m_linkStateDao;
@@ -53,16 +64,38 @@ public class DefaultNodeLinkService implements NodeLinkService {
         Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
         
         if(dataLinkInterface.size() <= 0){
+            
+            
             DataLinkInterface dataLink = new DataLinkInterface();
             dataLink.setNodeId(nodeId);
             dataLink.setNodeParentId(nodeParentId);
             dataLink.setIfIndex(getPrimaryIfIndexForNode(node));
             dataLink.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
-            dataLink.setStatus("G");
+            
+            OnmsLinkState linkState = new OnmsLinkState();
+            linkState.setDataLinkInterface(dataLink);
+            
+            boolean nodeParentEndPoint = nodeHasEndPointService(nodeParentId);
+            boolean nodeEndPoint =  nodeHasEndPointService(nodeId);
+            
+            if(nodeParentEndPoint && nodeEndPoint) {
+                dataLink.setStatus("G");
+                linkState.setLinkState(LinkState.LINK_UP);
+            }else {
+                dataLink.setStatus("U");
+                if(nodeEndPoint){
+                    linkState.setLinkState(LinkState.LINK_PARENT_NODE_UNMANAGED);
+                }else if(nodeParentEndPoint){
+                    linkState.setLinkState(LinkState.LINK_NODE_UNMANAGED);
+                }else{
+                    linkState.setLinkState(LinkState.LINK_BOTH_UNMANAGED);
+                }
+            }
             dataLink.setLastPollTime(new Date());
             
             m_dataLinkDao.save(dataLink);
-            m_dataLinkDao.flush();
+            
+            m_linkStateDao.save(linkState);
             infof(this, "successfully added link into db for nodes %d and %d", nodeParentId, nodeId);
         } else {
             infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
@@ -139,6 +172,14 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
         
         return null;
+    }
+    
+    @Transactional(readOnly=true)
+    public boolean nodeHasEndPointService(int nodeId) {
+        
+        OnmsMonitoredService endPointService = m_monitoredServiceDao.getPrimaryService(nodeId, m_endPointConfigDao.getValidator().getServiceName());
+        
+        return endPointService == null ? false : true;
     }
     
 }

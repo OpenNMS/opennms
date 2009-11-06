@@ -3,7 +3,7 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.*;
+import static org.opennms.core.utils.LogUtils.debugf;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -37,21 +37,27 @@ public class LinkEventCorrelator {
     public void handleNodeDown(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkDown(nodeId); 
+        if(nodeHasEndPointService(nodeId)) {
+            linkDown(nodeId);
+        }
+         
     }
 
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void handleNodeUp(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        linkUp(nodeId); 
+        if(nodeHasEndPointService(nodeId)) {
+            linkUp(nodeId);
+        }
+         
     }
 
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
+        if(nodeHasEndPointService(nodeId)){
             linkDown(nodeId); 
         }
         else {
@@ -64,11 +70,11 @@ public class LinkEventCorrelator {
     public void handleInterfaceUp(Event e) {
         logEvent(e);
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
+        if(nodeHasEndPointService(nodeId)){
             linkUp(nodeId); 
         }
         else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
 
@@ -113,7 +119,8 @@ public class LinkEventCorrelator {
         }
         int nodeId = Long.valueOf(e.getNodeid()).intValue();
         if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkUp(nodeId); 
+            //linkUp(nodeId);
+            endPointFound(nodeId);
         } else {
             debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
@@ -174,8 +181,25 @@ public class LinkEventCorrelator {
             linkUp(nodeId); 
         }
         else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
+    }
+    
+    @EventHandler(uei=EventConstants.SERVICE_DELETED_EVENT_UEI)
+    public void handleServiceDeleted(Event e){
+        if(e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+            return;
+        }
+        
+        int nodeId = Long.valueOf(e.getNodeid()).intValue();
+        if(isSnmpPrimary(nodeId, e.getInterface())){
+            endPointDeleted(nodeId);
+        }
+        else {
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+        }
+        
     }
 
     private void linkDown(int nodeId) {
@@ -202,7 +226,31 @@ public class LinkEventCorrelator {
             m_nodeLinkService.saveLinkState(linkStateObj);
         }
     }
+    
+    private void endPointDeleted(int nodeId){
+        for (DataLinkInterface dli : m_nodeLinkService.getLinkContainingNodeId(nodeId)) {
 
+            LinkStateTransition transition = new LinkEventSendingStateTransition(dli, m_forwarder, m_nodeLinkService);
+            OnmsLinkState linkStateObj = m_nodeLinkService.getLinkStateForInterface(dli);
+            if (linkStateObj == null) {
+                linkStateObj = new OnmsLinkState();
+                linkStateObj.setDataLinkInterface(dli);
+                linkStateObj.setLinkState(LinkState.LINK_UP);
+            }
+            LinkState linkState = linkStateObj.getLinkState();
+            
+            if (dli.getNodeId() == nodeId) {
+                linkState = linkState.nodeEndPointDeleted(transition);
+            } else {
+                linkState = linkState.parentNodeEndPointDeleted(transition);
+            }
+            
+            
+            linkStateObj.setLinkState(linkState);
+            m_nodeLinkService.saveLinkState(linkStateObj);
+        }
+    }
+    
     private void linkUp(int nodeId) {
         for (DataLinkInterface dli : m_nodeLinkService.getLinkContainingNodeId(nodeId)) {
             boolean isParent = false;
@@ -227,12 +275,39 @@ public class LinkEventCorrelator {
         }
     }
     
+    private void endPointFound(int nodeId){
+        for (DataLinkInterface dli : m_nodeLinkService.getLinkContainingNodeId(nodeId)) {
+
+            LinkStateTransition transition = new LinkEventSendingStateTransition(dli, m_forwarder, m_nodeLinkService);
+            OnmsLinkState linkStateObj = m_nodeLinkService.getLinkStateForInterface(dli);
+            if (linkStateObj == null) {
+                linkStateObj = new OnmsLinkState();
+                linkStateObj.setDataLinkInterface(dli);
+                linkStateObj.setLinkState(LinkState.LINK_BOTH_UNMANAGED);
+            }
+            LinkState linkState = linkStateObj.getLinkState();
+            
+            if (dli.getNodeId() == nodeId) {
+                linkState = linkState.nodeEndPointFound(transition);
+            } else {
+                linkState = linkState.parentNodeEndPointFound(transition);
+            }
+            
+            linkStateObj.setLinkState(linkState);
+            m_nodeLinkService.saveLinkState(linkStateObj);
+        }
+    }
+    
     public boolean isSnmpPrimary(int nodeId, String ipAddr) {
         String primaryAddress = m_nodeLinkService.getPrimaryAddress(nodeId);
         if(primaryAddress != null) {
             return primaryAddress.equals(ipAddr);
         }
         return false;
+    }
+
+    public boolean nodeHasEndPointService(int nodeId) {
+        return m_nodeLinkService.nodeHasEndPointService(nodeId);
     }
 
     public void updateLinkStatus(Event e) {
