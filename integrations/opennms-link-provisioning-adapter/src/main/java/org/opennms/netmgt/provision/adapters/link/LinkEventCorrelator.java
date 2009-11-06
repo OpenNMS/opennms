@@ -103,7 +103,7 @@ public class LinkEventCorrelator {
             debugf(this, "Bailing out of handleInterfaceUp");
         }
         else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
     
