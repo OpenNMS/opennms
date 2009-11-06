@@ -144,6 +144,11 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         updateLinkStatus("dataLinkRestored", event, "G");
     }
     
+    @EventHandler(uei=EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI)
+    public void dataLinkUnmanaged(Event e) {
+        updateLinkStatus("dataLinkUnmanaged", e, "U");
+    }
+    
     
     public static String max(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {

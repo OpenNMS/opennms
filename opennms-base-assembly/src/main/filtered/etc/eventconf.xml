@@ -989,6 +989,23 @@
       clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" />
   </event>
   <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkUnmanaged</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Unmanaged</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has been unmanaged.
+      &lt;/p&gt; &lt;p&gt;A link is considered unmanaged when either endpoint of a link does not have the link endpoint service as 
+      &lt;/p&gt; &lt;p&gt;per the EndPoint configuration.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>Data Link Unmanaged between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data alarm-type="2" auto-clean="false"
+      reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"
+      clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" />
+  </event>
+  <event>
     <uei>uei.opennms.org/internal/poller/suspendPollingService</uei>
     <event-label>OpenNMS-defined poller event: suspendPollingService</event-label>
     <descr>

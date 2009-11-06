@@ -11,13 +11,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -64,10 +67,16 @@ public class DefaultNodeLinkServiceTest {
     NodeDao m_nodeDao;
     
     @Autowired
+    IpInterfaceDao m_ipInterfaceDao;
+    
+    @Autowired
     LinkStateDao m_linkStateDao;
     
     @Autowired
-    DataLinkInterfaceDao m_dataLinkDao;    
+    DataLinkInterfaceDao m_dataLinkDao; 
+    
+    @Autowired
+    MonitoredServiceDao m_monitoredServiceDao;
     
     @Autowired
     JdbcTemplate m_jdbcTemplate;
@@ -85,6 +94,7 @@ public class DefaultNodeLinkServiceTest {
         assertNotNull(m_dbPopulator);
         assertNotNull(m_nodeDao);
         assertNotNull(m_jdbcTemplate);
+        assertNotNull(m_monitoredServiceDao);
     }
     
     @Test
@@ -238,6 +248,18 @@ public class DefaultNodeLinkServiceTest {
         OnmsLinkState linkState3 = m_nodeLinkService.getLinkStateForInterface(dli);
         
         assertEquals(OnmsLinkState.LinkState.LINK_NODE_DOWN, linkState3.getLinkState());
+        
+    }
+    
+    @Test
+    public void dwoTestNodeHasEndPointService() {
+        OnmsMonitoredService service = m_monitoredServiceDao.getPrimaryService(END_POINT1_ID, "ICMP");
+        assertNotNull(service);
+        assertEquals("ICMP", service.getServiceName());
+        
+        
+        service = m_monitoredServiceDao.getPrimaryService(END_POINT1_ID, "EndPoint");
+        assertNull(service);
         
     }
     
