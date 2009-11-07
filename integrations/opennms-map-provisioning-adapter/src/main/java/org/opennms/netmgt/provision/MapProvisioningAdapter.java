@@ -223,9 +223,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void processPendingOperationForNode(AdapterOperation op)
             throws ProvisioningAdapterException {
         
-        log().debug("processPendingOperationForNode: processing operation: " + op.getType().name() + " for node with Id: #" + op.getNodeId());
         log().info("processPendingOperationsForNode: acquiring lock...");
         synchronized (m_lock) {
+            log().debug("processPendingOperationForNode: processing operation: " + op.getType().name() + " for node with Id: #" + op.getNodeId());
 
             if (op.getType() == AdapterOperationType.ADD) {
                 adds.add(op.getNodeId());
