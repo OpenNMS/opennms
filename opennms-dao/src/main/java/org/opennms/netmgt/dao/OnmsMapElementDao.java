@@ -52,4 +52,5 @@ public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
     public abstract void deleteElementsByType(String type);
     public abstract void deleteElementsByElementIdAndType(int elementId, String type);
     public abstract void deleteElementsByMapType(String mapType);
+    public abstract int countElementsOnMap(int mapid);
 }

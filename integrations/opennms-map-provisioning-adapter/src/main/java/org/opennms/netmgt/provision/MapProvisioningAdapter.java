@@ -146,8 +146,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private TransactionTemplate m_template;
     
-//    private int m_nodeId;
-
     private volatile static ConcurrentMap<String,Integer> m_mapNameMapSizeListMap;
     
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
@@ -225,9 +223,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void processPendingOperationForNode(AdapterOperation op)
             throws ProvisioningAdapterException {
         
+        log().debug("processPendingOperationForNode: processing operation: " + op.getType().name() + " for node with Id: #" + op.getNodeId());
         log().info("processPendingOperationsForNode: acquiring lock...");
         synchronized (m_lock) {
-            log().debug("processPendingOperationForNode: processing operation: " + op.getType().name() + " for node with Id: #" + op.getNodeId());
 
             if (op.getType() == AdapterOperationType.ADD) {
                 adds.add(op.getNodeId());
@@ -239,9 +237,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             if ((adds.size()+deletes.size()+updates.size()) > m_mapsAdapterConfig.getOperationNumberBeforeSync()) {
                 reSyncMap();
             }
-
-        }
         log().info("processPendingOperationsForNode: lock released.");
+        }
+
     }    
     
     private void reSyncMap() throws ProvisioningAdapterException {
@@ -360,6 +358,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
                     // add not empty map and remove empty submap
                     Map<String,List<Csubmap>> mapnameSubmapMap = m_mapsAdapterConfig.getsubMaps();
+                    Map<String,Integer> mapNameSizeMap = new ConcurrentHashMap<String, Integer>();
                     
                     for (String mapName : mapnameSubmapMap.keySet()) {
                         log().debug("reSyncMap: update sub maps: found container map: " + mapName);
@@ -372,6 +371,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                         
                         boolean auto;
                         Collection<OnmsMapElement> elements = m_onmsMapElementDao.findElementsByMapIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
+                        
                         if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
                             auto = true;
                         } else if (onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
@@ -381,15 +381,43 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                             log().debug("reSyncMaps: cannot add submaps to map: " + mapName);
                             continue;
                         }
+                        // loop on submaps
                         for (Csubmap csubmap : mapnameSubmapMap.get(mapName)) {
                             log().debug("reSyncMaps: submap: " + csubmap.getName());
+
+                            if (! mapNames.containsKey(csubmap.getName())) {
+                                log().debug("reSyncMap: map: " + csubmap.getName() + " not in database. skipping....");
+                                continue;
+                            }
                             OnmsMap onmsSubMap = mapNames.get(csubmap.getName());
-                            if (onmsSubMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) 
-                                continue;
+                            if (!mapNameSizeMap.containsKey(onmsSubMap.getName())) {
+                                mapNameSizeMap.put(csubmap.getName(), m_onmsMapElementDao.countElementsOnMap(onmsSubMap.getId()));
+                            }
+                            
+                            //Loop to verify if the map exists
+                            Collection<OnmsMapElement> tempelems = new ArrayList<OnmsMapElement>();
+                            OnmsMapElement foundelement= null;
+                            for (OnmsMapElement element: elements) {
+                                if (element.getElementId() == onmsSubMap.getId()){
+                                    foundelement=element;
+                                    log().debug("reSyncMap: map with id: " + onmsSubMap.getId() + " is in map:" + mapName + ".");
+                                    continue;
+                                }
+                                tempelems.add(element);
+                            }
+                            elements = tempelems;
+                            
                             if ( (!csubmap.getAddwithoutelements()) &&
-                                m_mapNameMapSizeListMap.get(csubmap.getName())==0)
+                                    mapNameSizeMap.get(csubmap.getName())==0) {
+                                if (foundelement != null && (auto|| foundelement.getType().equals(OnmsMapElement.MAP_HIDE_TYPE)))
+                                    m_onmsMapElementDao.delete(foundelement);
                                 continue;
-                            log().debug("ReSyncMaps: add 0 size submap: " + csubmap.getName() + "to map: " + mapName);
+                            }
+                            
+                            if (foundelement != null)
+                                continue;
+                            
+                            log().debug("ReSyncMaps: add submap: " + csubmap.getName() + "to map: " + mapName);
                             if (auto) {
                                 XY xy = new XY();
                                 if (csubmap.hasX() && csubmap.hasY()) {
@@ -402,7 +430,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 }                                    
                                 m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_TYPE,csubmap.getLabel(),csubmap.getIcon(),xy.getX(),xy.getY()));                                    
                             } else {
-                                m_onmsMapElementDao.saveOrUpdate(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
+                                m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
                             }
                             
                         }
@@ -560,7 +588,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
                                 if ( (!csubmap.getAddwithoutelements()) &&
                                     m_mapNameMapSizeListMap.get(csubmap.getName())==0)
                                     continue;
-                                log().debug("syncMaps: add 0 size submap: " + csubmap.getName() + "to map: " + mapName);
+                                log().debug("syncMaps: add submap: " + csubmap.getName() + "to map: " + mapName);
                                 if (auto) {
                                     XY xy = new XY();
                                     if (csubmap.hasX() && csubmap.hasY()) {

@@ -72,13 +72,10 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
 
     public Collection<OnmsMapElement> findElementsByNodeId(int nodeid) {
         Object[] values = {nodeid, OnmsMapElement.NODE_TYPE, OnmsMapElement.NODE_HIDE_TYPE};
-        return find("from OnmsMapElement as element where element.elementid = ? and (element.type = ? or element.type = ? )", values);
+        return find("from OnmsMapElement as element where element.elementId = ? and (element.type = ? or element.type = ? )", values);
     }
     
     public void deleteElementsByMapId(final OnmsMap map) {
-//        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.map = ?", map)) {
-//            delete(elem);
-//        }
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -93,15 +90,12 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
     }
 
     public void deleteElementsByNodeid(final int nodeid) {
-//      for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.map = ?", map)) {
-//          delete(elem);
-//      }
       getHibernateTemplate().execute(
                                      new HibernateCallback() {
           public Object doInHibernate(Session session) throws HibernateException, SQLException {
               
            String hql = "delete from OnmsMapElement as element where element.elementId = :nodeId and" +
-           		" ( element.type =:typenode or element.type =: typemap ";
+           		" ( element.type = :typenode or element.type = :typemap )";
            Query query = session.createQuery(hql);
            query.setInteger("nodeId",nodeid);
            query.setString("typenode",OnmsMapElement.NODE_TYPE);
@@ -113,9 +107,6 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
   }
 
     public void deleteElementsByType(final String type) {
-//        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.type = ?", type)) {
-//            delete(elem);
-//        }
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -131,10 +122,6 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
     }
 
     public void deleteElementsByElementIdAndType(final int id,final String type) {
-//        Object[] values = {id, type};
-//        for(OnmsMapElement elem :  find("from OnmsMapElement as element where element.elementId = ? and element.type = ?", values)) {
-//            delete(elem);
-//        }
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -195,4 +182,18 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         Object[] values = {mapId,OnmsMapElement.NODE_TYPE,OnmsMapElement.NODE_HIDE_TYPE};
         return find("from OnmsMapElement as element where element.map.id = ? and (element.type = ? or element.type= ? )",values);
     }
+
+    public int countElementsOnMap(final int mapid) {
+        Number nu = (Number) getHibernateTemplate().execute(
+          new HibernateCallback() {
+              public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                  
+               String hql = "select count(*) from OnmsMapElement as element where element.map.id = ?)";
+               Query query = session.createQuery(hql);
+               query.setParameter(0, mapid);
+               return query.uniqueResult();
+              }
+          });
+        return nu.intValue();
+  }
 }
