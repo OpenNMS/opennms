@@ -104,10 +104,8 @@ public class OnmsMap implements Serializable {
 
     private Set<OnmsMapElement> mapElements = new LinkedHashSet<OnmsMapElement>();
 
-    private boolean isNew = false;
 
     public OnmsMap() {
-        this.isNew = true;
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
     }
@@ -318,16 +316,6 @@ public class OnmsMap implements Serializable {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    @XmlTransient
-    @Transient
-    public boolean isNew() {
-        return isNew;
-    }
-
-    public void setNew(boolean aNew) {
-        isNew = aNew;
     }
 
     @XmlTransient

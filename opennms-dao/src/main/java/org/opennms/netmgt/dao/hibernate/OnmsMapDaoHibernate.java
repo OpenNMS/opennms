@@ -3,10 +3,12 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 
 import java.util.Collection;
+import java.util.Date;
 import java.sql.SQLException;
 
 public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> implements OnmsMapDao {
@@ -74,6 +76,24 @@ public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> 
         return find("from OnmsMap as map where map.accessMode = ? or map.accessMode = ? or " +
         		"(map.accessMode = ? and map.mapGroup = ?)", values);
     }
+
+    public Collection<OnmsMap> findAutoAndSaveMaps() {
+        Object[] values = {OnmsMap.AUTOMATIC_SAVED_MAP, OnmsMap.AUTOMATICALLY_GENERATED_MAP};
+        return find("from OnmsMap as map where map.type = ? or map.type = ? ", values);
+    }
     
-    
+    public int updateAllAutomatedMap(final Date time) {
+        return (Integer) getHibernateTemplate().execute(
+                                       new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                
+             String hql = "update OnmsMap as map set map.lastModifiedTime = :time where map.type = :type";
+             Query query = session.createQuery(hql);
+             query.setTimestamp("time", time);
+             query.setString("type", OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+             return query.executeUpdate();
+            } 
+        });
+
+    }
 }

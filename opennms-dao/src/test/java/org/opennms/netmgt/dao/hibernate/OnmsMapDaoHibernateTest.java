@@ -208,22 +208,6 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
-    public void testIsNew() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsLike("Pop_Test");
-
-        assertEquals(1, maps.size());
-        OnmsMap map = maps.iterator().next();
-        assertEquals(false, map.isNew());
-    }
-
-    public void testIsNew2() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.USER_GENERATED_MAP);
-
-        assertEquals(1, maps.size());
-        OnmsMap map = maps.iterator().next();
-        assertEquals(false, map.isNew());
-    }
-
     public void testFindMapsByType() {
         Collection<OnmsMap> maps = getOnmsMapDao().findMapsByType("X");
         assertEquals(0, maps.size());
