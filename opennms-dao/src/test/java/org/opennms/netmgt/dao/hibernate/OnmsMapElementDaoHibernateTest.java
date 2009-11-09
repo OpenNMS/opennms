@@ -64,7 +64,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         Object [] args = { mapElement.getId() };
         assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from element where id = ?", args));
 
-        OnmsMapElement mapElement2 = getOnmsMapElementDao().findMapElementById(mapElement.getId());
+        OnmsMapElement mapElement2 = getOnmsMapElementDao().findElementById(mapElement.getId());
     	assertNotSame(mapElement, mapElement2);
         assertEquals(mapElement.getMap().getId(), mapElement2.getMap().getId());
         assertEquals(mapElement.getElementId(), mapElement2.getElementId());
@@ -97,7 +97,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         Object [] args = { mapElement.getId() };
         assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from element where id = ?", args));
 
-        OnmsMapElement mapElement2 = getOnmsMapElementDao().findMapElementById(mapElement.getId());
+        OnmsMapElement mapElement2 = getOnmsMapElementDao().findElementById(mapElement.getId());
         assertNotSame(mapElement, mapElement2);
         assertEquals(mapElement.getMap().getId(), mapElement2.getMap().getId());
         assertEquals(mapElement.getElementId(), mapElement2.getElementId());
@@ -113,7 +113,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of the map element object then this ID may change and this test
         // will fail.
-        OnmsMapElement mapElement = getOnmsMapElementDao().findMapElementById(59);
+        OnmsMapElement mapElement = getOnmsMapElementDao().findElementById(59);
         assertEquals(58, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
@@ -125,7 +125,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
     
     public void testFind() {
         OnmsMap map = getOnmsMapDao().findMapById(58);
-        OnmsMapElement mapElement = getOnmsMapElementDao().findMapElement(1, OnmsMapElement.NODE_TYPE, map);
+        OnmsMapElement mapElement = getOnmsMapElementDao().findElement(1, OnmsMapElement.NODE_TYPE, map);
         assertEquals(58, mapElement.getMap().getId());
         assertEquals(1, mapElement.getElementId());
         assertEquals(OnmsMapElement.NODE_TYPE, mapElement.getType());
@@ -137,7 +137,7 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
     
     public void testFindMapElementsByMapId() {
         OnmsMap map = getOnmsMapDao().findMapById(58);
-        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findMapElementsByMapId(map);
+        Collection<OnmsMapElement> elems = getOnmsMapElementDao().findElementsByMapId(map);
         assertEquals(1,elems.size());
         OnmsMapElement mapElement = elems.iterator().next();
         assertEquals(58, mapElement.getMap().getId());
@@ -210,11 +210,17 @@ public class OnmsMapElementDaoHibernateTest extends AbstractTransactionalDaoTest
         assertEquals(1,elems.size());
         OnmsMapElement element = elems.iterator().next();
         getOnmsMapElementDao().delete(element);
-        assertNull(getOnmsMapElementDao().findMapElementById(59));
+        assertNull(getOnmsMapElementDao().findElementById(59));
     }
     
     public void testDeleteElementsByElementIdAndType() {
         getOnmsMapElementDao().deleteElementsByElementIdAndType(1, OnmsMapElement.NODE_TYPE);
-        assertNull(getOnmsMapElementDao().findMapElementById(59));
+        assertNull(getOnmsMapElementDao().findElementById(59));
+    }
+    
+    public void testDeleteElementsByMapType() {
+        getOnmsMapElementDao().deleteElementsByMapType(OnmsMap.USER_GENERATED_MAP);
+        getOnmsMapElementDao().deleteElementsByMapType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+        assertEquals(0,getOnmsMapElementDao().findAll().size());
     }
 }

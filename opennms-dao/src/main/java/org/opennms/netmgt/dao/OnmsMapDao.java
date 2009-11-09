@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao;
 import org.opennms.netmgt.model.OnmsMap;
 
 import java.util.Collection;
+import java.util.Date;
 
 public interface OnmsMapDao extends OnmsDao<OnmsMap, Integer> {
     public abstract Collection<OnmsMap> findAll(Integer offset, Integer limit);
@@ -45,7 +46,9 @@ public interface OnmsMapDao extends OnmsDao<OnmsMap, Integer> {
     public abstract Collection<OnmsMap> findAutoMaps();
     public abstract Collection<OnmsMap> findUserMaps();
     public abstract Collection<OnmsMap> findSaveMaps();
+    public abstract Collection<OnmsMap> findAutoAndSaveMaps();
     public abstract Collection<OnmsMap> findMapsByOwner(String owner);
     public abstract Collection<OnmsMap> findMapsByGroup(String group);
     public abstract Collection<OnmsMap> findVisibleMapsByGroup(String group);
+    public abstract int updateAllAutomatedMap(Date time);
 }
