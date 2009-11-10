@@ -220,11 +220,33 @@ function addMapsList()
 	clearDownInfo();
 	hidePickColor();
 	resetFlags();
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterSelectionList);
 	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
+	selMaps.selectElementByPosition(1, true);
 	button1  = new button("button1","maps",openMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
 
+function filterSelectionList(textboxId,value,changeType) {
+		if (changeType == "change") {
+			var elementInList = mapLabels.length;
+			for(var k=1;k<mapLabels.length;k++) {
+				var mapLabel = mapLabels[k];
+				var match = mapLabel.indexOf(value);
+				if  ( match == -1 ) {
+					elementInList--;
+					if (selMaps.elementExists(mapLabel) >= 0) 
+						selMaps.deleteElement(mapLabel);
+				} else if (selMaps.elementExists(mapLabel) == -1 && match >= 0) {
+					selMaps.addElementAtPosition(mapLabel,k);
+				}
+			}
+			if (elementInList > 1 )
+				selMaps.selectElementByPosition(1,true);
+			else 
+				selMaps.selectElementByPosition(0,false);
+		}
+}
 // This function is called by open map and add map as node!
 function mapsResult() { }
 
@@ -281,7 +303,7 @@ function addRenameMapBox(){
 		resetFlags();
 
 		//first a few styling parameters:
-		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
  	} else if (currentMapType == "A") {
 		alert('Cannot rename automatic map');
@@ -292,7 +314,7 @@ function addRenameMapBox(){
 		resetFlags();
 
 		//first a few styling parameters:
-		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
 	}else{
 		alert('No maps opened');

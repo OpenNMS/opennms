@@ -57,10 +57,10 @@ var shadowOffset = 0;
 
 // These are constants used to manage textbox style
 var textboxmaxChars = 32;
-var textboxx = 3; 
-var textboxy = 22; 
-var textboxWidth = 237;
-var textboxHeight = 22;
+var textboxx = 2; 
+var textboxy = 0; 
+var textboxWidth = 170;
+var textboxHeight = 20;
 var textYOffset = 14;
 var textStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"black"};
 var boxStyles = {"fill":"white","stroke":"pink","stroke-width":1,"fill-opacity":0.5,"stroke-opacity":0.9};
