@@ -103,7 +103,23 @@ public class Application implements EntryPoint {
         }
     };
     private final ContentPanel checkStoredProcedures = new ContentPanel();
+
+    /**
+     * MessageBox listener that can be used to expand the checkStoredProcedures panel
+     * when exceptions are thrown.
+     */ 
+    private final Listener<MessageBoxEvent> expandCheckStoredProcedures = new Listener<MessageBoxEvent>() {
+        public void handleEvent(MessageBoxEvent event) {
+            checkStoredProcedures.expand();
+        }
+    };
+
     private final Button continueButton = new Button();
+    private final Listener<MessageBoxEvent> focusContinueButton = new Listener<MessageBoxEvent>() {
+        public void handleEvent(MessageBoxEvent event) {
+            continueButton.focus();
+        }
+    };
 
     // Create the RemoteServiceServlet that acts as the controller for this GWT view
     // TODO: Make sure that it is OK to have a global instance of this service
@@ -451,25 +467,60 @@ public class Application implements EntryPoint {
 
     private class StoredProceduresCheck implements InstallationCheck {
         private final InstallationCheck m_next;
-        public StoredProceduresCheck(InstallationCheck nextInChain) {
+        private final boolean m_alertOnSuccess;
+        public StoredProceduresCheck(InstallationCheck nextInChain, boolean alertOnSuccess) {
             m_next = nextInChain;
+            m_alertOnSuccess = alertOnSuccess;
         }
 
         public void check() {
             // Start a spinner that indicates operation start
             checkStoredProcedures.setIconStyle("check-progress-icon");
 
-            installService.checkIpLike(new AsyncCallback<Boolean>() {
-                public void onSuccess(Boolean result) {
-                    if (result) {
+            installService.checkIpLike(new AsyncCallback<IpLikeStatus>() {
+                public void onSuccess(IpLikeStatus result) {
+                    if (IpLikeStatus.C.equals(result)) {
                         checkStoredProcedures.setIconStyle("check-success-icon");
-                        if (m_next != null) {
-                            m_next.check();
+                        if (m_alertOnSuccess) {
+                            MessageBox.alert("<code>iplike</code> Found", "The native C <code>iplike</code> function was tested successfully.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    focusContinueButton.handleEvent(event);
+                                    if (m_next != null) {
+                                        m_next.check();
+                                    }
+                                }
+                            });
+                        } else {
+                            if (m_next != null) {
+                                m_next.check();
+                            }
+                        }
+                    } else if (IpLikeStatus.PLPGSQL.equals(result)) {
+                        checkStoredProcedures.setIconStyle("check-success-icon");
+                        if (m_alertOnSuccess) {
+                            MessageBox.alert("<code>iplike</code> Found", "The PL/pgSQL <code>iplike</code> function was tested successfully. Please note that you can achieve higher database performance by installing the native C version of <code>iplike</code>.", new Listener<MessageBoxEvent>() {
+                                public void handleEvent(MessageBoxEvent event) {
+                                    focusContinueButton.handleEvent(event);
+                                    if (m_next != null) {
+                                        m_next.check();
+                                    }
+                                }
+                            });
+                        } else {
+                            if (m_next != null) {
+                                m_next.check();
+                            }
                         }
                     } else {
                         checkStoredProcedures.setIconStyle("check-failure-icon");
-                        MessageBox.alert("<code>iplike</code> Not Found", "Could not find the <code>iplike</code> stored procedure in the database.", null);
-                        checkStoredProcedures.expand();
+                        if (IpLikeStatus.MISSING.equals(result)) {
+                            // TODO: Change to allow the user to install the SQL version of iplike?
+                            MessageBox.alert("<code>iplike</code> Not Found", "Could not find the <code>iplike</code> stored procedure in the database. You should reinstall the <code>iplike</code> package.", expandCheckStoredProcedures);
+                        } else if (IpLikeStatus.UNUSABLE.equals(result)) {
+                            MessageBox.alert("<code>iplike</code> Unusable", "The <code>iplike</code> function was found but basic tests of the function failed. You should reinstall the <code>iplike</code> package.", expandCheckStoredProcedures);
+                        } else {
+                            MessageBox.alert("Unexpected <code>iplike</code> Language", "<code>iplike</code> appears to be usable in the database but the language cannot be determined. You should probably reinstall the <code>iplike</code> package.", expandCheckStoredProcedures);
+                        }
                     }
                 }
 
@@ -553,12 +604,13 @@ public class Application implements EntryPoint {
         final Html verifyOwnershipCaption = verifyOwnership.addText("");
 
         // Add a caption that shows the user the ownership filename.
-        installService.getOwnershipFilename(new AsyncCallback<String>() {
-            public void onSuccess(String result) {
-                verifyOwnershipCaption.setHtml("<p>To prove your ownership of this OpenNMS installation, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
-            }
-            public void onFailure(Throwable e) {
-                handleUnexpectedException(e);
+        updateOwnershipFileCaption(verifyOwnershipCaption);
+
+        // Also reload the caption every time the panel is expanded. This
+        // will allow us to handle cases where the session times out.
+        verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
+            public void handleEvent(ComponentEvent event) {
+                updateOwnershipFileCaption(verifyOwnershipCaption);
             }
         });
 
@@ -759,6 +811,9 @@ public class Application implements EntryPoint {
         dbBinDir.setAllowBlank(false);
         connectToDatabase.add(dbBinDir);
          */
+
+        // Fetch the current database settings (if any)
+        new GetDatabaseConnectionSettingsCheck(null).check();
 
         connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent event) {
@@ -1131,15 +1186,7 @@ public class Application implements EntryPoint {
             public void componentSelected(ButtonEvent event) {
                 new OwnershipFileCheck(
                     new DatabaseConnectionCheck(
-                        new StoredProceduresCheck(new InstallationCheck() {
-                            public void check() {
-                                MessageBox.alert("Success", "The <code>iplike</code> stored procedure is installed properly.", new Listener<MessageBoxEvent>() {
-                                    public void handleEvent(MessageBoxEvent event) {
-                                        continueButton.focus();
-                                    }
-                                });
-                            }
-                        })
+                        new StoredProceduresCheck(null, true)
                     )
                 ).check();
             }
@@ -1168,12 +1215,13 @@ public class Application implements EntryPoint {
                 new OwnershipFileCheck(
                     new AdminPasswordCheck(
                         new DatabaseConnectionCheck(
+                            // Don't show iplike alerts on success
                             new StoredProceduresCheck(new InstallationCheck() {
                                 public void check() {
                                     // TODO: Figure out best way to redirect, make it equivalent to clicking a link
                                     com.google.gwt.user.client.Window.Location.replace("/opennms");
                                 }
-                            })
+                            }, false)
                         ),
                         true
                     )
@@ -1192,6 +1240,20 @@ public class Application implements EntryPoint {
         //dock.add(new HTML(), DockPanel.EAST);
 
         RootPanel.get().add(dock);
+    }
+
+    /**
+     * Add a caption that shows the user the ownership filename.
+     */
+    private void updateOwnershipFileCaption(final Html caption) {
+        installService.getOwnershipFilename(new AsyncCallback<String>() {
+            public void onSuccess(String result) {
+                caption.setHtml("<p>To prove your ownership of this OpenNMS installation, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
+            }
+            public void onFailure(Throwable e) {
+                handleUnexpectedException(e);
+            }
+        });
     }
 
     private void handleOwnershipNotConfirmed() {

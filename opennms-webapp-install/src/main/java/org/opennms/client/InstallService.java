@@ -131,5 +131,5 @@ public interface InstallService extends RemoteService {
      * @throws DatabaseDriverException 
      * @throws DatabaseAccessException 
      */
-    public boolean checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException;
+    public IpLikeStatus checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException;
 }

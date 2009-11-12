@@ -21,5 +21,5 @@ public interface InstallServiceAsync {
 	public void updateDatabase(AsyncCallback<Void> callback);
 	public void isUpdateInProgress(AsyncCallback<Boolean> callback);
 	public void didLastUpdateSucceed(AsyncCallback<Boolean> callback);
-	public void checkIpLike(AsyncCallback<Boolean> callback);
+	public void checkIpLike(AsyncCallback<IpLikeStatus> callback);
 }

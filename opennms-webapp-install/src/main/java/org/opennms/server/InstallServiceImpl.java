@@ -29,6 +29,7 @@ import org.opennms.client.DatabaseUserCreationException;
 import org.opennms.client.IllegalDatabaseArgumentException;
 import org.opennms.client.InstallService;
 import org.opennms.client.InstallerProgressItem;
+import org.opennms.client.IpLikeStatus;
 import org.opennms.client.LoggingEvent;
 import org.opennms.client.OwnershipNotConfirmedException;
 import org.opennms.client.UserConfigFileException;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.dao.db.InstallerDb;
+import org.opennms.netmgt.dao.db.InstallerDb.PostgresPgLanguageLanname;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -495,7 +497,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_lastUpdateSucceeded;
     }
 
-    public boolean checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException {
+    public IpLikeStatus checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
@@ -524,8 +526,38 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         InstallerDb db = new InstallerDb();
         db.setAdminDataSource(DataSourceFactory.getInstance(Installer.ADMIN_DATA_SOURCE_NAME));
         db.setDataSource(DataSourceFactory.getInstance(Installer.OPENNMS_DATA_SOURCE_NAME));
-        // TODO: Are there additional tests that we need to perform on the database?
-        return db.isIpLikeUsable();
+
+        boolean ipLikeUsable = db.isIpLikeUsable();
+        boolean ipLikeC = false;
+        boolean ipLikeSql = false;
+        boolean ipLikePlpgsql = false;
+        try {
+            ipLikeC = db.functionExists("iplike", PostgresPgLanguageLanname.c, "text,text", "boolean");
+            ipLikeSql = db.functionExists("iplike", PostgresPgLanguageLanname.sql, "text,text", "boolean");
+            ipLikePlpgsql = db.functionExists("iplike", PostgresPgLanguageLanname.plpgsql, "text,text", "boolean");
+        } catch (SQLException e) {
+            throw new DatabaseAccessException("Could not check iplike function: " + e.getMessage());
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Could not check iplike function: " + e.getMessage());
+        }
+
+        if (ipLikeUsable) {
+            if (ipLikeC) {
+                return IpLikeStatus.C;
+            } else if (ipLikeSql) {
+                return IpLikeStatus.SQL;
+            } else if (ipLikePlpgsql) {
+                return IpLikeStatus.PLPGSQL;
+            } else {
+                return IpLikeStatus.UNKNOWN_LANGUAGE;
+            }
+        } else {
+            if (ipLikeC || ipLikeSql || ipLikePlpgsql) {
+                return IpLikeStatus.UNUSABLE;
+            } else {
+                return IpLikeStatus.MISSING;
+            }
+        }
     }
 
     /**
