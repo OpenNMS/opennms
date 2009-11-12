@@ -85,11 +85,23 @@ public class InstallerDb {
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     public static final float POSTGRES_MIN_VERSION = 7.3f;
-    
+
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
 
+    /**
+     * This enumeration contains all of the possible values for the
+     * lanname field in the pg_language table of PostgreSQL.
+     */
+    public static enum PostgresPgLanguageLanname {
+        ANY,
+        internal,
+        c,
+        sql,
+        plpgsql
+    }
+
     private static final int s_fetch_size = 1024;
-    
+
     private static Comparator<Constraint> constraintComparator = new Comparator<Constraint>() {
 
 		public int compare(Constraint o1, Constraint o2) {
@@ -636,7 +648,13 @@ public class InstallerDb {
 
 
     public boolean functionExists(String function, String columns,
-            String returnType) throws Exception {
+        String returnType) throws SQLException, Exception {
+        return this.functionExists(function, PostgresPgLanguageLanname.ANY, columns,
+            returnType);
+    }
+
+    public boolean functionExists(String function, PostgresPgLanguageLanname language, String columns,
+            String returnType) throws SQLException, Exception {
         Map<String, Integer> types = getTypesFromDB();
 
         int[] columnTypes = new int[0];
@@ -660,11 +678,16 @@ public class InstallerDb {
         }
         int retType = (types.get(c.getType())).intValue();
 
-        return functionExists(function, columnTypes, retType);
+        return functionExists(function, language, columnTypes, retType);
     }
 
     public boolean functionExists(String function, int[] columnTypes,
-            int retType) throws Exception {
+            int retType) throws SQLException {
+        return this.functionExists(function, PostgresPgLanguageLanname.ANY, columnTypes, retType);
+    }
+
+    public boolean functionExists(String function, PostgresPgLanguageLanname language, 
+        int[] columnTypes, int retType) throws SQLException {
         Statement st = getConnection().createStatement();
         ResultSet rs;
 
@@ -673,14 +696,25 @@ public class InstallerDb {
             ct.append(" " + columnTypes[j]);
         }
 
-        String query = "SELECT oid FROM pg_proc WHERE proname='"
-                + function.toLowerCase() + "' AND " + "prorettype=" + retType
-                + " AND " + "proargtypes='" + ct.toString().trim() + "'";
+        String query = null;
+        if (PostgresPgLanguageLanname.ANY.equals(language)) {
+            query = "SELECT oid FROM pg_proc WHERE " +
+                "proname='" + function.toLowerCase() + "' AND " + 
+                "prorettype=" + retType + " AND " + 
+                "proargtypes='" + ct.toString().trim() + "'";
+        } else {
+            query = "SELECT pg_proc.oid FROM pg_proc,pg_language WHERE " +
+                "pg_proc.prolang=pg_language.oid AND " +
+                "pg_language.lanname='" + language.toString().toLowerCase() + "' AND " +
+                "pg_proc.proname='" + function.toLowerCase() + "' AND " +
+                "pg_proc.prorettype=" + retType + " AND " + 
+                "pg_proc.proargtypes='" + ct.toString().trim() + "'";
+        }
 
         rs = st.executeQuery(query);
         return rs.next();
     }
-    
+
     public Map<String, Integer> getTypesFromDB() throws SQLException {
         if (m_dbtypes != null) {
             return m_dbtypes;
@@ -1533,6 +1567,7 @@ public class InstallerDb {
 
         rs.close();
         st.close();
+        closeAdminConnection();
 
         Matcher m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+\\.\\d+)").matcher(versionString);
         if (m.find()) {
@@ -1588,8 +1623,8 @@ public class InstallerDb {
                 + "WHERE another_bogus_column_" + timestamp + " IS NULL";
 
         // Expected error: "ERROR: relation "bogus_table" does not exist"
+        Statement st = getAdminConnection().createStatement();
         try {
-            Statement st = getAdminConnection().createStatement();
             st.executeQuery(bogus_query);
         } catch (SQLException e) {
             if (e.toString().indexOf("does not exist") != -1) {
@@ -1611,6 +1646,17 @@ public class InstallerDb {
                     + bogus_query + "\" and expected "
                     + "\"does not exist\" in the error message, "
                     + "but this exception was received instead: " + e, e);
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
         }
 
         /*
@@ -1901,16 +1947,31 @@ public class InstallerDb {
     public boolean databaseUserExists() throws SQLException {
         assertUserSet();
 
-        boolean exists;
+        boolean exists = false;
 
         Statement st = getAdminConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT usename FROM pg_user WHERE "
-                + "usename = '" + m_user + "'");
-
-        exists = rs.next();
-
-        rs.close();
-        st.close();
+        ResultSet rs = null;
+        try {
+            rs = st.executeQuery("SELECT usename FROM pg_user WHERE "
+                    + "usename = '" + m_user + "'");
+            exists = rs.next();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
 
         return exists;
     }
@@ -1919,21 +1980,71 @@ public class InstallerDb {
         assertUserSet();
 
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass
+        try {
+            st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass
                 + "' CREATEDB CREATEUSER");
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
     }
 
+    public void databaseRemoveUser() throws SQLException {
+        assertUserSet();
+
+        m_out.print("- removing user '" + m_user + "'... ");
+        Statement st = getAdminConnection().createStatement();
+        try {
+            st.execute("DROP USER IF EXISTS " + m_user);
+            m_out.print("DONE");
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
+    }
+    
     public boolean databaseDBExists() throws SQLException {
         boolean exists;
 
         Statement st = getAdminConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT datname from pg_database "
-                + "WHERE datname = '" + m_databaseName + "'");
-
-        exists = rs.next();
-
-        rs.close();
-        st.close();
+        ResultSet rs = null;
+        try {
+            rs = st.executeQuery("SELECT datname from pg_database "
+                    + "WHERE datname = '" + m_databaseName + "'");
+            exists = rs.next();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
 
         return exists;
     }
@@ -1943,10 +2054,22 @@ public class InstallerDb {
 
         m_out.print("- creating database '" + m_databaseName + "'... ");
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE DATABASE \"" + m_databaseName + "\" WITH ENCODING='UNICODE'");
-        st.execute("GRANT ALL ON DATABASE \"" + m_databaseName + "\" TO \"" + m_user + "\"");
-        st.close();
-        m_out.print("DONE");
+        try {
+            st.execute("CREATE DATABASE \"" + m_databaseName + "\" WITH ENCODING='UNICODE'");
+            st.execute("GRANT ALL ON DATABASE \"" + m_databaseName + "\" TO \"" + m_user + "\"");
+            m_out.print("DONE");
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
     }
     
     public void databaseRemoveDB() throws SQLException {
@@ -1954,9 +2077,21 @@ public class InstallerDb {
 
         m_out.print("- removing database '" + m_databaseName + "'... ");
         Statement st = getAdminConnection().createStatement();
-        st.execute("DROP DATABASE \"" + m_databaseName + "\"");
-        st.close();
-        m_out.print("DONE");
+        try {
+            st.execute("DROP DATABASE \"" + m_databaseName + "\"");
+            m_out.print("DONE");
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+            try {
+                closeAdminConnection();
+            } catch (SQLException e) {
+                m_out.print("ERROR: " + e.getMessage());
+            }
+        }
     }
 
     public void addIndexesForTable(String table) throws SQLException {
