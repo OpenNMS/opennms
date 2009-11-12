@@ -58,7 +58,11 @@ public class WebSecurityUtils {
         return raw;
     }
     
-    public static String sanitizeString(String raw)
+    public static String sanitizeString(String raw) {
+        return sanitizeString(raw, false);
+    }
+    
+    public static String sanitizeString(String raw, boolean allowHTML)
     {
         if (raw==null || raw.length()==0) {
             return raw;
@@ -66,7 +70,10 @@ public class WebSecurityUtils {
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
-        return next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        if (! allowHTML) {
+            next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        }
+        return next;
     }
 
     public static int[] safeParseInt(String[] dirty) throws NumberFormatException {
