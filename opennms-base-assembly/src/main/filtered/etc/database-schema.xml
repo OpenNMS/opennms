@@ -45,7 +45,8 @@
 		<column name="nodeID" visible="false"/>
 		<column name="ipAddr"/>
 		<column name="ipHostname"/>
-		<column name="isManaged"/>
+		<column name="IsManaged"/>
+		<column name="IsSnmpPrimary"/>
 		<column name="ipStatus"/>
 		<column name="ipLastCapsdPoll"/>
 	</table>
