@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 10: Added new notification field: ifindex - ayres@opennms.org
 // 2002 Nov 14: Added non-blocking I/O classes to speed capsd and pollers.
 // 2002 Nov 13: Added two new notification fields: nodelabel and interfaceresolve.
 //
@@ -131,6 +132,11 @@ public final class EventUtil {
 	 * The event interface xml tag
 	 */
 	static final String TAG_INTERFACE = "interface";
+
+    /**
+     * The event ifindex xml tag
+     */
+    static final String TAG_IFINDEX = "ifindex";
 
 	/**
 	 * The reverse DNS lookup of the interface
@@ -422,6 +428,12 @@ public final class EventUtil {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {
 			retParmVal = event.getInterface();
+		} else if (parm.equals(TAG_IFINDEX)) {
+	          if (event.hasIfIndex()) {
+	              retParmVal = Integer.toString(event.getIfIndex());
+	            } else {
+	                retParmVal = "N/A";
+	            }
 		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
 			retParmVal = event.getInterface();
 			try {
