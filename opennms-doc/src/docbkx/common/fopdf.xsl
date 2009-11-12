@@ -100,9 +100,7 @@
         <xsl:param name="gentext-key" select="''"/>
         <xsl:variable name="Version">
             <xsl:if test="//releaseinfo">
-                <xsl:text>Spring Security (</xsl:text>
                 <xsl:value-of select="//releaseinfo"/>
-                <xsl:text>)</xsl:text>
             </xsl:if>
         </xsl:variable>
         <xsl:choose>
@@ -140,6 +138,58 @@
     </xsl:template>
 
     <!--###################################################
+                  Custom Toc Line
+   ################################################### -->
+
+    <!-- The default DocBook XSL TOC printing is seriously broken... -->
+    <xsl:template name="toc.line">
+        <xsl:variable name="id">
+            <xsl:call-template name="object.id"/>
+        </xsl:variable>
+
+        <xsl:variable name="label">
+            <xsl:apply-templates select="." mode="label.markup"/>
+        </xsl:variable>
+
+        <!-- justify-end removed from block attributes (space problem in title.markup) -->
+        <fo:block end-indent="{$toc.indent.width}pt"
+                  last-line-end-indent="-{$toc.indent.width}pt"
+                  white-space-treatment="preserve"
+                  text-align="left"
+                  white-space-collapse="false">
+            <fo:inline keep-with-next.within-line="always">
+                <!-- print Chapters in bold style -->
+                <xsl:choose>
+                    <xsl:when test="local-name(.) = 'chapter'">
+                        <xsl:attribute name="font-weight">bold</xsl:attribute>
+                    </xsl:when>
+                </xsl:choose>
+                <fo:basic-link internal-destination="{$id}">
+                    <xsl:if test="$label != ''">
+                        <xsl:copy-of select="$label"/>
+                        <fo:inline white-space-treatment="preserve"
+                                   white-space-collapse="false">
+                            <xsl:value-of select="$autotoc.label.separator"/>
+                        </fo:inline>
+                    </xsl:if>
+                    <xsl:apply-templates select="." mode="title.markup"/>
+                </fo:basic-link>
+            </fo:inline>
+            <fo:inline keep-together.within-line="always">
+                <xsl:text> </xsl:text>
+                <fo:leader leader-pattern="dots"
+                           leader-pattern-width="3pt"
+                           leader-alignment="reference-area"
+                           keep-with-next.within-line="always"/>
+                <xsl:text> </xsl:text>
+                <fo:basic-link internal-destination="{$id}">
+                    <fo:page-number-citation ref-id="{$id}"/>
+                </fo:basic-link>
+            </fo:inline>
+        </fo:block>
+    </xsl:template>
+
+    <!--###################################################
                      Extensions
    ################################################### -->
 
@@ -148,7 +198,7 @@
     <xsl:param name="tablecolumns.extension">0</xsl:param>
     <xsl:param name="callout.extensions">1</xsl:param>
     <!-- FOP provide only PDF Bookmarks at the moment -->
-    <!-- <xsl:param name="fop.extensions">1</xsl:param> -->
+    <!-- xsl:param name="fop.extensions">1</xsl:param-->
 
     <!--###################################################
                      Table Of Contents
@@ -325,7 +375,7 @@
     <!-- Verbatim text formatting (programlistings) -->
     <xsl:attribute-set name="monospace.verbatim.properties">
         <xsl:attribute name="font-size">
-            <xsl:value-of select="$body.font.small * 0.6"/>
+            <xsl:value-of select="$body.font.small * 1.0"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
