@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: test for null interface in handleInerfaceDeleted. - ayres@opennms.org
 // 2003 Oct 21: Fixed typo in variable name.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -350,10 +351,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
     public void handleInterfaceDeleted(Event event) {
-        // remove from known nodes
-        m_alreadyDiscovered.remove(event.getInterface());
+        if(event.getInterface() != null) {
+            // remove from known nodes
+            m_alreadyDiscovered.remove(event.getInterface());
 
-        debugf("Removed %s from known node list", event.getInterface());
+            debugf("Removed %s from known node list", event.getInterface());
+        }
     }
 
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)

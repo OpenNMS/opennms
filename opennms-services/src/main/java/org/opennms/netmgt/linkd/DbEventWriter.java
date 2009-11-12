@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -10,6 +10,10 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2009 Oct 01: Add ability to update database when an interface is deleted. - ayres@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
 // reserved.
@@ -138,7 +142,7 @@ public class DbEventWriter implements QueryManager {
     private static final String SQL_SELECT_SNMP_NODES = "SELECT node.nodeid, nodesysoid, ipaddr FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND issnmpprimary = 'P'";
 
     /**
-     * update status to D on node maked as Deleted on table Nodes
+     * update status to D on node marked as Deleted on table Nodes
      */
     private static final String SQL_UPDATE_VLAN_D = "UPDATE vlan set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D' ";
 
@@ -151,6 +155,19 @@ public class DbEventWriter implements QueryManager {
     private static final String SQL_UPDATE_IPROUTEINTERFACE_D = "UPDATE iprouteinterface set status = 'D' WHERE nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) AND status <> 'D'";
 
     private static final String SQL_UPDATE_DATALINKINTERFACE_D = "UPDATE datalinkinterface set status = 'D' WHERE (nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) OR nodeparentid IN (SELECT nodeid from node WHERE nodetype = 'D' )) AND status <> 'D'";
+
+    /**
+     * update table status for interfaces
+     */
+    private static final String SQL_UPDATE_ATINTERFACE_STATUS_INTFC = "UPDATE atinterface set status = ?  WHERE nodeid = ? AND ipaddr = ?";
+    
+    private static final String SQL_UPDATE_ATINTERFACE_STATUS_SRC_INTFC = "UPDATE atinterface set status = ?  WHERE sourcenodeid = ? AND ifindex = ?";
+
+    private static final String SQL_UPDATE_STPINTERFACE_STATUS_INTFC = "UPDATE stpinterface set status = ? WHERE nodeid = ? AND ifindex = ?";
+
+    private static final String SQL_UPDATE_IPROUTEINTERFACE_STATUS_INTFC = "UPDATE iprouteinterface set status = ? WHERE nodeid = ? AND routeifindex = ?";
+
+    private static final String SQL_UPDATE_DATALINKINTERFACE_STATUS_INTFC = "UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)";
 
     public DbEventWriter() {
 
@@ -1441,7 +1458,83 @@ public class DbEventWriter implements QueryManager {
         }
 
     }
-
+    
+    public void updateForInterface(int nodeId, String ipAddr, int ifIndex, char status) throws SQLException {
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            Connection dbConn = getConnection();
+            d.watch(dbConn);
+            PreparedStatement ps = null;
+            int i=0;
+            if(!EventUtils.isNonIpInterface(ipAddr)) {  
+                // update atinterface
+                ps = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_STATUS_INTFC);
+                d.watch(ps);
+                ps.setString(1, new String(new char[] { status }));
+                ps.setInt(2, nodeId);
+                ps.setString(3, ipAddr);
+                i = ps.executeUpdate();
+                if (log().isInfoEnabled()) {
+                    log().info("updateForInterface: atinterface: node = " + nodeId
+                               + ", IP Address = " + ipAddr + ", status = " + status + ": updated rows = " + i);
+                }
+            }
+            if(ifIndex > -1) {
+                 // update atinterface
+                ps = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_STATUS_SRC_INTFC);
+                d.watch(ps);
+                ps.setString(1, new String(new char[] { status }));
+                ps.setInt(2, nodeId);
+                ps.setInt(3, ifIndex);
+                i = ps.executeUpdate();
+                if (log().isInfoEnabled()) {
+                    log().info("updateForInterface: atinterface: source node = " + nodeId
+                               + ", ifIndex = " + ifIndex + ", status = " + status + ": updated rows = " + i);
+                }
+                // update stpinterface
+                ps = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE_STATUS_INTFC);
+                d.watch(ps);
+                ps.setString(1, new String(new char[] { status }));
+                ps.setInt(2, nodeId);
+                ps.setInt(3, ifIndex);
+                i = ps.executeUpdate();
+                if (log().isInfoEnabled()) {
+                    log().info("updateForInterface: stpinterface: node = " + nodeId
+                               + ", ifIndex = " + ifIndex  + ", status = " + status + ": updated rows = " + i);
+                }
+    
+                // update iprouteinterface
+                ps = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE_STATUS_INTFC);
+                d.watch(ps);
+                ps.setString(1, new String(new char[] { status }));
+                ps.setInt(2, nodeId);
+                ps.setInt(3, ifIndex);
+                i = ps.executeUpdate();
+                if (log().isInfoEnabled()) {
+                    log().info("updateForInterface: iprouteinterface: node = " + nodeId
+                               + ", rpouteIfIndex = " + ifIndex  + ", status = " + status + ": updated rows = " + i);
+                }
+    
+                // update datalinkinterface
+                ps = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE_STATUS_INTFC);
+                d.watch(ps);
+                ps.setString(1, new String(new char[] { status }));
+                ps.setInt(2, nodeId);
+                ps.setInt(3, ifIndex);
+                ps.setInt(4, nodeId);
+                ps.setInt(5, ifIndex);
+                i = ps.executeUpdate();
+                if (log().isInfoEnabled()) {
+                    log().info("updateForInterface: datalinkinterface: node = " + nodeId
+                               + ", ifIndex = " + ifIndex  + ", status = " + status + ": updated rows = " + i);
+                }
+            }
+            
+        } finally {
+            d.cleanUp();
+        }
+    }
+    
     public String getSnmpPrimaryIp(int nodeid) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());

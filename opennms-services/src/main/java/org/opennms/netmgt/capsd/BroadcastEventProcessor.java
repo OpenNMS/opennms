@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: Add delete capability for non-ip interface. - ayres@opennms.org
 // 2007 May 06: Moved plugin management out of CapsdConfigManager. - dj@opennms.org
 // 2005 Nov 20: Cleaned up.  Removed unused constants and fixed JavaDoc.  Added valid FIXMEs.
 // 2003 Nov 11: Merged changes from Rackspace project
@@ -656,19 +657,50 @@ public class BroadcastEventProcessor implements InitializingBean {
      * @throws SQLException
      *             if any database errors occur
      */
+  
     private List<Event> doDeleteInterface(Connection dbConn, String source, long nodeid, String ipAddr, long txNo) throws SQLException {
+        return doDeleteInterface( dbConn, source, nodeid, ipAddr, -1, txNo);
+    }
+    
+    /**
+     * Mark as deleted the specified interface and its associated services, and/or
+     * also the snmpinterface, if it exists. If delete propagation is enabled and
+     * the interface is the only one on the node, delete the node as well.
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for any events that must be sent
+     * @param nodeid
+     *            the id of the node the interface resides on
+     * @param ipAddr
+     *            the ip address of the interface to be deleted
+     * @param ifIndex
+     *             the ifIndex of the interface to be deleted
+     * @param txNo
+     *            a transaction number to associate with the deletion
+     * @return a list of events that need to be sent w.r.t. this deletion
+     * @throws SQLException
+     *             if any database errors occur
+     */
+    private List<Event> doDeleteInterface(Connection dbConn, String source, long nodeid, String ipAddr, int ifIndex, long txNo) throws SQLException {
         List<Event> eventsToSend = new LinkedList<Event>();
 
-        // if this is the last interface for the node then delete the node
+        // if this is the last ip interface for the node then delete the node
         // instead
-        if (isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
+        if (!EventUtils.isNonIpInterface(ipAddr) && isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
             // there are no other ifs for this node so delete the node
             eventsToSend = doDeleteNode(dbConn, source, nodeid, txNo);
         } else {
-            eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
-            eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
+            if (!EventUtils.isNonIpInterface(ipAddr)) {
+                eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
+            }
+            eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, ifIndex, txNo));
         }
         deleteAlarmsForInterface(dbConn, nodeid, ipAddr);
+        if (ifIndex > -1) {
+            deleteAlarmsForSnmpInterface(dbConn, nodeid, ifIndex);
+        }
         return eventsToSend;
     }
 
@@ -782,6 +814,38 @@ public class BroadcastEventProcessor implements InitializingBean {
             int count = stmt.executeUpdate();
 
             log().debug("deleteAlarmsForInterace: deleted: "+count+" alarms for interface: "+ipAddr);
+
+        } finally {
+            d.cleanUp();
+        }
+    }
+
+    /**
+     * Delete alarms for the specified snmp interface
+     * 
+     * @param dbConn
+     *            the connection to the database
+     * @param nodeid
+     *            the nodeid for the interface to be deleted
+     * @param ifIndex
+     *            the ifIndex for the interface to be deleted
+     * @throws SQLException
+     *             if any exception occurs communicating with the database
+     */
+    private void deleteAlarmsForSnmpInterface(Connection dbConn, long nodeId, int ifIndex) throws SQLException {
+        PreparedStatement stmt = null;
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ? AND ifindex = ?");
+            d.watch(stmt);
+            stmt.setLong(1, nodeId);
+            stmt.setInt(2, ifIndex);
+            int count = stmt.executeUpdate();
+
+            if (log().isDebugEnabled()) {
+                log().debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId
+                            + "ifIndex: "+ifIndex);
+            }
 
         } finally {
             d.cleanUp();
@@ -1288,14 +1352,22 @@ public class BroadcastEventProcessor implements InitializingBean {
     public void handleDeleteInterface(Event event) throws InsufficientInformationException, FailedOperationException {
         // validate event
         EventUtils.checkEventId(event);
-        EventUtils.checkInterface(event);
+        EventUtils.checkInterfaceOrIfIndex(event);
         EventUtils.checkNodeId(event);
+        int ifIndex = -1;
+        if(event.hasIfIndex()) {
+            ifIndex = event.getIfIndex();
+        }
         if (isXmlRpcEnabled())
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
 
         // log the event
         if (log().isDebugEnabled())
-            log().debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid() + "\nipaddr\t\t" + event.getInterface() + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
+            log().debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei()
+                        + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid()
+                        + "\nipaddr\t\t" + (event.getInterface() != null ? event.getInterface() : "N/A" )
+                        + "\nifIndex\t\t" + (ifIndex > -1 ? ifIndex : "N/A" )
+                        + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
@@ -1307,10 +1379,13 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn.setAutoCommit(false);
 
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
+            
+            eventsToSend = doDeleteInterface(dbConn, source, event.getNodeid(), event.getInterface(), ifIndex, txNo);
 
-            eventsToSend = doDeleteInterface(dbConn, source, event.getNodeid(), event.getInterface(), txNo);
         } catch (SQLException ex) {
-            log().error("handleDeleteService:  Database error deleting service " + event.getService() + " on ipAddr " + event.getInterface() + " for node " + event.getNodeid(), ex);
+            log().error("handleDeleteInterface:  Database error deleting interface on node " + event.getNodeid()
+                        + " with ip address " + (event.getInterface() != null ? event.getInterface() : "null")
+                        + " and ifIndex "+ (event.hasIfIndex() ? event.getIfIndex() : "null"), ex);
             throw new FailedOperationException("database error: " + ex.getMessage(), ex);
         } finally {
             if (dbConn != null)
@@ -1847,24 +1922,74 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if a database error occurs
      */
     private List<Event> markInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, long txNo) throws SQLException {
+       return markInterfaceDeleted(dbConn, source, nodeId, ipAddr, -1, txNo);
+    }
+    
+    /**
+     * Mark the given interface deleted
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for any events set
+     * @param nodeId
+     *            the id the interface resides on
+     * @param ipAddr
+     *            the ipAddress of the interface
+     * @param ifIndex
+     *            the ifIndex of the interface            
+     * @param txNo
+     *            a transaction no to associate with this deletion
+     * @return a List containing an interfaceDeleted event for the interface if
+     *         it was actually marked
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private List<Event> markInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, int ifIndex, long txNo) throws SQLException {
         final String DB_FIND_INTERFACE = "UPDATE ipinterface SET isManaged = 'D' WHERE nodeid = ? and ipAddr = ? and isManaged != 'D'";
+        final String DB_FIND_SNMPINTERFACE = "UPDATE snmpinterface SET snmpcollect = 'D' WHERE nodeid = ? and snmpifindex = ? and snmpcollect != 'D'";
         PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(getClass());
+        int countip = 0;
+        int countsnmp = 0;
         try {
 
-            stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            stmt.setString(2, ipAddr);
-            int count = stmt.executeUpdate();
+            if(!EventUtils.isNonIpInterface(ipAddr)) {
+                stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+                d.watch(stmt);
+                stmt.setLong(1, nodeId);
+                stmt.setString(2, ipAddr);
+                countip = stmt.executeUpdate();
+            }
+            if (ifIndex > -1) {
+                stmt = dbConn.prepareStatement(DB_FIND_SNMPINTERFACE);
+                d.watch(stmt);
+                stmt.setLong(1, nodeId);
+                stmt.setInt(2, ifIndex);
+                countsnmp = stmt.executeUpdate();
+            }
+            
+            if (countip > 0) {
+                if (log().isDebugEnabled()) {
+                    log().debug("markInterfaceDeleted: marked ip interface deleted: node = " + nodeId + ", IP address = " + ipAddr);
+                }
+            }
+            if (countsnmp > 0) {
+                if (log().isDebugEnabled()) {       
+                    log().debug("markInterfaceDeleted: marked snmp interface deleted: node = " + nodeId + ", ifIndex = " + ifIndex);
+                }
+            }
+            if (countip > 0 || countsnmp > 0) {
+                return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, ifIndex, txNo));
+            } else {
+                if (log().isDebugEnabled()) {
+                    log().debug("markInterfaceDeleted: Interface not found: node = " + nodeId
+                                            + ", with ip address " + (ipAddr != null ? ipAddr : "null")
+                                            + ", and ifIndex " + (ifIndex > -1 ? ifIndex : "N/A"));
 
-            if (log().isDebugEnabled())
-                log().debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
-
-            if (count > 0)
-                return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, txNo));
-            else
+                }
                 return Collections.emptyList();
+            }
         } finally {
             d.cleanUp();
         }        
