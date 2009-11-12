@@ -9,6 +9,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: fix minor logic issue. - ayres@opennms.org
 // 2009 Aug 27: Created
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -117,7 +118,7 @@ function doDelete() {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
-      <input type="hidden" name="ifindex" value="<%=(ifIndex != -1 ? "" : ifIndex)%>"/>
+      <input type="hidden" name="ifindex" value="<%=(ifIndex == -1 ? "" : ifIndex)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
       <%
       }
