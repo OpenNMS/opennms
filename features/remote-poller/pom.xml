@@ -13,40 +13,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.opennms.poller.remote.Main</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <tarLongFileMode>gnu</tarLongFileMode>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
@@ -60,6 +26,22 @@
               <sources>
                 <source>src/main/groovy</source>
               </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-signed-jar-with-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</file>
+                  <type>jar</type>
+                  <classifier>signed-jar-with-dependencies</classifier>
+                </artifact>
+              </artifacts>
             </configuration>
           </execution>
         </executions>
@@ -86,6 +68,88 @@ groovy.compiler.output.path=target/classes
               </content>
             </file>
           </additionalConfig>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.poller.remote.Main</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-key</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                def keystore = new File(project.properties['webstart.keystore'])
+                if (!keystore.exists()) {
+                  keystore.parentFile.mkdirs();
+                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
+                  def args = [
+                    keystore: project.properties['webstart.keystore'],
+                    alias: project.properties['webstart.keyalias'],
+                    storepass: project.properties['webstart.storepass'],
+                    dname: "cn=${project.properties['webstart.dnameCn']}"
+                  ]
+                  if (project.properties['webstart.keypass']) {
+                    args.put('keypass', project.properties['webstart.keypass'])
+                  }
+                  ant.genkey(args)
+                }
+              </source>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <keystore>${webstart.keystore}</keystore>
+          <keypass>${webstart.keypass}</keypass>
+          <storepass>${webstart.storepass}</storepass>
+          <alias>${webstart.keyalias}</alias>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <jarPath>${project.build.directory}/${project.build.FinalName}-${project.packaging}-with-dependencies.${project.packaging}</jarPath>
+          <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
         </configuration>
       </plugin>
     </plugins>

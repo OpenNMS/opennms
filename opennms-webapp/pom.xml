@@ -18,44 +18,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  ant.genkey(args)
-                }
-              </source>
-            </configuration>
-          </execution>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
         <version>1.0-alpha-2</version>
@@ -76,7 +38,7 @@
 	                  <groupId>org.opennms.features</groupId>
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
-	                  <classifier>jar-with-dependencies</classifier>
+	                  <classifier>signed-jar-with-dependencies</classifier>
 	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
 	                </jarResource>
 	              </jarResources>
@@ -100,7 +62,7 @@
 	                  <groupId>org.opennms.features</groupId>
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
-	                  <classifier>jar-with-dependencies</classifier>
+	                  <classifier>signed-jar-with-dependencies</classifier>
 	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
 	                </jarResource>
 	              </jarResources>
@@ -111,25 +73,8 @@
         </executions>
         <configuration>
           <templateDirectory>src/main/jnlp</templateDirectory>
-          <!-- jar-with-dependencies has everything -->
+          <!-- signed-jar-with-dependencies has everything -->
           <excludeTransitive>true</excludeTransitive>
-          <sign>
-            <keystore>${webstart.keystore}</keystore>
-            <keypass>${webstart.keypass}</keypass>
-            <storepass>${webstart.storepass}</storepass>
-            <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <!--
-              <dnameL>${webstart.dnameL}</dnameL>
-              <dnameSt>${webstart.dnameSt}</dnameSt>
-              <dnameC>${webstart.dnameC}</dnameC>
-            -->
-            <verify>true</verify>
-          </sign>
-          <keystoreConfig>
-            <delete>${webstart.keystore.delete}</delete>
-            <gen>${webstart.keygen}</gen>
-          </keystoreConfig>
           <verbose>false</verbose>
         </configuration>
       </plugin>
@@ -383,7 +328,7 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>
       <version>${pom.version}</version>
-      <classifier>jar-with-dependencies</classifier>
+      <classifier>signed-jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
