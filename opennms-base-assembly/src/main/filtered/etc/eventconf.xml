@@ -208,11 +208,12 @@
     <descr>
       &lt;p&gt;This event is an external command to delete an interface
       from the database. The required paramater is the IP
-      address for the interface: %interface%.&lt;/p&gt;
+      address for the interface: %interface%, or the nodeid %nodeid%
+      and ifIndex %ifindex%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
       &lt;p&gt;A request has been made to delete an interface:
-      %interface%.&lt;/p&gt;
+      %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -676,7 +677,7 @@
     <descr>
       &lt;p&gt;Interface %interface% deleted from node #&lt;a
       href="element/node.jsp?node=%nodeid%"&gt;
-      %nodeid%&lt;/a&gt;&lt;/p&gt; &lt;p&gt;This event is
+      %nodeid%&lt;/a&gt; with ifIndex %ifindex%.&lt;/p&gt; &lt;p&gt;This event is
       generated following an extended outage for a service, in
       which that service is the only service associated with an
       interface. If the service is later rediscovered, a new
@@ -685,7 +686,8 @@
     </descr>
     <logmsg dest='logndisplay'>
       Interface %interface% deleted from node #&lt;a
-      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;.
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
+      with ifIndex %ifindex%.
     </logmsg>
     <severity>Minor</severity>
   </event>

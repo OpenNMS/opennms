@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2009 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2009 Oct 01: Add delete capability for non-ip interface. - ayres@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // Aug 24, 2004: Created this file.
 //
@@ -119,6 +120,42 @@ public class EventUtils {
         if (e.getInterface() == null || e.getInterface().length() == 0)
             throw new InsufficientInformationException("ipaddr for event is unavailable");
     }
+    
+    /**
+     * Is the given interface a non-IP interface
+     * 
+     * @param intf
+     *            the interface
+     *            
+     * @return true/false
+     *
+     */
+    static public boolean isNonIpInterface(String intf) {
+        if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
+            return true;
+        }
+        return false;
+    }
+   
+    
+    /**
+     * Ensures the given event has an interface or ifIndex
+     * 
+     * @param e
+     *            the event
+     * @throws InsufficientInformationException
+     *             if  neither an interface nor an ifIndex is available
+     */
+    static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
+        if (e == null)
+            throw new NullPointerException("event is null");
+
+        if (e.getInterface() == null || e.getInterface().length() == 0) {
+            if (!e.hasIfIndex()) {
+                throw new InsufficientInformationException("Neither ipaddr nor ifIndex for the event is available");
+            }
+        }
+    }
 
     /**
      * Ensures the given event has a host
@@ -169,7 +206,7 @@ public class EventUtils {
     }
 
     /**
-     * Constructs a deleteInterface event for the given nodeId, ipAddress pair.
+     * Constructs a deleteInterface event for the given nodeId, ipAddress (or ifIndex) pair.
      * 
      * @param source
      *            the source for the event
@@ -177,18 +214,25 @@ public class EventUtils {
      *            the nodeId of the node that owns the interface
      * @param ipAddr
      *            the ipAddress of the interface being deleted
+     * @param ifIndex
+     *            the ifIndex of the interface being deleted
      * @param txNo
      *            the transaction number to use for processing this event
      * @return an Event representing a deleteInterface event for the given
      *         nodeId, ipaddr
      */
-    public static Event createDeleteInterfaceEvent(String source, long nodeId, String ipAddr, long txNo) {
+    public static Event createDeleteInterfaceEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.DELETE_INTERFACE_EVENT_UEI);
         newEvent.setSource(source);
-        newEvent.setInterface(ipAddr);
+        if (ipAddr != null && ipAddr.length() != 0) {
+            newEvent.setInterface(ipAddr);
+        }
         newEvent.setNodeid(nodeId);
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        if (ifIndex != -1) {
+            newEvent.setIfIndex(ifIndex);
+        }
 
         // Add appropriate parms
         Parms eventParms = new Parms();
@@ -291,16 +335,41 @@ public class EventUtils {
      *            the ipAdddr of the event
      * @param txNo
      *            a transaction number associated with the event
-     * @return an Event represent an interfaceDeleted event for the given
-     *         interface
+     * @return Event
+     *            an interfaceDeleted event for the given interface
      */
     public static Event createInterfaceDeletedEvent(String source, long nodeId, String ipAddr, long txNo) {
+        return createInterfaceDeletedEvent(source, nodeId, ipAddr, -1, txNo);
+    }
+    
+    /**
+     * Construct an interfaceDeleted event for an interface.
+     * 
+     * @param source
+     *            the source of the event
+     * @param nodeId
+     *            the nodeId of the node the interface resides in
+     * @param ipAddr
+     *            the ipAdddr of the event
+     * @param ifIndex
+     *            the ifIndex of the event
+     * @param txNo
+     *            a transaction number associated with the event
+     * @return Event
+     *            an interfaceDeleted event for the given interface
+     */
+    public static Event createInterfaceDeletedEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
         newEvent.setSource(source);
         newEvent.setNodeid(nodeId);
-        newEvent.setInterface(ipAddr);
+        if (ipAddr != null && ipAddr.length() != 0) {
+            newEvent.setInterface(ipAddr);
+        }
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        if (ifIndex != -1) {
+            newEvent.setIfIndex(ifIndex);
+        }
 
         // Add appropriate parms
         Parms eventParms = new Parms();

@@ -157,13 +157,11 @@ function doDelete() {
                               }
                           }
       %>
-      <%-- Comment out until delete works for non-ip interfaces 
         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 	 <li>
          <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
 	 </li>
          <% } %>
-      --%> 
          
       </ul>
       </div>
