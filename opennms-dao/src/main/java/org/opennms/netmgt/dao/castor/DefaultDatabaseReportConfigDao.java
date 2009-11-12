@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -36,13 +36,11 @@
 package org.opennms.netmgt.dao.castor;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.Report;
+import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 
 public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
@@ -52,8 +50,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         super(DatabaseReports.class, "Database Report Configuration");
     }
 
-    
-    
     @Override
     public List<Report> translateConfig(DatabaseReports castorConfig) {
         return Collections.unmodifiableList(castorConfig.getReportCollection());
@@ -71,18 +67,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
     }
     
-    public ReportParm getLogo(String id) {
-        
-        ReportParm logo = null;
-        Report report = getReport(id);
-        if (report != null) {
-            logo =  report.getLogo();
-        }
-        
-        return logo;
-        
-    }
-    
     public ReportParm[] getReportCategories(String id) {
         
         ReportParm[] categories = null;
@@ -92,18 +76,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         }
         
         return categories;
-        
-    }
-    
-    public Map<String, String> getReportMap() {
-        
-        Map<String, String> reportMap = new HashMap<String, String>();
-        
-        for(Report report : getContainer().getObject()) {
-            reportMap.put(report.getReportName(), report.getDisplayName());    
-        }
-        
-        return reportMap;
         
     }
     
@@ -131,7 +103,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
     }
 
-    public Report getReport(String name) {
+    private Report getReport(String name) {
         
         for(Report report : getContainer().getObject()) {
             if (name.equals(report.getReportName())) {

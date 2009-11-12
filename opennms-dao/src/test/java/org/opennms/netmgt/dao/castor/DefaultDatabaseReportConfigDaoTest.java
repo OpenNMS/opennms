@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -38,7 +38,6 @@ package org.opennms.netmgt.dao.castor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
@@ -69,22 +68,6 @@ public class DefaultDatabaseReportConfigDaoTest {
         assertEquals(dates[0].getName(),DATE_NAME);
         assertEquals(dates[0].getDisplayName(),DATE_DISPLAY_NAME);
         assertEquals(dates[0].getDefaultValue(),DATE_DEFAULT);
-        
-    }
-    
-    @Test
-    public void testGetReportMap() throws Exception {
-        
-        
-        DefaultDatabaseReportConfigDao dao = new DefaultDatabaseReportConfigDao();
-        
-        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/database-reports.xml");
-        dao.setConfigResource(new InputStreamResource(in));
-        dao.afterPropertiesSet();
-        
-        Map<String, String> reportMap = dao.getReportMap();
-        
-        assertEquals(reportMap.get(NAME),DESCRIPTION);
         
     }
 

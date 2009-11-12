@@ -126,6 +126,17 @@
 		<property name="reportRunner" ref="availabilityReportRunner" />
 	</bean>
 	
+	<bean id="onmsDatabaseReportService"
+		class="org.opennms.report.availability.svclayer.OnmsDatabaseReportService">
+		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
+		<property name="calendarCalculator">
+			<ref local="calendarAvailabilityCalculator" />
+		</property>
+		<property name="classicCalculator">
+			<ref local="classicAvailabilityCalculator" />
+		</property>
+	</bean>
+	
 	<bean id="legacyAvailabilityDataService" class="org.opennms.report.availability.svclayer.LegacyAvailabilityDataService" />
     
     <bean id="availabilityData" 

@@ -1,16 +1,18 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
-// TODO Remove this whan migration to database reports is complete
-//
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 
+// Created: November 11th, 2009 jonathan@opennms.org
+//
+// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,19 +35,11 @@
 //
 package org.opennms.web.controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.model.AvailabilityReportLocator;
-import org.opennms.report.availability.AvailabilityReportLocatorService;
-import org.opennms.report.availability.svclayer.AvailabilityReportCriteria;
 import org.opennms.web.command.ManageAvailabilityReportCommand;
 import org.opennms.web.svclayer.ReportListService;
 import org.springframework.beans.support.PagedListHolder;
@@ -53,13 +47,13 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class ManageAvailabilityReportController extends SimpleFormController {
+public class ManageDatabaseReportController extends SimpleFormController {
 
     private ReportListService m_reporListService;
     private int m_pageSize;
     
-    public ManageAvailabilityReportController() {
-        setFormView("report/availability/manage");
+    public ManageDatabaseReportController() {
+        setFormView("report/database/manage");
     }
 
     public void setReportListService(ReportListService reportListService) {
@@ -86,7 +80,6 @@ public class ManageAvailabilityReportController extends SimpleFormController {
         ManageAvailabilityReportCommand manageCommand = (ManageAvailabilityReportCommand) command;
         m_reporListService.deleteReports(manageCommand.getIds());
         ModelAndView mav = new ModelAndView(getSuccessView());
-        // mav.addObject("availabilityReportCommand", manageCommand);
         return mav;
     }
     

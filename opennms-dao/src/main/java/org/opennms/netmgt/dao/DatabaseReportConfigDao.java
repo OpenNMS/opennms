@@ -36,7 +36,6 @@
 package org.opennms.netmgt.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
@@ -44,12 +43,10 @@ import org.opennms.netmgt.config.databaseReports.ReportParm;
 public interface DatabaseReportConfigDao {
     
     ReportParm[] getDates(String id);
-    ReportParm getLogo(String id);
+
     ReportParm[] getReportCategories(String id);
     
     List <Report> getReports();
-    
-    Map <String,String> getReportMap(); 
     
     String getEngine(String id);
     

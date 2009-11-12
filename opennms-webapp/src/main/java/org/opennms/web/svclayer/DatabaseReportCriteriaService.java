@@ -36,11 +36,12 @@
 package org.opennms.web.svclayer;
 
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.svclayer.support.DatabaseReportCriteria;
+import org.opennms.netmgt.model.DatabaseReportCriteria;
+import org.opennms.web.command.DatabaseReportCriteriaCommand;
 
 public interface DatabaseReportCriteriaService {
     
-    DatabaseReportCriteria getCriteria(String reportId, String UserId);
+    DatabaseReportCriteriaCommand getCriteria(String reportId, String UserId);
     
     void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 

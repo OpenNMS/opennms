@@ -75,8 +75,12 @@ public class PDFReportRenderer implements ReportRenderer {
     private Resource m_xsltResource;
 
     private String m_baseDir;
-
+    
     public void render() throws ReportRenderException {
+        render(m_inputFileName, m_outputFileName, m_xsltResource);
+    }
+
+    public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(PDFReportRenderer.class);
@@ -84,21 +88,21 @@ public class PDFReportRenderer implements ReportRenderer {
 
         try {
 
-            log.debug("XSL File " + m_xsltResource.getDescription());
+            log.debug("XSL File " + xsltResource.getDescription());
 
-            Reader xsl = new FileReader(m_xsltResource.getFile());
+            Reader xsl = new FileReader(xsltResource.getFile());
             
             log.debug("Base directory " + m_baseDir);
 
-            log.debug("file to render" + m_inputFileName);
+            log.debug("file to render" + inputFileName);
 
-            Reader xml = new FileReader(m_baseDir + m_inputFileName);
+            Reader xml = new FileReader(m_baseDir + "/" + inputFileName);
 
-            log.debug("ouput File " + m_outputFileName);
+            log.debug("ouput File " + outputFileName);
 
             FileOutputStream pdfOutputStream = new FileOutputStream(
-                                                                    new File(m_baseDir + 
-                                                                             m_outputFileName));
+                                                                    new File(m_baseDir + "/" +
+                                                                             outputFileName));
 
             Logger nullLogger = new NullLogger();
             MessageHandler.setScreenLogger(nullLogger);

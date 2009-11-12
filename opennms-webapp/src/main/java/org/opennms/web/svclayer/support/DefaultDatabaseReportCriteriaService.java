@@ -45,6 +45,9 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.netmgt.model.DatabaseReportCategoryParm;
+import org.opennms.netmgt.model.DatabaseReportDateParm;
+import org.opennms.web.command.DatabaseReportCriteriaCommand;
 import org.opennms.web.svclayer.DatabaseReportCriteriaService;
 
 public class DefaultDatabaseReportCriteriaService implements
@@ -52,16 +55,15 @@ public class DefaultDatabaseReportCriteriaService implements
     
     DatabaseReportConfigDao m_dao;
 
-    public DatabaseReportCriteria getCriteria(String id, String userId) {
+    public DatabaseReportCriteriaCommand getCriteria(String id, String userId) {
        
-        DatabaseReportCriteria criteria = new DatabaseReportCriteria();
+        DatabaseReportCriteriaCommand command = new DatabaseReportCriteriaCommand();
         
-        criteria.setReportId(id);
-        criteria.setDisplayName(m_dao.getDisplayName(id));
-        criteria.setLogo("logo");
-        criteria.setMailFormat("SVG");
-        criteria.setPersist(true);
-        criteria.setSendMail(true);
+        command.setReportId(id);
+        command.setDisplayName(m_dao.getDisplayName(id));
+        command.setMailFormat("HTML");
+        command.setPersist(true);
+        command.setSendMail(true);
         
         
         ReportParm[] dates = m_dao.getDates(id);
@@ -78,7 +80,7 @@ public class DefaultDatabaseReportCriteriaService implements
 
             }
             
-            criteria.setDates(dateParms);
+            command.setDates(dateParms);
         }
         
         ReportParm[] categories = m_dao.getReportCategories(id);
@@ -91,15 +93,15 @@ public class DefaultDatabaseReportCriteriaService implements
                 catParm.setCategory("Network Interfaces");
                 catParms.add(catParm);
             }
-            criteria.setCategories(catParms);
+            command.setCategories(catParms);
         }
 
-//        UserFactory.init();
-//        UserManager userFactory = UserFactory.getInstance();
-//        criteria.setEmail(userFactory.getEmail(request.getRemoteUser()));
         UserManager userFactory = UserFactory.getInstance();
         try {
-            criteria.setMailTo(userFactory.getEmail(userId));
+            String emailAddress = userFactory.getEmail(userId);
+            if(emailAddress != null) {
+                command.setMailTo(userFactory.getEmail(userId));
+            }
         } catch (MarshalException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -112,7 +114,7 @@ public class DefaultDatabaseReportCriteriaService implements
         }
 
 
-        return criteria;
+        return command;
     }
     
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportDao) {

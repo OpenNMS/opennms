@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: Oct 26, 2009
+ * Created: November 11, 2009 jonathan@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -33,13 +33,12 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.web.svclayer;
+package org.opennms.report.availability.svclayer;
 
 import org.opennms.netmgt.model.DatabaseReportCriteria;
-import org.springframework.webflow.execution.RequestContext;
 
 public interface DatabaseReportService {
     
-    public String execute(DatabaseReportCriteria criteria, RequestContext context);
+    public void run(DatabaseReportCriteria criteria);
 
 }

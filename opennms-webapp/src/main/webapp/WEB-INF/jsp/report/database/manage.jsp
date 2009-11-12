@@ -12,8 +12,8 @@
  *
  * Modifications:
  *
- * 2009 Oct 18: Created jonathan@opennms.org
- * 
+ * 2009 Nov 12: Created jonathan@opennms.org
+ *  
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,22 +41,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Availability Reports" />
-  <jsp:param name="headTitle" value="Availability Reports" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Database Reports" />
+  <jsp:param name="headTitle" value="Database Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="List" />
+  <jsp:param name="breadcrumb" value="Manage"/>
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/availability/list.htm" var="pagedLink">
+<c:url value="/report/database/manage.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
 
@@ -67,6 +68,7 @@
 	</c:when>
 
 	<c:otherwise>
+		<form:form commandName="ManageAvailabilityReportCommand">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 
@@ -74,21 +76,36 @@
 		<table>
 			<thead>
 				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>execute report</th>
+					<th>category</th>
+					<th>type</th>
+					<th>period ending</th>
+					<th>available</th>
+					<th>view report</th>
+					<th>select</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
 			<c:forEach items="${pagedListHolder.pageList}" var="report">
 				<tr>
-					<td>${report.displayName}</td>
-					<td>${report.description}</td>
-					<td> <a href="report/database/databaseReportBuilder.htm?reportId=${report.id}">Execute Report</a></td>
+					<td>${report.category}</td>
+					<td>${report.type}</td>
+					<td>${report.date}</td>
+					<td>${report.available}</td>
+					<td><a
+						href="report/availability/view/report.htm?reportid=${report.id}">html</a>
+					<a
+						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
+					<a
+						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
+					</td>
+					<td><form:checkbox path="ids" value="${report.id}"/></td>
 				</tr>
 			</c:forEach>
 		</table>
+		<input type="submit" value="delete checked reports"/>
+	</form:form>
 	</c:otherwise>
 </c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

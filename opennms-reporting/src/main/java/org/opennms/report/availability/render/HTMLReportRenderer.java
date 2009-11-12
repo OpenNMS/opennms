@@ -68,24 +68,30 @@ public class HTMLReportRenderer implements ReportRenderer {
     private String m_baseDir;
 
     private Resource m_xsltResource;
+    
 
     public void render() throws ReportRenderException {
+        render(m_inputFileName, m_outputFileName, m_xsltResource);  
+    }
+    
+
+    public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(HTMLReportRenderer.class);
         try {
             
-            log.debug("XSL File " + m_xsltResource.getDescription());
+            log.debug("XSL File " + xsltResource.getDescription());
 
-            Reader xsl = new FileReader(m_xsltResource.getFile());
+            Reader xsl = new FileReader(xsltResource.getFile());
 
-            log.debug("file to render" + m_inputFileName);
+            log.debug("file to render" + inputFileName);
 
-            Reader xml = new FileReader(m_baseDir + m_inputFileName);
+            Reader xml = new FileReader(m_baseDir + "/" + inputFileName);
 
-            log.debug("ouput File " + m_outputFileName);
+            log.debug("ouput File " + outputFileName);
 
-            FileWriter htmlWriter = new FileWriter(m_baseDir + m_outputFileName);
+            FileWriter htmlWriter = new FileWriter(m_baseDir + "/" + outputFileName);
 
             TransformerFactory tfact = TransformerFactory.newInstance();
             Transformer processor = tfact.newTransformer(new StreamSource(xsl));
@@ -131,5 +137,6 @@ public class HTMLReportRenderer implements ReportRenderer {
     public String getBaseDir(){
        return m_baseDir;
     }
+
 
 }

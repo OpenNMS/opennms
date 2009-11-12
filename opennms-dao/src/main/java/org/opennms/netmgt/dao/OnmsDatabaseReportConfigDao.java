@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -44,5 +44,7 @@ public interface OnmsDatabaseReportConfigDao {
     String getHtmlStylesheetLocation(String id);
     
     String getType(String id);
+    
+    String getLogo(String logo);
 
 }

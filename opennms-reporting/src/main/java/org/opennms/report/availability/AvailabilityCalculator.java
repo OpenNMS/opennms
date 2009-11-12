@@ -165,6 +165,7 @@ public class AvailabilityCalculator {
         log.debug("periodEndDate: " + m_periodEndDate);
 
         m_report.setLogo(m_logoURL);
+        log.debug("logoURL: " + m_logoURL);
         ViewInfo viewInfo = new ViewInfo();
         m_report.setViewInfo(viewInfo);
         org.opennms.report.availability.Categories categories = new org.opennms.report.availability.Categories();
@@ -199,7 +200,7 @@ public class AvailabilityCalculator {
 
     }
 
-   public void writeXML() throws AvailabilityCalculationException {
+   public String writeXML() throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
@@ -216,6 +217,9 @@ public class AvailabilityCalculator {
             log.fatal("Unable to marshal report as XML");
             throw new AvailabilityCalculationException(e);
         }
+        
+        return m_outputFileName;
+        
     }
    
    public void writeXML(String outputFileName) throws AvailabilityCalculationException {
@@ -233,7 +237,10 @@ public class AvailabilityCalculator {
        }
    }
     
-    public void writeLocateableXML() throws AvailabilityCalculationException {
+   
+   
+   
+    public String writeLocateableXML() throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
@@ -259,6 +266,9 @@ public class AvailabilityCalculator {
             log.fatal("Unable to marshal report as XML");
             throw new AvailabilityCalculationException(e);
         }
+        
+        return m_outputFileName;
+        
     }
 
     public void marshal(File outputFile)

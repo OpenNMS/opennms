@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -37,11 +37,9 @@ package org.opennms.netmgt.dao.castor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
-
 import org.junit.Test;
-import org.opennms.test.ConfigurationTestUtils;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class DefaultOnmsDatabaseReportDaoTest {
     
@@ -49,21 +47,22 @@ public class DefaultOnmsDatabaseReportDaoTest {
     private static final String TYPE = "calendar";
     private static final String SVG_TEMPLATE = "SVGAvailReport.xsl";
     private static final String PDF_TEMPLATE = "PDFAvailReport.xsl";
-    private static final String HTML_TEMPLATE = "AvailabilityReports.xsl";
+    private static final String HTML_TEMPLATE = "HTMLAvailReport.xsl";
+    private static final String LOGO = "logo.gif";
     
 
     @Test
     public void testGetType() throws Exception {
+        Resource resource = new ClassPathResource("/opennms-database-reports-testdata.xml");
         DefaultOnmsDatabaseReportConfigDao dao = new DefaultOnmsDatabaseReportConfigDao();
-        
-        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/opennms-database-reports.xml");
-        dao.setConfigResource(new InputStreamResource(in));
+        dao.setConfigResource(resource);
         dao.afterPropertiesSet();
         
         assertEquals(dao.getType(ID),TYPE);
         assertEquals(dao.getSvgStylesheetLocation(ID), SVG_TEMPLATE);
         assertEquals(dao.getPdfStylesheetLocation(ID), PDF_TEMPLATE);
         assertEquals(dao.getHtmlStylesheetLocation(ID), HTML_TEMPLATE);
+        assertEquals(dao.getLogo(ID), LOGO);
     }
 
 }

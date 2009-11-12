@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2009 Nov 12: Replace availability reports with database reports
 // 2009 Feb 27: Add substring match capability to resource graphs and ksc reports. ayres@opennms.org
 // 2007 Apr 10: Add a link to statistics reports. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -72,7 +73,7 @@
       <ul class="plain">
         <li><a href="graph/index.jsp">Resource Graphs</a></li>
         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
-        <li><a href="report/availability/index.htm">Availability</a></li>
+        <li><a href="report/database/index.htm">Database Reports</a></li>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
       </ul>
     </div>
@@ -105,7 +106,7 @@
           match on resource names.
       </p>
 
-      <p><b>Availability Reports</b> provide graphical or numeric
+      <p><b>Database Reports</b> provide graphical or numeric
           view of your service level metrics for the current
           month-to-date, previous month, and last twelve months by categories.
       </p>

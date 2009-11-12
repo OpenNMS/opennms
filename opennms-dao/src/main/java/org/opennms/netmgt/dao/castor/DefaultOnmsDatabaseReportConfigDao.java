@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -69,6 +69,14 @@ implements OnmsDatabaseReportConfigDao {
         Report report = getReport(id);
         if (report != null) {
             return report.getSvgTemplate();
+        }
+        return null;
+    }
+    
+    public String getLogo(String id) {
+        Report report = getReport(id);
+        if (report != null) {
+            return report.getLogo();
         }
         return null;
     }

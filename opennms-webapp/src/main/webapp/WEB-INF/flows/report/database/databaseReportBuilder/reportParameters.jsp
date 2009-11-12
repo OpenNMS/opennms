@@ -44,6 +44,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="enableSpringDojo" value="true" />
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -62,7 +63,15 @@
 		<c:forEach items="${criteria.dates}" var="date" varStatus="dateParmRow">
 			<tr>
 				<td><c:out value="${date.displayName}"/></td>
-				<td><form:input path="dates[${dateParmRow.index}].date" />(yyyy-MM-dd)</td>
+				<td>
+					<form:input path="dates[${dateParmRow.index}].date" />
+					<script type="text/javascript">
+						Spring.addDecoration(new Spring.ElementDecoration({
+						elementId : "dates${dateParmRow.index}.date",
+						widgetType : "dijit.form.DateTextBox",
+						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
+					</script>
+				</td>
 			</tr>
 		</c:forEach>
 		<%-- // category fields --%>
@@ -76,10 +85,6 @@
 				</td>
 			</tr>
 		</c:forEach>
-		<tr>
-			<td>logo</td>
-			<td><form:input path="logo" /></td>
-		</tr>
 	</table>
   
  	<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;

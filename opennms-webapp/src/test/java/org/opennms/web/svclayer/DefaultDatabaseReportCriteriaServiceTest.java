@@ -43,7 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.web.svclayer.support.DatabaseReportCriteria;
+import org.opennms.web.command.DatabaseReportCriteriaCommand;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportCriteriaService;
 import org.springframework.core.io.InputStreamResource;
 
@@ -74,9 +74,10 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testDatabaseReportService() throws Exception {
         
-        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID, "admin");
+        // FIXME this test is failing
         
-        assertEquals(criteria.getLogo(),"logo");
+        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID, "admin");
+        
         assertEquals(criteria.getDates().size(),1);
         assertEquals(criteria.getDates().get(0).getDisplayName(),DATE_DISPLAY_NAME);
         assertEquals(criteria.getDates().get(0).getName(),DATE_NAME);

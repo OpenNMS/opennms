@@ -47,6 +47,8 @@ import org.springframework.core.io.Resource;
 public interface ReportRenderer {
 
     public void render() throws ReportRenderException;
+    
+    public void render(String inputFileName, String outputFileName, Resource xlstResource) throws ReportRenderException;
 
     public void setOutputFileName(String outputFileName);
     

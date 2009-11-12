@@ -502,6 +502,9 @@
   
   <!-- Database Reports -->
   
+  <bean name="/report/database/index.htm"
+  		class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+  
   <bean name="/report/database/list.htm"
   		class="org.opennms.web.controller.DatabaseReportListController">
   	<property name="databaseReportListService" ref="databaseReportListService"/>
@@ -510,6 +513,16 @@
   
   <bean name="/report/database/databaseReportBuilder.htm" 
   		class="org.opennms.web.report.database.DatabaseReportBuilderFlowHander" />
+  		
+   <bean name="/report/database/manage.htm" 
+  		class="org.opennms.web.controller.ManageDatabaseReportController">
+    <property name="bindOnNewForm" value="true" />
+  	<property name="reportListService" ref="reportListService"/>
+    <property name="commandName" value="ManageAvailabilityReportCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
+    <property name="pageSize" value="10"/>
+    <property name="successView" value="redirect:/report/database/manage.htm" />
+  </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>

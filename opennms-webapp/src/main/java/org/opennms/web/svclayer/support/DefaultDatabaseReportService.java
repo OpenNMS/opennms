@@ -37,8 +37,10 @@ package org.opennms.web.svclayer.support;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
-import org.opennms.report.availability.AvailabilityReportRunner;
+import org.opennms.netmgt.model.DatabaseReportCategoryParm;
+import org.opennms.netmgt.model.DatabaseReportCriteria;
+import org.opennms.netmgt.model.DatabaseReportDateParm;
+import org.opennms.report.availability.svclayer.OnmsDatabaseReportService;
 import org.opennms.web.svclayer.DatabaseReportService;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.webflow.execution.RequestContext;
@@ -47,7 +49,7 @@ import org.springframework.webflow.execution.RequestContext;
  * @author user
  *
  */
-public class OnmsDatabaseReportService implements DatabaseReportService {
+public class DefaultDatabaseReportService implements DatabaseReportService {
     
     private static final String DATE_NAME = "endDate";
     private static final String CATEGORY_NAME = "reportCategory";
@@ -59,9 +61,7 @@ public class OnmsDatabaseReportService implements DatabaseReportService {
     private static final String DATE_ERROR = 
         "Report definition must have only one date parameter, with name " + DATE_NAME;
     
-    AvailabilityReportRunner m_reportRunner;
-    
-    OnmsDatabaseReportConfigDao m_onmsDatabaseReportConfigDao;
+    OnmsDatabaseReportService m_reportRunner;
 
     /* (non-Javadoc)
      * @see org.opennms.web.svclayer.DatabaseReportService#execute(org.opennms.web.svclayer.support.DatabaseReportCriteria)
@@ -69,23 +69,19 @@ public class OnmsDatabaseReportService implements DatabaseReportService {
     public String execute(DatabaseReportCriteria criteria, RequestContext context) {
         
         List <DatabaseReportCategoryParm> categories = criteria.getCategories();
-        if ((categories.size() != 1) || (!categories.get(0).m_name.equals(CATEGORY_NAME))) {
+        if ((categories.size() != 1) || (!categories.get(0).getName().equals(CATEGORY_NAME))) {
             context.getMessageContext().addMessage(new MessageBuilder().error()
                                                    .defaultText(CATEGORY_ERROR).build());
             return ERROR;
         } else {
-            m_reportRunner.setCategoryName(categories.get(0).getCategory());
             List <DatabaseReportDateParm> dates = criteria.getDates();
-            if ((dates.size() != 1) || (!dates.get(0).m_name.equals(DATE_NAME))) {
+            if ((dates.size() != 1) || (!dates.get(0).getName().equals(DATE_NAME))) {
                 context.getMessageContext().addMessage(new MessageBuilder().error()
                                                        .defaultText(DATE_ERROR).build());
                 return ERROR; 
             } else {
-                m_reportRunner.setPeriodEndDate(dates.get(0).getDate());
-                m_reportRunner.setEmail(criteria.getMailTo());
-                m_reportRunner.setFormat(criteria.getMailFormat());
-                m_reportRunner.setLogo(criteria.getLogo());
-                m_reportRunner.setMonthFormat(m_onmsDatabaseReportConfigDao.getType(criteria.getReportId()));
+              
+                m_reportRunner.setCriteria(criteria);
                 new Thread(m_reportRunner).start();
                 return SUCCESS;
             }
@@ -93,14 +89,8 @@ public class OnmsDatabaseReportService implements DatabaseReportService {
         
     }
 
-    public void setReportRunner(AvailabilityReportRunner reportRunner) {
+    public void setReportRunner(OnmsDatabaseReportService reportRunner) {
         m_reportRunner = reportRunner;
-    }
-
-    public void setOnmsDatabaseReportConfigDao(OnmsDatabaseReportConfigDao onmsReportDao) {
-        m_onmsDatabaseReportConfigDao = onmsReportDao;
-    }
-    
-    
+    }    
 
 }
