@@ -88,6 +88,12 @@ INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager"
 # The user that OpenNMS needs to run as.
 RUNAS="root"
 
+# Maximum file Descriptors + 1to be setted by ulimit -n
+MAXIMUM_FILE_DESCRIPTORS=10240
+
+# maximum size of stack segment (in kbytes) to be setted by ulimit -s
+MAXIMUM_SIZE_STACK_SEGMENT=8192
+
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -428,8 +434,8 @@ else
 	exit 1
 fi
 
-ulimit -s 8192 > /dev/null 2>&1
-ulimit -n 10240 > /dev/null 2>&1
+ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
+ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
 if [ x"`uname`" = x"Darwin" ]; then
 	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
 		ulimit $flag unlimited >/dev/null 2>&1
