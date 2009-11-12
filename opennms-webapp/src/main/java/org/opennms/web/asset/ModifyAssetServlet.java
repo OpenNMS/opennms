@@ -40,6 +40,8 @@ package org.opennms.web.asset;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,11 +56,24 @@ import org.opennms.web.WebSecurityUtils;
 
 public class ModifyAssetServlet extends HttpServlet {
     private static final long serialVersionUID = 9203659232262966182L;
+    private static Set<String> s_allowHtmlFields;
     
     protected AssetModel model;
 
     public void init() throws ServletException {
         this.model = new AssetModel();
+        initAllowHtmlFields();
+    }
+    
+    private void initAllowHtmlFields() {
+        s_allowHtmlFields = new HashSet<String>();
+        String allowHtmlFieldNames = System.getProperty("opennms.assets.allowHtmlFields");
+        if (allowHtmlFieldNames == null)
+            return;
+        for (String fieldName : allowHtmlFieldNames.split("\\s*,\\s*")) {
+            s_allowHtmlFields.add(fieldName.toLowerCase());
+        }
+        
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -95,7 +110,11 @@ public class ModifyAssetServlet extends HttpServlet {
     }
 
     protected String getRequestParameter(final HttpServletRequest request, final String name) {
-        return WebSecurityUtils.sanitizeString(request.getParameter(name));
+        boolean allowHTML = false;
+        if (s_allowHtmlFields.contains(name.toLowerCase())) {
+            allowHTML = true;
+        }
+        return WebSecurityUtils.sanitizeString(request.getParameter(name), allowHTML);
     }
     
     protected Asset parms2Asset(HttpServletRequest request, int nodeId) {
