@@ -237,7 +237,8 @@ final public class LdapMonitor extends IPv4Monitor {
 
                     if (results != null && results.hasMore()) {
                         responseTime = tracker.elapsedTimeInMillis();
-                        log().debug("search yielded results");
+                        if (log().isDebugEnabled())
+                                log().debug("search yielded " + results.getCount() + " result(s)");
                         serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         log().debug("no results found from search");
@@ -258,7 +259,8 @@ final public class LdapMonitor extends IPv4Monitor {
 
                 try {
                     lc.disconnect();
-                    log().debug("disconected from LDAP server " + address + " on port ");
+                    if (log().isDebugEnabled())
+                            log().debug("disconected from LDAP server " + address + " on port " + ldapPort);
                 } catch (LDAPException e) {
                     log().debug(e);
                 }
