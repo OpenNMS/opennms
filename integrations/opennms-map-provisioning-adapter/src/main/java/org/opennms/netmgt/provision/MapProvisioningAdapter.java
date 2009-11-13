@@ -37,8 +37,8 @@ package org.opennms.netmgt.provision;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -46,9 +46,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.MapsAdapterConfig;
+import org.opennms.netmgt.config.MapsAdapterConfigFactory;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
@@ -61,7 +63,10 @@ import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -70,11 +75,12 @@ import org.springframework.util.Assert;
 
 
 /**
- * A Dynamic Map provisioning adapter for integration with OpenNMS Provisoning daemon API.
+ * A Dynamic Map provisioning adapter for integration with OpenNMS Provisioning daemon API.
  * 
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
  */
+@EventListener(name="MapsProvisioningAdapter")
 public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
     private class XY {
@@ -207,6 +213,34 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return ThreadCategory.getInstance(MapProvisioningAdapter.class);
     }
 
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadConfigEvent(Event event) {
+        if (isReloadConfigEventTarget(event)) {
+            LogUtils.debugf(this, "reloading the maps adapter configuration");
+            try {
+                MapsAdapterConfigFactory.reload();
+                reSyncMap();
+            } catch (Exception e) {
+                LogUtils.infof(this, e, "unable to reload maps adapter configuration");
+            }
+        }
+    }
+
+    private boolean isReloadConfigEventTarget(Event event) {
+        boolean isTarget = false;
+        
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond.MapProvisioningAdapter".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        
+        log().debug("isReloadConfigEventTarget: Provisiond.MapProvisioningAdapter was target of reload event: " + isTarget);
+        return isTarget;
+    }
 
     public String getName() {
         return ADAPTER_NAME;
