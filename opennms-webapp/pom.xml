@@ -329,6 +329,7 @@
       <artifactId>org.opennms.features.remote-poller</artifactId>
       <version>${pom.version}</version>
       <classifier>signed-jar-with-dependencies</classifier>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -369,7 +370,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-web</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

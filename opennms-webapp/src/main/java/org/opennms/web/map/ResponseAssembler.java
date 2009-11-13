@@ -84,7 +84,8 @@ public class ResponseAssembler {
 					response += "&" + vl.getFirst().getId()
 					+ vl.getFirst().getType() + "+"
 					+ vl.getSecond().getId()
-					+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
+					+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+					+ "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();
 			}
 		} 
 		log.debug("getRefreshResponse: String assembled: "+response);
@@ -110,7 +111,7 @@ public class ResponseAssembler {
 			response += "&" + ve.getId() + ve.getType() + "+"
 			+ ve.getIcon() + "+" + ve.getLabel();
 			response += "+" + ve.getRtc() + "+"
-			+ ve.getStatus() + "+" + ve.getSeverity();
+			+ ve.getStatus() + "+" + ve.getSeverity() + "+" + "ADDED";
 		}
 		
 		// add String to return containing Links
@@ -121,8 +122,9 @@ public class ResponseAssembler {
 				response += "&" + vl.getFirst().getId()
 						+ vl.getFirst().getType() + "+"
 						+ vl.getSecond().getId()
-						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
-			}
+	                    + vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
+				}
 		}		
 		log.debug("getAddMapsResponse: String assembled: "+response);
 		return response;		
@@ -151,7 +153,7 @@ public class ResponseAssembler {
 			response += "&" + ve.getId() + ve.getType() + "+"
 			+ ve.getIcon() + "+" + ve.getLabel();
 			response += "+" + ve.getRtc() + "+"
-			+ ve.getStatus() + "+" + ve.getSeverity();
+			+ ve.getStatus() + "+" + ve.getSeverity() + "+"+"ADDED";
 		}
 		
 		// add String to return containing Links
@@ -162,8 +164,9 @@ public class ResponseAssembler {
 				response += "&" + vl.getFirst().getId()
 						+ vl.getFirst().getType() + "+"
 						+ vl.getSecond().getId()
-						+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString();
-			}
+	                    + vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
+				}
 		}		
 		log.debug("getAddElementResponse: String assembled: "+response);
 		return response;
@@ -189,7 +192,7 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
-	protected static String getSaveMapResponse(String action,VMap map, String currPacket, String totalPackets){
+	protected static String getSaveMapResponse(String action,VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
 		SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
@@ -209,11 +212,11 @@ public class ResponseAssembler {
 				.getCreateTime()) : "")
 		+ "+"
 		+ ((map.getLastModifiedTime() != null) ? formatter
-				.format(map.getLastModifiedTime()) : "") + "+"
-		+ currPacket + "+" + totalPackets;
+				.format(map.getLastModifiedTime()) : "");
 		log.debug("getSaveMapResponse: String assembled: "+strToSend);
 	 return strToSend;
 	}
+	
 	protected static String getMapResponse(String action, VMap map, float widthFactor, float heightFactor,boolean sendElements) {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -241,7 +244,7 @@ public class ResponseAssembler {
 			strToSend +="+" + role + "+"
 				+ map.getName() + "+" + map.getOwner() + "+"
 				+ map.getUserLastModifies() + "+" + createTime
-				+ "+" + lastModTime;
+				+ "+" + lastModTime+ "+" + map.getType();
 				
 			VElement[] elems = map.getAllElements();
 			if (elems != null) {
@@ -267,7 +270,8 @@ public class ResponseAssembler {
 							+ links[i].getSecond().getId()
 							+ links[i].getSecond().getType()+ "+"
 							+links[i].getLinkTypeId() + "+"
-							+links[i].getLinkStatusString();
+							+links[i].getLinkStatusString()+"+"
+							+ links[i].getFirstNodeid()+"+"+links[i].getSecondNodeid();         
 				}
 			}	
 		} else {

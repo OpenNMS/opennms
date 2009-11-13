@@ -128,6 +128,8 @@ public class OnmsRestService {
 		        m_offset = offset;
 		    }
 		}
+		
+		
 	}
 
 	/**
@@ -351,7 +353,7 @@ public class OnmsRestService {
                                    )
                                )
                            );
-        System.out.println("\nm_offest: " + m_offset + "\n");
+        System.out.println("\n****m_offest: " + m_offset + "****\n");
         OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
         for (Order o : m_ordering) {
@@ -361,7 +363,6 @@ public class OnmsRestService {
             rootCriteria.setMaxResults(m_limit);
         }
         if (m_offset != null) {
-            System.out.println("\nadding m_offest: " + m_offset + "\n");
             rootCriteria.setFirstResult(m_offset);
         }
         return rootCriteria;

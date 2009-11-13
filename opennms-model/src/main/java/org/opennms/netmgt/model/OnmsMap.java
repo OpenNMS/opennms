@@ -65,6 +65,7 @@ public class OnmsMap implements Serializable {
 
     public static final String AUTOMATICALLY_GENERATED_MAP = "A";
 
+    public static final String AUTOMATIC_SAVED_MAP = "S";
     public static final String DELETED_MAP = "D"; //for future use
 
     public static final String ACCESS_MODE_ADMIN = "RW";
@@ -103,10 +104,8 @@ public class OnmsMap implements Serializable {
 
     private Set<OnmsMapElement> mapElements = new LinkedHashSet<OnmsMapElement>();
 
-    private boolean isNew = false;
 
     public OnmsMap() {
-        this.isNew = true;
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
     }
@@ -118,6 +117,7 @@ public class OnmsMap implements Serializable {
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
         this.accessMode = ACCESS_MODE_USER;
+        this.type=OnmsMap.USER_GENERATED_MAP;
         this.width = 800;
         this.height = 600;
     }
@@ -129,6 +129,7 @@ public class OnmsMap implements Serializable {
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
         this.accessMode = ACCESS_MODE_USER;
+        this.type=OnmsMap.USER_GENERATED_MAP;
         this.width = width;
         this.height = height;
     }
@@ -140,6 +141,7 @@ public class OnmsMap implements Serializable {
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
         setAccessMode(accessMode);
+        this.type=OnmsMap.USER_GENERATED_MAP;
         this.width = width;
         this.height = height;
     }
@@ -155,7 +157,7 @@ public class OnmsMap implements Serializable {
         this.createTime = new Date();
         this.lastModifiedTime = new Date();
         setAccessMode(accessMode);
-        this.type = type;
+        setType(type);
         this.width = width;
         this.height = height;
     }
@@ -289,7 +291,12 @@ public class OnmsMap implements Serializable {
     }
 
     public void setType(String type) {
-        this.type = type;
+        if (type.equalsIgnoreCase(OnmsMap.AUTOMATICALLY_GENERATED_MAP))
+            this.type = OnmsMap.AUTOMATICALLY_GENERATED_MAP;
+        else if (type.equalsIgnoreCase(OnmsMap.AUTOMATIC_SAVED_MAP))
+            this.type = OnmsMap.AUTOMATIC_SAVED_MAP;
+        else
+            this.type = OnmsMap.USER_GENERATED_MAP;
     }
 
     @Column(name = "mapWidth")
@@ -309,16 +316,6 @@ public class OnmsMap implements Serializable {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    @XmlTransient
-    @Transient
-    public boolean isNew() {
-        return isNew;
-    }
-
-    public void setNew(boolean aNew) {
-        isNew = aNew;
     }
 
     @XmlTransient

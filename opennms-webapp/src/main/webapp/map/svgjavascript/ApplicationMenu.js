@@ -168,6 +168,14 @@ function instantiateNodeGroup() {
 	nodeMenu.addElement(id, "Set Icon", menuDeltaX,8*menuDeltaY,menuWidth,menuHeight, addIconList,null);
 	id = "DelNode";
 	nodeMenu.addElement(id, "Delete", menuDeltaX,9*menuDeltaY,menuWidth,menuHeight, deleteMapElementList,null);
+	if (hasHideNodes) {
+		id = "AddHidesNodes";
+		nodeMenu.addElement(id, "Add Hidden Nodes", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideNodes,null);
+	}
+	if (hasHideMaps) {
+		id = "AddHidesMaps";
+		nodeMenu.addElement(id, "Add Hidden Maps", menuDeltaX,10*menuDeltaY,menuWidth,menuHeight, addHideMaps,null);
+	}
 }
 
 function instantiateViewGroup() {
@@ -212,11 +220,33 @@ function addMapsList()
 	clearDownInfo();
 	hidePickColor();
 	resetFlags();
-	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterSelectionList);
+	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
+	selMaps.selectElementByPosition(1, true);
 	button1  = new button("button1","maps",openMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
 
+function filterSelectionList(textboxId,value,changeType) {
+		if (changeType == "change") {
+			var elementInList = mapLabels.length;
+			for(var k=1;k<mapLabels.length;k++) {
+				var mapLabel = mapLabels[k];
+				var match = mapLabel.indexOf(value);
+				if  ( match == -1 ) {
+					elementInList--;
+					if (selMaps.elementExists(mapLabel) >= 0) 
+						selMaps.deleteElement(mapLabel);
+				} else if (selMaps.elementExists(mapLabel) == -1 && match >= 0) {
+					selMaps.addElementAtPosition(mapLabel,k);
+				}
+			}
+			if (elementInList > 1 )
+				selMaps.selectElementByPosition(1,true);
+			else 
+				selMaps.selectElementByPosition(0,false);
+		}
+}
 // This function is called by open map and add map as node!
 function mapsResult() { }
 
@@ -266,16 +296,27 @@ function closeSetUp() {
 // Rename Map
 function addRenameMapBox(){
 	closeAllMenu();
-	if(currentMapId!=MAP_NOT_OPENED){
+	if(currentMapType == "U" && currentMapId!=MAP_NOT_OPENED){
 		clearTopInfo();
 		clearDownInfo();
 		hidePickColor();
 		resetFlags();
 
 		//first a few styling parameters:
-		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"[a-zA-Z0-9 ]",undefined);
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
- 	}else{
+ 	} else if (currentMapType == "A") {
+		alert('Cannot rename automatic map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED) {
+		clearTopInfo();
+		clearDownInfo();
+		hidePickColor();
+		resetFlags();
+
+		//first a few styling parameters:
+		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
+		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
+	}else{
 		alert('No maps opened');
     }
 }
@@ -299,16 +340,20 @@ function deleteMapSetUp() {
 	clearDownInfo();
 	hidePickColor();
 	resetFlags();
-	if(currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
+	if(currentMapType == "U" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP){
 	    if(confirm('Are you sure to delete the map?')==true){ 
 	 		disableMenu();
 			deleteMap();
-    	} else {
-    	return;
+    	}
+ 	} else if (currentMapType == "A") {
+		alert('Cannot delete automatic map');
+ 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP ) {
+	    if(confirm('Are you sure to delete static the map?')==true){ 
+	 		disableMenu();
+			deleteMap();
     	}
 	}else{
 		alert('No maps to delete found');
-		return;
     }	
 }
 
@@ -467,6 +512,33 @@ function refreshNodesSetUp() {
 }
 
 // *****************Functions Called by  Node Menu **********************
+// Add Hide Nodes function
+function addHideNodes()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	addMapElement(hideNodesIds);
+	hideNodesIds = "";
+	hasHideNodes = false;
+
+}
+
+//Add Hide Nodes function
+function addHideMaps()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	addMapAsNode(hideMapsIds);
+	hideMapsIds = "";
+	hasHideMaps = false;
+
+}
 // Add Node function
 function addMapElementList()
 {
@@ -480,7 +552,7 @@ function addMapElementList()
 	hidePickColor();
 	resetFlags();
 
-	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
+	selNodes = new selectionList("nodes","nodes",nodeLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
     selNodes.sortList("asc");    
 	button1  = new button("button1","nodes",addMapElementSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
@@ -498,10 +570,10 @@ function addMapElementSetUp() {
 	if(selectedMapElemInList==0 ){
 		return;
 	}
-	addMapElement(nodeSortAss[selectedMapElemInList].id);	
-	clearTopInfo();
+	
 	clearDownInfo();
 	disableMenu();
+	addMapElement(nodeSortAss[selectedMapElemInList].getId());	
 }
 
 // Add Node by Category
@@ -531,10 +603,10 @@ function addNodesByCategorySetUp() {
 	if(selectedCategoryInList==0 )  {
 		return;
 	}
-	addNodesByCategory(categorySortAss[selectedCategoryInList]);	
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addNodesByCategory(categorySortAss[selectedCategoryInList]);	
 }
 
 // Add node using nodelabel
@@ -560,10 +632,10 @@ function addNodesByLabelSetUp() {
 		alert('Invalid Label (must not be blank)');
 		return;
 	}
-	addNodesByLabel(label);
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addNodesByLabel(label);
 }
 
 
@@ -590,10 +662,10 @@ function addRangeOfNodesSetUp() {
 		alert('Range not valid!');
 		return;
 	}
-	addRangeOfNodes(range);
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addRangeOfNodes(range);
 }
 
 // Add Map using neighbor
@@ -639,7 +711,7 @@ function addMapElementNeighList()
 	hidePickColor();
 	resetFlags();
 	
-	selNodes = new selectionList("nodes","nodes",nodes,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
+	selNodes = new selectionList("nodes","nodes",nodeLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
 	selNodes.sortList("asc");
 	button1  = new button("button1","nodes",addMapElementWithNeighborsSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);	
 }
@@ -648,10 +720,9 @@ function addMapElementWithNeighborsSetUp() {
 	if(selectedMapElemInList==0 )  {
 		return;
 	}
-	addMapElementWithNeighbors(nodeSortAss[selectedMapElemInList].id);
-	clearTopInfo();
 	clearDownInfo();
 	disableMenu();		
+	addMapElementWithNeighbors(nodeSortAss[selectedMapElemInList].id);
 }
 
 // Add Map as a Node Functions
@@ -667,7 +738,7 @@ function addMapAsNodeList(){
 	hidePickColor();
 	resetFlags();
 
-	selMaps = new selectionList("maps","maps",maps,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
+	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
 	button1  = new button("button1","maps",addMapAsNodeSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
@@ -682,11 +753,10 @@ function addMapAsNodeSetUp() {
 		writeDownInfo("Cannot add map to itself");		
 		return;
 	}
-	addMapAsNode(mapId);
-
 	clearTopInfo();
 	clearDownInfo();
 	disableMenu();
+	addMapAsNode(mapId);
 }
 
 // Add icons List function
@@ -1055,6 +1125,23 @@ function showMapInfo(){
 
 function writeMapInfo(){
 	clearMapInfo();
+	var hasHideText = '';
+	if (hasHideNodes && hasHideMaps) {
+		hasHideText = ' : map has hidden Nodes and Maps';
+	} else if (hasHideNodes) {
+		hasHideText = ' : map has hidden Nodes';
+	} else if (hasHideMaps) {
+		hasHideText = ' : map has hidden Maps';		
+	}
+	var mapType="Unknown";
+	
+	if (currentMapType == "U") {
+		mapType="User";
+	} else if (currentMapType == "A") {
+		mapType="Automatic"
+	}  else if (currentMapType == "S") {
+		mapType="Static"
+	}
 	var mapInfo= document.getElementById("MapInfo");
 	
 	var tspan = document.createElementNS(svgNS,"tspan");
@@ -1063,13 +1150,13 @@ function writeMapInfo(){
 	tspan.setAttributeNS(null, "id","MapInfoTitle");
 	tspan.setAttributeNS(null, "font-size",titleFontSize);
 	
-	var tspanContent = document.createTextNode("Map Info");
+	var tspanContent = document.createTextNode("Map Info"+hasHideText);
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","25");
+	tspan.setAttributeNS(null, "dy","20");
 	tspan.setAttributeNS(null, "id","mapName");
 	
 	var tspanContent = document.createTextNode("Name: "+currentMapName+" ");
@@ -1078,7 +1165,7 @@ function writeMapInfo(){
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapOwner");
 	
 	var tspanContent = document.createTextNode("Owner: "+currentMapOwner+" ");
@@ -1087,7 +1174,7 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapUserLast");
 	
 	var tspanContent = document.createTextNode("User last modified: "+currentMapUserlast+" ");
@@ -1096,7 +1183,7 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","22");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapCreateTime");
 	
 	var tspanContent = document.createTextNode("Create time: "+currentMapCreatetime+" ");
@@ -1105,13 +1192,22 @@ function writeMapInfo(){
 	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","25");
+	tspan.setAttributeNS(null, "dy","15");
 	tspan.setAttributeNS(null, "id","mapLastModTime");
 	
 	var tspanContent = document.createTextNode("Last modified time: "+currentMapLastmodtime+" ");
 	tspan.appendChild(tspanContent);
 	mapInfo.appendChild(tspan);
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "id","mapType");
 	
+	var tspanContent = document.createTextNode("Map Type: "+mapType+" ");
+	tspan.appendChild(tspanContent);
+	mapInfo.appendChild(tspan);
+
 	mapInfo.setAttributeNS(null,'display', 'inline');
 }
 
@@ -1135,6 +1231,9 @@ function clearMapInfo(){
    var mapLastModTimeNode=document.getElementById("mapLastModTime");
    if(mapLastModTimeNode!=null)
            mapLastModTimeNode.parentNode.removeChild(mapLastModTimeNode);          
+   var mapType=document.getElementById("mapType");
+   if(mapType!=null)
+       mapType.parentNode.removeChild(mapType);          
 }
 
 //Assert loading..
@@ -1398,3 +1497,142 @@ function showPickColor() {
 	add_pick_color("pickColor");
 	document.getElementById("pickColor").setAttributeNS(null,'display', 'inline');
 }
+
+function getInfoOnMapElement(mapElement)
+{
+
+    //var severityColor=getSeverityColor(mapElement.getSeverity())
+	var severityColor='black';
+    var severityLabel = SEVERITIES_LABEL[mapElement.getSeverity()];
+
+    //var statusColor=getStatusColor(mapElement.getStatus());
+	var statusColor='black'
+	var status = STATUSES_TEXT[mapElement.getStatus()];
+	
+	var avail=mapElement.getAvail();
+	var availColor='black';
+	//var availColor = getAvailColor(avail);
+
+
+
+	if(avail<0){
+		avail="Unknown";
+	}else{	
+		avail = (""+avail).substring(0,6)+"%";
+	}
+
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	
+	var textLabel = document.createTextNode("Map Element info");
+	text.appendChild(textLabel);
+	
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	
+	var tspanContent = document.createTextNode(mapElement.getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+
+	if(mapElement.isMap()){
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode("Id: "+ mapElement.getMapId() + "  (Map)");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);
+	}
+
+	if(mapElement.isNode()){
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspan.setAttributeNS(null, "id","TopInfoLabelText");
+		tspanContent = document.createTextNode("Id: "+ mapElement.getNodeId() + "  (Node)");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",statusColor);
+	tspanContent = document.createTextNode("Status: " + status);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+		
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",availColor);
+	tspanContent = document.createTextNode("Availability: " + avail );
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",severityColor);
+	tspanContent = document.createTextNode("Severity: " + severityLabel );
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);		
+
+	// get info 	
+	return text;
+}
+
+function getInfoOnLink(link) 
+{
+	//var statusColor = LINKSTATUS_COLOR[link.getStatus()];
+	var statusColor = 'black';
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var textLabel = document.createTextNode("Link info");
+	text.appendChild(textLabel);
+	
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	var tspanContent = document.createTextNode(" From: " + nodeidSortAss[link.getFirstNodeId()].getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode("    To: " + nodeidSortAss[link.getSecondNodeId()].getLabel());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspan.setAttributeNS(null, "fill",statusColor);
+	tspanContent = document.createTextNode(" Status: "+link.getStatus());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[link.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[link.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+	
+	return text;
+}
+
