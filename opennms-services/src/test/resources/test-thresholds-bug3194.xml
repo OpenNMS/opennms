@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp"
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="100" rearm="90" trigger="1"/>
+        </group>
+
+</thresholding-config>
