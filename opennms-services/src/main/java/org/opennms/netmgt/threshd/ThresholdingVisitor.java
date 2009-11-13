@@ -35,6 +35,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.lang.Math;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -498,7 +499,22 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         if (last == null) {
             return Double.NaN;
         }
-        return (current - last)/m_interval; // Treat counter as rates
+        Double delta = current.doubleValue() - last.doubleValue();
+        // wrapped counter handling(negative delta), rrd style
+        if (delta < 0) {
+            double newDelta = delta.doubleValue();
+            // 2-phase adjustment method
+            // try 32-bit adjustment
+            newDelta += Math.pow(2, 32);
+            if (newDelta < 0) {
+                // try 64-bit adjustment
+                newDelta += Math.pow(2, 64) - Math.pow(2, 32);
+            }
+            log().info("getValue: " + id + "(counter) wrapped counter adjusted last=" + last + ", current="
+                        + current + ", olddelta=" + delta + ", newdelta=" + newDelta);
+            delta = newDelta;
+        }
+        return delta/m_interval; // Treat counter as rates
     }
 
     private void thresholdingFinished(boolean success) {
