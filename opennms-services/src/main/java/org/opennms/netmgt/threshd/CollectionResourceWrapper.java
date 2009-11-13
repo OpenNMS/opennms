@@ -28,7 +28,7 @@ public class CollectionResourceWrapper {
     /*
      * Holds last values for counter attributes (in order to calculate delta)
      */
-    static private Map<String, Double> s_cache = new ConcurrentHashMap<String,Double>();
+    static Map<String, Double> s_cache = new ConcurrentHashMap<String,Double>();
     
     /*
      * To avoid update static cache on every call of getAttributeValue.
@@ -46,7 +46,7 @@ public class CollectionResourceWrapper {
      * Holds collection interval step. Counter attributes values must be returned as rates.
      */
     private long m_interval;
-    
+        
     public CollectionResourceWrapper(long interval, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
         m_interval = interval;
         m_nodeId = nodeId;
@@ -161,7 +161,7 @@ public class CollectionResourceWrapper {
         Double current = Double.parseDouble(numValue);
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
             if (log().isDebugEnabled()) {
-                log().debug("getAttributeValue: " + id + "(gauge) value= " + current);
+                log().debug("getAttributeValue: id=" + id + ", value= " + current);
             }
             return current;
         }
@@ -175,17 +175,28 @@ public class CollectionResourceWrapper {
         if (m_localCache.containsKey(id) == false) {
             Double last = s_cache.get(id);
             if (log().isDebugEnabled()) {
-                log().debug("getCounterValue: " + id + "(counter) last=" + last + ", current=" + current);
+                log().debug("getCounterValue: id=" + id + ", last=" + last + ", current=" + current);
             }
             s_cache.put(id, current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
                 log().info("getCounterValue: unknown last value, ignoring current");
-            } else if (current < last) {
-                log().info("getCounterValue: counter reset detected, ignoring value");
-                m_localCache.put(id, Double.NaN);
-            } else {
-                m_localCache.put(id, current - last);
+            } else {                
+                Double delta = current.doubleValue() - last.doubleValue();
+                // wrapped counter handling(negative delta), rrd style
+                if (delta < 0) {
+                    double newDelta = delta.doubleValue();
+                    // 2-phase adjustment method
+                    // try 32-bit adjustment
+                    newDelta += Math.pow(2, 32);
+                    if (newDelta < 0) {
+                        // try 64-bit adjustment
+                        newDelta += Math.pow(2, 64) - Math.pow(2, 32);
+                    }
+                    log().info("getCounterValue: " + id + "(counter) wrapped counter adjusted last=" + last + ", current=" + current + ", olddelta=" + delta + ", newdelta=" + newDelta);
+                    delta = newDelta;
+                }
+                m_localCache.put(id, delta);
             }
         }
         return m_localCache.get(id) / m_interval;
