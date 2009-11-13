@@ -282,7 +282,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 features/remote-poller/target/*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 features/remote-poller/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
@@ -355,6 +355,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-xsds.jar
 
 # config files, this should be more automated  :P
 cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
+cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
 cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   $RPM_BUILD_ROOT%{instprefix}/etc/
 
 %clean
@@ -406,6 +407,7 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-provisioning-link
 %attr(664,root,root) %{instprefix}/lib/opennms-link-provisioning-adapter*.jar
 %attr(664,root,root) %{instprefix}/etc/link-adapter-configuration.xml
+%attr(664,root,root) %{instprefix}/etc/endpoint-configuration.xml
 
 %files plugin-provisioning-map
 %attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar

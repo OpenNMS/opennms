@@ -101,11 +101,9 @@ Map.prototype.setBG = function() {
 
 Map.prototype.resetBackground = function() {
 	this.rect.setAttributeNS(null,"fill", this.defaultbackgroundcolor);
-	if (!this.backgroundiscolor) {
-		this.image.setAttributeNS(null,"display", "none");	
-		this.rect.setAttributeNS(null,"display", "inline");
-		this.backgroundiscolor = true;
-	}
+	this.image.setAttributeNS(null,"display", "none");	
+	this.rect.setAttributeNS(null,"display", "inline");
+	this.backgroundiscolor = true;
 }
 
 Map.prototype.setBackgroundColor = function(color){
@@ -252,7 +250,7 @@ Map.prototype.deleteLinksOnElement = function(id)
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_array, flash, deltaLink)
+Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeid1,nodeid2)
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]==null){
@@ -293,9 +291,9 @@ Map.prototype.addLink = function(id1, id2, typology, stroke, stroke_width, dash_
 		}
 
 
-		var link = new Link(id, typology, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink);
-
-
+		var link = new Link(id, typology, status, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
+//		alert("first: "+first.getLabel()+" nodeid1:" + nodeid1 +"---second: " + second.getLabel() + "nodeid2:" + nodeid2);
+		
 		this.mapLinks[id] = link;
 		this.mapLinkSize++;
 		linkAdded = true;
@@ -362,10 +360,10 @@ Map.prototype.render = function()
 	
 	this.setBG();
     
-	for ( var elemToRender in this.mapElements) //render mapElement
-		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 	for (var linkToRender in this.mapLinks) //render links
 		this.svgNode.appendChild(this.mapLinks[linkToRender].getSvgNode());
+	for ( var elemToRender in this.mapElements) //render mapElement
+		this.svgNode.appendChild(this.mapElements[elemToRender].getSvgNode());
 }
 
 // delete all nodes and links from map view

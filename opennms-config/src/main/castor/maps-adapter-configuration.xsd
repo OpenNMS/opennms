@@ -35,6 +35,12 @@
         </annotation>
       </attribute>
 
+      <attribute name="operation-number-before-sync" type="int" use="required">
+        <annotation>
+          <documentation>The number of update/delete/add operations before running a map sync.</documentation>
+        </annotation>
+      </attribute>
+
     </complexType>
   </element>
 

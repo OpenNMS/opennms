@@ -38,13 +38,19 @@ import java.util.Collection;
 
 public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
     public abstract Collection<OnmsMapElement> findAll(Integer offset, Integer limit);
-    public abstract OnmsMapElement findMapElementById(int id);
-    public abstract OnmsMapElement findMapElement(int elementId, String type, OnmsMap map);
-    public abstract Collection<OnmsMapElement> findMapElementsByMapId(OnmsMap map);
+    public abstract OnmsMapElement findElementById(int id);
+    public abstract OnmsMapElement findElement(int elementId, String type, OnmsMap map);
+    public abstract Collection<OnmsMapElement> findElementsByMapId(OnmsMap map);
+    public abstract Collection<OnmsMapElement> findElementsByNodeId(int nodeId);
+    public abstract Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
+    public abstract Collection<OnmsMapElement> findElementsByMapIdAndType(int mapId, String type);
+    public abstract Collection<OnmsMapElement> findElementsByType(String type);
     public abstract void deleteElementsByMapId(OnmsMap map);
+    public abstract Collection<OnmsMapElement> findMapElementsOnMap(int mapId);
+    public abstract Collection<OnmsMapElement> findNodeElementsOnMap(int mapId);
+    public abstract void deleteElementsByNodeid(int nodeId);
     public abstract void deleteElementsByType(String type);
     public abstract void deleteElementsByElementIdAndType(int elementId, String type);
-    public abstract Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
-    public abstract Collection<OnmsMapElement> findElementsByType(String type);
-
+    public abstract void deleteElementsByMapType(String mapType);
+    public abstract int countElementsOnMap(int mapid);
 }

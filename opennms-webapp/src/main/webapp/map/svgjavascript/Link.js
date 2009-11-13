@@ -3,22 +3,30 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink)
+function Link(id, typology, status, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
 {
-	if (arguments.length >= 6) {
+	if (arguments.length >= 8) {
 		var idSplitted = id.split("-");
 		
 		if(mapElement1.id==idSplitted[1]){
 			var tmp = mapElement1;
 			mapElement1=mapElement2;
 			mapElement2=tmp;
+			tmp = nodeid1;
+			nodeid1 = nodeid2;
+			nodeid2 = tmp;
 		}
 		
 		this.typology=typology;
+		this.status=status;
 		this.animateTag = null;
 		this.id = id;
+		
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
+		
+		this.nodeid1=nodeid1;
+		this.nodeid2=nodeid2;
 
 //		var heightCapacity=this.mapElement1.height/deltaLink;		
 //		var widthCapacity=this.mapElement1.width/deltaLink;		
@@ -55,8 +63,8 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 		this.svgNode.setAttributeNS(null,"stroke-dasharray", dash_array);
 	}
 	this.svgNode.setAttributeNS(null,"style", "z-index:0");
+	this.svgNode.setAttributeNS(null,"cursor", "pointer");
 	this.svgNode.addEventListener("click", this.onClick, false);
-
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "stroke");	
 	this.animateTag.setAttributeNS(null,"from", stroke);	
@@ -70,8 +78,24 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 		this.setFlash(true);
 }
 
+Link.prototype.getId = function() {
+	return this.id;
+}
+
+Link.prototype.getMapElement1 = function() {
+	return this.mapElement1;
+}
+
+Link.prototype.getMapElement2 = function() {
+	return this.mapElement2;
+}
+
 Link.prototype.getTypology = function() {
 	return this.typology;
+}
+
+Link.prototype.getStatus = function() {
+	return this.status;
 }
 
 Link.prototype.getStroke = function() {
@@ -120,6 +144,16 @@ Link.prototype.getSecondElementId = function()
      return ids[1];
 }
 
+Link.prototype.getFirstNodeId = function()
+{
+	return this.nodeid1;
+}
+
+Link.prototype.getSecondNodeId = function()
+{
+	return this.nodeid2;
+}
+
 // update link
 Link.prototype.update = function()
 {
@@ -133,47 +167,6 @@ Link.prototype.update = function()
 	this.svgNode.setAttributeNS(null,"x2", x2);	
 	this.svgNode.setAttributeNS(null,"y1", y1);
 	this.svgNode.setAttributeNS(null,"y2", y2);	
-}
-
-Link.prototype.getInfo = function(evt)
-{
-	var text = document.createElementNS(svgNS,"text");
-	text.setAttributeNS(null, "x","3");
-	text.setAttributeNS(null, "dy","15");
-	text.setAttributeNS(null, "id","topInfoTextTitle");
-	text.setAttributeNS(null, "font-size",titleFontSize);
-	
-	var textLabel = document.createTextNode("Link info");
-	text.appendChild(textLabel);
-	
-	var tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","30");
-	var tspanContent = document.createTextNode(" links: " + this.mapElement1.label.text);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode("    to: "+this.mapElement2.label.text);
-	tspan.appendChild(tspanContent);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode(" type: "+LINK_TEXT[this.typology]);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","10");
-	tspanContent = document.createTextNode(" speed: "+LINK_SPEED[this.typology]);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-	
-	return text;
 }
 
 /*
@@ -196,4 +189,3 @@ Link.prototype.onRepeat = function(evt)
 }
 
 Link.prototype.onClick = onMouseDownOnLink;
-Link.prototype.onMouseUp = onMouseUp;

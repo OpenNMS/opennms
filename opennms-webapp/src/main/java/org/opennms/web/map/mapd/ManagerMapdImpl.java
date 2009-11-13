@@ -324,4 +324,10 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
+    public VElement getElement(int mapId, int elementId, String type)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
