@@ -43,6 +43,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -1277,7 +1278,24 @@ public class Application implements EntryPoint {
     }
 
     private void handleUnexpectedException(final Throwable e, Listener<MessageBoxEvent> listener) {
-        MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + e.getMessage(), listener);
+        String errorMessage = "";
+        // GWT throws this exception if an HTTP or connectivity problem occurs
+        if (e instanceof StatusCodeException) {
+            int statusCode = ((StatusCodeException)e).getStatusCode();
+            switch (statusCode) {
+            case (0):
+                errorMessage = "Could not connect to server.";
+                break;
+            default:
+                errorMessage = "HTTP error code: " + statusCode;
+            }
+        } else {
+            errorMessage = e.getMessage();
+            if (errorMessage == null || "".equals(errorMessage.trim())) {
+                errorMessage = e.toString();
+            }
+        }
+        MessageBox.alert("Unexpected Error", "An unexpected error occurred: " + errorMessage, listener);
     }
 
     private void handleUnexpectedExceptionInPanel(final Throwable e, final ContentPanel panel) {
