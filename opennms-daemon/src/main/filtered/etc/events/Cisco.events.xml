@@ -14704,33 +14704,6 @@ Up.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Cisco MIB: CISCO-ES-STACK-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.9.%</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Cisco/traps/EnterpriseDefault</uei>
- <event-label>OpenNMS-defined trap event: Cisco EnterpriseDefault</event-label>
- <descr>
- &lt;p&gt;This is the default event format used when an
- enterprise specific event (trap) is received from a Cisco device for which no
- format has been configured (i.e. no event definition
- exists).&lt;/p&gt;
- </descr>
- <logmsg dest='logndisplay'>
- Received unformatted enterprise event (enterprise:%id% generic:%generic%
- specific:%specific%). %parm[##]%
- args: %parm[all]%
- </logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of Cisco Traps -->
     <event>
         <mask>
   	    <maskelement>
@@ -14774,4 +14747,31 @@ Up.&lt;/p&gt;</logmsg>
         <severity>Cleared</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-uei="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down"  clear-key="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
     </event>
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.9.%</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/vendor/Cisco/traps/EnterpriseDefault</uei>
+ <event-label>OpenNMS-defined trap event: Cisco EnterpriseDefault</event-label>
+ <descr>
+ &lt;p&gt;This is the default event format used when an
+ enterprise specific event (trap) is received from a Cisco device for which no
+ format has been configured (i.e. no event definition
+ exists).&lt;/p&gt;
+ </descr>
+ <logmsg dest='logndisplay'>
+ Received unformatted enterprise event (enterprise:%id% generic:%generic%
+ specific:%specific%). %parm[##]%
+ args: %parm[all]%
+ </logmsg>
+ <severity>Indeterminate</severity>
+</event>
+<!-- End of Cisco Traps -->
 </events>
