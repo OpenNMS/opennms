@@ -154,8 +154,7 @@ The error message is: %parm[#7]%.
         <uei>uei.opennms.org/standard/netsnmp/traps/procTableAlertFalling</uei>
         <event-label>NET-SNMP: A procTable Falling Alert has been generated.</event-label>
         <descr>
-&lt;p&gt;The Net-SNMP agent has detected an error with the %parm[#6]% process.
-The error message is: %parm[#7]%.
+&lt;p&gt;The Net-SNMP agent has detected that errors with the %parm[#6]% process are now resolved.
 &lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
