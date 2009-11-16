@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * GWT asynchronous RPC facade for an {@link InstallService} GWT service.
+ */
 public interface InstallServiceAsync {
 	public void checkOwnershipFileExists(AsyncCallback<Boolean> callback);
 	public void getOwnershipFilename(AsyncCallback<String> callback);

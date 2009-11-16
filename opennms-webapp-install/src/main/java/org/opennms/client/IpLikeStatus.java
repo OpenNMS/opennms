@@ -1,5 +1,8 @@
 package org.opennms.client;
 
+/**
+ * Contains possible states of the <code>iplike</code> database function.
+ */
 public enum IpLikeStatus {
     /**
      * <code>iplike</code> could not be found in a usable state in the database.

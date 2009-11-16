@@ -22,7 +22,9 @@ public class DatabaseConnectionSettings implements BeanModelTag, Serializable, I
     private String m_nmsPassword;
 
     /**
-     * Zero-argument constructor is necessary for GWT serialization
+     * Zero-argument constructor is necessary for GWT serialization.
+     * 
+     * @deprecated Only for use by GWT serialization.
      */
     public DatabaseConnectionSettings() {}
 

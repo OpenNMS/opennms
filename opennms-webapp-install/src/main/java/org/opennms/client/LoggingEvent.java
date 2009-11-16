@@ -12,6 +12,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class LoggingEvent implements BeanModelTag, Serializable, IsSerializable {
     private static final long serialVersionUID = -701344411706799165L;
 
+    /**
+     * Enum that facades the {@link org.apache.log4j.Level} of the original log4j log message.
+     */
     public enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL }
 
     private String m_category;
@@ -20,7 +23,9 @@ public class LoggingEvent implements BeanModelTag, Serializable, IsSerializable 
     private String m_message;
 
     /**
-     * Zero-argument constructor is necessary for GWT serialization
+     * Zero-argument constructor is necessary for GWT serialization.
+     * 
+     * @deprecated Only for use by GWT serialization.
      */
     public LoggingEvent() {}
 

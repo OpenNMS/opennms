@@ -126,6 +126,10 @@ public class Application implements EntryPoint {
     // TODO: Make sure that it is OK to have a global instance of this service
     private final InstallServiceAsync installService = (InstallServiceAsync)GWT.create(InstallService.class);
 
+    /**
+     * Interface that defines internal checks that the UI performs when users take actions
+     * in the installation UI.
+     */
     public interface InstallationCheck {
         public void check();
     }

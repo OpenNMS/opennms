@@ -6,10 +6,12 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * TODO: Do we need additional functions?
+ * <p>Interface that defines the server-side RPC functions that drive the
+ * installation UI.</p>
+ * 
+ * <p>TODO: Do we need additional functions?</p>
  * <ul>
  * <li>isDatabaseUpToDate()</li>
- * <li>setDatabaseConfiguration() with public access</li>
  * </ul>
  */
 @RemoteServiceRelativePath("install") // This path must match the value of the servlet mapping in web.xml

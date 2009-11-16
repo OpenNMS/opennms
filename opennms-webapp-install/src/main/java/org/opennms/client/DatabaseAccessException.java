@@ -4,6 +4,9 @@ public class DatabaseAccessException extends Exception {
 
     private static final long serialVersionUID = 8422075723564280674L;
 
+    /**
+     * @deprecated Only for use by GWT serialization.
+     */
     public DatabaseAccessException() {
         super();
     }

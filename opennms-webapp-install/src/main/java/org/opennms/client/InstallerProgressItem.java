@@ -5,6 +5,10 @@ import java.io.Serializable;
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * Instances of this class are used to communicate the names and statuses
+ * of various phases of the database schema upgrade process to the UI.
+ */
 public class InstallerProgressItem implements BeanModelTag, Serializable, IsSerializable {
     private static final long serialVersionUID = 3439201512922358422L;
 
@@ -17,13 +21,24 @@ public class InstallerProgressItem implements BeanModelTag, Serializable, IsSeri
 
     /**
      * Zero-argument constructor is necessary for GWT serialization.
+     * 
+     * @deprecated Only for use by GWT serialization.
      */
     public InstallerProgressItem() {}
 
+    /**
+     * Constructor that automatically sets the progress to {@link Progress#INDETERMINATE}.
+     * 
+     * @param name User-friendly name of the progress phase.
+     */
     public InstallerProgressItem(String name) {
         this(name, Progress.INDETERMINATE);
     }
 
+    /**
+     * @param name User-friendly name of the progress phase.
+     * @param progress The state of progress of the phase.
+     */
     public InstallerProgressItem(String name, Progress progress) {
         m_name = name;
         m_progress = progress;

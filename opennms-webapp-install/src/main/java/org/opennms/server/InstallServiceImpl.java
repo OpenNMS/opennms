@@ -427,7 +427,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     /**
-     * Delegate to {@link m_progressManager} to fetch the list of {@link InstallerProgressItem} 
+     * Delegate to {@link #m_progressManager} to fetch the list of {@link InstallerProgressItem} 
      * classes to track the progress of the {@link Installer} execution.
      */
     public List<InstallerProgressItem> getDatabaseUpdateProgress() throws OwnershipNotConfirmedException {
