@@ -1,3 +1,39 @@
+
+//
+//This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+//
+// Modifications:
+//
+// 2009 Oct 09: fix error with setFirstResult. - ayres@opennms.org
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc.:
+// 51 Franklin Street
+// 5th Floor
+// Boston, MA 02110-1301
+// USA
+//
+// For more information contact:
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+
 package org.opennms.web.rest;
 
 import java.util.ArrayList;
@@ -87,11 +123,13 @@ public class OnmsRestService {
 		
 		if (offset != null && offset != 0) {
 		    if (addImmediately) {
-		        criteria.setMaxResults(offset);
+		        criteria.setFirstResult(offset);
 		    } else {
 		        m_offset = offset;
 		    }
 		}
+		
+		
 	}
 
 	/**
@@ -315,7 +353,7 @@ public class OnmsRestService {
                                    )
                                )
                            );
-        System.out.println("\nm_offest: " + m_offset + "\n");
+        System.out.println("\n****m_offest: " + m_offset + "****\n");
         OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
         for (Order o : m_ordering) {
@@ -325,7 +363,6 @@ public class OnmsRestService {
             rootCriteria.setMaxResults(m_limit);
         }
         if (m_offset != null) {
-            System.out.println("\nadding m_offest: " + m_offset + "\n");
             rootCriteria.setFirstResult(m_offset);
         }
         return rootCriteria;

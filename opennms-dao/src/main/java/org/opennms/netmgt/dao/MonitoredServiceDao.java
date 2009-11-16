@@ -55,5 +55,7 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
     public abstract Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
 
     public abstract Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
+    
+    public abstract OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
 
 }

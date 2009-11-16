@@ -91,7 +91,11 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         if (! "".equals(nodeLabel)) {
             log().debug("Reading node label to user: " + nodeLabel);
             streamFileInterruptible("node");
-            sayAlphaInterruptible(nodeLabel);
+            try {
+                streamFileInterruptible(nodeLabel.toLowerCase());
+            } catch (AgiException e) {
+                sayAlphaInterruptible(nodeLabel);
+            }
         } else if (!"".equals(nodeID)) {
             log().debug("Reading node ID to user: " + nodeID);
             streamFileInterruptible("node");
@@ -108,9 +112,9 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         
         if ((ipAddr != null) && (!"".equals(ipAddr))) {
             log().debug("Reading IP address to user: " + ipAddr);
-            streamFile("letters/i");
-            streamFile("letters/p");
-            streamFile("address");
+            streamFileInterruptible("letters/i");
+            streamFileInterruptible("letters/p");
+            streamFileInterruptible("address");
             sayIpAddressInterruptible(ipAddr);
         }
     }
@@ -121,8 +125,12 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         
         if ((svcName != null) && (!"".equals(svcName))) {
             log().debug("Reading service name to user: " + svcName);
-            streamFile("service");
-            sayAlpha(svcName);
+            streamFileInterruptible("service");
+            try {
+                streamFileInterruptible(svcName.toLowerCase());
+            } catch (AgiException e) {
+                sayAlphaInterruptible(svcName);
+            }
         } else {
             log().debug("No service name available");
         }

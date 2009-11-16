@@ -589,6 +589,7 @@ public class EventConstants {
     public static final String PROVISIONING_ADAPTER_FAILED = "uei.opennms.org/provisioner/provisioningAdapterFailed";
 
     public static final String PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nodeScanCompleted";
+    public static final String PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nodeScanAborted";
     
     public static final String PARM_FAILURE_MESSAGE = "failureMessage";
 
@@ -613,6 +614,7 @@ public class EventConstants {
 
     public static final String DATA_LINK_FAILED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkFailed";
     public static final String DATA_LINK_RESTORED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkRestored";
+    public static final String DATA_LINK_UNMANAGED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkUnmanaged";
 
    
     //
@@ -1002,6 +1004,8 @@ public class EventConstants {
      * Used for indication the second endpoint to a map link
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
+
+   
 
 
     /**

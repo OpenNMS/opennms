@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2009 Oct 09: Add check for deleted snmp interfaces
  * 2009 Aug 28: Restore search and display capabilities for non-ip interfaces
  * Created: February 12, 2007
  *
@@ -150,11 +151,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
 
         criteria.createAlias("node.snmpInterfaces", "snmpInterface");
+        criteria.add(Restrictions.ne("snmpInterface.collect", "D"));
         if(snmpParmMatchType.equals("contains")) {
             criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
         } else if(snmpParmMatchType.equals("equals")) {
             snmpParmValue = snmpParmValue.toLowerCase();
-            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where lower(snmp" + snmpParm + ") = '" + snmpParmValue + "')"));
+            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where snmpcollect != 'D' and lower(snmp" + snmpParm + ") = '" + snmpParmValue + "')"));
         }
     }
 
@@ -298,19 +300,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                     String parmValueMatchString = (".*" + command.getSnmpParmValue().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("\\\\%", ".*").replaceAll("_", ".") + ".*");
                     if (command.getSnmpParm().equals("ifAlias")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().toLowerCase().matches(parmValueMatchString)) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().toLowerCase().matches(parmValueMatchString)) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifName")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null &&snmpIntf.getIfName() != null && snmpIntf.getIfName().toLowerCase().matches(parmValueMatchString)) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) &&snmpIntf.getIfName() != null && snmpIntf.getIfName().toLowerCase().matches(parmValueMatchString)) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifDescr")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().toLowerCase().matches(parmValueMatchString)) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().toLowerCase().matches(parmValueMatchString)) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
@@ -318,19 +320,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 } else if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("equals")) {
                     if (command.getSnmpParm().equals("ifAlias")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().equalsIgnoreCase(command.getSnmpParmValue())) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getIfAlias() != null && snmpIntf.getIfAlias().equalsIgnoreCase(command.getSnmpParmValue())) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifName")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null &&snmpIntf.getIfName() != null && snmpIntf.getIfName().equalsIgnoreCase(command.getSnmpParmValue())) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) &&snmpIntf.getIfName() != null && snmpIntf.getIfName().equalsIgnoreCase(command.getSnmpParmValue())) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
                     } else if (command.getSnmpParm().equals("ifDescr")) {
                         for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                            if (snmpIntf != null &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().equalsIgnoreCase(command.getSnmpParmValue())) {
+                            if (snmpIntf != null && !"D".equals(snmpIntf.getCollect()) &&snmpIntf.getIfDescr() != null && snmpIntf.getIfDescr().equalsIgnoreCase(command.getSnmpParmValue())) {
                                 displaySnmpInterfaces.add(snmpIntf);
                             }
                         }
@@ -343,7 +345,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 		}
                 	}
                 	for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
-                	    if (snmpIntf.getPhysAddr() != null && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
+                	    if (snmpIntf.getPhysAddr() != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
                 	        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(snmpIntf.getIpAddress());
                 	        if (intf == null) {
                 	            displaySnmpInterfaces.add(snmpIntf);

@@ -8,6 +8,32 @@
               FROM node
              WHERE nodetype = 'D');
   </statement>
+
+  <statement>
+    <!-- this deletes all entries in atInterface that have been marked as deleted -->
+    DELETE FROM atInterface WHERE atInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in datalinkInterface that have been marked as deleted -->
+    DELETE FROM datalinkInterface WHERE datalinkInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in ipRouteInterface that have been marked as deleted -->
+    DELETE FROM ipRouteInterface WHERE ipRouteInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
+    DELETE FROM stpInterface WHERE stpInterface.status = 'D';
+  </statement>
+   
+  <statement>
+    <!-- this deletes all the snmpInterfaces that have been marked as deleted -->
+    DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
+  </statement>
+
   <statement>
     <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
     DELETE FROM node WHERE node.nodeType = 'D';

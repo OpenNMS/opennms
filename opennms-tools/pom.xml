@@ -17,7 +17,6 @@
   <modules>
     <module>opennms-rrd-stresser</module>
     <module>groovy-tools</module>
-    <module>sms-reflector</module>
   </modules>
 
   <profiles>
