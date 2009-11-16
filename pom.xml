@@ -109,6 +109,7 @@
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
     <module>opennms-webapp</module>
+    <module>opennms-webapp-install</module>
     <module>opennms-daemon</module>
   </modules>
   <build>
@@ -933,6 +934,12 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp-install</artifactId>
+        <type>war</type>
         <version>${project.version}</version>
       </dependency>
       <dependency>
