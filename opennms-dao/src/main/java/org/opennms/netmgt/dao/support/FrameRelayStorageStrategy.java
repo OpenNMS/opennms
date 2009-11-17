@@ -34,6 +34,8 @@ import java.util.StringTokenizer;
 /**
  * This class use the new implementation of SnmpStorageStrategy extending the new
  * IndexStorageStrategy from opennms-services
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class FrameRelayStorageStrategy extends IndexStorageStrategy {
 
