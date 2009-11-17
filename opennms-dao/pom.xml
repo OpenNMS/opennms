@@ -65,6 +65,11 @@
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
@@ -86,6 +91,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-snmp-snmp4j</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
