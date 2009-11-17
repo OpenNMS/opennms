@@ -333,8 +333,18 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
     }
 
+    boolean checkDisableForceRescan(String disabledString) {
+        String src = m_snmpCollection.getServiceParameters().getParameters().get("disableForceRescan");
+        return ((src != null) && (src.toLowerCase().equals("all") || src.toLowerCase().equals(disabledString)));
+    }
+
     void checkForNewInterfaces(SnmpCollectionSet.RescanNeeded rescanNeeded) {
         if (!hasInterfaceDataToCollect()) {
+            return;
+        }
+
+        if (checkDisableForceRescan("ifnumber")) {
+            log().info("checkForNewInterfaces: check rescan is disabled for node " + m_agent.getNodeId());
             return;
         }
 
@@ -352,6 +362,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     void checkForSystemRestart(SnmpCollectionSet.RescanNeeded rescanNeeded) {
         if (!hasInterfaceDataToCollect()) {
+            return;
+        }
+
+        if (checkDisableForceRescan("sysuptime")) {
+            log().info("checkForSystemRestart: check rescan is disabled for node " + m_agent.getNodeId());
             return;
         }
 
