@@ -220,14 +220,14 @@ function addMapsList()
 	clearDownInfo();
 	hidePickColor();
 	resetFlags();
-	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterSelectionList);
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterMapSelectionList);
 	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
 	selMaps.sortList("asc");
 	selMaps.selectElementByPosition(1, true);
 	button1  = new button("button1","maps",openMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
 }
 
-function filterSelectionList(textboxId,value,changeType) {
+function filterMapSelectionList(textboxId,value,changeType) {
 		if (changeType == "change") {
 			var elementInList = mapLabels.length;
 			for(var k=1;k<mapLabels.length;k++) {
@@ -372,7 +372,7 @@ function saveMapSetUp() {
 	
 }
 
-// Save Map
+// Clear Map
 function clearMapSetUp() {	
 	closeAllMenu();
 	hidePickColor();
@@ -552,9 +552,32 @@ function addMapElementList()
 	hidePickColor();
 	resetFlags();
 
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterNodeSelectionList);
 	selNodes = new selectionList("nodes","nodes",nodeLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mynodesResult);
     selNodes.sortList("asc");    
+	selNodes.selectElementByPosition(1, true);
 	button1  = new button("button1","nodes",addMapElementSetUp,"rect","Add",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+
+function filterNodeSelectionList(textboxId,value,changeType) {
+	if (changeType == "change") {
+		var elementInList = nodeLabels.length;
+		for(var k=1;k<nodeLabels.length;k++) {
+			var nodeLabel = nodeLabels[k];
+			var match = nodeLabel.indexOf(value);
+			if  ( match == -1 ) {
+				elementInList--;
+				if (selNodes.elementExists(nodeLabel) >= 0) 
+					selNodes.deleteElement(nodeLabel);
+			} else if (selNodes.elementExists(nodeLabel) == -1 && match >= 0) {
+				selNodes.addElementAtPosition(nodeLabel,k);
+			}
+		}
+		if (elementInList > 1 )
+			selNodes.selectElementByPosition(1,true);
+		else 
+			selNodes.selectElementByPosition(0,false);
+	}
 }
 
 function nodesResult() { }
