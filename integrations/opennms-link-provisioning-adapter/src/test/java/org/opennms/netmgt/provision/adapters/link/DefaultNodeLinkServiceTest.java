@@ -1,10 +1,13 @@
 package org.opennms.netmgt.provision.adapters.link;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +18,16 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,6 +36,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -83,6 +93,12 @@ public class DefaultNodeLinkServiceTest {
     
     @Autowired
     NodeLinkService m_nodeLinkService;
+    
+    @Autowired
+    ServiceTypeDao m_serviceTypeDao;
+    
+    @Autowired
+    TransactionTemplate m_transactionTemplate;
     
     @Before
     public void setup(){
@@ -252,14 +268,57 @@ public class DefaultNodeLinkServiceTest {
     }
     
     @Test
-    public void dwoTestNodeHasEndPointService() {
+    public void dwoTestAddPrimaryServiceToNode(){
+        final String END_POINT_SERVICE_NAME = "EndPoint";
+        addPrimaryServiceToNode(END_POINT1_ID, END_POINT_SERVICE_NAME);
+        
         OnmsMonitoredService service = m_monitoredServiceDao.getPrimaryService(END_POINT1_ID, "ICMP");
         assertNotNull(service);
         assertEquals("ICMP", service.getServiceName());
         
         
-        service = m_monitoredServiceDao.getPrimaryService(END_POINT1_ID, "EndPoint");
-        assertNull(service);
+        service = m_monitoredServiceDao.getPrimaryService(END_POINT1_ID, END_POINT_SERVICE_NAME);
+        assertNotNull(service);
+        assertEquals(END_POINT_SERVICE_NAME,service.getServiceName());
+    }
+    
+    
+    @Test
+    public void dwoTestNodeHasEndPointService() {
+        
+        assertFalse(m_nodeLinkService.nodeHasEndPointService(END_POINT1_ID));
+        
+        final String END_POINT_SERVICE_NAME = "EndPoint";
+        addPrimaryServiceToNode(END_POINT1_ID, END_POINT_SERVICE_NAME);
+
+        assertTrue(m_nodeLinkService.nodeHasEndPointService(END_POINT1_ID));
+        
+    }
+    
+    public void addPrimaryServiceToNode(final int nodeId, final String serviceName){
+        m_transactionTemplate.execute(new TransactionCallback() {
+            
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsServiceType svcType = m_serviceTypeDao.findByName(serviceName);
+                if(svcType == null){
+                    svcType = new OnmsServiceType(serviceName);
+                    m_serviceTypeDao.save(svcType);
+                }
+                
+                OnmsNode node = m_nodeDao.get(nodeId);
+                
+                OnmsIpInterface ipInterface = node.getPrimaryInterface();
+                 
+                OnmsMonitoredService svc = new OnmsMonitoredService();
+                svc.setIpInterface(ipInterface);
+                svc.setServiceType(svcType);
+                m_monitoredServiceDao.save(svc);
+                
+                return null;
+            }
+        });
+        
+        
         
     }
     
