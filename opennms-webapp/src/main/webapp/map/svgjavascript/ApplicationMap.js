@@ -85,6 +85,7 @@ function handleLoadMapsResponse(data) {
 	}
 	mapLabels = [" "];
     var mapSorts = [null];
+    var mapids = [null];
     var st = str.split("&");
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
@@ -99,12 +100,13 @@ function handleLoadMapsResponse(data) {
 				name=name+" ";
 			}
 			var tmpMap = new ElemMap(id, name, owner);
+			mapids.push(id);
 			mapLabels.push(name);
 			mapSorts.push(tmpMap);
 		}
 	}
 	mapSortAss = assArrayPopulate(mapLabels,mapSorts);	
-
+	mapidSortAss = assArrayPopulate(mapids,mapLabels);	
 	loading--;	
 	assertLoading();
 	mapsLoaded=true;
