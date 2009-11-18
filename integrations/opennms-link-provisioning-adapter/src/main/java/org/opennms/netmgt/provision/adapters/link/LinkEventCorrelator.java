@@ -16,6 +16,7 @@ import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.annotation.Transactional;
 
 @EventListener(name="LinkEventCorrelator")
 public class LinkEventCorrelator {
@@ -32,116 +33,163 @@ public class LinkEventCorrelator {
     public void logEvent(Event e) {
         debugf(this, "Correlating Event %s/%d/%s/%s", e.getUei(), e.getNodeid(), e.getInterface(), e.getService());
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.NODE_DOWN_EVENT_UEI)
     public void handleNodeDown(Event e) {
-        logEvent(e);
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(nodeHasEndPointService(nodeId)) {
-            linkDown(nodeId);
+        try {
+            logEvent(e);
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(nodeHasEndPointService(nodeId)) {
+                linkDown(nodeId);
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable handleNodeDown");
+        }finally {
+            debugf(this, "Bailing out of handleNodeDown");
         }
-         
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void handleNodeUp(Event e) {
-        logEvent(e);
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(nodeHasEndPointService(nodeId)) {
-            linkUp(nodeId);
+        try {
+            logEvent(e);
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(nodeHasEndPointService(nodeId)) {
+                linkUp(nodeId);
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable in handleNodeUp");
+        }finally {
+            debugf(this, "Bailing out of handleNodeUp");
         }
-         
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
-        logEvent(e);
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(nodeHasEndPointService(nodeId)){
-            linkDown(nodeId); 
+        try {
+            logEvent(e);
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(nodeHasEndPointService(nodeId)){
+                linkDown(nodeId); 
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable in handleInterfaceDown");
+        }finally {
+            debugf(this, "Bailing out of handleInterfaceDown");
         }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
-        
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void handleInterfaceUp(Event e) {
-        logEvent(e);
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(nodeHasEndPointService(nodeId)){
-            linkUp(nodeId); 
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+        try {
+            logEvent(e);
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(nodeHasEndPointService(nodeId)){
+                linkUp(nodeId); 
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable in handleInterfaceUp");
+        }finally {
+            debugf(this, "Bailing out of handleInterfaceUp");
         }
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)
     public void handleServiceUnresponsive(Event e) {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkDown(nodeId);
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+        try {
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                linkDown(nodeId);
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable handleServiceUnresponsive");
+        }finally{
+            debugf(this, "Bailing out of handleServiceUnresponsive");
         }
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.SERVICE_RESPONSIVE_EVENT_UEI)
     public void handleServiceResponsive(Event e) {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkUp(nodeId);
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+        try {
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                linkUp(nodeId);
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable in handleServiceResponsive");
+        }finally {
+            debugf(this, "Bailing out of handleServiceResponsive");
         }
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void handleNodeGainedService(Event e) {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            //linkUp(nodeId);
-            endPointFound(nodeId);
-        } else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
+       try { 
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                //linkUp(nodeId);
+                endPointFound(nodeId);
+            } else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+       }catch(Throwable t) {
+           debugf(this, t, "Caught a throwable in handleNodeGained");
+       }finally {
+           debugf(this, "Bailing out of handleNodeGainedService");
+       }
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(Event e) {
         debugf(this, "A special log msg for %s", e.getUei());
         try {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkDown(nodeId);
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                linkDown(nodeId);
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
         
             
         } 
@@ -152,53 +200,74 @@ public class LinkEventCorrelator {
             debugf(this, "Bailing out of handleNodeLostService");
         }
     }
-
+    
+    @Transactional
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void handleNodeRegainedService(Event e) {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkUp(nodeId);
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
-    }
-
-    @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
-    public void handleServiceUnmanaged(Event e) {
-        logEvent(e);
-        if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            linkUp(nodeId); 
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+        try {
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                linkUp(nodeId);
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+        }catch(Throwable t) {
+            debugf(this, t, "Caught a throwable in handleNodeRegainedService!");
+        }finally {
+            debugf(this, "Bailing out of handleNodeRegainedService");
         }
     }
     
+    @Transactional
+    @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
+    public void handleServiceUnmanaged(Event e) {
+       try { 
+            logEvent(e);
+            if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                linkUp(nodeId); 
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+       }catch(Throwable t) {
+           debugf(this, t, "Caught a throwable in handleServiceUnmanaged!");
+       }finally {
+           debugf(this, "Bailing out of handleServiceUnmanaged");
+       }
+    }
+    
+    @Transactional
     @EventHandler(uei=EventConstants.SERVICE_DELETED_EVENT_UEI)
     public void handleServiceDeleted(Event e){
-        if(e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-            debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
-            return;
-        }
-        
-        int nodeId = Long.valueOf(e.getNodeid()).intValue();
-        if(isSnmpPrimary(nodeId, e.getInterface())){
-            endPointDeleted(nodeId);
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
+       try {
+            if(e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
+                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                return;
+            }
+            
+            int nodeId = Long.valueOf(e.getNodeid()).intValue();
+            if(isSnmpPrimary(nodeId, e.getInterface())){
+                endPointDeleted(nodeId);
+            }
+            else {
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+            }
+       }catch(Throwable t) {
+           debugf(this, t, "Caught a throwable in handleServiceDeleted");
+       }finally {
+           debugf(this, "Bailing out of handleServiceDeleted");
+       }
         
     }
 

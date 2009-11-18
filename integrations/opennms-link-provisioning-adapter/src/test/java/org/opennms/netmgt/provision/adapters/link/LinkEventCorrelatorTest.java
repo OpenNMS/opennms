@@ -63,7 +63,7 @@ public class LinkEventCorrelatorTest {
         m_nodeLinkService = createMock(NodeLinkService.class);
         
         Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
-        m_dataLinkInterface = new DataLinkInterface(2, 1, 1, 1, "A", new Date());
+        m_dataLinkInterface = new DataLinkInterface(2, 1, 1, 1, "U", new Date());
         dlis.add(m_dataLinkInterface);
         
         expect(m_nodeLinkService.getLinkContainingNodeId(1)).andStubReturn(dlis);
@@ -226,6 +226,7 @@ public class LinkEventCorrelatorTest {
         correlator.handleNodeGainedService(m_node1.getInterface("192.168.0.1").getService("EndPoint").createNewEvent());
         correlator.handleNodeGainedService(m_node2.getInterface("192.168.0.2").getService("EndPoint").createNewEvent());
         correlator.handleServiceDeleted(m_node1.getInterface("192.168.0.1").getService("EndPoint").createDeleteEvent());
+        
 
         m_eventIpcManager.finishProcessingEvents();
         
@@ -245,7 +246,7 @@ public class LinkEventCorrelatorTest {
         assertEquals("expect 2 endpoint parms", 2, foundGood);
         verify();
     }
-
+    
     public <T> T createMock(Class<T> clazz){
         return m_easyMock.createMock(clazz);
     }
