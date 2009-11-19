@@ -191,9 +191,20 @@ public class AddNodesController implements Controller {
 						
 					}
 
-					VElement curVElem = manager.newElement(elemId, type);
+					VElement ve = manager.newElement(elemId, type);
+                    try {
+                        VElement hve = manager.getElement(map.getId(), elemId, VElement.NODE_HIDE_TYPE);
+                        if (hve.getLabel() != null) {
+                            ve.setLabel(hve.getLabel());
+                            log.debug("preserving label map is hidden: label found: " + hve.getLabel());
+                        }
+                    } catch (Exception e) {
+                       log.debug("No Hidden Node found for id: " +elemId); 
+                    }
+                    log.debug("adding node element to map with id: " +elemId+type);
+
 					//set real-time data to -1 to force refresh always
-					velems.add(curVElem);
+					velems.add(ve);
 				} // end for
 
 				//get links and add elements to map

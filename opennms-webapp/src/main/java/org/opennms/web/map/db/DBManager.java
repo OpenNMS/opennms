@@ -736,7 +736,7 @@ public class DBManager extends Manager {
             statement.setInt(1, e.getId());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                e.setLabel(rs.getString(1));
+                e.setLabel(getLabel(rs.getString(1)));
                 if (e.getType().equals(Element.NODE_TYPE)) {
                     String iconName = null;
                     if (rs.getString(2) != null
@@ -2106,6 +2106,12 @@ public class DBManager extends Manager {
         }
         log.debug("isNodeInRow: elementId=" + nodeId + "is There: " + isThere);
         return isThere;
+    }
+
+    private String getLabel(String FQDN) {
+        if (FQDN.indexOf(".")>0)
+       return FQDN.substring(0, FQDN.indexOf(".")); 
+        return FQDN;
     }
 
 }

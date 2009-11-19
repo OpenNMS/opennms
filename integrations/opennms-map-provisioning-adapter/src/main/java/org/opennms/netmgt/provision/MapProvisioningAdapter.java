@@ -372,12 +372,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("reSyncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                 log().debug("reSyncMap: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getHostName(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                 );
                                 m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                             } else {
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getHostName(node.getLabel()),celement.getIcon(),0,0)
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }
                         }
@@ -421,12 +421,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("reSyncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                 log().debug("reSyncMap: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getHostName(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                 );
                                 m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                             } else {
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getHostName(node.getLabel()),celement.getIcon(),0,0)
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }                            
                         }
@@ -627,12 +627,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                     log().debug("syncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                     log().debug("syncMaps: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                     m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getHostName(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
+                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                     );
                                     m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                                 } else {
                                     m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getHostName(node.getLabel()),celement.getIcon(),0,0)
+                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                     );   
                                 }
                             }
@@ -718,7 +718,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
         return primaryInterface.getIpAddress();
     }
     
-    private String getHostName(String FQDN) {
+    private String getLabel(String FQDN) {
         if (FQDN.indexOf(".")>0)
        return FQDN.substring(0, FQDN.indexOf(".")); 
         return FQDN;

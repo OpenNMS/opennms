@@ -283,7 +283,11 @@ function handleAddElementResponse(data) {
 					
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
-
+			//Adding only the node label without domain
+			var index = labelText.indexOf('.');
+			if (index > 0)
+				labelText=labelText.substr(0,index);
+			
 			newElem= new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, 0, 0, mapElemDimension, status, avail,severity)
 			nodesToAdd.push(newElem);
 
