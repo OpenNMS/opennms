@@ -127,7 +127,8 @@
 	</bean>
 	
 	<bean id="onmsDatabaseReportService"
-		class="org.opennms.report.availability.svclayer.OnmsDatabaseReportService">
+		class="org.opennms.report.availability.svclayer.OnmsDatabaseReportService"
+		scope="prototype">
 		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
 		<property name="calendarCalculator">
 			<ref local="calendarAvailabilityCalculator" />
@@ -137,12 +138,18 @@
 		</property>
 	</bean>
 	
-	<bean id="legacyAvailabilityDataService" class="org.opennms.report.availability.svclayer.LegacyAvailabilityDataService" />
-    
+	<bean id="legacyAvailabilityDataService" class="org.opennms.report.availability.svclayer.LegacyAvailabilityDataService" scope="prototype" />
+	
+	<!--
     <bean id="availabilityData" 
     	class="org.opennms.report.availability.AvailabilityData"
     	lazy-init="true">
-    	<property name="availabilityDataService"> <ref local="legacyAvailabilityDataService" />
+    -->
+    <bean id="availabilityData" 
+    	class="org.opennms.report.availability.AvailabilityData"
+    	scope="prototype">
+		<property name="availabilityDataService">
+			<ref local="legacyAvailabilityDataService" />
     	</property>
     </bean>
 

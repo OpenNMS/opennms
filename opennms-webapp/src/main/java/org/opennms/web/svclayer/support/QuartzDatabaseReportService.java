@@ -10,9 +10,7 @@
  *
  * Modifications:
  * 
- * Created: Oct 26, 2009
- * 
- * TODO Remove this class when we're totally happy about the QuartzReportReportService
+ * Created: November 19, 2009 jonathan@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -37,22 +35,23 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.DatabaseReportCategoryParm;
 import org.opennms.netmgt.model.DatabaseReportCriteria;
 import org.opennms.netmgt.model.DatabaseReportDateParm;
-import org.opennms.report.availability.svclayer.OnmsDatabaseReportService;
 import org.opennms.web.svclayer.DatabaseReportService;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.webflow.execution.RequestContext;
 
-/**
- * @author user
- *
- */
-public class DefaultDatabaseReportService implements DatabaseReportService {
-    
+public class QuartzDatabaseReportService implements DatabaseReportService {
+
+
     private static final String DATE_NAME = "endDate";
     private static final String CATEGORY_NAME = "reportCategory";
 
@@ -62,12 +61,17 @@ public class DefaultDatabaseReportService implements DatabaseReportService {
         "Report definition must have only one category parameter, with name " + CATEGORY_NAME;
     private static final String DATE_ERROR = 
         "Report definition must have only one date parameter, with name " + DATE_NAME;
+    private static final String SCHEDULER_ERROR = 
+        "An exception occurred when scheduling the report";
     
-    OnmsDatabaseReportService m_reportRunner;
+    JobDetail m_jobDetail;
+    
+    Scheduler m_scheduler;
 
     /* (non-Javadoc)
      * @see org.opennms.web.svclayer.DatabaseReportService#execute(org.opennms.web.svclayer.support.DatabaseReportCriteria)
      */
+    
     public String execute(DatabaseReportCriteria criteria, RequestContext context) {
         
         List <DatabaseReportCategoryParm> categories = criteria.getCategories();
@@ -82,17 +86,35 @@ public class DefaultDatabaseReportService implements DatabaseReportService {
                                                        .defaultText(DATE_ERROR).build());
                 return ERROR; 
             } else {
-              
-                m_reportRunner.setCriteria(criteria);
-                new Thread(m_reportRunner).start();
+                SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
+                                                          null,
+                                                          new Date(),
+                                                          null,
+                                                          0,
+                                                          0L);
+                m_jobDetail.getJobDataMap().put("criteria", criteria);
+                try {
+                    m_scheduler.scheduleJob(m_jobDetail, trigger);
+                } catch (SchedulerException e) {
+                    e.printStackTrace();
+                    context.getMessageContext().addMessage(new MessageBuilder().error()
+                                                           .defaultText(SCHEDULER_ERROR).build());
+                    return ERROR;
+                }
+
+                
                 return SUCCESS;
             }
         }
         
     }
 
-    public void setReportRunner(OnmsDatabaseReportService reportRunner) {
-        m_reportRunner = reportRunner;
+    public void setJobDetail(JobDetail reportJob) {
+        m_jobDetail = reportJob;
     }    
+    
+    public void setScheduler(Scheduler scheduler) {
+        m_scheduler = scheduler;
+    }
 
 }

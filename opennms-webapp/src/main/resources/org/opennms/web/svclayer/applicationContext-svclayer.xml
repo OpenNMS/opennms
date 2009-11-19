@@ -237,9 +237,53 @@
     <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
   
+  <bean id="quartzDatabaseReportService" class="org.opennms.web.svclayer.support.QuartzDatabaseReportService">
+	<property name="scheduler">
+		<ref local="schedulerFactory" />
+	</property>
+	<property name="jobDetail">
+		<ref local="onmsReportJobDetail" />
+	</property>
+  </bean>
+  
+  <!-- this can be removed when the quartz service runs happily -->
+  
   <bean id="DatabaseReportService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportService">
     <property name="reportRunner" ref="onmsDatabaseReportService" />
   </bean>
+  
+  <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="databaseReport" />
+        <property name="dataSource" ref="dataSource" />
+       	<property name="applicationContextSchedulerContextKey">
+       		<value>applicationContext</value>
+       	</property>
+       	<property name="waitForJobsToCompleteOnShutdown">
+			<value>true</value>
+		</property>
+		<property name="quartzProperties">
+			<props>
+				<!-- Configure Main Scheduler Properties -->
+				<prop key="org.quartz.scheduler.instanceId">ReportSchdeuler</prop>
+				<!-- Configure ThreadPool -->
+				<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+				<prop key="org.quartz.threadPool.threadCount">1</prop>
+				<!-- Configure JobStore -->
+				<prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreCMT</prop>
+				<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
+				<!-- Configure Plugins -->
+				<prop key="org.quartz.plugin.shutdownHook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
+				<prop key="org.quartz.plugin.shutdownHook.cleanShutdown">true</prop>
+				<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+			</props>
+		</property>
+  </bean>
+  
+  <bean id="onmsReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass">
+		<value>org.opennms.web.report.database.ReportJob</value>
+	  </property>
+  </bean> 
   
   <!-- Node List page -->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">

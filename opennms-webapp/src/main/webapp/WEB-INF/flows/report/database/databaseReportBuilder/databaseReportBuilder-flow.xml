@@ -44,7 +44,8 @@
 	</view-state>
 
 	<action-state id="submitReport">
-		<evaluate expression="DatabaseReportService.execute(criteria, flowRequestContext)" />
+		<evaluate expression="quartzDatabaseReportService.execute(criteria, flowRequestContext)" />
+		<!--  <evaluate expression="DatabaseReportService.execute(criteria, flowRequestContext)" /> -->
 		<transition on="success" to="reportRunning" />
 		<transition on="error" to="reportError" />
 	</action-state>
