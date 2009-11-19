@@ -16,7 +16,7 @@ var viewMenu;
 var refreshMenu;
 
 // Needed by ECMAScripts
-var myMapApp = new mapApp();
+var myMapApp = new mapApp(false,undefined);
 
 // Windows Objects used now when double click on MapElements
 myMapApp.Windows = new Array();
@@ -77,6 +77,7 @@ var selMaps;
 
 var mapLabels = [" "];
 var mapSortAss;
+var mapidSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
 

@@ -52,6 +52,8 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.image.addEventListener("mousedown", this.onMouseDown, false);
 	this.image.addEventListener("mousemove", this.onMouseMove, false);
 	this.image.addEventListener("mouseup", this.onMouseUp, false);
+	this.image.addEventListener("mouseover", this.onMouseOver, false);
+	this.image.addEventListener("mouseout", this.onMouseOut, false);
 	this.svgNode.appendChild(this.image);
 	this.label = new Label(labelText, Math.round(this.width/3), this.height + dimension*0.5, dimension/2,null);
 	this.svgNode.appendChild(this.label.getSvgNode());
@@ -164,3 +166,5 @@ MapElement.prototype.onMouseDown = onMouseDownOnMapElement;
 MapElement.prototype.onMouseMove = onMouseMove;
 MapElement.prototype.onMouseUp   = onMouseUp;
 MapElement.prototype.onClick     = onClickMapElement;
+MapElement.prototype.onMouseOver = onMouseOverMapElement;
+MapElement.prototype.onMouseOut  = onMouseOutMapElement;

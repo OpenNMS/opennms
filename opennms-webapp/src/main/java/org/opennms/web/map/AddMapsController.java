@@ -124,7 +124,7 @@ public class AddMapsController implements Controller {
 				if(foundLoop) {
 					mapsWithLoop.add(id);
 				} else {
-				    VElement ve = manager.newElement(id, type);;
+				    VElement ve = manager.newElement(id, type);
 	                try {
 	                    VElement hve = manager.getElement(map.getId(), id, VElement.MAP_HIDE_TYPE);
 	                    if (hve.getLabel() != null) {

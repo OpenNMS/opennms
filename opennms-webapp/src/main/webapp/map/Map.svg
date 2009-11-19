@@ -35,8 +35,9 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationWin.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ContextMenu.js"/>	
 	
+	
 <script type="text/ecmascript"><![CDATA[
-		// ************** LOAD THE MAP APPLICATION ********************
+
 function startUp() {
 	// Instantiate the default map
 	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
@@ -69,6 +70,7 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
  	
 	displayCountDown("Set Refresh Time",true);
 	
+	myMapApp.initTooltips("toolTip",tooltipTextStyles,tooltipRectStyles,10,5,3);
 }
 
 function handleInit(data) {
@@ -264,6 +266,7 @@ function load(evt){
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
 	<svg id="Windows" x="0" y="0"/>
+	
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
 
@@ -357,6 +360,9 @@ function load(evt){
 
 
  	</svg> <!-- End WorkPanel -->
+	
+	<!-- ******** TOOLTIP P A N E L S ********* -->	
+	<g id="toolTip"/>
 </svg>
 
 
