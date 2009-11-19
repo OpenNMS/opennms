@@ -85,6 +85,7 @@ function handleLoadMapsResponse(data) {
 	}
 	mapLabels = [" "];
     var mapSorts = [null];
+    var mapids = [null];
     var st = str.split("&");
 	if(str.indexOf("+")>=0){
 		for(var k=0;k<st.length;k++){
@@ -99,12 +100,13 @@ function handleLoadMapsResponse(data) {
 				name=name+" ";
 			}
 			var tmpMap = new ElemMap(id, name, owner);
+			mapids.push(id);
 			mapLabels.push(name);
 			mapSorts.push(tmpMap);
 		}
 	}
 	mapSortAss = assArrayPopulate(mapLabels,mapSorts);	
-
+	mapidSortAss = assArrayPopulate(mapids,mapLabels);	
 	loading--;	
 	assertLoading();
 	mapsLoaded=true;
@@ -281,7 +283,11 @@ function handleAddElementResponse(data) {
 					
 			var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 			var semaphoreFlash = getSemaphoreFlash(severity,avail);
-
+			//Adding only the node label without domain
+			var index = labelText.indexOf('.');
+			if (index > 0)
+				labelText=labelText.substr(0,index);
+			
 			newElem= new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, 0, 0, mapElemDimension, status, avail,severity)
 			nodesToAdd.push(newElem);
 
