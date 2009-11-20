@@ -521,6 +521,7 @@
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.1</version>
       </plugin>
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -545,6 +546,7 @@
           </links>
         </configuration>
       </plugin>
+-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
