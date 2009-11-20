@@ -40,9 +40,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 
 import org.junit.Test;
+import org.opennms.netmgt.config.databaseReports.DateOffset;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportConfigDaoTest {
     
@@ -50,16 +53,14 @@ public class DefaultDatabaseReportConfigDaoTest {
     private static final String DESCRIPTION = "default calendar report";
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
-    private static final String DATE_DEFAULT = "TODAY";
     
 
     @Test
     public void testGetParmsByName() throws Exception {
         
         DefaultDatabaseReportConfigDao dao = new DefaultDatabaseReportConfigDao();
-        
-        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/database-reports.xml");
-        dao.setConfigResource(new InputStreamResource(in));
+        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
+        dao.setConfigResource(resource);
         dao.afterPropertiesSet();
         
         ReportParm[] dates = dao.getDates(NAME);
@@ -67,7 +68,15 @@ public class DefaultDatabaseReportConfigDaoTest {
         assertEquals(dates.length,1);
         assertEquals(dates[0].getName(),DATE_NAME);
         assertEquals(dates[0].getDisplayName(),DATE_DISPLAY_NAME);
-        assertEquals(dates[0].getDefaultValue(),DATE_DEFAULT);
+        
+        DateOffset[] offset = dao.getDateOffests(NAME);
+        assertEquals(offset.length,1);
+        assertEquals(offset[0].getName(),DATE_NAME);
+        assertEquals(offset[0].getDisplayName(),DATE_DISPLAY_NAME);
+        assertEquals(offset[0].getDefaultCount(),1);
+        assertEquals(offset[0].getDefaultInterval(),"day");
+        
+        
         
     }
 

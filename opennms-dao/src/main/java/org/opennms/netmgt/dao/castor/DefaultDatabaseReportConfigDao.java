@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
+import org.opennms.netmgt.config.databaseReports.DateOffset;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
@@ -61,6 +62,18 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         Report report = getReport(id);
         if (report != null) {
             dates =  report.getDate();
+        }
+        
+        return dates;
+        
+    }
+    
+    public DateOffset[] getDateOffests(String id) {
+        
+        DateOffset[] dates = null;
+        Report report = getReport(id);
+        if (report != null) {
+            dates =  report.getDateOffset();
         }
         
         return dates;
