@@ -554,6 +554,7 @@
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.1</version>
       </plugin>
+<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
