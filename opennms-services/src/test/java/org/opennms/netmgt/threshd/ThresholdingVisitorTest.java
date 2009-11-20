@@ -37,6 +37,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -103,7 +105,6 @@ import org.opennms.test.mock.MockLogAppender;
 public class ThresholdingVisitorTest {
 
     Level m_defaultErrorLevelToCheck;
-    ThresholdingVisitor m_visitor;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
@@ -112,6 +113,9 @@ public class ThresholdingVisitorTest {
     
     @Before
     public void setUp() throws Exception {
+        // Resets Counters Cache Data
+        CollectionResourceWrapper.s_cache.clear();
+        
         m_defaultErrorLevelToCheck = Level.WARN;
         MockLogAppender.setupLogging();
 
@@ -220,10 +224,12 @@ public class ThresholdingVisitorTest {
     @Test
     public void testCreateVisitorWithoutProperEnabledIt() {
         Map<String,String> params = new HashMap<String,String>();
+        // The time interval is usually taken from the configuration parameters of the service on collectd-configuration.xml
+        // The interval from threshd-configuration.xml is ignored.
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNull(visitor);
     }
-
+    
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
@@ -242,7 +248,7 @@ public class ThresholdingVisitorTest {
      * - thresd-configuration.xml
      * - test-thresholds.xml
      * 
-     * Updated to reflect the fact that counter are treated as rates.
+     * Updated to reflect the fact that counter are treated as rates (counter wrap is not checked here anymore).
      */
     @Test
     public void testResourceCounterData() throws Exception {
@@ -271,16 +277,6 @@ public class ThresholdingVisitorTest {
         // Collect Step 3 : Rearm. (last-current)/step => (6100-5500)/300=2
         resource = new NodeInfo(resourceType, agent);
         resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
-        resource.visit(visitor);
-
-        // Collect Step 3 : Reset counter (bad value). last=6100, current=10
-        resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(10));
-        resource.visit(visitor);
-
-        // Collect Step 3 : Normal. last=10, current=1000 => (1000-10)/300=3.3
-        resource = new NodeInfo(resourceType, agent);
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1010));
         resource.visit(visitor);
 
         EasyMock.verify(agent);
@@ -703,6 +699,45 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * Testing 32-bit counter wrapping on ifOutOctets
+     */
+    @Test
+    public void testBug3194_32bits() throws Exception {
+        runCounterWrapTest(32, 200);
+    }
+
+    /*
+     * Testing 64-bit counter wrapping on ifOutOctets
+     */
+    @Test
+    public void testBug3194_64bits() throws Exception {
+        runCounterWrapTest(64, 201.6);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-6.xml
+     */
+    @Test
+    public void testBug3333() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3333.xml");
+        ThresholdingVisitor visitor = createVisitor();
+        String expression = "hrStorageSize-hrStorageUsed";
+
+        // Trigger Low Threshold
+        addEvent("uei.opennms.org/threshold/lowThresholdExceeded", "127.0.0.1", "SNMP", 1, 10, 15, 5, "/opt", "1", expression, null, null);
+        runFileSystemDataTest(visitor, 1, "/opt", 95, 100);
+        verifyEvents(0);
+
+        // Rearm Low Threshold and Trigger High Threshold
+        addEvent("uei.opennms.org/threshold/lowThresholdRearmed", "127.0.0.1", "SNMP", 1, 10, 15, 60, "/opt", "1", expression, null, null);
+        addHighThresholdEvent(1, 50, 45, 60, "/opt", "1", expression, null, null);
+        runFileSystemDataTest(visitor, 1, "/opt", 40, 100);
+        verifyEvents(0);
+    }
+
+    /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
      * This test validate that Bug 1582 has been fixed.
@@ -898,6 +933,45 @@ public class ThresholdingVisitorTest {
         f.delete();
     }
 
+    /*
+     * Parameter expectedValue should be around 200:
+     * Initial counter value is 20000 below limit.
+     * Next value is 40000, so the difference will be 60000.
+     * Counters are treated as rates so 60000/300 is 200.
+     */
+    private void runCounterWrapTest(double bits, double expectedValue) throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3194.xml");
+        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
+        addHighThresholdEvent(1, 100, 90, expectedValue, "Unknown", "1", "ifOutOctets", "wlan0", "1");
+        ThresholdingVisitor visitor = createVisitor();
+        
+        // Creating Interface Resource Type
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", "wlan0");
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Creating Data Source
+        MibObject object = createMibObject("counter", "ifOutOctets", "ifIndex");
+        SnmpAttributeType objectType = new NumericAttributeType(resourceType, "default", object, new AttributeGroupType("mibGroup", "ignore"));
+
+        // Step 1 - Initialize Counter
+        BigDecimal n = new BigDecimal(Math.pow(2, bits) - 20000);
+        SnmpValue snmpValue1 = SnmpUtils.getValueFactory().getCounter64(n.toBigInteger());
+        SnmpCollectionResource resource1 = new IfInfo(resourceType, agent, ifData);
+        resource1.setAttributeValue(objectType, snmpValue1);
+        resource1.visit(visitor);
+        
+        // Step 2 - Wrap Counter
+        SnmpValue snmpValue2 = SnmpUtils.getValueFactory().getCounter64(new BigInteger("40000"));
+        SnmpCollectionResource resource2 = new IfInfo(resourceType, agent, ifData);
+        resource2.setAttributeValue(objectType, snmpValue2);
+        resource2.visit(visitor);
+
+        // Verify Events
+        EasyMock.verify(agent);        
+        verifyEvents(0);
+    }
+    
     private CollectionAgent createCollectionAgent() {
         CollectionAgent agent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();

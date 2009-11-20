@@ -58,6 +58,11 @@
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-castor</artifactId>
     </dependency>
     <dependency>
@@ -102,7 +107,12 @@
       <groupId>org.opennms.lib.snmp</groupId>
       <artifactId>org.opennms.lib.snmp.api</artifactId>
     </dependency>
-    
+     <dependency>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+   
     <!--  This is needed for the IPv4Address class - should probably move that -->
     <dependency>
       <groupId>org.opennms</groupId>
