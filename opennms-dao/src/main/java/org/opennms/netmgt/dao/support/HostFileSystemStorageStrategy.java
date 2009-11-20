@@ -33,6 +33,9 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class HostFileSystemStorageStrategy extends IndexStorageStrategy {
 
     public static String HR_STORAGE_DESC = ".1.3.6.1.2.1.25.2.3.1.3";
