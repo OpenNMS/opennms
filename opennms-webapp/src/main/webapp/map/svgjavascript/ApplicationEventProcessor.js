@@ -1,3 +1,22 @@
+function onMouseOverMapElement(evt) {
+	myMapApp.enableTooltips();
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
+	var mapElement = map.mapElements[id];
+	var toolTipLabel = "";
+
+	if (mapElement.isNode()) {
+		toolTipLabel=nodeidSortAss[mapElement.getNodeId()].getLabel();
+	} else {
+		toolTipLabel="Map: "+mapidSortAss[mapElement.getMapId()];
+	}
+
+	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
+}
+
+function onMouseOutMapElement(evt) {
+
+}
+
 //if double-click on an element (map) open the map 
 function onClickMapElement(evt)
 {
@@ -25,7 +44,7 @@ function onClickMapElement(evt)
 
 	if (evt.detail == 2)
 	{
-
+		myMapApp.disableTooltips();
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();

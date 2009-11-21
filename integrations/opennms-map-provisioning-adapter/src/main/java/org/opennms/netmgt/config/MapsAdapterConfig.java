@@ -14,7 +14,6 @@ import org.opennms.netmgt.config.map.adapter.Csubmap;
 public interface MapsAdapterConfig {
 
     public int getMapElementDimension();
-    public int getOperationNumberBeforeSync();
     public List<Cmap> getAllMaps();    
     public List<Csubmap> getSubMaps(String mapName);
     public Map<String,Csubmap> getContainerMaps(String submapName);

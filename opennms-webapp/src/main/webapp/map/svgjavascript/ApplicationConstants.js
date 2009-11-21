@@ -89,22 +89,6 @@ var cmmenuElementStyle = {"fill":"grey"};
 var cmmenuElementTextStyle={"font-size": titleFontSize,"font-family":textFamily,"fill":"black"};
 var cmmenuElementMouseStyle={"fill":"grey","fill-opacity":0};
 
-// Windows Objects styles
-/*
-var winPlaceholderStyles = {"fill":"none","stroke":"dimgray","stroke-width":1.5};
-var windowStyles = {"fill":"aliceblue","stroke":"dimgray","stroke-width":1};
-var wintitlebarStyles = {"fill":"gainsboro","stroke":"dimgray","stroke-width":1};
-var winstatusbarStyles = {"fill":"aliceblue","stroke":"dimgray","stroke-width":1};
-var wintitletextStyles = {"font-family":"Arial,Helvetica","font-size":titleFontSize,"fill":"dimgray"};
-var winstatustextStyles = {"font-family":"Arial,Helvetica","font-size":textFontSize,"fill":"dimgray"};
-var winbuttonStyles = {"fill":"none","stroke":"dimgray","stroke-width":1};
-var wintitlebarHeight = 17;
-var winstatusbarHeight = 13;
-
-var winwidth = 200;
-var winheight = 200;
-var winconstrXmin = 0;
-var winconstrYmin = 80;
-var winconstrXmax = 1024;
-var winconstrYmax = 700;
-*/
+// ToolTip style constants
+var tooltipTextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":titleFontSize};
+var tooltipRectStyles = {"fill":"white","stroke":"dimgray"};

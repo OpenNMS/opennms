@@ -323,6 +323,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
         m_isSnmpPrimary = PrimaryType.getCanonical(issnmpprimary);
     }
+    
+    @Transient
+    public boolean isPrimary(){
+        return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
+    }
 
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")

@@ -536,10 +536,6 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return getConfiguration().getElementDimension();
     }
 
-    public int getOperationNumberBeforeSync() {        
-        return getConfiguration().getOperationNumberBeforeSync();
-    }
-    
     public Map<String,Csubmap> getContainerMaps(String submapName) {
         Map<String,Csubmap> cmaps = new HashMap<String, Csubmap>();
         if (m_submapNameMapNameMap.containsKey(submapName)) {

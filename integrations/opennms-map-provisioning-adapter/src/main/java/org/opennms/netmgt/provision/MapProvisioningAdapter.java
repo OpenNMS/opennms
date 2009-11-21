@@ -156,9 +156,13 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private static final String MESSAGE_PREFIX = "Dynamic Map provisioning failed: ";
     private static final String ADAPTER_NAME="MAP Provisioning Adapter";
     
-    private Set<Integer> deletes;
-    private Set<Integer> adds;
-    private Set<Integer> updates;
+    private static final long RESYNC_TIMEOUT=300000;
+    
+    private Set<Integer> m_deletes;
+    private Set<Integer> m_adds;
+    private Set<Integer> m_updates;
+    
+    private boolean doSync = false;
 
     public OnmsMapDao getOnmsMapDao() {
         return m_onmsMapDao;
@@ -219,7 +223,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             LogUtils.debugf(this, "reloading the maps adapter configuration");
             try {
                 MapsAdapterConfigFactory.reload();
-                reSyncMap();
+                syncMaps();
             } catch (Exception e) {
                 LogUtils.infof(this, e, "unable to reload maps adapter configuration");
             }
@@ -251,6 +255,48 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return true;
     }
 
+    class MapSyncExecutor implements Runnable {
+
+        public void run() {
+            syncMaps();
+            while (true) {
+                try {
+                    log().debug("Sleeping: " + RESYNC_TIMEOUT);
+                    Thread.sleep(RESYNC_TIMEOUT);
+                } catch (InterruptedException e) {
+                    log().error("Cannot sleep:" + e.getLocalizedMessage());
+                }
+                
+                if (doSync) {
+                    log().debug("Synchronization started");
+                    Set<Integer> deletes = new TreeSet<Integer>();
+                    Set<Integer> adds = new TreeSet<Integer>();
+                    Set<Integer> updates = new TreeSet<Integer>();
+                    log().info("acquiring lock...");
+                    synchronized (m_lock) {                            
+                        for (Integer i: m_deletes) {
+                            deletes.add(i);
+                        }                        
+                        for (Integer i: m_adds) {
+                            adds.add(i);
+                        }
+                        for (Integer i: m_updates) {
+                            updates.add(i);
+                        }
+                        m_deletes = new TreeSet<Integer>();
+                        m_updates = new TreeSet<Integer>();
+                        m_adds = new TreeSet<Integer>();                            
+                        doSync = false;
+                    }
+                    log().info("lock released.");
+                    reSyncMap(deletes,adds,updates);
+                } else {
+                    log().debug("No Synchronization required");
+                    
+                }
+            }
+        }        
+    }
 
     @Override
     public void processPendingOperationForNode(AdapterOperation op)
@@ -261,31 +307,33 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             log().debug("processPendingOperationForNode: processing operation: " + op.getType().name() + " for node with Id: #" + op.getNodeId());
 
             if (op.getType() == AdapterOperationType.ADD) {
-                adds.add(op.getNodeId());
+                m_adds.add(op.getNodeId());
             } else if (op.getType() == AdapterOperationType.UPDATE) {
-                updates.add(op.getNodeId());
+                m_updates.add(op.getNodeId());
             } else if (op.getType() == AdapterOperationType.DELETE) {
-                deletes.add(op.getNodeId());
+                m_deletes.add(op.getNodeId());
             }
-            if ((adds.size()+deletes.size()+updates.size()) > m_mapsAdapterConfig.getOperationNumberBeforeSync()) {
-                reSyncMap();
-            }
-        log().info("processPendingOperationsForNode: lock released.");
+            doSync=true;
         }
+        log().info("processPendingOperationsForNode: lock released.");
 
     }    
     
-    private void reSyncMap() throws ProvisioningAdapterException {
+    private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
         m_template.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
-                    for (Integer nodeid:deletes) {
+                    for (Integer nodeid: deletes) {
                         log().debug("reSyncMap: deleting map element with nodeid: " + nodeid);
                         m_onmsMapElementDao.deleteElementsByNodeid(nodeid);
                     }
+
+                    // skip operation if there are only deletes
+                    if (adds.isEmpty() && updates.isEmpty())
+                        return null;
 
                     Map<String,OnmsMap> mapNames= new ConcurrentHashMap<String,OnmsMap>(m_mapNameMapSizeListMap.size());
                     
@@ -324,12 +372,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("reSyncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                 log().debug("reSyncMap: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,node.getLabel(),celement.getIcon(),xy.getX(),xy.getY())
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                 );
                                 m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                             } else {
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,node.getLabel(),celement.getIcon(),0,0)
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }
                         }
@@ -373,12 +421,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("reSyncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                 log().debug("reSyncMap: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,node.getLabel(),celement.getIcon(),xy.getX(),xy.getY())
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                 );
                                 m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                             } else {
                                 m_onmsMapElementDao.save(
-                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,node.getLabel(),celement.getIcon(),0,0)
+                                   new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }                            
                         }
@@ -478,9 +526,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 return null;
             }
         });
-        deletes = new TreeSet<Integer>();
-        updates = new TreeSet<Integer>();
-        adds = new TreeSet<Integer>();
     }
 
 
@@ -492,9 +537,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         Assert.notNull(m_mapsAdapterConfig, "Map Provisioning Adapter requires MapasAdapterConfig property to be set.");
         Assert.notNull(m_eventForwarder, "Map Provisioning Adapter requires EventForwarder property to be set.");
 
-        deletes = new TreeSet<Integer>();
-        updates = new TreeSet<Integer>();
-        adds = new TreeSet<Integer>();
+        m_deletes = new TreeSet<Integer>();
+        m_updates = new TreeSet<Integer>();
+        m_adds = new TreeSet<Integer>();
     }
     
     @Override
@@ -503,12 +548,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         new Thread(e).start();        
     }
     
-    class MapSyncExecutor implements Runnable {
-
-        public void run() {
-                syncMaps();
-        }        
-    }
 
     private void syncMaps() throws ProvisioningAdapterException {
 
@@ -588,12 +627,12 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                     log().debug("syncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
                                     log().debug("syncMaps: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
                                     m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,node.getLabel(),celement.getIcon(),xy.getX(),xy.getY())
+                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                     );
                                     m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
                                 } else {
                                     m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,node.getLabel(),celement.getIcon(),0,0)
+                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                     );   
                                 }
                             }
@@ -677,6 +716,12 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
             }
         }
         return primaryInterface.getIpAddress();
+    }
+    
+    private String getLabel(String FQDN) {
+        if (FQDN.indexOf(".")>0)
+       return FQDN.substring(0, FQDN.indexOf(".")); 
+        return FQDN;
     }
 
 }
