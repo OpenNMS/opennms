@@ -71,9 +71,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.core.style.ToStringCreator;
 
@@ -754,9 +756,17 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
 
     public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
+        OnmsIpInterface oldPrimaryInterface = null;
+        OnmsIpInterface scannedPrimaryIf = null;
         // build a map of ipAddrs to ipInterfaces for the scanned node
         Map<String, OnmsIpInterface> ipInterfaceMap = new HashMap<String, OnmsIpInterface>();
         for (OnmsIpInterface iface : scannedNode.getIpInterfaces()) {
+            if(scannedPrimaryIf == null && iface.isPrimary()){
+                scannedPrimaryIf = iface;
+            }else if(iface.isPrimary()){
+                iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+            }
+            
             ipInterfaceMap.put(iface.getIpAddress(), iface);
         }
     
@@ -771,13 +781,21 @@ public class OnmsNode extends OnmsEntity implements Serializable,
                 if (deleteMissing) {
                     it.remove();
                     dbIface.visit(new DeleteEventVisitor(eventForwarder));
+                }else if(scannedPrimaryIf != null && dbIface.isPrimary()){
+                   dbIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+                   oldPrimaryInterface = dbIface;
+                   
                 }
             } else {
                 // else update the database with scanned info
                 dbIface.mergeInterface(scannedIface, eventForwarder, deleteMissing);
+                if(scannedPrimaryIf != null && dbIface.isPrimary() && scannedPrimaryIf != scannedIface){
+                    dbIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+                    oldPrimaryInterface = dbIface;
+                }
             }
             
-            // now remove the interface form the map to indicate it was processed
+            // now remove the interface from the map to indicate it was processed
             ipInterfaceMap.remove(dbIface.getIpAddress());
         }
         
@@ -789,6 +807,16 @@ public class OnmsNode extends OnmsEntity implements Serializable,
                 iface.setSnmpInterface(getSnmpInterfaceWithIfIndex(iface.getIfIndex()));
             }
             iface.visit(new AddEventVisitor(eventForwarder));
+        }
+        
+        if(oldPrimaryInterface != null && scannedPrimaryIf != null){
+            EventBuilder bldr = new EventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, "Provisiond");
+            bldr.setIpInterface(scannedPrimaryIf);
+            bldr.setService("SNMP");
+            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryInterface.getIpAddress());
+            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, scannedPrimaryIf.getIpAddress());
+            
+            eventForwarder.sendNow(bldr.getEvent());
         }
     }
 
