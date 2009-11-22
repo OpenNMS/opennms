@@ -161,7 +161,6 @@ public class LinkEventCorrelator {
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             if(isSnmpPrimary(nodeId, e.getInterface())){
-                //linkUp(nodeId);
                 endPointFound(nodeId);
             } else {
                 debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
