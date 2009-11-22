@@ -268,6 +268,34 @@ public class DefaultNodeLinkServiceTest {
     }
     
     @Test
+    public void dwoTestSaveLinkParentNodeUnmanagedState() {
+        int nodeId = END_POINT2_ID;
+        
+        Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
+        DataLinkInterface dli = dlis.iterator().next();
+        
+        OnmsLinkState linkState = new OnmsLinkState();
+        linkState.setDataLinkInterface(dli);
+        
+        m_linkStateDao.save(linkState);
+        m_linkStateDao.flush();
+        
+        OnmsLinkState linkState2 = m_nodeLinkService.getLinkStateForInterface(dli);
+        
+        assertNotNull("linkState was null", linkState2);
+        assertEquals(OnmsLinkState.LinkState.LINK_UP, linkState2.getLinkState());
+        
+        linkState2.setLinkState(linkState2.getLinkState().LINK_PARENT_NODE_UNMANAGED);
+        
+        m_nodeLinkService.saveLinkState(linkState2);
+        
+        OnmsLinkState linkState3 = m_nodeLinkService.getLinkStateForInterface(dli);
+        
+        assertEquals(OnmsLinkState.LinkState.LINK_PARENT_NODE_UNMANAGED, linkState3.getLinkState());
+        
+    }
+    
+    @Test
     public void dwoTestAddPrimaryServiceToNode(){
         final String END_POINT_SERVICE_NAME = "EndPoint";
         addPrimaryServiceToNode(END_POINT1_ID, END_POINT_SERVICE_NAME);
