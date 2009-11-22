@@ -170,7 +170,13 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     
     @EventHandler(uei=EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI)
     public void dataLinkUnmanaged(Event e) {
-        updateLinkStatus("dataLinkUnmanaged", e, "U");
+        try{
+            updateLinkStatus("dataLinkUnmanaged", e, "U");
+        }catch(Throwable t){
+            debugf(this, t, "Caught a throwable in dataLinkUnmanaged");
+        }finally{
+            debugf(this, "Bailing out of dataLinkUnmanaged handler");
+        }
     }
     
     
