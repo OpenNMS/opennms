@@ -90,7 +90,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
     private static final String EVENT_LOG_STATUS_OID = ".1.3.6.1.4.1.674.10892.1.200.10.1.41.1";
 
     /**
-     * Defines the manufacturer’s name for this chassis.
+     * Defines the manufacturer's name for this chassis.
      */
     private static final String MANUFACTURER_OID = ".1.3.6.1.4.1.674.10892.1.300.10.1.8.1";
 
