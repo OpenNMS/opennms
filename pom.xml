@@ -479,6 +479,37 @@
           </execution>
         </executions>
       </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.6.1</version>
+        <executions>
+          <execution>
+            <id>aggregate</id>
+            <goals><goal>aggregate</goal></goals>
+            <phase>site</phase>
+            <configuration>
+              <maxmemory>2g</maxmemory>
+              <use>false</use>
+              <aggregate>true</aggregate>
+              <links>
+                <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+                <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
+                <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
+                <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+                <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+                <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+                <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
+                <link>http://junit.sourceforge.net/javadoc/</link>
+                <link>http://logging.apache.org/log4j/docs/api/</link>
+                <link>http://jakarta.apache.org/regexp/apidocs/</link>
+                <link>http://jakarta.apache.org/velocity/api/</link>
+              </links>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
    </plugins>
   </build>
 
@@ -512,41 +543,17 @@
             <minimumTokens>100</minimumTokens>
          </configuration>
       </plugin>
+<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
       </plugin>
+-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.1</version>
       </plugin>
-<!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <maxmemory>2g</maxmemory>
-          <aggregate>true</aggregate>
-          <use>false</use>
-          <links>
-            <link>http://java.sun.com/j2ee/1.4/docs/api</link>
-            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-            <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
-            <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
-            <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
-            <link>http://junit.sourceforge.net/javadoc/</link>
-            <link>http://logging.apache.org/log4j/docs/api/</link>
-            <link>http://jakarta.apache.org/regexp/apidocs/</link>
-            <link>http://jakarta.apache.org/velocity/api/</link>
-          </links>
-        </configuration>
-      </plugin>
--->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
