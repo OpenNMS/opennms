@@ -28,6 +28,7 @@ import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -268,7 +269,7 @@ public class DefaultNodeLinkServiceTest {
     }
     
     @Test
-    public void dwoTestSaveLinkParentNodeUnmanagedState() {
+    public void dwoTestSaveAllEnumStates() {
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
@@ -277,21 +278,11 @@ public class DefaultNodeLinkServiceTest {
         OnmsLinkState linkState = new OnmsLinkState();
         linkState.setDataLinkInterface(dli);
         
-        m_linkStateDao.save(linkState);
-        m_linkStateDao.flush();
         
-        OnmsLinkState linkState2 = m_nodeLinkService.getLinkStateForInterface(dli);
-        
-        assertNotNull("linkState was null", linkState2);
-        assertEquals(OnmsLinkState.LinkState.LINK_UP, linkState2.getLinkState());
-        
-        linkState2.setLinkState(linkState2.getLinkState().LINK_PARENT_NODE_UNMANAGED);
-        
-        m_nodeLinkService.saveLinkState(linkState2);
-        
-        OnmsLinkState linkState3 = m_nodeLinkService.getLinkStateForInterface(dli);
-        
-        assertEquals(OnmsLinkState.LinkState.LINK_PARENT_NODE_UNMANAGED, linkState3.getLinkState());
+        for(LinkState ls : LinkState.values()){
+            linkState.setLinkState(ls);
+            saveLinkState(linkState);
+        }
         
     }
     
@@ -348,6 +339,16 @@ public class DefaultNodeLinkServiceTest {
         
         
         
+    }
+    
+    public void saveLinkState(final OnmsLinkState linkState){
+        m_transactionTemplate.execute(new TransactionCallback() {
+            
+            public Object doInTransaction(TransactionStatus status) {
+                m_linkStateDao.saveOrUpdate(linkState);
+                return null;
+            }
+        });
     }
     
 }
