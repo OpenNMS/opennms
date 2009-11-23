@@ -98,7 +98,13 @@ public class NodeRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsNodeList getNodes() {
         OnmsCriteria criteria = getQueryFilters();
-        return new OnmsNodeList(m_nodeDao.findMatching(criteria));
+        
+        OnmsNodeList nodeList = new OnmsNodeList(m_nodeDao.findMatching(criteria));
+        
+        OnmsCriteria countCrit = getQueryFilters();
+        int count = m_nodeDao.countMatching(countCrit);
+        nodeList.setTotalCount(count);
+        return nodeList;
     }
 
     @GET
