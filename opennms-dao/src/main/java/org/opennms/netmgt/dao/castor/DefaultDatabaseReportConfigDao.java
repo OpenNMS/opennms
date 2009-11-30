@@ -39,9 +39,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
-import org.opennms.netmgt.config.databaseReports.DateOffset;
+import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
+import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 
 public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
@@ -68,36 +69,36 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
     }
     
-    public DateOffset[] getDateOffests(String id) {
+    public DateParm[] getDateParms(String id) {
         
-        DateOffset[] dates = null;
+        DateParm[] dateParms = null;
         Report report = getReport(id);
         if (report != null) {
-            dates =  report.getDateOffset();
+            dateParms =  report.getDateParm();
         }
         
-        return dates;
+        return dateParms;
         
     }
     
-    public ReportParm[] getReportCategories(String id) {
+    public StringParm[] getStringParms(String id) {
         
-        ReportParm[] categories = null;
+        StringParm[] stringParms = null;
         Report report = getReport(id);
         if (report != null) {
-            categories =  report.getReportCategory();
+            stringParms =  report.getStringParm();
         }
         
-        return categories;
+        return stringParms;
         
     }
     
-    public String getEngine(String name) {
+    public String getReportService(String name) {
         
         Report report = getReport(name);
         
         if(report != null){
-            return report.getEngineName();
+            return report.getReportService();
         } else {
         return new String();
         }
@@ -119,7 +120,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
     private Report getReport(String name) {
         
         for(Report report : getContainer().getObject()) {
-            if (name.equals(report.getReportName())) {
+            if (name.equals(report.getId())) {
                 return report;
             }
         }

@@ -242,14 +242,8 @@
 		<ref local="schedulerFactory" />
 	</property>
 	<property name="jobDetail">
-		<ref local="onmsReportJobDetail" />
+		<ref local="batchReportJobDetail" />
 	</property>
-  </bean>
-  
-  <!-- this can be removed when the quartz service runs happily -->
-  
-  <bean id="DatabaseReportService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportService">
-    <property name="reportRunner" ref="onmsDatabaseReportService" />
   </bean>
   
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -279,9 +273,9 @@
 		</property>
   </bean>
   
-  <bean id="onmsReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
 	  <property name="jobClass">
-		<value>org.opennms.web.report.database.ReportJob</value>
+		<value>org.opennms.web.report.database.BatchReportJob</value>
 	  </property>
   </bean> 
   

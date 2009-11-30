@@ -36,8 +36,8 @@
 package org.opennms.web.svclayer;
 
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.netmgt.model.DatabaseReportCriteria;
 import org.opennms.web.command.DatabaseReportCriteriaCommand;
+import org.opennms.web.report.database.model.DatabaseReportCriteria;
 
 public interface DatabaseReportCriteriaService {
     

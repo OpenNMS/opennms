@@ -9,6 +9,7 @@
 	<input name="reportId" required="true" />
 	
 	<on-start>
+		<evaluate expression="databaseReportConfigDao.getReportService(reportId)" result="flowScope.reportServiceName" />
 		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId, currentUser.name)" result="flowScope.criteria" />
 	</on-start>
 	

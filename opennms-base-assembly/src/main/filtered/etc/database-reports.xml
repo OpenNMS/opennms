@@ -3,16 +3,22 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
-	<report report-name="defaultCalendarReport" display-name="default calendar report"
-		engine-name="opennms" description="standard opennms report in calendar format">
-		<date name="endDate" display-name="end date" default-value="TODAY" />
-		<report-category name="reportCategory" display-name="report category"
-			default-value="networkInterfaces" />
+	<report id="defaultCalendarReport" display-name="default calendar report"
+		report-service="onmsBatchDatabaseReportService" description="standard opennms report in calendar format">
+		<date name="endDate" display-name="end date"/>
+		<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
+		<date-offset name="endDate" display-name="end date">
+			<default-interval>day</default-interval>
+			<default-count>1</default-count>
+		</date-offset>
 	</report>
-	<report report-name="defaultClassicReport" display-name="default classic report"
-		engine-name="opennms" description="standard opennms report in tabular format">
-		<date name="endDate" display-name="end date" default-value="TODAY" />
-		<report-category name="reportCategory" display-name="report category"
-			default-value="networkInterfaces" />
+	<report id="defaultClassicReport" display-name="default classic report"
+		report-service="onmsBatchDatabaseReportService" description="standard opennms report in tabular format">
+		<date name="endDate" display-name="end date"/>
+		<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
+		<date-offset name="endDate" display-name="end date">
+			<default-interval>day</default-interval>
+			<default-count>1</default-count>
+		</date-offset>
 	</report>
 </database-reports>

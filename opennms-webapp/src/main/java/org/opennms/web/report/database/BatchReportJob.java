@@ -36,15 +36,15 @@
 
 package org.opennms.web.report.database;
 
-import org.opennms.netmgt.model.DatabaseReportCriteria;
-import org.opennms.report.availability.svclayer.OnmsDatabaseReportService;
+import org.opennms.report.availability.svclayer.BatchReportService;
+import org.opennms.web.report.database.model.DatabaseReportCriteria;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-public class ReportJob extends QuartzJobBean {
+public class BatchReportJob extends QuartzJobBean {
     
     private ApplicationContext m_context;
 
@@ -55,10 +55,18 @@ public class ReportJob extends QuartzJobBean {
         JobDataMap dataMap = jobContext.getMergedJobDataMap();
         DatabaseReportCriteria criteria = (DatabaseReportCriteria) dataMap.get("criteria");
         
-        OnmsDatabaseReportService reportService = (OnmsDatabaseReportService)m_context.getBean("onmsDatabaseReportService");
+        BatchReportService reportService = 
+            (BatchReportService)m_context.getBean((String)dataMap.get("reportServiceName"));
         
-        reportService.run(criteria);
-
+        if (criteria.getSendMail() == true) {
+            reportService.runAndMail(criteria.getReportParms(),
+                                     criteria.getReportId(),
+                                     criteria.getMailTo(),
+                                     criteria.getMailFormat());
+        } else {
+            reportService.runAndPersist(criteria.getReportParms(),
+                                        criteria.getReportId());
+        }
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) {

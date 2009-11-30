@@ -37,9 +37,9 @@ package org.opennms.web.command;
 
 import java.util.Iterator;
 
-import org.opennms.netmgt.model.DatabaseReportCategoryParm;
-import org.opennms.netmgt.model.DatabaseReportCriteria;
-import org.opennms.netmgt.model.DatabaseReportDateParm;
+import org.opennms.web.report.database.model.DatabaseReportCriteria;
+import org.opennms.web.report.database.model.DatabaseReportDateParm;
+import org.opennms.web.report.database.model.DatabaseReportStringParm;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
@@ -68,19 +68,21 @@ public class DatabaseReportCriteriaCommand extends DatabaseReportCriteria {
         public void validateReportParameters(ValidationContext context) {
             MessageContext messages = context.getMessageContext();
             
-            for (Iterator<DatabaseReportDateParm> dates = m_dates.iterator(); dates.hasNext();) {
-                DatabaseReportDateParm dateParm = dates.next();
-                if (dateParm.getDate() == null) {
-                    messages.addMessage(new MessageBuilder().error().source("dates").
+            // this should be replaced with a call to validate on the reportengine bean
+            
+            for (Iterator<DatabaseReportDateParm> dateParms = m_dateParms.iterator(); dateParms.hasNext();) {
+                DatabaseReportDateParm dateParm = dateParms.next();
+                if (dateParm.getValue() == null) {
+                    messages.addMessage(new MessageBuilder().error().source("date parms").
                                         defaultText("cannot have null date field" + dateParm.getDisplayName()).build());
                 }
             }
             
-            for (Iterator<DatabaseReportCategoryParm> categories = m_categories.iterator(); categories.hasNext();) {
-                DatabaseReportCategoryParm catParm = categories.next();
-                if (catParm.getCategory() == "" ) {
-                    messages.addMessage(new MessageBuilder().error().source("categories").
-                                        defaultText("cannot have empty category field " + catParm.getDisplayName()).build());
+            for (Iterator<DatabaseReportStringParm> stringParms = m_stringParms.iterator(); stringParms.hasNext();) {
+                DatabaseReportStringParm stringParm = stringParms.next();
+                if (stringParm.getValue() == "" ) {
+                    messages.addMessage(new MessageBuilder().error().source("string parms").
+                                        defaultText("cannot have empty category field " + stringParm.getDisplayName()).build());
                 }
             }
             

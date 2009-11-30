@@ -36,37 +36,32 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Date;
-import java.util.List;
 
-import org.opennms.netmgt.model.DatabaseReportCategoryParm;
-import org.opennms.netmgt.model.DatabaseReportCriteria;
-import org.opennms.netmgt.model.DatabaseReportDateParm;
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.report.availability.svclayer.BatchReportService;
+import org.opennms.web.report.database.model.DatabaseReportCriteria;
 import org.opennms.web.svclayer.DatabaseReportService;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.springframework.binding.message.MessageBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.webflow.execution.RequestContext;
 
-public class QuartzDatabaseReportService implements DatabaseReportService {
-
-
-    private static final String DATE_NAME = "endDate";
-    private static final String CATEGORY_NAME = "reportCategory";
+public class QuartzDatabaseReportService implements DatabaseReportService, ApplicationContextAware {
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
-    private static final String CATEGORY_ERROR = 
-        "Report definition must have only one category parameter, with name " + CATEGORY_NAME;
-    private static final String DATE_ERROR = 
-        "Report definition must have only one date parameter, with name " + DATE_NAME;
+    private static final String PARAMETER_ERROR = 
+        "Report parameters did not match the definition for the report please contact your OpenNMS administrator";
     private static final String SCHEDULER_ERROR = 
         "An exception occurred when scheduling the report";
     
-    JobDetail m_jobDetail;
-    
-    Scheduler m_scheduler;
+    private JobDetail m_jobDetail;
+    private Scheduler m_scheduler;
+    private ApplicationContext m_context;
 
     /* (non-Javadoc)
      * @see org.opennms.web.svclayer.DatabaseReportService#execute(org.opennms.web.svclayer.support.DatabaseReportCriteria)
@@ -74,39 +69,34 @@ public class QuartzDatabaseReportService implements DatabaseReportService {
     
     public String execute(DatabaseReportCriteria criteria, RequestContext context) {
         
-        List <DatabaseReportCategoryParm> categories = criteria.getCategories();
-        if ((categories.size() != 1) || (!categories.get(0).getName().equals(CATEGORY_NAME))) {
+        String reportServiceName = (String)context.getFlowScope().get("reportServiceName");
+        
+        BatchReportService reportService = (BatchReportService)m_context.getBean(reportServiceName);
+        
+        if (reportService.validate(criteria.getReportParms(), criteria.getReportId()) == false) {
             context.getMessageContext().addMessage(new MessageBuilder().error()
-                                                   .defaultText(CATEGORY_ERROR).build());
+                                                   .defaultText(PARAMETER_ERROR).build());
             return ERROR;
         } else {
-            List <DatabaseReportDateParm> dates = criteria.getDates();
-            if ((dates.size() != 1) || (!dates.get(0).getName().equals(DATE_NAME))) {
+            SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
+                                                      null,
+                                                      new Date(),
+                                                      null,
+                                                      0,
+                                                      0L);
+            trigger.getJobDataMap().put("criteria", criteria);
+            trigger.getJobDataMap().put("reportServiceName", reportServiceName);
+            try {
+                m_scheduler.scheduleJob(m_jobDetail, trigger);
+            } catch (SchedulerException e) {
+                e.printStackTrace();
                 context.getMessageContext().addMessage(new MessageBuilder().error()
-                                                       .defaultText(DATE_ERROR).build());
-                return ERROR; 
-            } else {
-                SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
-                                                          null,
-                                                          new Date(),
-                                                          null,
-                                                          0,
-                                                          0L);
-                m_jobDetail.getJobDataMap().put("criteria", criteria);
-                try {
-                    m_scheduler.scheduleJob(m_jobDetail, trigger);
-                } catch (SchedulerException e) {
-                    e.printStackTrace();
-                    context.getMessageContext().addMessage(new MessageBuilder().error()
-                                                           .defaultText(SCHEDULER_ERROR).build());
-                    return ERROR;
-                }
-
-                
-                return SUCCESS;
+                                                       .defaultText(SCHEDULER_ERROR).build());
+                return ERROR;
             }
+
+            return SUCCESS;
         }
-        
     }
 
     public void setJobDetail(JobDetail reportJob) {
@@ -115,6 +105,10 @@ public class QuartzDatabaseReportService implements DatabaseReportService {
     
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        m_context = applicationContext;
     }
 
 }

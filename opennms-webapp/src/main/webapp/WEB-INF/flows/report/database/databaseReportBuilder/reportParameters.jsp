@@ -59,29 +59,36 @@
 <form:form modelAttribute="criteria">
 	
 	<table>
-			<%-- // date fields --%>
-		<c:forEach items="${criteria.dates}" var="date" varStatus="dateParmRow">
+		<%-- // string parameters --%>
+		<c:forEach items="${criteria.stringParms}" var="stringParm" varStatus="stringParmRow">
 			<tr>
-				<td><c:out value="${date.displayName}"/></td>
-				<td>
-					<form:input path="dates[${dateParmRow.index}].date" />
-					<script type="text/javascript">
-						Spring.addDecoration(new Spring.ElementDecoration({
-						elementId : "dates${dateParmRow.index}.date",
-						widgetType : "dijit.form.DateTextBox",
-						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
-					</script>
+				<td><c:out value="${stringParm.displayName}"/></td>
+                <td>
+                <c:choose>
+	                <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
+	                	<form:select path="stringParms[${stringParmRow.index}].value"> 
+		                <form:options items="${categories}"/>
+		                </form:select>
+	                </c:when>
+	                <c:otherwise>
+	                	<form:input path="stringParms[${stringParmRow.index}].value"/>
+	                </c:otherwise>
+                </c:choose>
 				</td>
 			</tr>
 		</c:forEach>
-		<%-- // category fields --%>
-		<c:forEach items="${criteria.categories}" var="category" varStatus="categoryParmRow">
+		<%-- // date fields --%>
+		<c:forEach items="${criteria.dateParms}" var="date" varStatus="dateParmRow">
 			<tr>
-				<td><c:out value="${category.displayName}"/></td>
-                <td>
-	                <form:select path="categories[${categoryParmRow.index}].category"> 
-	                <form:options items="${categories}"/>
-	                </form:select>
+				<td><c:out value="${date.displayName}"/></td>
+				<td>
+					<form:input path="dateParms[${dateParmRow.index}].value" />
+					<script type="text/javascript">
+						Spring.addDecoration(new Spring.ElementDecoration({
+						elementId : "dateParms${dateParmRow.index}.value",
+						widgetType : "dijit.form.DateTextBox",
+						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
+					</script>
 				</td>
 			</tr>
 		</c:forEach>

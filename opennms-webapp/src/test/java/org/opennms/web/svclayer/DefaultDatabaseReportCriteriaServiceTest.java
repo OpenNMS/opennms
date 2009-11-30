@@ -75,12 +75,15 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     public void testDatabaseReportService() throws Exception {
         
         // FIXME this test is failing
+        // probably because the userManager/factory is not set up properly.
+        // this will not be an issue if we move the execution config (mailto etc),
+        // of the report criteria.
         
         DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID, "admin");
         
-        assertEquals(criteria.getDates().size(),1);
-        assertEquals(criteria.getDates().get(0).getDisplayName(),DATE_DISPLAY_NAME);
-        assertEquals(criteria.getDates().get(0).getName(),DATE_NAME);
+        assertEquals(criteria.getDateParms().size(),1);
+        assertEquals(criteria.getDateParms().get(0).getDisplayName(),DATE_DISPLAY_NAME);
+        assertEquals(criteria.getDateParms().get(0).getName(),DATE_NAME);
         
     }
 

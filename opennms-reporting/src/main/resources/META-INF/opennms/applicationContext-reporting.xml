@@ -126,8 +126,8 @@
 		<property name="reportRunner" ref="availabilityReportRunner" />
 	</bean>
 	
-	<bean id="onmsDatabaseReportService"
-		class="org.opennms.report.availability.svclayer.OnmsDatabaseReportService"
+	<bean id="onmsBatchDatabaseReportService"
+		class="org.opennms.report.availability.svclayer.OnmsBatchDatabaseReportService"
 		scope="prototype">
 		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
 		<property name="calendarCalculator">

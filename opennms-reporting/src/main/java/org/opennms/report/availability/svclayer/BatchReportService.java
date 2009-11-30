@@ -10,7 +10,9 @@
  *
  * Modifications:
  * 
- * Created: Oct 26, 2009
+ * Created: November 23, 2009 jonathan@opennms.org
+ * 
+ * TODO: Move this into an API project
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -33,13 +35,19 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.web.svclayer;
+package org.opennms.report.availability.svclayer;
 
-import org.opennms.web.report.database.model.DatabaseReportCriteria;
-import org.springframework.webflow.execution.RequestContext;
+import java.util.HashMap;
 
-public interface DatabaseReportService {
-    
-    public String execute(DatabaseReportCriteria criteria, RequestContext context);
+public interface BatchReportService {
+
+    public abstract boolean validate(HashMap<String, Object> reportParms,
+            String reportID);
+
+    public abstract void runAndPersist(HashMap<String, Object> reportParms,
+            String reportID);
+
+    public abstract void runAndMail(HashMap<String, Object> reportParms,
+            String reportId, String recipient, String format);
 
 }

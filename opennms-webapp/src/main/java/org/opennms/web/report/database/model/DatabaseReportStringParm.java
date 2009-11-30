@@ -33,31 +33,35 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.model;
+package org.opennms.web.report.database.model;
 
 import java.io.Serializable;
 
-public class DatabaseReportParm implements Serializable {
-
-    private static final long serialVersionUID = -7987984390575422836L;
+public class DatabaseReportStringParm extends DatabaseReportParm implements Serializable {
     
-    String m_name;
-    String m_displayName;
-
-    public String getName() {
-        return m_name;
+    
+    private static final long serialVersionUID = -2057597127243217834L;
+    
+    String m_value;
+    String m_type;
+    
+    public DatabaseReportStringParm() {
+      super();
     }
-
-    public void setName(String name) {
-        m_name = name;
+    
+    public String getValue() {
+        return m_value;
     }
-
-    public String getDisplayName() {
-        return m_displayName;
+    
+    public void setValue(String value) {
+        m_value = value;
     }
-
-    public void setDisplayName(String displayName) {
-        m_displayName = displayName;
+    
+    public String getInputType() {
+        return m_type;
+    }
+    public void setInputType(String type) {
+        m_type = type;
     }
 
 }

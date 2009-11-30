@@ -33,26 +33,31 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.model;
+package org.opennms.web.report.database.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public class DatabaseReportDateParm extends DatabaseReportParm implements Serializable {
+public class DatabaseReportParm implements Serializable {
 
-    private static final long serialVersionUID = -8528562178984136887L;
+    private static final long serialVersionUID = -7987984390575422836L;
     
-    Date m_date;
-    
-    public DatabaseReportDateParm() {
-        super();
+    String m_name;
+    String m_displayName;
+
+    public String getName() {
+        return m_name;
     }
-    
-    public Date getDate() {
-        return m_date;
+
+    public void setName(String name) {
+        m_name = name;
     }
-    public void setDate(Date date) {
-        m_date = date;
-    } 
+
+    public String getDisplayName() {
+        return m_displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        m_displayName = displayName;
+    }
 
 }

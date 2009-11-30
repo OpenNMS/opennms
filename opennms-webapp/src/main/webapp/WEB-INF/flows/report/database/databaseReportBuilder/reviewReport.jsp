@@ -55,17 +55,17 @@
 	  		<td>Report Name</td>
 			<td><c:out value="${criteria.displayName}"/></td>
 	  <%-- // date fields --%>
-	  <c:forEach items="${criteria.dates}" var="date" >
+	  <c:forEach items="${criteria.dateParms}" var="dateParm" >
 			<tr>
-				<td><c:out value="${date.displayName}"/></td>
-				<td><c:out value="${date.date}"/></td>
+				<td><c:out value="${dateParm.displayName}"/></td>
+				<td><c:out value="${dateParm.value}"/></td>
 			</tr>
 	  </c:forEach>
 	  <%-- // category fields --%>
-		<c:forEach items="${criteria.categories}" var="category" >
+		<c:forEach items="${criteria.stringParms}" var="stringParm" >
 			<tr>
-				<td><c:out value="${category.displayName}"/></td>
-				<td><c:out value="${category.category}"/></td>
+				<td><c:out value="${stringParm.displayName}"/></td>
+				<td><c:out value="${stringParm.value}"/></td>
             </tr>
 		</c:forEach>
 	  </table>

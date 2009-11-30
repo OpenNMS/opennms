@@ -41,6 +41,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 import org.opennms.netmgt.config.databaseReports.DateOffset;
+import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -53,6 +54,7 @@ public class DefaultDatabaseReportConfigDaoTest {
     private static final String DESCRIPTION = "default calendar report";
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
+    private static final String REPORT_SERVICE = "onmsBatchDatabaseReportService";
     
 
     @Test
@@ -63,18 +65,15 @@ public class DefaultDatabaseReportConfigDaoTest {
         dao.setConfigResource(resource);
         dao.afterPropertiesSet();
         
-        ReportParm[] dates = dao.getDates(NAME);
+        assertEquals(dao.getReportService(NAME),REPORT_SERVICE);
         
+        DateParm[] dates = dao.getDateParms(NAME);
         assertEquals(dates.length,1);
         assertEquals(dates[0].getName(),DATE_NAME);
         assertEquals(dates[0].getDisplayName(),DATE_DISPLAY_NAME);
-        
-        DateOffset[] offset = dao.getDateOffests(NAME);
-        assertEquals(offset.length,1);
-        assertEquals(offset[0].getName(),DATE_NAME);
-        assertEquals(offset[0].getDisplayName(),DATE_DISPLAY_NAME);
-        assertEquals(offset[0].getDefaultCount(),1);
-        assertEquals(offset[0].getDefaultInterval(),"day");
+        assertEquals(dates[0].getUseAbsoluteDate(),true);
+        assertEquals(dates[0].getDefaultCount(),1);
+        assertEquals(dates[0].getDefaultInterval(),"day");
         
         
         

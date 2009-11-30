@@ -33,9 +33,11 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.model;
+package org.opennms.web.report.database.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -44,8 +46,8 @@ public class DatabaseReportCriteria implements Serializable {
     private static final long serialVersionUID = -3848794546173077375L;
     protected String m_reportId;
     protected String m_displayName;
-    protected List <DatabaseReportCategoryParm> m_categories;
-    protected List <DatabaseReportDateParm> m_dates;
+    protected List <DatabaseReportDateParm> m_dateParms;
+    protected List <DatabaseReportStringParm> m_stringParms;
     protected String m_mailTo;
     protected Boolean m_persist;
     protected Boolean m_sendMail;
@@ -71,20 +73,20 @@ public class DatabaseReportCriteria implements Serializable {
         m_mailFormat = format;
     }
 
-    public List<DatabaseReportDateParm> getDates() {
-        return m_dates;
+    public List<DatabaseReportDateParm> getDateParms() {
+        return m_dateParms;
     }
 
-    public void setDates(List<DatabaseReportDateParm> dates) {
-        m_dates = dates;
+    public void setDateParms(List<DatabaseReportDateParm> dateParms) {
+        m_dateParms = dateParms;
+    }
+    
+    public List<DatabaseReportStringParm> getStringParms() {
+        return m_stringParms;
     }
 
-    public List<DatabaseReportCategoryParm> getCategories() {
-        return m_categories;
-    }
-
-    public void setCategories(List<DatabaseReportCategoryParm> categories) {
-        m_categories = categories;
+    public void setStringParms(List<DatabaseReportStringParm> strings) {
+        m_stringParms = strings;
     }
 
     public void setPersist(Boolean persist) {
@@ -117,6 +119,27 @@ public class DatabaseReportCriteria implements Serializable {
 
     public String getDisplayName() {
         return m_displayName;
+    }
+    
+    public HashMap<String, Object> getReportParms() {
+        
+        HashMap <String,Object>parmMap = new HashMap<String, Object>();
+        
+        // Add all the strings from the report
+        Iterator<DatabaseReportStringParm>stringIter = m_stringParms.iterator();
+        while (stringIter.hasNext()) {
+            DatabaseReportStringParm parm = stringIter.next();
+            parmMap.put(parm.getName(), parm.getValue());
+        }
+        
+        // Add all the dates from the report
+        Iterator<DatabaseReportDateParm>dateIter = m_dateParms.iterator();
+        while (dateIter.hasNext()) {
+            DatabaseReportDateParm parm = dateIter.next();
+            parmMap.put(parm.getName(), parm.getValue());
+        }
+        
+        return parmMap;
     }
 
 }

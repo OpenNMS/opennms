@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: November 11, 2009 jonathan@opennms.org
+ * Created: November 23, 2009 jonathan@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -35,10 +35,11 @@
  */
 package org.opennms.report.availability.svclayer;
 
-import org.opennms.netmgt.model.DatabaseReportCriteria;
+import java.util.HashMap;
 
-public interface DatabaseReportService {
+public interface ReportValidationService {
     
-    public void run(DatabaseReportCriteria criteria);
+    public abstract boolean validate(HashMap<String, Object> reportParms,
+            String reportID);
 
 }

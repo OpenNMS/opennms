@@ -53,7 +53,7 @@ public class DefaultDatabaseReportListService implements
         
         for(Report report : m_dao.getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
-            summary.setId(report.getReportName());
+            summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
             summary.setDescription(report.getDescription());
             summaryList.add(summary);

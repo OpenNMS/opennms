@@ -43,11 +43,13 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
+import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.netmgt.model.DatabaseReportCategoryParm;
-import org.opennms.netmgt.model.DatabaseReportDateParm;
 import org.opennms.web.command.DatabaseReportCriteriaCommand;
+import org.opennms.web.report.database.model.DatabaseReportDateParm;
+import org.opennms.web.report.database.model.DatabaseReportStringParm;
 import org.opennms.web.svclayer.DatabaseReportCriteriaService;
 
 public class DefaultDatabaseReportCriteriaService implements
@@ -59,42 +61,52 @@ public class DefaultDatabaseReportCriteriaService implements
        
         DatabaseReportCriteriaCommand command = new DatabaseReportCriteriaCommand();
         
+        // TODO Extract this lot into a deliveryOptions object
         command.setReportId(id);
         command.setDisplayName(m_dao.getDisplayName(id));
         command.setMailFormat("HTML");
         command.setPersist(true);
         command.setSendMail(true);
         
-        
-        ReportParm[] dates = m_dao.getDates(id);
+        ArrayList<DatabaseReportDateParm> dateParms = new ArrayList<DatabaseReportDateParm>();
+        DateParm[] dates = m_dao.getDateParms(id);
         if (dates.length > 0) {
-            ArrayList<DatabaseReportDateParm> dateParms = new ArrayList<DatabaseReportDateParm>();;
             for (int i = 0 ; i < dates.length ; i++ ) {
                 DatabaseReportDateParm dateParm = new DatabaseReportDateParm();
-                //dateParm.setDisplayName(dates[i].getDisplayName());
                 dateParm.setDisplayName(dates[i].getDisplayName());
                 dateParm.setName(dates[i].getName());
+                dateParm.setCount(new Integer((int) dates[i].getDefaultCount()));
+                dateParm.setInterval(dates[i].getDefaultInterval());
                 Calendar cal = Calendar.getInstance();
-                dateParm.setDate(cal.getTime());
+                int amount = 0 - dates[i].getDefaultCount();
+                if (dates[i].getDefaultInterval().equals("year")) {
+                    cal.add(Calendar.YEAR, amount);
+                } else { 
+                    if (dates[i].getDefaultInterval().equals("year")) {
+                        cal.add(Calendar.MONTH, amount);
+                    } else {
+                        cal.add(Calendar.DATE, amount);
+                    }
+                }   
+                dateParm.setValue(cal.getTime());
                 dateParms.add(dateParm);
-
             }
-            
-            command.setDates(dateParms);
         }
+        command.setDateParms(dateParms);
         
-        ReportParm[] categories = m_dao.getReportCategories(id);
-        if (categories.length > 0) {
-            ArrayList<DatabaseReportCategoryParm> catParms = new ArrayList<DatabaseReportCategoryParm>();;
-            for (int i = 0 ; i < categories.length ; i++ ) {
-                DatabaseReportCategoryParm catParm = new DatabaseReportCategoryParm();
-                catParm.setDisplayName(categories[i].getDisplayName());
-                catParm.setName(categories[i].getName());
-                catParm.setCategory("Network Interfaces");
-                catParms.add(catParm);
+        ArrayList<DatabaseReportStringParm> stringParms = new ArrayList<DatabaseReportStringParm>();
+        StringParm[] strings = m_dao.getStringParms(id);
+        if (strings.length > 0) {
+            for (int i = 0 ; i < strings.length ; i++ ) {
+                DatabaseReportStringParm stringParm = new DatabaseReportStringParm();
+                stringParm.setDisplayName(strings[i].getDisplayName());
+                stringParm.setName(strings[i].getName());
+                stringParm.setInputType(strings[i].getInputType());
+                stringParm.setValue(strings[i].getDefault());
+                stringParms.add(stringParm);
             }
-            command.setCategories(catParms);
         }
+        command.setStringParms(stringParms);
 
         UserManager userFactory = UserFactory.getInstance();
         try {

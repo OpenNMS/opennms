@@ -24,14 +24,12 @@
 	<element name="report">
 		<complexType>
 			<sequence>
-				<element name="date" maxOccurs="unbounded" minOccurs="0"
-					type="this:report-parm" />
-				<element name="report-category" maxOccurs="unbounded" minOccurs="0"
-					type="this:report-parm" />
-				<element name="date-offset" maxOccurs="unbounded" minOccurs="0"
-					type="this:date-offset-parm" />				
+				<element name="string-parm" maxOccurs="unbounded" minOccurs="0"
+					type="this:string-parm" />
+				<element name="date-parm" maxOccurs="unbounded" minOccurs="0"
+					type="this:date-parm" />
 			</sequence>
-			<attribute name="report-name" type="string" use="required">
+			<attribute name="id" type="string" use="required">
 				<annotation>
 					<documentation>the name of this report as defined in engine
 						configuration</documentation>
@@ -43,7 +41,7 @@
 					</documentation>
 				</annotation>
 			</attribute>
-			<attribute name="engine-name" type="string" use="required">
+			<attribute name="report-service" type="string" use="required">
 				<annotation>
 					<documentation>the name of the engine to use to process and
 						render this report</documentation>
@@ -56,69 +54,99 @@
 			</attribute>
 		</complexType>
 	</element>
-	
-	<complexType name="date-offset-parm">
-		
+
+	<complexType name="date-parm">
+
 		<annotation>
 			<documentation>
-				An offset period used as a base to determine a real date when running the report
+				An offset period used as a base to determine a real
+				date when running the report
 			</documentation>
 		</annotation>
-		
+
 		<sequence>
-			<element maxOccurs="1" minOccurs="1" name="default-interval">
-	         <annotation>
-	           <documentation>period for the date offset (day|month|year)</documentation>
-	         </annotation>
-	         <simpleType>
-	           <restriction base="string">
-	             <pattern value="(day|month|year)"/>
-	           </restriction>
-	         </simpleType>
-	       </element>
-	       <element maxOccurs="1" minOccurs="1" name="default-count" type="integer" />
+			<element maxOccurs="1" minOccurs="1" name="default-interval" type="this:date-interval" />
+			<element maxOccurs="1" minOccurs="1" name="default-count" type="int" />
 		</sequence>
-		
+
 		<attribute name="name" type="string" use="required">
 			<annotation>
-				<documentation>the name of this parameter as passed to the report engine</documentation>
+				<documentation>the name of this parameter as passed to the report
+					engine</documentation>
 			</annotation>
 		</attribute>
-		
+
 		<attribute name="display-name" type="string" use="required">
 			<annotation>
 				<documentation>the name of this parameter as displayed in the
 					webui</documentation>
 			</annotation>
 		</attribute>
-	
+		
+		<attribute name="use-absolute-date" type="boolean" use="optional">
+			<annotation>
+				<documentation>flag to use absolute date if possible</documentation>
+			</annotation>
+		</attribute>
+
 	</complexType>
 
-	<complexType name="report-parm">
+	<complexType name="string-parm">
+
+		<annotation>
+			<documentation>
+				A string parameter passed to the report engine
+			</documentation>
+		</annotation>
+
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="default" type="string">
+				<annotation>
+					<documentation>value</documentation>
+				</annotation>
+			</element>
+		</sequence>
+
+		<attribute name="name" type="string" use="required">
+			<annotation>
+				<documentation>the name of this parameter as passed to the report
+					engine</documentation>
+			</annotation>
+		</attribute>
+
+		<attribute name="display-name" type="string" use="required">
+			<annotation>
+				<documentation>the name of this parameter as displayed in the
+					webui</documentation>
+			</annotation>
+		</attribute>
+
+		<attribute name="input-type" use="required">
+			<annotation>
+				<documentation>indicates if collected SNMP data is to be
+					stored for
+					"all" interfaces or only for the "primary"
+					interface.</documentation>
+			</annotation>
+
+			<simpleType>
+				<restriction base="string">
+					<pattern value="(reportCategorySelector|freeText)" />
+				</restriction>
+			</simpleType>
+		</attribute>
+
+	</complexType>
+
+	<simpleType name="date-interval">
 		<annotation>
 			<documentation>
 				Parameters taken by this report
 			</documentation>
 		</annotation>
-		<sequence>
-		<element maxOccurs="1" minOccurs="0" name="default" type="string">
-			<annotation>
-				<documentation>value</documentation>
-			</annotation>
-		</element>
-		</sequence>
-		<attribute name="name" type="string" use="required">
-			<annotation>
-				<documentation>the name of this parameter as passed to the report engine</documentation>
-			</annotation>
-		</attribute>
-		<attribute name="display-name" type="string" use="required">
-			<annotation>
-				<documentation>the name of this parameter as displayed in the
-					webui</documentation>
-			</annotation>
-		</attribute>
-	</complexType>
-	
+		<restriction base="string">
+			<pattern value="(day|month|year)" />
+		</restriction>
+	</simpleType>
 
 </schema>

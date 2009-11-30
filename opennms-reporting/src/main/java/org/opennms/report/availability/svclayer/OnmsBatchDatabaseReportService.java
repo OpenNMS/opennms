@@ -10,7 +10,7 @@
  *
  * Modifications:
  * 
- * Created: November 11, 2009 jonathan@opennms.org
+ * Created: November 23, 2009 jonathan@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -37,12 +37,13 @@ package org.opennms.report.availability.svclayer;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
-import org.opennms.netmgt.model.DatabaseReportCriteria;
 import org.opennms.report.availability.AvailabilityCalculationException;
 import org.opennms.report.availability.AvailabilityCalculator;
 import org.opennms.report.availability.ReportMailer;
@@ -53,7 +54,7 @@ import org.opennms.report.availability.render.ReportRenderer;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class OnmsDatabaseReportService implements Runnable {
+public class OnmsBatchDatabaseReportService implements BatchReportService, ReportValidationService {
     
     private AvailabilityCalculator m_classicCalculator;
 
@@ -62,8 +63,6 @@ public class OnmsDatabaseReportService implements Runnable {
     private OnmsDatabaseReportConfigDao m_configDao;
     
     private Category log;
-
-    private DatabaseReportCriteria m_criteria;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -76,31 +75,60 @@ public class OnmsDatabaseReportService implements Runnable {
     private static final String SVG_OUTPUT_FILE_NAME = "SVGAvailReport.pdf";
     private static final String PDF_OUTPUT_FILE_NAME = "PDFAvailReport.pdf";
     
-    public OnmsDatabaseReportService() {
+    public OnmsBatchDatabaseReportService() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(OnmsDatabaseReportService.class);
+        log = ThreadCategory.getInstance(OnmsBatchDatabaseReportService.class);
         
     }
     
-    public void run(DatabaseReportCriteria criteria) {
-        this.setCriteria(criteria);
-        run();
+    
+    /* (non-Javadoc)
+     * @see org.opennms.report.availability.svclayer.BatchDatabaseReportService#validate(java.util.HashMap, java.lang.String)
+     */
+    public boolean validate(HashMap<String, Object> reportParms, String reportID){
+        
+        if (!reportParms.containsKey("endDate")) {
+            log.fatal("report parameters should contain parameter endDate");
+            return false;
+        }
+        
+        if (!(reportParms.get("endDate") instanceof Date)){
+            log.fatal("report parameters 'endDate' should be a Date");
+            return false;
+        }
+
+        if (!reportParms.containsKey("reportCategory")) {
+            log.fatal("report parameters should contain parameter reportCategory");
+            return false;
+        }
+
+        if (!(reportParms.get("reportCategory") instanceof String)){
+            log.fatal("report parameter 'reportCategory' should be a String");
+            return false;
+        }
+        
+        return true;
+        
     }
 
-    public void run() {
+    /* (non-Javadoc)
+     * @see org.opennms.report.availability.svclayer.BatchDatabaseReportService#runAndPersist(java.util.HashMap, java.lang.String)
+     */
+    public void runAndPersist(HashMap<String, Object> reportParms, String reportID) {
         
-        Resource xsltResource;
+        runInternal(reportParms, reportID);
+        
+    }
+    
+    private String runInternal(HashMap<String, Object> reportParms, String reportId) {
         
         AvailabilityCalculator calculator;
-        String inputFileName;
-        String outputFileName;
-        ReportRenderer renderer;
+        String reportFileName = null;
         
-        log.debug("running OpenNMS database report " + m_criteria.getReportId());
-        log.debug(m_configDao.getType(m_criteria.getReportId()) + " type report selected");
+        log.debug("running OpenNMS database report " + reportId);
         
-        if (m_configDao.getType(m_criteria.getReportId()).equalsIgnoreCase(CAL_TYPE)) {
+        if (m_configDao.getType(reportId).equalsIgnoreCase(CAL_TYPE)) {
             calculator = m_calendarCalculator;
             log.debug("Calendar report format selected");
         } else {
@@ -108,48 +136,60 @@ public class OnmsDatabaseReportService implements Runnable {
             log.debug("Classic report format selected");
         }
         
+        calculator.setCategoryName((String) reportParms.get("reportCategory"));
+        
         calculator.setCalendar(new GregorianCalendar());
+        calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
         
-        // TODO fix this so that it uses the right name for the category
-        calculator.setCategoryName(getCriteria().getCategories().get(0).getCategory());
-        // TODO fix this so that it uses the right name for the date
-        calculator.setPeriodEndDate(getCriteria().getDates().get(0).getDate());
+        calculator.setLogoURL(m_configDao.getLogo(reportId));
         
-        calculator.setLogoURL(m_configDao.getLogo(getCriteria().getReportId()));
+
+        // have the calculator calculate everything to enable any of the templates to work
+        // This will have some performance impact.
         
-        if (getCriteria().getMailFormat() == null || getCriteria().getMailFormat().equalsIgnoreCase(SVG_FORMAT)) {
-            log.debug("report will be calculated as PDF with embedded SVG");
-            calculator.setReportFormat(SVG_FORMAT);
-        } else if (getCriteria().getMailFormat().equalsIgnoreCase(SVG_FORMAT)) {
-            log.debug("report will be calculated as PDF");
-            calculator.setReportFormat(PDF_FORMAT);
-        } else {
-            log.debug("report will be calculated as html");
-            calculator.setReportFormat(HTML_FORMAT);
-        }
+        calculator.setReportFormat("all");
         
-        
+        log.debug("Starting Availability Report Calculations");
         try {
-            log.debug("Starting Availability Report Calculations");
             calculator.calculate();
-            if (getCriteria().getPersist() == true) {
-                inputFileName = calculator.writeLocateableXML();
-            } else {
-                inputFileName = calculator.writeXML();
-            }
-            if (getCriteria().getSendMail() == true) {
-                if (getCriteria().getMailFormat().equalsIgnoreCase(HTML_FORMAT)) {
+            reportFileName = calculator.writeLocateableXML();
+        } catch (AvailabilityCalculationException ce) {
+            log.fatal("Unable to calculate report data ", ce);
+        }
+
+        return reportFileName;
+        
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see org.opennms.report.availability.svclayer.BatchDatabaseReportService#runAndMail(java.util.HashMap, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void runAndMail(HashMap<String, Object> reportParms, String reportId, String recipient, String format) {
+    
+        Resource xsltResource;
+        String inputFileName;
+        String outputFileName;
+        ReportRenderer renderer;
+        
+        inputFileName = runInternal(reportParms, reportId);
+        
+        if (inputFileName != null) {
+ 
+            try {
+                
+                if (format.equalsIgnoreCase(HTML_FORMAT)) {
                     renderer = new HTMLReportRenderer();
-                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(getCriteria().getReportId()));
+                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(reportId));
                     outputFileName = HTML_OUTPUT_FILE_NAME;
                 } else {
                     renderer = new PDFReportRenderer();
-                    if (getCriteria().getMailFormat().equalsIgnoreCase(SVG_FORMAT)) {
-                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(getCriteria().getReportId()));
+                    if (format.equalsIgnoreCase(SVG_FORMAT)) {
+                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(reportId));
                         outputFileName = SVG_OUTPUT_FILE_NAME;
              
                     } else {
-                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(getCriteria().getReportId()));
+                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(reportId));
                         outputFileName = PDF_OUTPUT_FILE_NAME;
                     }
                 }
@@ -161,19 +201,17 @@ public class OnmsDatabaseReportService implements Runnable {
                 renderer.setBaseDir(baseDir);
                 renderer.render(inputFileName, outputFileName, xsltResource);
                 ReportMailer mailer = new ReportMailer(
-                                                       getCriteria().getMailTo(),
+                                                       recipient,
                                                        baseDir + "/" + outputFileName);
                 mailer.send();
+                
+            } catch (MalformedURLException e) {
+                log.fatal("Malformed URL for xslt template");
+            } catch (ReportRenderException e) {
+                log.fatal("unable to render report");
+            } catch (IOException e) {
+                log.fatal("unable to mail report");
             }
-            
-        } catch (AvailabilityCalculationException ce) {
-            log.fatal("Unable to calculate report data ", ce);
-        } catch (MalformedURLException e) {
-            log.fatal("Malformed URL for xslt template");
-        } catch (ReportRenderException e) {
-            log.fatal("unable to render report");
-        } catch (IOException e) {
-            log.fatal("unable to mail report");
         }
 
 
@@ -185,14 +223,6 @@ public class OnmsDatabaseReportService implements Runnable {
 
     public void setClassicCalculator(AvailabilityCalculator calulator) {
         m_classicCalculator = calulator;
-    }
-
-    public void setCriteria(DatabaseReportCriteria criteria) {
-        m_criteria = criteria;
-    }
-
-    public DatabaseReportCriteria getCriteria() {
-        return m_criteria;
     }
 
     public void setConfigDao(OnmsDatabaseReportConfigDao configDao) {
