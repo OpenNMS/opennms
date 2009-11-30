@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
+import static org.opennms.core.utils.LogUtils.debugf;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.LogUtils;
@@ -115,7 +116,13 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     
     @EventHandler(uei=EventConstants.DATA_LINK_FAILED_EVENT_UEI)
     public void dataLinkFailed(Event event){
-        updateLinkStatus("dataLinkFailed", event, "B");
+        try{
+            updateLinkStatus("dataLinkFailed", event, "B");
+        }catch(Throwable t){
+            debugf(this, t, "Caught an exception in dataLinkFailed");
+        }finally{
+            debugf(this, "Bailing out of dataLinkFailed handler");
+        }
     }
 
     private void updateLinkStatus(String method, Event event, String newStatus) {
@@ -141,12 +148,24 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     
     @EventHandler(uei=EventConstants.DATA_LINK_RESTORED_EVENT_UEI)
     public void dataLinkRestored(Event event){
-        updateLinkStatus("dataLinkRestored", event, "G");
+        try{
+            updateLinkStatus("dataLinkRestored", event, "G");
+        }catch(Throwable t){
+            debugf(this, t, "Caught a throwable in dataLinkRestored");
+        }finally{
+            debugf(this, "Bailing out of dataLinkRestored handler");
+        }
     }
     
     @EventHandler(uei=EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI)
     public void dataLinkUnmanaged(Event e) {
-        updateLinkStatus("dataLinkUnmanaged", e, "U");
+        try{
+            updateLinkStatus("dataLinkUnmanaged", e, "U");
+        }catch(Throwable t){
+            debugf(this, t, "Caught a throwable in dataLinkUnmanaged");
+        }finally{
+            debugf(this, "Bailing out of dataLinkUnmanaged handler");
+        }
     }
     
     

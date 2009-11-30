@@ -1831,7 +1831,7 @@ create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,pa
 create table linkstate (
     id                      integer default nextval('opennmsNxtId') not null,
     datalinkinterfaceid     integer not null, 
-    linkstate               varchar(24) default 'LINK_UP' not null,
+    linkstate               varchar(30) default 'LINK_UP' not null,
 
     constraint pk_linkstate primary key (id),
     constraint fk_linkstate_datalinkinterface_id foreign key (datalinkinterfaceid) references datalinkinterface (id) on delete cascade

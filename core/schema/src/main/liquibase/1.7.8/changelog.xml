@@ -31,5 +31,11 @@
 		</modifySql>
 
 	</changeSet>
+	
+	<changeSet author="thedesloge" id="1.7.8-update-linkstate">
+		<modifyColumn tableName="linkstate">
+    		<column name="linkstate" type="varchar(32)"/>
+		</modifyColumn>
+	</changeSet>
 
 </databaseChangeLog>
