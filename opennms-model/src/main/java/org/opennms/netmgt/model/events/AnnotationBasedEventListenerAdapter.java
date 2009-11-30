@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -150,18 +151,21 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
 
     protected void handleException(Event event, Throwable cause) {
+        
         for(Method method : m_exceptionHandlers) {
             if (ClassUtils.isAssignableValue(method.getParameterTypes()[1], cause)) {
                 try {
                     method.invoke(m_annotatedListener, event, cause);
                     
                     // we found the correct handler to we are done
-                    break;
+                    return;
                 } catch (Exception e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }
         }
+        
+        LogUtils.debugf(this, cause, "Caught an unhandled exception while processing event %s, for listener %s. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener);
     }
 
     public void setAnnotatedListener(Object annotatedListener) {
@@ -212,8 +216,8 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
     private void validateMethodAsEventExceptionHandler(Method method) {
         Assert.state(method.getParameterTypes().length == 2, "Invalid number of paremeters. EventExceptionHandler methods must take 2 arguments with types (Event, ? extends Throwable)");
-        Assert.state(ClassUtils.isAssignable(Event.class, method.getParameterTypes()[0]), "First parameter of incorrent type. EventExceptionHandler first paramenter must be of type Event");
-        Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrent type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
+        Assert.state(ClassUtils.isAssignable(Event.class, method.getParameterTypes()[0]), "First parameter of incorrect type. EventExceptionHandler first paramenter must be of type Event");
+        Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrect type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
     }
 
     private static class ClassComparator<T> implements Comparator<Class<? extends T>> {

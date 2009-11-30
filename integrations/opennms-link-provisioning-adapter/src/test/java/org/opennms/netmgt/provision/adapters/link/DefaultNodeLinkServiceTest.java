@@ -28,6 +28,7 @@ import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -268,6 +269,24 @@ public class DefaultNodeLinkServiceTest {
     }
     
     @Test
+    public void dwoTestSaveAllEnumStates() {
+        int nodeId = END_POINT2_ID;
+        
+        Collection<DataLinkInterface> dlis = m_nodeLinkService.getLinkContainingNodeId(nodeId);
+        DataLinkInterface dli = dlis.iterator().next();
+        
+        OnmsLinkState linkState = new OnmsLinkState();
+        linkState.setDataLinkInterface(dli);
+        
+        
+        for(LinkState ls : LinkState.values()){
+            linkState.setLinkState(ls);
+            saveLinkState(linkState);
+        }
+        
+    }
+    
+    @Test
     public void dwoTestAddPrimaryServiceToNode(){
         final String END_POINT_SERVICE_NAME = "EndPoint";
         addPrimaryServiceToNode(END_POINT1_ID, END_POINT_SERVICE_NAME);
@@ -320,6 +339,16 @@ public class DefaultNodeLinkServiceTest {
         
         
         
+    }
+    
+    public void saveLinkState(final OnmsLinkState linkState){
+        m_transactionTemplate.execute(new TransactionCallback() {
+            
+            public Object doInTransaction(TransactionStatus status) {
+                m_linkStateDao.saveOrUpdate(linkState);
+                return null;
+            }
+        });
     }
     
 }

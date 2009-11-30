@@ -1,3 +1,4 @@
+Ext.BLANK_IMAGE_URL =  "extJS/resources/images/default/s.gif";
 Ext.namespace("OpenNMS.ux");
 OpenNMS.ux.NodePageableComboBox=Ext.extend(OpenNMS.ux.ComboFilterBox,{
 	

@@ -173,11 +173,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
     public void run() {        
         if (getParent().polling()) {
-            log().warn("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
+            log().info("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
-                log().info("No Interface found. Doing nothing");
+                log().debug("No Interface found. Doing nothing");
             } else {
-                log().info(m_snmpinterfaces.size() + " Interfaces found. Getting Statutes....");
+                log().debug(m_snmpinterfaces.size() + " Interfaces found. Getting Statutes....");
             	SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
         		int maxiface = getMaxInterfacePerPdu();
         		if (maxiface == 0) maxiface=m_snmpinterfaces.size();
@@ -205,9 +205,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
         if (mifaces != null) {
             log().info("doPoll: PollerMonitor return interfaces number: " + mifaces.size());
-            Iterator<SnmpMinimalPollInterface> ite = mifaces.iterator();
-            while (ite.hasNext()) {
-                SnmpMinimalPollInterface miface = ite.next();
+            for (SnmpMinimalPollInterface miface : mifaces) {
                 log().debug("Working on interface with ifindex: " + miface.getIfindex());
                 log().debug("Interface PollStatus is " + miface.getStatus().getStatusName());
                 if (miface.getStatus().isUp()) {
