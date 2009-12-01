@@ -20,7 +20,7 @@
             <id>add-groovy-source</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>add-source</goal>
+              <goal>execute</goal>
             </goals>
             <configuration>
               <sources>
