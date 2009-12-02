@@ -63,15 +63,15 @@ public class JavaMailerTest extends TestCase {
         MockLogAppender.setupLogging();
 
         Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
-
         File homeDir = resource.getFile().getParentFile().getParentFile();
-        System.out.println("homeDir: "+homeDir.getAbsolutePath());
-
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
 
     @Override
     protected void runTest() throws Throwable {
+        if (!Boolean.getBoolean("runMailTests")) {
+            return;
+        }
         super.runTest();
         MockLogAppender.assertNoWarningsOrGreater();
     }
