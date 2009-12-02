@@ -63,7 +63,7 @@ public class C3P0ConnectionFactoryTest extends TestCase {
         try {
             conn = factory2.getConnection();
             s = conn.createStatement();
-            s.execute("select * from service");
+            s.execute("select * from pg_proc");
         } finally {
             if (s != null) {
                 s.close();

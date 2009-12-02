@@ -758,8 +758,14 @@
       </group>
 
       <!-- Cisco MIBs -->
-      <group  name="cisco-ap-stats" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.2.1.1" instance="1" alias="ciscoApAssoc" type="Gauge32" />
+      <group  name="cisco-ap-dot11-stats" ifType="71">
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.2.1.1" instance="ifIndex" alias="ciscoApActClients"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.1" instance="ifIndex" alias="ciscoApAssociated"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.2" instance="ifIndex" alias="ciscoApAuthen"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.3" instance="ifIndex" alias="ciscoApRoamedIn"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.4" instance="ifIndex" alias="ciscoApRoamedAway"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.5" instance="ifIndex" alias="ciscoApDeauthen"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.6" instance="ifIndex" alias="ciscoApDisassoc"     type="Counter32" />
       </group>
 
       <group name="cisco-bgp-peer-addr-family-prefix-stats" ifType="all">
@@ -2583,7 +2589,14 @@
       <systemDef name = "Cisco C1200">
         <sysoid>.1.3.6.1.4.1.9.1.525</sysoid>
         <collect>
-          <includeGroup>cisco-ap-stats</includeGroup>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco C1240">
+        <sysoid>.1.3.6.1.4.1.9.1.685</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
         </collect>
       </systemDef>
 
