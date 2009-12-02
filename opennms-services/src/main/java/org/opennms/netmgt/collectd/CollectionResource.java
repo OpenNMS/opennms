@@ -67,4 +67,11 @@ public interface CollectionResource extends ResourceIdentifier {
      * @return
      */
     public String getInstance();
+
+    /**
+     * Returns a unique label for each resource depending on resource type.
+     * This label is the same label used when constructing the resource ID.
+     * @Return
+     */
+    public String getLabel();
 }
