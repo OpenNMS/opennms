@@ -29,7 +29,19 @@ OpenNMS.ux.ComboFilterBox = Ext.extend(Ext.form.ComboBox,{
 	        baseParams:{
 	        	comparator:"contains"
 	        },
-	        reader: new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap)
+	        reader: new Ext.data.XmlReader({ record:this.recordTag, totalRecords:"@totalCount" }, this.recordMap),
+	        listeners:{
+	          	'load':{
+					scope:this,
+					fn:function(store, record, options){
+	        			if(store.getTotalCount() == 0){
+	        				this.emptyText = "-- No Nodes Available --";
+	        			}else{
+	        				this.emptyText = "-- Choose A Node --";
+	        			}
+					}
+	          	}
+	        }
 	    });
 		
 		Ext.apply(this, {
