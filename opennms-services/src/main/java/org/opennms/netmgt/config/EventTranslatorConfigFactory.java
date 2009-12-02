@@ -643,22 +643,65 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 				if (!nestedVal.matches(e))
 					return false;
 			}
-			return true;
-		}
+		    
+		    Query query = createQuery(e);
+		    int rowCount = query.execute();
 
+		    if (rowCount < 1) {
+                log().info("No results found for query "+query.reproduceStatement()+". No match.");
+                return false;
+		    }
+		    
+		    return true;
+		}
+		
+		private class Query {
+		    SingleResultQuerier m_querier;
+		    Object[] m_args;
+		    
+		    Query(SingleResultQuerier querier, Object[] args) {
+		        m_querier = querier;
+		        m_args = args;
+		    }
+
+		    public int getRowCount() {
+		        return m_querier.getCount();
+		    }
+
+		    public int execute() {
+		        m_querier.execute(m_args);
+		        return getRowCount();
+		    }
+		    
+		    public String reproduceStatement() {
+		        return m_querier.reproduceStatement(m_args);
+		    }
+		    
+		    public Object getResult() {
+		        return m_querier.getResult();
+		    }
+		    
+		}
+		
+		public Query createQuery(Event srcEvent) {
+            Object[] args = new Object[getNestedValues().size()];
+            SingleResultQuerier querier = new SingleResultQuerier(m_dbConnFactory, m_val.getResult());
+            for (int i = 0; i < args.length; i++) {
+                args[i] = (getNestedValues().get(i)).getResult(srcEvent);
+            }
+            
+            return new Query(querier, args);
+		}
+		
 		public String getResult(Event srcEvent) {
-			SingleResultQuerier querier = new SingleResultQuerier(m_dbConnFactory, m_val.getResult());
-			Object[] args = new Object[getNestedValues().size()];
-			for (int i = 0; i < args.length; i++) {
-				args[i] = (getNestedValues().get(i)).getResult(srcEvent);
-			}
-			querier.execute(args);
-			if (querier.getCount() < 1) {
-				log().info("No results found for query "+querier.reproduceStatement(args)+". Returning null");
+		    Query query = createQuery(srcEvent);
+            query.execute();
+			if (query.getRowCount() < 1) {
+                log().info("No results found for query "+query.reproduceStatement()+". Returning null");
 				return null;
 			}
 			else {
-			    Object result = querier.getResult();
+			    Object result = query.getResult();
 			    if (log().isDebugEnabled()) {
 			        log().debug("getResult: result of single result querier is:"+result);
 			    }
