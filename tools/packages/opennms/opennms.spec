@@ -233,7 +233,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 opennms-remote-poller/target/opennms-remote-poller*-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 opennms-remote-poller/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
