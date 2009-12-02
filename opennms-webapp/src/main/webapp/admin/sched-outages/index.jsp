@@ -151,7 +151,7 @@
 						for (int k = 0; k < interfaces.length; k++) {
 							org.opennms.web.element.Interface thisInterface = interfaces[k];
 							if (thisInterface.isManaged()) {
-								display.append(thisInterface.getHostname() + "<BR>");
+								display.append(thisInterface.getName() + "<BR>");
 							}
 						}
 					}
