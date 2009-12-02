@@ -475,8 +475,10 @@ if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 fi
 
 
-if ! echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -q MaxPermSize ; then
-	  ADDITIONAL_MANAGER_OPTIONS=" -XX:MaxPermSize=128m"
+if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -q MaxPermSize ; then
+	true # do nothing
+else
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=128m"
 fi
 
 if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then
