@@ -8,8 +8,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $local_fs $network ${install.postgresql.service}
-# Should-Start:      $time $named ypbind
+# Required-Start:    $local_fs $network
+# Should-Start:      $time $named ypbind ${install.postgresql.service}
 # Required-Stop:     $local_fs $network
 # Should-Stop:       $time $named ypbind
 # Default-Start:     3 5
