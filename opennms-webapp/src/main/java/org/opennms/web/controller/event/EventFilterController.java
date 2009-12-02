@@ -169,16 +169,11 @@ public class EventFilterController extends AbstractController implements Initial
         parms.sortStyle = sortStyle;
         
         EventCriteria queryCriteria = new EventCriteria(filters, sortStyle, ackType, limit, limit * multiple);
-        EventCriteria countCriteria = new EventCriteria(ackType, filters);
 
         Event[] events = m_webEventRepository.getMatchingEvents(queryCriteria);
         
-        // get the total event count
-        int eventCount = m_webEventRepository.countMatchingEvents(countCriteria);
-        
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("events", events);
-        modelAndView.addObject("eventCount", eventCount);
         modelAndView.addObject("parms", parms);
         return modelAndView;
 
