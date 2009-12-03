@@ -1,4 +1,4 @@
-package org.opennms.netmgmt.reporting.service;
+package org.opennms.netmgt.reporting.service;
 
 import java.util.List;
 
@@ -22,8 +22,7 @@ public class Reportd implements SpringServiceDaemon {
     private ReportScheduler m_reportScheduler;
 
     public void start() throws Exception {
-        // TODO Auto-generated method stub
-
+           m_reportScheduler.start();
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -31,8 +30,13 @@ public class Reportd implements SpringServiceDaemon {
     }
    
     
-    public void runReport(String reportName) {
-        // TODO Auto-generated method stub   
+    public void runReport(String reportName){
+        runReport(reportName,null);
+    }
+ 
+    
+    public void runReport(String reportName, String[] reportEmailDestinations) {
+        LogUtils.debugf(this, "reportd -- running job %s", reportName );
     }
     
     

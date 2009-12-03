@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reportd-configuration 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/reportd-configuration"
+> 
+  <!--  
+    http://quartz.sourceforge.net/javadoc/org/quartz/CronTrigger.html
+        Field Name     Allowed Values      Allowed Special Characters
+        Seconds        0-59                , - * /
+        Minutes        0-59                , - * /
+        Hours          0-23                , - * /
+        Day-of-month   1-31                , - * ? / L W C
+        Month          1-12 or JAN-DEC     , - * /
+        Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
+        Year (Opt)     empty, 1970-2099    , - * /
+   -->
+    <report>
+    </report>  
+   
+</reportd-configuration>
