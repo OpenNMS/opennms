@@ -146,7 +146,9 @@ function handleLoadNodesResponse(data) {
 			var nodeST = nodeToken.split("+");
 			var id =nodeST[0];
 			var label = nodeST[1];
-			var tmpNode = new Node(id,label);
+			// the second label should be the ip address but for the moment we are stillusing the FQDN
+			var tmpNode = new Node(id,label,label);
+			
 			nodeids.push(id);
 			nodeLabels.push(label);
 			nodeSorts.push(tmpNode);
