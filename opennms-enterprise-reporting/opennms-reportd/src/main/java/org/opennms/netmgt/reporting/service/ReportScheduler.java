@@ -1,4 +1,4 @@
-package org.opennms.netmgmt.reporting.service;
+package org.opennms.netmgt.reporting.service;
 
 
 import java.util.Arrays;
@@ -133,9 +133,9 @@ public class ReportScheduler implements InitializingBean {
                     getScheduler().scheduleJob(detail, trigger);
 
                 } catch (ParseException e) {
-                    LogUtils.errorf(this, "buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LogUtils.errorf(this, "buildReportSchedule: "+e.getLocalizedMessage(), e);
                 } catch (SchedulerException e) {
-                    LogUtils.errorf(this, "buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LogUtils.errorf(this, "buildReportSchedule: "+e.getLocalizedMessage(), e);
                 }
             }
         }
@@ -186,6 +186,11 @@ public class ReportScheduler implements InitializingBean {
 
     public JobFactory getReportJobFactory() {
         return m_reportJobFactory;
+    }
+
+
+    public void start() throws SchedulerException {
+        getScheduler().start();
     }
     
 }

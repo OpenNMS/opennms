@@ -1,4 +1,4 @@
-package org.opennms.netmgmt.reporting.service;
+package org.opennms.netmgt.reporting.service;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
