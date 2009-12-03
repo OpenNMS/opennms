@@ -467,10 +467,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             setLastCapsdPoll(scannedSnmpIface.getLastCapsdPoll());
         }
         
-        if(scannedSnmpIface.isCollectionUserSpecified()){
-            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), true);
-        }else if(!isCollectionUserSpecified()){
-            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled() || isCollectionEnabled());
+        if(scannedSnmpIface.isCollectionUserSpecified() || !isCollectionUserSpecified()){
+            setCollectionEnabled(scannedSnmpIface.isCollectionEnabled(), scannedSnmpIface.isCollectionUserSpecified());
         }
         
     }
