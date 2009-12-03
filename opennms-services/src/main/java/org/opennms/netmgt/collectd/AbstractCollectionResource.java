@@ -111,4 +111,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
 
     public abstract boolean shouldPersist(ServiceParameters params);
 
+    public String getLabel() {
+        return null;
+    }
+
 }

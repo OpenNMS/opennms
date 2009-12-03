@@ -609,7 +609,7 @@ function updateOutageTypeDisplay(selectElement) {
 						for ( org.opennms.web.element.Interface element : allInterfaces ) {
 							String addr = element.getIpAddress();
 							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManaged()) {
-								interfaceMap.put(element.getHostname(), element);
+								interfaceMap.put(element.getName(), element);
 							}
 						}
 						allInterfaces = null;
@@ -623,10 +623,10 @@ function updateOutageTypeDisplay(selectElement) {
 								if (iface != null && interfaceMap.containsKey(iface.getAddress())) {
 									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(iface.getAddress());
 									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
-										interfaceMap.remove(thisInterface.getHostname());
+										interfaceMap.remove(thisInterface.getName());
 										if (thisInterface.isManaged()) {
 											out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-											out.println(thisInterface.getHostname());
+											out.println(thisInterface.getName());
 											out.println("<br>");
 										}
 									}
@@ -639,7 +639,7 @@ function updateOutageTypeDisplay(selectElement) {
 							for ( String hostname : interfaceMap.keySet() ) {
 								org.opennms.web.element.Interface iface = interfaceMap.get(hostname);
 								if (iface != null && interfaceMap.containsValue(iface)) {
-									out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getHostname() + "</option>");
+									out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getName() + "</option>");
 								}
 							}
 						}

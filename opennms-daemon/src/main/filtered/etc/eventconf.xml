@@ -1820,6 +1820,7 @@
   <event-file>events/DellOpenManage.events.xml</event-file>
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
+  <event-file>events/DISMAN.events.xml</event-file>
   <event-file>events/DPS.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/Fore.events.xml</event-file>
