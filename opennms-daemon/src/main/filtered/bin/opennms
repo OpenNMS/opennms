@@ -559,7 +559,7 @@ cases, it is enough to run:
 
 A quickstart web UI will also be launched at:
   
-  http://localhost:8080/
+  http://localhost:8980/
   
 that will guide you through the basic steps of configuring 
 OpenNMS such as setting the admin password, configuring the

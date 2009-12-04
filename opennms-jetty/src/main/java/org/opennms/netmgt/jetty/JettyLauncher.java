@@ -50,19 +50,19 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.start.Monitor;
 
 /**
- * Launches a WAR file on port 8080.
+ * Launches a WAR file on port 8980.
  * 
  * @author Seth
  *
  */
 public class JettyLauncher {
 
-	private static final int STOP_PORT = 8081;
+	private static final int STOP_PORT = 8981;
 	// Random string that should make it harder for a random user to shut down Jetty
 	private static final String STOP_KEY = "b7f3609ab1dd8c7e5bac070bca9ba0d5";
 
 	public static void usage() {
-		System.out.println("To launch a WAR file on port 8080:");
+		System.out.println("To launch a WAR file on port 8980:");
 		System.out.println("  org.opennms.netmgt.jetty.JettyLauncher <war_file_path>");
 		System.out.println("To check the status of the Jetty process:");
 		System.out.println("  org.opennms.netmgt.jetty.JettyLauncher STATUS");
@@ -108,9 +108,11 @@ public class JettyLauncher {
 				}
 			}
 		} else {
+			// Enable Jetty debug logging
+			System.setProperty("DEBUG", "true");
 			Server server = new Server();
 			Connector connector = new SelectChannelConnector();
-			connector.setPort(8080);
+			connector.setPort(8980);
 			server.addConnector(connector);
 			Handler handler = new WebAppContext(args[0], "/");
 			server.addHandler(handler);
