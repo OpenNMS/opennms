@@ -1201,7 +1201,7 @@ public class Application implements EntryPoint {
         final ContentPanel tips = new ContentPanel();
         tips.setHeading("Additional tips");
         tips.setBodyStyleName("accordion-panel");
-        tips.addText("Add additional tips here.");
+        tips.addText("<p>After you complete this wizard, the OpenNMS services will restart and the regular web UI will be launched.</p><p>To begin collecting information with OpenNMS, you need to set up IP address ranges for OpenNMS to discover by visiting the Discovery section of the Admin web interface.</p><p>To receive alerts when problems occur, you will also need to configure Notifications in the Operations section of the Admin web interface.</p><p>For more tips on getting OpenNMS up and running, please visit the <a href=\"http://www.opennms.org/index.php/QuickStart\">OpenNMS QuickStart guide</a>.</p>");
 
         gxtPanel.add(verifyOwnership);
         gxtPanel.add(setAdminPassword);

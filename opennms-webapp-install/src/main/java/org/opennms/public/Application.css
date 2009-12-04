@@ -20,6 +20,10 @@ BODY {
 	padding: 10px;
 }
 
+.accordion-panel P {
+	padding-bottom: 10px;
+}
+
 .font-style-italic {
 	font-style: italic;
 }
