@@ -35,6 +35,8 @@ package org.opennms.netmgt.jetty;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.io.LineNumberReader;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Hashtable;
@@ -83,12 +85,28 @@ public class JettyLauncher {
 			out.flush();
 			s.close();
 		} else if ("STATUS".equals(args[0])) {
-			Socket s = new Socket(InetAddress.getByName("127.0.0.1"), STOP_PORT);
-			OutputStream out = s.getOutputStream();
-			out.write((STOP_KEY + "\r\n").getBytes("ASCII"));
-			out.write(("status" + "\r\n").getBytes("ASCII"));
-			out.flush();
-			s.close();
+			Socket s = null;
+			String statusResponse = null;
+			try {
+				s = new Socket(InetAddress.getByName("127.0.0.1"), STOP_PORT);
+				OutputStream out = s.getOutputStream();
+				LineNumberReader reader = new LineNumberReader(new InputStreamReader(s.getInputStream(), "ASCII"));
+				out.write((STOP_KEY + "\r\n").getBytes("ASCII"));
+				out.write(("status" + "\r\n").getBytes("ASCII"));
+				out.flush();
+
+				if ("OK".equals(reader.readLine())) {
+					System.exit(0);
+				} else {
+					System.exit(1);
+				}
+			} catch (Throwable e) {
+				System.exit(1);
+			} finally {
+				if (s != null) { 
+					s.close();
+				}
+			}
 		} else {
 			Server server = new Server();
 			Connector connector = new SelectChannelConnector();
