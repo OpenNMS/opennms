@@ -10,6 +10,7 @@
  *
  * Modifications:
  *
+ * 2009 Nov 17: Added LASTSEVENDAYS and LASTTHIRTYONEDAYS. ayres@opennms.org
  * 2007 Apr 10: Added LASTHOUR; useful for testing. - dj@opennms.org
  * 2007 Apr 05: Created this file. - dj@opennms.org
  *
@@ -47,30 +48,33 @@ import org.opennms.core.utils.TimeKeeper;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public enum RelativeTime {
-    YESTERDAY {
+    LASTTHIRTYONEDAYS {
         public Date getStart() {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTimeInMillis(getCurrentTime());
-            
-            calendar.set(Calendar.MILLISECOND, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.HOUR, 0);
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-            
-            return calendar.getTime();
+            return getStartDate(31);
         }
         
         public Date getEnd() {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTimeInMillis(getCurrentTime());
+                  return getStartOfToday();
+        }
+    },
 
-            calendar.set(Calendar.MILLISECOND, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.HOUR, 0);
-            
-            return calendar.getTime();
+    LASTSEVENDAYS {
+        public Date getStart() {
+            return getStartDate(7);
+        }
+        
+        public Date getEnd() {
+                  return getStartOfToday();
+        }
+    },
+
+    YESTERDAY {
+        public Date getStart() {
+            return getStartDate(1);
+        }
+        
+        public Date getEnd() {
+                  return getStartOfToday();
         }
     },
     
@@ -99,6 +103,31 @@ public enum RelativeTime {
         }
     };
 
+    protected Date getStartDate(int offset) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(getCurrentTime());
+        
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.add(Calendar.DAY_OF_YEAR, -offset);
+        
+        return calendar.getTime();
+    }
+    
+    protected Date getStartOfToday() {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(getCurrentTime());
+
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        
+        return calendar.getTime();
+    }
+    
     public abstract Date getStart();
     public abstract Date getEnd();
     
