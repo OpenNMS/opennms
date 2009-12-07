@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.support;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 
 /**
@@ -76,7 +77,8 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     }
 
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        super.exceptionCaught(session, cause);
+        LogUtils.debugf(this, cause, "Caught a Throwable in BaseDetectorHandler");
+        getFuture().setException(cause);
         session.close(true);
     }
 
