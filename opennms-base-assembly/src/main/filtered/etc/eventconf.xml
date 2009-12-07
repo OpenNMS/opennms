@@ -2168,6 +2168,7 @@
   <event-file>events/RFC1382.events.xml</event-file>
   <event-file>events/RFC1628.events.xml</event-file>
   <event-file>events/Rightfax.events.xml</event-file>
+  <event-file>events/RiverbedSteelhead.events.xml</event-file>
   <event-file>events/RMON.events.xml</event-file>
   <event-file>events/Sensaphone.events.xml</event-file>
   <event-file>events/SNA-NAU.events.xml</event-file>
