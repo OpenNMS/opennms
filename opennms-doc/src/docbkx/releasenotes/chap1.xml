@@ -4,6 +4,23 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.8">
+		<title>Release 1.7.8</title>
+		
+		<para>
+			Release 1.7.8 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.8.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			Since 1.7.7, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.7.8">more bugfixing</ulink>
+			has been going on in preparation for the 1.8 release, as well as the addition of a few new features.
+		</para>
+		<para>
+			The codename for 1.7.8 is <emphasis>Serenity</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.7">
 		<title>Release 1.7.7</title>
 		
