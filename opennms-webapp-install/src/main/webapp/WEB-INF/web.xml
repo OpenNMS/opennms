@@ -16,6 +16,6 @@
 	
 	<servlet-mapping>
 		<servlet-name>install</servlet-name>
-		<url-pattern>/org.opennms.Application/install</url-pattern>
+		<url-pattern>/installer/install</url-pattern>
 	</servlet-mapping>
 </web-app>

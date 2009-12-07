@@ -67,7 +67,7 @@
           <compileTargets>
             <value>org.opennms.Application</value>
           </compileTargets>
-          <runTarget>org.opennms.Application/Application.html</runTarget>
+          <runTarget>installer/index.html</runTarget>
           <logLevel>INFO</logLevel>
           <style>OBFUSCATED</style>
           <noServer>false</noServer>
@@ -94,7 +94,7 @@
                   <classifier>${platform}-libs</classifier>
                   <type>zip</type>
                   <overWrite>false</overWrite>
-                  <outputDirectory>${localRepository}/com/google/gwt/gwt-dev/${gwtVersion}</outputDirectory>
+                  <outputDirectory>${settings.localRepository}/com/google/gwt/gwt-dev/${gwtVersion}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
