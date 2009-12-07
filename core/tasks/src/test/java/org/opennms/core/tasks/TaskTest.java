@@ -153,6 +153,32 @@ public class TaskTest {
         
     }
     
+    @Test(timeout=1000)
+    public void testTaskThatThrowsException() throws Exception {
+        
+        AtomicInteger count = new AtomicInteger(0);
+    
+        Runnable thrower = new Runnable() {
+            public void run() {
+                throw new RuntimeException("Intentionally failed for test purposes");
+            }
+        };
+        
+        Task throwerTask = m_coordinator.createTask(null, thrower);
+        Task incrTask = m_coordinator.createTask(null, incr(count));
+        
+        incrTask.addPrerequisite(throwerTask);
+        
+        
+        incrTask.schedule();
+        throwerTask.schedule();
+        
+        
+        incrTask.waitFor(1500, TimeUnit.MILLISECONDS);
+
+        
+    }
+    
     @Test
     public void testBatchTask() throws Exception {
         
@@ -408,6 +434,7 @@ public class TaskTest {
     private Runnable incr(final AtomicInteger counter) {
         return new Runnable() {
             public void run() {
+                System.err.println("Incrementing!");
                 counter.incrementAndGet();
             }
             public String toString() {
