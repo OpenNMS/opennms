@@ -13,6 +13,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -402,19 +403,22 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
             throw new OwnershipNotConfirmedException();
         }
         List<LoggingEvent> retval = new ArrayList<LoggingEvent>();
-        for (org.apache.log4j.spi.LoggingEvent event : ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED")).getEvents(offset, 200)) {
-            LogLevel level = null;
-            switch(event.getLevel().toInt()) {
-            case (Level.TRACE_INT): level = LogLevel.TRACE; break;
-            case (Level.DEBUG_INT): level = LogLevel.DEBUG; break;
-            case (Level.INFO_INT): level = LogLevel.INFO; break;
-            case (Level.WARN_INT): level = LogLevel.WARN; break;
-            case (Level.ERROR_INT): level = LogLevel.ERROR; break;
-            case (Level.FATAL_INT): level = LogLevel.FATAL; break;
-            // If the level is set to any other value, skip this message
-            default: continue;
+        Appender appender = Logger.getRootLogger().getAppender("UNCATEGORIZED");
+        if (appender instanceof ListAppender) {
+            for (org.apache.log4j.spi.LoggingEvent event : ((ListAppender)appender).getEvents(offset, 200)) {
+                LogLevel level = null;
+                switch(event.getLevel().toInt()) {
+                case (Level.TRACE_INT): level = LogLevel.TRACE; break;
+                case (Level.DEBUG_INT): level = LogLevel.DEBUG; break;
+                case (Level.INFO_INT): level = LogLevel.INFO; break;
+                case (Level.WARN_INT): level = LogLevel.WARN; break;
+                case (Level.ERROR_INT): level = LogLevel.ERROR; break;
+                case (Level.FATAL_INT): level = LogLevel.FATAL; break;
+                // If the level is set to any other value, skip this message
+                default: continue;
+                }
+                retval.add(new LoggingEvent(event.getLoggerName(), event.getTimeStamp(), level, event.getMessage().toString()));
             }
-            retval.add(new LoggingEvent(event.getLoggerName(), event.getTimeStamp(), level, event.getMessage().toString()));
         }
         return retval;
     }
@@ -423,7 +427,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
-        return ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED")).getEventsAsStrings();
+        Appender appender = Logger.getRootLogger().getAppender("UNCATEGORIZED");
+        if (appender instanceof ListAppender) {
+            return ((ListAppender)appender).getEventsAsStrings();
+        } else {
+            // Return an empty list
+            return new ArrayList<String>();
+        }
     }
 
     /**
@@ -441,8 +451,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
         }
-        ListAppender appender = ((ListAppender)Logger.getRootLogger().getAppender("UNCATEGORIZED"));
-        appender.clear();
+        Appender appender = Logger.getRootLogger().getAppender("UNCATEGORIZED");
+        if (appender instanceof ListAppender) {
+            ((ListAppender)appender).clear();
+        }
     }
 
     /**
