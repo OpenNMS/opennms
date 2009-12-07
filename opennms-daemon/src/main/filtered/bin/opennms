@@ -573,7 +573,7 @@ http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
 END
 	# If the installer webapp isn't already running then start it up
 	if [ $jetty_status != 0 ]; then
-		$JAVA_CMD $APP_VM_PARMS -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP $OPENNMS_HOME/lib/setup/opennms_setup.war &
+		$JAVA_CMD $APP_VM_PARMS -Dorg.mortbay.log.class=org.mortbay.log.StdErrLog -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP $OPENNMS_HOME/lib/setup/opennms_setup.war >>"$REDIRECT" 2>&1 &
 	fi
 	exit 6	# From LSB: 6 - program is not configured
 else
