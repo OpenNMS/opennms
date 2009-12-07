@@ -56,7 +56,12 @@ public class AsyncTask<T> extends Task {
 
     @Override
     protected void doSubmit() {
-        m_async.submit(callback());
+        Callback<T> callback = callback();
+        try {
+            m_async.submit(callback);
+        } catch (Throwable t) {
+            callback.handleException(t);
+        }
     }
     
     private Callback<T> callback() {
