@@ -93,7 +93,16 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         public Integer getIfIndex() {
             SnmpValue value = getValue(IF_INDEX);
-            return value == null ? null : value.toInt();
+            if (value != null) {
+                return value.toInt();
+            } else {
+                // ifIndex is the instance id as well
+                SnmpInstId inst = getInstance();
+                if (inst != null && inst.length() == 1) {
+                    return inst.toInt();
+                }
+            }
+            return null;
         }
         
         private Integer getIfType() {
