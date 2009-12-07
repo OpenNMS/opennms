@@ -109,7 +109,6 @@ public class JettyLauncher {
 			}
 		} else {
 			// Enable Jetty debug logging
-			System.setProperty("DEBUG", "true");
 			Server server = new Server();
 			Connector connector = new SelectChannelConnector();
 			connector.setPort(8980);
