@@ -222,9 +222,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         for(Task dependent : dependents) {
             dependent.doCompletePrerequisite(completed);
             if (dependent.isReady()) {
-                if (log().isDebugEnabled()) {
-                    // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
-                }
+                // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
             }
             
             dependent.submitIfReady();
@@ -266,9 +264,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
     private CompletionService<Runnable> getCompletionService(String name) {
         CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
         CompletionService<Runnable> selected = completionService != null ? completionService : m_defaultCompletionService;
-        if (log().isDebugEnabled()) {
-            // log().debug(String.format("USING COMPLETION SERVICE %s : %s!", name, selected));
-        }
+        // log().debug(String.format("USING COMPLETION SERVICE %s : %s!", name, selected));
         return selected;
     }
     
@@ -281,21 +277,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
     void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
-        @SuppressWarnings("unused")
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    workToBeDone.run();
-                } catch (Throwable t) {
-                    log().warn("Unexpected Exception processing: "+workToBeDone, t);
-                }
-            }
-        };
-        final String preferredExecutor = executorPreference;
-        getCompletionService(preferredExecutor).submit(workToBeDone, completionProcessor);
-        if (log().isDebugEnabled()) {
-            // log().debug(String.format("SUBMIT: Task %s to executor %s\n", workToBeDone, preferredExecutor));
-        }
+        getCompletionService(executorPreference).submit(workToBeDone, completionProcessor);
     }
     
     public void addExecutor(String executorName, Executor executor) {
