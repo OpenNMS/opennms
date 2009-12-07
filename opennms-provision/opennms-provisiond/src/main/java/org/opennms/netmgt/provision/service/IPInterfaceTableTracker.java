@@ -78,7 +78,21 @@ public class IPInterfaceTableTracker extends TableTracker {
         
         public String getIpAddress() {
             SnmpValue value = getValue(IP_ADDR_ENT_ADDR);
-            return value == null ? null : value.toInetAddress().getHostAddress();
+            if (value != null) {
+                return value.toInetAddress().getHostAddress();
+            } else {
+                // instance for ipAddr Table it ipAddr
+                SnmpInstId inst = getInstance();
+                if (inst != null) {
+                    try {
+                        String ipAddr = inst.toString();
+                        return InetAddress.getByName(ipAddr).getHostAddress();
+                    } catch (UnknownHostException e) {
+                        throw new IllegalArgumentException("cannot convert "+inst+" to an InetAddress"); 
+                    }
+                }
+            }
+            return null;
         }
 
         private String getNetMask() {
