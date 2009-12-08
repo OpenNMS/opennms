@@ -557,24 +557,37 @@ cases, it is enough to run:
 
   $OPENNMS_HOME/bin/install -dis
 
-A quickstart web UI will also be launched at:
-  
-  http://localhost:8980/
-  
-that will guide you through the basic steps of configuring 
-OpenNMS such as setting the admin password, configuring the
-database connection, and updating the database schema and
-stored procedures.
-
 For details, see the install guide at:
 
 http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
 
 END
-	# If the installer webapp isn't already running then start it up
-	if [ $jetty_status != 0 ]; then
-		$JAVA_CMD $APP_VM_PARMS -Dorg.mortbay.log.class=org.mortbay.log.StdErrLog -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP $OPENNMS_HOME/lib/setup/opennms_setup.war >>"$REDIRECT" 2>&1 &
-	fi
+	case "$COMMAND" in
+		start|spawn|restart)
+			cat <<END >&2
+A quickstart web UI will also be launched at:
+
+http://localhost:8980/
+
+that will guide you through the basic steps of configuring 
+OpenNMS such as setting the admin password, configuring the
+database connection, and updating the database schema and
+stored procedures.
+
+END
+			# If the installer webapp isn't already running then start it up
+			if [ $jetty_status != 0 ]; then
+				$JAVA_CMD $APP_VM_PARMS -Dorg.mortbay.log.class=org.mortbay.log.StdErrLog -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP $OPENNMS_HOME/lib/setup/opennms_setup.war >>"$REDIRECT" 2>&1 &
+			fi
+			;;
+
+		*)
+			# If the installer webapp is running, then shut it down
+			if [ $jetty_status != 1 ]; then
+				$JAVA_CMD $APP_VM_PARMS -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP STOP
+			fi
+			;;
+	esac
 	exit 6	# From LSB: 6 - program is not configured
 else
 	# If the installer webapp is running, then shut it down
