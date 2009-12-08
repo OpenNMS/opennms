@@ -237,4 +237,17 @@
   <properties>
     <gwtVersion>1.7.1</gwtVersion>
   </properties>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>hippocms-repo</id>
+      <name>Hippo CMS Repository</name>
+      <url>http://repository.hippocms.org/maven2</url>
+    </repository>
+  </repositories>
 </project>
