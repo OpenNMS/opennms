@@ -62,7 +62,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     private static boolean m_updateIsInProgress = false;
     private static boolean m_lastUpdateSucceeded = false;
 
-    private Installer m_installer = null;
     private final InstallerProgressManager m_progressManager = new InstallerProgressManager();
 
     /**
@@ -473,15 +472,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
                 m_updateIsInProgress = true;
                 try {
                     // Create a new Installer
-                    m_installer = new Installer();
+                    Installer installer = new Installer();
                     // Run BasicConfigurator as a precondition of running the install
                     BasicConfigurator.configure();
                     // Clear any progress tracking items currently stored in the InstallerProgressManager instance
                     m_progressManager.clearItems();
                     // Inject the InstallerProgressManager into the Installer instance
-                    m_installer.setProgressManager(m_progressManager);
+                    installer.setProgressManager(m_progressManager);
                     // Run the install
-                    m_installer.install(new String[] { "-dis" });
+                    installer.install(new String[] { "-dis" });
+                    // Dereference the installer to make it more likely to get quickly GC'd
+                    installer = null;
                     // Mark the install as successful
                     m_lastUpdateSucceeded = true;
                 } catch (Exception e) {
