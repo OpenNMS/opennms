@@ -51,7 +51,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * GWT entry point classes define {@link #onModuleLoad()}.</code>.
+ * The main GWT entry point class for the installation UI. The {@link #onModuleLoad()} method 
+ * contains all of the UI generation code; the UI is generated completely dynamically from this
+ * method call.
  */
 public class Application implements EntryPoint {
     // TODO: Figure out if there are any issues with having these components being

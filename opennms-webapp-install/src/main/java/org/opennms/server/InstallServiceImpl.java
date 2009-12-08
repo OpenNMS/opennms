@@ -50,6 +50,9 @@ import org.opennms.netmgt.dao.db.SimpleDataSource;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * This is the main GWT RPC service that drives the installation UI.
+ */
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
     private static final long serialVersionUID = 3125272519349298486L;
 
@@ -346,6 +349,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /**
+     * Persist the database configuration parameters to the configuration files.
+     */
     protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws OwnershipNotConfirmedException, DatabaseConfigFileException, IllegalDatabaseArgumentException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -457,10 +463,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
-    /**
-     * Initiate the installer class. This will generate log messages that will be
-     * relayed to the web UI by the log4j appender.
-     */
     public void updateDatabase() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();

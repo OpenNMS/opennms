@@ -107,27 +107,36 @@ public interface InstallService extends RemoteService {
     public void clearDatabaseUpdateLogs() throws OwnershipNotConfirmedException;
 
     /**
-     * Run the OpenNMS installer code to update the database schema.
+     */
+    /**
+     * Spawn a thread to run the OpenNMS {@link org.opennms.install.Installer} class to update the database schema.
      * This method will spawn a new thread to perform the updates and 
-     * while the thread runs, the return value of {@link #updateDatabase()}
-     * will be <code>true</code>.
+     * while the thread runs, the return value of {@link #isUpdateInProgress()}
+     * will be <code>true</code>. Log messages that are generated will be made available to 
+     * the web UI by the {@link org.opennms.server.ListAppender} log4j appender.
      */
     public void updateDatabase() throws OwnershipNotConfirmedException;
 
     /**
-     * @return True if the thread spawned by {@link #updateDatabase()} is
-     * alive, false otherwise
+     * Check to see if the {@link Thread} spawned by a call to {@link #updateDatabase()} is 
+     * still running.
+     * 
+     * @return <code>true</code> if the thread spawned by {@link #updateDatabase()} is still running, 
+     * <code>false</code> if it has completed.
      */
     public boolean isUpdateInProgress() throws OwnershipNotConfirmedException;
 
     /**
-     * @return True if the thread spawned by {@link #updateDatabase()} completed 
-     * successfully, false otherwise
+     * Check to see if the last {@link Thread} spawned by {@link #updateDatabase()}
+     * completed without throwing an exception.
+     * 
+     * @return <code>true</code> if the thread spawned by {@link #updateDatabase()} completed 
+     * without throwing an exception, <code>false</code> if an exception was thrown before it completed.
      */
     public boolean didLastUpdateSucceed() throws OwnershipNotConfirmedException;
 
     /**
-     * Check to see if the <code>IPLIKE</code> database procedure is working
+     * Check to see if the <code>iplike</code> database procedure is working
      * properly on the currently configured database connection.
      * @throws DatabaseConfigFileException 
      * @throws DatabaseDriverException 
