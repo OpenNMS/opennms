@@ -12,18 +12,16 @@
     <dependency>
       <groupId>jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.5.2</version>
+      <version>3.6.0</version>
     </dependency>
   </dependencies>
-<!-- out of date
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>jasperforge-repo</id>
       <name>JasperForge Maven Repository</name>
-      <url>http://jasperforge.org/maven2</url>
+      <url>http://jasperforge.org/svn/repos/maven2/</url>
     </repository>
   </repositories>
--->
 </project>
