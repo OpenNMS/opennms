@@ -37,6 +37,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -151,6 +153,75 @@ public class TaskTest {
         
         assertArrayEquals(new String[] { "task1", "task2", "task3" }, sequence.toArray(new String[0]));
         
+    }
+    
+    @Test(timeout=1000)
+    public void testTaskThatThrowsException() throws Exception {
+        
+        AtomicInteger count = new AtomicInteger(0);
+    
+        Runnable thrower = new Runnable() {
+            public void run() {
+                throw new RuntimeException("Intentionally failed for test purposes");
+
+            }
+        };
+        
+        Task throwerTask = m_coordinator.createTask(null, thrower);
+        Task incrTask = m_coordinator.createTask(null, incr(count));
+        
+        incrTask.addPrerequisite(throwerTask);
+        
+        
+        incrTask.schedule();
+        throwerTask.schedule();
+        
+        
+        incrTask.waitFor(1500, TimeUnit.MILLISECONDS);
+
+        assertEquals(1, count.get());
+    }
+    
+    @Test(timeout=1000)
+    public void testAsyncThatThrowsException() throws Exception {
+        
+        AtomicInteger count = new AtomicInteger(0);
+    
+        Async<Integer> thrower = new Async<Integer>() {
+
+            public void submit(Callback<Integer> cb) {
+                throw new RuntimeException("Intentionally failed for test purposes");
+            }
+            
+        };
+           
+        
+        Task throwerTask = m_coordinator.createTask(null, thrower, setter(count));
+        Task incrTask = m_coordinator.createTask(null, incr(count));
+        
+        incrTask.addPrerequisite(throwerTask);
+        
+        
+        incrTask.schedule();
+        throwerTask.schedule();
+        
+        
+        incrTask.waitFor(1500, TimeUnit.MILLISECONDS);
+
+        assertEquals(1, count.get());
+    }
+    
+    @Test(timeout=1000)
+    public void testAsync() throws Exception {
+        final AtomicInteger count = new AtomicInteger(0);
+        
+        Task async = m_coordinator.createTask(null, timer(500, 17), setter(count));
+        
+        async.schedule();
+        
+        async.waitFor(15000, TimeUnit.MILLISECONDS);
+        
+        assertEquals(17, count.get());
     }
     
     @Test
@@ -408,6 +479,7 @@ public class TaskTest {
     private Runnable incr(final AtomicInteger counter) {
         return new Runnable() {
             public void run() {
+                //System.err.println("Incrementing!");
                 counter.incrementAndGet();
             }
             public String toString() {
@@ -441,6 +513,7 @@ public class TaskTest {
         };
     }
     
+    
     private Runnable waiter(final String name, final CountDownLatch latch) {
         return new Runnable() {
             public void run() {
@@ -454,6 +527,41 @@ public class TaskTest {
             public String toString() {
                 return name;
             }
+        };
+    }
+    
+    private <T> Async<T> timer(final long millis, final T value) {
+        final Timer timer = new Timer(true);
+        return new Async<T>() {
+            public void submit(final Callback<T> cb) {
+                TimerTask timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            //System.err.println("Running");
+                            cb.complete(value);
+                        } catch (Throwable t) {
+                            cb.handleException(t);
+                        }
+                    }
+                };
+                //System.err.println("Scheduling");
+                timer.schedule(timerTask, millis);
+            }
+        };
+    }
+    
+    private Callback<Integer> setter(final AtomicInteger keeper) {
+        return new Callback<Integer>() {
+
+            public void complete(Integer t) {
+                keeper.set(t);
+            }
+
+            public void handleException(Throwable t) {
+
+            }
+            
         };
     }
     

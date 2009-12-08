@@ -31,6 +31,8 @@
  */
 package org.opennms.core.tasks;
 
+import org.opennms.core.utils.LogUtils;
+
 /**
  * SyncTask
  *
@@ -78,7 +80,11 @@ public class SyncTask extends Task {
     final Runnable getRunnable() {
         return new Runnable() {
           public void run() {
-              SyncTask.this.run();
+              try {
+                  SyncTask.this.run();
+              } catch (Throwable t) {
+                  LogUtils.debugf(this, t, "Exception occurred executing task %s", SyncTask.this);
+              }
           }
           public String toString() { return "Runner for "+SyncTask.this; }
         };
