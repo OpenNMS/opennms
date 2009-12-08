@@ -610,9 +610,6 @@ public class Application implements EntryPoint {
         // Create an empty caption for the panel that will be filled by an RPC call
         final Html verifyOwnershipCaption = verifyOwnership.addText("");
 
-        // Add a caption that shows the user the ownership filename.
-        updateOwnershipFileCaption(verifyOwnershipCaption);
-
         // Also reload the caption every time the panel is expanded. This
         // will allow us to handle cases where the session times out.
         verifyOwnership.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
@@ -818,9 +815,6 @@ public class Application implements EntryPoint {
         dbBinDir.setAllowBlank(false);
         connectToDatabase.add(dbBinDir);
          */
-
-        // Fetch the current database settings (if any)
-        new GetDatabaseConnectionSettingsCheck(null).check();
 
         connectToDatabase.addListener(Events.BeforeExpand, new Listener<ComponentEvent>() {
             public void handleEvent(ComponentEvent event) {
@@ -1226,7 +1220,8 @@ public class Application implements EntryPoint {
                             new StoredProceduresCheck(new InstallationCheck() {
                                 public void check() {
                                     // TODO: Figure out best way to redirect, make it equivalent to clicking a link
-                                    com.google.gwt.user.client.Window.Location.replace("/opennms");
+                                    // com.google.gwt.user.client.Window.Location.replace("/opennms");
+                                    MessageBox.alert("OpenNMS Configured Successfully", "All configuration steps are complete. Please restart OpenNMS.", null);
                                 }
                             }, false)
                         ),
@@ -1246,7 +1241,30 @@ public class Application implements EntryPoint {
         dock.add(vertical, DockPanel.CENTER);
         //dock.add(new HTML(), DockPanel.EAST);
 
+        // Load all initial data from RPC services. This needs to be
+        // done in series or you will end up with multiple session
+        // cookie sets from the webserver on the first visit, leading
+        // to multiple sessions being created but only one winning.
+        //
+        this.loadInitialSettings(verifyOwnershipCaption);
+
         RootPanel.get().add(dock);
+    }
+
+    private void loadInitialSettings(final Html caption) {
+        // Add a caption that shows the user the ownership filename.
+        installService.getOwnershipFilename(new AsyncCallback<String>() {
+            public void onSuccess(String result) {
+                caption.setHtml("<p>To prove your ownership of this OpenNMS installation, please create a file named <code>" + result + "</code> in the OpenNMS home directory.</p>");
+                // Fetch the current database settings (if any)
+                new GetDatabaseConnectionSettingsCheck(null).check();
+            }
+            public void onFailure(Throwable e) {
+                handleUnexpectedException(e);
+                // Fetch the current database settings (if any)
+                new GetDatabaseConnectionSettingsCheck(null).check();
+            }
+        });
     }
 
     /**
