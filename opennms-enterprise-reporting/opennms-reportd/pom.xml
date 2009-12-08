@@ -35,6 +35,11 @@
       <groupId>org.opensymphony.quartz</groupId>
       <artifactId>quartz</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jasperreports</groupId>
+      <artifactId>jasperreports</artifactId>
+      <version>3.6.0</version>
+    </dependency>
 
     <!-- runtime only dependencies -->
     <dependency>
