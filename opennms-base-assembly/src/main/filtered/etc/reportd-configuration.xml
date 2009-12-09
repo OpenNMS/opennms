@@ -14,7 +14,7 @@
         Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
         Year (Opt)     empty, 1970-2099    , - * /
    -->
-    <report>
+    <report report-name="sample-report" report-template="sample.jasper" report-output="sample">
+        <cron-schedule>0 0 0 * * ? *</cron-schedule> <!-- daily, at midnight -->
     </report>  
-  
 </reportd-configuration>
