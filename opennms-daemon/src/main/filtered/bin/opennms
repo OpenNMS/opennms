@@ -549,30 +549,37 @@ jetty_status=$?
 
 if [ ! -f $OPENNMS_HOME/etc/configured ]; then
 	cat <<END >&2
-$0: OpenNMS is not configured.
-$OPENNMS_HOME/etc/configured does not exist.
 
-You need to run an installer to set up the database.  In most
-cases, it is enough to run:
+==== ERROR ====
+$0: OpenNMS is not configured.
+You need to run an installer to set up the database.
+
+In most cases, it is enough to run:
 
   $OPENNMS_HOME/bin/install -dis
 
 For details, see the install guide at:
 
-http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
+  http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
 
 END
+
+	if [ -n "$OPENNMS_SKIP_WEB_INSTALLER" ]; then
+		exit 6  # From LSB: 6 - program is not configured
+	fi
+
 	case "$COMMAND" in
 		start|spawn|restart)
 			cat <<END >&2
 A quickstart web UI will also be launched at:
 
-http://localhost:8980/
+  http://localhost:8980/
 
 that will guide you through the basic steps of configuring 
 OpenNMS such as setting the admin password, configuring the
 database connection, and updating the database schema and
 stored procedures.
+
 
 END
 			# If the installer webapp isn't already running then start it up.
