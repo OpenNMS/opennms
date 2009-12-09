@@ -18,8 +18,8 @@ public class Reportd implements SpringServiceDaemon {
     public static final String NAME = "Reportd";
     
     private volatile EventForwarder m_eventForwarder;
-
     private ReportScheduler m_reportScheduler;
+    private DefaultReportService m_reportService;
 
     public void start() throws Exception {
            m_reportScheduler.start();
@@ -37,6 +37,8 @@ public class Reportd implements SpringServiceDaemon {
     
     public void runReport(String reportName, String[] reportEmailDestinations) {
         LogUtils.debugf(this, "reportd -- running job %s", reportName );
+        m_reportService.runReport(reportName,reportEmailDestinations);
+        LogUtils.debugf(this,"reportd -- done running job %s",reportName);
     }
  
     
@@ -102,6 +104,14 @@ public class Reportd implements SpringServiceDaemon {
     }
     public ReportScheduler getReportScheduler() {
         return m_reportScheduler;
+    }
+
+    public DefaultReportService getReportService() {
+        return m_reportService;
+    }
+
+    public void setReportService(DefaultReportService reportService) {
+        m_reportService = reportService;
     }
 
    
