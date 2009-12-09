@@ -12,7 +12,7 @@
   <context:annotation-config/>
 
   <bean id="reportdConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/reportdd-configuration.xml" />
+    <constructor-arg value="file:${opennms.home}/etc/reportd-configuration.xml" />
   </bean>
 
 
@@ -29,7 +29,8 @@
 
   <bean id="daemon" class="org.opennms.netmgt.reporting.service.Reportd" >
     <property name="eventForwarder" ref="eventForwarder" /> 
-    <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    <property name="reportScheduler" ref="reportdReportSchedule" />
+<!--    <property name="eventSubscriptionService" ref="eventSubscriptionService"/> -->
   </bean>
 
   <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
@@ -41,9 +42,11 @@
 
   <bean id="quartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
      
+  <bean id="reportJobFactory" class="org.opennms.netmgt.reporting.service.ReportJobFactory" />
+   
   <bean id="reportdReportSchedule" class="org.opennms.netmgt.reporting.service.ReportScheduler" >
     <constructor-arg ref="quartzScheduler" />
-    <property name="reportd" ref="daemon" />
+    <property name="configDao" ref="reportdConfigDao" />
   </bean>
 
 </beans>

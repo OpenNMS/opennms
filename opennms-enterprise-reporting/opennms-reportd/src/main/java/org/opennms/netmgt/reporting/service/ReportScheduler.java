@@ -38,6 +38,9 @@ public class ReportScheduler implements InitializingBean {
         
     }
 
+    ReportScheduler(Scheduler sched){
+        m_scheduler = sched;
+    }
 
     public void rebuildReportSchedule() {
         
@@ -191,6 +194,7 @@ public class ReportScheduler implements InitializingBean {
 
     public void start() throws SchedulerException {
         getScheduler().start();
+        buildReportSchedule();
     }
     
 }
