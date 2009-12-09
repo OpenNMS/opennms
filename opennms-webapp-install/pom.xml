@@ -14,6 +14,11 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
         <configuration>
+          <!-- 
+            Since we're marking most JARs as 'provided' to reduce the size of the 
+            WAR file, use the test classpath when running Jetty.
+          -->
+          <useTestClasspath>true</useTestClasspath>
           <stopPort>8081</stopPort>
           <stopKey>stopme</stopKey>
           <systemProperties>
@@ -203,6 +208,7 @@
       <classifier>${platform}</classifier>
       <scope>provided</scope>
     </dependency>
+    <!-- Required for our RPC service -->
     <dependency>
       <groupId>com.extjs</groupId>
       <artifactId>gxt</artifactId>
@@ -219,19 +225,19 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.15</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-install</artifactId>
       <version>1.6.8-INSTALLER-SNAPSHOT</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <version>1.6.8-INSTALLER-SNAPSHOT</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <properties>
