@@ -73,6 +73,7 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
+       <!-- This WAR name needs to match the value inside the opennms init script -->
        <outputFileNameMapping>opennms_setup.war</outputFileNameMapping>
        <outputDirectory>lib/setup</outputDirectory>
        <includes>
@@ -128,6 +129,7 @@
          <exclude>org.opennms:opennms-rrdtool-jni-linux</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-freebsd</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-solaris</exclude>
+         <exclude>org.opennms:opennms-webapp-install:war</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
