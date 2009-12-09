@@ -201,6 +201,16 @@ public class DefaultProvisionService implements ProvisionService {
         
         OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
         if (dbIface != null) {
+            if(dbIface.isManaged() && !scannedIface.isManaged()){
+                Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
+                
+                for(OnmsMonitoredService monSvc : monSvcs ){
+                    monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
+                }
+                
+                dbIface.setMonitoredServices(Collections.<OnmsMonitoredService>emptySet());
+            }
+            
             dbIface.mergeInterfaceAttributes(scannedIface);
             info("Updating IpInterface %s", dbIface);
             m_ipInterfaceDao.update(dbIface);

@@ -344,11 +344,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /** 
      * The services on this node
      */
+    /**
+     * removed 12/9/09 org.hibernate.annotations.CascadeType.DELETE_ORPHAN
+     */
     @XmlTransient
     @OneToMany(mappedBy="ipInterface")
     @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+        org.hibernate.annotations.CascadeType.ALL })
         public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices ;
     }
