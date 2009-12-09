@@ -7,7 +7,6 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-reportd.xml</value>
-         <value>classpath*:/META-INF/opennms/component-service.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="commonContext" />

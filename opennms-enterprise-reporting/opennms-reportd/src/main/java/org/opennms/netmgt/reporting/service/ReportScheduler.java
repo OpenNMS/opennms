@@ -38,7 +38,10 @@ public class ReportScheduler implements InitializingBean {
         
     }
 
-
+    ReportScheduler(Scheduler sched){
+        m_scheduler = sched;
+    }
+    
     public void rebuildReportSchedule() {
         
         LogUtils.infof(this,"rebuildReportSchedule: obtaining lock...");
@@ -191,6 +194,7 @@ public class ReportScheduler implements InitializingBean {
 
     public void start() throws SchedulerException {
         getScheduler().start();
+        buildReportSchedule();
     }
     
 }
