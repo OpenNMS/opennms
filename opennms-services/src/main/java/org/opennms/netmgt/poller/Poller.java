@@ -49,6 +49,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
@@ -364,7 +365,7 @@ public class Poller extends AbstractServiceDaemon {
     
     private int scheduleMatchingServices(String criteria) {
         String sql = "SELECT ifServices.nodeId AS nodeId, node.nodeLabel AS nodeLabel, ifServices.ipAddr AS ipAddr, " +
-                "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
+                "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, ifServices.status as status, " +
                 "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +
                 "outages.ifLostService AS ifLostService, outages.ifRegainedService AS ifRegainedService " +
         "FROM ifServices " +
@@ -376,38 +377,55 @@ public class Poller extends AbstractServiceDaemon {
         "ifServices.serviceId = outages.serviceId AND " +
         "ifRegainedService IS NULL " +
         "LEFT OUTER JOIN events ON outages.svcLostEventId = events.eventid " +
-        "WHERE ifServices.status = 'A'" +
+        "WHERE ifServices.status in ('A','N')" +
         (criteria == null ? "" : " AND "+criteria);
        
         
+        final AtomicInteger count = new AtomicInteger(0);
         
         Querier querier = new Querier(m_dataSource, sql) {
             public void processRow(ResultSet rs) throws SQLException {
-                scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
-                                (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
-                                rs.getString("svcLostEventUei"));
+                if (scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
+                                "A".equals(rs.getString("status")), (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
+                                rs.getString("svcLostEventUei"))) {
+                    count.incrementAndGet();
+                }
             }
         };
         querier.execute();
         
         
-        return querier.getCount();
+        return count.get();
 
     }
+    
+    private void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
+        final String sql = "UPDATE ifservices SET status = ? WHERE id " +
+        		" IN (SELECT ifs.id FROM ifservices AS ifs JOIN service AS svc ON ifs.serviceid = svc.serviceid " +
+        		" WHERE ifs.nodeId = ? AND ifs.ipAddr = ? AND svc.servicename = ?)"; 
 
-    private void scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, Number svcLostEventId, Date date, String svcLostUei) {
+        Updater updater = new Updater(m_dataSource, sql);
+        updater.execute(status, nodeId, ipAddr, serviceName);
+        
+    }
+
+    private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date date, String svcLostUei) {
         Category log = ThreadCategory.getInstance();
 
         Package pkg = findPackageForService(ipAddr, serviceName);
-        if (pkg == null) {
-            log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package");
-            return;
+        if (pkg == null && active) {
+            log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package. Marking as Not Polled.");
+            updateServiceStatus(nodeId, ipAddr, serviceName, "N");
+            return false;
+        } else if (pkg != null && !active) {
+            log.info("Active service "+serviceName+" on "+ipAddr+" is now configured for any package. Marking as active.");
+            updateServiceStatus(nodeId, ipAddr, serviceName, "A");
         }
         
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
         if (monitor == null) {
             log.info("Could not find service monitor associated with service "+serviceName);
-            return;
+            return false;
         }
         
         InetAddress addr;
@@ -415,7 +433,7 @@ public class Poller extends AbstractServiceDaemon {
             addr = InetAddress.getByName(ipAddr);
         } catch (UnknownHostException e) {
             log.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
-            return;
+            return false;
         }
         
         PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
@@ -445,6 +463,8 @@ public class Poller extends AbstractServiceDaemon {
         }
         
         svc.schedule();
+        
+        return true;
 
     }
 
