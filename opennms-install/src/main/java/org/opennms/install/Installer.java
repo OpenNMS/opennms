@@ -130,15 +130,56 @@ public class Installer {
 
     private InstallerDb m_installerDb = new InstallerDb();
 
-    private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
+    public static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
 
-    private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
+    public static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
+
+    /**
+     * By default, use a no-op progress manager that doesn't track progress. If
+     * a caller wants to track progress, they must inject a ProgressManager by using
+     * {@link #setProgressManager()}.
+     */
+    private ProgressManager<ProgressItemKey> m_progressManager = new ProgressManagerDefaultImpl<ProgressItemKey>();
+
+    /**
+     * This enum holds keys that are used to identify and sort the progress items.
+     */
+    public static enum ProgressItemKey {
+        LOADING_SETTINGS,
+        CONNECTING_TO_DATABASE,
+        VERIFYING_CONFIGURATION_FILES,
+        UPDATING_DATABASE,
+        VACUUMING_DATABASE,
+        FINALIZE_CONFIGURATION
+    }
+
+    public void setProgressManager(ProgressManager<ProgressItemKey> manager) {
+        m_progressManager = manager;
+    }
 
     public Installer() {
         setOutputStream(System.out);
     }
 
     public void install(String[] argv) throws Exception {
+        synchronized(m_progressManager) {
+            // TODO: Populate this list based on the parsed command line options
+            m_progressManager.clearItems();
+            // Mark the first item as in-progress
+            m_progressManager.addItem(ProgressItemKey.LOADING_SETTINGS, "Loading installer settings");
+            m_progressManager.setInProgress(ProgressItemKey.LOADING_SETTINGS);
+            m_progressManager.addItem(ProgressItemKey.CONNECTING_TO_DATABASE, "Connecting to database");
+            m_progressManager.setIncomplete(ProgressItemKey.CONNECTING_TO_DATABASE);
+            m_progressManager.addItem(ProgressItemKey.VERIFYING_CONFIGURATION_FILES, "Verifying configuration files");
+            m_progressManager.setIncomplete(ProgressItemKey.VERIFYING_CONFIGURATION_FILES);
+            m_progressManager.addItem(ProgressItemKey.UPDATING_DATABASE, "Updating database schema");
+            m_progressManager.setIncomplete(ProgressItemKey.UPDATING_DATABASE);
+            m_progressManager.addItem(ProgressItemKey.VACUUMING_DATABASE, "Vacuuming database");
+            m_progressManager.setIncomplete(ProgressItemKey.VACUUMING_DATABASE);
+            m_progressManager.addItem(ProgressItemKey.FINALIZE_CONFIGURATION, "Finalizing installation");
+            m_progressManager.setIncomplete(ProgressItemKey.FINALIZE_CONFIGURATION);
+        }
+
         printHeader();
         loadProperties();
         parseArguments(argv);
@@ -182,7 +223,12 @@ public class Installer {
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
             writeLibraryConfig(icmp_path, jrrd_path);
         }
-        
+
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.LOADING_SETTINGS); 
+            m_progressManager.setInProgress(ProgressItemKey.CONNECTING_TO_DATABASE);
+        }
+
         /*
          * Everything needs to use the administrative data source until we
          * verify that the opennms database is created below (and where we
@@ -200,11 +246,21 @@ public class Installer {
             m_out.println("* using '" + m_installerDb.getDatabaseName() + "' as the PostgreSQL database name for OpenNMS");
         }
 
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.CONNECTING_TO_DATABASE); 
+            m_progressManager.setInProgress(ProgressItemKey.VERIFYING_CONFIGURATION_FILES);
+        }
+
         verifyFilesAndDirectories();
 
         if (m_install_webapp) {
             checkWebappOldOpennmsDir();
             checkServerXmlOldOpennmsContext();
+        }
+
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.VERIFYING_CONFIGURATION_FILES); 
+            m_progressManager.setInProgress(ProgressItemKey.UPDATING_DATABASE);
         }
 
         if (m_update_database || m_fix_constraint) {
@@ -262,8 +318,18 @@ public class Installer {
             m_out.println("WARNING: the -U option is deprecated, it does nothing now");
         }
 
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.UPDATING_DATABASE); 
+            m_progressManager.setInProgress(ProgressItemKey.VACUUMING_DATABASE);
+        }
+
         if (m_do_vacuum) {
             m_installerDb.vacuumDatabase(m_do_full_vacuum);
+        }
+
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.VACUUMING_DATABASE); 
+            m_progressManager.setInProgress(ProgressItemKey.FINALIZE_CONFIGURATION);
         }
 
         if (m_install_webapp) {
@@ -289,6 +355,10 @@ public class Installer {
         
         if (m_update_database) {
             createConfiguredFile();
+        }
+
+        synchronized(m_progressManager) {
+            m_progressManager.setComplete(ProgressItemKey.FINALIZE_CONFIGURATION);
         }
 
         m_out.println();
