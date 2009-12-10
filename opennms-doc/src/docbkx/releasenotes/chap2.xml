@@ -45,6 +45,12 @@
 					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3456">#3456</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>A new installation wizard has been added, which allows you to configure the
+					administrator password, database configuration, etc. upon startup when not configured.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3321">#3321</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
