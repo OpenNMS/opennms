@@ -90,6 +90,7 @@
   		<script type='text/javascript' src='extJS/source/core/Ext.js'></script>
   		<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>
   		<script type='text/javascript' src='extJS/ext-all-debug.js'></script>
+  		<script type='text/javascript'>Ext.BLANK_IMAGE_URL = 'extJS/resources/images/default/s.gif'</script>
 	</c:if>
 
 	<c:if test="${param.storageAdmin == 'true'}">

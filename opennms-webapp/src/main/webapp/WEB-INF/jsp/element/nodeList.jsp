@@ -78,6 +78,7 @@
 <script type="text/javascript" src="extJS/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="extJS/ext-all.js"></script>
 <script type="text/javascript" src="js/nodeListGrid.js"></script>--%>
+<script type='text/javascript'>Ext.BLANK_IMAGE_URL = 'extJS/resources/images/default/s.gif'</script>
 
 <div id="node-grid"></div>
 <c:choose>
