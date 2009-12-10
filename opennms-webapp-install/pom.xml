@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.6.7-testing-SNAPSHOT</version>
+    <version>1.6.9-TESTING-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp-install</artifactId>
@@ -230,13 +230,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-install</artifactId>
-      <version>1.6.7-testing-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>1.6.7-testing-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
