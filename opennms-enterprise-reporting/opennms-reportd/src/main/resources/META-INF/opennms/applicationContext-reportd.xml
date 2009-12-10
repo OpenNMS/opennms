@@ -41,12 +41,15 @@
   <bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory" />
 
   <bean id="quartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
-     
-  <bean id="reportJobFactory" class="org.opennms.netmgt.reporting.service.ReportJobFactory" />
+  
+  <bean id="reportJobFactory" class="org.opennms.netmgt.reporting.service.ReportJobFactory">
+      <property name="reportd" ref="daemon" />
+  </bean>   
    
   <bean id="reportdReportSchedule" class="org.opennms.netmgt.reporting.service.ReportScheduler" >
     <constructor-arg ref="quartzScheduler" />
     <property name="configDao" ref="reportdConfigDao" />
+    <property name="reportJobFactory" ref="reportJobFactory" />
   </bean>
 
 </beans>

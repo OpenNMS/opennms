@@ -35,7 +35,11 @@ public class ReportScheduler implements InitializingBean {
     private Object m_lock = new Object();
     
     public void afterPropertiesSet() throws Exception {
-        
+        try {
+            getScheduler().setJobFactory(getReportJobFactory());
+        } catch (SchedulerException e) {
+            LogUtils.errorf(this,"afterPropertiesSet: couldn't set proper JobFactory for scheduler: "+e, e);
+        }
     }
 
     ReportScheduler(Scheduler sched){
