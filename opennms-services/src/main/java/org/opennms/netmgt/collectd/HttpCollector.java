@@ -428,9 +428,11 @@ public class HttpCollector implements ServiceCollector {
     }
 
     public class HttpCollectorException extends RuntimeException {
+        
         private static final long serialVersionUID = 1L;
         HttpClient m_client;
-        HttpCollectorException(String message, HttpClient client){
+        
+        HttpCollectorException(String message, HttpClient client) {
             super(message);
             m_client = client;
         }
@@ -441,44 +443,26 @@ public class HttpCollector implements ServiceCollector {
             buffer.append(super.toString());
             buffer.append(": client URL: ");
             final HostConfiguration hostConfiguration = m_client.getHostConfiguration();
-            buffer.append((hostConfiguration == null ? "null" : hostConfiguration.toString()));
+            
+            if (hostConfiguration != null) {
+                buffer.append(hostConfiguration.getHostURL() == null ? "null" : hostConfiguration.getHostURL());
+            }
+            
             return buffer.toString();
         }
     }
 
     private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpMethod method) throws IOException {
         List<HttpCollectionAttribute> butes = processResponse(method.getResponseBodyAsString(), collectionSet, collectionResource);
+        
         if (butes.isEmpty()) {
-            log().warn("doCollection: no attributes defined for collection were found in response text matching regular expression '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
+            String url = client.getHostConfiguration() == null ? "null" : client.getHostConfiguration().getHostURL();
+            log().warn("doCollection: no attributes defined for the response from: "+url+" were found that match the expression: '" + collectionSet.getUriDef().getUrl().getMatches() + "'");
             throw new HttpCollectorException("No attributes specified were found: ", client);
         }
         
         //put the results into the collectionset for later
         collectionSet.storeResults(butes, collectionResource);
-        //String collectionName = collectionSet.getParameters().get("http-collection");
-        //RrdRepository rrdRepository = HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
-
-        /*ResourceIdentifier resource = new ResourceIdentifier() {
-
-            public String getOwnerName() {
-                return collectionSet.getAgent().getHostAddress();
-            }
-
-            public File getResourceDir(RrdRepository repository) {
-                return new File(repository.getRrdBaseDir(), Integer.toString(collectionSet.getAgent().getNodeId()));
-            }
-            
-        }; */
-        log().info("doCollection: persisting "+butes.size()+" attributes");
-        
-        // We don't persist here anymore - see CollectableService
-        /*for (HttpCollectionAttribute attribute : butes) {
-            PersistOperationBuilder builder = new PersistOperationBuilder(rrdRepository, resource, attribute.getName());
-            builder.declareAttribute(attribute);
-            log().debug("doCollection: setting attribute: "+attribute);
-            builder.setAttributeValue(attribute, attribute.getValueAsString());
-            builder.commit();
-        }*/
     }
 
     private void buildCredentials(final HttpCollectionSet collectionSet, final HttpClient client, final HttpMethod method) {
