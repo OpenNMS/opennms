@@ -37,6 +37,7 @@
     <complexType>
       <sequence>
         <element name="cron-schedule" minOccurs="1" maxOccurs="1" type="string" />
+        <element name="recipient" minOccurs="0" maxOccurs="unbounded" type="string" />
       </sequence>
       <attribute name="report-template" type="string" use="required" />
       <attribute name="report-name" type="string" use="required" />

@@ -13,8 +13,8 @@ public class ReportJob implements Job {
 
     
     public void execute(JobExecutionContext context)
-            throws JobExecutionException {
-        m_reportd.runReport(context.getJobDetail().getName());
+        throws JobExecutionException {
+            m_reportd.runReport(context.getJobDetail().getName());
     }
 
 
