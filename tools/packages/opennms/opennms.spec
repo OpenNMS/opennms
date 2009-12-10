@@ -34,6 +34,7 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%global _binaries_in_noarch_packages_terminate_build 0
 
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
