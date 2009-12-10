@@ -1,0 +1,24 @@
+<module rename-to="installer">
+
+    <!-- Inherit the core Web Toolkit stuff. -->
+    <inherits name="com.google.gwt.user.User"/>
+
+    <!-- inherit css based theme -->
+    <inherits name="com.google.gwt.user.theme.standard.Standard"/>
+
+    <!-- Add support for ExtJS integration -->
+    <inherits name="com.extjs.gxt.ui.GXT"/>
+
+    <!-- Specify the app entry point class. -->
+    <entry-point class="org.opennms.client.Application"/>
+
+    <!--
+      Declare a mapping for the InstallService implementation. This is
+      only really necessary for gwt:test unit tests.
+    -->
+    <servlet path="/install" class="org.opennms.server.InstallServiceImpl"/>
+
+    <!-- Specify the application specific style sheet. -->
+    <stylesheet src="Application.css" />
+
+</module>

@@ -1,0 +1,62 @@
+/* Add a margin over the buttons to separate them from the rest of the controls */
+.x-btn {
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+/* Provide a background image */
+BODY {
+	background-color: #c9dfc9;
+	background-image: url('../images/logo-background.gif');
+	background-repeat: repeat-x;
+	font-family: arial, tahoma, verdana, helvetica;
+}
+
+.transparent-background {
+	background-color: transparent;
+}
+
+.accordion-panel {
+	padding: 10px;
+}
+
+.accordion-panel P {
+	padding-bottom: 10px;
+}
+
+.font-style-italic {
+	font-style: italic;
+}
+
+.font-style-normal {
+	font-style: normal;
+}
+
+.check-success-icon { 
+	background: url('../images/greentick.gif') no-repeat center left !important; 
+}
+
+.check-failure-icon { 
+	background: url('../images/redcross.gif') no-repeat center left !important; 
+}
+
+.check-incomplete-icon { 
+	background: url('../images/circle.png') no-repeat center left !important; 
+}
+
+.check-progress-icon { 
+	background: url('../images/indicator.gif') no-repeat center left !important; 
+}
+
+.progress-panel {
+	margin-top: 10px;
+}
+
+.progress-header {
+	font-size: 11px;
+}
+
+.log-message {
+	font-family: 'courier new', courier;
+	font-size: small;
+}
