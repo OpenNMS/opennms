@@ -207,8 +207,7 @@ public class DefaultProvisionService implements ProvisionService {
                 for(OnmsMonitoredService monSvc : monSvcs ){
                     monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
                 }
-                
-                dbIface.setMonitoredServices(Collections.<OnmsMonitoredService>emptySet());
+                monSvcs.clear();
             }
             
             dbIface.mergeInterfaceAttributes(scannedIface);
