@@ -38,8 +38,6 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -54,58 +52,21 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.Snm
  * plug-ins by the service poller framework.
  * </P>
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
 
-//this does snmp and there relies on the snmp configuration so it is not distributable
-@Distributable(DistributionContext.DAEMON)
 public class SnmpPollInterfaceMonitor {
 
     /**
-     * Default object to collect if "oid" property not available.
+     * ifAdminStatus table from MIB-2.
      */
-    private static final String IF_ADMIN_STATUS_OID = ".1.3.6.1.2.1.2.2.1.7."; // MIB-II
-                                                                                // System
-                                                                                // Object
-                                                                                // Id
-
-    private static final String IF_OPER_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8."; // MIB-II
-    // System
-    // Object
-    // Id
-
-//    private List<>
+    private static final String IF_ADMIN_STATUS_OID = ".1.3.6.1.2.1.2.2.1.7.";
+    
     /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     * 
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
+     * ifOperStatus table from MIB-2.
      */
+    private static final String IF_OPER_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8.";
 
-    /**
-     * <P>
-     * The poll() method is responsible for polling the specified address for
-     * SNMP service availability.
-     * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be supressed.
-     * 
-     * @exception RuntimeException
-     *                Thrown for any uncrecoverable errors.
-     */
     public List<SnmpMinimalPollInterface> poll(SnmpAgentConfig agentConfig, List<SnmpMinimalPollInterface> mifaces) {
 
         if (mifaces == null ) {

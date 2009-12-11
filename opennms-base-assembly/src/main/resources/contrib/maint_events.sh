@@ -47,17 +47,24 @@ function runDbMaint() {
   #runsql "DELETE FROM outages where iflostservice < '2007/1/1'::timestamp;"
 
   # Table trimming
-  runsql "DELETE FROM outages where (ifregainedservice - iflostservice)::interval < interval '35 seconds';"
+  runsql "DELETE FROM events e WHERE e.eventid IN (SELECT o.svcregainedeventid FROM outages o WHERE o.svcregainedeventid IS NOT NULL AND  (ifregainedservice - iflostservice)::interval < interval '35 seconds');"
+
   runsql "DELETE FROM notifications WHERE pagetime < now() - interval '3 months';"
   runsql "DELETE 
             FROM events 
             WHERE NOT EXISTS (
-                  SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid
-	          UNION
-                  SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid
-                  UNION
-                  SELECT eventid FROM notifications WHERE eventid = events.eventid)
-              AND eventtime < now() - interval '6 weeks';"
+           SELECT svclosteventid 
+             FROM outages 
+            WHERE svclosteventid = events.eventid
+	    UNION
+           SELECT svcregainedeventid 
+             FROM outages 
+            WHERE svcregainedeventid = events.eventid
+            UNION
+           SELECT eventid 
+             FROM notifications 
+            WHERE eventid = events.eventid)
+              AND eventtime < now() - interval '6 weeks');"
 
   # Routine maintenance if autovacuum isn't running
   #runsql "VACUUM;"

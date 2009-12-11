@@ -179,10 +179,121 @@
 
 	</section>
 
+	<section id="opennms-1.6.8">
+		<title>Changes in OpenNMS 1.6.8</title>
+
+		<section id="opennms-1.6.8-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Logging was improved for the LDAP monitor.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3381">#3381</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graphing has been added or updated for
+					AudioCodes DS1, Cisco, Riverbed Steelhead, SofaWare devices.
+					(Bugs 
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3385">#3385</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3441">#3441</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3455">#3455</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3458">#3458</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3464">#3464</ulink>,
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3465">#3465</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The documentation for the unix time monitor now includes persisting clock skew.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3388">#3388</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to configure a list of fields which are allowed to contain
+					raw HTML in node assets.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3392">#3392</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A null pointer exception when creating scheduled outages has been fixed in UI.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3456">#3456</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A new installation wizard has been added, which allows you to configure the
+					administrator password, database configuration, etc. upon startup when not configured.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3321">#3321</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.6.8-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Thresholds for counter datasources didn't handle wrapping correctly.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3194">#3194</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Capsd rescan queue now checks for an existing host entry before scheduling
+					a new rescan.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3375">#3375</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The FTP monitor incorrectly expected a very specific error message when
+					checking for "not logged in" errors.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3376">#3376</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Dhcpd now properly honors the extended mode configuration in
+					<code>dhcpd-configuration.xml</code>.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3448">#3448</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The OpenNMS startup script no longer exits because of a missing PostgreSQL,
+					since it is possible to run OpenNMS and the database on separate hosts.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3461">#3461</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.6.8-changes">
+    
+			<title>Configuration/Behavior Changes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The SNMP collector would generate forceRescan events under certain conditions,
+					which can cause performance issues in Capsd.  The default is now to <emphasis>not</emphasis>
+					send these events.  To re-enable this behavior, set
+					"<code>org.opennms.netmgt.collectd.SnmpCollector.forceRescan = true</code>" in your
+					<code>opennms.properties</code> file.
+					(Bugs <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3389">#3389</ulink>
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3459">#3459</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	
+	</section>
+
 	<section id="opennms-1.6.7">
 		<title>Changes in OpenNMS 1.6.7</title>
 
-		<section id="opennms.1.6.7-features">
+		<section id="opennms-1.6.7-features">
 			<title>New Features and Enhancements</title>
 
 			<itemizedlist>
