@@ -544,7 +544,7 @@ if [ x"$VERBOSE_GC" != x"" ]; then
 fi
 
 # Check to see if the installer webapp is running
-$JAVA_CMD $APP_VM_PARMS -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP STATUS
+$JAVA_CMD $APP_VM_PARMS -Dinstall.dir=$OPENNMS_HOME -Dinstall.etc.dir=$OPENNMS_HOME/etc -Dopennms.home=$OPENNMS_HOME -Dopennms.manager.class=org.opennms.netmgt.jetty.JettyLauncher -jar $BOOTSTRAP STATUS
 jetty_status=$?
 
 if [ ! -f $OPENNMS_HOME/etc/configured ]; then
