@@ -413,11 +413,13 @@ public class Poller extends AbstractServiceDaemon {
         Category log = ThreadCategory.getInstance();
 
         Package pkg = findPackageForService(ipAddr, serviceName);
-        if (pkg == null && active) {
-            log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package. Marking as Not Polled.");
-            updateServiceStatus(nodeId, ipAddr, serviceName, "N");
+        if (pkg == null) {
+            if(active){
+                log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package. Marking as Not Polled.");
+                updateServiceStatus(nodeId, ipAddr, serviceName, "N");
+            }
             return false;
-        } else if (pkg != null && !active) {
+        } else if (!active) {
             log.info("Active service "+serviceName+" on "+ipAddr+" is now configured for any package. Marking as active.");
             updateServiceStatus(nodeId, ipAddr, serviceName, "A");
         }
@@ -548,4 +550,4 @@ public class Poller extends AbstractServiceDaemon {
         getNetwork().visit(visitor);
     }
 
-}
+}    
