@@ -1,5 +1,6 @@
 package org.opennms.netmgt.reporting.service;
 
+import org.opennms.netmgt.config.reportd.Report;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,7 +15,7 @@ public class ReportJob implements Job {
     
     public void execute(JobExecutionContext context)
         throws JobExecutionException {
-            m_reportd.runReport(context.getJobDetail().getName());
+            m_reportd.runReport((Report)context.getJobDetail().getJobDataMap().get(KEY));
     }
 
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
+import org.eclipse.jdt.internal.core.Assert;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.ReportdConfigurationDao;
@@ -35,6 +36,8 @@ public class ReportScheduler implements InitializingBean {
     private Object m_lock = new Object();
     
     public void afterPropertiesSet() throws Exception {
+        
+        
         try {
             getScheduler().setJobFactory(getReportJobFactory());
         } catch (SchedulerException e) {
@@ -133,7 +136,8 @@ public class ReportScheduler implements InitializingBean {
 
                 try {
                     detail = new JobDetail(report.getReportName(), JOB_GROUP, ReportJob.class, false, false, false);
-                    detail.getJobDataMap().put(ReportJob.KEY, report.getReportTemplate());
+                    detail.getJobDataMap().put(ReportJob.KEY, report);
+                   
 
                     trigger = new CronTrigger(report.getReportName(), JOB_GROUP, report.getCronSchedule());
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
