@@ -2,8 +2,10 @@ package org.opennms.netmgt.reporting.service;
 
 import java.util.List;
 
+import org.eclipse.jdt.internal.core.Assert;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -19,7 +21,7 @@ public class Reportd implements SpringServiceDaemon {
     
     private volatile EventForwarder m_eventForwarder;
     private ReportScheduler m_reportScheduler;
-    private DefaultReportService m_reportService;
+    private ReportService m_reportService;
 
     public void start() throws Exception {
            m_reportScheduler.start();
@@ -27,20 +29,47 @@ public class Reportd implements SpringServiceDaemon {
 
     public void afterPropertiesSet() throws Exception {
         // TODO Auto-generated method stub
+        
+        Assert.isNotNull(m_eventForwarder, "No Event Forwarder Set");
+        Assert.isNotNull(m_reportScheduler, "No Report Scheduler Set");
+        Assert.isNotNull(m_reportService,"No Report service set");
     }
    
     
-    public void runReport(String reportName){
-        runReport(reportName,null);
+      
+    public void runReport(Report report) {
+        LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
+        m_reportService.runReport(report);
+        LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
     }
  
     
-    public void runReport(String reportName, String[] reportEmailDestinations) {
-        LogUtils.debugf(this, "reportd -- running job %s", reportName );
-        m_reportService.runReport(reportName,reportEmailDestinations);
-        LogUtils.debugf(this,"reportd -- done running job %s",reportName);
-    }
- 
+    @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
+    public void handleRunReportEvent(Event e){
+       List <Parm> parmCollection = e.getParms().getParmCollection();
+       String reportName = new String();
+       String reportDestination = new String();
+       
+       for(Parm parm : parmCollection){
+       
+           if(EventConstants.PARM_REPORT_NAME.equals(parm.getParmName()))
+               reportName = parm.getValue().toString();
+           
+           else 
+               LogUtils.infof(this,"Unknown Event Constant: %s",parm.getParmName());
+               
+           }
+           
+           if (reportName != ""){
+              LogUtils.debugf(this, "running report %s", reportName);
+              // runReport(reportName,reportDestinations);
+               
+           }
+           else {
+               LogUtils.errorf(this, "Can not run report -- reportName not specified");
+           }
+       }
+    
     
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
@@ -106,11 +135,11 @@ public class Reportd implements SpringServiceDaemon {
         return m_reportScheduler;
     }
 
-    public DefaultReportService getReportService() {
+    public ReportService getReportService() {
         return m_reportService;
     }
 
-    public void setReportService(DefaultReportService reportService) {
+    public void setReportService(ReportService reportService) {
         m_reportService = reportService;
     }
 

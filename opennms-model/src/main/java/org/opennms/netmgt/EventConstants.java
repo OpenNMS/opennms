@@ -572,6 +572,13 @@ public class EventConstants {
     public static final String RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI = "uei.opennms.org/internal/reloadDaemonConfigSuccessful";
     public static final String PARM_DAEMON_NAME = "daemonName";
 
+    /**
+     * Reportd UEIs
+     */
+    
+    public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
+    public static final String PARM_REPORT_NAME = "reportName";
+    
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
     public static final String REMOTE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeRegainedService";
     public static final String LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorRegistered";
