@@ -72,20 +72,24 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private void addOrReduceEventAsAlarm(Event event) {
         OnmsEvent e = m_eventDao.get(event.getDbid());
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm."); //TODO: Understand why we use Assert
-
-        OnmsAlarm alarm = m_alarmDao.findByReductionKey(event.getAlarmData().getReductionKey());
-
+    
+        String reductionKey = event.getAlarmData().getReductionKey();
+        log().debug("addOrReduceEventAsAlarm: looking for existing reduction key: "+reductionKey);
+        OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+    
         if (alarm == null) {
+            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" not found, instantiating new alarm");
             alarm = createNewAlarm(e, event);
             
             //FIXME: this should be a cascaded save
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
         } else {
+            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" found, reducting event to exisiting alarm: "+alarm.getIpAddr());
             reduceEvent(e, alarm);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
-
+    
             if (event.getAlarmData().isAutoClean()) {
                 m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
             }
