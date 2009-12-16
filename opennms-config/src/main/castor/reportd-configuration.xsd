@@ -38,12 +38,36 @@
       <sequence>
         <element name="cron-schedule" minOccurs="1" maxOccurs="1" type="string" />
         <element name="recipient" minOccurs="0" maxOccurs="unbounded" type="string" />
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
       </sequence>
       <attribute name="report-template" type="string" use="required" />
       <attribute name="report-name" type="string" use="required" />
       <attribute name="report-output" type="string" use="required" /> 
+      <attribute name="report-format" type="string" use="optional" default="pdf">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(pdf|csv|html)"/> 
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="report-engine" type="string" use="optional" default="opennms">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(jdbc|opennms)" />
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
   
- 
+  <element name="parameter">
+    <complexType>
+      <sequence>
+        <any id="configuration" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+
 </schema>

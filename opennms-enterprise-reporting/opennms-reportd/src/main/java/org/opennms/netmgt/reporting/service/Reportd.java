@@ -28,7 +28,6 @@ public class Reportd implements SpringServiceDaemon {
     }
 
     public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
         
         Assert.isNotNull(m_eventForwarder, "No Event Forwarder Set");
         Assert.isNotNull(m_reportScheduler, "No Report Scheduler Set");
@@ -48,7 +47,6 @@ public class Reportd implements SpringServiceDaemon {
     public void handleRunReportEvent(Event e){
        List <Parm> parmCollection = e.getParms().getParmCollection();
        String reportName = new String();
-       String reportDestination = new String();
        
        for(Parm parm : parmCollection){
        
