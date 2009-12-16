@@ -1,31 +1,91 @@
 package org.opennms.netmgt.reporting.service;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Report;
+import org.opennms.netmgt.config.reportd.Parameter;
 
 public class DefaultReportService implements ReportService {
     
+    private enum Format { pdf,html,xml,xls };
+    
     public void runReport(Report report) {
-       // String fileName = new String();
         try {
-            JasperReport jasperReport = JasperCompileManager.compileReport(System.getProperty("opennms.home") + "/etc/report-templates/" + report.getReportTemplate());
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap());
-            //LogUtils.debugf(this, "writing report file: %s", fileName);
+            runAndRender(report);
+            
+            
         } catch (JRException e) {
             LogUtils.errorf(this, "error running report: %s",e.getMessage());
             e.printStackTrace();
         }  catch (Exception e){
             LogUtils.errorf(this, "Exception: %s", e.getMessage());
+        }        
+    }
+ 
+    
+    private void saveReport(JasperPrint jasperPrint, String format, String destFileName) throws JRException, Exception{
+        switch(Format.valueOf(format)){    
+            case pdf:
+                JasperExportManager.exportReportToPdfFile(jasperPrint, destFileName);
+            case html:
+                JasperExportManager.exportReportToHtmlFile(jasperPrint,destFileName);
+            case xml:
+                JasperExportManager.exportReportToXmlFile(jasperPrint,destFileName,true);
+            default:
+                LogUtils.errorf(this, "Error Running Report: Unknown Format: %s",format);
+       }    
+    }
+        
+    
+    private JasperPrint runAndRender(Report report) throws Exception, JRException {
+        JasperPrint jasperPrint = new JasperPrint();
+        
+        JasperReport jasperReport = JasperCompileManager.compileReport(
+                                                                       System.getProperty("opennms.home") + 
+                                                                       "/etc/report-templates/" + 
+                                                                       report.getReportTemplate() );
+        if(report.getReportEngine().equals("jdbc")){
+        
+            jasperPrint = JasperFillManager.fillReport(jasperReport,
+                                                       paramListToMap(report.getParameterCollection()),
+                                                       DataSourceFactory.getDataSource().getConnection() );              
         }
         
+        else if(report.getReportEngine().equals("opennms")){
+            LogUtils.errorf(this, "Sorry the OpenNMS Data source engine is not yet available");
+            jasperPrint = null;
+        }
+        else{
+            LogUtils.errorf(this,"Unknown report engine: %s ", report.getReportEngine());
+            jasperPrint = null;
+        }
+        
+        
+        return jasperPrint;
+        
+        
+        
+    }
+    
+    
+    private Map<String,String> paramListToMap(List<Parameter> parameters){
+        Map<String,String> parmMap = new HashMap();
+
+        for(Parameter parm : parameters)
+            parmMap.put(parm.getName(), parm.getValue());
+
+        return parmMap;
     }
     
 }
