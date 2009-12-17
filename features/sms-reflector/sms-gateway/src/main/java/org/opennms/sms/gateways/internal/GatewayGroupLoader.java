@@ -45,7 +45,7 @@ public class GatewayGroupLoader implements InitializingBean {
             modems = modemProperties.getProperty("modems");
         }
 
-        String[] tokens = modems.split("\\s");
+        String[] tokens = modems.split("\\s+");
 
         final AGateway[] gateways = new AGateway[tokens.length];
 
