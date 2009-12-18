@@ -78,9 +78,6 @@ public class ReportScheduler implements InitializingBean {
 
         LogUtils.infof(this,"rebuildReportSchedule: schedule rebuilt and lock released.");
    
-        
-        
-        
     }
     
     private void printCurrentSchedule() {

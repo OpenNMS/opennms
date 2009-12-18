@@ -1,5 +1,7 @@
 package org.opennms.netmgt.reporting.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +26,9 @@ public class DefaultReportService implements ReportService {
             
         String outputFile = null;
         try {
-            //outputFile = generateOutputFile(report.getReportOutput(),report.getReportName());
+            outputFile = generateReportName(reportDirectory,report.getReportName(), report.getReportFormat());
             JasperPrint print = runAndRender(report);
-            saveReport(print,report.getReportFormat(),null);
+            saveReport(print,report.getReportFormat(),outputFile);
             
         } catch (JRException e) {
             LogUtils.errorf(this, "error running report: %s",e.getMessage());
@@ -39,7 +41,11 @@ public class DefaultReportService implements ReportService {
     }
  
     private String generateReportName(String reportDirectory, String reportName, String reportFormat){
-        return "/tmp/wookies.pdf";
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setCalendar(Calendar.getInstance());
+        sdf.applyPattern("yyyymmddhhmm");
+        String fileName = reportDirectory + reportName + sdf.toString()  + "." + reportFormat;
+        return fileName;
     }
     
     private void saveReport(JasperPrint jasperPrint, String format, String destFileName) throws JRException, Exception{
