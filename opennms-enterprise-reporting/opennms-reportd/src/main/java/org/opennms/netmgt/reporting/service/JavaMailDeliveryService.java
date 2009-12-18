@@ -11,7 +11,7 @@ import org.opennms.netmgt.config.common.SendmailMessage;
 import org.opennms.netmgt.config.reportd.Report;
 import org.springframework.mail.javamail.MimeMailMessage;
 
-public class JavaMailDeliverySerivce implements ReportDeliveryService {
+public class JavaMailDeliveryService implements ReportDeliveryService {
 
     SendmailConfig m_sendMailConfig = null;
     

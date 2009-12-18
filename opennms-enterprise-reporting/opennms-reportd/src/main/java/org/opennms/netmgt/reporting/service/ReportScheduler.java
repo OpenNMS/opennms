@@ -123,22 +123,17 @@ public class ReportScheduler implements InitializingBean {
         
     }
 
-
     private void buildReportSchedule() {
 
         synchronized (m_lock) {
-            Iterator<Report> it = m_configDao.getReports().iterator();
 
-            while (it.hasNext()) {
-                Report report = it.next();
+            for(Report report : m_configDao.getReports()) {
                 JobDetail detail = null;
                 Trigger trigger = null;
 
                 try {
                     detail = new JobDetail(report.getReportName(), JOB_GROUP, ReportJob.class, false, false, false);
                     detail.getJobDataMap().put(ReportJob.KEY, report);
-                   
-
                     trigger = new CronTrigger(report.getReportName(), JOB_GROUP, report.getCronSchedule());
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
                     getScheduler().scheduleJob(detail, trigger);

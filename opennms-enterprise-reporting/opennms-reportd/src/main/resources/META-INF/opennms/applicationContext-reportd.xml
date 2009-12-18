@@ -31,6 +31,11 @@
     <property name="eventForwarder" ref="eventForwarder" /> 
     <property name="reportScheduler" ref="reportdReportSchedule" />
     <property name="reportService" ref="reportService" />
+    <property name="reportdConfigurationDao" ref="reportdConfigDao" />
+    <property name="reportDeliveryService" ref="deliveryService" />
+  </bean>
+
+  <bean id="deliveryService" class="org.opennms.netmgt.reporting.service.JavaMailDeliveryService">
   </bean>
 
   <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">

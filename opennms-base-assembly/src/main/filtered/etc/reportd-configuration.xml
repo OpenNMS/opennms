@@ -2,6 +2,8 @@
 <reportd-configuration 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/reportd-configuration"
+  storage-location="${install.share.dir}/reports/"
+  persist-reports="yes"
 > 
   <!--  
     http://quartz.sourceforge.net/javadoc/org/quartz/CronTrigger.html

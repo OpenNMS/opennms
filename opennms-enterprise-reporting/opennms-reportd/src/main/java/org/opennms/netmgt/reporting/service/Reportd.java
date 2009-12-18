@@ -7,6 +7,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.ReportdConfigurationDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -22,23 +23,34 @@ public class Reportd implements SpringServiceDaemon {
     private volatile EventForwarder m_eventForwarder;
     private ReportScheduler m_reportScheduler;
     private ReportService m_reportService;
+    private ReportDeliveryService m_reportDeliveryService;
+   
 
+    private ReportdConfigurationDao m_reportConfigurationDao;
+    
+    private String reportDirectory;
+    private boolean reportPersist;
+    
     public void start() throws Exception {
+          reportDirectory = m_reportConfigurationDao.getStorageDirectory();
+          reportPersist = m_reportConfigurationDao.getPersistFlag();
            m_reportScheduler.start();
     }
-
-    public void afterPropertiesSet() throws Exception {
-        
+    
+    public void afterPropertiesSet() throws Exception {    
         Assert.isNotNull(m_eventForwarder, "No Event Forwarder Set");
         Assert.isNotNull(m_reportScheduler, "No Report Scheduler Set");
         Assert.isNotNull(m_reportService,"No Report service set");
+        Assert.isNotNull(m_reportDeliveryService,"No Delivery service set");
+        Assert.isNotNull(m_reportConfigurationDao,"NoConfiguration DAO Defined");
     }
    
     
       
     public void runReport(Report report) {
         LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
-        m_reportService.runReport(report);
+        String fileName = m_reportService.runReport(report,reportDirectory);
+        m_reportDeliveryService.deliverReport(report, fileName);
         LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
     }
  
@@ -77,6 +89,10 @@ public class Reportd implements SpringServiceDaemon {
             EventBuilder ebldr = null;
 
             try {
+                
+                reportDirectory = m_reportConfigurationDao.getStorageDirectory();
+                reportPersist = m_reportConfigurationDao.getPersistFlag();
+                
                 LogUtils.debugf(this,"handleReloadConfigEvent: lock acquired, unscheduling current reports...");
 
                 m_reportScheduler.rebuildReportSchedule();
@@ -141,6 +157,23 @@ public class Reportd implements SpringServiceDaemon {
         m_reportService = reportService;
     }
 
+    public ReportDeliveryService getReportDeliveryService() {
+        return m_reportDeliveryService;
+    }
+
+    public void setReportDeliveryService(
+            ReportDeliveryService reportDeliveryService) {
+        m_reportDeliveryService = reportDeliveryService;
+    }
+
+    public ReportdConfigurationDao getReportdConfigurationDao() {
+        return m_reportConfigurationDao;
+    }
+
+    public void setReportdConfigurationDao(
+            ReportdConfigurationDao reportConfigurationDao) {
+        m_reportConfigurationDao = reportConfigurationDao;
+    }
    
     
 }
