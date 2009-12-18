@@ -20,21 +20,30 @@ public class DefaultReportService implements ReportService {
     
     private enum Format { pdf,html,xml,xls };
     
-    public void runReport(Report report) {
-        try {
-            runAndRender(report);
+    public String runReport(Report report,String reportDirectory) {
             
+        String outputFile = null;
+        try {
+            //outputFile = generateOutputFile(report.getReportOutput(),report.getReportName());
+            JasperPrint print = runAndRender(report);
+            saveReport(print,report.getReportFormat(),null);
             
         } catch (JRException e) {
             LogUtils.errorf(this, "error running report: %s",e.getMessage());
-            e.printStackTrace();
         }  catch (Exception e){
             LogUtils.errorf(this, "Exception: %s", e.getMessage());
-        }
+        }        
+ 
+        return outputFile;
+    
     }
  
+    private String generateReportName(String reportDirectory, String reportName, String reportFormat){
+        return "/tmp/wookies.pdf";
+    }
     
     private void saveReport(JasperPrint jasperPrint, String format, String destFileName) throws JRException, Exception{
+        
         switch(Format.valueOf(format)){    
             case pdf:
                 JasperExportManager.exportReportToPdfFile(jasperPrint, destFileName);
@@ -56,7 +65,6 @@ public class DefaultReportService implements ReportService {
                                                                        "/etc/report-templates/" + 
                                                                        report.getReportTemplate() );
         if(report.getReportEngine().equals("jdbc")){
-        
             jasperPrint = JasperFillManager.fillReport(jasperReport,
                                                        paramListToMap(report.getParameterCollection()),
                                                        DataSourceFactory.getDataSource().getConnection() );              

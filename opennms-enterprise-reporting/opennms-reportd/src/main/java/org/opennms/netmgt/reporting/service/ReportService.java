@@ -4,6 +4,6 @@ import org.opennms.netmgt.config.reportd.Report;
     
 public interface ReportService {
 
-    public void runReport(Report report);
+    public String runReport(Report report,String reportDirectory);
 
 }

@@ -74,6 +74,26 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
     public List<Report> getReports() {
         return getConfig().getReportCollection();
     }
-    
-    
+
+    public boolean getPersistFlag() {
+        
+        //return  getConfig().getPersistReports();
+        String strval = getConfig().getPersistReports();
+        boolean retval=false;
+        if(strval.equals("yes") || strval.equals("on") ){
+            retval = true;
+        }
+        
+        else if(strval.equals("off") ||strval.equals("no")){
+          retval = false; 
+        }
+        
+        return retval;
+    }
+
+    public String getStorageDirectory() {
+        return getConfig().getStorageLocation();
+    }
+
+        
 }
