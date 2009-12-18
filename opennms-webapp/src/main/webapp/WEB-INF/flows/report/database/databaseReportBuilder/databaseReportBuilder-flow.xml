@@ -6,14 +6,17 @@
 
 	<secured attributes="ROLE_USER" />
 
+	<var name="triggerDetails" class="org.opennms.web.report.database.model.TriggerDetails" />
+
 	<input name="reportId" required="true" />
-	
+	<input name="schedule" type="boolean" required="true" />
+
 	<on-start>
 		<evaluate expression="databaseReportConfigDao.getReportService(reportId)" result="flowScope.reportServiceName" />
-		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId, currentUser.name)" result="flowScope.criteria" />
+		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId)" result="flowScope.criteria" />
 	</on-start>
 	
-	<view-state id="reportParameters" model="criteria">
+	<view-state id="scheduledReportParameters" model="criteria">
 		<!--<binder>
 			<binding property="dates" converter="shortDate" required="true" />
 			<binding property="categories" required="true" />
@@ -22,40 +25,74 @@
         	<evaluate expression="categoryConfigService.getCategoriesList()"
                   result="viewScope.categories" />
     	</on-render>
-		<transition on="proceed" to="reportDeliveryOptions" />
+		<transition on="proceed" to="deliveryOptions" />
 		<transition on="cancel" to="reportCancelled" bind="false" />
 	</view-state>
 
-	<view-state id="reportDeliveryOptions" model="criteria">
-		<binder>
-			<binding property="persist" required="true"/>
+	<view-state id="deliveryOptions" model="deliveryOptions">
+		<!-- <binder>
+			<binding property="persist" required="true" />
 			<binding property="sendMail" required="true" />
 			<binding property="mailTo" />
 			<binding property="mailFormat" />
 		</binder>
-		<transition on="proceed" to="reviewReport" />
-		<transition on="revise" to="reportParameters" />
+		-->
+		<on-render>
+			<evaluate expression="onmsBatchReportService.getDeliveryOptions(reportId, currentUser.name)" result="flowScope.deliveryOptions" />
+			<evaluate expression="onmsBatchReportService.getAvailableFormats(reportId)" result="viewScope.availableFormats" />
+		</on-render>
+		<transition on="proceed" to="scheduleOrExecute" />
+		<transition on="revise" to="scheduledReportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 	
+	<!--
+	
+	TODO Decide if we want to review this at all (value is limited)
+	
 	<view-state id="reviewReport" model="criteria">
-		<transition on="proceed" to="submitReport" />
-		<transition on="revise" to="reportParameters" />
+		<transition on="proceed" to="scheduleOrExecute" />
+		<transition on="revise" to="scheduledReportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
+	
+	-->
+	
+	<decision-state id="scheduleOrExecute">
+    	<if test="schedule" then="triggerDetails" else="executeReport" />
+	</decision-state>
 
-	<action-state id="submitReport">
-		<evaluate expression="quartzDatabaseReportService.execute(criteria, flowRequestContext)" />
-		<!--  <evaluate expression="DatabaseReportService.execute(criteria, flowRequestContext)" /> -->
+	<action-state id="executeReport">
+		<evaluate expression="reportSchedulerService.execute(criteria, deliveryOptions, flowRequestContext)" />
 		<transition on="success" to="reportRunning" />
 		<transition on="error" to="reportError" />
 	</action-state>
-
+	
+	<view-state id="triggerDetails" model="triggerDetails">
+		<transition on="revise" to="scheduledReportParameters" />
+		<transition on="cancel" to="reportCancelled" />
+		<transition on="proceed" to="scheduleReport" />
+	</view-state>
+	
+	<action-state id="scheduleReport">
+		<evaluate expression="reportSchedulerService.addCronTrigger(criteria, 
+			deliveryOptions, 
+			triggerDetails.getTriggerName(),
+        	triggerDetails.getCronExpression(),
+        	flowRequestContext)" />
+		<transition on="success" to="reportScheduled" />
+		<transition on="error" to="reportError" />
+	</action-state>
+		
 	<view-state id="reportError">
 		<transition on="proceed" to="reportCancelled" />
 	</view-state>
 	
 	<view-state id="reportRunning">
+		<transition on="proceed" to="reportComplete" />
+	</view-state>
+	
+	<view-state id="reportScheduled">
 		<transition on="proceed" to="reportComplete" />
 	</view-state>
 

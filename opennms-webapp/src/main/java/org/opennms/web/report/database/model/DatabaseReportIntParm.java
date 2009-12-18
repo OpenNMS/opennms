@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: December 3th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,34 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
+package org.opennms.web.report.database.model;
 
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
+import java.io.Serializable;
 
-public interface DatabaseReportCriteriaService {
+public class DatabaseReportIntParm extends DatabaseReportParm implements Serializable {
     
-    DatabaseReportCriteriaCommand getCriteria(String id);
+    private static final long serialVersionUID = 4587512112540000518L;
     
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    int m_value;
+    String m_type;
+    
+    public DatabaseReportIntParm() {
+      super();
+    }
+    
+    public int getValue() {
+        return m_value;
+    }
+    
+    public void setValue(int value) {
+        m_value = value;
+    }
+    
+    public String getInputType() {
+        return m_type;
+    }
+    public void setInputType(String type) {
+        m_type = type;
+    }
 
 }

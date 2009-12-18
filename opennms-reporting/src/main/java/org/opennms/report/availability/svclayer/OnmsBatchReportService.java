@@ -37,12 +37,21 @@ package org.opennms.report.availability.svclayer;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.api.integration.reporting.BatchDeliveryOptions;
+import org.opennms.api.integration.reporting.BatchReportService;
+import org.opennms.api.integration.reporting.ReportValidationService;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
 import org.opennms.report.availability.AvailabilityCalculationException;
 import org.opennms.report.availability.AvailabilityCalculator;
@@ -54,7 +63,7 @@ import org.opennms.report.availability.render.ReportRenderer;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class OnmsBatchDatabaseReportService implements BatchReportService, ReportValidationService {
+public class OnmsBatchReportService implements BatchReportService, ReportValidationService {
     
     private AvailabilityCalculator m_classicCalculator;
 
@@ -75,10 +84,10 @@ public class OnmsBatchDatabaseReportService implements BatchReportService, Repor
     private static final String SVG_OUTPUT_FILE_NAME = "SVGAvailReport.pdf";
     private static final String PDF_OUTPUT_FILE_NAME = "PDFAvailReport.pdf";
     
-    public OnmsBatchDatabaseReportService() {
+    public OnmsBatchReportService() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(OnmsBatchDatabaseReportService.class);
+        log = ThreadCategory.getInstance(OnmsBatchReportService.class);
         
     }
     
@@ -111,17 +120,104 @@ public class OnmsBatchDatabaseReportService implements BatchReportService, Repor
         return true;
         
     }
+    
 
-    /* (non-Javadoc)
-     * @see org.opennms.report.availability.svclayer.BatchDatabaseReportService#runAndPersist(java.util.HashMap, java.lang.String)
-     */
-    public void runAndPersist(HashMap<String, Object> reportParms, String reportID) {
+    public void run(HashMap<String, Object> reportParms, BatchDeliveryOptions deliveryOptions, String reportId) {
         
-        runInternal(reportParms, reportID);
+        Resource xsltResource;
+        String inputFileName;
+        String outputFileName;
+        ReportRenderer renderer;
+        
+        inputFileName = runInternal(reportParms, reportId, deliveryOptions.getPersist());
+        
+        if ((inputFileName != null) && deliveryOptions.getSendMail()) {
+ 
+            try {
+                
+                if (deliveryOptions.getMailFormat().equalsIgnoreCase(HTML_FORMAT)) {
+                    renderer = new HTMLReportRenderer();
+                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(reportId));
+                    outputFileName = HTML_OUTPUT_FILE_NAME;
+                } else {
+                    renderer = new PDFReportRenderer();
+                    if (deliveryOptions.getMailFormat().equalsIgnoreCase(SVG_FORMAT)) {
+                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(reportId));
+                        outputFileName = SVG_OUTPUT_FILE_NAME;
+             
+                    } else {
+                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(reportId));
+                        outputFileName = PDF_OUTPUT_FILE_NAME;
+                    }
+                }
+                String baseDir = System.getProperty("opennms.report.dir");
+                log.debug("render base dir: " + baseDir);
+                log.debug("render input file: " + inputFileName);
+                log.debug("render output file: " + outputFileName);
+                log.debug("render template: " + xsltResource);
+                renderer.setBaseDir(baseDir);
+                renderer.render(inputFileName, outputFileName, xsltResource);
+                ReportMailer mailer = new ReportMailer(
+                                                       deliveryOptions.getMailTo(),
+                                                       baseDir + "/" + outputFileName);
+                mailer.send();
+                
+            } catch (MalformedURLException e) {
+                log.fatal("Malformed URL for xslt template");
+            } catch (ReportRenderException e) {
+                log.fatal("unable to render report");
+            } catch (IOException e) {
+                log.fatal("unable to mail report");
+            }
+        }
+
+
+    }
+    
+    public BatchDeliveryOptions getDeliveryOptions(String reportId, String userId) {
+
+        BatchDeliveryOptions options = new BatchDeliveryOptions();
+        
+        options.setMailFormat("HTML");
+        options.setCanPersist(true);
+        options.setPersist(true);
+        options.setSendMail(true);
+        
+        UserManager userFactory = UserFactory.getInstance();
+        
+        try {
+            String emailAddress = userFactory.getEmail(userId);
+            if(emailAddress != null) {
+                options.setMailTo(userFactory.getEmail(userId));
+            }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return options;
         
     }
     
-    private String runInternal(HashMap<String, Object> reportParms, String reportId) {
+    public List<String> getAvailableFormats(String id) {
+        
+        List<String> formats = new ArrayList<String>();
+        
+        if (m_configDao.getHtmlStylesheetLocation(id) != null) formats.add(HTML_FORMAT);
+        if (m_configDao.getPdfStylesheetLocation(id) != null) formats.add(PDF_FORMAT);
+        if (m_configDao.getSvgStylesheetLocation(id) != null) formats.add(SVG_FORMAT);
+       
+        return formats;
+
+    }
+    
+    private String runInternal(HashMap<String, Object> reportParms, String reportId, Boolean persist) {
         
         AvailabilityCalculator calculator;
         String reportFileName = null;
@@ -145,6 +241,7 @@ public class OnmsBatchDatabaseReportService implements BatchReportService, Repor
         
 
         // have the calculator calculate everything to enable any of the templates to work
+        // This has changed since the last version
         // This will have some performance impact.
         
         calculator.setReportFormat("all");
@@ -152,69 +249,17 @@ public class OnmsBatchDatabaseReportService implements BatchReportService, Repor
         log.debug("Starting Availability Report Calculations");
         try {
             calculator.calculate();
-            reportFileName = calculator.writeLocateableXML();
+            if (persist) {
+            reportFileName = calculator.writeLocateableXML(); 
+            } else {
+                reportFileName = calculator.writeXML();
+            }
         } catch (AvailabilityCalculationException ce) {
             log.fatal("Unable to calculate report data ", ce);
         }
 
         return reportFileName;
         
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see org.opennms.report.availability.svclayer.BatchDatabaseReportService#runAndMail(java.util.HashMap, java.lang.String, java.lang.String, java.lang.String)
-     */
-    public void runAndMail(HashMap<String, Object> reportParms, String reportId, String recipient, String format) {
-    
-        Resource xsltResource;
-        String inputFileName;
-        String outputFileName;
-        ReportRenderer renderer;
-        
-        inputFileName = runInternal(reportParms, reportId);
-        
-        if (inputFileName != null) {
- 
-            try {
-                
-                if (format.equalsIgnoreCase(HTML_FORMAT)) {
-                    renderer = new HTMLReportRenderer();
-                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(reportId));
-                    outputFileName = HTML_OUTPUT_FILE_NAME;
-                } else {
-                    renderer = new PDFReportRenderer();
-                    if (format.equalsIgnoreCase(SVG_FORMAT)) {
-                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(reportId));
-                        outputFileName = SVG_OUTPUT_FILE_NAME;
-             
-                    } else {
-                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(reportId));
-                        outputFileName = PDF_OUTPUT_FILE_NAME;
-                    }
-                }
-                String baseDir = System.getProperty("opennms.report.dir");
-                log.debug("render base dir: " + baseDir);
-                log.debug("render input file: " + inputFileName);
-                log.debug("render output file: " + outputFileName);
-                log.debug("render template: " + xsltResource);
-                renderer.setBaseDir(baseDir);
-                renderer.render(inputFileName, outputFileName, xsltResource);
-                ReportMailer mailer = new ReportMailer(
-                                                       recipient,
-                                                       baseDir + "/" + outputFileName);
-                mailer.send();
-                
-            } catch (MalformedURLException e) {
-                log.fatal("Malformed URL for xslt template");
-            } catch (ReportRenderException e) {
-                log.fatal("unable to render report");
-            } catch (IOException e) {
-                log.fatal("unable to mail report");
-            }
-        }
-
-
     }
     
     public void setCalendarCalculator(AvailabilityCalculator calculator) {
@@ -228,5 +273,5 @@ public class OnmsBatchDatabaseReportService implements BatchReportService, Repor
     public void setConfigDao(OnmsDatabaseReportConfigDao configDao) {
         m_configDao = configDao;
     }
-
+  
 }

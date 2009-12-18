@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: December 7th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,34 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
 
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
+package org.opennms.web.command;
 
-public interface DatabaseReportCriteriaService {
+
+import org.opennms.api.integration.reporting.BatchDeliveryOptions;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.binding.validation.ValidationContext;
+
+public class BatchDeliveryOptionsCommand extends BatchDeliveryOptions {
+
+    private static final long serialVersionUID = -4725838438394923258L;
     
-    DatabaseReportCriteriaCommand getCriteria(String id);
+    public BatchDeliveryOptionsCommand() {
+        super();
+    }
     
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    public void validateBatchDeliveryOptions(ValidationContext context) {
+        MessageContext messages = context.getMessageContext();
+        if ((m_persist == false) && (m_sendMail == false)) {
+            messages.addMessage(new MessageBuilder().error().source("Persist").
+                defaultText("At least one of the these options must be set").build());
+            messages.addMessage(new MessageBuilder().error().source("sendMail").
+                defaultText("At least one of the these options must be set").build());
+        } else if (m_sendMail && (m_mailTo.equals(""))) {
+            messages.addMessage(new MessageBuilder().error().source("mailTo").
+                defaultText("require an email address for delivery").build());
+        }
+    }
 
 }

@@ -10,4 +10,10 @@
 		<pdf-template>PDFAvailReport.xsl</pdf-template>
 		<html-template>HTMLAvailReport.xsl</html-template>
 	</report>
+	<report id="defaultClassicReport" 
+		type="calendar">
+		<logo>logo.gif</logo>
+		<pdf-template>PDFAvailReport.xsl</pdf-template>
+		<html-template>HTMLAvailReport.xsl</html-template>
+	</report>
 </opennms-database-reports>

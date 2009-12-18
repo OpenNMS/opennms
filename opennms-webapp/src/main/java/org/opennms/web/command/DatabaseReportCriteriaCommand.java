@@ -39,6 +39,7 @@ import java.util.Iterator;
 
 import org.opennms.web.report.database.model.DatabaseReportCriteria;
 import org.opennms.web.report.database.model.DatabaseReportDateParm;
+import org.opennms.web.report.database.model.DatabaseReportIntParm;
 import org.opennms.web.report.database.model.DatabaseReportStringParm;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
@@ -51,19 +52,6 @@ public class DatabaseReportCriteriaCommand extends DatabaseReportCriteria {
     public DatabaseReportCriteriaCommand() {
         super();
     }
-
-        public void validateReportDeliveryOptions(ValidationContext context) {
-            MessageContext messages = context.getMessageContext();
-            if ((m_persist == false) && (m_sendMail == false)) {
-                messages.addMessage(new MessageBuilder().error().source("Persist").
-                    defaultText("At least one of the these options must be set").build());
-                messages.addMessage(new MessageBuilder().error().source("sendMail").
-                    defaultText("At least one of the these options must be set").build());
-            } else if (m_sendMail && (m_mailTo.equals(""))) {
-                messages.addMessage(new MessageBuilder().error().source("mailTo").
-                    defaultText("require an email address for delivery").build());
-            }
-        }
         
         public void validateReportParameters(ValidationContext context) {
             MessageContext messages = context.getMessageContext();
@@ -82,7 +70,16 @@ public class DatabaseReportCriteriaCommand extends DatabaseReportCriteria {
                 DatabaseReportStringParm stringParm = stringParms.next();
                 if (stringParm.getValue() == "" ) {
                     messages.addMessage(new MessageBuilder().error().source("string parms").
-                                        defaultText("cannot have empty category field " + stringParm.getDisplayName()).build());
+                                        defaultText("cannot have empty string field " + stringParm.getDisplayName()).build());
+                }
+            }
+            
+            for (Iterator<DatabaseReportIntParm> intParms = m_intParms.iterator(); intParms.hasNext();) {
+                DatabaseReportIntParm intParm = intParms.next();
+                // TODO add a more sensible check here
+                if (intParm.getValue() == 0 ) {
+                    messages.addMessage(new MessageBuilder().error().source("int parms").
+                                        defaultText("cannot have empty string field " + intParm.getDisplayName()).build());
                 }
             }
             

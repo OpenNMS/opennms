@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.DateParm;
+import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
@@ -57,17 +58,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         return Collections.unmodifiableList(castorConfig.getReportCollection());
     }
     
-    public ReportParm[] getDates(String id) {
-        
-        ReportParm[] dates = null;
-        Report report = getReport(id);
-        if (report != null) {
-            dates =  report.getDate();
-        }
-        
-        return dates;
-        
-    }
     
     public DateParm[] getDateParms(String id) {
         
@@ -90,6 +80,18 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         }
         
         return stringParms;
+        
+    }
+    
+    public IntParm[] getIntParms(String id) {
+        
+        IntParm[] intParms = null;
+        Report report = getReport(id);
+        if (report != null) {
+            intParms =  report.getIntParm();
+        }
+        
+        return intParms;
         
     }
     

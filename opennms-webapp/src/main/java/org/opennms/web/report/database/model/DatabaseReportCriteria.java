@@ -36,6 +36,7 @@
 package org.opennms.web.report.database.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,29 +49,12 @@ public class DatabaseReportCriteria implements Serializable {
     protected String m_displayName;
     protected List <DatabaseReportDateParm> m_dateParms;
     protected List <DatabaseReportStringParm> m_stringParms;
-    protected String m_mailTo;
-    protected Boolean m_persist;
-    protected Boolean m_sendMail;
-    protected String m_mailFormat;
+    protected List <DatabaseReportIntParm> m_intParms;
+    private HashMap <String,Object> m_reportParms;
 
     public DatabaseReportCriteria() {
         super();
-    }
-
-    public String getMailTo() {
-        return m_mailTo;
-    }
-
-    public void setMailTo(String email) {
-        m_mailTo = email;
-    }
-
-    public String getMailFormat() {
-        return m_mailFormat;
-    }
-
-    public void setMailFormat(String format) {
-        m_mailFormat = format;
+        m_reportParms = new HashMap<String, Object>();
     }
 
     public List<DatabaseReportDateParm> getDateParms() {
@@ -88,21 +72,13 @@ public class DatabaseReportCriteria implements Serializable {
     public void setStringParms(List<DatabaseReportStringParm> strings) {
         m_stringParms = strings;
     }
-
-    public void setPersist(Boolean persist) {
-        m_persist = persist;
+    
+    public List<DatabaseReportIntParm> getIntParms() {
+        return m_intParms;
     }
 
-    public Boolean getPersist() {
-        return m_persist;
-    }
-
-    public void setSendMail(Boolean sendEmail) {
-        m_sendMail = sendEmail;
-    }
-
-    public Boolean getSendMail() {
-        return m_sendMail;
+    public void setIntParms(List<DatabaseReportIntParm> ints) {
+        m_intParms = ints;
     }
 
     public void setReportId(String reportId) {
@@ -126,17 +102,46 @@ public class DatabaseReportCriteria implements Serializable {
         HashMap <String,Object>parmMap = new HashMap<String, Object>();
         
         // Add all the strings from the report
-        Iterator<DatabaseReportStringParm>stringIter = m_stringParms.iterator();
-        while (stringIter.hasNext()) {
-            DatabaseReportStringParm parm = stringIter.next();
-            parmMap.put(parm.getName(), parm.getValue());
+        if (m_stringParms != null ) {
+            Iterator<DatabaseReportStringParm>stringIter = m_stringParms.iterator();
+            while (stringIter.hasNext()) {
+                DatabaseReportStringParm parm = stringIter.next();
+                parmMap.put(parm.getName(), parm.getValue());
+            }
+        }
+        // Add all the dates from the report
+        if (m_dateParms != null) {
+            Iterator<DatabaseReportDateParm>dateIter = m_dateParms.iterator();
+            while (dateIter.hasNext()) {
+                DatabaseReportDateParm parm = dateIter.next();
+                if (parm.getUseAbsoluteDate()) {
+                    // use the absolute date set when the report was scheduled.
+                    parmMap.put(parm.getName(), parm.getValue());
+                } else {
+                    // use the offset date set when the report was scheduled
+                    Calendar cal = Calendar.getInstance();
+                    int amount = 0 - parm.getCount();
+                    if (parm.getInterval().equals("year")) {
+                        cal.add(Calendar.YEAR, amount);
+                    } else { 
+                        if (parm.getInterval().equals("month")) {
+                            cal.add(Calendar.MONTH, amount);
+                        } else {
+                            cal.add(Calendar.DATE, amount);
+                        }
+                    }   
+                    parmMap.put(parm.getName(),cal.getTime());
+                }
+            }
         }
         
-        // Add all the dates from the report
-        Iterator<DatabaseReportDateParm>dateIter = m_dateParms.iterator();
-        while (dateIter.hasNext()) {
-            DatabaseReportDateParm parm = dateIter.next();
-            parmMap.put(parm.getName(), parm.getValue());
+        // Add all the integers from the report
+        if (m_intParms != null) {
+            Iterator<DatabaseReportIntParm>intIter = m_intParms.iterator();
+            while (intIter.hasNext()) {
+                DatabaseReportIntParm parm = intIter.next();
+                parmMap.put(parm.getName(), parm.getValue());
+            }
         }
         
         return parmMap;

@@ -42,7 +42,9 @@ import java.io.InputStream;
 import org.junit.Test;
 import org.opennms.netmgt.config.databaseReports.DateOffset;
 import org.opennms.netmgt.config.databaseReports.DateParm;
+import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.ReportParm;
+import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -55,6 +57,8 @@ public class DefaultDatabaseReportConfigDaoTest {
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
     private static final String REPORT_SERVICE = "onmsBatchDatabaseReportService";
+    private static final String STRING_NAME = "offenderCount";
+    private static final String STRING_DISPLAY_NAME = "top offender count";
     
 
     @Test
@@ -71,11 +75,15 @@ public class DefaultDatabaseReportConfigDaoTest {
         assertEquals(dates.length,1);
         assertEquals(dates[0].getName(),DATE_NAME);
         assertEquals(dates[0].getDisplayName(),DATE_DISPLAY_NAME);
-        assertEquals(dates[0].getUseAbsoluteDate(),true);
+        assertEquals(dates[0].getUseAbsoluteDate(),false);
         assertEquals(dates[0].getDefaultCount(),1);
         assertEquals(dates[0].getDefaultInterval(),"day");
         
-        
+        IntParm[] integers = dao.getIntParms(NAME);
+        assertEquals(integers.length,1);
+        assertEquals(integers[0].getName(),STRING_NAME);
+        assertEquals(integers[0].getDisplayName(),STRING_DISPLAY_NAME);
+        assertEquals(integers[0].getDefault(),20);
         
     }
 

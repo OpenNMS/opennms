@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: December 15th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
+package org.opennms.web.command;
 
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
+public class ManageReportScheduleCommand {
+    
+    private String[] m_triggerNames;
 
-public interface DatabaseReportCriteriaService {
-    
-    DatabaseReportCriteriaCommand getCriteria(String id);
-    
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    public void setTriggerNames(String[] triggerNames) {
+        m_triggerNames = triggerNames;
+    }
+
+    public String[] getTriggerNames() {
+        return m_triggerNames;
+    }
 
 }

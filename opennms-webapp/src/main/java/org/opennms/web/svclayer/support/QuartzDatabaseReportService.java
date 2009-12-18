@@ -37,8 +37,9 @@ package org.opennms.web.svclayer.support;
 
 import java.util.Date;
 
+import org.opennms.api.integration.reporting.BatchDeliveryOptions;
+import org.opennms.api.integration.reporting.BatchReportService;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.report.availability.svclayer.BatchReportService;
 import org.opennms.web.report.database.model.DatabaseReportCriteria;
 import org.opennms.web.svclayer.DatabaseReportService;
 import org.quartz.JobDetail;
@@ -85,6 +86,39 @@ public class QuartzDatabaseReportService implements DatabaseReportService, Appli
                                                       0,
                                                       0L);
             trigger.getJobDataMap().put("criteria", criteria);
+            trigger.getJobDataMap().put("reportServiceName", reportServiceName);
+            try {
+                m_scheduler.scheduleJob(m_jobDetail, trigger);
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+                context.getMessageContext().addMessage(new MessageBuilder().error()
+                                                       .defaultText(SCHEDULER_ERROR).build());
+                return ERROR;
+            }
+
+            return SUCCESS;
+        }
+    }
+    
+    public String execute(DatabaseReportCriteria criteria, BatchDeliveryOptions deliveryOptions, RequestContext context) {
+        
+        String reportServiceName = (String)context.getFlowScope().get("reportServiceName");
+        
+        BatchReportService reportService = (BatchReportService)m_context.getBean(reportServiceName);
+        
+        if (reportService.validate(criteria.getReportParms(), criteria.getReportId()) == false) {
+            context.getMessageContext().addMessage(new MessageBuilder().error()
+                                                   .defaultText(PARAMETER_ERROR).build());
+            return ERROR;
+        } else {
+            SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
+                                                      null,
+                                                      new Date(),
+                                                      null,
+                                                      0,
+                                                      0L);
+            trigger.getJobDataMap().put("criteria", criteria);
+            trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
             trigger.getJobDataMap().put("reportServiceName", reportServiceName);
             try {
                 m_scheduler.scheduleJob(m_jobDetail, trigger);

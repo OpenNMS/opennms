@@ -36,6 +36,7 @@
 package org.opennms.netmgt.dao.castor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -44,6 +45,7 @@ import org.springframework.core.io.Resource;
 public class DefaultOnmsDatabaseReportDaoTest {
     
     private static final String ID = "defaultCalendarReport";
+    private static final String ALTERNATE_ID = "defaultClassicReport";
     private static final String TYPE = "calendar";
     private static final String SVG_TEMPLATE = "SVGAvailReport.xsl";
     private static final String PDF_TEMPLATE = "PDFAvailReport.xsl";
@@ -63,6 +65,8 @@ public class DefaultOnmsDatabaseReportDaoTest {
         assertEquals(dao.getPdfStylesheetLocation(ID), PDF_TEMPLATE);
         assertEquals(dao.getHtmlStylesheetLocation(ID), HTML_TEMPLATE);
         assertEquals(dao.getLogo(ID), LOGO);
+        // test to see if missing parameters return null
+        assertNull(dao.getSvgStylesheetLocation(ALTERNATE_ID));
     }
 
 }

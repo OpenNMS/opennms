@@ -237,6 +237,14 @@
     <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
   
+  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator" />
+  
+  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator">
+  	<property name="schedulerService">
+  		<ref local="reportSchedulerService" />
+  	</property>
+  </bean>
+  
   <bean id="quartzDatabaseReportService" class="org.opennms.web.svclayer.support.QuartzDatabaseReportService">
 	<property name="scheduler">
 		<ref local="schedulerFactory" />
@@ -244,6 +252,17 @@
 	<property name="jobDetail">
 		<ref local="batchReportJobDetail" />
 	</property>
+  </bean>
+  
+  <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
+	<property name="scheduler">
+		<ref local="schedulerFactory" />
+	</property>
+	<property name="jobDetail">
+		<ref local="batchReportJobDetail" />
+	</property>
+	<property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
+	<property name="triggerGroup" value="reporting" />
   </bean>
   
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -277,6 +296,7 @@
 	  <property name="jobClass">
 		<value>org.opennms.web.report.database.BatchReportJob</value>
 	  </property>
+	  <property name="durability" value="true" />
   </bean> 
   
   <!-- Node List page -->

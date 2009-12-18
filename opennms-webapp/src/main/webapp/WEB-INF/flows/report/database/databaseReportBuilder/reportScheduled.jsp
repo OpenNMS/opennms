@@ -11,7 +11,7 @@
  *
  * Modifications:
  *
- * 2009 October 28: Created jonathan@opennms.org
+ * 2009 December 15: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -50,25 +50,14 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Report Delivery Options</h3>
+<h3>Report Scheduled</h3>
 
-  
-<form:form commandName="criteria">
-
-	<B>Report Delivery</B><br>
-	Email report
-	<form:checkbox path="sendMail"/><br>
-	<form:radiobutton path="mailFormat" value="SVG"/> Graphical Reports in PDF Format <br>
-    <form:radiobutton path="mailFormat" value="PDF"/> Numeric Reports in PDF Format <br>
-    <form:radiobutton path="mailFormat" value="HTML"/> Numeric Reports in HTM Format <br>
-    Recipient Address
-    <form:input path="mailTo"/>
-    <br><B>Report Persistence</B><br>
-    Save Report <form:checkbox path="persist"/>
-    <br>
-    <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+      <p>
+        Your report has been scheduled.
+      </p>
+      
+<form:form>  
+    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
 </form:form>
-  
+
 <jsp:include page="/includes/footer.jsp" flush="false" />

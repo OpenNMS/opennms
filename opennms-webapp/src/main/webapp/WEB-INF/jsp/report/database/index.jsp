@@ -57,6 +57,7 @@
       <ul class="plain">
         <li><a href="report/database/list.htm">Show available database reports</a></li>
         <li><a href="report/database/manage.htm">View and manage pre-run database reports</a></li>
+        <li><a href="report/database/manageSchedule.htm">Manage the database report schedule</a></li>
       </ul>
     </div>
   </div>

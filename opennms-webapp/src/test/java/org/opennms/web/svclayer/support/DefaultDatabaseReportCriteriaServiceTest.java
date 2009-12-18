@@ -33,19 +33,20 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.support;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
+import java.util.Calendar;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.command.DatabaseReportCriteriaCommand;
+import org.opennms.web.svclayer.DatabaseReportCriteriaService;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportCriteriaService;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportCriteriaServiceTest {
     
@@ -53,6 +54,17 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     private static final String DESCRIPTION = "default calendar report";
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
+    private static final String STRING_NAME = "reportCategory";
+    private static final String STRING_DISPLAY_NAME =  "report category";
+    private static final String STRING_INPUT_TYPE = "reportCategorySelector";
+    private static final String INT_NAME = "offenderCount";
+    private static final String INT_DISPLAY_NAME =  "top offender count";
+    private static final int INT_VALUE = 20;
+    private static final Integer OFFSET_COUNT = 1;
+    private static final String OFFSET_INTERVAL = "day";
+    private static final String INT_INPUT_TYPE = "freeText";
+    
+    
     
     private DefaultDatabaseReportConfigDao m_dao;
     private DatabaseReportCriteriaService m_criteriaService;
@@ -61,8 +73,8 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     public void setupDao() throws Exception {
 
         m_dao = new DefaultDatabaseReportConfigDao();
-        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/database-reports.xml");
-        m_dao.setConfigResource(new InputStreamResource(in));
+        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
+        m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
         
         m_criteriaService = new DefaultDatabaseReportCriteriaService();
@@ -74,16 +86,41 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testDatabaseReportService() throws Exception {
         
-        // FIXME this test is failing
-        // probably because the userManager/factory is not set up properly.
-        // this will not be an issue if we move the execution config (mailto etc),
-        // of the report criteria.
+        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID);
         
-        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID, "admin");
+        assertEquals(criteria.getStringParms().size(),1);
+        assertEquals(criteria.getStringParms().get(0).getDisplayName(),STRING_DISPLAY_NAME);
+        assertEquals(criteria.getStringParms().get(0).getName(),STRING_NAME);
+        assertEquals(criteria.getStringParms().get(0).getInputType(),STRING_INPUT_TYPE);
         
         assertEquals(criteria.getDateParms().size(),1);
+        assertEquals(criteria.getDateParms().get(0).getUseAbsoluteDate(),false);
         assertEquals(criteria.getDateParms().get(0).getDisplayName(),DATE_DISPLAY_NAME);
         assertEquals(criteria.getDateParms().get(0).getName(),DATE_NAME);
+        
+        assertEquals(criteria.getIntParms().size(),1);
+        assertEquals(criteria.getIntParms().get(0).getName(),INT_NAME);
+        assertEquals(criteria.getIntParms().get(0).getDisplayName(),INT_DISPLAY_NAME);
+        assertEquals(criteria.getIntParms().get(0).getInputType(),INT_INPUT_TYPE);
+        assertEquals(criteria.getIntParms().get(0).getValue(),INT_VALUE); 
+        
+    }
+    
+    @Test
+    public void testCalendarOffset() {
+        
+        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID);
+        
+        assertEquals(OFFSET_COUNT,criteria.getDateParms().get(0).getCount());
+        assertEquals(OFFSET_INTERVAL,criteria.getDateParms().get(0).getInterval());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 0 - OFFSET_COUNT);
+        Calendar configCal = Calendar.getInstance();
+        configCal.setTime(criteria.getDateParms().get(0).getValue());
+        assertEquals(cal.get(Calendar.DATE),configCal.get(Calendar.DATE));
+        assertEquals(cal.get(Calendar.MONTH),configCal.get(Calendar.MONTH));
+        assertEquals(cal.get(Calendar.YEAR),configCal.get(Calendar.YEAR));
+        
         
     }
 

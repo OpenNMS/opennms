@@ -11,8 +11,6 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- *
- * 2009 Oct 18: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -41,32 +39,34 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Availability Reports" />
-  <jsp:param name="headTitle" value="Availability Reports" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Manage Report Schedule" />
+  <jsp:param name="headTitle" value="Scheduled Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="List" />
+  <jsp:param name="breadcrumb" value="Manage Schedule"/>
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/availability/list.htm" var="pagedLink">
+<c:url value="/report/database/manageSchedule.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
 
 
 <c:choose>
 	<c:when test="${empty pagedListHolder.pageList}">
-		<p>None found.</p>
+		<p>The database report schedule is empty.</p>
 	</c:when>
 
 	<c:otherwise>
+		<form:form commandName="ManageReportScheduleCommand">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 
@@ -74,22 +74,24 @@
 		<table>
 			<thead>
 				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>execute report</th>
+					<th>trigger name</th>
+					<th>next fire time</th>
+					<th>select</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="report">
+			<c:forEach items="${pagedListHolder.pageList}" var="trigger">
 				<tr>
-					<td>${report.displayName}</td>
-					<td>${report.description}</td>
-					<td> <a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=false">Execute Report</a>
-					<a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=true">Schedule Report</a></td>
+					<td>${trigger.triggerName}</td>
+					<td>${trigger.nextFireTime}</td>
+					<td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
 				</tr>
 			</c:forEach>
 		</table>
+		<input type="submit" value="unschedule selected jobs"/>
+	</form:form>
 	</c:otherwise>
 </c:choose>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

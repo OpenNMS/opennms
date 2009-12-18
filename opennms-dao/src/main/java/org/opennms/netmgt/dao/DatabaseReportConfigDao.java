@@ -38,17 +38,17 @@ package org.opennms.netmgt.dao;
 import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DateParm;
+import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 
 public interface DatabaseReportConfigDao {
-    
-    ReportParm[] getDates(String id);
 
     DateParm[] getDateParms(String id);
     
     StringParm[] getStringParms(String id);
+    
+    IntParm[] getIntParms(String id);
     
     List <Report> getReports();
     

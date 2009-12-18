@@ -35,20 +35,16 @@
 //
 package org.opennms.web.svclayer.support;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.databaseReports.DateParm;
-import org.opennms.netmgt.config.databaseReports.ReportParm;
+import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.command.DatabaseReportCriteriaCommand;
 import org.opennms.web.report.database.model.DatabaseReportDateParm;
+import org.opennms.web.report.database.model.DatabaseReportIntParm;
 import org.opennms.web.report.database.model.DatabaseReportStringParm;
 import org.opennms.web.svclayer.DatabaseReportCriteriaService;
 
@@ -57,22 +53,21 @@ public class DefaultDatabaseReportCriteriaService implements
     
     DatabaseReportConfigDao m_dao;
 
-    public DatabaseReportCriteriaCommand getCriteria(String id, String userId) {
+    public DatabaseReportCriteriaCommand getCriteria(String id) {
        
         DatabaseReportCriteriaCommand command = new DatabaseReportCriteriaCommand();
         
-        // TODO Extract this lot into a deliveryOptions object
         command.setReportId(id);
         command.setDisplayName(m_dao.getDisplayName(id));
-        command.setMailFormat("HTML");
-        command.setPersist(true);
-        command.setSendMail(true);
+        
+        // add date parms to criteria
         
         ArrayList<DatabaseReportDateParm> dateParms = new ArrayList<DatabaseReportDateParm>();
         DateParm[] dates = m_dao.getDateParms(id);
         if (dates.length > 0) {
             for (int i = 0 ; i < dates.length ; i++ ) {
                 DatabaseReportDateParm dateParm = new DatabaseReportDateParm();
+                dateParm.setUseAbsoluteDate(dates[i].getUseAbsoluteDate());
                 dateParm.setDisplayName(dates[i].getDisplayName());
                 dateParm.setName(dates[i].getName());
                 dateParm.setCount(new Integer((int) dates[i].getDefaultCount()));
@@ -82,7 +77,7 @@ public class DefaultDatabaseReportCriteriaService implements
                 if (dates[i].getDefaultInterval().equals("year")) {
                     cal.add(Calendar.YEAR, amount);
                 } else { 
-                    if (dates[i].getDefaultInterval().equals("year")) {
+                    if (dates[i].getDefaultInterval().equals("month")) {
                         cal.add(Calendar.MONTH, amount);
                     } else {
                         cal.add(Calendar.DATE, amount);
@@ -93,6 +88,8 @@ public class DefaultDatabaseReportCriteriaService implements
             }
         }
         command.setDateParms(dateParms);
+        
+        // add string parms to criteria
         
         ArrayList<DatabaseReportStringParm> stringParms = new ArrayList<DatabaseReportStringParm>();
         StringParm[] strings = m_dao.getStringParms(id);
@@ -107,24 +104,22 @@ public class DefaultDatabaseReportCriteriaService implements
             }
         }
         command.setStringParms(stringParms);
-
-        UserManager userFactory = UserFactory.getInstance();
-        try {
-            String emailAddress = userFactory.getEmail(userId);
-            if(emailAddress != null) {
-                command.setMailTo(userFactory.getEmail(userId));
+        
+        // add int parms to criteria
+        
+        ArrayList<DatabaseReportIntParm> intParms = new ArrayList<DatabaseReportIntParm>();
+        IntParm[] integers = m_dao.getIntParms(id);
+        if (integers.length > 0) {
+            for (int i = 0 ; i < integers.length ; i++ ) {
+                DatabaseReportIntParm intParm = new DatabaseReportIntParm();
+                intParm.setDisplayName(integers[i].getDisplayName());
+                intParm.setName(integers[i].getName());
+                intParm.setInputType(integers[i].getInputType());
+                intParm.setValue(integers[i].getDefault());
+                intParms.add(intParm);
             }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-
+        command.setIntParms(intParms);
 
         return command;
     }

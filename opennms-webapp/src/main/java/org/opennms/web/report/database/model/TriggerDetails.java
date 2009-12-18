@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: December 16th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,30 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer;
+package org.opennms.web.report.database.model;
 
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
+import java.io.Serializable;
 
-public interface DatabaseReportCriteriaService {
+public class TriggerDetails  implements Serializable {
     
-    DatabaseReportCriteriaCommand getCriteria(String id);
+    private static final long serialVersionUID = 3258199709023045243L;
     
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    String m_cronExpression;
+    String m_triggerName;
+    
+    public String getCronExpression() {
+        return m_cronExpression;
+    }
+    public void setCronExpression(String cronExpression) {
+        m_cronExpression = cronExpression;
+    }
+    public String getTriggerName() {
+        return m_triggerName;
+    }
+    public void setTriggerName(String triggerName) {
+        m_triggerName = triggerName;
+    }
+    
+    
 
 }

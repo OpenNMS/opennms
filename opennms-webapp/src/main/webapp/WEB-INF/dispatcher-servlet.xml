@@ -524,6 +524,16 @@
     <property name="successView" value="redirect:/report/database/manage.htm" />
   </bean>
   
+  <bean name="/report/database/manageSchedule.htm" 
+  		class="org.opennms.web.controller.ManageReportScheduleController">
+    <property name="bindOnNewForm" value="true" />
+  	<property name="reportSchedulerService" ref="reportSchedulerService"/>
+    <property name="commandName" value="ManageReportScheduleCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageReportScheduleCommand" />
+    <property name="pageSize" value="10"/>
+    <property name="successView" value="redirect:/report/database/manageSchedule.htm" />
+  </bean>
+  
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
