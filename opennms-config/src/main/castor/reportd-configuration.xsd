@@ -14,9 +14,24 @@
       <sequence>
         <element ref="this:report" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
+    <attribute name="storage-location" type="string" use="required">
+      <annotation>
+        <documentation>The base directory rendered reports are saved on the file system.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="persist-reports" type="string" use="required" >
+      <annotation>
+        <documentation>Should reports be kept after delivered?</documentation>
+      </annotation>
+      <simpleType>
+          <restriction base="string">
+            <pattern value="(yes|no|on|off)"/>
+          </restriction>
+        </simpleType>
+    </attribute>
     </complexType>
   </element>
-  
+
   <element name="report"  >
     <annotation>
       <documentation>

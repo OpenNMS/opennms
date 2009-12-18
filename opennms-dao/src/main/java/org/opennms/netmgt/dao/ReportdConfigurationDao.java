@@ -15,5 +15,10 @@ public interface ReportdConfigurationDao {
     List<Report> getReports();
         
     void reloadConfiguration() throws DataAccessResourceFailureException;
+    
+    boolean  getPersistFlag();
+    
+    String getStorageDirectory();
+    
 
 }
