@@ -304,6 +304,9 @@ install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
 mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/share
 
+rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%{instprefix}/share/etc-pristine/
+chmod -R ugo-w $RPM_BUILD_ROOT%{instprefix}/share/etc-pristine/
+
 pushd $RPM_BUILD_ROOT
 
 # core package files
