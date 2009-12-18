@@ -65,7 +65,7 @@ public class ReportScheduler implements InitializingBean {
 
                 LogUtils.debugf(this,"rebuildReportSchedule: recreating report schedule based on configuration...");
                 buildReportSchedule();
-                
+                       
                 printCurrentSchedule();
 
             } catch (DataAccessResourceFailureException e) {
@@ -77,9 +77,6 @@ public class ReportScheduler implements InitializingBean {
         }
 
         LogUtils.infof(this,"rebuildReportSchedule: schedule rebuilt and lock released.");
-   
-        
-        
         
     }
     
@@ -173,12 +170,12 @@ public class ReportScheduler implements InitializingBean {
     public void setConfigDao(ReportdConfigurationDao configDao) {
         m_configDao = configDao;
     }
-
+    
     
     public Scheduler getScheduler() {
         return m_scheduler;
     }
-
+    
     
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
