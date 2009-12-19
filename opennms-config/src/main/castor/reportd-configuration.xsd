@@ -57,7 +57,6 @@
       </sequence>
       <attribute name="report-template" type="string" use="required" />
       <attribute name="report-name" type="string" use="required" />
-      <attribute name="report-output" type="string" use="required" /> 
       <attribute name="report-format" type="string" use="optional" default="pdf">
         <simpleType>
           <restriction base="string">

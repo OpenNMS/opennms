@@ -36,6 +36,7 @@
   </bean>
 
   <bean id="deliveryService" class="org.opennms.netmgt.reporting.service.JavaMailDeliveryService">
+    <property name="javamailConfigDao" ref="javamailConfigDao" />
   </bean>
 
   <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
@@ -45,20 +46,31 @@
   
   <bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory" />
 
-  <bean id="quartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
+  <bean id="reportdQuartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
   
   <bean id="reportJobFactory" class="org.opennms.netmgt.reporting.service.ReportJobFactory">
       <property name="reportd" ref="daemon" />
   </bean>   
    
   <bean id="reportdReportSchedule" class="org.opennms.netmgt.reporting.service.ReportScheduler" >
-    <constructor-arg ref="quartzScheduler" />
+    <constructor-arg ref="reportdQuartzScheduler" />
     <property name="configDao" ref="reportdConfigDao" />
     <property name="reportJobFactory" ref="reportJobFactory" />
   </bean>
 
   <bean id="reportService" class="org.opennms.netmgt.reporting.service.DefaultReportService" >
   </bean>
+
+ <bean id="javamailConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
+  </bean>
+
+  <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
+    <property name="configResource" ref="javamailConfigResourceLocation" />
+    <property name="reloadCheckInterval" value="-1" />
+  </bean>
+
+
 
 </beans>
 

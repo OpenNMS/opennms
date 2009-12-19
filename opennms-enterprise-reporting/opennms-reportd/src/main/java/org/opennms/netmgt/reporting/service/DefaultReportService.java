@@ -2,6 +2,7 @@ package org.opennms.netmgt.reporting.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class DefaultReportService implements ReportService {
             
         String outputFile = null;
         try {
+            
             outputFile = generateReportName(reportDirectory,report.getReportName(), report.getReportFormat());
             JasperPrint print = runAndRender(report);
             saveReport(print,report.getReportFormat(),outputFile);
@@ -42,24 +44,24 @@ public class DefaultReportService implements ReportService {
  
     private String generateReportName(String reportDirectory, String reportName, String reportFormat){
         SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.setCalendar(Calendar.getInstance());
         sdf.applyPattern("yyyymmddhhmm");
-        String fileName = reportDirectory + reportName + sdf.toString()  + "." + reportFormat;
-        return fileName;
+        return  reportDirectory + reportName + sdf.format(new Date())  + "." + reportFormat;
     }
     
     private void saveReport(JasperPrint jasperPrint, String format, String destFileName) throws JRException, Exception{
-        
         switch(Format.valueOf(format)){    
             case pdf:
                 JasperExportManager.exportReportToPdfFile(jasperPrint, destFileName);
+                break;
             case html:
                 JasperExportManager.exportReportToHtmlFile(jasperPrint,destFileName);
+                break;
             case xml:
                 JasperExportManager.exportReportToXmlFile(jasperPrint,destFileName,true);
+                break;
             default:
                 LogUtils.errorf(this, "Error Running Report: Unknown Format: %s",format);
-       }    
+        }    
     }
         
     
@@ -70,6 +72,7 @@ public class DefaultReportService implements ReportService {
                                                                        System.getProperty("opennms.home") + 
                                                                        "/etc/report-templates/" + 
                                                                        report.getReportTemplate() );
+        
         if(report.getReportEngine().equals("jdbc")){
             jasperPrint = JasperFillManager.fillReport(jasperReport,
                                                        paramListToMap(report.getParameterCollection()),
@@ -94,7 +97,7 @@ public class DefaultReportService implements ReportService {
     
     
     private Map<String,String> paramListToMap(List<Parameter> parameters){
-        Map<String,String> parmMap = new HashMap();
+        Map<String,String> parmMap = new HashMap<String, String>();
 
         for(Parameter parm : parameters)
             parmMap.put(parm.getName(), parm.getValue());
