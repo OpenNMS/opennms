@@ -46,6 +46,10 @@ public class Reportd implements SpringServiceDaemon {
     }
    
     
+    public void runReport(String reportName){
+        LogUtils.infof(this, "Running report (%s).", reportName);
+        runReport(m_reportConfigurationDao.getReport(reportName));
+    }
       
     public void runReport(Report report) {
         LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
@@ -72,7 +76,7 @@ public class Reportd implements SpringServiceDaemon {
            
            if (reportName != ""){
               LogUtils.debugf(this, "running report %s", reportName);
-              // runReport(reportName,reportDestinations);
+              runReport(reportName);
                
            }
            else {
