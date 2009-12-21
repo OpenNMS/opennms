@@ -17,6 +17,7 @@ public class MobileMsgSequence {
 
 	private List<MobileMsgTransaction> m_transactions = Collections.synchronizedList(new ArrayList<MobileMsgTransaction>());
 	private Task m_mainTask;
+	private boolean m_failed = false;
 	
 	public void addTransaction(MobileMsgTransaction t) {
 		m_transactions.add(t);
@@ -59,5 +60,19 @@ public class MobileMsgSequence {
 		return new ToStringCreator(this)
 			.append("transactions", m_transactions)
 			.toString();
+	}
+
+	public boolean hasFailed() {
+		if (m_failed) {
+			return true;
+		}
+		
+		for (MobileMsgTransaction t : m_transactions) {
+			if (t.getError() != null) {
+				m_failed  = true;
+				return true;
+			}
+		}
+		return false;
 	}
 }
