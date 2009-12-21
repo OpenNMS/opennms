@@ -65,11 +65,13 @@ public class MobileMsgSequenceBuilder {
 	}
 
 	public static class SmsTransactionBuilder extends MobileMsgTransactionBuilder {
+		private MobileMsgSequence m_sequence;
 		private String m_recipient;
 		private String m_text;
 
-		public SmsTransactionBuilder(String label, String gatewayId, long timeout, int retries, String recipient, String text) {
+		public SmsTransactionBuilder(MobileMsgSequence sequence, String label, String gatewayId, long timeout, int retries, String recipient, String text) {
 			super(label, gatewayId, timeout, retries);
+			m_sequence = sequence;
 			m_recipient = recipient;
 			m_text = text;
 		}
@@ -77,6 +79,7 @@ public class MobileMsgSequenceBuilder {
 		@Override
 		public MobileMsgTransaction getTransaction() {
 			return new SmsTransaction(
+				m_sequence,
 				getLabel(),
 				getGatewayId(),
 				getTimeout(),
@@ -97,16 +100,26 @@ public class MobileMsgSequenceBuilder {
 	}
 
 	public static class UssdTransactionBuilder extends MobileMsgTransactionBuilder {
+		private MobileMsgSequence m_sequence;
 		private String m_text;
 		
-		public UssdTransactionBuilder(String label, String gatewayId, long timeout, int retries, String text) {
+		public UssdTransactionBuilder(MobileMsgSequence sequence, String label, String gatewayId, long timeout, int retries, String text) {
 			super(label, gatewayId, timeout, retries);
+			m_sequence = sequence;
 			m_text = text;
 		}
 
 		@Override
 		public MobileMsgTransaction getTransaction() {
-			return new UssdTransaction(getLabel(), getGatewayId(), getTimeout(), getRetries(), m_text, getMatcher());
+			return new UssdTransaction(
+				m_sequence,
+				getLabel(),
+				getGatewayId(),
+				getTimeout(),
+				getRetries(),
+				m_text,
+				getMatcher()
+			);
 		}
 		
 	}
@@ -119,21 +132,18 @@ public class MobileMsgSequenceBuilder {
 	
 	public MobileMsgTransactionBuilder sendSms(String label, String gatewayId, String recipient, String text) {
 		addCurrentBuilderToSequence();
-		m_currentBuilder = new SmsTransactionBuilder(label, gatewayId == null? m_gatewayId : gatewayId, m_timeout, m_retries, recipient, text);
+		m_currentBuilder = new SmsTransactionBuilder(m_sequence, label, gatewayId == null? m_gatewayId : gatewayId, m_timeout, m_retries, recipient, text);
 		return m_currentBuilder;
 	}
 
 	public MobileMsgTransactionBuilder sendUssd(String label, String gatewayId, String text) {
 		addCurrentBuilderToSequence();
-		m_currentBuilder = new UssdTransactionBuilder(label, gatewayId == null? m_gatewayId : gatewayId, m_timeout, m_retries, text);
+		m_currentBuilder = new UssdTransactionBuilder(m_sequence, label, gatewayId == null? m_gatewayId : gatewayId, m_timeout, m_retries, text);
 		return m_currentBuilder;
 	}
 
 	public MobileMsgSequenceBuilder setDefaultGatewayId(String gatewayId) {
 		m_gatewayId = gatewayId;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setGatewayId(gatewayId);
-		}
 		return this;
 	}
 
@@ -143,9 +153,6 @@ public class MobileMsgSequenceBuilder {
 
 	public MobileMsgSequenceBuilder setDefaultTimeout(long timeout) {
 		m_timeout = timeout;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setTimeout(timeout);
-		}
 		return this;
 	}
 	
@@ -155,9 +162,6 @@ public class MobileMsgSequenceBuilder {
 
 	public MobileMsgSequenceBuilder setDefaultRetries(int retries) {
 		m_retries = retries;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setRetries(retries);
-		}
 		return this;
 	}
 	

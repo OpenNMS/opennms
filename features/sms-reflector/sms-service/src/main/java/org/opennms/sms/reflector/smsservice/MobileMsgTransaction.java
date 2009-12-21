@@ -15,15 +15,15 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 		private String m_recipient;
 		private String m_text;
 
-		public SmsTransaction(String label, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher matcher) {
-			super(label, gatewayId, timeout, retries, matcher);
+		public SmsTransaction(MobileMsgSequence sequence, String label, String gatewayId, long timeout, int retries, String recipient, String text, MobileMsgResponseMatcher matcher) {
+			super(sequence, label, gatewayId, timeout, retries, matcher);
 			m_recipient = recipient;
 			m_text = text;
 		}
 
 		@Override
 		public Async<MobileMsgResponse> createAsync(MobileMsgTracker tracker) {
-			return new SmsAsync(tracker, getGatewayId(), getTimeout(), getRetries(), m_recipient, m_text, getMatcher());
+			return new SmsAsync(tracker, getSequence(), getGatewayId(), getTimeout(), getRetries(), m_recipient, m_text, getMatcher());
 		}
 
 		public String toString() {
@@ -42,14 +42,14 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 	public static class UssdTransaction extends MobileMsgTransaction {
 		private String m_text;
 
-		public UssdTransaction(String label, String gatewayId, long timeout, int retries, String text, MobileMsgResponseMatcher matcher) {
-			super(label, gatewayId, timeout, retries, matcher);
+		public UssdTransaction(MobileMsgSequence sequence, String label, String gatewayId, long timeout, int retries, String text, MobileMsgResponseMatcher matcher) {
+			super(sequence, label, gatewayId, timeout, retries, matcher);
 			m_text = text;
 		}
 
 		@Override
 		public Async<MobileMsgResponse> createAsync(MobileMsgTracker tracker) {
-			return new UssdAsync(tracker, getGatewayId(), getTimeout(), getRetries(), m_text, getMatcher());
+			return new UssdAsync(tracker, getSequence(), getGatewayId(), getTimeout(), getRetries(), m_text, getMatcher());
 		}
 
 		public String toString() {
@@ -67,18 +67,24 @@ public abstract class MobileMsgTransaction implements Callback<MobileMsgResponse
 
 	private String m_label;
 	private MobileMsgResponseMatcher m_matcher;
+	private MobileMsgSequence m_sequence;
 	private Long m_latency;
 	private Throwable m_error;
 	private long m_timeout;
 	private int m_retries;
 	private String m_gatewayId;
 	
-	public MobileMsgTransaction(String label, String gatewayId, long timeout, int retries, MobileMsgResponseMatcher matcher) {
+	public MobileMsgTransaction(MobileMsgSequence sequence, String label, String gatewayId, long timeout, int retries, MobileMsgResponseMatcher matcher) {
+		m_sequence = sequence;
 		m_label = label;
 		m_gatewayId = gatewayId;
 		m_timeout = timeout;
 		m_retries = retries;
 		m_matcher = matcher;
+	}
+
+	public MobileMsgSequence getSequence() {
+		return m_sequence;
 	}
 
 	public String getLabel() {

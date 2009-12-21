@@ -148,7 +148,12 @@ public class PollableNetwork extends PollableContainer {
         }
         
         private String getStatusString(PollableElement e) {
-            return (e.getStatus().isUp() ? e.getStatus().toString() : e.getStatus().toString()+"("+e.getCause().getEventId()+")");
+            PollStatus status = e.getStatus();
+            boolean up = status.isUp();
+            String statusDesc = status.toString();
+            PollEvent cause = e.getCause();
+            int eventId = cause == null ? 0 : cause.getEventId();
+            return (up ? statusDesc : statusDesc+"("+eventId+")");
         }
     }
 
