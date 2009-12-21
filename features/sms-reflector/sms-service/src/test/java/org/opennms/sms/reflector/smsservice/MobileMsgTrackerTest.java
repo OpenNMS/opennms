@@ -51,7 +51,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
@@ -357,19 +356,14 @@ public class MobileMsgTrackerTest {
     }
     
     @Test
-    @Ignore
-    public void testMultiResponseBuilder() throws Throwable {
-    	// FIXME: handle multiple responses from a single request
-    }
-
-    @Test
     public void testRawSmsPing() throws Exception {
         final long start = System.currentTimeMillis();
 
+        MobileMsgSequence sequence = new MobileMsgSequence();
         LatencyCallback cb = new LatencyCallback(start);
 		final MobileMsgResponseMatcher responseMatcher = and(smsFromRecipient(), textMatches("^[Pp]ong$"));
  
-        Async<MobileMsgResponse> async = new SmsAsync(m_tracker, "*", 1000L, 0,  PHONE_NUMBER, "ping", responseMatcher);
+        Async<MobileMsgResponse> async = new SmsAsync(m_tracker, sequence, "*", 1000L, 0,  PHONE_NUMBER, "ping", responseMatcher);
                                         
         Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
@@ -390,8 +384,9 @@ public class MobileMsgTrackerTest {
     public void testRawUssdMessage() throws Exception {
         final String gatewayId = "G";
         
+        MobileMsgSequence sequence = new MobileMsgSequence();
         LatencyCallback cb = new LatencyCallback(System.currentTimeMillis());
-        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, 3000L, 0, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
+        Async<MobileMsgResponse> async = new UssdAsync(m_tracker, sequence, 3000L, 0, new USSDRequest("#225#"), and(isUssd(), textMatches(TMOBILE_USSD_MATCH)));
 
         Task t = m_coordinator.createTask(null, async, cb);
         t.schedule();
