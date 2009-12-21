@@ -131,9 +131,6 @@ public class MobileMsgSequenceBuilder {
 
 	public MobileMsgSequenceBuilder setDefaultGatewayId(String gatewayId) {
 		m_gatewayId = gatewayId;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setGatewayId(gatewayId);
-		}
 		return this;
 	}
 
@@ -143,9 +140,6 @@ public class MobileMsgSequenceBuilder {
 
 	public MobileMsgSequenceBuilder setDefaultTimeout(long timeout) {
 		m_timeout = timeout;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setTimeout(timeout);
-		}
 		return this;
 	}
 	
@@ -155,9 +149,6 @@ public class MobileMsgSequenceBuilder {
 
 	public MobileMsgSequenceBuilder setDefaultRetries(int retries) {
 		m_retries = retries;
-		if (m_currentBuilder != null) {
-			m_currentBuilder.setRetries(retries);
-		}
 		return this;
 	}
 	
