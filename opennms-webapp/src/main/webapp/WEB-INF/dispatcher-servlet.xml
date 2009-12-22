@@ -534,6 +534,12 @@
     <property name="successView" value="redirect:/report/database/manageSchedule.htm" />
   </bean>
   
+  <bean name="/report/database/downloadReport.htm" 
+  		class="org.opennms.web.controller.DownloadReportController">
+	<property name="batchReportService" ref="onmsReportService" />
+	<property name="reportLocatorService" ref="availabilityReportLocator" />
+  </bean>
+  
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>

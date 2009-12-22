@@ -1,9 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -12,7 +15,7 @@
 // 
 // Created: December 15th, 2009 jonathan@opennms.org
 //
-// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+// Copyright (C) 2009 The OpenNMS Group, Inc. All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +24,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -29,9 +32,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 package org.opennms.web.svclayer.support;
 
@@ -41,8 +44,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.api.integration.reporting.BatchDeliveryOptions;
-import org.opennms.api.integration.reporting.BatchReportService;
+import org.opennms.api.integration.reporting.DeliveryOptions;
+import org.opennms.api.integration.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.report.database.model.DatabaseReportCriteria;
@@ -59,8 +62,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.webflow.execution.RequestContext;
 
-public class DefaultSchedulerService implements ApplicationContextAware, InitializingBean,
-        SchedulerService {
+public class DefaultSchedulerService implements ApplicationContextAware,
+        InitializingBean, SchedulerService {
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
@@ -73,50 +76,53 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
     private DatabaseReportConfigDao m_configDao;
     private ApplicationContext m_applicationContext;
     private String m_triggerGroup;
-    
+
     public void afterPropertiesSet() throws Exception {
-                
-                log().debug("Adding job " + m_jobDetail.getName() + " to scheduler");
-                m_scheduler.addJob(m_jobDetail,true);
-           
+
+        log().debug("Adding job " + m_jobDetail.getName() + " to scheduler");
+        m_scheduler.addJob(m_jobDetail, true);
+
     }
-    
-    
-    public List<TriggerDescription> getTriggerDescriptions(){
-        
+
+    public List<TriggerDescription> getTriggerDescriptions() {
+
         List<TriggerDescription> triggerDescriptions = new ArrayList<TriggerDescription>();
-    
-    try {
-        String[] triggerNames = m_scheduler.getTriggerNames(m_triggerGroup);
-        for (int j = 0; j < triggerNames.length; j++) {
-            TriggerDescription description = new TriggerDescription();
-            description.setNextFireTime(m_scheduler.getTrigger(triggerNames[j],m_triggerGroup).getNextFireTime());
-            description.setTriggerName(triggerNames[j]);
-            triggerDescriptions.add(description);
-            
+
+        try {
+            String[] triggerNames = m_scheduler.getTriggerNames(m_triggerGroup);
+            for (int j = 0; j < triggerNames.length; j++) {
+                TriggerDescription description = new TriggerDescription();
+                description.setNextFireTime(m_scheduler.getTrigger(
+                                                                   triggerNames[j],
+                                                                   m_triggerGroup).getNextFireTime());
+                description.setTriggerName(triggerNames[j]);
+                triggerDescriptions.add(description);
+
+            }
+        } catch (SchedulerException e) {
+            log().error("exception looking retrieving trigger descriptions",
+                        e);
         }
-    } catch (SchedulerException e) {
-        log().error("exception looking retrieving trigger descriptions", e);
+
+        return triggerDescriptions;
+
     }
 
-    return triggerDescriptions;
-
-}
-    
     public Boolean exists(String triggerName) {
-        
+
         Boolean found = false;
-        
-        try  {
-            Trigger trigger = m_scheduler.getTrigger(triggerName, m_triggerGroup);
-            if (trigger != null ) {
+
+        try {
+            Trigger trigger = m_scheduler.getTrigger(triggerName,
+                                                     m_triggerGroup);
+            if (trigger != null) {
                 found = true;
             }
         } catch (SchedulerException e) {
             log().error("exception looking up trigger name: " + triggerName);
             log().error(e);
         }
-        
+
         return found;
     }
 
@@ -130,12 +136,14 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
         try {
             m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
         } catch (SchedulerException e) {
-            log().error("exception when attempting to remove trigger " + triggerName);
+            log().error(
+                        "exception when attempting to remove trigger "
+                                + triggerName);
             log().error(e);
         }
 
     }
-    
+
     public void removeTriggers(String[] triggerNames) {
         for (String triggerName : triggerNames) {
             removeTrigger(triggerName);
@@ -151,14 +159,13 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
      * org.springframework.webflow.execution.RequestContext)
      */
     public String addCronTrigger(DatabaseReportCriteria criteria,
-            BatchDeliveryOptions deliveryOptions, String triggerName,
-            String cronExpression,
-            RequestContext context) {
+            DeliveryOptions deliveryOptions, String triggerName,
+            String cronExpression, RequestContext context) {
 
         CronTrigger cronTrigger = null;
 
         String reportBean = m_configDao.getReportService(criteria.getReportId());
-        BatchReportService reportService = (BatchReportService) m_applicationContext.getBean(reportBean);
+        ReportService reportService = (ReportService) m_applicationContext.getBean(reportBean);
 
         if (reportService.validate(criteria.getReportParms(),
                                    criteria.getReportId()) == false) {
@@ -174,8 +181,8 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
                 cronTrigger.setName(triggerName);
                 cronTrigger.setJobName(m_jobDetail.getName());
                 cronTrigger.setCronExpression(cronExpression);
-                //cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
-                //                              cronExpression);
+                // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
+                // cronExpression);
             } catch (ParseException e) {
                 log().error(TRIGGER_PARSE_ERROR, e);
                 context.getMessageContext().addMessage(
@@ -186,9 +193,9 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
 
             cronTrigger.setJobName(m_jobDetail.getName());
             cronTrigger.getJobDataMap().put("criteria", criteria);
-            cronTrigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
-            cronTrigger.getJobDataMap().put("reportServiceName",
-                                            reportBean);
+            cronTrigger.getJobDataMap().put("deliveryOptions",
+                                            deliveryOptions);
+            cronTrigger.getJobDataMap().put("reportServiceName", reportBean);
             try {
                 m_scheduler.scheduleJob(cronTrigger);
             } catch (SchedulerException e) {
@@ -211,11 +218,10 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
      * org.springframework.webflow.execution.RequestContext)
      */
     public String execute(DatabaseReportCriteria criteria,
-            BatchDeliveryOptions deliveryOptions,
-            RequestContext context) {
+            DeliveryOptions deliveryOptions, RequestContext context) {
 
         String reportBean = m_configDao.getReportService(criteria.getReportId());
-        BatchReportService reportService = (BatchReportService) m_applicationContext.getBean(reportBean);
+        ReportService reportService = (ReportService) m_applicationContext.getBean(reportBean);
 
         if (reportService.validate(criteria.getReportParms(),
                                    criteria.getReportId()) == false) {
@@ -248,7 +254,7 @@ public class DefaultSchedulerService implements ApplicationContextAware, Initial
     private Category log() {
         return ThreadCategory.getInstance();
     }
-    
+
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }

@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009 jonathan@opennms.org
+// Created: December 8th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,43 +33,58 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.report.availability.svclayer;
+package org.opennms.api.integration.reporting;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
-import org.opennms.report.availability.AvailabilityCalculator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import java.io.Serializable;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class
-})
-@ContextConfiguration(locations={
-        "classpath:org/opennms/report/availability/svclayer/OnmsBatchReportServiceTest.xml"
-})
+public class DeliveryOptions  implements Serializable{
 
-// TODO: get this to test something (
-
-public class OnmsBatchReportServiceTest {
+    private static final long serialVersionUID = 7983363859009905407L;
     
-    @Autowired
-    AvailabilityCalculator m_classicCalculator;
-    @Autowired
-    AvailabilityCalculator m_calendarCalculator;
-    @Autowired
-    OnmsDatabaseReportConfigDao m_configDao;
+    protected String m_mailTo;
+    protected Boolean m_persist;
+    protected Boolean m_canPersist;
+    protected Boolean m_sendMail;
+    protected String m_mailFormat;
     
-    @Test
-    public void testWiring() {
-        Assert.assertNotNull(m_classicCalculator);
-        Assert.assertNotNull(m_calendarCalculator);
-        Assert.assertNotNull(m_configDao);
+    public String getMailTo() {
+        return m_mailTo;
+    }
+
+    public void setMailTo(String email) {
+        m_mailTo = email;
+    }
+
+    public String getMailFormat() {
+        return m_mailFormat;
+    }
+
+    public void setMailFormat(String format) {
+        m_mailFormat = format;
+    }
+    
+    public void setCanPersist(Boolean canPersist) {
+        m_canPersist = canPersist;
+    }
+    
+    public Boolean getCanPersist() {
+        return m_canPersist;    
+    }
+    
+    public void setPersist(Boolean persist) {
+        m_persist = persist;
+    }
+
+    public Boolean getPersist() {
+        return m_persist;
+    }
+
+    public void setSendMail(Boolean sendEmail) {
+        m_sendMail = sendEmail;
+    }
+
+    public Boolean getSendMail() {
+        return m_sendMail;
     }
 
 }

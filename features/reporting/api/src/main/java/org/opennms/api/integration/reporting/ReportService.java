@@ -37,18 +37,19 @@
  */
 package org.opennms.api.integration.reporting;
 
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public interface BatchReportService {
+public interface ReportService {
 
     public abstract boolean validate(HashMap<String, Object> reportParms,
             String reportID);
     
-    public abstract void run(HashMap<String, Object> reportParms, BatchDeliveryOptions options,
+    public abstract void run(HashMap<String, Object> reportParms, DeliveryOptions options,
             String reportID);
     
-    public abstract BatchDeliveryOptions getDeliveryOptions(String userId, String reportId);
+    public abstract DeliveryOptions getDeliveryOptions(String userId, String reportId);
     
     public abstract List<String> getAvailableFormats(String reportId);
 

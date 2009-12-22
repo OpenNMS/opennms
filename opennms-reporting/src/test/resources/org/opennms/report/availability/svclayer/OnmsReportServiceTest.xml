@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-  	<bean id="onmsBatchReportService"
-		class="org.opennms.report.availability.svclayer.OnmsBatchReportService"
+  	<bean id="onmsReportService"
+		class="org.opennms.report.availability.svclayer.OnmsReportService"
 		scope="prototype">
 		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
 		<property name="calendarCalculator">

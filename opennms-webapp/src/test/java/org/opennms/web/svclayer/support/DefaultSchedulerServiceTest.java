@@ -48,8 +48,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.api.integration.reporting.BatchDeliveryOptions;
-import org.opennms.api.integration.reporting.BatchReportService;
+import org.opennms.api.integration.reporting.DeliveryOptions;
+import org.opennms.api.integration.reporting.ReportService;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.report.database.model.DatabaseReportCriteria;
@@ -90,7 +90,7 @@ public class DefaultSchedulerServiceTest {
     private JobDetailBean m_jobDetail;
  
     @Autowired
-    private BatchReportService m_reportService;
+    private ReportService m_reportService;
     
     @Autowired
     private DatabaseReportConfigDao m_reportConfigDao;
@@ -101,13 +101,13 @@ public class DefaultSchedulerServiceTest {
     private static String REPORT_ID = "test";
     private static String REPORT_SERVICE = "mockReportService";
     private static String CRON_EXPRESSION = "0 * * * * ?";
-    private static BatchDeliveryOptions m_deliveryOptions;
+    private static DeliveryOptions m_deliveryOptions;
     private static final String TRIGGER_GROUP = "reporting";
     
     @BeforeClass
     public static void setUp() {
         MockLogAppender.setupLogging();
-        m_deliveryOptions = new BatchDeliveryOptions();
+        m_deliveryOptions = new DeliveryOptions();
         m_criteria = new DatabaseReportCriteria();
         m_criteria.setReportId(REPORT_ID);
     }

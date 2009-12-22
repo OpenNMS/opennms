@@ -240,7 +240,7 @@ public class AvailabilityCalculator {
    
    
    
-    public String writeLocateableXML() throws AvailabilityCalculationException {
+    public String writeLocateableXML(String id) throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
@@ -257,7 +257,7 @@ public class AvailabilityCalculator {
             locator.setCategory(m_categoryName);
             locator.setDate(m_periodEndDate);
             locator.setType(m_monthFormat);
-            locator.setFormat(XML_FORMAT);
+            locator.setFormat(id);
             locator.setLocation(reportFile.getAbsolutePath());
             locator.setAvailable(true);
             m_locatorService.addReport(locator);

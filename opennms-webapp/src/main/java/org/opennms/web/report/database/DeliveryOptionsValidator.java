@@ -1,13 +1,13 @@
 package org.opennms.web.report.database;
 
-import org.opennms.api.integration.reporting.BatchDeliveryOptions;
+import org.opennms.api.integration.reporting.DeliveryOptions;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
 public class DeliveryOptionsValidator {
 
-    public void validateDeliveryOptions(BatchDeliveryOptions deliveryOptions, ValidationContext context) {
+    public void validateDeliveryOptions(DeliveryOptions deliveryOptions, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
         if (!(deliveryOptions.getCanPersist() && (deliveryOptions.getSendMail() | deliveryOptions.getPersist()))) {
             messages.addMessage(new MessageBuilder().error().source("sendMail").

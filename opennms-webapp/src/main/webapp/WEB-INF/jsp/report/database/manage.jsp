@@ -77,7 +77,7 @@
 			<thead>
 				<tr>
 					<th>category</th>
-					<th>type</th>
+					<th>report ID</th>
 					<th>period ending</th>
 					<th>available</th>
 					<th>view report</th>
@@ -88,15 +88,15 @@
 			<c:forEach items="${pagedListHolder.pageList}" var="report">
 				<tr>
 					<td>${report.category}</td>
-					<td>${report.type}</td>
+					<td>${report.format}</td>
 					<td>${report.date}</td>
 					<td>${report.available}</td>
 					<td><a
-						href="report/availability/view/report.htm?reportid=${report.id}">html</a>
+						href="report/database/downloadReport.htm?locatorId=${report.id}&format=html">html</a>
 					<a
-						href="report/availability/view/report.pdf?reportid=${report.id}">pdf</a>
+						href="report/database/downloadReport.htm?locatorId=${report.id}&format=pdf">pdf</a>
 					<a
-						href="report/availability/view/svgreport.pdf?reportid=${report.id}">svg</a>
+						href="report/database/downloadReport.htm?locatorId=${report.id}&format=svg">svg</a>
 					</td>
 					<td><form:checkbox path="ids" value="${report.id}"/></td>
 				</tr>

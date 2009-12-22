@@ -37,12 +37,12 @@
 package org.opennms.web.command;
 
 
-import org.opennms.api.integration.reporting.BatchDeliveryOptions;
+import org.opennms.api.integration.reporting.DeliveryOptions;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
-public class BatchDeliveryOptionsCommand extends BatchDeliveryOptions {
+public class BatchDeliveryOptionsCommand extends DeliveryOptions {
 
     private static final long serialVersionUID = -4725838438394923258L;
     

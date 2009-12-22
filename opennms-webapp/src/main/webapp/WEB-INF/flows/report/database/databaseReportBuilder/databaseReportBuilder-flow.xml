@@ -38,8 +38,8 @@
 		</binder>
 		-->
 		<on-render>
-			<evaluate expression="onmsBatchReportService.getDeliveryOptions(reportId, currentUser.name)" result="flowScope.deliveryOptions" />
-			<evaluate expression="onmsBatchReportService.getAvailableFormats(reportId)" result="viewScope.availableFormats" />
+			<evaluate expression="onmsReportService.getDeliveryOptions(reportId, currentUser.name)" result="flowScope.deliveryOptions" />
+			<evaluate expression="onmsReportService.getAvailableFormats(reportId)" result="viewScope.availableFormats" />
 		</on-render>
 		<transition on="proceed" to="scheduleOrExecute" />
 		<transition on="revise" to="scheduledReportParameters" />

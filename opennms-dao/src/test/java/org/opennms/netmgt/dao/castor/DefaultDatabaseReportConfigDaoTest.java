@@ -56,7 +56,7 @@ public class DefaultDatabaseReportConfigDaoTest {
     private static final String DESCRIPTION = "default calendar report";
     private static final String DATE_DISPLAY_NAME = "end date";
     private static final String DATE_NAME = "endDate";
-    private static final String REPORT_SERVICE = "onmsBatchDatabaseReportService";
+    private static final String REPORT_SERVICE = "onmsReportService";
     private static final String STRING_NAME = "offenderCount";
     private static final String STRING_DISPLAY_NAME = "top offender count";
     
@@ -72,18 +72,18 @@ public class DefaultDatabaseReportConfigDaoTest {
         assertEquals(dao.getReportService(NAME),REPORT_SERVICE);
         
         DateParm[] dates = dao.getDateParms(NAME);
-        assertEquals(dates.length,1);
-        assertEquals(dates[0].getName(),DATE_NAME);
-        assertEquals(dates[0].getDisplayName(),DATE_DISPLAY_NAME);
-        assertEquals(dates[0].getUseAbsoluteDate(),false);
-        assertEquals(dates[0].getDefaultCount(),1);
-        assertEquals(dates[0].getDefaultInterval(),"day");
+        assertEquals(1, dates.length);
+        assertEquals(DATE_NAME,dates[0].getName());
+        assertEquals(DATE_DISPLAY_NAME,dates[0].getDisplayName());
+        assertEquals(false,dates[0].getUseAbsoluteDate());
+        assertEquals(1,dates[0].getDefaultCount());
+        assertEquals("day",dates[0].getDefaultInterval());
         
         IntParm[] integers = dao.getIntParms(NAME);
-        assertEquals(integers.length,1);
-        assertEquals(integers[0].getName(),STRING_NAME);
-        assertEquals(integers[0].getDisplayName(),STRING_DISPLAY_NAME);
-        assertEquals(integers[0].getDefault(),20);
+        assertEquals(1,integers.length);
+        assertEquals(STRING_NAME,integers[0].getName());
+        assertEquals(STRING_DISPLAY_NAME,integers[0].getDisplayName());
+        assertEquals(20,integers[0].getDefault());
         
     }
 
