@@ -40,6 +40,7 @@
         classpath:/META-INF/opennms/applicationContext-reporting.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
+        /WEB-INF/applicationContext-spring-webflow.xml
     </param-value>
   </context-param>
   
@@ -308,6 +309,19 @@
      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
      <load-on-startup>1</load-on-startup>
    </servlet>
+
+   <!-- Serves static resource content from .jar files such as spring-js.jar -->
+   <servlet>
+	<servlet-name>Resources Servlet</servlet-name>
+	<servlet-class>org.springframework.js.resource.ResourceServlet</servlet-class>
+	<load-on-startup>0</load-on-startup>
+   </servlet>
+	
+   <!-- Map all /resources requests to the Resource Servlet for handling -->
+   <servlet-mapping>
+		<servlet-name>Resources Servlet</servlet-name>
+		<url-pattern>/resources/*</url-pattern>
+   </servlet-mapping>
 
    <!-- WebStart servlet -->
    <servlet>

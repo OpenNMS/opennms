@@ -140,7 +140,7 @@ public class AvailabilityReportRunner implements Runnable {
         try {
             log.debug("Starting Availability Report Calculations");
             calculator.calculate();
-            calculator.writeLocateableXML();
+            calculator.writeLocateableXML("xml");
             String outputFile = calculator.getOutputFileName();
             log.debug("Written Availability Report as XML to " + outputFile);
             renderer.setInputFileName(outputFile);
