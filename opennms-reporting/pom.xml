@@ -114,6 +114,7 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>avalon-framework</groupId>

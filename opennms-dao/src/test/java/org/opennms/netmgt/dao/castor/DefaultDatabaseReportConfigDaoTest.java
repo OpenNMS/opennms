@@ -40,10 +40,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 
 import org.junit.Test;
-import org.opennms.netmgt.config.databaseReports.DateOffset;
 import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.IntParm;
-import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;

@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.config.databaseReports.ReportParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 
