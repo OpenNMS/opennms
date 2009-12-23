@@ -1189,9 +1189,9 @@ public class AvailCalculations extends Object {
 				Section section = new Section();
 				section.setClassicTable(table);
                 section.setPeriod(periodFrom + " to " + periodTo);
-                section.setSectionName(label + service);
-                section.setSectionTitle(label + service);
-                section.setSectionDescr(descr + service);
+                section.setSectionName(label + " " + service);
+                section.setSectionTitle(label + " " + service);
+                section.setSectionDescr(descr + " " + service);
                 section.setSectionIndex(m_sectionIndex);
                 m_sectionIndex++;
                 catSections.addSection(section);
@@ -1264,9 +1264,9 @@ public class AvailCalculations extends Object {
 				Section section = new Section();
 				section.setClassicTable(table);
                 section.setPeriod(periodFrom + " to " + periodTo);
-                section.setSectionName(label + service);
-                section.setSectionTitle(label + service);
-                section.setSectionDescr(descr + service);
+                section.setSectionName(label + " " + service);
+                section.setSectionTitle(label + " " + service);
+                section.setSectionDescr(descr + " " + service);
                 section.setSectionIndex(m_sectionIndex);
                 m_sectionIndex++;
                 catSections.addSection(section);
