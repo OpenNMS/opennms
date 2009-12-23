@@ -13,7 +13,7 @@ public class MobileMsgResponseMatchers {
 				tracef("smsFrom.matches(%s, %s, %s)", originator, request, response);
 				if (response instanceof SmsResponse) {
 					SmsResponse resp = (SmsResponse)response;
-					return resp.getOriginator().equals(originator);
+					return isAMatch(originator, resp.getOriginator());
 				}
 				return false;
 			}
@@ -187,5 +187,12 @@ public class MobileMsgResponseMatchers {
 		if (log.isTraceEnabled()) {
 			log.trace(String.format(format, args));
 		}
+	}
+	
+	public static boolean isAMatch(String expected, String actual) {
+	    if (expected.startsWith("~") && expected.length() > 1) {
+	        return actual.matches(expected.substring(1));
+	    }
+	    return actual.equals(expected);
 	}
 }
