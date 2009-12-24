@@ -241,15 +241,6 @@
   	</property>
   </bean>
   
-  <bean id="quartzDatabaseReportService" class="org.opennms.web.svclayer.support.QuartzDatabaseReportService">
-	<property name="scheduler">
-		<ref local="schedulerFactory" />
-	</property>
-	<property name="jobDetail">
-		<ref local="batchReportJobDetail" />
-	</property>
-  </bean>
-  
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
 	<property name="scheduler">
 		<ref local="schedulerFactory" />
