@@ -49,6 +49,10 @@
       </excludes>
     </fileSet>
     <fileSet>
+      <directory>target/classes/jetty-webapps/ROOT</directory>
+      <outputDirectory>jetty-webapps/ROOT</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency/WEB-INF/lib</directory>
       <outputDirectory>lib</outputDirectory>
       <excludes>
