@@ -133,8 +133,8 @@ public class SmsPonger implements OnmsInboundMessageNotification {
         
         String pseudoPingTokensPsv = System.getProperty("sms.ping.tokens", "");
         String pseudoPingResponsesPsv = System.getProperty("sms.ping.responses", "");
-        String[] tokens = pseudoPingTokensPsv.split("\\t");
-        String[] responses = pseudoPingResponsesPsv.split("\\t");
+        String[] tokens = pseudoPingTokensPsv.split(";");
+        String[] responses = pseudoPingResponsesPsv.split(";");
         if (tokens.length == 0) {
             LogUtils.debugf(SmsPonger.class, "No pseudo-ping tokens defined");
             return tokenResponses;
