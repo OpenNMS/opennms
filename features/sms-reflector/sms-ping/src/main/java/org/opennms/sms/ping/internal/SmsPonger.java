@@ -61,6 +61,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
         debugf("SmsPonger.processInboundMessage");
         
         if (isPingRequest(msg)) {
+            debugf("Message is a ping request: %s", msg.getText());
             sendPong(gateway, msg);
         }
     }
@@ -97,6 +98,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
     
     private void sendPong(AGateway gateway, InboundMessage msg) {
         String pongResponse = (isCanonicalPingRequest(msg)) ? "pong" : getPseudoPongResponse(msg);
+        debugf("SmsPonger.sendPong: sending string '%s'", pongResponse);
         try {
             OutboundMessage pong = new OutboundMessage(msg.getOriginator(), pongResponse);
             pong.setGatewayId(gateway.getGatewayId());
@@ -144,6 +146,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
         
         for (int i = 0; i < tokens.length; i++) {
             tokenResponses.put(tokens[i], responses[i]);
+            LogUtils.debugf(SmsPonger.class, "Setting response '%s' for pseudo-ping token '%s'", responses[i], tokens[i]);
         }
         
         return tokenResponses;
