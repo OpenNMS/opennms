@@ -108,6 +108,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     public static final String NAME = "RancidProvisioningAdapter";
     private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
+    private volatile static ConcurrentMap<Integer, String> m_onmsNodeIpMap;
+    
 
     @Override
     AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType adapterOperationType) {
@@ -115,11 +117,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (adapterOperationType.equals(AdapterOperationType.CONFIG_CHANGE)) {
             updateRancidNodeState(nodeId, true);
 
-            String ipaddress = (String) m_template.execute(new TransactionCallback() {
-                public Object doInTransaction(TransactionStatus arg0) {
-                    return getSuitableIpForRancid(nodeId);
-                }
-            });
+            String ipaddress = m_onmsNodeIpMap.get(nodeId);
+            //String ipaddress = (String) m_template.execute(new TransactionCallback() {
+            //    public Object doInTransaction(TransactionStatus arg0) {
+            //        return getSuitableIpForRancid(nodeId);
+            //    }
+            //});
+            
             log().debug("Found Suitable ip address: " + ipaddress);
             long initialDelay = m_rancidAdapterConfig.getDelay(ipaddress);
             int retries = m_rancidAdapterConfig.getRetries(ipaddress);
@@ -171,9 +175,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private void buildRancidNodeMap() {
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNode>(nodes.size());
-        
+        m_onmsNodeIpMap = new ConcurrentHashMap<Integer, String>(nodes.size());
 
         for (OnmsNode onmsNode : nodes) {
+            String ipaddr = getSuitableIpForRancid(onmsNode);
+            if (ipaddr != null)
+                m_onmsNodeIpMap.putIfAbsent(onmsNode.getId(), ipaddr);
+            
             RancidNode rNode = getSuitableRancidNode(onmsNode);
             if (rNode != null) {            
                 m_onmsNodeRancidNodeMap.putIfAbsent(onmsNode.getId(), rNode);
@@ -192,9 +200,18 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED addNode: nodeid: " + nodeId);
         try {
-            OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
+            final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
             Assert.notNull(node, "Rancid Provisioning Adapter addNode method failed to return node for given nodeId:"+nodeId);
-            
+
+            String ipaddress = (String) m_template.execute(new TransactionCallback() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    return getSuitableIpForRancid(node);
+                }
+            });
+
+            m_onmsNodeIpMap.putIfAbsent(nodeId, ipaddress);
+
+
             RancidNode rNode = getSuitableRancidNode(node);
             
             if (m_onmsNodeRancidNodeMap.containsValue(rNode)) {
@@ -232,10 +249,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             
             RancidNode rNewNode = getSuitableRancidNode(node);
             // The node should exists onmsNodeRancidNodeMap 
+            boolean stateUp = true;
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
                 RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
                 // set the state to the suitable state
-                rNewNode.setStateUp(rCurrentNode.isStateUp());
+                stateUp=rCurrentNode.isStateUp();
+                rNewNode.setStateUp(false);
                 // delete the current node if it is different
                 if (!rCurrentNode.equals(rNewNode)) {
                     try {
@@ -254,6 +273,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             RWSClientApi.createOrUpdateRWSRancidNode(cp, rNewNode);
             RWSClientApi.createOrUpdateRWSAuthNode(cp, rNewNode.getAuth());
             
+            rNewNode.setStateUp(stateUp);
             m_onmsNodeRancidNodeMap.replace(node.getId(), rNewNode);
         } catch (Exception e) {
             cp = getStandByRWSConnection();
@@ -283,6 +303,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 RWSClientApi.deleteRWSAuthNode(cp, rNode.getAuth());
 
                 m_onmsNodeRancidNodeMap.remove(Integer.valueOf(nodeId));
+                m_onmsNodeIpMap.remove(Integer.valueOf(nodeId));
             } else {
                 log().warn("No node found in nodeRancid Map for nodeid: " + nodeId);                
             }
@@ -399,11 +420,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
         return ipaddr;
     }
-
-    private String getSuitableIpForRancid(Integer nodeId) {
-        return getSuitableIpForRancid(m_nodeDao.get(nodeId));
-    }
-
     
     private RancidNode getSuitableRancidNode(OnmsNode node) {
         
@@ -415,7 +431,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (group == null) return null;
         RancidNode r_node = new RancidNode(group, node.getLabel());
 
-        String ipaddress = getSuitableIpForRancid(node);
+        String ipaddress = m_onmsNodeIpMap.get(node.getId());
         log().debug("Found Suitable ip address: " + ipaddress + " for node: " + node.getLabel() );
         if (m_rancidAdapterConfig.useCategories(ipaddress)) {
            r_node.setDeviceType(getTypeFromCategories(node)); 
@@ -486,14 +502,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         boolean ready = true;
         if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             log().debug("Config Change Operation for node: " + op.getNodeId());
-            String ipaddress = (String)  m_template.execute(new TransactionCallback() {
-                public Object doInTransaction(TransactionStatus arg0) {
-                    return getSuitableIpForRancid(op.getNodeId());
-                }
-            });
+//            String ipaddress = (String)  m_template.execute(new TransactionCallback() {
+//                public Object doInTransaction(TransactionStatus arg0) {
+//                    return getSuitableIpForRancid(op.getNodeId());
+//                }
+//            });
      
             ready =
-            m_rancidAdapterConfig.isCurTimeInSchedule(ipaddress);
+            m_rancidAdapterConfig.isCurTimeInSchedule(m_onmsNodeIpMap.get(op.getNodeId()));
         }
         log().debug("is Node Ready: " + ready + " For Operation " + op.getType() + " for node: " + op.getNodeId());
         return ready;
