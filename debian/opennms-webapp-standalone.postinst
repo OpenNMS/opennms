@@ -16,7 +16,7 @@ case "$1" in
                 tomcat55
         fi
         # Change ownership so Tomcat can write to config and log files
-        chown -R tomcat55 /etc/opennms /usr/share/opennms/etc /var/log/opennms/webapp || :
+        chown -R tomcat55 /etc/opennms /var/log/opennms/webapp || :
     ;;
     abort-upgrade|abort-remove|abort-deconfigure)
 

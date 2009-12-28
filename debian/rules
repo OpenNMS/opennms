@@ -31,28 +31,16 @@ $(STAMP_BUILD):
 	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
 	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
 		echo "using $$OPENNMS_SETTINGS_XML"; \
-		sh ./build.sh -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install assembly:directory-inline; \
+		sh ./build.sh -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install assembly:directory-inline; \
 	else \
-		sh ./build.sh -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install assembly:directory-inline; \
+		sh ./build.sh -Duser.home=$(HOME) $(BUILDDEFINES) install assembly:directory-inline; \
 	fi
-	install -d -m 755 debian/temp/integrations
-	cp integrations/opennms-dns-provisioning-adapter/target/*.jar  debian/temp/integrations/
-	cp integrations/opennms-link-provisioning-adapter/target/*.jar debian/temp/integrations/
-	cp integrations/opennms-map-provisioning-adapter/target/*.jar  debian/temp/integrations/
-	cp integrations/opennms-rancid/target/*.jar                    debian/temp/integrations/
-	rm -rf debian/temp/integrations/*-sources.jar
-	rm -rf debian/temp/integrations/*-tests.jar
-	rm -rf debian/temp/integrations/*-xsds.jar
-	cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml debian/temp/integrations/
-	cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml debian/temp/integrations/
-	cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   debian/temp/integrations/
-	find debian/temp -type d -name .svn -exec rm -rf {} \;
 	touch $(STAMP_BUILD)
 
 clean:
 	dh_testdir
 	dh_testroot
-	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	sh ./build.sh -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	dh_clean
 	rm -f $(STAMP_BUILD)
 
@@ -65,9 +53,8 @@ install: build
 	##
 	## Setup the libopennms-java package
 	##
-	mv debian/temp/lib/opennms*.jar debian/libopennms-java/usr/share/java/opennms/
-	mv debian/temp/lib/endorsed     debian/libopennms-java/usr/share/java/opennms/
-	chmod 644 debian/libopennms-java/usr/share/java/opennms/*.jar debian/libopennms-java/usr/share/java/opennms/endorsed/*.jar
+	mv debian/temp/lib/opennms*.jar debian/temp/lib/setup debian/libopennms-java/usr/share/java/opennms/
+	chmod 644 debian/libopennms-java/usr/share/java/opennms/*
 
 	##
 	## Setup the libopennmsdeps-java package
@@ -102,6 +89,8 @@ install: build
 	# which listens on 8180 by default
 	sed -i -e 's/8180/8280/' debian/opennms-common/etc/opennms/service-configuration.xml
 
+	rsync -ar --exclude=examples debian/opennms-common/etc/ debian/opennms-common/usr/share/opennms/etc-pristine/
+
 	##
 	## Setup the opennms-db package
 	##
@@ -109,13 +98,6 @@ install: build
 	##
 	## Setup the opennms-server package
 	##
-
-	##
-	## Setup the opennms-remote-poller package
-	##
-	install -m 755 debian/opennms-remote-poller.bin debian/opennms-remote-poller/usr/sbin/opennms-remote-poller
-	install -m 644 features/remote-poller/target/*remote-poller-*-signed-jar-with-dependencies.jar \
-		debian/opennms-remote-poller/usr/share/java/opennms-remote-poller.jar
 
 	##
 	## Setup the opennms-webapp-jetty package
@@ -152,31 +134,17 @@ install: build
 	find debian/opennms-contrib/usr/share/opennms/contrib -type f -execdir chmod 644 {} \;
 	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.pl" -execdir chmod 755 {} \;
 	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.sh" -execdir chmod 755 {} \;
-	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
-		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
-		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
+	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS
 
-	##
-	## Setup the provision adapter packages
-	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map}/etc/opennms
-	mv debian/temp/integrations/opennms-dns-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-link-provisioning-adapter*.jar debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-map-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-rancid*.jar                    debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/temp/integrations/link-adapter-configuration.xml         debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/endpoint-configuration.xml         debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/mapsadapter-configuration.xml          debian/opennms-plugin-provisioning-map/etc/opennms/
 
 # Build architecture-independent files here.
 binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs
-	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
-	dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
+	dh_installinit --name=opennms --no-start -u"defaults 21 19"
 	dh_installman
+	dh_installchangelogs CHANGELOG
 	dh_installdebconf
 	dh_link
 	dh_strip
