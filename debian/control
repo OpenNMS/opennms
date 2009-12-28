@@ -1,0 +1,264 @@
+Source: opennms
+Section: contrib/net
+Priority: optional
+Maintainer: Jeff Gehlbach <jeffg@opennms.org>
+Build-Depends: sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), debhelper (>= 5.0.42), po-debconf (>= 1.0.5)
+Standards-Version: 3.7.3
+
+Package: opennms
+Architecture: all
+Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version}) | opennms-webapp-standalone (=${binary:Version})
+Suggests: opennms-doc
+Description: Enterprise-grade Open-source Network Management Platform (Full Install)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the components needed for a reasonable default
+ installation of OpenNMS.
+
+Package: opennms-db
+Architecture: all
+Depends: postgresql-8.3 | postgresql-8.2 | postgresql-8.1 | postgresql-7.4, iplike-pgsql83 (>= 1.0.8) | iplike-pgsql82 (>= 1.0.8) | iplike-pgsql81 (>= 1.0.8) | iplike-pgsql74 (>= 1.0.8), debconf
+Description: Enterprise-grade Open-source Network Management Platform (Database)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the database components required by OpenNMS.
+ .
+ This package may be installed on a separate machine from the opennms-server
+ package.
+
+Package: opennms-server
+Architecture: all
+Depends: opennms-common (=${binary:Version}), libopennms-java (=${binary:Version}), libopennmsdeps-java (=${binary:Version}), mailx, metamail
+Suggests: jrrd, rrdtool, postgresql-client-8.2
+Description: Enterprise-grade Open-source Network Management Platform (Daemon)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the OpenNMS backend daemon responsible for discovery,
+ polling, data collection, notifications, etc (basically, anything that is not
+ part of the web UI).
+
+Package: opennms-remote-poller
+Architecture: all
+Conflicts: opennms-server
+Depends: sun-java6-jre | sun-java5-jre
+Description: Enterprise-grade Open-source Network Management Platform (Remote Poller)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This is the standalone remote poller for OpenNMS.
+
+Package: opennms-webapp-jetty
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Conflicts: opennms-webapp
+Description: Enterprise-grade Open-source Network Management Platform (Jetty Web UI)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the Jetty version of the OpenNMS web UI, which runs
+ embedded in the main OpenNMS daemon.  This is the recommended web UI, unless
+ you have a specific need for the standalone web UI.  The default URL for this
+ web UI is 'http://yourhost:8180/opennms/'
+
+Package: opennms-webapp-standalone
+Architecture: all
+Depends: opennms-common (=${binary:Version}), tomcat5.5 (>= 5.5.20), sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), adduser
+Conflicts: opennms-webapp
+Replaces: opennms-webapp
+Suggests: jrrd, rrdtool, postgresql-client-8.2
+Description: Enterprise-grade Open-source Network Management Platform (Standalone Web UI)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the standalone version of the OpenNMS web UI, which runs
+ in Tomcat or another servlet container, independent of the main OpenNMS daemon.
+ The default URL for this web UI is http://yourhost:8280/opennms/
+ .
+ If you are installing this on a separate machine from the opennms-server
+ package, it is recommended that you share the files in /etc/opennms/ between
+ the two machines (using NFS or something similar).  Otherwise, configuration
+ changes made through the web UI will not actually take effect in the main
+ OpenNMS daemon.
+
+Package: opennms-common
+Architecture: all
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
+Recommends: libnet-snmp-perl
+Description: Enterprise-grade Open-source Network Management Platform (Common Files)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the common files required by both the main OpenNMS daemon
+ and the standalone OpenNMS web UI.
+
+Package: libopennms-java
+Architecture: all
+Depends: sun-java6-jre | sun-java5-jre | openjdk-6-jre (>= 6b11-9.1), libpg-java (>= 8.1), jicmp
+Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0)
+Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the OpenNMS Java libraries.
+
+Package: libopennmsdeps-java
+Architecture: all
+Depends: sun-java6-jre | sun-java5-jre | openjdk-6-jre (>= 6b11-9.1)
+Description: Enterprise-grade Open-source Network Management Platform (Required Libraries)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the external Java libraries required by OpenNMS.
+
+Package: opennms-doc
+Section: contrib/doc
+Architecture: all
+Description: Enterprise-grade Open-source Network Management Platform (Documentation)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides the user, administration, and programming documentation
+ for OpenNMS.
+
+Package: opennms-contrib
+Architecture: all
+Depends: opennms-common (=${binary:Version}), ${perl:Depends}, libwww-perl
+Description: Enterprise-grade Open-source Network Management Platform (Contrib)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides additional features and functionality that are not part
+ of OpenNMS proper.
+
+Package: opennms-plugins
+Architecture: all
+Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package installs all optional plugins for OpenNMS.
+
+Package: opennms-plugin-provisioning-dns
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (DNS Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The DNS provisioning adapter allows for updating dynamic DNS records based on
+ provisioned nodes.
+
+Package: opennms-plugin-provisioning-link
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (Link Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The link provisioning adapter creates links between provisioned nodes based on
+ naming conventions defined in the link-adapter-configuration.xml file.  It
+ also updates the status of the map links based on data link events.
+
+Package: opennms-plugin-provisioning-map
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (Map Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The map provisioning adapter will automatically create maps when nodes are
+ provisioned in OpenNMS.
+
+Package: opennms-plugin-provisioning-rancid
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (RANCID Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The RANCID provisioning adapter coordinates with the RANCID Web Service by
+ updating RANCID's device database when OpenNMS provisions nodes.

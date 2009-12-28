@@ -1,0 +1,12 @@
+diff -Naur Clean/opennms-install/src/main/java/org/opennms/install/Installer.java Edit/opennms-install/src/main/java/org/opennms/install/Installer.java
+--- Clean/opennms-install/src/main/java/org/opennms/install/Installer.java	2008-02-12 17:59:28.000000000 -0500
++++ Edit/opennms-install/src/main/java/org/opennms/install/Installer.java	2008-02-14 11:18:54.000000000 -0500
+@@ -405,7 +405,7 @@
+         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+         m_installerDb.setDebug(m_commandLine.hasOption("x"));
+         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
+-        m_install_webapp = m_commandLine.hasOption("y");
++        //m_install_webapp = m_commandLine.hasOption("y");
+ 
+         if (m_commandLine.getArgList().size() > 0) {
+             usage(options, m_commandLine, "Unknown command-line arguments: " + m_commandLine.getArgs(), null);

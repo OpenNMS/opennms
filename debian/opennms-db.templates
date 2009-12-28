@@ -1,0 +1,9 @@
+Template: opennms-db/noinstall
+Type: note
+Description: The OpenNMS installer must now be run manually
+  Previous versions of this package would invoke the installer to handle
+  initial setup, or upgrade an existing database. This is no longer the
+  case. You must manually run /usr/share/opennms/bin/install to complete
+  this install/upgrade. Full install documentation can be found in the
+  opennms-doc package or viewed online at the OpenNMS wiki,
+  (http://www.opennms.org/index.php/Official_Documentation).

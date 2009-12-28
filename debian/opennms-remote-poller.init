@@ -1,0 +1,63 @@
+#! /bin/sh
+#
+# opennms-remote-poller	startup script for OpenNMS remote poller
+#
+#		Written by Jonathan Oddy <jonathan.oddy@truphone.com>
+#
+# $Id: opennms-server.init 6433 2007-06-15 05:33:20Z jgehlbach $
+#
+
+### BEGIN INIT INFO
+# Provides:          opennms-remote-poller
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenNMS - Open Source Network Management System remote poller
+# Description:       Enterprise grade open-source network management platform,
+#                    providing service polling, data collection, and event
+#                    and notification management. Remote poller service.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NAME=opennms-remote-poller
+DAEMON=/usr/sbin/opennms-remote-poller
+DESC="Open Network Management System remote poller"
+PIDFILE=/var/run/$NAME.pid
+
+# read in settings from default file
+if [ -f /etc/default/opennms-remote-poller ]; then
+	. /etc/default/opennms-remote-poller
+fi
+
+if [ -z $LOCATION ] || [ -z $RMI_HOST ] || [ -z $JAVA_HOME ] || [ $START_POLLER -eq 0 ]; then echo "Configuration incorrect. Edit /etc/default/opennms-remote-poller"; exit 0; fi;
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: $NAME"
+	start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --startas $DAEMON -- $RMI_HOST $LOCATION > /dev/null
+	echo "."
+	;;
+  stop)
+	echo -n "Stopping $DESC: $NAME"
+	start-stop-daemon --stop --quiet --retry 15 --pidfile $PIDFILE > /dev/null
+	echo "."
+	;;
+  restart|force-reload)
+	$0 stop
+	sleep 2
+	$0 start
+	;;
+  status)
+	$DAEMON -v status
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
