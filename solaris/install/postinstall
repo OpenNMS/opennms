@@ -1,0 +1,30 @@
+#!/bin/sh -
+
+BASEDIR=/opt/opennms
+INSTUSER=opennms
+INSTGROUP=opennms
+FMRI=svc:/application/opennms:default 
+
+rm -f $BASEDIR/etc/configured
+
+for distfile in $BASEDIR/etc/.dist/*; do
+	basename=`basename $distfile`
+	if [ -f $BASEDIR/etc/$basename ]; then
+		cp $distfile $BASEDIR/etc/$basename.rpmnew || exit 1
+	else
+		cp $distfile $BASEDIR/etc/$basename || exit 1
+	fi
+	chown $INSTUSER:$INSTGROUP $BASEDIR/etc/$basename || exit 1
+done
+
+/usr/sbin/svccfg import $BASEDIR/contrib/smf-manifest.xml || exit 1
+
+if [ -f $BASEDIR/etc/java.conf ]; then
+	/usr/bin/su $INSTUSER -c "$BASEDIR/bin/runjava -c" || exit 1
+else
+	/usr/bin/su $INSTUSER -c "$BASEDIR/bin/runjava -s" || exit 1
+fi
+
+/usr/bin/su $INSTUSER -c "$BASEDIR/bin/install -dis" || exit 1
+
+/usr/sbin/svcadm enable $FMRI || exit 1
