@@ -1,7 +1,0 @@
-# Automatically added by dh_installdocs
-if [ "$1" = "configure" ]; then
-	if [ -d /usr/doc -a ! -e /usr/doc/opennms -a -d /usr/share/doc/opennms ]; then
-		ln -sf ../share/doc/opennms /usr/doc/opennms
-	fi
-fi
-# End automatically added section
