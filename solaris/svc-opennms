@@ -1,0 +1,46 @@
+#!/sbin/sh
+
+home=/opt/opennms
+javaconf=$home/etc/java.conf
+configured=$home/etc/configured
+service=$home/bin/opennms
+
+. /lib/svc/share/smf_include.sh
+
+if [ ! -f $javaconf ]; then
+    echo "Error: Configuration file '$javaconf' not found." \
+        "  See opennms(1M)."
+    exit $SMF_EXIT_ERR_CONFIG
+fi
+
+if [ ! -f $configured ]; then
+    echo "Error: Configuration file '$configured' not found." \
+        "  See opennms(1M)."
+    exit $SMF_EXIT_ERR_CONFIG
+fi
+
+if [ "$1" = "start" ]; then
+    $service -v start
+    ret=$?
+
+    if [ $ret -eq 6 ]; then
+        echo "Error: OpenNMS not properly configured.  See previous error messages for details." \
+            "  See opennms(1M)."
+        exit $SMF_EXIT_ERR_CONFIG
+    else
+        exit $ret
+    fi
+elif [ "$1" = "stop" ]; then
+    $service -v stop
+    ret=$?
+
+    if [ $ret -eq 7 ]; then
+        exit 0
+    else
+        exit $ret
+    fi
+else
+    echo "$0: command '$1' unknown" >&2
+    exit 1
+fi
+

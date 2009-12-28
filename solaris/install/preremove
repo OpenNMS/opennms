@@ -1,0 +1,18 @@
+#!/bin/sh -
+
+BASEDIR=/opt/opennms
+FMRI=svc:/application/opennms:default
+
+/usr/sbin/svcadm disable -s $FMRI || exit 1
+
+rm -f $BASEDIR/etc/configured
+
+# Remove files that haven't changed from the distributed version
+for distfile in $BASEDIR/etc/.dist/*; do
+	basename=`basename $distfile`
+	if cmp -s $distfile $BASEDIR/etc/$basename; then
+		rm $BASEDIR/etc/$basename
+	fi
+done
+
+/usr/sbin/svccfg delete $FMRI || exit 1

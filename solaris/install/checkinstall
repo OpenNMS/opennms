@@ -1,0 +1,7 @@
+#!/bin/sh -
+
+if [ x$PKG_INSTALL_ROOT != x ]; then
+	echo "Error: this package must not be installed with an alternate root path."
+	exit 1
+fi
+
