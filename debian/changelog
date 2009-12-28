@@ -1,56 +1,14 @@
-opennms (1.7.8-1) unstable; urgency=medium
+opennms (1.6.8-2) stable; urgency=low
+
+  * Fix missing setup war.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 10 Dec 2009 11:31:00 -0500
+
+opennms (1.6.8-1) stable; urgency=low
 
   * New upstream release.
 
- -- Benjamin Reed <ranger@opennms.org>  Tue, 08 Dec 2009 12:02:00 -0500
-
-opennms (1.7.7-1) unstable; urgency=medium
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Oct 2009 19:57:00 -0500
-
-opennms (1.7.6-1) unstable; urgency=medium
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Mon, 03 Aug 2009 14:07:00 -0500
-
-opennms (1.7.5-1) unstable; urgency=medium
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Mon, 13 Jul 2009 12:46:00 -0500
-
-opennms (1.7.4-1) unstable; urgency=medium
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Sun, 07 Jun 2009 13:21:00 -0500
-
-opennms (1.7.3-1) unstable; urgency=medium
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Wed, 29 Apr 2009 17:15:00 -0500
-
-opennms (1.7.2-1) unstable; urgency=high
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Wed, 01 Apr 2009 12:30:00 -0500
-
-opennms (1.7.1-1) unstable; urgency=low
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Tue, 31 Mar 2009 21:38:55 -0500
-
-opennms (1.7.0-1) unstable; urgency=low
-
-  * New upstream release.
-
- -- Benjamin Reed <ranger@opennms.org>  Wed, 15 Oct 2008 21:38:55 -0500
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 09 Dec 2009 22:05:00 -0500
 
 opennms (1.6.7-1) stable; urgency=low
 
