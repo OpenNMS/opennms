@@ -1,0 +1,81 @@
+#! /bin/sh
+#
+# opennms	startup script for OpenNMS system
+#
+#		Written by Tony Simone <tony.simone@medvantx.com>
+#
+# $Id$
+#
+
+### BEGIN INIT INFO
+# Provides:          opennms
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenNMS - Open Source Network Management System
+# Description:       Enterprise grade open-source network management platform,
+#                    providing service polling, data collection, and event
+#                    and notification management
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/opennms
+NAME=opennms
+DESC="Open Network Management System"
+
+test -x $DAEMON || exit 0
+
+set -e
+
+# read in settings from default file
+if [ -f /etc/default/$NAME ]; then
+	. /etc/default/$NAME
+fi
+
+# Check for JAVA_HOME
+if [ -z "$JAVA_HOME" ]; then
+	for dir in /usr/lib/jvm/java-6-sun; do
+		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+			JAVA_HOME="$dir"
+			break
+		fi
+	done
+
+	if [ -z "$JAVA_HOME" ]; then
+		echo "You need to set a valid JAVA_HOME in /etc/default/$NAME" >&2
+		exit 1
+	fi
+fi
+export JAVA_HOME
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: $NAME"
+	$DAEMON start > /dev/null
+	echo "."
+	;;
+  stop)
+	echo -n "Stopping $DESC: $NAME"
+	$DAEMON stop > /dev/null
+	rm -f /var/run/$NAME.pid
+	echo "."
+	;;
+  restart|force-reload)
+	$0 stop
+	sleep 2
+	$0 start
+	;;
+  status)
+	$DAEMON -v status
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
