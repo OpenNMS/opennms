@@ -1,0 +1,2 @@
+opennms-webapp-standalone: file-in-usr-marked-as-conffile
+opennms-webapp-standalone: package-contains-empty-directory usr/share/opennms/webapps/opennms/WEB-INF/classes/
