@@ -1,0 +1,197 @@
+#!/usr/bin/make -f
+
+# $Id$
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Maven requires JAVA_HOME to be set properly
+export JAVA_HOME=$(shell debian/getjava)
+
+export BUILDDEFINES=\
+	-Dopennms.home=/usr/share/opennms \
+	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
+	-Dinstall.dir=/usr/share/opennms \
+	-Dinstall.init.dir=/etc/init.d \
+	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
+	-Dinstall.share.dir=/var/lib/opennms \
+	-Dinstall.servlet.dir=/usr/share/opennms/webapps \
+	-Dinstall.webapps.dir=/usr/share/opennms/webapps \
+	-Dinstall.logs.dir=/var/log/opennms \
+	-Dinstall.pid.file=/var/run/opennms.pid \
+	-Dproduct.release=1 \
+	-Dproduct.snapshot=true
+
+configure:
+
+STAMP_BUILD = debian/stamp-build
+build: configure $(STAMP_BUILD)
+$(STAMP_BUILD):
+	dh_testdir
+	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
+	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
+		echo "using $$OPENNMS_SETTINGS_XML"; \
+		sh ./build.sh -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install assembly:directory-inline; \
+	else \
+		sh ./build.sh -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install assembly:directory-inline; \
+	fi
+	install -d -m 755 debian/temp/integrations
+	cp integrations/opennms-dns-provisioning-adapter/target/*.jar  debian/temp/integrations/
+	cp integrations/opennms-link-provisioning-adapter/target/*.jar debian/temp/integrations/
+	cp integrations/opennms-map-provisioning-adapter/target/*.jar  debian/temp/integrations/
+	cp integrations/opennms-rancid/target/*.jar                    debian/temp/integrations/
+	rm -rf debian/temp/integrations/*-sources.jar
+	rm -rf debian/temp/integrations/*-tests.jar
+	rm -rf debian/temp/integrations/*-xsds.jar
+	cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml debian/temp/integrations/
+	cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml debian/temp/integrations/
+	cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   debian/temp/integrations/
+	find debian/temp -type d -name .svn -exec rm -rf {} \;
+	touch $(STAMP_BUILD)
+
+clean:
+	dh_testdir
+	dh_testroot
+	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	dh_clean
+	rm -f $(STAMP_BUILD)
+
+install: build
+	dh_testdir
+	dh_clean -k --exclude=temp
+	dh_installdirs
+	dh_testroot
+
+	##
+	## Setup the libopennms-java package
+	##
+	mv debian/temp/lib/opennms*.jar debian/libopennms-java/usr/share/java/opennms/
+	mv debian/temp/lib/endorsed     debian/libopennms-java/usr/share/java/opennms/
+	chmod 644 debian/libopennms-java/usr/share/java/opennms/*.jar debian/libopennms-java/usr/share/java/opennms/endorsed/*.jar
+
+	##
+	## Setup the libopennmsdeps-java package
+	##
+	mv debian/temp/lib/*.jar debian/libopennmsdeps-java/usr/share/java/opennms/
+	chmod 644 debian/libopennmsdeps-java/usr/share/java/opennms/*
+
+	##
+	## Setup the opennms-common package
+	##
+	mv debian/temp/bin/* debian/opennms-common/usr/share/opennms/bin/
+	find debian/opennms-common/usr/share/opennms/bin -type f -execdir chmod 755 {} \;
+	mv debian/temp/etc/* debian/opennms-common/etc/opennms/
+	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
+
+	# Adjust permissions for config files containing sensitive information
+	install -m 644 debian/opennms-common.overrides debian/opennms-common/usr/share/lintian/overrides/opennms-common
+	chmod 640 \
+		debian/opennms-common/etc/opennms/users.xml \
+		debian/opennms-common/etc/opennms/groups.xml \
+		debian/opennms-common/etc/opennms/magic-users.properties \
+		debian/opennms-common/etc/opennms/opennms.properties \
+		debian/opennms-common/etc/opennms/opennms-datasources.xml \
+		debian/opennms-common/etc/opennms/snmp-config.xml \
+		debian/opennms-common/etc/opennms/vulnscand-configuration.xml
+
+	# Update paths in scripts and config files
+	sed -i -e 's,/opt/OpenNMS,/usr/share/opennms,g' debian/opennms-common/usr/share/opennms/bin/opennms
+	sed -i -e 's,bin/mail,usr/bin/mail,' debian/opennms-common/etc/opennms/notificationCommands.xml
+
+	# Adjust the HttpAdaptor port number to avoid conflicting with tomcat,
+	# which listens on 8180 by default
+	sed -i -e 's/8180/8280/' debian/opennms-common/etc/opennms/service-configuration.xml
+
+	##
+	## Setup the opennms-db package
+	##
+
+	##
+	## Setup the opennms-server package
+	##
+
+	##
+	## Setup the opennms-remote-poller package
+	##
+	install -m 755 debian/opennms-remote-poller.bin debian/opennms-remote-poller/usr/sbin/opennms-remote-poller
+	install -m 644 features/remote-poller/target/*remote-poller-*-signed-jar-with-dependencies.jar \
+		debian/opennms-remote-poller/usr/share/java/opennms-remote-poller.jar
+
+	##
+	## Setup the opennms-webapp-jetty package
+	##
+	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
+	mv debian/temp/jetty-webapps/opennms/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms -type f -execdir chmod 644 {} \;
+
+	##
+	## Setup the opennms-webapp-standalone package
+	##
+	install -m 644 debian/opennms-webapp-standalone.overrides debian/opennms-webapp-standalone/usr/share/lintian/overrides/opennms-webapp-standalone
+	mv debian/temp/webapps/opennms/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms/
+	find debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms -type f -execdir chmod 644 {} \;
+	install -m 644 debian/opennms-webapp-standalone.policy debian/opennms-webapp-standalone/etc/tomcat5.5/policy.d/99opennms.policy
+
+	# Adjust the port numbers in the default post-back URLs to account for
+	# tomcat listening on port 8180 instead of 8080
+	sed -i -e 's/localhost:8080/localhost:8180/g' \
+		debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms/WEB-INF/configuration.properties
+
+	##
+	## Setup the opennms-doc package
+	##
+	mv debian/temp/docs/* debian/opennms-doc/usr/share/doc/opennms/
+	find debian/opennms-doc/usr/share/doc/opennms -type f -execdir chmod 644 {} \;
+
+	##
+	## Setup the opennms-contrib package
+	##
+	mv debian/temp/contrib/* debian/opennms-contrib/usr/share/opennms/contrib/
+	# Remove this unstripped i386 Linux binary to quiet lintian
+	rm -f debian/opennms-contrib/usr/share/opennms/contrib/qosdaemon/qos_example_configuration/testtraps/trapgen
+	find debian/opennms-contrib/usr/share/opennms/contrib -type f -execdir chmod 644 {} \;
+	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.pl" -execdir chmod 755 {} \;
+	find debian/opennms-contrib/usr/share/opennms/contrib -type f -iname "*.sh" -execdir chmod 755 {} \;
+	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
+		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
+		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
+
+	##
+	## Setup the provision adapter packages
+	##
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map}/etc/opennms
+	mv debian/temp/integrations/opennms-dns-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-link-provisioning-adapter*.jar debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-map-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-rancid*.jar                    debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/temp/integrations/link-adapter-configuration.xml         debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/integrations/endpoint-configuration.xml         debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/integrations/mapsadapter-configuration.xml          debian/opennms-plugin-provisioning-map/etc/opennms/
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
+	dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
+	dh_installman
+	dh_installdebconf
+	dh_link
+	dh_strip
+	dh_compress
+	#dh_fixperms # Disabled to allow non-standard permissions
+	dh_makeshlibs -n
+	dh_installdeb
+	dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib
+	-dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure
