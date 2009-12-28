@@ -1,0 +1,48 @@
+OpenNMS for Debian
+------------------
+
+This file only highlights the differences between the Debian packages and 
+the other distributions. 
+
+For comprehensive off-line documentation install the opennms-doc package, 
+or check out the online documentation at http://www.opennms.org/users/docs/
+
+For troubleshooting installation and configuration issues see the FAQ, 
+http://www.opennms.org/index.php/FAQ
+
+If you are upgrading, be sure to check out the release notes, 
+(http://sourceforge.net/docman/?group_id=4141).
+
+If you have a question that is not answered in the documentation, FAQ, or 
+release notes you can always ask on one of the mailing lists, (search the 
+archive first to see if the question has already been asked and/or 
+answered),  http://sourceforge.net/mail/?group_id=4141
+
+
+Differences in the Debian packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- $OPENNMS_HOME on Debian is /usr/share/opennms, not /opt/OpenNMS
+
+- The configuration files can be found in /etc/opennms
+
+- mail on Debian is /usr/bin/mail, not /bin/mail
+
+- Tomcat listens on port 8180 by default, rather than 8080 (so you will need to
+  use http://yourhost:8180/opennms/ instead of http://yourhost:8080/opennms/ if
+  you are using the standalone webapp)
+
+- As a result of Tomcat listening on 8180, the HttpAdaptor service has been
+  moved to port 8280
+
+
+Known Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- The tomcat webapp will not work unless you either run tomcat5.5 as root, or
+  adjust permissions yourself.  It is recommended you use the Jetty webapp
+  instead.
+
+-- Benjamin Reed <ranger@opennms.org>, Fri Sep 14 16:58:50 -0500
+-- Jeff Gehlbach <jeffg@opennms.org>, Sun Mar 25 00:38:27 EDT 2007
+-- Eric Evans <eevans@sym-link.com>, Wed, 14 Nov 2004 15:50:00 -0600

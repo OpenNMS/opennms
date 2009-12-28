@@ -1,0 +1,12 @@
+// Grant permissions for OpenNMS
+// This is probably too wide open, but for now I'm just getting it working.
+// Any feedback would be greatly appreciated!
+grant codeBase "file:/usr/share/opennms/webapps/opennms/-" {
+        permission java.security.AllPermission;
+};
+
+// Workaround for Debian Bug #461355 (http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=461355)
+grant codeBase "file:${catalina.home}/bin/tomcat-juli.jar" {
+        permission java.io.FilePermission "/usr/share/opennms/webapps/opennms/WEB-INF/classes/logging.properties", "read";
+};
+
