@@ -1,0 +1,4 @@
+/usr/share/opennms/webapps/opennms/WEB-INF/applicationContext-spring-security.xml
+/usr/share/opennms/webapps/opennms/WEB-INF/configuration.properties
+/usr/share/opennms/webapps/opennms/WEB-INF/log4j.properties
+/usr/share/opennms/webapps/opennms/WEB-INF/web.xml

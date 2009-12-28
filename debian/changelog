@@ -1,0 +1,487 @@
+opennms (1.7.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 08 Dec 2009 12:02:00 -0500
+
+opennms (1.7.7-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Oct 2009 19:57:00 -0500
+
+opennms (1.7.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 03 Aug 2009 14:07:00 -0500
+
+opennms (1.7.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 13 Jul 2009 12:46:00 -0500
+
+opennms (1.7.4-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Sun, 07 Jun 2009 13:21:00 -0500
+
+opennms (1.7.3-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 29 Apr 2009 17:15:00 -0500
+
+opennms (1.7.2-1) unstable; urgency=high
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 01 Apr 2009 12:30:00 -0500
+
+opennms (1.7.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 31 Mar 2009 21:38:55 -0500
+
+opennms (1.7.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 15 Oct 2008 21:38:55 -0500
+
+opennms (1.6.7-1) stable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Oct 2009 12:32:00 -0500
+
+opennms (1.6.6-1) stable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 18 Sep 2009 10:45:00 -0500
+
+opennms (1.6.5-1) stable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 15 May 2009 13:42:00 -0500
+
+opennms (1.6.4-1) stable; urgency=high
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 01 Apr 2009 12:00:00 -0500
+
+opennms (1.6.3-1) stable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 31 Mar 2009 14:02:00 -0500
+
+opennms (1.6.2-2) stable; urgency=low
+
+  * Update dependencies to allow OpenJDK.
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 13 Feb 2009 16:07:00 -0500
+
+opennms (1.6.2-1) stable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 15 Jan 2009 09:15:35 -0500
+
+opennms (1.6.1-1) stable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 13 Nov 2008 14:05:15 -0500
+
+opennms (1.6.0-1) stable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 28 Oct 2008 10:49:06 -0500
+
+opennms (1.5.99-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 23 Oct 2008 12:11:10 -0500
+
+opennms (1.5.98-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 22 Oct 2008 21:45:57 -0500
+
+opennms (1.5.97-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 15 Oct 2008 21:38:55 -0500
+
+opennms (1.5.96-6) unstable; urgency=medium
+
+  * Rebuild with a patch for notification stuff.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 01 Oct 2008 15:37:23 -0500
+
+opennms (1.5.96-4) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 30 Sep 2008 23:54:22 -0500
+
+opennms (1.5.96-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 30 Sep 2008 18:38:28 -0500
+
+opennms (1.5.95-1) unstable; urgency=high
+
+  * New upstream release.
+  * Fix for important poller bug.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 30 Sep 2008 12:23:53 -0500
+
+opennms (1.5.94-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 25 Sep 2008 16:30:23 -0500
+
+opennms (1.5.93-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 24 Jun 2008 11:15:23 -0500
+
+opennms (1.5.92-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 18 Jun 2008 12:08:13 -0500
+
+opennms (1.5.91-3) unstable; urgency=low
+
+  * More package tweaks and fix for an upgrade issue
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 09 May 2008 09:55:57 -0500
+
+opennms (1.5.91-3) unstable; urgency=low
+
+  * Fix for bug #2461 (incorrect script location)
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 08 May 2008 08:52:08 -0500
+
+opennms (1.5.91-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 05 May 2008 16:54:00 -0500
+
+opennms (1.5.90-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 21 Mar 2008 17:43:00 -0500
+
+opennms (1.3.11-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 07 Feb 2008 14:40:00 -0500
+
+opennms (1.3.10-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 06 Feb 2008 14:30:00 -0500
+
+opennms (1.3.9-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 28 Nov 2007 14:29:26 -0500
+
+opennms (1.3.8-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 07 Nov 2007 13:11:00 -0500
+
+opennms (1.3.7-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Fri, 14 Sep 2007 15:26:26 -0500
+
+opennms (1.3.7-SNAPSHOT-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Jeff Gehlbach <jeffg@opennms.org>  Sun, 29 Jul 2007 18:51:01 -0500
+
+opennms (1.3.6-1) unstable; urgency=low
+
+  * New upstream release.
+  * Removed requirement for libjicmp, changed to suggest jicmp,
+    now separately maintained
+  * Changed dependency on librrd-java to jrrd, now separately
+    maintained
+
+ -- Jeff Gehlbach <jeffg@opennms.org>  Sun, 29 Jul 2007 15:43:47 -0500
+
+opennms (1.3.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Jeff Gehlbach <jeffg@opennms.org>  Fri, 29 Jun 2007 15:43:10 -0400
+
+opennms (1.3.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * Package libiplike-pgsql now separately versioned in three flavors
+    to match the target PostgreSQL version (7.4, 8.1, 8.2).
+
+ -- Jeff Gehlbach <jeffg@opennms.org>  Wed, 28 Mar 2007 09:55:31 -0400
+
+opennms (1.3.2) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Jeff Gehlbach <jeffg@opennms.org>  Sat, 13 Jan 2007 22:32:31 -0400
+
+opennms (1.2.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Thu, 24 Nov 2005 15:01:19 -0600
+
+opennms (1.2.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Sat, 27 Aug 2005 17:20:45 -0500
+
+opennms (1.2.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Sun, 29 May 2005 14:20:30 -0500
+
+opennms (1.2.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Sat,  2 Apr 2005 14:39:35 -0600
+
+opennms (1.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Mon, 21 Mar 2005 14:11:28 -0600
+
+opennms (1.2.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Eric Evans <eevans@sym-link.com>  Mon, 14 Feb 2005 11:26:15 -0600
+
+opennms (1.1.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * Dropped installer invocation in opennms-db, opennms-webapp.
+  * Only remove data in /var/lib/opennms on purge.
+  * Added debconf note, (conditional on upgrade from < 1.1.5), about
+    the need to manually run the installer.
+
+ -- Eric Evans <eevans@sym-link.com>  Wed, 26 Jan 2005 13:17:53 -0600
+
+opennms (1.1.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added debconf note to opennms-webapp regarding need to manually
+    remove the old server context, (conditional upon upgrade from 
+    versions < 1.1.4).
+
+ -- Eric Evans <eevans@sym-link.com>  Sun, 07 Nov 2004 04:58:21 +0000
+ 
+opennms (1.1.3-2) unstable; urgency=low
+
+  * Updated dependencies to include libpgjava, and dropped the copy of 
+    postgresql.jar that was being installed by upstream.
+  * Re-added clobbered conffiles
+
+ -- Eric Evans <eevans@sym-link.com>  Tue, 27 Jul 2004 09:30:17 -0500
+
+opennms (1.1.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Updated opennms-db post-install to accomodate the new java-based 
+    installer.
+  * Updated opennms-webapp post-install to accomodate the new java-based
+    installer.
+  * Added libgetopt-mixed-perl as a dependency for common, removed it as
+    a dependency for contrib, (it was backward before, this is how it 
+    should have been).
+  * Added opennms-common as a dependency for opennms-db, and moved 
+    install.pl from common to db.
+  * Added a symlink to CATALINA_HOME/server/lib for upstream copy of 
+    log4j and removed dependency on package from Debian repository.
+  * Reverted log4j.properties back to upstream defaults.
+  * Changed opennms-db.postinst and opennms-db.postrm to be kinder
+    about starting and stoping the database, (see
+    http://bugs.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=814).
+  * Eliminated opennms-server.preinst
+
+ -- Eric Evans <eevans@sym-link.com>  Sat,  14 Feb 2004 14:10:00 -0600
+
+opennms (1.1.2-1) stable; urgency=low
+
+  * Made /etc/opennms/web.xml a symlink that points to
+    /usr/share/java/webapps/opennms/WEB-INF/web.xml to make tomcat happy.
+  * Changed the post-install of opennms-webapp and opennms-db, since
+    install.pl now runs as root.
+  * Fixed postrm of opennms-db so that dropdb works.
+  * Replaced reference to /opt/Opennms with /usr/share/opennms in init script.
+  * Added dependency on libgetopt-mixed-perl for opennms-contrib,
+    (send-event.pl requires it).
+  * Fixed duplicate and missing depends to make lintian happy.
+
+ -- Eric Evans <eevans@opennms.org>  Fri,  5 Sep 2003 14:10:00 -0500
+
+opennms (1.1.1-5) unstable; urgency=low
+
+  * The "Tax Man Cometh" release!
+  * Fixed the database install portion so that upgrades now run smoothly.
+  * We now use the "postgres" user to do the db work instead of root.
+  * Split up packages again to use an opennms-db package for all database
+    stuff.
+  * Moved the misc jars (not opennms*jar) to opennms-server, since it's the
+    only package that needs them (webapp has it's jars in WEB-INF/lib).
+
+ -- Tony Simone <tony.simone@medvantx.com>  Tue, 15 Apr 2003 11:52:00 -0500
+
+opennms (1.1.1-4) unstable; urgency=low
+
+  * Massive rework to split into numerous packages.
+  * Fixed several dependency issues for the latest cut.
+  * Fixed the TOMCAT var install / no-install issue in install.pl.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Wed,  2 Apr 2003 23:06:00 -0500
+
+opennms (1.1.1-3) unstable; urgency=low
+
+  * Merged latest changes from upstream 1.1.1.1.
+  * Eliminated install-tomcat4.pl, modified the newly enhanced install.pl.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Thu, 27 Feb 2003 16:34:00 -0500
+
+opennms (1.1.1-2) unstable; urgency=low
+
+  * Not released.
+  * Updated dependencies to reflect current Postgres version and need for
+    Tomcat4 >= 4.1.18.
+  * Split off the opennms-webapps opennms-doc packages.
+  * Fixed some layout of the libs.
+  * Hacked up install.pl, took out the tomcat part and put it in a separate
+    install-tomcat4.pl script.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Thu, 14 Feb 2003 11:00:00 -0500
+
+opennms (1.1.1-1) unstable; urgency=low
+
+  * Updated to Debian standards version 3.5.8.
+  * Added a (undocumented) manpage.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Mon, 10 Feb 2003 14:27:00 -0500
+
+opennms (1.1.1-0) unstable; urgency=low
+
+  * New upstream release.
+  * Added a postgres createuser "root" to the postinst script now that 7.3.1
+    doesn't have a root user setup already.
+  * Added a fix to install.pl for the proper location of postgres libs on
+    Debian.
+  * Another fix for the new postgresql pg_hba.conf format.
+  * Fixed the log4j problem by depending on a reasonable version.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Mon, 10 Feb 2003 09:11:00 -0500
+
+opennms (1.1.0-0) unstable; urgency=low
+
+  * New upstream release.
+  * Fixed the 1.0.2-1 bug of opennms not stopping (due to mismatched
+    HttpManagment ports in source file, config file, and opennms.sh script).
+  * Fixed the debian/control file to use real and virtual depends on java
+    stuff.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Fri, 22 Nov 2002 08:29:00 -0500
+
+opennms (1.0.2-1) unstable; urgency=low
+
+  * Re-worked postinst to take a username/password for Postgres access.
+  * Removed the conffiles list since it is autogenerated.
+  * Changed configs to match Debian Woody/Sid tomcat4 running on port 8180.
+  * To work with Debian tomcat4 which is already on 8180 by default,
+    moved HttpConnector to port 8280 and server on 8281.
+  * Fixed up all the symlinks using dh_link.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Mon, 18 Nov 2002 13:24:00 -0500
+
+opennms (1.0.2-0) unstable; urgency=low
+
+  * New upstream release.
+  * Changed Section to contrib since it depends on a non-free package (java2).
+  * Fixed Depends to use autogenerated shlibs deps.
+  * Removed logrotate config and just downshifted the defaults in the
+    log4j.properties to INFO level and smaller logfiles.
+  * Added a tomcat policy to allow proper access to OpenNMS stuff.
+    (Thanks to Dmitry Glushenok <glush@rasko.ru> for pointing that out)
+
+ -- Tony Simone <tony.simone@medvantx.com>  Fri, 15 Nov 2002 09:00:00 -0500
+
+opennms (1.0.1-2) unstable; urgency=low
+
+  * Added Depends on metamail since the Reports mailing functions require it.
+  * Now linking /usr/share/opennms/share to /var/lib/opennms, since certain
+    functions are hardcoded to the share dir.  This fixes reports generation.
+  * Moved all Java native libs to /usr/lib, and do ldconfig in postinst.
+  * Fixed logrotate script to be quiet unless there is a problem.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Tue, 30 Sep 2002 20:37:00 -0400
+
+opennms (1.0.1-1) unstable; urgency=low
+
+  * Changed postinst to tell admin about some special needs.
+  * update-rc.d now starts opennms as S21, since postgresql is S20 and needs
+    to start first.
+  * Added a logrotate script (these logs get big fast).
+  * Changed the Depends to accurately reflect rrdtool instead of librrd0 and
+    remove perl since it is required by libdbd-pg-perl.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Thu, 19 Sep 2002 16:15:00 -0400
+
+opennms (1.0.1-0) unstable; urgency=low
+
+  * Upstream update.
+  * Complete rebuild to be more Debian FHS compliant. A truly massive work-over
+    that hacked up the debian dirs build scripts pretty thoroughly.
+
+ -- Tony Simone <tony.simone@medvantx.com>  Fri, 13 Sep 2002 09:00:00 -0400
+
+opennms (0.9.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Ben Reed <ben@opennms.org>  Wed, 12 Sep 2001 23:42:39 +0000
+
+Local variables:
+mode: debian-changelog
+End:

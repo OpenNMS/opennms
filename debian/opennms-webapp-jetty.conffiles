@@ -1,0 +1,3 @@
+/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
+/usr/share/opennms/jetty-webapps/opennms/WEB-INF/configuration.properties
+/usr/share/opennms/jetty-webapps/opennms/WEB-INF/web.xml
