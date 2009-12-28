@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<service_bundle type='manifest' name='NMSopennms:opennms'>
+  <service
+      name='application/opennms'
+      type='service'
+      version='1'>
+
+    <create_default_instance enabled='false' />
+
+    <single_instance />
+  		
+    <!-- Must be able to resolve hostnames. -->
+    <dependency
+        name='nameservice'
+        type='service'
+        grouping='require_all'
+        restart_on='none'>
+      <service_fmri value='svc:/milestone/name-services' />
+    </dependency>
+
+
+    <dependency
+        name='postgresql'
+        type='service'
+        grouping='optional_all'
+        restart_on='restart'>
+      <service_fmri value='svc:/application/database/postgresql' />
+    </dependency>
+  
+    <dependent
+         name='opennms_multi-user'
+         grouping='require_all'
+         restart_on='none'>
+       <service_fmri value='svc:/milestone/multi-user' />
+    </dependent>
+  
+    <exec_method
+        type='method'
+        name='start'
+        exec='/opt/opennms/contrib/svc-opennms start'
+        timeout_seconds='300'>
+      <method_context>
+        <method_credential user='opennms' group='opennms' privileges='basic,net_icmpaccess,net_privaddr' />
+      </method_context>
+    </exec_method>
+  
+    <exec_method
+        type='method'
+        name='stop'
+        exec='/opt/opennms/contrib/svc-opennms stop'
+        timeout_seconds='180'>
+      <method_context>
+        <method_credential user='opennms' group='opennms' />
+      </method_context>
+    </exec_method>
+  
+    <template>
+      <common_name>
+        <loctext xml:lang='C'>
+          OpenNMS daemon
+        </loctext>
+      </common_name>
+      <documentation>
+        <manpage title='opennms' section='1M' manpath='/usr/share/man' />
+      </documentation>
+    </template>
+  
+  </service>
+</service_bundle>
