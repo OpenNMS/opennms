@@ -1,7 +1,0 @@
-// Grant permissions for OpenNMS
-// This is probably too wide open, but for now I'm just getting it working.
-// Any feedback would be greatly appreciated!
-grant codeBase "file:/usr/share/opennms/webapp/-" {
-        permission java.security.AllPermission;
-};
-

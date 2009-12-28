@@ -1,9 +1,0 @@
-/usr/share/opennms/webapp/WEB-INF/web.xml /etc/opennms/web.xml
-/usr/share/java/opennms_common.jar /usr/share/tomcat4/server/lib/opennms_common.jar
-/usr/share/java/opennms_core.jar /usr/share/tomcat4/server/lib/opennms_core.jar
-/usr/share/java/opennms_joesnmp.jar /usr/share/tomcat4/server/lib/opennms_joesnmp.jar
-/usr/share/java/opennms_services.jar /usr/share/tomcat4/server/lib/opennms_services.jar
-/usr/share/java/opennms_web.jar /usr/share/tomcat4/server/lib/opennms_web.jar
-/usr/share/opennms/webapp/WEB-INF/lib/castor-0.9.3.9.jar /usr/share/tomcat4/server/lib/castor-0.9.3.9.jar
-/usr/share/opennms/webapp/WEB-INF/lib/castor-0.9.3.9-xml.jar /usr/share/tomcat4/server/lib/castor-0.9.3.9-xml.jar
-/usr/share/opennms/webapp/WEB-INF/lib/log4j.jar /usr/share/tomcat4/server/lib/log4j.jar

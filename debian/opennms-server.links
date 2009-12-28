@@ -1,5 +1,0 @@
-/usr/share/java/opennms_common.jar	/usr/share/opennms/lib/opennms_common.jar
-/usr/share/java/opennms_core.jar	/usr/share/opennms/lib/opennms_core.jar
-/usr/share/java/opennms_joesnmp.jar	/usr/share/opennms/lib/opennms_joesnmp.jar
-/usr/share/java/opennms_services.jar	/usr/share/opennms/lib/opennms_services.jar
-/usr/share/java/opennms_web.jar		/usr/share/opennms/lib/opennms_web.jar
