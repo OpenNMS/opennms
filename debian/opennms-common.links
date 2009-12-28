@@ -1,0 +1,3 @@
+/etc/opennms					/usr/share/opennms/etc
+/var/lib/opennms				/usr/share/opennms/share
+/var/log/opennms				/usr/share/opennms/logs
