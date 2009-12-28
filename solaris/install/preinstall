@@ -1,0 +1,27 @@
+#!/bin/sh -
+
+BASEDIR=/opt/opennms 
+INSTUSER=opennms
+INSTGROUP=opennms
+
+if /usr/bin/getent group $INSTGROUP > /dev/null; then
+	echo "$INSTGROUP group already exists, not adding"
+else
+	echo "$INSTGROUP group does not exist, adding"
+	/usr/sbin/groupadd $INSTGROUP
+	if [ $? -ne 0 ]; then
+		echo "Failed to add $INSTGROUP group, exiting" >&2
+		exit 1
+	fi
+fi
+
+if /usr/bin/getent passwd $INSTUSER > /dev/null; then
+	echo "$INSTUSER user already exists, not adding"
+else
+	echo "$INSTUSER user does not exist, adding"
+	/usr/sbin/useradd -g $INSTGROUP -d $BASEDIR -c "OpenNMS Daemon" $INSTUSER
+	if [ $? -ne 0 ]; then
+		echo "Failed to add $INSTUSER user, exiting" >&2
+		exit 1
+	fi
+fi
