@@ -38,6 +38,7 @@
     <complexType>
       <sequence>
         <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:session-variable" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="method" type="this:allowed-methods" use="optional" default="GET" />
       <attribute name="http-version" type="this:allowed-versions" use="optional" default="1.1" />
@@ -61,10 +62,11 @@
       <attribute name="failureMessage" type="string" use="optional" />
       <attribute name="successMatch" type="string" use="optional" />
       <attribute name="response-range" type="string" use="optional" default="100-399" />
+      <attribute name="ds-name" type="string" use="optional" />
     </complexType>
   </element>
   
-    <element name="parameter">
+  <element name="parameter">
     <annotation>
       <documentation>Currently only used for HTTP form parameters.</documentation>
     </annotation>
@@ -74,13 +76,32 @@
     </complexType>
   </element>
   
-    <simpleType name="allowed-methods" >
+  <element name="session-variable">
+    <annotation>
+      <documentation>Assign the value of a regex match group to a
+                     session variable with a user-defined name. The
+                     match group is identified by number and must
+                     be zero or greater.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="match-group" use="required">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0" />
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <simpleType name="allowed-methods" >
     <restriction base="string" >
       <pattern value="GET|POST" />
     </restriction>
   </simpleType>
   
-    <simpleType name="allowed-versions" >
+  <simpleType name="allowed-versions" >
     <restriction base="string" >
       <pattern value="1\.0|1\.1" />
     </restriction>
