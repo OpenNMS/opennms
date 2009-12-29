@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,12 +10,11 @@
 //
 // Modifications:
 //
+// 2010 Feb 23: Add test for ${matchingGroup[n]} syntax. - jeffg@opennms.org
 // 2007 Apr 06: Separate out testSimple into individual tests and
 //              pass the virtual host in the config to keep cookie
 //              warnings from happening.  Verify that nothing is
 //              logged at a level at WARN or higher. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -205,4 +204,74 @@ public class PageSequenceMonitorTest {
         
     }
 	
+    @Test
+    public void testLoginDynamicCredentials() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\">\n" +
+                "    <session-variable name=\"username\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"password\" match-group=\"2\" />\n" +
+                "  </page>\n" +
+                "  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" virtual-host=\"demo.opennms.org\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login Failed: ${1}\" successMatch=\"Log out\">\n" + 
+                "    <parameter key=\"j_username\" value=\"${username}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${password}\"/>\n" + 
+                "  </page>\n" + 
+                "  <page path=\"/opennms/event/index.jsp\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"Event Queries\" />\n" + 
+                "  <page path=\"/opennms/j_acegi_logout\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"logged off\" />\n" +
+                "</page-sequence>\n");
+        
+        
+        PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        
+    }
+
+    @Test
+    public void testLoginDynamicCredentialsTwice() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\">\n" +
+                "    <session-variable name=\"username\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"password\" match-group=\"2\" />\n" +
+                "  </page>\n" +
+                "  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" virtual-host=\"demo.opennms.org\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login Failed: ${1}\" successMatch=\"Log out\">\n" + 
+                "    <parameter key=\"j_username\" value=\"${username}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${password}\"/>\n" + 
+                "  </page>\n" + 
+                "  <page path=\"/opennms/event/index.jsp\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"Event Queries\" />\n" + 
+                "  <page path=\"/opennms/j_acegi_logout\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"logged off\" />\n" + 
+                "\n" +
+                "  <page path=\"/opennms\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s).*(.*?) is the world's first (.*?) grade network management platform.*\">\n" +
+                "    <session-variable name=\"username\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"password\" match-group=\"2\" />\n" +
+                "  </page>\n" +
+                "  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" virtual-host=\"demo.opennms.org\" method=\"POST\" successMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login succeeded but should have failed.\" failureMatch=\"Log out\">\n" + 
+                "    <parameter key=\"j_username\" value=\"${username}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${password}\"/>\n" + 
+                "  </page>\n" + 
+                "</page-sequence>\n");
+        
+        
+        PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+    }
+    
+    @Test
+    public void testDsNamePerPage() throws Exception {
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page path=\"/opennms/\" ds-name=\"slash\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
+                     "  <page path=\"/opennms/acegilogin.jsp\" ds-name=\"acegilogin\"  port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
+                     "</page-sequence>\n");
+                          
+             PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+             assertTrue("Expected three DSes", (3 == status.getProperties().size()));
+             assertTrue("Expected a DS called 'slash' but did not find one", status.getProperties().containsKey("slash"));
+             assertTrue("Expected a DS called 'acegilogin' but did not find one", status.getProperties().containsKey("acegilogin"));
+    }
+    
 }
