@@ -14,11 +14,7 @@ fi
 
 if [ $RELEASE_MAJOR -eq 0 ]; then
 	# Set the SVN checkout version if SVN is on the box, otherwise use the date as default
-	RELEASE_MINOR=`date +%Y%m%d`
-	if which svn > /dev/null; then
-	        SVN_DUMMY=`svn info . | grep -i 'last changed rev' | awk -F': ' '{ print $2 }'`
-	        if [ "$SVN_DUMMY" ]; then RELEASE_MINOR="${SVN_DUMMY}.snapshot"; fi
-	fi
+	RELEASE_MINOR=`date '+%Y%m%d'`
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR
 else
 	RELEASE=$RELEASE_MAJOR

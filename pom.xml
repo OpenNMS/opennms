@@ -81,9 +81,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</developerConnection>
-    <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.6-testing</url>
+    <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
+    <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
+    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/1.6-testing</url>
   </scm>
   <modules>
     <module>dependencies</module>
