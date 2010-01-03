@@ -168,7 +168,6 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
-    
     public static String max(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {
             return string2;

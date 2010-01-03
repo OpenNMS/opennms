@@ -352,6 +352,10 @@ function deleteMapSetUp() {
 	 		disableMenu();
 			deleteMap();
     	}
+ 	} else if (currentMapType == "A") {
+		alert('Cannot delete automatic map');
+ 	} else if (currentMapType == "S") {
+		alert('Cannot delete static map');
 	}else{
 		alert('No maps to delete found');
     }	

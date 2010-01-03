@@ -244,7 +244,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             filterPassed = ipList.contains(iface);
         }
     
-        log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
+        if (log.isDebugEnabled())
+            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
     
         if (!filterPassed)
             return false;
