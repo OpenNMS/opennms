@@ -102,9 +102,6 @@ public class LinkEventCorrelator {
         }finally {
             debugf(this, "Bailing out of handleInterfaceUp");
         }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
     }
     
     @Transactional
@@ -128,9 +125,6 @@ public class LinkEventCorrelator {
         }finally{
             debugf(this, "Bailing out of handleServiceUnresponsive");
         }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
     }
     
     @Transactional
@@ -153,9 +147,6 @@ public class LinkEventCorrelator {
             debugf(this, t, "Caught a throwable in handleServiceResponsive");
         }finally {
             debugf(this, "Bailing out of handleServiceResponsive");
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
     
@@ -207,18 +198,6 @@ public class LinkEventCorrelator {
         finally {
             debugf(this, "Bailing out of handleNodeLostService");
         }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
-        }
-        
-            
-        } 
-        catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleNodeLostService!");
-        }
-        finally {
-            debugf(this, "Bailing out of handleNodeLostService");
-        }
     }
     
     @Transactional
@@ -241,9 +220,6 @@ public class LinkEventCorrelator {
             debugf(this, t, "Caught a throwable in handleNodeRegainedService!");
         }finally {
             debugf(this, "Bailing out of handleNodeRegainedService");
-        }
-        else {
-            debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
         }
     }
     
