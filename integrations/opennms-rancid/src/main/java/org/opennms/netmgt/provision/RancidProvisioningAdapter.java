@@ -243,47 +243,48 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     public void doUpdate(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("RANCID PROVISIONING ADAPTER CALLED updateNode: nodeid: " + nodeId);
-        try {
-            OnmsNode node = m_nodeDao.get(nodeId);
-            Assert.notNull(node, "Rancid Provisioning Adapter update Node method failed to return node for given nodeId:"+nodeId);
             
-            RancidNode rNewNode = getSuitableRancidNode(node);
-            // The node should exists onmsNodeRancidNodeMap 
-            boolean stateUp = true;
-            if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                RancidNode rCurrentNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
-                // set the state to the suitable state
-                stateUp=rCurrentNode.isStateUp();
-                rNewNode.setStateUp(false);
-                // delete the current node if it is different
-                if (!rCurrentNode.equals(rNewNode)) {
-                    try {
-                        RWSClientApi.deleteRWSRancidNode(cp, rCurrentNode);
-                        RWSClientApi.deleteRWSAuthNode(cp, rCurrentNode.getAuth());                        
-                    } catch (Exception e) {
-                        log().error("RANCID PROVISIONING ADAPTER Failed to delete node: " + nodeId + " Exception: " + e.getMessage());
+        RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+
+        log().debug("RANCID PROVISIONING ADAPTER found Node in local map: " + rLocalNode.toString());
+        
+        try {
+            RancidNode rRemoteNode = RWSClientApi.getRWSRancidNodeTLO(cp, rLocalNode.getGroup(), rLocalNode.getDeviceName());
+            log().debug("RANCID PROVISIONING ADAPTER found Node in router.db : " + rRemoteNode.toString());
+            if (!rLocalNode.getDeviceType().equalsIgnoreCase(rRemoteNode.getDeviceType())) {
+                try {
+                    // don't change the status of the node in update operation
+                    rLocalNode.setStateUp(rRemoteNode.isStateUp());
+                    log().debug("RANCID PROVISIONING ADAPTER updating router.db data");
+                    RWSClientApi.updateRWSRancidNode(cp, rLocalNode);
+                    if ( updateAuth(rLocalNode.getAuth(), RWSClientApi.getRWSAuthNode(cp, rLocalNode.getDeviceName())) ) {
+                        log().debug("RANCID PROVISIONING ADAPTER updating authentication data");
+                        RWSClientApi.updateRWSAuthNode(cp, rLocalNode.getAuth());                                                        
                     }
+                } catch (Exception e) {
+                    log().error("RANCID PROVISIONING ADAPTER Failed to update node: " + nodeId + " Exception: " + e.getMessage());
+                }
+            }
+        } catch (RancidApiException re) {
+            if (re.getRancidCode() ==RancidApiException.OTHER_ERROR) {
+                log().info("RANCID PROVISIONING ADAPTER: addng the node: " + rLocalNode.toString());
+                try {
+                    RWSClientApi.createRWSRancidNode(cp, rLocalNode);
+                    RWSClientApi.createOrUpdateRWSAuthNode(cp, rLocalNode.getAuth());
+                } catch (RancidApiException e) {
+                    log().error("RANCID PROVISIONING ADAPTER Failed to create node: " + nodeId + " Exception: " + e.getMessage());
                 }
             } else {
-                rNewNode.setStateUp(true);
-                m_onmsNodeRancidNodeMap.put(node.getId(), rNewNode);
-            }
-            
-            
-            RWSClientApi.createOrUpdateRWSRancidNode(cp, rNewNode);
-            RWSClientApi.createOrUpdateRWSAuthNode(cp, rNewNode.getAuth());
-            
-            rNewNode.setStateUp(stateUp);
-            m_onmsNodeRancidNodeMap.replace(node.getId(), rNewNode);
-        } catch (Exception e) {
-            cp = getStandByRWSConnection();
-            if (retry && cp != null) {
-                log().info("Rancid Provisioning Adapter: retry Update on standByConn: " + cp.getUrl());
-                doUpdate(nodeId, cp, false);
-            } else {
-                sendAndThrow(nodeId, e);            
-            }
+                cp = getStandByRWSConnection();
+                if (retry && cp != null) {
+                    log().info("Rancid Provisioning Adapter: retry Update on standByConn: " + cp.getUrl());
+                    doUpdate(nodeId, cp, false);
+                } else {
+                    sendAndThrow(nodeId, re);            
+                }
+            } 
         }
+     
     }
     
     public void doDelete(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
@@ -555,6 +556,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             LogUtils.debugf(this, "reloading the rancid adapter configuration");
             try {
                 RancidAdapterConfigFactory.reload();
+                m_template.execute(new TransactionCallback() {
+                    public Object doInTransaction(TransactionStatus arg0) {
+                        buildRancidNodeMap();
+                        return null;
+                    }
+                });        
             } catch (Exception e) {
                 LogUtils.infof(this, e, "unable to reload rancid adapter configuration");
             }
@@ -637,4 +644,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         m_onmsNodeRancidNodeMap.put(nodeid, rnode);
     }
 
+    private boolean updateAuth(RancidNodeAuthentication localNode, RancidNodeAuthentication remoteNode) {
+        if (!localNode.getUser().equals(remoteNode.getUser())) return true;
+        if (!localNode.getPassword().equals(remoteNode.getPassword())) return true;
+        if (!localNode.getEnablePass().equals(remoteNode.getEnablePass())) return true;
+        if (!localNode.getConnectionMethodString().equals(remoteNode.getConnectionMethodString())) return true;
+        if (localNode.isAutoEnable() && !remoteNode.isAutoEnable()) return true;
+        if (!localNode.isAutoEnable() && remoteNode.isAutoEnable()) return true;
+        return false;
+    }
 }
