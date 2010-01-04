@@ -10,7 +10,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for common components that are used in other
-    OpenNMS schemas. Version: $Id$.</documentation>
+    OpenNMS schemas. </documentation>
   </annotation>
 
   <complexType name="basicSchedule">

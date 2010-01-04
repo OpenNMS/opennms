@@ -47,7 +47,6 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -91,7 +90,7 @@ public class FormProcViewController extends AbstractController implements Initia
                 override_graphtype = "none";
             }
             if (report_action.equals("Customize")) {
-                KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), false);
+                KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
                 if (report_type.equals("node")) {
                     editor.loadWorkingReport(m_kscReportService.buildNodeReport(report_index)); 

@@ -37,7 +37,7 @@
 //      http://www.opennms.com/
 //
 //
-//$Id$
+//$Id: EventConfDataTest.java 10576 2008-09-18 14:43:43Z rangerrick $
 //
 package org.opennms.netmgt.eventd.datablock;
 

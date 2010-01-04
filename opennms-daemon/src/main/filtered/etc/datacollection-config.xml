@@ -1389,28 +1389,6 @@
         <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.20" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrVolts"    type="Integer32" />
       </group>  
 
-      <!-- Dell OpenManage MIBs -->
-      <group name="openmanage-coolingdevices" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.6" instance="coolingDeviceIndex" alias="coolingDevReading" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.8" instance="coolingDeviceIndex" alias="coolingDeviceLocationName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.12.1.13" instance="coolingDeviceIndex" alias="coolDevLowCritThres" type="integer" />
-      </group>
-
-      <group name="openmanage-temperatureprobe" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.6" instance="temperatureProbeIndex" alias="tempProbeReading" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.8" instance="temperatureProbeIndex" alias="temperatureProbeLocationName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.10" instance="temperatureProbeIndex" alias="tempProbeUpCrit" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.11" instance="temperatureProbeIndex" alias="tempProbeUpNonCrit" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.12" instance="temperatureProbeIndex" alias="tempProbeLowNonCrit" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.700.20.1.13" instance="temperatureProbeIndex" alias="tempProbeLowCrit" type="integer" />
-      </group>
-
-      <group name="openmanage-powerusage" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.6" instance="powerUsageIndex" alias="powerUsageEntityName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.7" instance="powerUsageIndex" alias="powerUsageWattage" type="Counter32" />
-        <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.9" instance="powerUsageIndex" alias="powerUsagePeakWatts" type="integer" />
-      </group>
-
       <!-- Netapp MIBS -->
       <group name="netapp-cpu" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
@@ -1566,18 +1544,6 @@
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.8"  instance="hpuxFSTable" alias="hpuxFSFiles"  type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.9"  instance="hpuxFSTable" alias="hpuxFSFfree"  type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.10" instance="hpuxFSTable" alias="hpuxFSDir"    type="string" />
-      </group>
-      <group name="hpux-filesystem" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.1" instance="hpuxFSTable" alias="hpuxFSID1" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.2" instance="hpuxFSTable" alias="hpuxFSID2" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.3" instance="hpuxFSTable" alias="hpuxFSName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.4" instance="hpuxFSTable" alias="hpuxFSBlock" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.5" instance="hpuxFSTable" alias="hpuxFSBfree" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.6" instance="hpuxFSTable" alias="hpuxFSBavail" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.7" instance="hpuxFSTable" alias="hpuxFSBsize" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.8" instance="hpuxFSTable" alias="hpuxFSFiles" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.9" instance="hpuxFSTable" alias="hpuxFSFfree" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.10" instance="hpuxFSTable" alias="hpuxFSDir" type="string" />
       </group>
 
       <!-- IBM MIBs -->
@@ -1830,13 +1796,6 @@
         <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.4" instance="0" alias="NSmemSizeMB"   type="Integer32" />
       </group>
 
-      <!-- Netscaler MIBs -->
-      <group name="NetScaler-General" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.1" instance="0" alias="NSresCpuUsage" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.2" instance="0" alias="NSresMemUsage" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.4" instance="0" alias="NSmemSizeMB" type="Integer32" />
-      </group>
-
       <!-- Netbotz MIBs -->
       <group name="netbotz" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.5528.30.10.1"  instance="0" alias="netBotz-temp"      type="INTEGER" />
@@ -1891,20 +1850,6 @@
         <mibObj oid=".1.3.6.1.4.1.23.2.28.2.9"  instance="0" alias="nwFSRecordLocks"    type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.23.2.28.2.10" instance="0" alias="nwFSMaxRecordLocks" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.23.2.28.2.13" instance="0" alias="nwFSVolCount"       type="gauge" />
-      </group>
-
-      <group name="netware-fs-scalars" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.1" instance="0" alias="nwFSReads" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.2" instance="0" alias="nwFSWrites" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.3" instance="0" alias="nwFSReadKB" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.4" instance="0" alias="nwFSWrittenKB" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.5" instance="0" alias="nwFSCacheChecks" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.6" instance="0" alias="nwFSCacheHits" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.7" instance="0" alias="nwFSOpenFiles" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.8" instance="0" alias="nwFSMaxOpenFiles" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.9" instance="0" alias="nwFSRecordLocks" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.10" instance="0" alias="nwFSMaxRecordLocks" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.13" instance="0" alias="nwFSVolCount" type="gauge" />
       </group>
 
       <!-- Sun MIBs -->
@@ -3513,13 +3458,6 @@
 
       <systemDef name="Netscaler">
         <sysoidMask>.1.3.6.1.4.1.5951.1.</sysoidMask>
-        <collect>
-          <includeGroup>NetScaler-General</includeGroup>
-        </collect>
-      </systemDef>
-
-      <systemDef name="Netscaler">
-        <sysoidMask>.1.3.6.1.4.1.5951.1</sysoidMask>
         <collect>
           <includeGroup>NetScaler-General</includeGroup>
         </collect>

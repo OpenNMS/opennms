@@ -9,8 +9,7 @@
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>XML Schema for the notifications.xml configuration file.
-    Version: $Id$</documentation>
+    <documentation>XML Schema for the notifications.xml configuration file. </documentation>
   </annotation>
 
   <import namespace="http://xmlns.opennms.org/xsd/types"

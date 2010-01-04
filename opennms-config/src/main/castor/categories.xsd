@@ -9,8 +9,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for the categories.xml configuration file. This
-    file contains categories for the UI and reports. Version:
-    $Id$.</documentation>
+    file contains categories for the UI and reports. </documentation>
   </annotation>
 
   <import namespace="http://xmlns.opennms.org/xsd/types"

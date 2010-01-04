@@ -11,7 +11,7 @@ END
  
 }
 
-VERSION_UEILIST='$Revision$'
+VERSION_UEILIST='$Revision: 13193 $'
 
 ulimit -s 2048
  

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_LD_PATH='$Revision$'
+VERSION_LD_PATH='$Revision: 8370 $'
 PACKAGES="$PACKAGES LD_PATH"
 
 # add_ld_path ()

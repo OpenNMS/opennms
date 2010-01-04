@@ -52,7 +52,7 @@
 		java.sql.SQLException,
 		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.alarm.filter.*,
-		org.opennms.web.SafeHtmlUtil,
+		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.XssRequestWrapper
 		
 		"
@@ -265,7 +265,7 @@
                 
                   <% for( int i=0; i < length; i++ ) { %>
                     <% org.opennms.web.alarm.filter.Filter filter = (org.opennms.web.alarm.filter.Filter)parms.filters.get(i); %>
-                    &nbsp; <span class="filter"><%=SafeHtmlUtil.sanitize(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
+                    &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
               </p>           
             <% } %>
@@ -424,12 +424,12 @@
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">
-          <option value="clear">Clear Alarms</option>
         <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <option value="acknowledge">Acknowledge Alarms</option>
         <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
           <option value="unacknowledge">Unacknowledge Alarms</option>
         <% } %>
+          <option value="clear">Clear Alarms</option>
           <option value="escalate">Escalate Alarms</option>
           </select>
           <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />

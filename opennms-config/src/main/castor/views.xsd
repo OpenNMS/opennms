@@ -10,7 +10,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for the views.xml configuration file. This seems
-    to be unused. Version: $Id$.</documentation>
+    to be unused. </documentation>
   </annotation>
 
   <import namespace="http://xmlns.opennms.org/xsd/types"

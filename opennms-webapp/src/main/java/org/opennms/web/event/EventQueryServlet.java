@@ -54,7 +54,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.Filter;
@@ -104,7 +103,6 @@ public class EventQueryServlet extends HttpServlet {
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<Filter>();
-        HttpServletRequest req = new XssRequestWrapper(request);
 
         // convenient syntax for LogMessageSubstringFilter
         String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));
@@ -156,7 +154,7 @@ public class EventQueryServlet extends HttpServlet {
         String useBeforeTime = WebSecurityUtils.sanitizeString(request.getParameter("usebeforetime"));
         if (useBeforeTime != null && useBeforeTime.equals("1")) {
             try {
-                filterArray.add(this.getBeforeDateFilter(req));
+                filterArray.add(this.getBeforeDateFilter(request));
             } catch (IllegalArgumentException e) {
                 // ignore the before time if it is an illegal value
                 this.log("Illegal before time value", e);
@@ -168,7 +166,7 @@ public class EventQueryServlet extends HttpServlet {
         String useAfterTime = WebSecurityUtils.sanitizeString(request.getParameter("useaftertime"));
         if (useAfterTime != null && useAfterTime.equals("1")) {
             try {
-                filterArray.add(this.getAfterDateFilter(req));
+                filterArray.add(this.getAfterDateFilter(request));
             } catch (IllegalArgumentException e) {
                 // ignore the after time if it is an illegal value
                 this.log("Illegal after time value", e);

@@ -9,7 +9,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for OpenNMS events. Version:
-    $Id$</documentation>
+    $Id: event.xsd 11208 2008-11-10 17:15:03Z tarus $</documentation>
   </annotation>
 
   <annotation>

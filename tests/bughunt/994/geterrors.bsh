@@ -1,4 +1,4 @@
-//  $Id$
+//  $Id: geterrors.bsh 1158 2004-11-10 22:12:21Z djgregor $
 
 /*
  *   THIS SCRIPT IS DESTRUCTIVE ON THE DATABASE!

@@ -18,8 +18,6 @@
 # Description:       OpenNMS daemon for network monitoring
 ### END INIT INFO
 #
-#  $Id$
-#
 #  For info on the "chkconfig:" section, see:
 #     http://www.sensi.org/~alec/unix/redhat/sysvinit.html
 #

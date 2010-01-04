@@ -8,11 +8,7 @@
   xmlns:ns="http://www.w3.org/2001/XMLSchema"
   xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
-    <documentation>
-      XML Schema for the thresholds.xml configuration file. Version:
-      $Id: thresholding-config.xsd 5960 2007-03-15 03:01:15 +0000 (Thu,
-      15 Mar 2007) cmiskell $
-    </documentation>
+    <documentation>XML Schema for the thresholds.xml configuration file. </documentation>
   </annotation>
 
   <element name="thresholding-config">

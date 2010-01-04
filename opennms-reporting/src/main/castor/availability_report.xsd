@@ -8,7 +8,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for OpenNMS availability reports in intermediate
-    XML form. Version: $Id$</documentation>
+    XML form. Version: $Id: availability_report.xsd 8808 2008-03-27 18:33:48Z rangerrick $</documentation>
   </annotation>
 
   <element name="report">

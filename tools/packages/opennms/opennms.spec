@@ -1,5 +1,5 @@
 #
-#  $Id$
+#  $Id: opennms.spec 15470 2009-12-18 16:35:47Z rangerrick $
 #
 # The version used to be passed from build.xml. It's hardcoded here
 # the build system generally passes --define "version X" to rpmbuild.

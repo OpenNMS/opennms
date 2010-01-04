@@ -8,7 +8,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML Schema for RTC data. This is used for passing RTC data
-    from the OpenNMS daemon to the UI. Version $Id$. </documentation>
+    from the OpenNMS daemon to the UI. </documentation>
   </annotation>
 
   <element name="euiLevel">

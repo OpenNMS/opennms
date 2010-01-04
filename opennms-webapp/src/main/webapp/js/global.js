@@ -1,5 +1,5 @@
 //
-//  $Id$
+//  $Id: global.js 3400 2006-06-05 22:01:41Z brozow $
 //
 
 function getBaseHref() {

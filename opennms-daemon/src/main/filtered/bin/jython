@@ -11,7 +11,7 @@ END
  
 }
 
-VERSION_REPORT='$Revision$'
+VERSION_REPORT='$Revision: 13193 $'
 
 # minimum requirements
 MINIMUM_JAVA=1.3.0 export MINIMUM_JAVA

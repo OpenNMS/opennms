@@ -7,11 +7,7 @@
 	xmlns:ns="http://www.w3.org/2001/XMLSchema"
 	xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
 	<annotation>
-		<documentation>
-			XML Schema for the linkd-configuration.xml configuration
-			file. Version: $Id: linkd-configuration.xsd 3400 2006-10-03
-			22:01:41Z rssntn67 $
-		</documentation>
+		<documentation>XML Schema for the linkd-configuration.xml configuration file. </documentation>
 	</annotation>
 
 	<element name="linkd-configuration">

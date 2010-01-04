@@ -1,7 +1,5 @@
 #!/bin/sh -
 #
-#  $Id$
-#
 
 # workaround for buggy libc's
 #

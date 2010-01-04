@@ -47,7 +47,6 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 import org.opennms.web.svclayer.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -61,8 +60,7 @@ public class FormProcReportController extends AbstractController implements Init
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
-        KscReportEditor editor = KscReportEditor.getFromSession(req.getSession(), true);
+        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
         
         // Get The Customizable Report 
         Report report = editor.getWorkingReport();
@@ -74,7 +72,7 @@ public class FormProcReportController extends AbstractController implements Init
         String show_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("show_graphtype"));
         String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graph_index"));
         int graph_index = WebSecurityUtils.safeParseInt(g_index);
-        int graphs_per_line = WebSecurityUtils.safeParseInt(req.getParameter("graphs_per_line"));
+        int graphs_per_line = WebSecurityUtils.safeParseInt(request.getParameter("graphs_per_line"));
      
         // Save the global variables into the working report
         report.setTitle(report_title);

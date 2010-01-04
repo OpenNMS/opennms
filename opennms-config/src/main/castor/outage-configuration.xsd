@@ -8,7 +8,7 @@
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <annotation>
     <documentation>XML schema for the outage-configuration.xml configuration
-    file. This file is currently unused. Version: $Id$.</documentation>
+    file. This file is currently unused. </documentation>
   </annotation>
 
   <element name="OutageConfiguration">

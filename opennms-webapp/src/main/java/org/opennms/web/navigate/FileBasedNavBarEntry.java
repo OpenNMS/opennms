@@ -9,8 +9,6 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- * 
- * Created: May 10, 2007
  *
  * 2007 Dec 08: Created this file. - dj@opennms.org
  *

@@ -34,7 +34,7 @@
 //      http://www.opennms.com/
 //
 //
-// $Id$
+// $Id: InstallerWebappTest.java 6534 2007-06-24 02:29:33Z djgregor $
 //
 
 package org.opennms.install;
@@ -169,12 +169,12 @@ public class InstallerWebappTest extends TestCase {
     
     public void testServerVersion41() throws IOException {
         String readme = 
-            "$Id$\n"
+            "$Id: InstallerWebappTest.java 6534 2007-06-24 02:29:33Z djgregor $\n"
             + "\n"
             + "                   The Tomcat 4.1 Servlet/JSP Container\n"
             + "                   ====================================\n";
         String running =
-            "$Id$\n"
+            "$Id: InstallerWebappTest.java 6534 2007-06-24 02:29:33Z djgregor $\n"
             + "\n"
             + "\n"
             + "               Running The Tomcat 4.0 Servlet/JSP Container\n"
@@ -185,7 +185,7 @@ public class InstallerWebappTest extends TestCase {
     
     public void testServerVersion5() throws IOException {
         String running =
-            "$Id$\n"
+            "$Id: InstallerWebappTest.java 6534 2007-06-24 02:29:33Z djgregor $\n"
             + "\n"
             + "\n"
             + "                 Running The Tomcat 5 Servlet/JSP Container\n"
@@ -196,7 +196,7 @@ public class InstallerWebappTest extends TestCase {
     
     public void testServerVersion55() throws IOException {
         String running = 
-            "$Id$\n"
+            "$Id: InstallerWebappTest.java 6534 2007-06-24 02:29:33Z djgregor $\n"
             + "\n"
             + "                 ============================================\n"
             + "                 Running The Tomcat 5.5 Servlet/JSP Container\n"

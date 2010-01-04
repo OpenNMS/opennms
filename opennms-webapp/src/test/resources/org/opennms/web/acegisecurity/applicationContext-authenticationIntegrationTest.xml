@@ -4,6 +4,7 @@
 
  <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
   <property name="usersConfigurationFile" value="src/test/resources/org/opennms/web/acegisecurity/users.xml"/>
+  <property name="useGroups" value="false"/>
   <property name="magicUsersConfigurationFile" value="src/test/resources/org/opennms/web/acegisecurity/magic-users.properties"/>
  </bean>
 

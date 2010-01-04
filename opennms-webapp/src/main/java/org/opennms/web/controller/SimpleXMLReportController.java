@@ -52,7 +52,6 @@ public class SimpleXMLReportController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse res) throws Exception {
-        HttpServletRequest req = new XssRequestWrapper(request);
         String[] requiredParameters = new String[] { "format", "reportid" };
 
         for (String requiredParameter : requiredParameters) {

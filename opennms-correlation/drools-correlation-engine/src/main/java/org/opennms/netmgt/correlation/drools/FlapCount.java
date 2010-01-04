@@ -38,7 +38,6 @@ package org.opennms.netmgt.correlation.drools;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
-import java.util.Date;
 
 /**
  * 

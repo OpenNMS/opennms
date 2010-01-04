@@ -74,16 +74,6 @@ public class EventBuilder {
 	    setCreationTime(date);
 	}
 
-    public EventBuilder(Event event) {
-        this(event, new Date());
-    }
-
-    public EventBuilder(Event event, Date date) {
-    	m_event = event;
-	    setTime(date);
-	    setCreationTime(date);
-	}
-
 	public Event getEvent() {
         return m_event;
     }

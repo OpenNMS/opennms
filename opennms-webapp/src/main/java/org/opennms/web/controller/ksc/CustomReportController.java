@@ -66,7 +66,7 @@ public class CustomReportController extends AbstractController implements Initia
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // Get Form Variables
-        Report report = KscReportEditor.getFromSession(req.getSession(), true).getWorkingReport();
+        Report report = KscReportEditor.getFromSession(request.getSession(), true).getWorkingReport();
         if (report == null) {
             throw new IllegalStateException("There is no working report");
         }

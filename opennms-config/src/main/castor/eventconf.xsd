@@ -10,8 +10,7 @@
   <annotation>
     <documentation>XML Schema for the eventconf.xml configuration file. This
     schema is also used for files that are included in eventconf.xml by the
-    "event-file" element. Version: $Id: eventconf.xsd,v 1.9 2005/07/03
-    02:54:11 djgregor Exp $.</documentation>
+    "event-file" element. </documentation>
   </annotation>
 
   <element name="events">

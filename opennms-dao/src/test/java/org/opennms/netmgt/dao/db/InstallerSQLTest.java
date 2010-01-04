@@ -30,7 +30,7 @@
 //      http://www.opennms.com/
 //
 //
-//  $Id$
+//  $Id: InstallerSQLTest.java 5380 2007-01-05 15:36:05Z brozow $
 //
 
 package org.opennms.netmgt.dao.db;

@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
  * </P>
  * 
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
- * @version CVS $Id$
+ * @version CVS $Id: ExecRunner.java 9111 2008-05-12 15:28:54Z rangerrick $
  */
 public class ExecRunner {
 
@@ -95,7 +95,7 @@ public class ExecRunner {
     private static final String CLASS_NAME = "ExecRunner";
 
     /** The version of this class (filled in by CVS) * */
-    private static final String VERSION = "CVS $Revision$";
+    private static final String VERSION = "CVS $Revision: 9111 $";
 
     /** Number of miliseconds to wait between polling watched thread * */
     private static final int POLL_DELAY_MS = 100;

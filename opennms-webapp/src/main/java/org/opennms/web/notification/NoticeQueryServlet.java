@@ -48,7 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
 
 /**
  * A servlet that handles querying the notifications table and and then forwards
@@ -76,7 +75,6 @@ public class NoticeQueryServlet extends HttpServlet {
      * </p>
      */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpServletRequest req = new XssRequestWrapper(request);
         // handle the style sort parameter
         String sortStyleString = WebSecurityUtils.sanitizeString(request.getParameter("sortby"));
         NoticeFactory.SortStyle sortStyle = NoticeFactory.SortStyle.ID;
@@ -98,7 +96,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the filter parameters
-        String[] filterStrings = req.getParameterValues("filter");
+        String[] filterStrings = request.getParameterValues("filter");
         List<NoticeFactory.Filter> filterArray = new ArrayList<NoticeFactory.Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
@@ -110,7 +108,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the optional limit parameter
-        String limitString = req.getParameter("limit");
+        String limitString = request.getParameter("limit");
         int limit = DEFAULT_LIMIT;
         if (limitString != null) {
             try {
@@ -123,7 +121,7 @@ public class NoticeQueryServlet extends HttpServlet {
         }
 
         // handle the optional multiple parameter
-        String multipleString = req.getParameter("multiple");
+        String multipleString = request.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
         if (multipleString != null) {
             try {
@@ -151,7 +149,7 @@ public class NoticeQueryServlet extends HttpServlet {
 
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/notification/browser.jsp");
-            dispatcher.forward(req, response);
+            dispatcher.forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("", e);
         }
