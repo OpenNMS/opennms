@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.6.9-TESTING-SNAPSHOT</version>
+  <version>1.6.9-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -588,7 +588,7 @@
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
     <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password></install.database.admin.password>
+    <install.database.admin.password />
     <install.database.driver>org.postgresql.Driver</install.database.driver> 
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>

@@ -115,5 +115,4 @@ public class Outage {
         m_serviceName = svcName;
     }
     
-    
 }
