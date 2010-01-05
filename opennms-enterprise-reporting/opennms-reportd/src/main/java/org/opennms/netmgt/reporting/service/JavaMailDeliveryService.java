@@ -26,7 +26,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
                 helper.addTo(recipient);
             }
             
-            helper.setSubject("OpenNMS Report " + report.getReportName());
+            helper.setSubject("OpenNMS Report: " + report.getReportName());
             helper.setText("OpenNMS Report: ");
             
             helper.addAttachment(fileName, new File(fileName));
