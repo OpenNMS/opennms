@@ -3,6 +3,9 @@
 %{!?instprefix:%define instprefix /opt/opennms}
 %{!?jdk:%define jdk jdk >= 1:1.5}
 
+%{!?extrainfo:%define extrainfo %{nil}}
+%{!?extrainfo2:%define extrainfo2 %{nil}}
+
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
@@ -32,6 +35,9 @@ This package contains the CentricCRM trouble-ticketer plugin
 for OpenNMS.  For details, see the wiki page at:
 
 http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
+
+%{extrainfo}
+%{extrainfo2}
 
 %prep
 %setup -n centric-troubleticketer
