@@ -302,13 +302,6 @@
      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
      <load-on-startup>2</load-on-startup>
    </servlet>
-   
-   <!--  servlet that map requests get mapped to -->
-   <servlet>
-     <servlet-name>availabilityDispatcher</servlet-name>
-     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-     <load-on-startup>1</load-on-startup>
-   </servlet>
 
    <!-- Serves static resource content from .jar files such as spring-js.jar -->
    <servlet>
@@ -329,63 +322,6 @@
       <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
    </servlet>
 
-  <servlet>
-    <!-- This servlet creates availability reports. -->
-    <servlet-name>availabilityXml</servlet-name>
-    <servlet-class>org.opennms.web.availability.raw.RawAvailabilityServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- This servlet creates availability reports. -->
-    <servlet-name>availability</servlet-name>
-    <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
-    <init-param>
-      <param-name>report.logo</param-name>
-      <param-value>/images/logo.gif</param-value>
-    </init-param>
-    <init-param>
-      <param-name>xslt.filename</param-name>
-      <param-value>etc/AvailabilityReports.xsl</param-value>
-    </init-param>
-    <init-param>
-      <param-name>pdf.xslt.filename</param-name>
-      <param-value>etc/PDFAvailReport.xsl</param-value>
-    </init-param>
-    <init-param>
-      <param-name>svg.xslt.filename</param-name>
-      <param-value>etc/SVGAvailReport.xsl</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>reportgenerating.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL on failure.</description>
-      <param-name>redirect.failure</param-name>
-      <param-value>reportfailed.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
-      <param-name>redirect.noEmail</param-name>
-      <param-value>noemail.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Use this script to generate an Availability report on the command line.</description>
-      <param-name>script.generateReport</param-name>
-      <param-value>${opennms.bin.dir}/report.sh</param-value>
-    </init-param>
-    <init-param>
-      <description>Use this script to mail a file to a user from the command line.</description>
-      <param-name>script.mailReport</param-name>
-      <param-value>${opennms.bin.dir}/webreport.pl</param-value>
-    </init-param>
-    <init-param>
-      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
-      <param-name>script.useScript</param-name>
-      <param-value>false</param-value>
-    </init-param>
-  </servlet>
-  
   <!-- Servlet for modify Discovery configuration service -->
   <servlet>
     <servlet-name>actionDiscovery</servlet-name>
@@ -767,17 +703,10 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>availabilityXml</servlet-name>
-    <url-pattern>/availability/availabilityRaw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>availability</servlet-name>
-    <url-pattern>/availability/availability</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
@@ -1024,11 +953,6 @@
   <servlet-mapping>
     <servlet-name>mapDispatcher</servlet-name>
     <url-pattern>*.map</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>availabilityDispatcher</servlet-name>
-    <url-pattern>/report/availability/view/*</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

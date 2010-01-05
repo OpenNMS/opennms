@@ -4,12 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="availabilityReportScheduler"
-		class="org.opennms.report.availability.AvailabilityReportSchedulerService"
-		lazy-init="true">
-		<property name="availabilityReportLocatorDao" ref="availabilityReportLocatorDao" />
-	</bean>
-
 	<bean id="availabilityReportLocator"
 		class="org.opennms.report.availability.AvailabilityReportLocatorService"
 		lazy-init="true">
@@ -166,17 +160,6 @@
 		</property>
 	</bean>
 
-	<bean id="availabilityReportViewerService"
-		class="org.opennms.report.availability.AvailabilityReportViewerService"
-		lazy-init="true">
-		<property name="reportLocatorService">
-			<ref local="availabilityReportLocator" />
-		</property>
-		<property name="baseDir">
-			<value>${opennms.report.dir}/</value>
-		</property>
-	</bean>
-
 	<bean id="availabilityReportService"
 		class="org.opennms.report.availability.svclayer.DefaultAvailabilityReportService">
 		<property name="reportRunner" ref="availabilityReportRunner" />
@@ -196,11 +179,6 @@
 	
 	<bean id="legacyAvailabilityDataService" class="org.opennms.report.availability.svclayer.LegacyAvailabilityDataService" scope="prototype" />
 	
-	<!--
-    <bean id="availabilityData" 
-    	class="org.opennms.report.availability.AvailabilityData"
-    	lazy-init="true">
-    -->
     <bean id="availabilityData" 
     	class="org.opennms.report.availability.AvailabilityData"
     	scope="prototype">
