@@ -195,6 +195,7 @@ public class ReportScheduler implements InitializingBean {
     public void start() throws SchedulerException {
         getScheduler().start();
         buildReportSchedule();
+        printCurrentSchedule();
     }
     
 }
