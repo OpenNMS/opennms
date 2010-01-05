@@ -17,24 +17,22 @@ import org.opennms.netmgt.xml.event.Parm;
 
 @EventListener(name="Reportd:EventListener")
 public class Reportd implements SpringServiceDaemon {
-
+    
     public static final String NAME = "Reportd";
     
     private volatile EventForwarder m_eventForwarder;
     private ReportScheduler m_reportScheduler;
     private ReportService m_reportService;
     private ReportDeliveryService m_reportDeliveryService;
-   
-
     private ReportdConfigurationDao m_reportConfigurationDao;
     
     private String reportDirectory;
     private boolean reportPersist;
-    
+        
     public void start() throws Exception {
           reportDirectory = m_reportConfigurationDao.getStorageDirectory();
           reportPersist = m_reportConfigurationDao.getPersistFlag();
-           m_reportScheduler.start();
+          m_reportScheduler.start();
     }
     
     public void afterPropertiesSet() throws Exception {    
@@ -47,15 +45,18 @@ public class Reportd implements SpringServiceDaemon {
    
     
     public void runReport(String reportName){
-        LogUtils.infof(this, "Running report (%s).", reportName);
+        LogUtils.infof(this, "Running report by name: (%s).", reportName);
         runReport(m_reportConfigurationDao.getReport(reportName));
     }
       
     public void runReport(Report report) {
+            
         LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
         String fileName = m_reportService.runReport(report,reportDirectory);
+        LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
         m_reportDeliveryService.deliverReport(report, fileName);
         LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
+       
     }
  
     
