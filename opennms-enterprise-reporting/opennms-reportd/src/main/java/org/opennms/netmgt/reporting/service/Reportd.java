@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jdt.internal.core.Assert;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -50,13 +51,14 @@ public class Reportd implements SpringServiceDaemon {
     }
       
     public void runReport(Report report) {
-            
+        String originalName = ThreadCategory.getPrefix();
+        ThreadCategory.setPrefix(NAME);    
         LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
         String fileName = m_reportService.runReport(report,reportDirectory);
         LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
         m_reportDeliveryService.deliverReport(report, fileName);
         LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
-       
+        ThreadCategory.setPrefix(originalName);
     }
  
     
