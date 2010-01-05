@@ -241,37 +241,36 @@ public class Installer {
         
         // We can now use the opennms database
 
-        /* OLDINSTALL
-        if (m_fix_constraint) {
-            m_installerDb.fixConstraint(m_fix_constraint_name, m_fix_constraint_remove_rows);
-        }
+        // OLDINSTALL
+        // if (m_fix_constraint) {
+        //     m_installerDb.fixConstraint(m_fix_constraint_name, m_fix_constraint_remove_rows);
+        // }
 
-        if (m_update_database) {
-            m_installerDb.checkOldTables();
-            if (!m_skip_constraints) {
-                m_installerDb.checkConstraints();
-                m_installerDb.checkIndexUniqueness();
-            }
-            m_installerDb.createSequences();
+        // if (m_update_database) {
+        //     m_installerDb.checkOldTables();
+        //     if (!m_skip_constraints) {
+        //         m_installerDb.checkConstraints();
+        //         m_installerDb.checkIndexUniqueness();
+        //     }
+        //     m_installerDb.createSequences();
 
-            // should we be using createFunctions and createLanguages instead?
-            m_installerDb.updatePlPgsql();
+        //     // should we be using createFunctions and createLanguages instead?
+        //     m_installerDb.updatePlPgsql();
 
-            // should we be using createFunctions instead?
-            m_installerDb.addStoredProcedures();
+        //     // should we be using createFunctions instead?
+        //     m_installerDb.addStoredProcedures();
 
-            m_installerDb.addColumnReplacements();
-            m_installerDb.createTables();
-            m_installerDb.closeColumnReplacements();
+        //     m_installerDb.addColumnReplacements();
+        //     m_installerDb.createTables();
+        //     m_installerDb.closeColumnReplacements();
 
-            m_installerDb.fixData();
-        }
+        //     m_installerDb.fixData();
+        // }
 
-        if (m_do_inserts) {
-            m_installerDb.insertData();
-            handleConfigurationChanges();
-        }
-        */
+        // if (m_do_inserts) {
+        //     m_installerDb.insertData();
+        //     handleConfigurationChanges();
+        // }
 
         handleConfigurationChanges();
 
