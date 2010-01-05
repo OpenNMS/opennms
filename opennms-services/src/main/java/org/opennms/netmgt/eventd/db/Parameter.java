@@ -120,16 +120,22 @@ public final class Parameter {
                         Parm parm = new Parm();
                         parm.setParmName(paramEncoded[0]);
                         Value value = new Value();
-                        int startParamType = paramEncoded[1].lastIndexOf("\\(");
-                        value.setContent(paramEncoded[1].substring(0,startParamType));
-                        String paramType=paramEncoded[1].substring(startParamType+1);
-                        String[] typeAndEncode = paramType.split(Character.toString(Constants.DB_ATTRIB_DELIM));
-                        if (typeAndEncode != null && typeAndEncode.length == 2) {
-                                value.setType(typeAndEncode[0]);
-                                value.setEncoding(typeAndEncode[1].split("\\)")[0]);
-                        } else {
+                        int startParamType = paramEncoded[1].lastIndexOf("(");
+                        if (startParamType == -1 ) {
+                            value.setContent(paramEncoded[1]);
                             value.setType("string");
                             value.setEncoding("text");
+                        } else {
+                            value.setContent(paramEncoded[1].substring(0,startParamType));
+                            String paramType=paramEncoded[1].substring(startParamType+1);
+                            String[] typeAndEncode = paramType.split(Character.toString(Constants.DB_ATTRIB_DELIM));
+                            if (typeAndEncode != null && typeAndEncode.length == 2) {
+                                value.setType(typeAndEncode[0]);
+                                value.setEncoding(typeAndEncode[1].split("\\)")[0]);
+                            } else {
+                                value.setType("string");
+                                value.setEncoding("text");
+                            }
                         }
                         parm.setValue(value);
                         parms.addParm(parm);
