@@ -70,7 +70,7 @@ public class Reportd implements SpringServiceDaemon {
        for(Parm parm : parmCollection){
        
            if(EventConstants.PARM_REPORT_NAME.equals(parm.getParmName()))
-               reportName = parm.getValue().toString();
+               reportName = parm.getValue().getContent();
            
            else 
                LogUtils.infof(this,"Unknown Event Constant: %s",parm.getParmName());
