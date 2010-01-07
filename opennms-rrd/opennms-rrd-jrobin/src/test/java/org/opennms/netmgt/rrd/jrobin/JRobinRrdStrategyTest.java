@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -77,7 +79,7 @@ import org.springframework.util.StringUtils;
  */
 public class JRobinRrdStrategyTest {
     
-    private JRobinRrdStrategy m_strategy;
+    private RrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     
     @Before
@@ -229,13 +231,13 @@ public class JRobinRrdStrategyTest {
                 "COMMENT:foo2\\n"
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         
         int firstHeight = graph.getRrdGraphInfo().getHeight();
 
-        RrdGraphDef graphDef2 = m_strategy.createGraphDef(new File(""), command2);
+        RrdGraphDef graphDef2 = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command2);
         RrdGraph graph2 = new RrdGraph(graphDef2);
         assertNotNull("second graph object", graph2);
         
@@ -263,13 +265,13 @@ public class JRobinRrdStrategyTest {
                 "GPRINT:b:AVERAGE:\"%8.2lf\\n\""
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         
         int firstHeight = graph.getRrdGraphInfo().getHeight();
 
-        RrdGraphDef graphDef2 = m_strategy.createGraphDef(new File(""), command2);
+        RrdGraphDef graphDef2 = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command2);
         RrdGraph graph2 = new RrdGraph(graphDef2);
         assertNotNull("second graph object", graph2);
         
@@ -289,7 +291,7 @@ public class JRobinRrdStrategyTest {
                 "PRINT:something:AVERAGE:\"%le\""
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         

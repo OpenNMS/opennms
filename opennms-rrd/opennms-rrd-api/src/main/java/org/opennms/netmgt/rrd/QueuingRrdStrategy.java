@@ -116,7 +116,7 @@ import org.apache.log4j.Logger;
  * TODO: Provide an event that will write data for a particular file... Say
  * right before we try to graph it.
  */
-public class QueuingRrdStrategy implements RrdStrategy, Runnable {
+public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operation,String>, Runnable {
 
     RrdStrategy m_delegate;
 
@@ -716,7 +716,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#closeFile(java.lang.Object)
      */
-    public void closeFile(Object rrd) throws Exception {
+    public void closeFile(String rrd) throws Exception {
         // no need to do anything here
     }
 
@@ -725,11 +725,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#createDefinition(java.lang.String)
      */
-    public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws Exception {
+    public Operation createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws Exception {
         return createDefinition(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
     }
     
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public Operation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
@@ -741,11 +741,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#createFile(java.lang.Object)
      */
-    public void createFile(Object op) throws Exception {
+    public void createFile(Operation op) throws Exception {
         if (QUEUE_CREATES)
-            addOperation((Operation) op);
+            addOperation(op);
         else {
-            m_delegate.createFile(((Operation) op).getData());
+            m_delegate.createFile(op.getData());
         }
     }
 
@@ -772,7 +772,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#openFile(java.lang.String)
      */
-    public Object openFile(String fileName) throws Exception {
+    public String openFile(String fileName) throws Exception {
         return fileName;
     }
 
@@ -781,7 +781,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#updateFile(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public void updateFile(Object rrdFile, String owner, String data) throws Exception {
+    public void updateFile(String rrdFile, String owner, String data) throws Exception {
         addOperation(makeUpdateOperation((String) rrdFile, owner, data));
     }
 

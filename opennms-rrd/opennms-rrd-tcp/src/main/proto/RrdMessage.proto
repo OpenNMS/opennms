@@ -1,0 +1,12 @@
+option java_package = "org.opennms.netmgt.rrd.tcp";
+option java_outer_classname = "RrdMessageProtos";
+
+message RrdMessage {
+  required string path = 1;
+  required string owner = 2;
+  required string data = 3;
+}
+
+message RrdMessages {
+  repeated RrdMessage message = 1;
+}
