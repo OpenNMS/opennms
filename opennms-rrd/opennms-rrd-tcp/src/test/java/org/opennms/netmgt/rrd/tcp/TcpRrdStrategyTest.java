@@ -46,15 +46,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
@@ -75,6 +82,40 @@ public class TcpRrdStrategyTest {
 
     private RrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
+    private static Thread m_listenerThread;
+
+    @BeforeClass
+    public static void startListenerThread() throws Exception {
+        m_listenerThread = new Thread() {
+            public void run() {
+                this.setName("fail");
+                try {
+                    ServerSocket ssocket = new ServerSocket(8999);
+                    ssocket.setSoTimeout(500);
+                    while (true) {
+                        try {
+                            Socket socket = ssocket.accept();
+                            RrdMessageProtos.RrdMessages messages = RrdMessageProtos.RrdMessages.parseFrom(socket.getInputStream());
+                            for (RrdMessageProtos.RrdMessage message : messages.getMessageList()) {
+                                System.out.println("Message received: { path: \"" + message.getPath() + "\", owner: \"" + message.getOwner() + "\", data: \"" + message.getData() + "\" }");
+                            }
+                        } catch (SocketTimeoutException e) {
+                            if (this.isInterrupted()) {
+                                this.setName("notfailed");
+                                return;
+                            }
+                        } catch (IOException e) {
+                            ThreadCategory.getInstance(this.getClass()).error(e.getMessage(), e);
+                        }
+                    }
+                } catch (IOException e) {
+                    ThreadCategory.getInstance(this.getClass()).error(e.getMessage(), e);
+                }
+            }
+        };
+
+        m_listenerThread.start();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -98,6 +139,13 @@ public class TcpRrdStrategyTest {
     }
      */
 
+    @AfterClass
+    public static void stopListenerThread() throws Exception {
+        m_listenerThread.interrupt();
+        m_listenerThread.join();
+        assertFalse("Listener thread encountered errors", "fail".equals(m_listenerThread.getName()));
+    }
+
     @Test
     public void testInitialize() {
         // Don't do anything... just check that setUp works 
@@ -119,6 +167,9 @@ public class TcpRrdStrategyTest {
 
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
+        m_strategy.updateFile(openedFile, "oh", "N:1.234234");
+        m_strategy.updateFile(openedFile, "ok", "N:1.234234");
+        m_strategy.updateFile(openedFile, "lol", "N:1.234234");
         m_strategy.closeFile(openedFile);
     }
 

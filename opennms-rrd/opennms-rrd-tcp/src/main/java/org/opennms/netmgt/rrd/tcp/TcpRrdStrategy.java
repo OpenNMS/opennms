@@ -143,7 +143,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     /**
      * TODO: Fetch this value from configuration file
      */
-    private static final int TCP_PORT = 80;
+    private static final int TCP_PORT = 8999;
 
     public void initialize() throws Exception {
         // Do nothing
