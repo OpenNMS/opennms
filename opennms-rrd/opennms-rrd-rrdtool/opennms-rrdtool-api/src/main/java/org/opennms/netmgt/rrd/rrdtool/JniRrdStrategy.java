@@ -84,8 +84,9 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      */
     public void closeFile(StringBuffer rrd) throws Exception {
         checkState("closeFile");
-        log().debug("Executing: rrdtool "+rrd.toString());
-        String[] results = Interface.launch(rrd.toString());
+        String command = rrd.toString();
+        log().debug("Executing: rrdtool "+command);
+        String[] results = Interface.launch(command);
         if (results[0] != null) {
             throw new Exception(results[0]);
         }
@@ -175,9 +176,8 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      */
     public void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
         checkState("updateFile");
-        StringBuffer cmd = rrd;
-        cmd.append(' ');
-        cmd.append(data);
+        rrd.append(' ');
+        rrd.append(data);
     }
 
     /**
