@@ -2,7 +2,7 @@ package org.opennms.netmgt.reporting.service;
 
 import java.util.List;
 
-import org.eclipse.jdt.internal.core.Assert;
+import org.springframework.util.Assert;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -35,13 +35,13 @@ public class Reportd implements SpringServiceDaemon {
           reportPersist = m_reportConfigurationDao.getPersistFlag();
           m_reportScheduler.start();
     }
-
-    public void afterPropertiesSet() throws Exception {
-        Assert.isNotNull(m_eventForwarder, "No Event Forwarder Set");
-        Assert.isNotNull(m_reportScheduler, "No Report Scheduler Set");
-        Assert.isNotNull(m_reportService,"No Report service set");
-        Assert.isNotNull(m_reportDeliveryService,"No Delivery service set");
-        Assert.isNotNull(m_reportConfigurationDao,"NoConfiguration DAO Defined");
+    
+    public void afterPropertiesSet() throws Exception {    
+        Assert.notNull(m_eventForwarder, "No Event Forwarder Set");
+        Assert.notNull(m_reportScheduler, "No Report Scheduler Set");
+        Assert.notNull(m_reportService,"No Report service set");
+        Assert.notNull(m_reportDeliveryService,"No Delivery service set");
+        Assert.notNull(m_reportConfigurationDao,"NoConfiguration DAO Defined");
     }
    
     
