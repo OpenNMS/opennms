@@ -103,7 +103,7 @@ public class JRobinRrdStrategyTest {
     }
 
     @Test
-    public void testInitilize() {
+    public void testInitialize() {
        // Don't do anything... just check that setUp works 
     }
     

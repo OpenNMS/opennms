@@ -72,15 +72,15 @@ import org.springframework.util.StringUtils;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class TcpRrdStrategyTest {
-    
+
     private RrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
-    
+
     @Before
     public void setUp() throws Exception {
-        
+
         MockLogAppender.setupLogging();
-        
+
         m_strategy = new TcpRrdStrategy();
         m_strategy.initialize();
 
@@ -96,27 +96,27 @@ public class TcpRrdStrategyTest {
         }
         m_fileAnticipator.tearDown();
     }
-    */
+     */
 
     @Test
-    public void testInitilize() {
-       // Don't do anything... just check that setUp works 
+    public void testInitialize() {
+        // Don't do anything... just check that setUp works 
     }
-    
+
     @Test
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
-        
+
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         //m_strategy.updateFile(openedFile, "huh?", "N:1,234234");
-        
+
         m_strategy.closeFile(openedFile);
     }
 
     @Test
     public void testUpdate() throws Exception {
         File rrdFile = createRrdFile();
-        
+
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
         m_strategy.closeFile(openedFile);
@@ -127,19 +127,19 @@ public class TcpRrdStrategyTest {
         String rrdExtension = ".jrb";
 
         m_fileAnticipator.initialize();
-        
+
         // This is so the RrdUtils.getExtension() call in the strategy works
         Properties properties = new Properties();
         properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
         RrdConfig.setProperties(properties);
-        
+
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         Object def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
         m_strategy.createFile(def);
-        
+
         return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);
     }
 }
