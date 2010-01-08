@@ -57,25 +57,26 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.tcp.RrdMessageProtos.RrdMessage;
 
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
  * out in a simple serialized format.
  */
 public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocket> {
-    public static class RrdException extends Exception {}
     public static class RrdDefinition {
         private final String m_creator, m_directory, m_rrdName;
         private final int m_step;
 
         public RrdDefinition(
-            String creator,
-            String directory,
-            String rrdName,
-            int step
+                String creator,
+                String directory,
+                String rrdName,
+                int step
         ) {
             m_creator = creator;
             m_directory = directory;
@@ -87,114 +88,130 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
             return m_directory + File.separator + m_rrdName;
         };
     }
-    
-    public static class RrdOutputSocket {
-        private final Socket m_socket;
-        private final RrdDefinition m_def;
 
+    public static class RrdOutputSocket {
+        // private final RrdDefinition m_def;
+        private final String m_filename;
+        private final RrdMessageProtos.RrdMessages.Builder m_messages; 
+
+        /*
         public RrdOutputSocket(RrdDefinition def) throws Exception {
             m_socket = new Socket(InetAddress.getByName("127.0.0.1"), TCP_PORT);
             m_def = def;
         }
+         */
+
+        public RrdOutputSocket(String filename) throws Exception {
+            m_filename = filename;
+            m_messages = RrdMessageProtos.RrdMessages.newBuilder();
+        }
 
         public String getPath() {
-            return m_def.getPath();
+            return m_filename; // m_def.getPath();
         };
-        
-        public OutputStream getOutputStream() throws Exception {
-            return m_socket.getOutputStream();
+
+        public void addData(String owner, String data) {
+            m_messages.addMessage(RrdMessage.newBuilder()
+                    .setPath(m_filename)
+                    .setOwner(owner)
+                    .setData(data)
+            );
+        }
+
+        public void writeData() throws Exception {
+            Socket socket = null;
+            try {
+                socket = new Socket(InetAddress.getByName(HOST_ADDRESS), TCP_PORT);
+                OutputStream out = socket.getOutputStream();
+                m_messages.build().writeTo(out);
+                out.flush();
+            } catch (Throwable e) {
+                System.out.println(e.getMessage());
+            } finally {
+                if (socket != null) {
+                    socket.close();
+                }
+            }
         };
     }
-    
+
+    /**
+     * TODO: Fetch this value from configuration file
+     */
+    private static final String HOST_ADDRESS = "127.0.0.1";
+
+    /**
+     * TODO: Fetch this value from configuration file
+     */
     private static final int TCP_PORT = 80;
-    
+
     public void initialize() throws Exception {
         // Do nothing
     }
-    
+
     public void graphicsInitialize() throws Exception {
         // Do nothing
     }
-    
+
     public String getDefaultFileExtension() {
         return "";
     }
-    
+
     public RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         return new RrdDefinition(creator, directory, rrdName, step);
     }
-    
+
     public void createFile(RrdDefinition rrdDef) throws Exception {
     }
-    
+
     public RrdOutputSocket openFile(String fileName) throws Exception {
-        return null;
+        return new RrdOutputSocket(fileName);
     }
-    
+
     public void updateFile(RrdOutputSocket rrd, String owner, String data) throws Exception {
-        Socket s = null;
-        String statusResponse = null;
-        OutputStream out = null;
-        try {
-            RrdOutputSocket output = ((RrdOutputSocket)rrd);
-            RrdMessageProtos.RrdMessage.Builder record = RrdMessageProtos.RrdMessage.newBuilder();
-            record.setPath(output.getPath());
-            record.setOwner(owner);
-            record.setData(data);
-            
-            RrdMessageProtos.RrdMessages.Builder records = RrdMessageProtos.RrdMessages.newBuilder();
-            records.addMessage(record.build());
-            
-            out = output.getOutputStream();
-            records.build().writeTo(out);
-            out.flush();
-        } catch (Throwable e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
+        rrd.addData(owner, data);
     }
-    
-    public void closeFile(RrdOutputSocket rrd) throws Exception {}
-    
+
+    public void closeFile(RrdOutputSocket rrd) throws Exception {
+        rrd.writeData();
+    }
+
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {
         return Double.NaN;
     }
-    
+
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException {
         return Double.NaN;
     }
-    
+
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException {
         return Double.NaN;
     }
-    
+
     public InputStream createGraph(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public int getGraphLeftOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public int getGraphRightOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public int getGraphTopOffsetWithText() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public String getStats() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
-    
+
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // Do nothing; this implementation simply sends data to an external source and has not control
         // over when data is persisted to disk.
