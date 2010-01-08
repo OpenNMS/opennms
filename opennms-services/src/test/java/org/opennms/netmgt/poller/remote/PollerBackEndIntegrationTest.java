@@ -69,7 +69,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
                 "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml",
                 "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
         };
     }
