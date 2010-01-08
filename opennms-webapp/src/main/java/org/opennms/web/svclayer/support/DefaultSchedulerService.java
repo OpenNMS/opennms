@@ -48,6 +48,8 @@ import org.opennms.api.integration.reporting.DeliveryOptions;
 import org.opennms.api.integration.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.reporting.core.svclayer.ReportServiceLocator;
+import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.web.report.database.model.DatabaseReportCriteria;
 import org.opennms.web.svclayer.SchedulerService;
 import org.quartz.CronTrigger;
@@ -58,24 +60,22 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.webflow.execution.RequestContext;
 
-public class DefaultSchedulerService implements ApplicationContextAware,
-        InitializingBean, SchedulerService {
+public class DefaultSchedulerService implements InitializingBean, SchedulerService {
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
     private static final String PARAMETER_ERROR = "Report parameters did not match the definition for the report please contact your OpenNMS administrator";
     private static final String SCHEDULER_ERROR = "An exception occurred when scheduling the report";
     private static final String TRIGGER_PARSE_ERROR = "An error occurred parsing the cron expression. It was not possible to schedule the report";
-
+    private static final String REPORTID_ERROR = "An error occurred locating the report service bean";
+    
     private Scheduler m_scheduler;
     private JobDetail m_jobDetail;
     private DatabaseReportConfigDao m_configDao;
-    private ApplicationContext m_applicationContext;
     private String m_triggerGroup;
+    private ReportServiceLocator m_reportServiceLocator;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -164,50 +164,62 @@ public class DefaultSchedulerService implements ApplicationContextAware,
 
         CronTrigger cronTrigger = null;
 
-        String reportBean = m_configDao.getReportService(criteria.getReportId());
-        ReportService reportService = (ReportService) m_applicationContext.getBean(reportBean);
+        String reportServiceName = m_configDao.getReportService(criteria.getReportId());
+        
+        try {
+            
+            ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
+            
+            if (reportService.validate(criteria.getReportParms(),
+                                       criteria.getReportId()) == false) {
+                log().error(PARAMETER_ERROR);
+                context.getMessageContext().addMessage(
+                                                       new MessageBuilder().error().defaultText(
+                                                                                                PARAMETER_ERROR).build());
+                return ERROR;
+            } else {
+                try {
+                    cronTrigger = new CronTrigger();
+                    cronTrigger.setGroup(m_triggerGroup);
+                    cronTrigger.setName(triggerName);
+                    cronTrigger.setJobName(m_jobDetail.getName());
+                    cronTrigger.setCronExpression(cronExpression);
+                    // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
+                    // cronExpression);
+                } catch (ParseException e) {
+                    log().error(TRIGGER_PARSE_ERROR, e);
+                    context.getMessageContext().addMessage(
+                                                           new MessageBuilder().error().defaultText(
+                                                                                                    TRIGGER_PARSE_ERROR).build());
+                    return ERROR;
+                }
 
-        if (reportService.validate(criteria.getReportParms(),
-                                   criteria.getReportId()) == false) {
-            log().error(PARAMETER_ERROR);
+                cronTrigger.setJobName(m_jobDetail.getName());
+                cronTrigger.getJobDataMap().put("criteria", criteria);
+                cronTrigger.getJobDataMap().put("deliveryOptions",
+                                                deliveryOptions);
+                cronTrigger.getJobDataMap().put("reportServiceName", reportServiceName);
+                try {
+                    m_scheduler.scheduleJob(cronTrigger);
+                } catch (SchedulerException e) {
+                    log().error(SCHEDULER_ERROR, e);
+                    context.getMessageContext().addMessage(
+                                                           new MessageBuilder().error().defaultText(
+                                                                                                    SCHEDULER_ERROR).build());
+                    return ERROR;
+                }
+
+                return SUCCESS;
+            }
+        } catch (ReportServiceLocatorException e) {
+            log().error(REPORTID_ERROR);
             context.getMessageContext().addMessage(
                                                    new MessageBuilder().error().defaultText(
-                                                                                            PARAMETER_ERROR).build());
+                                                                                            REPORTID_ERROR).build());
             return ERROR;
-        } else {
-            try {
-                cronTrigger = new CronTrigger();
-                cronTrigger.setGroup(m_triggerGroup);
-                cronTrigger.setName(triggerName);
-                cronTrigger.setJobName(m_jobDetail.getName());
-                cronTrigger.setCronExpression(cronExpression);
-                // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
-                // cronExpression);
-            } catch (ParseException e) {
-                log().error(TRIGGER_PARSE_ERROR, e);
-                context.getMessageContext().addMessage(
-                                                       new MessageBuilder().error().defaultText(
-                                                                                                TRIGGER_PARSE_ERROR).build());
-                return ERROR;
-            }
-
-            cronTrigger.setJobName(m_jobDetail.getName());
-            cronTrigger.getJobDataMap().put("criteria", criteria);
-            cronTrigger.getJobDataMap().put("deliveryOptions",
-                                            deliveryOptions);
-            cronTrigger.getJobDataMap().put("reportServiceName", reportBean);
-            try {
-                m_scheduler.scheduleJob(cronTrigger);
-            } catch (SchedulerException e) {
-                log().error(SCHEDULER_ERROR, e);
-                context.getMessageContext().addMessage(
-                                                       new MessageBuilder().error().defaultText(
-                                                                                                SCHEDULER_ERROR).build());
-                return ERROR;
-            }
-
-            return SUCCESS;
         }
+
+        
     }
 
     /*
@@ -220,35 +232,45 @@ public class DefaultSchedulerService implements ApplicationContextAware,
     public String execute(DatabaseReportCriteria criteria,
             DeliveryOptions deliveryOptions, RequestContext context) {
 
-        String reportBean = m_configDao.getReportService(criteria.getReportId());
-        ReportService reportService = (ReportService) m_applicationContext.getBean(reportBean);
-
-        if (reportService.validate(criteria.getReportParms(),
-                                   criteria.getReportId()) == false) {
-            context.getMessageContext().addMessage(
-                                                   new MessageBuilder().error().defaultText(
-                                                                                            PARAMETER_ERROR).build());
-            return ERROR;
-        } else {
-            SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
-                                                      m_triggerGroup,
-                                                      new Date(), null, 0, 0L);
-            trigger.setJobName(m_jobDetail.getName());
-            trigger.getJobDataMap().put("criteria", criteria);
-            trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
-            trigger.getJobDataMap().put("reportServiceName", reportBean);
-            try {
-                m_scheduler.scheduleJob(trigger);
-            } catch (SchedulerException e) {
-                e.printStackTrace();
+        String reportServiceName = m_configDao.getReportService(criteria.getReportId());
+        ReportService reportService;
+        try {
+            reportService = m_reportServiceLocator.getReportService(reportServiceName);
+            if (reportService.validate(criteria.getReportParms(),
+                                       criteria.getReportId()) == false) {
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
-                                                                                                SCHEDULER_ERROR).build());
+                                                                                                PARAMETER_ERROR).build());
                 return ERROR;
-            }
+            } else {
+                SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
+                                                          m_triggerGroup,
+                                                          new Date(), null, 0, 0L);
+                trigger.setJobName(m_jobDetail.getName());
+                trigger.getJobDataMap().put("criteria", criteria);
+                trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
+                trigger.getJobDataMap().put("reportServiceName", reportServiceName);
+                try {
+                    m_scheduler.scheduleJob(trigger);
+                } catch (SchedulerException e) {
+                    e.printStackTrace();
+                    context.getMessageContext().addMessage(
+                                                           new MessageBuilder().error().defaultText(
+                                                                                                    SCHEDULER_ERROR).build());
+                    return ERROR;
+                }
 
-            return SUCCESS;
+                return SUCCESS;
+            }
+        } catch (ReportServiceLocatorException e) {
+            log().error(REPORTID_ERROR);
+            context.getMessageContext().addMessage(
+                                                   new MessageBuilder().error().defaultText(
+                                                                                            REPORTID_ERROR).build());
+            return ERROR;
         }
+
+
     }
 
     private Category log() {
@@ -257,10 +279,6 @@ public class DefaultSchedulerService implements ApplicationContextAware,
 
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
-    }
-
-    public void setApplicationContext(ApplicationContext context) {
-        m_applicationContext = context;
     }
 
     public void setJobDetail(JobDetail reportJob) {
@@ -274,5 +292,10 @@ public class DefaultSchedulerService implements ApplicationContextAware,
     public void setTriggerGroup(String triggerGroup) {
         m_triggerGroup = triggerGroup;
     }
+
+    public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
+        m_reportServiceLocator = reportServiceLocator;
+    }
+
 
 }

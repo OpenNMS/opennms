@@ -11,5 +11,6 @@
   <name>OpenNMS Reporting</name>
   <modules>
     <module>api</module>
+    <module>core</module>
   </modules>
 </project>

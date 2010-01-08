@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>org.opennms.features.reporting</artifactId>
+    <version>1.7.9-TESTING-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.reporting</groupId>
+  <artifactId>org.opennms.features.reporting.core</artifactId>
+  <name>OpenNMS Reporting Core</name>
+  <url>http://www.opennms.org/</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.api</artifactId>
+    </dependency>
+  </dependencies>
+</project>
+

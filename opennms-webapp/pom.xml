@@ -396,6 +396,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.api</artifactId>
     </dependency>
     <dependency>

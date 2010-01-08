@@ -73,7 +73,7 @@ import org.springframework.webflow.test.MockRequestContext;
 })
 
 /**
- * OnmsBatchReportService unit tests
+ * Unit tests for DefaultSchedulerService
  * 
  * @author <a href="mailto:jonathand@opennms.org">Jonathan Sartin</a>
  */

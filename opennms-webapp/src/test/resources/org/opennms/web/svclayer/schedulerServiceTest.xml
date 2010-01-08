@@ -14,6 +14,9 @@
 		<ref local="mockConfigDao" />
 	</property>
 	<property name="triggerGroup" value="reporting" />
+	<property name="reportServiceLocator">
+		 <ref local="reportServiceLocator"/>
+	</property>
   </bean>
   
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -37,5 +40,7 @@
   <bean id="mockConfigDao" class="org.easymock.EasyMock" factory-method="createStrictMock">
 	<constructor-arg value="org.opennms.netmgt.dao.DatabaseReportConfigDao"/>
   </bean>
+  
+  <bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator" />
   
 </beans>

@@ -41,16 +41,50 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This interface provides an API for implementing additional database reports 
+ * inside the opennms webapp
+ * 
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ *
+ */
 public interface ReportService {
 
+    /**
+     * This method validates that the map of report parameters matches the report
+     * parameters accepted by the report. Used by the web interface.
+     * 
+     * @param reportParms hashmap of parameters to be provided at runtime
+     * @param reportID reportID as defined in database-reports.xml
+     * @return true if the reportParms supplied match those in the report definition.
+     */
     public abstract boolean validate(HashMap<String, Object> reportParms,
             String reportID);
     
+    /**
+     * This method runs the report
+     * 
+     * @param reportParms hashmap of parameters to be provided at runtime
+     * @param options delivery options for the report
+     * @param reportID reportID as defined in database-reports.xml
+     */
     public abstract void run(HashMap<String, Object> reportParms, DeliveryOptions options,
             String reportID);
     
+    /**
+     * 
+     * @param userId
+     * @param reportId
+     * @return
+     */
     public abstract DeliveryOptions getDeliveryOptions(String userId, String reportId);
     
+    /**
+     * This method provides a list of formats supported by the report
+     * 
+     * @param reportId reportID as defined in database-reports.xml
+     * @return a list of supported formats
+     */
     public abstract List<String> getAvailableFormats(String reportId);
 
 }
