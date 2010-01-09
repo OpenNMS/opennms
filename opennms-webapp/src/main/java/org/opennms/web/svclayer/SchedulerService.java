@@ -3,7 +3,7 @@ package org.opennms.web.svclayer;
 import java.util.List;
 
 import org.opennms.api.integration.reporting.DeliveryOptions;
-import org.opennms.web.report.database.model.DatabaseReportCriteria;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
 import org.opennms.web.svclayer.support.TriggerDescription;
 import org.springframework.webflow.execution.RequestContext;
 

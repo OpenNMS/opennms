@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.report.database.model;
+package org.opennms.reporting.core.model;
 
 import java.io.Serializable;
 

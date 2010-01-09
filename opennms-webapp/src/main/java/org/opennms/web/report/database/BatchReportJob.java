@@ -38,7 +38,8 @@ package org.opennms.web.report.database;
 
 import org.opennms.api.integration.reporting.DeliveryOptions;
 import org.opennms.api.integration.reporting.ReportService;
-import org.opennms.web.report.database.model.DatabaseReportCriteria;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -57,8 +58,14 @@ public class BatchReportJob extends QuartzJobBean {
         DatabaseReportCriteria criteria = (DatabaseReportCriteria) dataMap.get("criteria");
         DeliveryOptions deliveryOptions = (DeliveryOptions) dataMap.get("deliveryOptions");
         
-        ReportService reportService = 
-            (ReportService)m_context.getBean((String)dataMap.get("reportServiceName"));
+        // TODO this needs the reportServiceName in the criteria 
+        ReportServiceLocator reportServiceLocator =
+            (ReportServiceLocator)m_context.getBean("reportServiceLocator");
+        
+        ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
+        
+       // ReportService reportService = 
+       //     (ReportService)m_context.getBean((String)dataMap.get("reportServiceName"));
         
         reportService.run(criteria.getReportParms(), deliveryOptions, criteria.getReportId());
         

@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.report.database.model;
+package org.opennms.reporting.core.model;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -50,11 +50,9 @@ public class DatabaseReportCriteria implements Serializable {
     protected List <DatabaseReportDateParm> m_dateParms;
     protected List <DatabaseReportStringParm> m_stringParms;
     protected List <DatabaseReportIntParm> m_intParms;
-    private HashMap <String,Object> m_reportParms;
 
     public DatabaseReportCriteria() {
         super();
-        m_reportParms = new HashMap<String, Object>();
     }
 
     public List<DatabaseReportDateParm> getDateParms() {
@@ -96,7 +94,7 @@ public class DatabaseReportCriteria implements Serializable {
     public String getDisplayName() {
         return m_displayName;
     }
-    
+
     public HashMap<String, Object> getReportParms() {
         
         HashMap <String,Object>parmMap = new HashMap<String, Object>();

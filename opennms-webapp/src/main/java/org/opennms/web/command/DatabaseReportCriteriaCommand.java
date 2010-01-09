@@ -37,10 +37,10 @@ package org.opennms.web.command;
 
 import java.util.Iterator;
 
-import org.opennms.web.report.database.model.DatabaseReportCriteria;
-import org.opennms.web.report.database.model.DatabaseReportDateParm;
-import org.opennms.web.report.database.model.DatabaseReportIntParm;
-import org.opennms.web.report.database.model.DatabaseReportStringParm;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.reporting.core.model.DatabaseReportDateParm;
+import org.opennms.reporting.core.model.DatabaseReportIntParm;
+import org.opennms.reporting.core.model.DatabaseReportStringParm;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;

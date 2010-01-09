@@ -42,10 +42,10 @@ import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.reporting.core.model.DatabaseReportDateParm;
+import org.opennms.reporting.core.model.DatabaseReportIntParm;
+import org.opennms.reporting.core.model.DatabaseReportStringParm;
 import org.opennms.web.command.DatabaseReportCriteriaCommand;
-import org.opennms.web.report.database.model.DatabaseReportDateParm;
-import org.opennms.web.report.database.model.DatabaseReportIntParm;
-import org.opennms.web.report.database.model.DatabaseReportStringParm;
 import org.opennms.web.svclayer.DatabaseReportCriteriaService;
 
 public class DefaultDatabaseReportCriteriaService implements

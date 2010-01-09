@@ -33,35 +33,53 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.report.database.model;
+package org.opennms.reporting.core.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
-public class DatabaseReportStringParm extends DatabaseReportParm implements Serializable {
+public class DatabaseReportDateParm extends DatabaseReportParm implements Serializable {
+
+    private static final long serialVersionUID = -8528562178984136887L;
     
+    Date m_date;
+    Boolean m_useAbsoluteDate;
+    String m_interval;
+    Integer m_count;
     
-    private static final long serialVersionUID = -2057597127243217834L;
-    
-    String m_value;
-    String m_type;
-    
-    public DatabaseReportStringParm() {
-      super();
+    public DatabaseReportDateParm() {
+        super();
     }
     
-    public String getValue() {
-        return m_value;
+    public Boolean getUseAbsoluteDate() {
+        return m_useAbsoluteDate;
     }
-    
-    public void setValue(String value) {
-        m_value = value;
+
+    public void setUseAbsoluteDate(Boolean useAbsoluteDate) {
+        m_useAbsoluteDate = useAbsoluteDate;
     }
-    
-    public String getInputType() {
-        return m_type;
+
+    public String getInterval() {
+        return m_interval;
     }
-    public void setInputType(String type) {
-        m_type = type;
+
+    public void setInterval(String interval) {
+        m_interval = interval;
     }
+
+    public Integer getCount() {
+        return m_count;
+    }
+
+    public void setCount(Integer count) {
+        m_count = count;
+    }
+
+    public Date getValue() {
+        return m_date;
+    }
+    public void setValue(Date date) {
+        m_date = date;
+    } 
 
 }
