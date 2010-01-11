@@ -4,7 +4,8 @@ option java_outer_classname = "RrdMessageProtos";
 message RrdMessage {
   required string path = 1;
   required string owner = 2;
-  required string data = 3;
+  required uint64 timestamp = 3;
+  repeated double value = 4;
 }
 
 message RrdMessages {

@@ -43,11 +43,13 @@ package org.opennms.netmgt.rrd.tcp;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,10 +113,13 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         };
 
         public void addData(String owner, String data) {
+            Long timestamp = parseRrdTimestamp(data);
+            List<Double> values = parseRrdValues(data);
             m_messages.addMessage(RrdMessage.newBuilder()
                     .setPath(m_filename)
                     .setOwner(owner)
-                    .setData(data)
+                    .setTimestamp(timestamp).
+                    addAllValue(values)
             );
         }
 
@@ -124,6 +129,8 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
                 socket = new Socket(InetAddress.getByName(HOST_ADDRESS), TCP_PORT);
                 OutputStream out = socket.getOutputStream();
                 m_messages.build().writeTo(out);
+                // out = new FileOutputStream(new File("/tmp/testdata.protobuf"));
+                // m_messages.build().writeTo(out);
                 out.flush();
             } catch (Throwable e) {
                 System.out.println(e.getMessage());
@@ -133,6 +140,31 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
                 }
             }
         };
+
+        private Long parseRrdTimestamp(String data) {
+            if (data.startsWith("N:")) {
+                return System.currentTimeMillis();
+            } else {
+                String timestamp = data.split(":")[0];
+                // RRD timestamps are in seconds, we want to return milliseconds
+                return Long.valueOf(timestamp) * 1000;
+            }
+        }
+
+        private List<Double> parseRrdValues(String data) {
+            List<Double> retval = new ArrayList<Double>();
+            String[] values = data.split(":");
+            // Skip index zero, that's the timestamp
+            for (int i = 1; i < values.length; i++) {
+                // Parse the RRD value for "unknown"
+                if ("U".equals(values[i])) {
+                    retval.add(Double.NaN);
+                } else {
+                    retval.add(new Double(values[i]));
+                }
+            }
+            return retval;
+        }
     }
 
     /**

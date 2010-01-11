@@ -97,7 +97,18 @@ public class TcpRrdStrategyTest {
                             Socket socket = ssocket.accept();
                             RrdMessageProtos.RrdMessages messages = RrdMessageProtos.RrdMessages.parseFrom(socket.getInputStream());
                             for (RrdMessageProtos.RrdMessage message : messages.getMessageList()) {
-                                System.out.println("Message received: { path: \"" + message.getPath() + "\", owner: \"" + message.getOwner() + "\", data: \"" + message.getData() + "\" }");
+                                StringBuffer values = new StringBuffer();
+                                values.append("{ ");
+                                for (int i = 0; i < message.getValueCount(); i++) {
+                                    if (i != 0) { values.append(", "); }
+                                    values.append(message.getValue(i));
+                                }
+                                values.append(" }");
+                                System.out.println("Message received: { " + 
+                                        "path: \"" + message.getPath() + "\", " + 
+                                        "owner: \"" + message.getOwner() + "\", " + 
+                                        "timestamp: \"" + message.getTimestamp() + "\", " + 
+                                        "values: " + values.toString() + " }");
                             }
                         } catch (SocketTimeoutException e) {
                             if (this.isInterrupted()) {

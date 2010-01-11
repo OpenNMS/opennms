@@ -45,17 +45,29 @@ public final class RrdMessageProtos {
     public boolean hasOwner() { return hasOwner; }
     public java.lang.String getOwner() { return owner_; }
     
-    // required string data = 3;
-    public static final int DATA_FIELD_NUMBER = 3;
-    private boolean hasData;
-    private java.lang.String data_ = "";
-    public boolean hasData() { return hasData; }
-    public java.lang.String getData() { return data_; }
+    // required uint64 timestamp = 3;
+    public static final int TIMESTAMP_FIELD_NUMBER = 3;
+    private boolean hasTimestamp;
+    private long timestamp_ = 0L;
+    public boolean hasTimestamp() { return hasTimestamp; }
+    public long getTimestamp() { return timestamp_; }
+    
+    // repeated double value = 4;
+    public static final int VALUE_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Double> value_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.Double> getValueList() {
+      return value_;
+    }
+    public int getValueCount() { return value_.size(); }
+    public double getValue(int index) {
+      return value_.get(index);
+    }
     
     public final boolean isInitialized() {
       if (!hasPath) return false;
       if (!hasOwner) return false;
-      if (!hasData) return false;
+      if (!hasTimestamp) return false;
       return true;
     }
     
@@ -67,8 +79,11 @@ public final class RrdMessageProtos {
       if (hasOwner()) {
         output.writeString(2, getOwner());
       }
-      if (hasData()) {
-        output.writeString(3, getData());
+      if (hasTimestamp()) {
+        output.writeUInt64(3, getTimestamp());
+      }
+      for (double element : getValueList()) {
+        output.writeDouble(4, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -87,9 +102,15 @@ public final class RrdMessageProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeStringSize(2, getOwner());
       }
-      if (hasData()) {
+      if (hasTimestamp()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(3, getData());
+          .computeUInt64Size(3, getTimestamp());
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getValueList().size();
+        size += dataSize;
+        size += 1 * getValueList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -224,6 +245,10 @@ public final class RrdMessageProtos {
           throw new IllegalStateException(
             "build() has already been called on this Builder.");
         }
+        if (result.value_ != java.util.Collections.EMPTY_LIST) {
+          result.value_ =
+            java.util.Collections.unmodifiableList(result.value_);
+        }
         org.opennms.netmgt.rrd.tcp.RrdMessageProtos.RrdMessage returnMe = result;
         result = null;
         return returnMe;
@@ -246,8 +271,14 @@ public final class RrdMessageProtos {
         if (other.hasOwner()) {
           setOwner(other.getOwner());
         }
-        if (other.hasData()) {
-          setData(other.getData());
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (!other.value_.isEmpty()) {
+          if (result.value_.isEmpty()) {
+            result.value_ = new java.util.ArrayList<java.lang.Double>();
+          }
+          result.value_.addAll(other.value_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -282,8 +313,12 @@ public final class RrdMessageProtos {
               setOwner(input.readString());
               break;
             }
-            case 26: {
-              setData(input.readString());
+            case 24: {
+              setTimestamp(input.readUInt64());
+              break;
+            }
+            case 33: {
+              addValue(input.readDouble());
               break;
             }
           }
@@ -333,24 +368,55 @@ public final class RrdMessageProtos {
         return this;
       }
       
-      // required string data = 3;
-      public boolean hasData() {
-        return result.hasData();
+      // required uint64 timestamp = 3;
+      public boolean hasTimestamp() {
+        return result.hasTimestamp();
       }
-      public java.lang.String getData() {
-        return result.getData();
+      public long getTimestamp() {
+        return result.getTimestamp();
       }
-      public Builder setData(java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  result.hasData = true;
-        result.data_ = value;
+      public Builder setTimestamp(long value) {
+        result.hasTimestamp = true;
+        result.timestamp_ = value;
         return this;
       }
-      public Builder clearData() {
-        result.hasData = false;
-        result.data_ = getDefaultInstance().getData();
+      public Builder clearTimestamp() {
+        result.hasTimestamp = false;
+        result.timestamp_ = 0L;
+        return this;
+      }
+      
+      // repeated double value = 4;
+      public java.util.List<java.lang.Double> getValueList() {
+        return java.util.Collections.unmodifiableList(result.value_);
+      }
+      public int getValueCount() {
+        return result.getValueCount();
+      }
+      public double getValue(int index) {
+        return result.getValue(index);
+      }
+      public Builder setValue(int index, double value) {
+        result.value_.set(index, value);
+        return this;
+      }
+      public Builder addValue(double value) {
+        if (result.value_.isEmpty()) {
+          result.value_ = new java.util.ArrayList<java.lang.Double>();
+        }
+        result.value_.add(value);
+        return this;
+      }
+      public Builder addAllValue(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        if (result.value_.isEmpty()) {
+          result.value_ = new java.util.ArrayList<java.lang.Double>();
+        }
+        super.addAll(values, result.value_);
+        return this;
+      }
+      public Builder clearValue() {
+        result.value_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -700,11 +766,11 @@ public final class RrdMessageProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\020RrdMessage.proto\"7\n\nRrdMessage\022\014\n\004path" +
-      "\030\001 \002(\t\022\r\n\005owner\030\002 \002(\t\022\014\n\004data\030\003 \002(\t\"+\n\013R" +
-      "rdMessages\022\034\n\007message\030\001 \003(\0132\013.RrdMessage" +
-      "B.\n\032org.opennms.netmgt.rrd.tcpB\020RrdMessa" +
-      "geProtos"
+      "\n\020RrdMessage.proto\"K\n\nRrdMessage\022\014\n\004path" +
+      "\030\001 \002(\t\022\r\n\005owner\030\002 \002(\t\022\021\n\ttimestamp\030\003 \002(\004" +
+      "\022\r\n\005value\030\004 \003(\001\"+\n\013RrdMessages\022\034\n\007messag" +
+      "e\030\001 \003(\0132\013.RrdMessageB.\n\032org.opennms.netm" +
+      "gt.rrd.tcpB\020RrdMessageProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -716,7 +782,7 @@ public final class RrdMessageProtos {
           internal_static_RrdMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_RrdMessage_descriptor,
-              new java.lang.String[] { "Path", "Owner", "Data", },
+              new java.lang.String[] { "Path", "Owner", "Timestamp", "Value", },
               org.opennms.netmgt.rrd.tcp.RrdMessageProtos.RrdMessage.class,
               org.opennms.netmgt.rrd.tcp.RrdMessageProtos.RrdMessage.Builder.class);
           internal_static_RrdMessages_descriptor =
