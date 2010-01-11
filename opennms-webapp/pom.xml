@@ -39,7 +39,7 @@
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
 	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
+	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
 	                </jarResource>
 	              </jarResources>
 	            </jnlpFile>
@@ -63,7 +63,7 @@
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
 	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
+	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
 	                </jarResource>
 	              </jarResources>
 	            </jnlpFile>
