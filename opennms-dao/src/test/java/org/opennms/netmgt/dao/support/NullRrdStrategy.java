@@ -47,7 +47,7 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
-public class NullRrdStrategy implements RrdStrategy {
+public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 	
 	// THIS IS USED FOR TESTS SO RrdUtils can be initialized
 	// but doesn't need to do anything
