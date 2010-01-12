@@ -71,7 +71,7 @@ Defaults to 'admin'.
 The password associated with the administrative username specified
 in B<-username>.
 
-Defaults to 'password'.
+Defaults to 'admin'.
 
 =item B<--url>
 
@@ -88,10 +88,10 @@ my $result = GetOptions(
 	"longhelp|l" => \$print_longhelp,
 	"version|v"  => \&print_version,
 
-	"username|u" => \$username,
-	"password|p" => \$password,
+	"username|u=s" => \$username,
+	"password|p=s" => \$password,
 
-	"url"        => \$url_root,
+	"url=s"        => \$url_root,
 );
 
 pod2usage(1) if $print_help;
