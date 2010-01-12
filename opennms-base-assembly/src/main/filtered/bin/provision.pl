@@ -71,7 +71,7 @@ Defaults to 'admin'.
 The password associated with the administrative username specified
 in B<-username>.
 
-Defaults to 'password'.
+Defaults to 'admin'.
 
 =item B<--url>
 
