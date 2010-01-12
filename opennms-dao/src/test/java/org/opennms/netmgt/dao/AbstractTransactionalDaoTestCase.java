@@ -63,6 +63,7 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private LinkStateDao m_linkStateDao;
+    private ReportCatalogDao m_reportCatalogDao;
     
     private DatabasePopulator m_populator;
     
@@ -303,5 +304,13 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public LinkStateDao getLinkStateDao() {
         return m_linkStateDao;
+    }
+
+    public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
+        m_reportCatalogDao = reportCatalogDao;
+    }
+
+    public ReportCatalogDao getReportCatalogDao() {
+        return m_reportCatalogDao;
     }
 }

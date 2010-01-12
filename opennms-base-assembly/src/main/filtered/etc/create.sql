@@ -87,6 +87,7 @@ drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 drop sequence reportNxtId;
+drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
 
@@ -1991,6 +1992,34 @@ create table reportLocator (
 --#          sequence,   column, table
 --# install: reportNxtId reportId reportLocator
 create sequence reportNxtId minvalue 1;
+
+--########################################################################
+--#
+--# reportcatalog table     -- report catalog data
+--#                            reports and their location on disk
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  reportId			: Name of the report category
+--#  title				: display title
+--#  date				: when the report was run
+--#  location			: where on disk we put the report
+--#
+--########################################################################
+
+create table reportCatalog (
+    id			 		integer not null,
+    reportId			varchar(256) not null,
+    title				varchar(256) not null,
+	date				timestamp with time zone not null,
+    location			varchar(256) not null
+);
+
+--# Sequence for the reportId column in the reportLocator table
+--#          sequence,   column, table
+--# install: reportCatalogNxtId id reportCatalog
+create sequence reportCatalogNxtId minvalue 1;
 
 
 --########################################################################

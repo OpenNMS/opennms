@@ -28,7 +28,7 @@
   
   <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
 	  <property name="jobClass">
-		<value>org.opennms.web.report.database.BatchReportJob</value>
+		<value>org.opennms.reporting.core.BatchReportJob</value>
 	  </property>
 	  <property name="durability" value="true" />
   </bean>

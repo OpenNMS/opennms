@@ -6,6 +6,9 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
+
+	<include file="1.7.9/reportcatalog.xml" />
+
 	<changeSet author="jsartin" id="1.7.9-quartz-priority">
 
 		<addColumn tableName="qrtz_triggers">

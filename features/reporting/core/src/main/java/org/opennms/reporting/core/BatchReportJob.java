@@ -34,7 +34,7 @@
  *      http://www.opennms.com/
  */
 
-package org.opennms.web.report.database;
+package org.opennms.reporting.core;
 
 import org.opennms.api.integration.reporting.DeliveryOptions;
 import org.opennms.api.integration.reporting.ReportService;
@@ -63,9 +63,6 @@ public class BatchReportJob extends QuartzJobBean {
             (ReportServiceLocator)m_context.getBean("reportServiceLocator");
         
         ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
-        
-       // ReportService reportService = 
-       //     (ReportService)m_context.getBean((String)dataMap.get("reportServiceName"));
         
         reportService.run(criteria.getReportParms(), deliveryOptions, criteria.getReportId());
         

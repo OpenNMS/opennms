@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="jsartin" id="1.7.9-reportcatalog">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="reportcatalog" /></not>
+		</preConditions> 
+
+		<!-- This table contains a record of  reports and their location on disk -->
+		<createTable tableName="reportlocator">
+
+			<!-- Unique integer identifier for the report -->
+			<column name="id" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- reportid of which this is an instance -->
+			<column name="reportid" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- Title of the report (for display purposes) -->
+			<column name="title" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+			
+			<!-- Date that the report was run -->
+			<column name="date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+
+			<!-- format of the report (calenda etc) -->
+			<column name="location" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+		</createTable>
+
+		<createSequence sequenceName="reportcatalognxtid" minValue="1" />
+
+	</changeSet>
+
+</databaseChangeLog>

@@ -61,6 +61,7 @@
         <value>org.opennms.netmgt.model.DataLinkInterface</value>
         <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
         <value>org.opennms.netmgt.model.OnmsLinkState</value>
+        <value>org.opennms.netmgt.model.ReportCatalogEntry</value>
         <!--
         <value>org.opennms.netmgt.model.OnmsUser</value>
         <value>org.opennms.netmgt.model.OnmsGroup</value>
@@ -139,6 +140,10 @@
   </bean>
   
   <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="reportCatalogDao" class="org.opennms.netmgt.dao.hibernate.ReportCatalogDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
