@@ -152,8 +152,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     public synchronized void initialize() throws Exception {
         if (!m_initialized) {
             if(!s_initialized) {
-                RrdDb.setDefaultFactory("FILE");
-                String factory = RrdConfig.getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
+                String factory = RrdConfig.getInstance().getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
                 RrdDb.setDefaultFactory(factory);
                 s_initialized=true;
             }

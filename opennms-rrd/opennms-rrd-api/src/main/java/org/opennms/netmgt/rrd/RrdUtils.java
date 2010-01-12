@@ -75,13 +75,13 @@ public class RrdUtils {
 
     private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
 
-    private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
+    private static final boolean USE_QUEUE = RrdConfig.getInstance().getProperty("org.opennms.rrd.usequeue", true);
 
-    private static final String RRD_STRATEGY_CLASSNAME = RrdConfig.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASSNAME);
+    private static final String RRD_STRATEGY_CLASSNAME = RrdConfig.getInstance().getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASSNAME);
 
     private static RrdStrategy m_rrdStrategy = null;
     
-    private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension", null);
+    private static String m_rrdExtension = RrdConfig.getInstance().getProperty("org.opennms.rrd.fileExtension", null);
 
     public static RrdStrategy getStrategy() {
         if (m_rrdStrategy == null) {

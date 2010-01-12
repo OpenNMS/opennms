@@ -95,8 +95,8 @@ public class TcpRrdStrategyTest {
                     while (true) {
                         try {
                             Socket socket = ssocket.accept();
-                            RrdMessageProtos.RrdMessages messages = RrdMessageProtos.RrdMessages.parseFrom(socket.getInputStream());
-                            for (RrdMessageProtos.RrdMessage message : messages.getMessageList()) {
+                            PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
+                            for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 StringBuffer values = new StringBuffer();
                                 values.append("{ ");
                                 for (int i = 0; i < message.getValueCount(); i++) {
@@ -191,9 +191,9 @@ public class TcpRrdStrategyTest {
         m_fileAnticipator.initialize();
 
         // This is so the RrdUtils.getExtension() call in the strategy works
-        Properties properties = new Properties();
-        properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
-        RrdConfig.setProperties(properties);
+        // Properties properties = new Properties();
+        // properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
+        // RrdConfig.getInstance().setProperties(properties);
 
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));

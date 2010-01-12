@@ -93,7 +93,6 @@ public class BasePersisterTest extends TestCase {
         
         // Grumble grumble... side effects... grumble grumble
         if (!s_rrdInitialized) {
-            RrdConfig.setProperties(new Properties());
             RrdUtils.setStrategy(new JRobinRrdStrategy());
             RrdUtils.initialize();
             s_rrdInitialized  = true;

@@ -269,7 +269,6 @@ public class SnmpThresholderTest {
     }
 
     private void setUpRrdStrategy() throws RrdException {
-        RrdConfig.setProperties(new Properties());
         RrdUtils.initialize();
     }
 

@@ -152,9 +152,6 @@ public class OpenNMSProvisionerTest {
         MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
-        
-        Properties properties = new Properties();
-        RrdConfig.setProperties(properties);
 
         RrdUtils.setStrategy(m_strategy);
         

@@ -63,7 +63,8 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.tcp.RrdMessageProtos.RrdMessage;
+import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
+import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
 
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
@@ -94,7 +95,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     public static class RrdOutputSocket {
         // private final RrdDefinition m_def;
         private final String m_filename;
-        private final RrdMessageProtos.RrdMessages.Builder m_messages; 
+        private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
 
         /*
         public RrdOutputSocket(RrdDefinition def) throws Exception {
@@ -105,7 +106,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
 
         public RrdOutputSocket(String filename) throws Exception {
             m_filename = filename;
-            m_messages = RrdMessageProtos.RrdMessages.newBuilder();
+            m_messages = PerformanceDataProtos.PerformanceDataReadings.newBuilder();
         }
 
         public String getPath() {
@@ -115,7 +116,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         public void addData(String owner, String data) {
             Long timestamp = parseRrdTimestamp(data);
             List<Double> values = parseRrdValues(data);
-            m_messages.addMessage(RrdMessage.newBuilder()
+            m_messages.addMessage(PerformanceDataReading.newBuilder()
                     .setPath(m_filename)
                     .setOwner(owner)
                     .setTimestamp(timestamp).

@@ -40,6 +40,7 @@ package org.opennms.netmgt.rrd;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -53,7 +54,13 @@ import org.opennms.netmgt.ConfigFileConstants;
  */
 public class RrdConfig {
 
-    private static Properties m_properties = null;
+    /**
+     * Singleton instance of class.
+     */
+    private static final RrdConfig m_instance = new RrdConfig();
+    public static final RrdConfig getInstance() { return m_instance; }
+
+    private Properties m_properties = null;
 
     /**
      * This loads the configuration file.
@@ -61,25 +68,26 @@ public class RrdConfig {
      * @return a Properties object representing the configuration properties
      * @throws IOException
      */
-    private static synchronized Properties getProperties() throws IOException {
+    private synchronized Properties getProperties() throws IOException {
         if (m_properties == null) {
-            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RRD_CONFIG_FILE_NAME);
-            loadProperties(new FileInputStream(configFile));
+            m_properties = new Properties(System.getProperties());
+            InputStream in = null;
+            String configFileName = null;
+            // Merge the config file contents into these properties (if the file exists)
+            try {
+                configFileName = ConfigFileConstants.getFileName(ConfigFileConstants.RRD_CONFIG_FILE_NAME);
+                File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RRD_CONFIG_FILE_NAME);
+                in = new FileInputStream(configFile);
+                m_properties.load(in);
+            } catch (FileNotFoundException e) {
+                ThreadCategory.getInstance(this.getClass()).info(configFileName + " not found, loading RRD configuration solely from system properties");
+            } finally {
+                if (in != null) { 
+                    in.close(); 
+                }
+            }
         }
         return m_properties;
-
-    }
-
-    public static synchronized void loadProperties(InputStream in) throws IOException {
-        Properties properties = new Properties(System.getProperties());
-        properties.load(in);
-        in.close();
-        m_properties = properties;
-    }
-
-
-    public static synchronized void setProperties(Properties properties) {
-        m_properties = properties;
     }
 
     /**
@@ -91,7 +99,7 @@ public class RrdConfig {
      *            the default value to use if the property is not set
      * @return the value of the property
      */
-    public static String getProperty(String name, String defaultVal) {
+    public synchronized String getProperty(String name, String defaultVal) {
         Category log = ThreadCategory.getInstance(RrdConfig.class);
 
         try {
@@ -113,7 +121,7 @@ public class RrdConfig {
      *            the default value to use if the property is not set
      * @return the value of the property
      */
-    public static boolean getProperty(String name, boolean defaultVal) {
+    public boolean getProperty(String name, boolean defaultVal) {
         return "true".equalsIgnoreCase(getProperty(name, (defaultVal ? "true" : "false")));
     }
 
@@ -127,7 +135,7 @@ public class RrdConfig {
      *            the default value to use if the property is not set
      * @return the value of the property
      */
-    public static int getProperty(String name, int defaultVal) {
+    public int getProperty(String name, int defaultVal) {
         String val = getProperty(name, (String) null);
         if (val != null) {
             try {
@@ -148,7 +156,7 @@ public class RrdConfig {
      *            the default value to use if the property is not set
      * @return the value of the property
      */
-    public static long getProperty(String name, long defaultVal) {
+    public long getProperty(String name, long defaultVal) {
         String val = getProperty(name, (String) null);
         if (val != null) {
             try {
@@ -158,5 +166,4 @@ public class RrdConfig {
         }
         return defaultVal;
     }
-
 }

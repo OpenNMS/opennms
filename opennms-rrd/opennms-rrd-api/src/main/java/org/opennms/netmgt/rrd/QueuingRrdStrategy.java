@@ -124,27 +124,27 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
     static final int CREATE = 1;
 
-    static final int WRITE_THREADS = RrdConfig.getProperty("org.opennms.rrd.queuing.writethreads", 2);
+    static final int WRITE_THREADS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethreads", 2);
 
-    private static final boolean QUEUE_CREATES = RrdConfig.getProperty("org.opennms.rrd.queuing.queuecreates", false);
+    private static final boolean QUEUE_CREATES = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.queuecreates", false);
     
-    private static final boolean PRIORITIZE_SIGS = RrdConfig.getProperty("org.opennms.rrd.queuing.prioritizeSignificantUpdates", false);
+    private static final boolean PRIORITIZE_SIGS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.prioritizeSignificantUpdates", false);
 
-    private static final long INSIG_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.inSigHighWaterMark", 0L);
+    private static final long INSIG_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.inSigHighWaterMark", 0L);
 
-    private static final long SIG_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.sigHighWaterMark", 0L);
+    private static final long SIG_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.sigHighWaterMark", 0L);
 
-    private static final long QUEUE_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.queueHighWaterMark", 0L);
+    private static final long QUEUE_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.queueHighWaterMark", 0L);
 
-    private static final long MODULUS = RrdConfig.getProperty("org.opennms.rrd.queuing.modulus", 10000L);
+    private static final long MODULUS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.modulus", 10000L);
 
-    private static final String LOG4J_CATEGORY = RrdConfig.getProperty("org.opennms.rrd.queuing.category", "OpenNMS.Queued");
+    private static final String LOG4J_CATEGORY = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.category", "OpenNMS.Queued");
 
-    private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
+    private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
 
-    private static final long WRITE_THREAD_SLEEP_TIME = RrdConfig.getProperty("org.opennms.rrd.queuing.writethread.sleepTime", 50L);
+    private static final long WRITE_THREAD_SLEEP_TIME = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethread.sleepTime", 50L);
 
-    private static final long WRITE_THREAD_EXIT_DELAY = RrdConfig.getProperty("org.opennms.rrd.queuing.writethread.exitDelay", 60000L);
+    private static final long WRITE_THREAD_EXIT_DELAY = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethread.exitDelay", 60000L);
 
     LinkedList<String> filesWithSignificantWork = new LinkedList<String>();
 

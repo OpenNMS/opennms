@@ -66,6 +66,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -366,14 +367,10 @@ public class JRobinRrdStrategyTest {
 
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
-        String rrdExtension = ".jrb";
 
         m_fileAnticipator.initialize();
-        
-        // This is so the RrdUtils.getExtension() call in the strategy works
-        Properties properties = new Properties();
-        properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
-        RrdConfig.setProperties(properties);
+        RrdUtils.initialize();
+        String rrdExtension = RrdUtils.getStrategy().getDefaultFileExtension();
         
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
