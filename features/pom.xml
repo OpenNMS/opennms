@@ -26,6 +26,7 @@
       </activation>
       <modules>
         <module>remote-poller</module>
+        <module>remote-poller-jnlp</module>
       </modules>
     </profile>
 

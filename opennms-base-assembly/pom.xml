@@ -75,6 +75,13 @@
 	             </artifactItem>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
+	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>jnlp</classifier>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+	             </artifactItem>
+	             <artifactItem>
+	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-reporting</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>

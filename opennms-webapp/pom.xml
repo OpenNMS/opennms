@@ -18,67 +18,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo.webstart</groupId>
-        <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
-        <executions>
-          <execution>
-            <id>gui-app</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>jnlp-download-servlet</goal>
-            </goals>
-            <configuration>
-	          <jnlpFiles>
-	            <jnlpFile>
-	              <templateFilename>app.vm</templateFilename>
-	              <outputFilename>app.jnlp</outputFilename>
-	              <jarResources>
-	                <jarResource>
-	                  <groupId>org.opennms.features</groupId>
-	                  <artifactId>org.opennms.features.remote-poller</artifactId>
-	                  <version>${project.version}</version>
-	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
-	                </jarResource>
-	              </jarResources>
-	            </jnlpFile>
-	          </jnlpFiles>
-            </configuration>
-          </execution>
-          <execution>
-            <id>headless-app</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>jnlp-download-servlet</goal>
-            </goals>
-            <configuration>
-	          <jnlpFiles>
-	            <jnlpFile>
-	              <templateFilename>headless.vm</templateFilename>
-	              <outputFilename>headless.jnlp</outputFilename>
-	              <jarResources>
-	                <jarResource>
-	                  <groupId>org.opennms.features</groupId>
-	                  <artifactId>org.opennms.features.remote-poller</artifactId>
-	                  <version>${project.version}</version>
-	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
-	                </jarResource>
-	              </jarResources>
-	            </jnlpFile>
-	          </jnlpFiles>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <templateDirectory>src/main/jnlp</templateDirectory>
-          <!-- signed-jar-with-dependencies has everything -->
-          <excludeTransitive>true</excludeTransitive>
-          <verbose>false</verbose>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>

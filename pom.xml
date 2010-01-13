@@ -1148,7 +1148,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-	<artifactId>opennms-qosdaemon</artifactId>
+        <artifactId>opennms-qosdaemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
