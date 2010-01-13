@@ -490,15 +490,6 @@
   	<property name="pageSize" value="10"/>
   </bean>
   
-  <bean name="/report/availability/manage.htm" 
-  		class="org.opennms.web.controller.ManageAvailabilityReportController">
-    <property name="bindOnNewForm" value="true" />
-  	<property name="reportListService" ref="reportListService"/>
-    <property name="commandName" value="ManageAvailabilityReportCommand" />
-    <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
-    <property name="pageSize" value="10"/>
-    <property name="successView" value="redirect:/report/availability/manage.htm" />
-  </bean>
   
   <!-- Database Reports -->
   
@@ -518,8 +509,8 @@
   		class="org.opennms.web.controller.ManageDatabaseReportController">
     <property name="bindOnNewForm" value="true" />
   	<property name="reportListService" ref="reportListService"/>
-    <property name="commandName" value="ManageAvailabilityReportCommand" />
-    <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
+    <property name="commandName" value="ManageDatabaseReportCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageDatabaseReportCommand" />
     <property name="pageSize" value="10"/>
     <property name="successView" value="redirect:/report/database/manage.htm" />
   </bean>

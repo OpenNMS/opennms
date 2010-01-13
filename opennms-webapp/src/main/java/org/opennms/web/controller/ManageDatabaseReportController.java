@@ -40,7 +40,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.web.command.ManageAvailabilityReportCommand;
+import org.opennms.web.command.ManageDatabaseReportCommand;
 import org.opennms.web.svclayer.ReportListService;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -77,7 +77,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
     
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
-        ManageAvailabilityReportCommand manageCommand = (ManageAvailabilityReportCommand) command;
+        ManageDatabaseReportCommand manageCommand = (ManageDatabaseReportCommand) command;
         m_reporListService.deleteReports(manageCommand.getIds());
         ModelAndView mav = new ModelAndView(getSuccessView());
         return mav;

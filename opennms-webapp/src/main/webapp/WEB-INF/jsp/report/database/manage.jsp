@@ -68,7 +68,7 @@
 	</c:when>
 
 	<c:otherwise>
-		<form:form commandName="ManageAvailabilityReportCommand">
+		<form:form commandName="ManageDatabaseReportCommand">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 

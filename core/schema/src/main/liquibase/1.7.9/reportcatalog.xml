@@ -12,7 +12,7 @@
 		</preConditions> 
 
 		<!-- This table contains a record of  reports and their location on disk -->
-		<createTable tableName="reportlocator">
+		<createTable tableName="reportcatalog">
 
 			<!-- Unique integer identifier for the report -->
 			<column name="id" type="integer">
