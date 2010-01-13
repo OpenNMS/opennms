@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -29,20 +29,19 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.report.availability;
+package org.opennms.web.command;
 
-import java.util.List;
+public class ManageDatabaseReportCommand {
+    
+    private Integer[] m_ids;
 
-import org.opennms.netmgt.model.AvailabilityReportLocator;
+    public void setIds(Integer[] ids) {
+    m_ids = ids;
+    }
 
-public interface ReportLocatorService {
-	
-	List<?> locateReports();
+    public Integer[] getIds() {
+    return m_ids;
+    }
+    
 
-	List<?> locateReports(String categoryName);
-	
-	void deleteReport(int id);
-	
-	void addReport(AvailabilityReportLocator locator);
-	
 }

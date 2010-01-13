@@ -46,7 +46,6 @@ import junit.framework.Assert;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -112,7 +111,6 @@ public class AvailabilityDatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
@@ -327,18 +325,7 @@ public class AvailabilityDatabasePopulator {
         m_assetRecordDao = assetRecordDao;
     }
 
-
-    public AvailabilityReportLocatorDao getAvailabilityReportLocatorDao() {
-        return m_availabilityReportLocatorDao;
-    }
-
-
-    public void setAvailabilityReportLocatorDao(
-            AvailabilityReportLocatorDao availabilityReportLocatorDao) {
-        m_availabilityReportLocatorDao = availabilityReportLocatorDao;
-    }
-
-
+    
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }

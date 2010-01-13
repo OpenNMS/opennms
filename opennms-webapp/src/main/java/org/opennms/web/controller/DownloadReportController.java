@@ -40,9 +40,8 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.model.AvailabilityReportLocator;
-import org.opennms.report.availability.AvailabilityReportLocatorService;
 import org.opennms.report.availability.svclayer.OnmsReportService;
+import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,8 +49,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 public class DownloadReportController extends AbstractController {
 
-    private AvailabilityReportLocatorService m_reportLocatorService;
-    private OnmsReportService m_batchReportService;
+    private ReportStoreService m_reportStoreService;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -67,19 +65,19 @@ public class DownloadReportController extends AbstractController {
         }
 
         try {
-            int reportLocatorId = WebSecurityUtils.safeParseInt(request.getParameter("locatorId"));
-            AvailabilityReportLocator locator = m_reportLocatorService.locateReport(reportLocatorId);
+            Integer reportCatalogEntryId = new Integer(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
             if (request.getParameter("format").equalsIgnoreCase("pdf")
                     || request.getParameter("format").equalsIgnoreCase("svg")) {
                 response.setContentType("application/pdf;charset=UTF-8");
                 response.setHeader("Content-disposition", "inline; filename="
-                        + locator.getFormat() + ".pdf");
+                                   + reportCatalogEntryId.toString()
+                                   + ".pdf");
                 response.setHeader("Pragma", "public");
                 response.setHeader("Cache-Control", "cache");
                 response.setHeader("Cache-Control", "must-revalidate");
             }
-            m_batchReportService.render(
-                                        locator,
+            m_reportStoreService.render(
+                                        reportCatalogEntryId,
                                         request.getParameter("format"),
                                         (OutputStream) response.getOutputStream());
         } catch (NumberFormatException e) {
@@ -88,15 +86,9 @@ public class DownloadReportController extends AbstractController {
 
         return null;
     }
-
-    public void setReportLocatorService(
-            AvailabilityReportLocatorService reportLocatorService) {
-        m_reportLocatorService = reportLocatorService;
-    }
-
-    public void setBatchReportService(
-            OnmsReportService batchReportService) {
-        m_batchReportService = batchReportService;
+    
+    public void setReportStoreService(ReportStoreService reportStoreService) {
+        m_reportStoreService = reportStoreService;
     }
 
 }

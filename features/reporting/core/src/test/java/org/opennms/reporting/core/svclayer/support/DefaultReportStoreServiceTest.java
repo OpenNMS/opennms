@@ -38,8 +38,10 @@ package org.opennms.reporting.core.svclayer.support;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,10 +67,18 @@ public class DefaultReportStoreServiceTest {
     @Autowired
     ReportCatalogDao m_reportCatalogDao;
     
+    @Autowired
+    ReportServiceLocator m_reportServiceLocator;
+    
+    @Autowired
+    DatabaseReportConfigDao m_databaseReportConfigDao;
+    
     @Test
     public void testWiring() {
         Assert.assertNotNull(m_reportStoreService);
         Assert.assertNotNull(m_reportCatalogDao);
+        Assert.assertNotNull(m_reportServiceLocator);
+        Assert.assertNotNull(m_databaseReportConfigDao);
     }
     
     @Test
@@ -81,5 +91,10 @@ public class DefaultReportStoreServiceTest {
         m_reportStoreService.save(reportCatalogEntry);
         verify(m_reportCatalogDao);
         
+    }
+    
+    @Test
+    public void testReder(){
+        // TODO something useful here
     }
 }

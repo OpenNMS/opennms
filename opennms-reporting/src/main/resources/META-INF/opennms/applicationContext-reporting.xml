@@ -4,12 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="availabilityReportLocator"
-		class="org.opennms.report.availability.AvailabilityReportLocatorService"
-		lazy-init="true">
-		<property name="availabilityReportLocatorDao" ref="availabilityReportLocatorDao" />
-	</bean>
-
 	<bean id="calendarAvailabilityCalculator"
 		class="org.opennms.report.availability.AvailabilityCalculator"
 		scope="prototype">
@@ -19,7 +13,7 @@
 		<property name="baseDir">
 			<value>${opennms.report.dir}/</value>
 		</property>
-		<property name="locatorService" ref="availabilityReportLocator" />
+		<property name="reportStoreService" ref="reportStoreService" />
 		<property name="availabilityData">
 			<ref local="availabilityData"/>
 		</property>
@@ -34,7 +28,7 @@
 		<property name="baseDir">
 			<value>${opennms.report.dir}/</value>
 		</property>
-		<property name="locatorService" ref="availabilityReportLocator" />
+		<property name="reportStoreService" ref="reportStoreService" />
 		<property name="availabilityData">
 			<ref local="availabilityData"/>
 		</property>

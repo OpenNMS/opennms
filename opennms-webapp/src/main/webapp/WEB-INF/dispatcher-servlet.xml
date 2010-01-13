@@ -469,28 +469,7 @@
     <property name="chooseResourceService" ref="chooseResourceService"/>
     <property name="defaultEndUrl"><value>graph/results.htm</value></property>
   </bean>
-  
-  <!-- Availability Reports -->
-  
-  <bean name="/report/availability/index.htm"
-  		class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
-  
-  <bean name="/report/availability/report.htm"
-  		class="org.opennms.web.controller.AvailabilityReportController">
-  	<property name="availabilityReportService" ref="availabilityReportService"/>
-  	<property name="categoryConfigService" ref="categoryConfigService"/>
-  	<property name="logo">
-  		<value>"${opennms.report.logo}"</value>
-  	</property>
-  </bean>
-  
-  <bean name="/report/availability/list.htm"
-  		class="org.opennms.web.controller.ReportListController">
-  	<property name="reportListService" ref="reportListService"/>
-  	<property name="pageSize" value="10"/>
-  </bean>
-  
-  
+      
   <!-- Database Reports -->
   
   <bean name="/report/database/index.htm"
@@ -508,7 +487,7 @@
    <bean name="/report/database/manage.htm" 
   		class="org.opennms.web.controller.ManageDatabaseReportController">
     <property name="bindOnNewForm" value="true" />
-  	<property name="reportListService" ref="reportListService"/>
+	<property name="reportStoreService" ref="reportStoreService"/>
     <property name="commandName" value="ManageDatabaseReportCommand" />
     <property name="commandClass" value="org.opennms.web.command.ManageDatabaseReportCommand" />
     <property name="pageSize" value="10"/>
@@ -527,8 +506,7 @@
   
   <bean name="/report/database/downloadReport.htm" 
   		class="org.opennms.web.controller.DownloadReportController">
-	<property name="batchReportService" ref="onmsReportService" />
-	<property name="reportLocatorService" ref="availabilityReportLocator" />
+	<property name="reportStoreService" ref="reportStoreService"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">

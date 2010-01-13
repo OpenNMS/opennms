@@ -86,5 +86,15 @@ public interface ReportService {
      * @return a list of supported formats
      */
     public abstract List<String> getAvailableFormats(String reportId);
+    
+    /**
+     * This method renders the report into a given output stream
+     * 
+     * @param id reportID as defined in database-reports.xml
+     * @param location location of the report on disk
+     * @param format format to render the report
+     * @param outputStream stream to render the resulting report
+     */
+    public abstract void render(String id, String location, String format, OutputStream outputStream);
 
 }

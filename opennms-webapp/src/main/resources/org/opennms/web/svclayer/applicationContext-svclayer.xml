@@ -219,10 +219,6 @@
     <property name="categoryConfigDao" ref="categoryConfigDao" />
   </bean>
   
-  <bean id="reportListService" class="org.opennms.web.svclayer.support.DefaultReportListService">
-    <property name="reportLocatorDao" ref="availabilityReportLocatorDao"/>
-  </bean>
-  
   <!-- Database Report Beans -->
   
   <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">

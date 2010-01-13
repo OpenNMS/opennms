@@ -35,15 +35,24 @@
  */
 package org.opennms.reporting.core.svclayer.support;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.api.integration.reporting.ReportService;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
 public class DefaultReportStoreService implements ReportStoreService {
     
     private ReportCatalogDao m_reportCatalogDao;
+    private ReportServiceLocator m_reportServiceLocator;
+    private DatabaseReportConfigDao m_databaseReportConfigDao;
 
     public void delete(Integer[] ids) {
         for (Integer id : ids) {
@@ -52,21 +61,45 @@ public class DefaultReportStoreService implements ReportStoreService {
     }
     
     public void delete(Integer id) {
+        String deleteFile = new String(m_reportCatalogDao.get(id).getLocation());
+        boolean success = (new File(deleteFile).delete());
+        if (success) {
+            log().debug("deleted report XML file: " + deleteFile);
+        } else {
+            log().warn("unable to delete report XML file: " + deleteFile + " will delete reportCatalogEntry anyway");
+        }
         m_reportCatalogDao.delete(id);
     }
 
     public List<ReportCatalogEntry> getAll() {
-        // TODO Auto-generated method stub
-        return null;
+        return m_reportCatalogDao.findAll();
+    }
+    
+    public void render(Integer id, String format, OutputStream outputStream) {
+        ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
+        String reportServiceName = m_databaseReportConfigDao.getReportService(catalogEntry.getReportId());
+        ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
+        reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     public void save(ReportCatalogEntry reportCatalogEntry) {
         m_reportCatalogDao.save(reportCatalogEntry);
-
     }
 
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
         m_reportCatalogDao = reportCatalogDao;
+    }
+    
+    public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportConfigDao) {
+        m_databaseReportConfigDao = databaseReportConfigDao;
+    }
+    
+    public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
+        m_reportServiceLocator = reportServiceLocator;
     }
 
 }

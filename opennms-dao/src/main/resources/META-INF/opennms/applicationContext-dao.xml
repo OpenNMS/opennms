@@ -51,7 +51,6 @@
         <value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
         <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
         <value>org.opennms.netmgt.model.PollStatus</value>
-        <value>org.opennms.netmgt.model.AvailabilityReportLocator</value>
         <value>org.opennms.netmgt.model.OnmsApplication</value>
         <value>org.opennms.netmgt.model.ResourceReference</value>
         <value>org.opennms.netmgt.model.StatisticsReportData</value>
@@ -179,10 +178,6 @@
   -->
  
   <bean id="applicationDao" class="org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 

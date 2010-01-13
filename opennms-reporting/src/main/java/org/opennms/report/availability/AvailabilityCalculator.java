@@ -1,38 +1,41 @@
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
-// reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included
-// code and modified
-// code that was published under the GNU General Public License. Copyrights
-// for modified
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-// OpenNMS Licensing <license@opennms.org>
-// http://www.opennms.org/
-// http://www.opennms.com/
-//
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * January 13th 2010 jonathan@opennms.org
+ * ======================================
+ * 
+ * Reworking to use ReportStore rather than AvailabilityReportLocator
+ *
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.report.availability;
 
 import java.io.File;
@@ -51,7 +54,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.AvailabilityReportLocator;
+import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.opennms.reporting.core.svclayer.ReportStoreService;
 
 /**
  * AvailabilityCalculator is a partial refectoring of AvailabilityReport that
@@ -128,9 +132,9 @@ public class AvailabilityCalculator {
     private Report m_report = null;
 
     private Category log;
-    
-    private AvailabilityReportLocatorService m_locatorService;
 
+    private ReportStoreService m_reportStoreService;
+    
     private AvailabilityData m_availabilityData;
 
     public AvailabilityCalculator() {
@@ -253,15 +257,13 @@ public class AvailabilityCalculator {
             File reportFile = new File(m_baseDir, m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
-            // save a locator
-            AvailabilityReportLocator locator = new AvailabilityReportLocator();
-            locator.setCategory(m_categoryName);
-            locator.setDate(m_periodEndDate);
-            locator.setType(m_monthFormat);
-            locator.setFormat(id);
-            locator.setLocation(reportFile.getAbsolutePath());
-            locator.setAvailable(true);
-            m_locatorService.addReport(locator);
+            // save to reportStore
+            ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
+            catalogEntry.setReportId(id);
+            catalogEntry.setTitle(m_monthFormat + " " + m_categoryName);
+            catalogEntry.setLocation(reportFile.getAbsolutePath());
+            catalogEntry.setDate(new Date());
+            m_reportStoreService.save(catalogEntry);
 
         } catch (AvailabilityCalculationException e) {
             log.fatal("Unable to marshal report as XML");
@@ -358,12 +360,8 @@ public class AvailabilityCalculator {
         this.m_periodEndDate = periodEndDate;
     }
 
-    public AvailabilityReportLocatorService getLocatorService() {
-        return m_locatorService;
-    }
-
-    public void setLocatorService(AvailabilityReportLocatorService locatorService) {
-        m_locatorService = locatorService;
+    public void setReportStoreService(ReportStoreService reportStoreService) {
+        m_reportStoreService = reportStoreService;
     }
 
     public String getBaseDir() {

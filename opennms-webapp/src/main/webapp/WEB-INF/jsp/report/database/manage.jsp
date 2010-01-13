@@ -76,10 +76,9 @@
 		<table>
 			<thead>
 				<tr>
-					<th>category</th>
+					<th>title</th>
 					<th>report ID</th>
-					<th>period ending</th>
-					<th>available</th>
+					<th>run date</th>
 					<th>view report</th>
 					<th>select</th>
 				</tr>
@@ -87,10 +86,9 @@
 			<%-- // show only current page worth of data --%>
 			<c:forEach items="${pagedListHolder.pageList}" var="report">
 				<tr>
-					<td>${report.category}</td>
-					<td>${report.format}</td>
+					<td>${report.title}</td>
+					<td>${report.reportId}</td>
 					<td>${report.date}</td>
-					<td>${report.available}</td>
 					<td><a
 						href="report/database/downloadReport.htm?locatorId=${report.id}&format=html">html</a>
 					<a

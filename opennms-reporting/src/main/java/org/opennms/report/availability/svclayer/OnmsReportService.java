@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
+import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.report.availability.AvailabilityCalculationException;
 import org.opennms.report.availability.AvailabilityCalculator;
 import org.opennms.report.availability.ReportMailer;
@@ -205,6 +206,36 @@ public class OnmsReportService implements ReportService, ReportValidationService
             }
             
             return result;
+            
+        }
+    
+    public void render(String id, String location, String format, OutputStream outputStream) {
+        
+        Resource xsltResource;
+        ReportRenderer renderer;
+            
+        try {
+                
+                if (format.equalsIgnoreCase(HTML_FORMAT)) {
+                    renderer = new HTMLReportRenderer();
+                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(id));
+                } else {
+                    renderer = new PDFReportRenderer();
+                    if (format.equalsIgnoreCase(SVG_FORMAT)) {
+                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(id));
+                    } else {
+                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(id));
+                    }
+                }
+                String baseDir = System.getProperty("opennms.report.dir");
+                renderer.setBaseDir(baseDir);
+                renderer.render(location, outputStream, xsltResource);
+
+            } catch (MalformedURLException e) {
+                log.fatal("Malformed URL for xslt template");
+            } catch (ReportRenderException e) {
+                log.fatal("unable to render report");
+            }
             
         }
     

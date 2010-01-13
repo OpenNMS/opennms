@@ -35,6 +35,7 @@
  */
 package org.opennms.reporting.core.svclayer;
 
+import java.io.OutputStream;
 import java.util.List;
 
 import org.opennms.netmgt.dao.ReportCatalogDao;
@@ -45,6 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReportStoreService {
     
     public List<ReportCatalogEntry> getAll();
+    
+    public void render(Integer id, String format, OutputStream outputStream);
     
     @Transactional(readOnly = false)
     public void delete(Integer[] ids);
@@ -57,4 +60,5 @@ public interface ReportStoreService {
     
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao);
 
+    public void setReportServiceLocator(ReportServiceLocator reportServiceLocator);
 }

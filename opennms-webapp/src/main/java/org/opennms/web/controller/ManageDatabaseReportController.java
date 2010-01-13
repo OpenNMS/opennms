@@ -40,8 +40,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.command.ManageDatabaseReportCommand;
-import org.opennms.web.svclayer.ReportListService;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,16 +49,17 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class ManageDatabaseReportController extends SimpleFormController {
 
-    private ReportListService m_reporListService;
     private int m_pageSize;
+    private ReportStoreService m_reportStoreService;
     
     public ManageDatabaseReportController() {
         setFormView("report/database/manage");
     }
 
-    public void setReportListService(ReportListService reportListService) {
-        m_reporListService = reportListService;
+    public void setReportStoreService(ReportStoreService reportStoreService) {
+        m_reportStoreService = reportStoreService;
     }
+    
     public void setPageSize(int pageSize) {
         m_pageSize = pageSize;
     }
@@ -66,7 +67,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-        PagedListHolder pagedListHolder = new PagedListHolder(m_reporListService.getAllReports());
+        PagedListHolder pagedListHolder = new PagedListHolder(m_reportStoreService.getAll());
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(req, "p", 0);
         pagedListHolder.setPage(page); 
@@ -78,7 +79,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         ManageDatabaseReportCommand manageCommand = (ManageDatabaseReportCommand) command;
-        m_reporListService.deleteReports(manageCommand.getIds());
+        m_reportStoreService.delete(manageCommand.getIds());
         ModelAndView mav = new ModelAndView(getSuccessView());
         return mav;
     }
