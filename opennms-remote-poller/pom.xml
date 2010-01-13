@@ -79,7 +79,7 @@ groovy.compiler.output.path=target/classes
                 <configuration>
                    <mainClass>org.opennms.poller.remote.Main</mainClass>
                    <onejarVersion>0.96</onejarVersion>
-                   <attachToBuild>true</attachToBuild>
+                   <attachToBuild>false</attachToBuild>
                 </configuration>
                 <phase>package</phase>
                 <goals>
