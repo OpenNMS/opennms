@@ -46,6 +46,7 @@ fi
 log_file="/dev/null"
 
 exec nohup $JAVA_EXE \
+        -Xmx384m \
         -Djava.rmi.activation.port="$RMI_PORT" \
         -Dlog4j.logger="DEBUG" \
         -jar "$MONITOR_JAR" \
