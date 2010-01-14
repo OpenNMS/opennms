@@ -6,12 +6,42 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Object>> {
 
     private final List<RrdStrategy> m_strategies = new ArrayList<RrdStrategy>();
-    private int m_graphIndex;
-    private int m_readIndex;
+    private int m_graphStrategyIndex;
+    private int m_fetchStrategyIndex;
+
+    public void setConfigurationProperties(Properties configurationParameters) {
+        // We don't use any configuration properties
+    }
+
+    public List<RrdStrategy> getDelegates() {
+        return m_strategies;
+    }
+
+    public void setDelegates(List<RrdStrategy> delegates) {
+        m_strategies.clear();
+        m_strategies.addAll(delegates);
+    }
+
+    public int getGraphStrategyIndex() {
+        return m_graphStrategyIndex;
+    }
+
+    public void setGraphStrategyIndex(int graphStrategyIndex) {
+        this.m_graphStrategyIndex = graphStrategyIndex;
+    }
+
+    public int getFetchStrategyIndex() {
+        return m_fetchStrategyIndex;
+    }
+
+    public void setFetchStrategyIndex(int fetchStrategyIndex) {
+        this.m_fetchStrategyIndex = fetchStrategyIndex;
+    }
 
     public void closeFile(List<Object> rrd) throws Exception {
         for (int i = 0; i < rrd.size(); i++) {
@@ -37,44 +67,44 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
 
     public InputStream createGraph(String command, File workDir)
     throws IOException, RrdException {
-        return m_strategies.get(m_graphIndex).createGraph(command, workDir);
+        return m_strategies.get(m_graphStrategyIndex).createGraph(command, workDir);
     }
 
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir)
     throws IOException, RrdException {
-        return m_strategies.get(m_graphIndex).createGraphReturnDetails(command, workDir);
+        return m_strategies.get(m_graphStrategyIndex).createGraphReturnDetails(command, workDir);
     }
 
     public Double fetchLastValue(String rrdFile, String ds, int interval)
     throws NumberFormatException, RrdException {
-        return m_strategies.get(m_readIndex).fetchLastValue(rrdFile, ds, interval);
+        return m_strategies.get(m_fetchStrategyIndex).fetchLastValue(rrdFile, ds, interval);
     }
 
     public Double fetchLastValue(String rrdFile, String ds,
             String consolidationFunction, int interval)
     throws NumberFormatException, RrdException {
-        return m_strategies.get(m_readIndex).fetchLastValue(rrdFile, ds, consolidationFunction, interval);
+        return m_strategies.get(m_fetchStrategyIndex).fetchLastValue(rrdFile, ds, consolidationFunction, interval);
     }
 
     public Double fetchLastValueInRange(String rrdFile, String ds,
             int interval, int range) throws NumberFormatException, RrdException {
-        return m_strategies.get(m_readIndex).fetchLastValueInRange(rrdFile, ds, interval, range);
+        return m_strategies.get(m_fetchStrategyIndex).fetchLastValueInRange(rrdFile, ds, interval, range);
     }
 
     public String getDefaultFileExtension() {
-        return m_strategies.get(m_readIndex).getDefaultFileExtension();
+        return m_strategies.get(m_fetchStrategyIndex).getDefaultFileExtension();
     }
 
     public int getGraphLeftOffset() {
-        return m_strategies.get(m_graphIndex).getGraphLeftOffset();
+        return m_strategies.get(m_graphStrategyIndex).getGraphLeftOffset();
     }
 
     public int getGraphRightOffset() {
-        return m_strategies.get(m_graphIndex).getGraphRightOffset();
+        return m_strategies.get(m_graphStrategyIndex).getGraphRightOffset();
     }
 
     public int getGraphTopOffsetWithText() {
-        return m_strategies.get(m_graphIndex).getGraphTopOffsetWithText();
+        return m_strategies.get(m_graphStrategyIndex).getGraphTopOffsetWithText();
     }
 
     @Override
@@ -85,26 +115,6 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
             retval.append("\n");
         }
         return retval.toString().trim();
-    }
-
-    public void graphicsInitialize() throws Exception {
-        m_strategies.get(m_graphIndex).graphicsInitialize();
-    }
-
-    /**
-     * Initialize the array of RrdStrategy delegates.
-     * TODO: Use a configuration file to initialize this
-     * list.
-     */
-    public void initialize() throws Exception {
-        // TODO Auto-generated method stub
-        m_strategies.add((RrdStrategy)Class.forName("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy").newInstance());
-        m_strategies.add((RrdStrategy)Class.forName("org.opennms.netmgt.rrd.tcp.TcpRrdStrategy").newInstance());
-        m_graphIndex = 0;
-        m_readIndex = 0;
-        for (RrdStrategy strategy : m_strategies) {
-            strategy.initialize();
-        }
     }
 
     public List<Object> openFile(String fileName) throws Exception {

@@ -61,8 +61,6 @@ import junit.framework.TestCase;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class PersistOperationBuilderTest extends TestCase {
-    private static boolean s_rrdInitialized = false;
-    
     private FileAnticipator m_fileAnticipator;
     private File m_snmpDirectory;
     private OnmsIpInterface m_intf;
@@ -90,13 +88,6 @@ public class PersistOperationBuilderTest extends TestCase {
         EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
         
         EasyMock.replay(m_ifDao);
-        
-        // Grumble grumble... side effects... grumble grumble
-        if (!s_rrdInitialized) {
-            RrdUtils.setStrategy(new JRobinRrdStrategy());
-            RrdUtils.initialize();
-            s_rrdInitialized = true;
-        }
     }
     
     @Override

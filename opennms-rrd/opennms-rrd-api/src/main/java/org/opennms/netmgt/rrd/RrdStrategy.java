@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Defines an abstract strategy for manipulating round robin database file. This
@@ -50,19 +51,9 @@ import java.util.List;
 public interface RrdStrategy<D,F> {
 
     /**
-     * Initialize the appropriate round robin system
-     * 
-     * @throws Exception
-     *             if an Error occurs
      */
-    public void initialize() throws Exception;
+    public void setConfigurationProperties(Properties props);
 
-    /**
-     * This Initializes the graphics subsystem only. This is used by the web
-     * application to avoid the need for the JNI infrastructure in the webapp.
-     */
-    public void graphicsInitialize() throws Exception;
-    
     /**
      * Get the file extension appropriate for files of this type
      */

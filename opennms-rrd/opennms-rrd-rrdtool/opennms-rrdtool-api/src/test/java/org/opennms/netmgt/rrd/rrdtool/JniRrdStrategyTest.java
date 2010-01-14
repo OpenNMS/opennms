@@ -69,7 +69,6 @@ public class JniRrdStrategyTest {
             File libFile = new File(rrdLib);
             if (libFile.exists()) {
                 m_strategy = new JniRrdStrategy();
-                m_strategy.initialize();
             } else {
                 throw new FileNotFoundException(rrdLib + " does not exist");
             }

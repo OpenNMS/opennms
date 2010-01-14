@@ -89,7 +89,6 @@ public class JRobinRrdStrategyTest {
         MockLogAppender.setupLogging();
         
         m_strategy = new JRobinRrdStrategy();
-        m_strategy.initialize();
 
         // Don't initialize by default since not all tests need it.
         m_fileAnticipator = new FileAnticipator(false);
@@ -369,8 +368,7 @@ public class JRobinRrdStrategyTest {
         String rrdFileBase = "foo";
 
         m_fileAnticipator.initialize();
-        RrdUtils.initialize();
-        String rrdExtension = RrdUtils.getStrategy().getDefaultFileExtension();
+        String rrdExtension = RrdUtils.getExtension();
         
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));

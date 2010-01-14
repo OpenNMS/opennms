@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.jrobin.core.FetchData;
@@ -71,10 +72,18 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * open)
  */
 public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
-    //Ensure that we only initialize certain things *once* per Java VM, not once per instantiation of this class  
+    //Ensure that we only initialize certain things *once* per Java VM, not once per instantiation of this class
     private static boolean s_initialized = false;
-    
-    private boolean m_initialized = false;
+
+    private Properties m_configurationProperties;
+
+    public Properties getConfigurationProperties() {
+        return m_configurationProperties;
+    }
+
+    public void setConfigurationProperties(Properties configurationParameters) {
+        this.m_configurationProperties = configurationParameters;
+    }
 
     /**
      * Closes the JRobin RrdDb.
@@ -149,26 +158,19 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * Initialized the RrdDb to use the FILE factory because the NIO factory
      * uses too much memory for our implementation.
      */
-    public synchronized void initialize() throws Exception {
-        if (!m_initialized) {
-            if(!s_initialized) {
-                String factory = RrdConfig.getInstance().getProperty("org.jrobin.core.RrdBackendFactory", "FILE");
-                RrdDb.setDefaultFactory(factory);
-                s_initialized=true;
+    public JRobinRrdStrategy() throws Exception {
+        if(!s_initialized) {
+            String factory = null;
+            if (m_configurationProperties == null) {
+                factory = "FILE";
+            } else {
+                factory = (String)m_configurationProperties.get("org.jrobin.core.RrdBackendFactory");
             }
-            String home = System.getProperty("opennms.home");
-            System.setProperty("jrobin.fontdir", home + File.separator + "etc");
-            m_initialized = true;
+            RrdDb.setDefaultFactory(factory);
+            s_initialized=true;
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
-     */
-    public void graphicsInitialize() throws Exception {
-        initialize();
+        String home = System.getProperty("opennms.home");
+        System.setProperty("jrobin.fontdir", home + File.separator + "etc");
     }
 
     /**

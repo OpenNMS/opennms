@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Category;
@@ -118,33 +119,132 @@ import org.apache.log4j.Logger;
  */
 public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operation,String>, Runnable {
 
+    private Properties m_configurationProperties;
+
+    public Properties getConfigurationProperties() {
+        return m_configurationProperties;
+    }
+
+    public void setConfigurationProperties(Properties configurationParameters) {
+        this.m_configurationProperties = configurationParameters;
+    }
+
     RrdStrategy m_delegate;
 
     static final int UPDATE = 0;
 
     static final int CREATE = 1;
 
-    static final int WRITE_THREADS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethreads", 2);
+    private int m_writeThreads;
 
-    private static final boolean QUEUE_CREATES = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.queuecreates", false);
+    private boolean m_queueCreates;
     
-    private static final boolean PRIORITIZE_SIGS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.prioritizeSignificantUpdates", false);
+    private boolean m_prioritizeSignificantUpdates;
 
-    private static final long INSIG_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.inSigHighWaterMark", 0L);
+    private long m_inSigHighWaterMark;
 
-    private static final long SIG_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.sigHighWaterMark", 0L);
+    private long m_sigHighWaterMark;
 
-    private static final long QUEUE_HIGH_WATER_MARK = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.queueHighWaterMark", 0L);
+    private long m_queueHighWaterMark;
 
-    private static final long MODULUS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.modulus", 10000L);
+    private long m_modulus;
 
-    private static final String LOG4J_CATEGORY = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.category", "OpenNMS.Queued");
+    private String m_category;
 
-    private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
+    private long m_maxInsigUpdateSeconds;
 
-    private static final long WRITE_THREAD_SLEEP_TIME = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethread.sleepTime", 50L);
+    private long m_writeThreadSleepTime;
 
-    private static final long WRITE_THREAD_EXIT_DELAY = RrdConfig.getInstance().getProperty("org.opennms.rrd.queuing.writethread.exitDelay", 60000L);
+    private long m_writeThreadExitDelay;
+
+    public int getWriteThreads() {
+        return m_writeThreads;
+    }
+
+    public void setWriteThreads(int writeThreads) {
+        m_writeThreads = writeThreads;
+    }
+
+    public boolean queueCreates() {
+        return m_queueCreates;
+    }
+
+    public void setQueueCreates(boolean queueCreates) {
+        m_queueCreates = queueCreates;
+    }
+
+    public boolean prioritizeSignificantUpdates() {
+        return m_prioritizeSignificantUpdates;
+    }
+
+    public void setPrioritizeSignificantUpdates(
+            boolean prioritizeSignificantUpdates) {
+        m_prioritizeSignificantUpdates = prioritizeSignificantUpdates;
+    }
+
+    public long getInSigHighWaterMark() {
+        return m_inSigHighWaterMark;
+    }
+
+    public void setInSigHighWaterMark(long inSigHighWaterMark) {
+        m_inSigHighWaterMark = inSigHighWaterMark;
+    }
+
+    public long getSigHighWaterMark() {
+        return m_sigHighWaterMark;
+    }
+
+    public void setSigHighWaterMark(long sigHighWaterMark) {
+        m_sigHighWaterMark = sigHighWaterMark;
+    }
+
+    public long getQueueHighWaterMark() {
+        return m_queueHighWaterMark;
+    }
+
+    public void setQueueHighWaterMark(long queueHighWaterMark) {
+        m_queueHighWaterMark = queueHighWaterMark;
+    }
+
+    public long getModulus() {
+        return m_modulus;
+    }
+
+    public void setModulus(long modulus) {
+        m_modulus = modulus;
+    }
+
+    public String getCategory() {
+        return m_category;
+    }
+
+    public void setCategory(String category) {
+        m_category = category;
+    }
+
+    public long getMaxInsigUpdateSeconds() {
+        return m_maxInsigUpdateSeconds;
+    }
+
+    public void setMaxInsigUpdateSeconds(long maxInsigUpdateSeconds) {
+        m_maxInsigUpdateSeconds = maxInsigUpdateSeconds;
+    }
+
+    public long getWriteThreadSleepTime() {
+        return m_writeThreadSleepTime;
+    }
+
+    public void setWriteThreadSleepTime(long writeThreadSleepTime) {
+        m_writeThreadSleepTime = writeThreadSleepTime;
+    }
+
+    public long getWriteThreadExitDelay() {
+        return m_writeThreadExitDelay;
+    }
+
+    public void setWriteThreadExitDelay(long writeThreadExitDelay) {
+        m_writeThreadExitDelay = writeThreadExitDelay;
+    }
 
     LinkedList<String> filesWithSignificantWork = new LinkedList<String>();
 
@@ -306,7 +406,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
             // keep stats
             setUpdatesCompleted(getUpdatesCompleted() + 1);
-            if (getUpdatesCompleted() % MODULUS == 0) {
+            if (getUpdatesCompleted() % m_modulus == 0) {
                 logStats();
             }
             // return the open rrd for further processing
@@ -352,7 +452,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
                 // keep stats
                 setUpdatesCompleted(getUpdatesCompleted() + 1);
-                if (getUpdatesCompleted() % MODULUS == 0) {
+                if (getUpdatesCompleted() % m_modulus == 0) {
                     logStats();
                 }
             }
@@ -480,28 +580,28 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
     
     private Category log() {
-        return Logger.getLogger(LOG4J_CATEGORY);
+        return Logger.getLogger(m_category);
     }
 
     private boolean queueIsFull() {
-        if (QUEUE_HIGH_WATER_MARK <= 0)
+        if (m_queueHighWaterMark <= 0)
             return false;
         else
-            return getTotalOperationsPending() >= QUEUE_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= m_queueHighWaterMark;
     }
 
     private boolean sigQueueIsFull() {
-        if (SIG_HIGH_WATER_MARK <= 0)
+        if (m_sigHighWaterMark <= 0)
             return false;
         else
-            return getTotalOperationsPending() >= SIG_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= m_sigHighWaterMark;
     }
 
     private boolean inSigQueueIsFull() {
-        if (INSIG_HIGH_WATER_MARK <= 0)
+        if (m_inSigHighWaterMark <= 0)
             return false;
         else
-            return getTotalOperationsPending() >= INSIG_HIGH_WATER_MARK;
+            return getTotalOperationsPending() >= m_inSigHighWaterMark;
     }
 
     /**
@@ -509,7 +609,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      * 
      */
     public synchronized void ensureThreadsStarted() {
-        if (threadsRunning < WRITE_THREADS) {
+        if (threadsRunning < m_writeThreads) {
             threadsRunning++;
             Thread t = new Thread(this);
             t.start();
@@ -579,11 +679,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
             // add the file to the correct list based on what type of work we
             // are adding.  (if we aren't prioritizing then every file is counted as
             // signficant
-            if (!PRIORITIZE_SIGS || op.isSignificant())
+            if (!m_prioritizeSignificantUpdates || op.isSignificant())
                 filesWithSignificantWork.addLast(op.getFileName());
             else
                 filesWithInsignificantWork.addLast(op.getFileName());
-        } else if (PRIORITIZE_SIGS && op.isSignificant() && hasOnlyInsignificant(pendingOperations)) {
+        } else if (m_prioritizeSignificantUpdates && op.isSignificant() && hasOnlyInsignificant(pendingOperations)) {
             // only do this when we are prioritizing as this bumps files from inSig
             // up to insig
             // promote the file to the significant list if this is the first
@@ -604,10 +704,10 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     private synchronized void promoteAgedFiles() {
         
         // no need to do this is we aren't prioritizing
-        if (!PRIORITIZE_SIGS) return;
+        if (!m_prioritizeSignificantUpdates) return;
 
         // the num seconds to update files is 0 then use unfair prioritization
-        if (MAX_INSIG_UPDATE_SECONDS == 0 || filesWithInsignificantWork.isEmpty())
+        if (m_maxInsigUpdateSeconds == 0 || filesWithInsignificantWork.isEmpty())
             return;
 
         // calculate the elapsed time we first queued updates
@@ -617,7 +717,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
         // calculate the milliseconds between promotions necessary to age
         // insignificant files into
         // the significant queue
-        double millisPerPromotion = ((MAX_INSIG_UPDATE_SECONDS * 1000.0) / filesWithInsignificantWork.size());
+        double millisPerPromotion = ((m_maxInsigUpdateSeconds * 1000.0) / filesWithInsignificantWork.size());
 
         // calculate the number of millis since start until the next file needs
         // to be promotoed
@@ -742,29 +842,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      * @see RrdStrategy#createFile(java.lang.Object)
      */
     public void createFile(Operation op) throws Exception {
-        if (QUEUE_CREATES)
+        if (m_queueCreates)
             addOperation(op);
         else {
             m_delegate.createFile(op.getData());
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.rrd.RrdStrategy#initialize()
-     */
-    public void initialize() throws Exception {
-        m_delegate.initialize();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
-     */
-    public void graphicsInitialize() throws Exception {
-        m_delegate.graphicsInitialize();
     }
 
     /*
@@ -819,7 +901,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
             long waitStart = -1L;
             long delayed = 0;
-            while (delayed < WRITE_THREAD_EXIT_DELAY) {
+            while (delayed < m_writeThreadExitDelay) {
                 if (getTotalOperationsPending() > 0) {
                     delayed = 0;
                     waitStart = -1L;
@@ -829,7 +911,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
                         waitStart = System.currentTimeMillis();
                     }
                     try {
-                        Thread.sleep(WRITE_THREAD_SLEEP_TIME);
+                        Thread.sleep(m_writeThreadSleepTime);
                     } catch (InterruptedException e) {
                     }
                     long now = System.currentTimeMillis();

@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.StringUtils;
@@ -92,7 +93,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         };
     }
 
-    public static class RrdOutputSocket {
+    public class RrdOutputSocket {
         // private final RrdDefinition m_def;
         private final String m_filename;
         private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
@@ -127,14 +128,14 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         public void writeData() throws Exception {
             Socket socket = null;
             try {
-                socket = new Socket(InetAddress.getByName(HOST_ADDRESS), TCP_PORT);
+                socket = new Socket(InetAddress.getByName(m_host), m_port);
                 OutputStream out = socket.getOutputStream();
                 m_messages.build().writeTo(out);
                 // out = new FileOutputStream(new File("/tmp/testdata.protobuf"));
                 // m_messages.build().writeTo(out);
                 out.flush();
             } catch (Throwable e) {
-                System.out.println(e.getMessage());
+                ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ": " + e.getMessage());
             } finally {
                 if (socket != null) {
                     socket.close();
@@ -168,22 +169,28 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         }
     }
 
-    /**
-     * TODO: Fetch this value from configuration file
-     */
-    private static final String HOST_ADDRESS = "127.0.0.1";
+    private String m_host = null;
 
-    /**
-     * TODO: Fetch this value from configuration file
-     */
-    private static final int TCP_PORT = 8999;
+    public String getHost() {
+        return m_host;
+    }
 
-    public void initialize() throws Exception {
+    public void setConfigurationProperties(Properties configurationParameters) {
         // Do nothing
     }
 
-    public void graphicsInitialize() throws Exception {
-        // Do nothing
+    public void setHost(String host) {
+        this.m_host = host;
+    }
+
+    private int m_port = 0;
+
+    public int getPort() {
+        return m_port;
+    }
+
+    public void setPort(int port) {
+        this.m_port = port;
     }
 
     public String getDefaultFileExtension() {

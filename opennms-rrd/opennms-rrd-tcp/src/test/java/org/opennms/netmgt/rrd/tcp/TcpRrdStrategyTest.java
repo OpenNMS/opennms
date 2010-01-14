@@ -67,6 +67,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -133,8 +134,10 @@ public class TcpRrdStrategyTest {
 
         MockLogAppender.setupLogging();
 
-        m_strategy = new TcpRrdStrategy();
-        m_strategy.initialize();
+        m_strategy = RrdUtils.getStrategy();
+        // m_strategy = new TcpRrdStrategy();
+        // ((TcpRrdStrategy)m_strategy).setHost("127.0.0.1");
+        // ((TcpRrdStrategy)m_strategy).setPort(8999);
 
         // Don't initialize by default since not all tests need it.
         m_fileAnticipator = new FileAnticipator(false);
@@ -178,15 +181,19 @@ public class TcpRrdStrategyTest {
 
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
+        // Sleep in between updates so that we don't underrun the 1-second step size
+        Thread.currentThread().sleep(1000);
         m_strategy.updateFile(openedFile, "oh", "N:1.234234");
+        Thread.currentThread().sleep(1000);
         m_strategy.updateFile(openedFile, "ok", "N:1.234234");
+        Thread.currentThread().sleep(1000);
         m_strategy.updateFile(openedFile, "lol", "N:1.234234");
         m_strategy.closeFile(openedFile);
     }
 
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
-        String rrdExtension = ".jrb";
+        String rrdExtension = RrdUtils.getExtension();
 
         m_fileAnticipator.initialize();
 

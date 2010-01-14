@@ -46,13 +46,11 @@ import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public abstract class RrdTestUtils {
-    public static void initialize() throws IOException, RrdException {
+    public static void initialize() throws RrdException, Exception {
         RrdUtils.setStrategy(new JRobinRrdStrategy());
-        RrdUtils.initialize();
     }
 
-    public static void initializeNullStrategy() throws IOException, RrdException {
+    public static void initializeNullStrategy() throws RrdException, Exception {
         RrdUtils.setStrategy(new NullRrdStrategy());
-        RrdUtils.initialize();
     }
 }

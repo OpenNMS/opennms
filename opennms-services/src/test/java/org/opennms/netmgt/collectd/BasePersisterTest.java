@@ -62,8 +62,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class BasePersisterTest extends TestCase {
-    private static boolean s_rrdInitialized = false;
-    
     private FileAnticipator m_fileAnticipator;
     private File m_snmpDirectory;
     private BasePersister m_persister;
@@ -91,12 +89,6 @@ public class BasePersisterTest extends TestCase {
         
         m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
         
-        // Grumble grumble... side effects... grumble grumble
-        if (!s_rrdInitialized) {
-            RrdUtils.setStrategy(new JRobinRrdStrategy());
-            RrdUtils.initialize();
-            s_rrdInitialized  = true;
-        }
     }
     
     @Override

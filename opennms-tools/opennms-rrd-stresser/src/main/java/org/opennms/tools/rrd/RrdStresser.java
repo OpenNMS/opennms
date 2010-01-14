@@ -296,7 +296,6 @@ public class RrdStresser {
     }
 
     private static void rrdInitialize() throws Exception {
-    	RrdUtils.initialize();
     	rrd = RrdUtils.getStrategy();
     }
 

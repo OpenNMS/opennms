@@ -155,7 +155,6 @@ public class ThresholderTestCase extends TestCase {
     }
     
 	protected void expectRrdStrategyCalls() throws Exception {
-        m_rrdStrategy.initialize();
         expectLastCall().anyTimes();
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrd").anyTimes();
 	}

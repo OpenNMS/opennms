@@ -199,7 +199,6 @@ public class OpenNMSProvisionerTest {
     }
 
     private void expectRrdInitialize() throws Exception {
-        m_strategy.initialize();
         EasyMock.expectLastCall().anyTimes();
     }
 

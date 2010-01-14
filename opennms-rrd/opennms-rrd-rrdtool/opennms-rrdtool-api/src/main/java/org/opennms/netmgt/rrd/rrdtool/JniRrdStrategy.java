@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.StringUtils;
@@ -73,9 +74,15 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
 	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
 	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
-    boolean initialized = false;
+    private Properties m_configurationProperties;
 
-    boolean graphicsInitialized = false;
+    public Properties getConfigurationProperties() {
+        return m_configurationProperties;
+    }
+
+    public void setConfigurationProperties(Properties configurationParameters) {
+        this.m_configurationProperties = configurationParameters;
+    }
 
     /**
      * The 'closes' the rrd file. This is where the actual work of writing the
@@ -83,7 +90,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * string containing updates. This method executes this command.
      */
     public void closeFile(StringBuffer rrd) throws Exception {
-        checkState("closeFile");
         String command = rrd.toString();
         log().debug("Executing: rrdtool "+command);
         String[] results = Interface.launch(command);
@@ -92,23 +98,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         }
     }
 
-    /**
-     * Ensures that the initialize method has been called.
-     * 
-     * @param methodName
-     *            the name of the method we are called from
-     * @throws IllegalState
-     *             exception of intialize has not been called.
-     */
-    private void checkState(String methodName) {
-        if (!initialized) {
-            throw new IllegalStateException("the " + methodName + " method cannot be called before initialize");
-        }
-    }
-
     public String createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-        checkState("createDefinition");
-
         File f = new File(directory);
         f.mkdirs();
 
@@ -150,7 +140,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * really just the create command string it just executes it.
      */
     public void createFile(String rrdDef) throws Exception {
-        checkState("createFile");
         if (rrdDef == null) return;
         log().debug("Executing: rrdtool "+rrdDef.toString());
         Interface.launch(rrdDef);
@@ -162,7 +151,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * of the rrd command to update the file.
      */
     public StringBuffer openFile(String fileName) throws Exception {
-        checkState("openFile");
         return new StringBuffer("update " + fileName);
     }
 
@@ -175,7 +163,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * per open. The updates are all performed at once in the closeFile method.
      */
     public void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
-        checkState("updateFile");
         rrd.append(' ');
         rrd.append(data);
     }
@@ -183,18 +170,8 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     /**
      * Initialized the JNI Interface
      */
-    public void initialize() throws Exception {
+    public JniRrdStrategy() throws Exception {
         Interface.init();
-        initialized = true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
-     */
-    public void graphicsInitialize() throws Exception {
-        // nothing to do here
     }
 
     /**
@@ -206,8 +183,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
 
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) {
-        checkState("fetchLastValue");
-
         /*
          * Generate rrd_fetch() command through jrrd JNI interface in order to
          * retrieve LAST pdp for the datasource stored in the specified RRD
@@ -292,8 +267,6 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
 
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
-        checkState("fetchLastValue");
-
         // Generate rrd_fetch() command through jrrd JNI interface in order to
         // retrieve
         // LAST pdp for the datasource stored in the specified RRD file
