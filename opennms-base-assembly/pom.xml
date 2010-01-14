@@ -74,7 +74,7 @@
                   <classifier>xsds</classifier>
 	             </artifactItem>
 	             <artifactItem>
-	               <groupId>org.opennms</groupId>
+	               <groupId>org.opennms.features</groupId>
 	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>
                   <classifier>jnlp</classifier>
