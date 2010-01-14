@@ -228,8 +228,8 @@
       <artifactId>opennms-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-remote-poller</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
       <classifier>signed-jar-with-dependencies</classifier>
       <version>${pom.version}</version>
       <scope>provided</scope>

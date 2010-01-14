@@ -63,8 +63,8 @@
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-remote-poller-jnlp</artifactId>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>
                   <classifier>jnlp</classifier>
                   <outputDirectory>${project.build.directory}</outputDirectory>
