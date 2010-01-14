@@ -86,6 +86,7 @@
     <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/1.6</url>
   </scm>
   <modules>
+    <module>features</module>
     <module>dependencies</module>
     <module>opennms-test</module>
     <module>mock-snmp-agent</module>
@@ -880,7 +881,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-	<artifactId>opennms-qosdaemon</artifactId>
+        <artifactId>opennms-qosdaemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-remote-poller</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

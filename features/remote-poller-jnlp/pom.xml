@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.6.9-TESTING-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-remote-poller-jnlp</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS Remote Poller (JNLP)</name>
+  <url>http://maven.apache.org</url>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-key</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                def keystore = new File(project.properties['webstart.keystore'])
+                if (!keystore.exists()) {
+                  keystore.parentFile.mkdirs();
+                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
+                  def args = [
+                    keystore: project.properties['webstart.keystore'],
+                    alias: project.properties['webstart.keyalias'],
+                    storepass: project.properties['webstart.storepass'],
+                    dname: "cn=${project.properties['webstart.dnameCn']}"
+                  ]
+                  if (project.properties['webstart.keypass']) {
+                    args.put('keypass', project.properties['webstart.keypass'])
+                  }
+                  ant.genkey(args)
+                }
+              </source>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo.webstart</groupId>
+        <artifactId>webstart-maven-plugin</artifactId>
+        <version>1.0-alpha-2</version>
+        <executions>
+          <execution>
+            <id>gui-app</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <templateFilename>app.vm</templateFilename>
+                  <outputFilename>app.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms</groupId>
+                      <artifactId>opennms-remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <id>headless-app</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <templateFilename>headless.vm</templateFilename>
+                  <outputFilename>headless.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms</groupId>
+                      <artifactId>opennms-remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <templateDirectory>src/main/jnlp</templateDirectory>
+          <outputJarVersions>true</outputJarVersions>
+          <verbose>false</verbose>
+          <verifyjar>true</verifyjar>
+          <sign>
+            <keystore>${webstart.keystore}</keystore>
+            <keypass>${webstart.keypass}</keypass>
+            <storepass>${webstart.storepass}</storepass>
+            <alias>${webstart.keyalias}</alias>
+            <dnameCn>${webstart.dnameCn}</dnameCn>
+            <dnameCn>${webstart.dnameCn}</dnameCn>
+          </sign>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/jnlp.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-remote-poller</artifactId>
+      <scope>process-sources</scope>
+    </dependency>
+  </dependencies>
+</project>
