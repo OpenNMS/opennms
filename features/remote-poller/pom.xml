@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -71,28 +71,6 @@ groovy.compiler.output.path=target/classes
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.opennms.poller.remote.Main</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <tarLongFileMode>gnu</tarLongFileMode>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <executions>
@@ -131,6 +109,24 @@ groovy.compiler.output.path=target/classes
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.dstovall</groupId>
+           <artifactId>onejar-maven-plugin</artifactId>
+           <version>1.4.1</version>
+           <executions>
+              <execution>
+                <configuration>
+                   <mainClass>org.opennms.poller.remote.Main</mainClass>
+                   <onejarVersion>0.96</onejarVersion>
+                   <attachToBuild>true</attachToBuild>
+                </configuration>
+                <phase>package</phase>
+                <goals>
+                   <goal>one-jar</goal>
+                </goals>
+              </execution>
+           </executions>
+        </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -148,7 +144,7 @@ groovy.compiler.output.path=target/classes
           <alias>${webstart.keyalias}</alias>
           <dnameCn>${webstart.dnameCn}</dnameCn>
           <dnameCn>${webstart.dnameCn}</dnameCn>
-          <jarPath>${project.build.directory}/${project.build.FinalName}-${project.packaging}-with-dependencies.${project.packaging}</jarPath>
+          <jarPath>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</jarPath>
           <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
         </configuration>
       </plugin>
@@ -184,4 +180,10 @@ groovy.compiler.output.path=target/classes
       <artifactId>groovy</artifactId>
     </dependency>
   </dependencies>
+   <pluginRepositories>
+      <pluginRepository>
+        <id>onejar-maven-plugin.googlecode.com</id>
+        <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+      </pluginRepository>
+   </pluginRepositories>
 </project>
