@@ -37,6 +37,7 @@ package org.opennms.reporting.core.svclayer;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -46,6 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReportStoreService {
     
     public List<ReportCatalogEntry> getAll();
+    
+    public Map<String, Object> getFormatMap();
     
     public void render(Integer id, String format, OutputStream outputStream);
     

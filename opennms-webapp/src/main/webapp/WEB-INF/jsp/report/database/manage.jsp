@@ -89,12 +89,10 @@
 					<td>${report.title}</td>
 					<td>${report.reportId}</td>
 					<td>${report.date}</td>
-					<td><a
-						href="report/database/downloadReport.htm?locatorId=${report.id}&format=html">html</a>
-					<a
-						href="report/database/downloadReport.htm?locatorId=${report.id}&format=pdf">pdf</a>
-					<a
-						href="report/database/downloadReport.htm?locatorId=${report.id}&format=svg">svg</a>
+					<td>
+					<c:forEach items='${formatMap[report.reportId]}' var="format">
+						<a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
+					</c:forEach>
 					</td>
 					<td><form:checkbox path="ids" value="${report.id}"/></td>
 				</tr>

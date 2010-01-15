@@ -37,11 +37,16 @@ package org.opennms.reporting.core.svclayer.support;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 
 import org.apache.log4j.Category;
 import org.opennms.api.integration.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
@@ -73,6 +78,20 @@ public class DefaultReportStoreService implements ReportStoreService {
 
     public List<ReportCatalogEntry> getAll() {
         return m_reportCatalogDao.findAll();
+    }
+    
+    public Map<String, Object> getFormatMap() {
+        HashMap <String, Object> formatMap = new HashMap<String, Object>();
+        List <Report> reports = m_databaseReportConfigDao.getReports();
+        Iterator<Report> reportIter = reports.iterator();
+        while (reportIter.hasNext()) {
+            Report report = reportIter.next();
+            String id = report.getId();
+            String service = report.getReportService();
+            List <String> formats = m_reportServiceLocator.getReportService(service).getAvailableFormats(id);
+            formatMap.put(id, formats);
+        }
+        return formatMap;
     }
     
     public void render(Integer id, String format, OutputStream outputStream) {

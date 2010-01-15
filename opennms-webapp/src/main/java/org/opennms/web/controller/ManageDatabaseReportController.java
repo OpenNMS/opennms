@@ -36,10 +36,13 @@
 package org.opennms.web.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.command.ManageDatabaseReportCommand;
 import org.springframework.beans.support.PagedListHolder;
@@ -67,10 +70,13 @@ public class ManageDatabaseReportController extends SimpleFormController {
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-        PagedListHolder pagedListHolder = new PagedListHolder(m_reportStoreService.getAll());
+        List<ReportCatalogEntry> reportCatalog = m_reportStoreService.getAll();
+        Map<String, Object> formatMap = m_reportStoreService.getFormatMap();
+        PagedListHolder pagedListHolder = new PagedListHolder(reportCatalog);
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(req, "p", 0);
         pagedListHolder.setPage(page); 
+        data.put("formatMap", formatMap);
         data.put("pagedListHolder", pagedListHolder);
         return data;
 

@@ -37,6 +37,7 @@ package org.opennms.report.availability.svclayer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,8 +55,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
-import org.opennms.netmgt.model.AvailabilityReportLocator;
-import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.report.availability.AvailabilityCalculationException;
 import org.opennms.report.availability.AvailabilityCalculator;
 import org.opennms.report.availability.ReportMailer;
@@ -66,18 +65,19 @@ import org.opennms.report.availability.render.ReportRenderer;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class OnmsReportService implements ReportService, ReportValidationService {
-    
+public class OnmsReportService implements ReportService, ReportValidationService{
+
     private AvailabilityCalculator m_classicCalculator;
 
     private AvailabilityCalculator m_calendarCalculator;
     
-    private ReportRenderer m_pdfReportRenderer;
-    private ReportRenderer m_htmlReportRenderer;
-    
     private OnmsDatabaseReportConfigDao m_configDao;
     
     private Category log;
+
+    private ReportRenderer m_pdfReportRenderer;
+
+    private ReportRenderer m_htmlReportRenderer;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -177,38 +177,6 @@ public class OnmsReportService implements ReportService, ReportValidationService
 
     }
     
-    public byte[] render(AvailabilityReportLocator locator, String format) {
-        
-        Resource xsltResource;
-        ReportRenderer renderer;
-        byte[] result = null;
-            
-        try {
-                
-                if (format.equalsIgnoreCase(HTML_FORMAT)) {
-                    renderer = new HTMLReportRenderer();
-                    xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(locator.getFormat()));
-                } else {
-                    renderer = new PDFReportRenderer();
-                    if (format.equalsIgnoreCase(SVG_FORMAT)) {
-                        xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(locator.getFormat()));
-                    } else {
-                        xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(locator.getFormat()));
-                    }
-                }
-                String baseDir = System.getProperty("opennms.report.dir");
-                renderer.setBaseDir(baseDir);
-                result = renderer.render(locator.getLocation(),xsltResource);
-            } catch (MalformedURLException e) {
-                log.fatal("Malformed URL for xslt template");
-            } catch (ReportRenderException e) {
-                log.fatal("unable to render report");
-            }
-            
-            return result;
-            
-        }
-    
     public void render(String id, String location, String format, OutputStream outputStream) {
         
         Resource xsltResource;
@@ -239,35 +207,6 @@ public class OnmsReportService implements ReportService, ReportValidationService
             
         }
     
-    public void render(AvailabilityReportLocator locator, String format, OutputStream outputStream) {
-        
-    Resource xsltResource;
-    ReportRenderer renderer;
-        
-    try {
-            
-            if (format.equalsIgnoreCase(HTML_FORMAT)) {
-                renderer = new HTMLReportRenderer();
-                xsltResource =  new UrlResource(m_configDao.getHtmlStylesheetLocation(locator.getFormat()));
-            } else {
-                renderer = new PDFReportRenderer();
-                if (format.equalsIgnoreCase(SVG_FORMAT)) {
-                    xsltResource =  new UrlResource(m_configDao.getSvgStylesheetLocation(locator.getFormat()));
-                } else {
-                    xsltResource =  new UrlResource(m_configDao.getPdfStylesheetLocation(locator.getFormat()));
-                }
-            }
-            String baseDir = System.getProperty("opennms.report.dir");
-            renderer.setBaseDir(baseDir);
-            renderer.render(locator.getLocation(), outputStream, xsltResource);
-
-        } catch (MalformedURLException e) {
-            log.fatal("Malformed URL for xslt template");
-        } catch (ReportRenderException e) {
-            log.fatal("unable to render report");
-        }
-        
-    }
     
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
 

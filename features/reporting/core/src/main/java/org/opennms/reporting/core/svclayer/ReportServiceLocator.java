@@ -58,5 +58,15 @@ public interface ReportServiceLocator  {
      */
     
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException; 
+    
+    /**
+     * This method is used to retrieve the ReportService bean associated with a report Id
+     * 
+     * @param   reportId the reportID defined in database-reports.xml
+     * @return  the ReportService bean used to run this report
+     * @throws  ReportServiceLocatorException
+     */
+    
+    public ReportService getReportServiceForId(String reportId) throws ReportServiceLocatorException; 
 
 }

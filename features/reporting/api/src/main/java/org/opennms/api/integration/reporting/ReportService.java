@@ -12,7 +12,9 @@
  * 
  * Created: December 8th, 2009 jonathan@opennms.org
  * 
- * TODO: Move this into an API project
+ * Modified: January 13th 2010 jonathan@opennms.org
+ * 
+ * Moved into report API package
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -72,10 +74,13 @@ public interface ReportService {
             String reportID);
     
     /**
+     * This method returns the delivery options for the report. Providing a userID will
+     * allow the report service to pre-populate the destination address 
      * 
      * @param userId
      * @param reportId
-     * @return
+     * @return a delivery options object containing information that describes how the report might
+     *         be delivered.
      */
     public abstract DeliveryOptions getDeliveryOptions(String userId, String reportId);
     
@@ -88,7 +93,7 @@ public interface ReportService {
     public abstract List<String> getAvailableFormats(String reportId);
     
     /**
-     * This method renders the report into a given output stream
+     * This method renders the report into a given output stream.
      * 
      * @param id reportID as defined in database-reports.xml
      * @param location location of the report on disk
