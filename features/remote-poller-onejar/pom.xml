@@ -14,6 +14,44 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-key</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                def keystore = new File(project.properties['webstart.keystore'])
+                if (!keystore.exists()) {
+                  keystore.parentFile.mkdirs();
+                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
+                  def args = [
+                    keystore: project.properties['webstart.keystore'],
+                    alias: project.properties['webstart.keyalias'],
+                    storepass: project.properties['webstart.storepass'],
+                    dname: "cn=${project.properties['webstart.dnameCn']}"
+                  ]
+                  if (project.properties['webstart.keypass']) {
+                    args.put('keypass', project.properties['webstart.keypass'])
+                  }
+                  ant.genkey(args)
+                }
+              </source>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
