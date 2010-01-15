@@ -40,6 +40,7 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	// renderize element
 	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", this.id);
+
 	// renderize icon
 	this.image = document.createElementNS(svgNS,"image");
 	this.image.setAttributeNS(null,"width", this.width);
@@ -48,7 +49,6 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.image.setAttributeNS(null,this.attributeY, 0);
 	this.image.setAttributeNS(null,"preserveAspectRatio", "xMinYMin");
 	this.image.setAttributeNS(null,"cursor", "pointer");
-	//WOOKIES
 	this.image.setAttributeNS(xlinkNS, "xlink:href", IMAGES_ELEMENTS_FOLDER+MEIconsSortAss[this.icon].fileName);
 	if(MEIconsSortAss[this.icon].height != "")	
           this.image.setAttributeNS(null,"height", MEIconsSortAss[this.icon].height);
@@ -76,11 +76,9 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	if (MEIconsSortAss[this.icon].textSize!="")
 		labelSize = MEIconsSortAss[this.icon].textSize;
 
-	//if(MEIconsSortAss[this.icon].textAlign!="")
-	//	labelAnchor = MEIconsSortAss[this.icon].textAlign;  
+	if(MEIconsSortAss[this.icon].textAlign!="")
+		labelAnchor = MEIconsSortAss[this.icon].textAlign;  
 
-	if(MEIconsSortAss[this.icon].textAllign!="")
-		labelAnchor = MEIconsSortAss[this.icon].textAllign;  
 
         this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor ,null);
 	this.svgNode.appendChild(this.label.getSvgNode());
