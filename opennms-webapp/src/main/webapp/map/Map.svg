@@ -136,8 +136,10 @@ function handleInit(data) {
 		
 		for(var icon in mapsPropertiesFactory.icons)
 		{
+            // WOOKIE
             MEIcons.push(icon);
-            MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+mapsPropertiesFactory.icons[icon]);
+            //MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+mapsPropertiesFactory.icons[icon]);
+	      MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
         }
               
 		for (var image in mapsPropertiesFactory.backgroundImages)

@@ -97,7 +97,7 @@ public class MapPropertiesFactory extends Object {
 
 	protected  Avail[] orderedAvails = null;
 
-	protected  Map<String,String> iconsMap = null;
+	protected  Map<String,Icon> iconsMap = null;
 
 	protected Map<String,String> iconsBySysoidMap = null;
 	
@@ -395,7 +395,7 @@ public class MapPropertiesFactory extends Object {
 		severitiesMap = new HashMap<String,Severity>();
 		statusesMap = new HashMap<String,Status>();
 		availsMap = new HashMap<String,Avail>();
-		iconsMap = new HashMap<String,String>();
+		iconsMap = new HashMap<String,Icon>();
 		iconsBySysoidMap = new HashMap<String,String>();
 		bgImagesMap = new HashMap<String,String>();
 		linksMap = new HashMap<Integer,Link>();
@@ -707,15 +707,29 @@ public class MapPropertiesFactory extends Object {
 		}
 
 		// look up icons filenames
+		
 		String[] icons = BundleLists
 				.parseBundleList(props.getProperty("icons"));
 
 		for (int i = 0; i < icons.length; i++) {
-			String filename = props.getProperty("icon." + icons[i]
-					+ ".filename");
-			log.debug("found icon " + icons[i] + " with filename=" + filename
+			
+			String baseProperty = "icon." + icons[i] + ".";
+			
+			Icon icon = new Icon(props.getProperty(baseProperty + "filename"),
+			                     props.getProperty(baseProperty + "width"),
+			                     props.getProperty(baseProperty + "height"),
+			                     props.getProperty(baseProperty + "semaphore.radius"),
+			                     props.getProperty(baseProperty + "semaphore.x"),
+			                     props.getProperty(baseProperty + "semaphore.y"),
+			                     props.getProperty(baseProperty + "label.x"),
+			                     props.getProperty(baseProperty + "label.y"),
+			                     props.getProperty(baseProperty + "label.size"),
+			                     props.getProperty(baseProperty + "label.align")
+			                    );
+			
+			log.debug("found icon " + icons[i] + " with filename=" + icon.getFileName()
 					+ ". Adding it.");
-			iconsMap.put(icons[i], filename);
+			iconsMap.put(icons[i], icon);
 		}
 		
 		// look up sysoid icons
@@ -768,7 +782,7 @@ public class MapPropertiesFactory extends Object {
 	}
 
 
-	public Map<String,String> getIconsMap() {
+	public Map<String,Icon> getIconsMap() {
 		return iconsMap;
 	}
 	
@@ -938,7 +952,7 @@ public class MapPropertiesFactory extends Object {
     	return sevs;
     }
     
-    public java.util.Map<String,String> getIcons() throws MapsException{
+    public java.util.Map<String,Icon> getIcons() throws MapsException{
     	return getIconsMap();
     }
     
