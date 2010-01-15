@@ -1,9 +1,13 @@
 package org.opennms.core.utils;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 
 public class LogUtils {
+    static volatile Appender m_appender;
     
     public static void tracef(Object logee, String format, Object... args) {
         logf(Level.TRACE, logee, null, format, args);
@@ -72,6 +76,15 @@ public class LogUtils {
             log = ThreadCategory.getInstance((Class<?>)logee);
         } else {
             log = ThreadCategory.getInstance(logee.getClass());
+        }
+        if (!log.getAllAppenders().hasMoreElements()) {
+            System.err.println("LogUtils: creating a default STDERR appender.");
+            log.setLevel(Level.DEBUG);
+            
+            if (m_appender == null) {
+                m_appender = new ConsoleAppender(new SimpleLayout(), "System.err");
+            }
+            log.addAppender(m_appender);
         }
         return log;
     }
