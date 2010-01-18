@@ -60,8 +60,8 @@
 		<c:when test="${deliveryOptions.canPersist}">
 			<form:checkbox path="sendMail"/>
 			Email a copy of the report in 
-			<form:select path="mailFormat"> 
-				<form:options items="${availableFormats}"/>
+			<form:select path="format"> 
+				<form:options items="${formats}"/>
 			</form:select>
 			format, to: 
 		    <form:input path="mailTo"/>

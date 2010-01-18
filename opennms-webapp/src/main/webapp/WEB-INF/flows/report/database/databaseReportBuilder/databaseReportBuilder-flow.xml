@@ -40,8 +40,8 @@
 		<on-render>
 			<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getDeliveryOptions(reportId, currentUser.name)" 
 				result="flowScope.deliveryOptions" />
-			<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getAvailableFormats(reportId)"
-				result="viewScope.availableFormats" />
+			<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getFormats(reportId)"
+				result="viewScope.formats" />
 		</on-render>
 		<transition on="proceed" to="scheduleOrExecute" />
 		<transition on="revise" to="scheduledReportParameters" />

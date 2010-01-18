@@ -10,9 +10,9 @@
  *
  * Modifications:
  * 
- * Created: January 7th 2010 Jonathan Sartin <jonathan@opennms.org>
- * 
- * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ * Created: December 8th, 2009 jonathan@opennms.org
+ *
+ * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,40 +33,13 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
+package org.opennms.api.reporting;
 
-package org.opennms.reporting.core.svclayer;
+import java.util.HashMap;
 
-import org.opennms.api.reporting.ReportService;
-
-/**
- * This class provides a simple mechanism for returning the ReportService bean
- * for a given reportId
- * 
- * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
- *
- */
-
-public interface ReportServiceLocator  {
+public interface ReportValidationService {
     
-    /**
-     * This method is used to retrieve the ReportService bean associated with 
-     * 
-     * @param   reportServiceName the name of the report service as
-     *          as defined in database-reports.xml
-     * @return  the ReportService bean used to run this report
-     * @throws  ReportServiceLocatorException
-     */
-    
-    public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException; 
-    
-    /**
-     * This method is used to retrieve the ReportService bean associated with a report Id
-     * 
-     * @param   reportId the reportID defined in database-reports.xml
-     * @return  the ReportService bean used to run this report
-     * @throws  ReportServiceLocatorException
-     */
-    
-    public ReportService getReportServiceForId(String reportId) throws ReportServiceLocatorException; 
+    public abstract boolean validate(HashMap<String, Object> reportParms,
+            String reportID);
 
 }

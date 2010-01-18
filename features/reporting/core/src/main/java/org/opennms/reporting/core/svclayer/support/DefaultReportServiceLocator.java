@@ -36,7 +36,7 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import org.opennms.api.integration.reporting.ReportService;
+import org.opennms.api.reporting.ReportService;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;

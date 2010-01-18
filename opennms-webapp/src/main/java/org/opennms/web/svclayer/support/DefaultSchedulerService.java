@@ -44,8 +44,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.api.integration.reporting.DeliveryOptions;
-import org.opennms.api.integration.reporting.ReportService;
+import org.opennms.api.reporting.DeliveryOptions;
+import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.reporting.core.model.DatabaseReportCriteria;

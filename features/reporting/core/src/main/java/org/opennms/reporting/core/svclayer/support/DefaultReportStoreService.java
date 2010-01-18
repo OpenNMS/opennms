@@ -44,7 +44,8 @@ import java.util.Map;
 
 
 import org.apache.log4j.Category;
-import org.opennms.api.integration.reporting.ReportService;
+import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
@@ -88,16 +89,17 @@ public class DefaultReportStoreService implements ReportStoreService {
             Report report = reportIter.next();
             String id = report.getId();
             String service = report.getReportService();
-            List <String> formats = m_reportServiceLocator.getReportService(service).getAvailableFormats(id);
+            List <ReportFormat> formats = m_reportServiceLocator.getReportService(service).getFormats(id);
             formatMap.put(id, formats);
         }
         return formatMap;
     }
     
-    public void render(Integer id, String format, OutputStream outputStream) {
+    public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
         String reportServiceName = m_databaseReportConfigDao.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
+        log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );
         reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
     }
     

@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.api.reporting.ReportFormat;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ public interface ReportStoreService {
     
     public Map<String, Object> getFormatMap();
     
-    public void render(Integer id, String format, OutputStream outputStream);
+    public void render(Integer id, ReportFormat format, OutputStream outputStream);
     
     @Transactional(readOnly = false)
     public void delete(Integer[] ids);

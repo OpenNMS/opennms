@@ -37,7 +37,7 @@
 package org.opennms.web.command;
 
 
-import org.opennms.api.integration.reporting.DeliveryOptions;
+import org.opennms.api.reporting.DeliveryOptions;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;

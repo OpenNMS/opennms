@@ -37,7 +37,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.api.integration.reporting;
+package org.opennms.api.reporting;
 
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -90,8 +90,9 @@ public interface ReportService {
      * @param reportId reportID as defined in database-reports.xml
      * @return a list of supported formats
      */
-    public abstract List<String> getAvailableFormats(String reportId);
+    public abstract List<ReportFormat> getFormats(String reportId);
     
+
     /**
      * This method renders the report into a given output stream.
      * 
@@ -100,6 +101,6 @@ public interface ReportService {
      * @param format format to render the report
      * @param outputStream stream to render the resulting report
      */
-    public abstract void render(String id, String location, String format, OutputStream outputStream);
-
+    public abstract void render(String id, String location, ReportFormat format, OutputStream outputStream);
+    
 }

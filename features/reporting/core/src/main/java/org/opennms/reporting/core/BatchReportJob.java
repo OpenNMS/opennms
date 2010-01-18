@@ -36,8 +36,8 @@
 
 package org.opennms.reporting.core;
 
-import org.opennms.api.integration.reporting.DeliveryOptions;
-import org.opennms.api.integration.reporting.ReportService;
+import org.opennms.api.reporting.DeliveryOptions;
+import org.opennms.api.reporting.ReportService;
 import org.opennms.reporting.core.model.DatabaseReportCriteria;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.quartz.JobDataMap;

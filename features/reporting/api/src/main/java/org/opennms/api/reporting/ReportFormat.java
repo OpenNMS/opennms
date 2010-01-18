@@ -10,8 +10,8 @@
  *
  * Modifications:
  * 
- * Created: December 8th, 2009 jonathan@opennms.org
- *
+ * Created: January 15th 2010 jonathan@opennms.org
+ * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,13 +33,6 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.api.integration.reporting;
+package org.opennms.api.reporting;
 
-import java.util.HashMap;
-
-public interface ReportValidationService {
-    
-    public abstract boolean validate(HashMap<String, Object> reportParms,
-            String reportID);
-
-}
+public enum ReportFormat { HTML, SVG, PDF }

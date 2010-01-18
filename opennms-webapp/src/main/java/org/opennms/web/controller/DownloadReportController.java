@@ -40,7 +40,7 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.report.availability.svclayer.OnmsReportService;
+import org.opennms.api.reporting.ReportFormat;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
@@ -66,8 +66,11 @@ public class DownloadReportController extends AbstractController {
 
         try {
             Integer reportCatalogEntryId = new Integer(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
-            if (request.getParameter("format").equalsIgnoreCase("pdf")
-                    || request.getParameter("format").equalsIgnoreCase("svg")) {
+            
+            String requestFormat = new String(request.getParameter("format"));
+
+            if ((ReportFormat.PDF == ReportFormat.valueOf(requestFormat))
+                    || (ReportFormat.SVG == ReportFormat.valueOf(requestFormat)) ) {
                 response.setContentType("application/pdf;charset=UTF-8");
                 response.setHeader("Content-disposition", "inline; filename="
                                    + reportCatalogEntryId.toString()
@@ -78,7 +81,7 @@ public class DownloadReportController extends AbstractController {
             }
             m_reportStoreService.render(
                                         reportCatalogEntryId,
-                                        request.getParameter("format"),
+                                        ReportFormat.valueOf(requestFormat),
                                         (OutputStream) response.getOutputStream());
         } catch (NumberFormatException e) {
             // TODO something usefule here.
