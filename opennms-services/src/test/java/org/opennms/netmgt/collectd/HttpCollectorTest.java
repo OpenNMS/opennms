@@ -95,7 +95,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
-@JUnitHttpServer(port=10342)
+@JUnitHttpServer(port=10342, vhosts={"127.0.0.1"})
 public class HttpCollectorTest {
 
     @Autowired
