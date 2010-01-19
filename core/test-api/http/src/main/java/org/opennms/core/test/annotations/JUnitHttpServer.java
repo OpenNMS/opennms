@@ -15,6 +15,24 @@ public @interface JUnitHttpServer {
     /** the port to listen on **/
     int port() default 9162;
 
+    /** the list of virtual hosts to respond to, defaults to "localhost" **/
+    String[] vhosts() default {"localhost"};
+
     /** whether or not to use HTTPS (defaults to HTTP) **/
     boolean https() default false;
+
+    /** whether or not to use basic auth **/
+    boolean basicAuth() default false;
+
+    /** the basic auth property file (defaults to target/test-classes/realm.properties **/
+    String basicAuthFile() default "target/test-classes/realm.properties";
+
+    /** the location of the keystore if using HTTPS (defaults to target/test-classes/JUnitHttpServer.keystore) **/
+    String keystore() default "target/test-classes/JUnitHttpServer.keystore";
+    
+    /** the keystore password **/
+    String keystorePassword() default "opennms";
+    
+    /** the key password **/
+    String keyPassword() default "opennms";
 }

@@ -48,13 +48,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitHttpServerExecutionListener;
+import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.mock.JUnitMockHttpServer;
-import org.opennms.netmgt.mock.JUnitMockHttpServerExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -83,7 +83,7 @@ import org.springframework.transaction.PlatformTransactionManager;
     OpenNMSConfigurationExecutionListener.class,
     TemporaryDatabaseExecutionListener.class,
     JUnitCollectorExecutionListener.class,
-    JUnitMockHttpServerExecutionListener.class,
+    JUnitHttpServerExecutionListener.class,
     DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
@@ -95,7 +95,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
-@JUnitMockHttpServer(port=10342)
+@JUnitHttpServer(port=10342)
 public class HttpCollectorTest {
 
     @Autowired

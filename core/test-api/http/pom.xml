@@ -9,8 +9,9 @@
   <artifactId>org.opennms.core.test-api.http</artifactId>
   <name>OpenNMS Core Test API (HTTP)</name>
   <!-- pax OSGi package -->
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
 
+<!--
   <build>
     <plugins>
       <plugin>
@@ -27,6 +28,7 @@
       </plugin>
     </plugins>
   </build>
+-->
 
   <dependencies>
     <dependency>
