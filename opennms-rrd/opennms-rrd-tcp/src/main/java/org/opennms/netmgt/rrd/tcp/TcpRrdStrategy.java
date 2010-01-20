@@ -135,7 +135,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
                 // m_messages.build().writeTo(out);
                 out.flush();
             } catch (Throwable e) {
-                ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ": " + e.getMessage());
+                ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messages.getMessageCount() + " performance messages: " + e.getMessage());
             } finally {
                 if (socket != null) {
                     socket.close();

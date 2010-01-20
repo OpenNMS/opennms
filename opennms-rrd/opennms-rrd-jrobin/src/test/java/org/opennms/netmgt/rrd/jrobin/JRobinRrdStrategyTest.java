@@ -85,6 +85,8 @@ public class JRobinRrdStrategyTest {
     
     @Before
     public void setUp() throws Exception {
+        // Make sure that AWT headless mode is enabled
+        System.setProperty("java.awt.headless", "true");
         
         MockLogAppender.setupLogging();
         
