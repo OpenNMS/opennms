@@ -33,6 +33,10 @@
               <name>org.opennms.rrd.usequeue</name>
               <value>false</value>
             </property>
+            <property>
+              <name>java.awt.headless</name>
+              <value>true</value>
+            </property>
           </systemProperties>
         </configuration>
       </plugin>
