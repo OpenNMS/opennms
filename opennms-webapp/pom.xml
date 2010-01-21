@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -39,7 +39,7 @@
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
 	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
+	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
 	                </jarResource>
 	              </jarResources>
 	            </jnlpFile>
@@ -63,7 +63,7 @@
 	                  <artifactId>org.opennms.features.remote-poller</artifactId>
 	                  <version>${project.version}</version>
 	                  <classifier>signed-jar-with-dependencies</classifier>
-	                  <mainClass>org.opennms.poller.remote.Main</mainClass>
+	                  <mainClass>com.simontuffs.onejar.Boot</mainClass>
 	                </jarResource>
 	              </jarResources>
 	            </jnlpFile>
