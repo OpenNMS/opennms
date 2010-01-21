@@ -76,9 +76,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class,
     JUnitHttpServerExecutionListener.class
 })
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/emptyContext.xml",
-})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 public class HttpMonitorTest {
 
     private boolean m_runTests = true;

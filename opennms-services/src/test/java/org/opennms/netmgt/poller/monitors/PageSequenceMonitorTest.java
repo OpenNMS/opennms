@@ -72,9 +72,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     OpenNMSConfigurationExecutionListener.class,
     JUnitHttpServerExecutionListener.class
 })
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/emptyContext.xml",
-})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitHttpServer(port=10342)
 public class PageSequenceMonitorTest {
 	
