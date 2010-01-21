@@ -6,7 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-tcp</artifactId>
-  <name>OpenNMS TCP Export for RRD Performance Data</name>
+  <name>OpenNMS TCP Export RRD Implementation</name>
   <build>
     <plugins>
       <plugin>
@@ -43,6 +43,16 @@
       <version>${parent.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- 
+      Doesn't work properly with urllib2 requests; see
+      TcpRrdStrategyTest.java for more details.
+    <dependency>
+      <groupId>org.python</groupId>
+      <artifactId>jython</artifactId>
+      <version>2.2.1</version>
+      <scope>test</scope>
+    </dependency>
+    -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>

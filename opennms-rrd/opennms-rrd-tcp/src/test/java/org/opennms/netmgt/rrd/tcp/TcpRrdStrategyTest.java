@@ -47,6 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -71,7 +72,13 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
+/*
+import org.python.core.PyException;
+import org.python.core.PyDictionary;
+import org.python.core.PyInteger;
+import org.python.core.PyObject;
+import org.python.util.PythonInterpreter;
+ */
 import org.springframework.util.StringUtils;
 
 /**
@@ -84,6 +91,7 @@ public class TcpRrdStrategyTest {
     private RrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     private static Thread m_listenerThread;
+    private static String m_tempDir;
 
     @BeforeClass
     public static void startListenerThread() throws Exception {
@@ -95,6 +103,24 @@ public class TcpRrdStrategyTest {
                     ssocket.setSoTimeout(500);
                     while (true) {
                         try {
+                            /*
+                             * This python code is not working properly under Jython. My
+                             * hunch is that it would be better under the new Jython 2.5.1
+                             * but that version is not easy to use under Maven, see:
+                             * 
+                             * http://bugs.jython.org/issue1512
+                             * http://bugs.jython.org/issue1513
+                             * 
+                            PythonInterpreter python = new PythonInterpreter();
+                            python.execfile(
+                                    // Load the python path parser script from the classpath
+                                    Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                                            "rrdPathParser.py"
+                                    )
+                            );
+                            python.eval("configureRrdPaths('" + m_tempDir + "')");
+                             */
+
                             Socket socket = ssocket.accept();
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
@@ -110,6 +136,12 @@ public class TcpRrdStrategyTest {
                                         "owner: \"" + message.getOwner() + "\", " + 
                                         "timestamp: \"" + message.getTimestamp() + "\", " + 
                                         "values: " + values.toString() + " }");
+
+                                /*
+                                 * See comments above re: Jython
+                                PyDictionary attributes = (PyDictionary)python.eval("parseRrdPath('" + message.getPath() + "')");
+                                System.out.println(attributes.getClass().getName());
+                                 */
                             }
                         } catch (SocketTimeoutException e) {
                             if (this.isInterrupted()) {
@@ -121,6 +153,8 @@ public class TcpRrdStrategyTest {
                         }
                     }
                 } catch (IOException e) {
+                    ThreadCategory.getInstance(this.getClass()).error(e.getMessage(), e);
+                } catch (Throwable e) {
                     ThreadCategory.getInstance(this.getClass()).error(e.getMessage(), e);
                 }
             }
@@ -143,7 +177,6 @@ public class TcpRrdStrategyTest {
         m_fileAnticipator = new FileAnticipator(false);
     }
 
-    /*
     @After
     public void tearDown() throws Exception {
         if (m_fileAnticipator.isInitialized()) {
@@ -151,7 +184,6 @@ public class TcpRrdStrategyTest {
         }
         m_fileAnticipator.tearDown();
     }
-     */
 
     @AfterClass
     public static void stopListenerThread() throws Exception {
@@ -206,9 +238,14 @@ public class TcpRrdStrategyTest {
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
-        Object def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
+        File tempDir = m_fileAnticipator.getTempDir(); 
+        m_tempDir = tempDir.getAbsolutePath();
+        // Create an '/rrd/snmp/1' directory in the temp directory so that the
+        // RRDs created by the test will have a realistic path
+        File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
+        Object def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
         m_strategy.createFile(def);
 
-        return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);
+        return m_fileAnticipator.expecting(rrdDir, rrdFileBase + rrdExtension);
     }
 }
