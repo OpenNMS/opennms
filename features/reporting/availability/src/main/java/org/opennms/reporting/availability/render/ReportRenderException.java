@@ -3,7 +3,7 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified
+// code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,24 +25,29 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
 //
-package org.opennms.report;
+package org.opennms.reporting.availability.render;
 
-import java.util.List;
+public class ReportRenderException extends Exception {
 
-import org.opennms.netmgt.model.AvailabilityReportLocator;
+    private static final long serialVersionUID = 3345608823051705228L;
 
-public interface ReportLocatorService {
-	
-	List<?> locateReports();
+    public ReportRenderException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
 
-	List<?> locateReports(String categoryName);
-	
-	void deleteReport(int id);
-	
-	void addReport(AvailabilityReportLocator locator);
-	
+	public ReportRenderException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ReportRenderException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+
 }

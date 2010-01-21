@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="calendarAvailabilityCalculator"
+		class="org.opennms.reporting.availability.AvailabilityCalculator"
+		scope="prototype">
+		<property name="monthFormat">
+			<value>calendar</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="reportStoreService" ref="reportStoreService" />
+		<property name="availabilityData">
+			<ref local="availabilityData"/>
+		</property>
+	</bean>
+
+	<bean id="classicAvailabilityCalculator"
+		class="org.opennms.reporting.availability.AvailabilityCalculator"
+		scope="prototype">
+		<property name="monthFormat">
+			<value>classic</value>
+		</property>
+		<property name="baseDir">
+			<value>${opennms.report.dir}/</value>
+		</property>
+		<property name="reportStoreService" ref="reportStoreService" />
+		<property name="availabilityData">
+			<ref local="availabilityData"/>
+		</property>
+	</bean>
+	
+	<bean id="onmsReportService"
+		class="org.opennms.reporting.availability.svclayer.OnmsReportService"
+		scope="prototype">
+		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
+		<property name="calendarCalculator">
+			<ref local="calendarAvailabilityCalculator" />
+		</property>
+		<property name="classicCalculator">
+			<ref local="classicAvailabilityCalculator" />
+		</property>
+	</bean>
+	
+	<bean id="legacyAvailabilityDataService" class="org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService" scope="prototype" />
+	
+    <bean id="availabilityData" 
+    	class="org.opennms.reporting.availability.AvailabilityData"
+    	scope="prototype">
+		<property name="availabilityDataService">
+			<ref local="legacyAvailabilityDataService" />
+    	</property>
+    </bean>
+    
+</beans>
