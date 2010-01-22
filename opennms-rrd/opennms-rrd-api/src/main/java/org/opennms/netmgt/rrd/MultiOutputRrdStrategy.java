@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Object>> {
 
-    private final List<RrdStrategy> m_strategies = new ArrayList<RrdStrategy>();
+    private final List<RrdStrategy<Object,Object>> m_strategies = new ArrayList<RrdStrategy<Object,Object>>();
     private int m_graphStrategyIndex;
     private int m_fetchStrategyIndex;
 
@@ -18,11 +18,11 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
         // We don't use any configuration properties
     }
 
-    public List<RrdStrategy> getDelegates() {
+    public List<RrdStrategy<Object, Object>> getDelegates() {
         return m_strategies;
     }
 
-    public void setDelegates(List<RrdStrategy> delegates) {
+    public void setDelegates(List<RrdStrategy<Object, Object>> delegates) {
         m_strategies.clear();
         m_strategies.addAll(delegates);
     }
@@ -53,7 +53,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
             int step, List<RrdDataSource> dataSources, List<String> rraList)
             throws Exception {
         List<Object> retval = new ArrayList<Object>();
-        for (RrdStrategy strategy : m_strategies) {
+        for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.createDefinition(creator, directory, rrdName, step, dataSources, rraList));
         }
         return retval;
@@ -107,10 +107,9 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
         return m_strategies.get(m_graphStrategyIndex).getGraphTopOffsetWithText();
     }
 
-    @Override
     public String getStats() {
         StringBuffer retval = new StringBuffer();
-        for (RrdStrategy strategy : m_strategies) {
+        for (RrdStrategy<?, ?> strategy : m_strategies) {
             retval.append(strategy.getStats());
             retval.append("\n");
         }
@@ -119,14 +118,14 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
 
     public List<Object> openFile(String fileName) throws Exception {
         List<Object> retval = new ArrayList<Object>();
-        for (RrdStrategy strategy : m_strategies) {
+        for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.openFile(fileName));
         }
         return retval;
     }
 
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
-        for (RrdStrategy strategy : m_strategies) {
+        for (RrdStrategy<Object, Object> strategy : m_strategies) {
             strategy.promoteEnqueuedFiles(rrdFiles);
         }
     }
