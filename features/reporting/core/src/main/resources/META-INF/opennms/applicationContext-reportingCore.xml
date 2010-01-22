@@ -16,4 +16,8 @@
 		</property>
 	</bean>
 	
+	<bean id="databaseReportCriteriaService" class="org.opennms.reporting.core.svclayer.support.DefaultDatabaseReportCriteriaService">
+    	<property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
+	</bean>
+	
 </beans>

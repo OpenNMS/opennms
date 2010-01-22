@@ -57,21 +57,21 @@ public interface ReportService {
      * parameters accepted by the report. Used by the web interface.
      * 
      * @param reportParms hashmap of parameters to be provided at runtime
-     * @param reportID reportID as defined in database-reports.xml
+     * @param reportId reportId as defined in database-reports.xml
      * @return true if the reportParms supplied match those in the report definition.
      */
     public abstract boolean validate(HashMap<String, Object> reportParms,
-            String reportID);
+            String reportId);
     
     /**
      * This method runs the report
      * 
      * @param reportParms hashmap of parameters to be provided at runtime
      * @param options delivery options for the report
-     * @param reportID reportID as defined in database-reports.xml
+     * @param reportId reportId as defined in database-reports.xml
      */
     public abstract void run(HashMap<String, Object> reportParms, DeliveryOptions options,
-            String reportID);
+            String reportId);
     
     /**
      * This method returns the delivery options for the report. Providing a userID will
@@ -87,7 +87,7 @@ public interface ReportService {
     /**
      * This method provides a list of formats supported by the report
      * 
-     * @param reportId reportID as defined in database-reports.xml
+     * @param reportId reportId as defined in database-reports.xml
      * @return a list of supported formats
      */
     public abstract List<ReportFormat> getFormats(String reportId);
@@ -96,11 +96,11 @@ public interface ReportService {
     /**
      * This method renders the report into a given output stream.
      * 
-     * @param id reportID as defined in database-reports.xml
+     * @param ReportId reportId as defined in database-reports.xml
      * @param location location of the report on disk
      * @param format format to render the report
      * @param outputStream stream to render the resulting report
      */
-    public abstract void render(String id, String location, ReportFormat format, OutputStream outputStream);
+    public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
     
 }

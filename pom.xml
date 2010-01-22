@@ -873,6 +873,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.availability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.ticketing</groupId>
         <artifactId>org.opennms.features.ticketing.api</artifactId>
         <version>${project.version}</version>

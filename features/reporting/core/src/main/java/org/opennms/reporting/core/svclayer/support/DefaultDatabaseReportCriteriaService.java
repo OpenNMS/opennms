@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer.support;
+package org.opennms.reporting.core.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,23 +42,23 @@ import org.opennms.netmgt.config.databaseReports.DateParm;
 import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
 import org.opennms.reporting.core.model.DatabaseReportDateParm;
 import org.opennms.reporting.core.model.DatabaseReportIntParm;
 import org.opennms.reporting.core.model.DatabaseReportStringParm;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
-import org.opennms.web.svclayer.DatabaseReportCriteriaService;
+import org.opennms.reporting.core.svclayer.DatabaseReportCriteriaService;
 
 public class DefaultDatabaseReportCriteriaService implements
         DatabaseReportCriteriaService {
     
     DatabaseReportConfigDao m_dao;
 
-    public DatabaseReportCriteriaCommand getCriteria(String id) {
+    public DatabaseReportCriteria getCriteria(String id) {
        
-        DatabaseReportCriteriaCommand command = new DatabaseReportCriteriaCommand();
+        DatabaseReportCriteria criteria = new DatabaseReportCriteria();
         
-        command.setReportId(id);
-        command.setDisplayName(m_dao.getDisplayName(id));
+        criteria.setReportId(id);
+        criteria.setDisplayName(m_dao.getDisplayName(id));
         
         // add date parms to criteria
         
@@ -87,7 +87,7 @@ public class DefaultDatabaseReportCriteriaService implements
                 dateParms.add(dateParm);
             }
         }
-        command.setDateParms(dateParms);
+        criteria.setDateParms(dateParms);
         
         // add string parms to criteria
         
@@ -103,7 +103,7 @@ public class DefaultDatabaseReportCriteriaService implements
                 stringParms.add(stringParm);
             }
         }
-        command.setStringParms(stringParms);
+        criteria.setStringParms(stringParms);
         
         // add int parms to criteria
         
@@ -119,9 +119,9 @@ public class DefaultDatabaseReportCriteriaService implements
                 intParms.add(intParm);
             }
         }
-        command.setIntParms(intParms);
+        criteria.setIntParms(intParms);
 
-        return command;
+        return criteria;
     }
     
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportDao) {

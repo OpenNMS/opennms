@@ -195,9 +195,9 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 }
 
                 cronTrigger.setJobName(m_jobDetail.getName());
-                cronTrigger.getJobDataMap().put("criteria", criteria);
+                cronTrigger.getJobDataMap().put("criteria", (DatabaseReportCriteria) criteria);
                 cronTrigger.getJobDataMap().put("deliveryOptions",
-                                                deliveryOptions);
+                                                (DeliveryOptions) deliveryOptions);
                 cronTrigger.getJobDataMap().put("reportServiceName", reportServiceName);
                 try {
                     m_scheduler.scheduleJob(cronTrigger);
@@ -247,8 +247,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                                                           m_triggerGroup,
                                                           new Date(), null, 0, 0L);
                 trigger.setJobName(m_jobDetail.getName());
-                trigger.getJobDataMap().put("criteria", criteria);
-                trigger.getJobDataMap().put("deliveryOptions", deliveryOptions);
+                trigger.getJobDataMap().put("criteria", (DatabaseReportCriteria) criteria);
+                trigger.getJobDataMap().put("deliveryOptions", (DeliveryOptions) deliveryOptions);
                 trigger.getJobDataMap().put("reportServiceName", reportServiceName);
                 try {
                     m_scheduler.scheduleJob(trigger);

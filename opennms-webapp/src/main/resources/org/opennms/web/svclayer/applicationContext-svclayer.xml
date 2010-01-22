@@ -225,11 +225,11 @@
     <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
   
-  <bean id="databaseReportCriteriaService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportCriteriaService">
-    <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
-  </bean>
+  <!-- Validators for Database Report web flow -->
   
   <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator" />
+  
+  <bean id="ReportCriteriaValidator" class="org.opennms.web.report.database.ReportCriteriaValidator" />
   
   <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator">
   	<property name="schedulerService">

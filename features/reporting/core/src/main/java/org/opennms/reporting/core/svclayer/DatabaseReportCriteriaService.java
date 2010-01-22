@@ -3,12 +3,16 @@
 //
 // OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 
+// Created: October 5th, 2009
+//
+// Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,28 +29,19 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-// OpenNMS Licensing       <license@opennms.org>
-//     http://www.opennms.org/
-//     http://www.opennms.com/
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
 //
-package org.opennms.report.availability.svclayer;
+package org.opennms.reporting.core.svclayer;
 
-public class AvailabilityDataServiceException extends Exception {
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
 
-    private static final long serialVersionUID = -8290071295128513350L;
+public interface DatabaseReportCriteriaService {
+    
+    DatabaseReportCriteria getCriteria(String id);
+    
+    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
-    public AvailabilityDataServiceException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
-
-	public AvailabilityDataServiceException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
-
-	public AvailabilityDataServiceException(Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
 }

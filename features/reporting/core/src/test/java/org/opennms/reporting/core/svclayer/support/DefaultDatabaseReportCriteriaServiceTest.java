@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.web.svclayer.support;
+package org.opennms.reporting.core.svclayer.support;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,9 +42,9 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
-import org.opennms.web.command.DatabaseReportCriteriaCommand;
-import org.opennms.web.svclayer.DatabaseReportCriteriaService;
-import org.opennms.web.svclayer.support.DefaultDatabaseReportCriteriaService;
+import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.reporting.core.svclayer.DatabaseReportCriteriaService;
+import org.opennms.reporting.core.svclayer.support.DefaultDatabaseReportCriteriaService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -73,7 +73,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     public void setupDao() throws Exception {
 
         m_dao = new DefaultDatabaseReportConfigDao();
-        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
+        Resource resource = new ClassPathResource("database-reports-testdata.xml");
         m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
         
@@ -86,7 +86,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testDatabaseReportService() throws Exception {
         
-        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID);
+        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID);
         
         assertEquals(criteria.getStringParms().size(),1);
         assertEquals(criteria.getStringParms().get(0).getDisplayName(),STRING_DISPLAY_NAME);
@@ -109,7 +109,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testCalendarOffset() {
         
-        DatabaseReportCriteriaCommand criteria = m_criteriaService.getCriteria(ID);
+        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID);
         
         assertEquals(OFFSET_COUNT,criteria.getDateParms().get(0).getCount());
         assertEquals(OFFSET_INTERVAL,criteria.getDateParms().get(0).getInterval());
