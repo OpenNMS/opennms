@@ -222,8 +222,6 @@ public class SnmpThresholderTest {
         
         try {
         */
-        setUpRrdStrategy();
-           
                 m_snmpThresholder.checkNodeDir(new File(""), m_thresholdInterface, new Date(), new Events());
             /*
         } catch (Throwable t) {
@@ -237,7 +235,6 @@ public class SnmpThresholderTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testStripRrdExtensionWithValidExtension() throws Exception {
-        setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension()); 
         assertNotNull("stripped file name should not be null", strippedName);
         assertEquals("stripped file name", "foo", strippedName);
@@ -246,7 +243,6 @@ public class SnmpThresholderTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testStripRrdExtensionWithNoExtension() throws Exception {
-        setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo");
         assertNull("stripped file name should be null, but was: " + strippedName, strippedName);
     }
@@ -254,7 +250,6 @@ public class SnmpThresholderTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testStripRrdExtensionWithValidExtensionTwice() throws Exception {
-        setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + RrdUtils.getExtension()); 
         assertNotNull("stripped file name should not be null", strippedName);
         assertEquals("stripped file name", "foo" + RrdUtils.getExtension(), strippedName);
@@ -263,14 +258,8 @@ public class SnmpThresholderTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testStripRrdExtensionWithValidExtensionNotAtEnd() throws Exception {
-        setUpRrdStrategy();
         String strippedName = m_snmpThresholder.stripRrdExtension("foo" + RrdUtils.getExtension() + ".bar"); 
         assertNull("stripped file name should be null, but was: " + strippedName, strippedName);
-    }
-
-    private void setUpRrdStrategy() throws RrdException {
-        RrdConfig.setProperties(new Properties());
-        RrdUtils.initialize();
     }
 
     @Test
@@ -290,7 +279,6 @@ public class SnmpThresholderTest {
     @Test
     public void testInterfaces() throws Exception {
         System.err.println("--------------------------------------------------------");
-        setUpRrdStrategy();
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 
@@ -356,7 +344,6 @@ public class SnmpThresholderTest {
     @Test
     public void testThresholdWithGenericResourceTypes() throws Exception {
         System.err.println("--------------------------------------------------------");
-        setUpRrdStrategy();
         // Set storeByGroup, because JRBs will be created with this feature
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
 

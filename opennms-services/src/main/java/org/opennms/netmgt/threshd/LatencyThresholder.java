@@ -165,19 +165,6 @@ final class LatencyThresholder implements ServiceThresholder {
                 log().warn("initialize: Unable to resolve local host name.", e);
             m_host = "unresolved.host";
         }
-
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            if (log().isEnabledFor(Priority.ERROR))
-                log().error("initialize: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
-        }
-
-        if (log().isDebugEnabled())
-            log().debug("initialize: successfully instantiated JNI interface to RRD...");
-
-        return;
     }
 
     public void reinitialize() {
