@@ -3,10 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 	
-	<bean id="rrdUtils-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.initialize</value></property>
-    </bean>
-	
 	<bean id="init-onmsServerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
 	</bean>

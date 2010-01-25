@@ -914,7 +914,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
 
         try {
-            RrdUtils.initialize();
             File rrdFile = new File(rrdDir, dsName);
             if (!rrdFile.exists()) {
                 RrdUtils.createRRD(locationMonitor, rrdDir, dsName, getStep(pkg), "GAUGE", 600, "U", "U", getRRAList(pkg));
