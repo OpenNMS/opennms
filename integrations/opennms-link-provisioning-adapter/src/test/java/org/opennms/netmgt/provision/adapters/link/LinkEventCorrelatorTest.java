@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -33,7 +32,7 @@ public class LinkEventCorrelatorTest {
     private Event m_regainedEvent = new EventBuilder(EventConstants.DATA_LINK_RESTORED_EVENT_UEI, "Test").getEvent();
 
     EasyMockUtils m_easyMock = new EasyMockUtils();
-    MockEventUtil m_eventUtil = new MockEventUtil();
+    // MockEventUtil m_eventUtil = new MockEventUtil();
     private MockNetwork m_network;
     private MockNode m_node1;
     private MockNode m_node2;
