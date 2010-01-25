@@ -1880,7 +1880,7 @@
     <descr>
       This event is sent by the WebUI when a user has successfully authenticated
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest='donotpersist'>
       OpenNMS user %parm[user]% has logged in from %parm[ip]%.
     </logmsg>
     <severity>Normal</severity>
