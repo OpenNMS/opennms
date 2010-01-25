@@ -2,6 +2,7 @@ package org.opennms.netmgt.provision.adapters.link;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
+import static org.opennms.core.utils.LogUtils.warnf;
 
 import java.util.Collection;
 import java.util.Date;
@@ -18,8 +19,10 @@ import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -27,19 +30,23 @@ import org.springframework.util.Assert;
 public class DefaultNodeLinkService implements NodeLinkService {
     
     @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
     
     @Autowired
-    DataLinkInterfaceDao m_dataLinkDao;
+    private DataLinkInterfaceDao m_dataLinkDao;
     
     @Autowired
-    MonitoredServiceDao m_monitoredServiceDao;
+    private MonitoredServiceDao m_monitoredServiceDao;
     
     @Autowired
-    EndPointConfigurationDao m_endPointConfigDao;
+    private EndPointConfigurationDao m_endPointConfigDao;
     
     @Autowired
-    LinkStateDao m_linkStateDao;
+    private LinkStateDao m_linkStateDao;
+    
+    @Autowired
+    @Qualifier("transactionAware")
+    private EventForwarder m_eventForwarder;
     
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
@@ -62,44 +69,49 @@ public class DefaultNodeLinkService implements NodeLinkService {
         criteria.add(Restrictions.eq("nodeParentId", nodeParentId));
         
         Collection<DataLinkInterface> dataLinkInterface = m_dataLinkDao.findMatching(criteria);
+        DataLinkInterface dli = null;
         
-        if(dataLinkInterface.size() <= 0){
-            
-            
-            DataLinkInterface dataLink = new DataLinkInterface();
-            dataLink.setNodeId(nodeId);
-            dataLink.setNodeParentId(nodeParentId);
-            dataLink.setIfIndex(getPrimaryIfIndexForNode(node));
-            dataLink.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
-            
-            OnmsLinkState linkState = new OnmsLinkState();
-            linkState.setDataLinkInterface(dataLink);
-            
-            boolean nodeParentEndPoint = nodeHasEndPointService(nodeParentId);
-            boolean nodeEndPoint =  nodeHasEndPointService(nodeId);
-            
-            if(nodeParentEndPoint && nodeEndPoint) {
-                dataLink.setStatus("G");
-                linkState.setLinkState(LinkState.LINK_UP);
-            }else {
-                dataLink.setStatus("U");
-                if(nodeEndPoint){
-                    linkState.setLinkState(LinkState.LINK_PARENT_NODE_UNMANAGED);
-                }else if(nodeParentEndPoint){
-                    linkState.setLinkState(LinkState.LINK_NODE_UNMANAGED);
-                }else{
-                    linkState.setLinkState(LinkState.LINK_BOTH_UNMANAGED);
-                }
-            }
-            dataLink.setLastPollTime(new Date());
-            
-            m_dataLinkDao.save(dataLink);
-            
-            m_linkStateDao.save(linkState);
-            infof(this, "successfully added link into db for nodes %d and %d", nodeParentId, nodeId);
+        if (dataLinkInterface.size() > 1) {
+            warnf(this, "more than one data link interface exists for nodes %d and %d", nodeParentId, nodeId);
+            return;
+        } else if (dataLinkInterface.size() > 0) {
+            dli = dataLinkInterface.iterator().next();
+            infof(this, "link between nodes %d and %d already exists", nodeParentId, nodeId);  
         } else {
-            infof(this, "link between pointOne: %d and pointTwo %d already exists", nodeParentId, nodeId);  
+            dli = new DataLinkInterface();
+            dli.setNodeId(nodeId);
+            dli.setNodeParentId(nodeParentId);
+            dli.setIfIndex(getPrimaryIfIndexForNode(node));
+            dli.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
+            infof(this, "creating new link between nodes %d and %d", nodeParentId, nodeId);
         }
+        
+        OnmsLinkState onmsLinkState = new OnmsLinkState();
+        onmsLinkState.setDataLinkInterface(dli);
+        
+        Boolean nodeParentEndPoint = getEndPointStatus(nodeParentId);
+        Boolean nodeEndPoint =  getEndPointStatus(nodeId);
+
+        LinkState state = LinkState.LINK_UP;
+        LinkEventSendingStateTransition transition = new LinkEventSendingStateTransition(dli, m_eventForwarder, this);
+
+        if (nodeParentEndPoint == null) {
+			state = state.parentNodeEndPointDeleted(transition);
+		} else if (!nodeParentEndPoint) {
+			state = state.parentNodeDown(transition);
+		}
+		if (nodeEndPoint == null) {
+			state = state.nodeEndPointDeleted(transition);
+		} else if (!nodeEndPoint) {
+			state = state.nodeDown(null);
+		}
+		dli.setStatus(state.getDataLinkInterfaceStateType());
+		onmsLinkState.setLinkState(state);
+		
+        dli.setLastPollTime(new Date());
+        
+        m_dataLinkDao.save(dli);
+        m_linkStateDao.save(onmsLinkState);
     }
     
     private int getPrimaryIfIndexForNode(OnmsNode node) {
@@ -178,8 +190,18 @@ public class DefaultNodeLinkService implements NodeLinkService {
     public boolean nodeHasEndPointService(int nodeId) {
         
         OnmsMonitoredService endPointService = m_monitoredServiceDao.getPrimaryService(nodeId, m_endPointConfigDao.getValidator().getServiceName());
-        
+
         return endPointService == null ? false : true;
     }
-    
+
+    @Transactional(readOnly=true)
+    public Boolean getEndPointStatus(int nodeId) {
+        OnmsMonitoredService endPointService = m_monitoredServiceDao.getPrimaryService(nodeId, m_endPointConfigDao.getValidator().getServiceName());
+        if (endPointService == null) {
+        	return null;
+        }
+
+        // want true to be UP, not DOWN
+        return !endPointService.isDown();
+    }
 }

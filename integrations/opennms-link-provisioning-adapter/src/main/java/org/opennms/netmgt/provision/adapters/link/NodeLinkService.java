@@ -16,5 +16,5 @@ public interface NodeLinkService {
     public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface);
     public String getPrimaryAddress(int nodeId);
     public boolean nodeHasEndPointService(int nodeId);
-
+    public Boolean getEndPointStatus(int nodeId);
 }
