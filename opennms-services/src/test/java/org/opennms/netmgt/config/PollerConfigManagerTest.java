@@ -126,7 +126,6 @@ public class PollerConfigManagerTest extends TestCase {
         rrd.addRra("bogusRRA");
         pkg.setRrd(rrd);
         
-        m_rrdStrategy.initialize();
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
         m_rrdStrategy.createFile(isA(Object.class));

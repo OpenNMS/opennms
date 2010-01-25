@@ -149,16 +149,12 @@ public class ThresholderTestCase extends TestCase {
     }
 
 	protected void createMockRrd() throws Exception {
-		// set this so we don't get exceptions in the log
-	    RrdConfig.setProperties(new Properties());
         m_rrdStrategy = m_easyMockUtils.createMock(RrdStrategy.class);
         expectRrdStrategyCalls();
         RrdUtils.setStrategy(m_rrdStrategy);
     }
     
 	protected void expectRrdStrategyCalls() throws Exception {
-        m_rrdStrategy.initialize();
-        expectLastCall().anyTimes();
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".mockRrd").anyTimes();
 	}
 

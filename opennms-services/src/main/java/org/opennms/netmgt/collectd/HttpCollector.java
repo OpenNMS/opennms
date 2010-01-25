@@ -614,7 +614,6 @@ public class HttpCollector implements ServiceCollector {
     private void initializeRrdRepository() {
         log().debug("initializeRrdRepository: Initializing RRD repo from HttpCollector...");
         initializeRrdDirs();
-        initializeRrdInterface();
     }
 
     private void initializeRrdDirs() {
@@ -632,15 +631,6 @@ public class HttpCollector implements ServiceCollector {
                 log().error(sb.toString());
                 throw new RuntimeException(sb.toString());
             }
-        }
-    }
-
-    private void initializeRrdInterface() {
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
     }
 
