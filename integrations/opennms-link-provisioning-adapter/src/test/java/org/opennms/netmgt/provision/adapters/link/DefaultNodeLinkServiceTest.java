@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,10 +64,9 @@ public class DefaultNodeLinkServiceTest {
     private static final int END_POINT2_ID = 2;
     private static final int END_POINT3_ID = 3;
     private static final String END_POINT1_LABEL = "node1";
-    private static final String END_POINT2_LABEL = "node2";
-    private static final String END_POINT3_LABEL = "node3";
+//    private static final String END_POINT2_LABEL = "node2";
+//    private static final String END_POINT3_LABEL = "node3";
     public static final String NO_SUCH_NODE_LABEL = "noSuchNode";
-    
     
     @Autowired 
     DatabasePopulator m_dbPopulator;
@@ -257,7 +255,7 @@ public class DefaultNodeLinkServiceTest {
         assertNotNull("linkState was null", linkState2);
         assertEquals(OnmsLinkState.LinkState.LINK_UP, linkState2.getLinkState());
         
-        linkState2.setLinkState(linkState2.getLinkState().LINK_NODE_DOWN);
+        linkState2.setLinkState(OnmsLinkState.LinkState.LINK_NODE_DOWN);
         
         m_nodeLinkService.saveLinkState(linkState2);
         
