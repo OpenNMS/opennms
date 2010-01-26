@@ -11,9 +11,4 @@
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>
   
-  <bean name="mockTransactionAwareEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
-    <qualifier value="transactionAware" />
-    <property name="eventIpcManagerProxy" ref="eventIpcManager" />
-  </bean>
-  
 </beans>
