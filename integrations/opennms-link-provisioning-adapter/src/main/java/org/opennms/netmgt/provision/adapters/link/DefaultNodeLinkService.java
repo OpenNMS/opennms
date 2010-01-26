@@ -20,6 +20,8 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.provision.adapters.link.LinkEventSendingStateTransition;
+import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -85,8 +87,14 @@ public class DefaultNodeLinkService implements NodeLinkService {
             dli.setParentIfIndex(getPrimaryIfIndexForNode(parentNode));
             infof(this, "creating new link between nodes %d and %d", nodeParentId, nodeId);
         }
-        
-        OnmsLinkState onmsLinkState = new OnmsLinkState();
+
+        OnmsLinkState onmsLinkState = null;
+        if (dli.getId() != null) {
+            onmsLinkState = m_linkStateDao.findByDataLinkInterfaceId(dli.getId());
+        }
+        if (onmsLinkState == null) {
+            onmsLinkState = new OnmsLinkState();
+        }
         onmsLinkState.setDataLinkInterface(dli);
         
         Boolean nodeParentEndPoint = getEndPointStatus(nodeParentId);
