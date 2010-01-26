@@ -155,12 +155,24 @@ public final class NrpePlugin extends AbstractPlugin {
 				NrpePacket response = NrpePacket.receivePacket(socket.getInputStream(), padding);
 				if (response.getResultCode() == 0) {
                     isAServer = true;
-                } else {
-					log.info("recieved a non-zero return result code, " +
-							response.getResultCode() + ", with message: " +
-							response.getBuffer());
-                    isAServer = false;
-					break;
+				} else if (response.getResultCode() <= 2) {
+						String response_msg = response.getBuffer();
+						RE r = new RE("OK|WARNING|CRITICAL");
+						if (r.match(response_msg)) {
+							isAServer = true;
+						} else {
+							log.info("received 1-2 return code, " +
+									response.getResultCode() + ", with message: " + 
+									response.getBuffer());
+							isAServer = false;
+							break;
+						}
+				} else {
+						log.info("received 3+ return code, " +
+								response.getResultCode() + ", with message: " +
+								response.getBuffer());
+                        isAServer = false;
+						break;
                 }
 
 				/*
