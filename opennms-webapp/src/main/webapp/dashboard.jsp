@@ -56,7 +56,7 @@
 	
 </jsp:include>
 
-<script type="text/javascript" language='javascript' src='gwt.js'></script>
+<script type="text/javascript" language='javascript' src='dashboard/dashboard.nocache.js'></script>
 <table class="dashboard" cellspacing="5" width="100%">
   <tbody>
     <tr>
