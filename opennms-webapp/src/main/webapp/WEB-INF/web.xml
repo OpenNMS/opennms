@@ -288,13 +288,6 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!--  servlet for HTTP remoting (Hessian) -->
-  <servlet>
-    <servlet-name>remoting</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
   <!--  servlet that gwt rpc requests get mapped to -->
    <servlet>
      <servlet-name>gwtDispatcher</servlet-name>
@@ -566,11 +559,6 @@
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>remoting</servlet-name>
-    <url-pattern>/remoting/*</url-pattern>
-  </servlet-mapping>
-
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
     <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
