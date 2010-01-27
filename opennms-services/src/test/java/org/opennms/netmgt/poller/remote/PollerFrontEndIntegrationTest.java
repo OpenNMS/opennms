@@ -112,7 +112,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         
         m_frontEndContext = new ClassPathXmlApplicationContext(
                 new String[] { 
-                        "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
+                        "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-rmi.xml",
                         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
                 },
                 false
