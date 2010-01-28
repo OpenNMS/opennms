@@ -17,7 +17,7 @@
   </bean>
   
   <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
-    <property name="mailAckProcessor" ref="mailAckProcessor" />
+    <property name="ackProcessor" ref="mailAckProcessor" />
   </bean>
 
   <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >

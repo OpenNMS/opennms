@@ -227,7 +227,7 @@ public class JavaMailAckReaderTest {
     public void findAndProcessAcks() throws InterruptedException {
         JavaMailAckReader reader = new JavaMailAckReader();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-        reader.setMailAckProcessor(m_processor);
+        reader.setAckProcessor(m_processor);
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
         
         m_processor.setJmConfigDao(m_jmDao);
