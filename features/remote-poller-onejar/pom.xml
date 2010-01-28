@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>1.6.9-TESTING-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS Remote Poller (One Jar)</name>
+  <url>http://maven.apache.org</url>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-key</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                def keystore = new File(project.properties['webstart.keystore'])
+                if (!keystore.exists()) {
+                  keystore.parentFile.mkdirs();
+                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
+                  def args = [
+                    keystore: project.properties['webstart.keystore'],
+                    alias: project.properties['webstart.keyalias'],
+                    storepass: project.properties['webstart.storepass'],
+                    dname: "cn=${project.properties['webstart.dnameCn']}"
+                  ]
+                  if (project.properties['webstart.keypass']) {
+                    args.put('keypass', project.properties['webstart.keypass'])
+                  }
+                  ant.genkey(args)
+                }
+              </source>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-signed-jar-with-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</file>
+                  <type>jar</type>
+                  <classifier>signed-jar-with-dependencies</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.dstovall</groupId>
+         <artifactId>onejar-maven-plugin</artifactId>
+         <version>1.4.1</version>
+         <executions>
+            <execution>
+              <configuration>
+                 <mainClass>org.opennms.poller.remote.Main</mainClass>
+                 <onejarVersion>0.96</onejarVersion>
+                 <attachToBuild>true</attachToBuild>
+              </configuration>
+              <phase>package</phase>
+              <goals>
+                 <goal>one-jar</goal>
+              </goals>
+            </execution>
+         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <keystore>${webstart.keystore}</keystore>
+          <keypass>${webstart.keypass}</keypass>
+          <storepass>${webstart.storepass}</storepass>
+          <alias>${webstart.keyalias}</alias>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <jarPath>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</jarPath>
+          <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller</artifactId>
+    </dependency>
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>onejar-maven-plugin.googlecode.com</id>
+      <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+    </pluginRepository>
+  </pluginRepositories>
+</project>

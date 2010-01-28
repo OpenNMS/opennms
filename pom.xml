@@ -102,7 +102,6 @@
     <module>opennms-snmp</module>
     <module>opennms-config</module>
     <module>opennms-services</module>
-    <module>opennms-remote-poller</module>
     <module>integrations</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
@@ -885,8 +884,18 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-remote-poller</artifactId>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
