@@ -75,6 +75,8 @@ import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.common.JavamailConfiguration;
+import org.opennms.netmgt.config.databaseReports.DatabaseReports;
+import org.opennms.netmgt.config.databaseReports.opennms.OpennmsDatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
@@ -244,6 +246,14 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleCollectdConfiguration() throws Exception {
         unmarshalExample("collectd-configuration.xml", CollectdConfiguration.class);
+    }
+    @Test
+    public void testDatabaseReportsConfiguration() throws Exception {
+        unmarshal("database-reports.xml", DatabaseReports.class);
+    }
+    @Test
+    public void testOpennmsDatabaseReportsConfiguration() throws Exception {
+        unmarshal("opennms-database-reports.xml", OpennmsDatabaseReports.class);
     }
     @Test
     public void testDatabaseSchema() throws Exception {
