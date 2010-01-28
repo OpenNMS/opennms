@@ -77,7 +77,7 @@ import org.springframework.util.Assert;
  */
 public class JavaMailAckReader implements AckReader, InitializingBean {
 
-    private static final String NAME="JavaMailReader";
+    private volatile String m_name;
 
     private volatile Future<?> m_future;
     private AckProcessor m_ackProcessor;
@@ -216,10 +216,6 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
         return m_ackProcessor;
     }
 
-    public String getName() {
-        return NAME;
-    }
-
     public void setAckdConfigDao(AckdConfigurationDao ackdConfigDao) {
         m_ackdConfigDao = ackdConfigDao;
     }
@@ -264,6 +260,14 @@ public class JavaMailAckReader implements AckReader, InitializingBean {
 
     public Future<?> getFuture() {
         return m_future;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public synchronized void setName(String name) {
+        m_name = name;
     }
 
 }
