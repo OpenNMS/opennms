@@ -21,6 +21,14 @@
     <property name="name" value="JavaMailReader" />
   </bean>
 
+  <bean id="hypericReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
+    <property name="ackProcessor" ref="hypericAckProcessor" />
+    <property name="name" value="HypericReader" />
+  </bean>
+
+  <bean id="hypericAckProcessor" class="org.opennms.netmgt.ackd.readers.HypericAckProcessor" >
+  </bean>
+
   <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
     <property name="ackService" ref="ackService" />
@@ -37,6 +45,7 @@
     <property name="ackReaders" >
       <list>
         <ref local="javaMailReader" />
+        <ref local="hypericReader" />
       </list>
     </property>
   </bean>
