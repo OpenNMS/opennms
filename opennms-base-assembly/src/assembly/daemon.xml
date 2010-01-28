@@ -35,6 +35,14 @@
       <outputDirectory>share</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/jnlp</directory>
+      <outputDirectory>webapps/opennms/webstart</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/jnlp</directory>
+      <outputDirectory>jetty-webapps/opennms/webstart</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency/xsds</directory>
       <outputDirectory>share/xsds</outputDirectory>
     </fileSet>
@@ -47,6 +55,10 @@
         <exclude>xsds</exclude>
         <exclude>xsds/*</exclude>
       </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/classes/jetty-webapps/ROOT</directory>
+      <outputDirectory>jetty-webapps/ROOT</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/dependency/WEB-INF/lib</directory>

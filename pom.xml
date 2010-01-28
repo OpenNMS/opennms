@@ -82,9 +82,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</connection>
-    <developerConnection>scm:svn:https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk</developerConnection>
-    <url>http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/trunk</url>
+    <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
+    <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
+    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/master</url>
   </scm>
   <modules>
     <!-- new structure -->
@@ -555,11 +555,13 @@
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.1</version>
       </plugin>
+<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
         <version>2.0</version>
       </plugin>
+-->
     </plugins>
   </reporting>
 
@@ -855,11 +857,6 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1162,7 +1159,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-	<artifactId>opennms-qosdaemon</artifactId>
+        <artifactId>opennms-qosdaemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

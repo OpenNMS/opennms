@@ -28,6 +28,8 @@
       </activation>
       <modules>
         <module>remote-poller</module>
+        <module>remote-poller-jnlp</module>
+        <module>remote-poller-onejar</module>
       </modules>
     </profile>
 

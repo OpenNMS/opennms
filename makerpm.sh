@@ -12,14 +12,18 @@ else
 	RELEASE_MAJOR=0
 fi
 
+EXTRA_INFO=""
+EXTRA_INFO2=""
 if [ $RELEASE_MAJOR -eq 0 ]; then
-	# Set the SVN checkout version if SVN is on the box, otherwise use the date as default
-	RELEASE_MINOR=`date +%Y%m%d`
-	if which svn > /dev/null; then
-	        SVN_DUMMY=`svn info . | grep -i 'last changed rev' | awk -F': ' '{ print $2 }'`
-	        if [ "$SVN_DUMMY" ]; then RELEASE_MINOR="${SVN_DUMMY}.snapshot"; fi
-	fi
+	RELEASE_MINOR=`date '+%Y%m%d'`
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR
+	GIT=`which git 2>/dev/null`
+	if [ -n "$GIT" ] && [ -x "$GIT" ]; then
+		BRANCH=`git branch | grep -E '^\*' | awk '{ print $2 }'`
+		COMMIT=`git log -1 | grep -E '^commit' | cut -d' ' -f2`
+		EXTRA_INFO="This is a snapshot build from the $BRANCH branch.  For a complete log, see:"
+		EXTRA_INFO2="  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$COMMIT"
+	fi
 else
 	RELEASE=$RELEASE_MAJOR
 fi
@@ -75,7 +79,7 @@ if [ -z "$SKIP_SETUP" ]; then
 	install -d -m 755 "$WORKDIR"/{BUILD,RPMS/{i386,i686,noarch},SOURCES,SPECS,SRPMS}
 
 	echo "=== Copying Source to Source Directory ==="
-	$RSYNC -aqr --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
+	$RSYNC -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/"
 
 	echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
 
@@ -85,8 +89,8 @@ fi
 
 echo "=== Building RPMs ==="
 
-rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
-rpmbuild -bb --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
+rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
+rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
 
 if [ -n "$GPG" ]; then
 	if [ `$GPG $GPGOPTS --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then

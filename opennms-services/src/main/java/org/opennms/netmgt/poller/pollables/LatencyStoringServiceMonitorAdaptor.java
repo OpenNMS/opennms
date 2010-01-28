@@ -150,6 +150,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
+	try {
         if (m_thresholdingSet == null) {
             RrdRepository repository = new RrdRepository();
             repository.setRrdBaseDir(new File(rrdPath));
@@ -168,6 +169,10 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 proxy.sendAllEvents();
             }
         }
+
+	} catch(Exception e) {
+	    log().error("Failed to threshold on " + service + " for " + dsName + " because of an exception", e);
+	}
     }
 
     /**

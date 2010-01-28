@@ -74,6 +74,13 @@
                   <classifier>xsds</classifier>
 	             </artifactItem>
 	             <artifactItem>
+	               <groupId>org.opennms.features</groupId>
+	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>jnlp</classifier>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+	             </artifactItem>
+	             <artifactItem>
 	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-reporting</artifactId>
                   <version>${project.version}</version>
@@ -305,6 +312,7 @@
       <groupId>org.rxtx</groupId>
       <artifactId>rxtx-osgi</artifactId>
     </dependency>
+
 
 
     <!-- this is a runtime depdency we need at install time -->

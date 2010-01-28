@@ -48,14 +48,15 @@ public class SIUtils {
     private static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
     
     /**
-     * Print no digits after the decimal point (heh, nor a decimal point)
+     * Print no digits after the decimal point (heh, nor a decimal point).
      */
     private static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
     
     /**
-     * Method used to convert an integer bits-per-second value and a more
-     * commonly recognized abbreviation for network interface speeds. Feel free
-     * to expand it as necessary to accomodate different values.
+     * Method used to convert an integer bits-per-second value to a more
+     * readable vale using commonly recognized abbreviation for network
+     * interface speeds. Feel free to expand it as necessary to accomodate
+     * different values.
      * 
      * @param ifSpeed
      *            The bits-per-second value to be converted into a string
@@ -69,7 +70,11 @@ public class SIUtils {
         String units;
         
         if (ifSpeed >= 1000000000L) {
-            formatter = s_oneDigitAfterDecimal;
+            if ((ifSpeed % 1000000000L) == 0) {
+                formatter = s_noDigitsAfterDecimal;
+            } else {
+                formatter = s_oneDigitAfterDecimal;
+            }
             displaySpeed = ((double) ifSpeed) / 1000000000;
             units = "Gbps";
         } else if (ifSpeed >= 1000000L) {
