@@ -16,12 +16,12 @@
     </constructor-arg>
   </bean>
   
-  <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
+  <bean id="javaMailReader" class="org.opennms.netmgt.ackd.readers.DefaultAckReader" >
     <property name="ackProcessor" ref="mailAckProcessor" />
     <property name="name" value="JavaMailReader" />
   </bean>
 
-  <bean id="hypericReader" class="org.opennms.netmgt.ackd.readers.JavaMailAckReader" >
+  <bean id="hypericReader" class="org.opennms.netmgt.ackd.readers.DefaultAckReader" >
     <property name="ackProcessor" ref="hypericAckProcessor" />
     <property name="name" value="HypericReader" />
   </bean>

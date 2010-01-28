@@ -75,7 +75,7 @@ import org.springframework.util.Assert;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * 
  */
-public class JavaMailAckReader implements AckReader, InitializingBean {
+public class DefaultAckReader implements AckReader, InitializingBean {
 
     private volatile String m_name;
 
