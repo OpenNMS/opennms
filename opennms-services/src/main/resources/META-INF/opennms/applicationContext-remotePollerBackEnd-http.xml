@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+   <bean id="frontEndConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <property name="properties">
+       <props>
+         <prop key="opennms.poller.configuration.resource">${user.home.url}/.opennms/remote-poller.properties</prop>
+         <prop key="opennms.poller.server.url">http://localhost:8980/opennms-remoting</prop>
+       </props>
+     </property>
+     <property name="order" value="0" />
+     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+   </bean>
+
+	<bean id="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.ServerUnreachableAdaptor">
+    	<property name="remoteBackEnd">
+			<bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+				<property name="serviceUrl" value="${opennms.poller.server.url}/pollerBackEnd"/>
+				<property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd"/>
+			</bean>
+    	</property>
+	</bean>
+	
+</beans>

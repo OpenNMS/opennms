@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -19,6 +19,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>opennms.home</name>
+              <value>${project.build.testOutputDirectory}</value>
+            </property>
+          </systemProperties>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -88,6 +99,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.joesnmp</artifactId>
       <scope>compile</scope>
@@ -106,6 +122,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -258,6 +278,11 @@
       <groupId>bsh</groupId>
       <artifactId>bsh</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.caucho</groupId>
+      <artifactId>hessian</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>

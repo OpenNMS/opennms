@@ -264,11 +264,7 @@
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
 
-  <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize</value></property>
-  </bean>
-
-  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rrdStrategy-init">
+  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
   </bean>
 
