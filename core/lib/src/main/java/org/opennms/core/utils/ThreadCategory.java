@@ -91,13 +91,15 @@ public class ThreadCategory extends Category {
      * @see java.lang.InheritableThreadLocal
      */
     public static Logger getInstance(Class<?> c) {
-        String prefix = getPrefix();
+    	return getLog4jInstance(c);
+    }
 
-        if ((prefix != null) && !prefix.equals("")) {
-            return Logger.getLogger(prefix + "." + c.getName());
-        } else {
-            return Logger.getLogger(c.getName());
-        }
+    public static Logger getLog4jInstance(Class<?> c) {
+        return getLog4jInstance(c.getName());
+    }
+    
+    public static org.slf4j.Logger getSlf4jInstance(Class<?> c) {
+        return getSlf4jInstance(c.getName());
     }
 
     /**
@@ -114,6 +116,10 @@ public class ThreadCategory extends Category {
      * @see java.lang.InheritableThreadLocal
      */
     public static Logger getInstance(String cname) {
+        return getLog4jInstance(cname);
+    }
+    
+    public static Logger getLog4jInstance(String cname) {
         String prefix = getPrefix();
 
         if ((prefix != null) && !prefix.equals("")) {
@@ -123,6 +129,16 @@ public class ThreadCategory extends Category {
         }
     }
 
+    public static org.slf4j.Logger getSlf4jInstance(String cname) {
+        String prefix = getPrefix();
+
+        if ((prefix != null) && !prefix.equals("")) {
+            return org.slf4j.LoggerFactory.getLogger(prefix + "." + cname);
+        } else {
+            return org.slf4j.LoggerFactory.getLogger(cname);
+        }
+    }
+    
     /**
      * This method is used to get the category instance associated with the
      * thread. If the instance has not been set then a default category is
@@ -133,6 +149,10 @@ public class ThreadCategory extends Category {
      * @see java.lang.InheritableThreadLocal
      */
     public static Logger getInstance() {
+        return getLog4jInstance();
+    }
+    
+    public static Logger getLog4jInstance() {
         String prefix = getPrefix();
         
         if (prefix != null) {
@@ -144,6 +164,16 @@ public class ThreadCategory extends Category {
              * specified string.
              */
             return Logger.getLogger(DEFAULT_CATEGORY);
+        }
+    }
+    
+    public static org.slf4j.Logger getSlf4jInstance() {
+        String prefix = getPrefix();
+        
+        if (prefix != null) {
+            return org.slf4j.LoggerFactory.getLogger(prefix);
+        } else {
+            return org.slf4j.LoggerFactory.getLogger(DEFAULT_CATEGORY);
         }
     }
 

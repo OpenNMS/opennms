@@ -90,21 +90,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     public void initialize(Map<String, Object> parameters) {
-        try {
-            RrdUtils.initialize();
-            m_serviceMonitor.initialize(parameters);
-        } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
-        }
+        m_serviceMonitor.initialize(parameters);
     }
 
     public void initialize(MonitoredService svc) {
-        try {
-            RrdUtils.initialize();
-            m_serviceMonitor.initialize(svc);
-        } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
-        }
+        m_serviceMonitor.initialize(svc);
     }
 
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
@@ -150,6 +140,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
+	try {
         if (m_thresholdingSet == null) {
             RrdRepository repository = new RrdRepository();
             repository.setRrdBaseDir(new File(rrdPath));
@@ -168,6 +159,10 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 proxy.sendAllEvents();
             }
         }
+
+	} catch(Exception e) {
+	    log().error("Failed to threshold on " + service + " for " + dsName + " because of an exception", e);
+	}
     }
 
     /**

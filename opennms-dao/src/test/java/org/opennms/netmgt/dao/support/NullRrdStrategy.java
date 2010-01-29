@@ -41,16 +41,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
-public class NullRrdStrategy implements RrdStrategy {
+public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 	
 	// THIS IS USED FOR TESTS SO RrdUtils can be initialized
 	// but doesn't need to do anything
+
+    public void setConfigurationProperties(Properties configurationParameters) {
+        // Do nothing
+    }
 
 	public void closeFile(Object rrd) throws Exception {
 	}

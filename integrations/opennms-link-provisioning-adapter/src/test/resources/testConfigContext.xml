@@ -11,6 +11,11 @@
 	
 	<tx:annotation-driven/>
 
+	<bean name="mockTransactionAwareEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
+		<qualifier value="transactionAware" />
+		<property name="eventIpcManagerProxy" ref="eventIpcManager" />
+	</bean>
+
 	<bean id="endPointConfigResourceLocation" class="java.lang.String">
 		<constructor-arg value="classpath:/test-endpoint-configuration.xml" />
 	</bean>

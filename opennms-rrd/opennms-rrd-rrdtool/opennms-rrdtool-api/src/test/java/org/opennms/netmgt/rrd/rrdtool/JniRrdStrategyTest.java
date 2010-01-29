@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.test.mock.MockLogAppender;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.springframework.util.StringUtils;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -58,7 +59,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JniRrdStrategyTest {
     
-    private JniRrdStrategy m_strategy;
+    private RrdStrategy m_strategy;
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +69,6 @@ public class JniRrdStrategyTest {
             File libFile = new File(rrdLib);
             if (libFile.exists()) {
                 m_strategy = new JniRrdStrategy();
-                m_strategy.initialize();
             } else {
                 throw new FileNotFoundException(rrdLib + " does not exist");
             }

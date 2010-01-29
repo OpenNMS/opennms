@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.5+" codebase="$$codebase" href="$$name">
+  <information>
+    <title>OpenNMS Remote Poller (Headless)</title>
+    <vendor>The OpenNMS Group</vendor>
+    <homepage>http://www.opennms.org/</homepage>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="OpenNMS"/>
+    </shortcut>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+" java-vm-args="-Xmx384m" />
+    $dependencies
+  </resources>
+  <application-desc main-class="$mainClass">
+    <argument>--url</argument>
+    <argument>$$context</argument>
+  </application-desc>
+</jnlp> 

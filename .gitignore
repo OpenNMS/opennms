@@ -1,5 +1,7 @@
 *~
+.*.swp
 target
 .classpath
 .project
 .settings
+build.properties

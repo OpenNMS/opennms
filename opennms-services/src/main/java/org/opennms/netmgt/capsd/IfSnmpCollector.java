@@ -115,6 +115,10 @@ public final class IfSnmpCollector implements Runnable {
      * Returns true if the system group was collected successfully
      */
     public boolean hasSystemGroup() {
+        if (m_sysGroup == null) {
+            log().debug("hasSystemGroup: No system group present.");
+        }
+
         return (m_sysGroup != null && !m_sysGroup.failed());
     }
 

@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -11,12 +11,12 @@
   <packaging>war</packaging>
   
 <!--  <build>
-<!--  	<plugins>
+  	<plugins>
   		<plugin>
 	      	<groupId>org.codehaus.cargo</groupId>
 	      	<artifactId>cargo-maven2-plugin</artifactId>
 	      	<version>1.0</version>
-	      	<extensions>true</extensions>-->
+	      	<extensions>true</extensions>
 	      	<executions>
 	      		<execution>
 	      			<goals>
@@ -24,7 +24,7 @@
 	      			</goals>
 	      		</execution>
 	      	</executions>
-<!--	      	<configuration>
+	      	<configuration>
 	      		<descriptor>src/assemble/merge.xml</descriptor>
 	      		<container>
 	      			<containerId>jetty6x</containerId>
@@ -32,7 +32,7 @@
 	      		</container>
 	      	</configuration>
 	      </plugin>
-  	</plugins>-->
+  	</plugins>
   </build>-->
   
   
