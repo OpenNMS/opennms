@@ -55,7 +55,7 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
+import org.opennms.netmgt.dao.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculationException;
 import org.opennms.reporting.availability.AvailabilityCalculator;
 import org.opennms.reporting.availability.ReportMailer;
@@ -63,19 +63,22 @@ import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
+import org.opennms.reporting.core.svclayer.ParameterConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class OnmsReportService implements ReportService,
+public class AvailabilityReportService implements ReportService,
         ReportValidationService {
 
     private AvailabilityCalculator m_classicCalculator;
 
     private AvailabilityCalculator m_calendarCalculator;
 
-    private OnmsDatabaseReportConfigDao m_configDao;
+    private OnmsReportConfigDao m_configDao;
 
     private Category log;
+
+    private ParameterConversionService m_parameterConversionService;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -85,10 +88,10 @@ public class OnmsReportService implements ReportService,
     private static final String SVG_OUTPUT_FILE_NAME = "SVGAvailReport.pdf";
     private static final String PDF_OUTPUT_FILE_NAME = "PDFAvailReport.pdf";
 
-    public OnmsReportService() {
+    public AvailabilityReportService() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(OnmsReportService.class);
+        log = ThreadCategory.getInstance(AvailabilityReportService.class);
 
     }
 
@@ -335,8 +338,7 @@ public class OnmsReportService implements ReportService,
 
     
     public ReportParameters getParameters(String ReportId) {
-        // TODO Auto-generated method stub
-        return null;
+        return m_parameterConversionService.convert(m_configDao.getParameters(ReportId));
     }
     
     public void setCalendarCalculator(AvailabilityCalculator calculator) {
@@ -347,8 +349,12 @@ public class OnmsReportService implements ReportService,
         m_classicCalculator = calulator;
     }
 
-    public void setConfigDao(OnmsDatabaseReportConfigDao configDao) {
+    public void setConfigDao(OnmsReportConfigDao configDao) {
         m_configDao = configDao;
+    }
+    
+    public void setParameterConversionService(ParameterConversionService parameterConversionService) {
+        m_parameterConversionService = parameterConversionService;
     }
 
 }

@@ -43,6 +43,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import org.opennms.api.reporting.parameter.ReportParameters;
+
 /**
  * This interface provides an API for implementing additional database reports 
  * inside the opennms webapp
@@ -102,5 +104,13 @@ public interface ReportService {
      * @param outputStream stream to render the resulting report
      */
     public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
+    
+    /**
+     * This method retrieves the runtime parameters taken by the report
+     * 
+     * @param reportId
+     * @return a ReportParameters object containing the parameters taken by the report
+     */
+    public abstract ReportParameters getParameters(String ReportId);
     
 }

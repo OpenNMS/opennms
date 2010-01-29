@@ -33,31 +33,25 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.model;
+package org.opennms.netmgt.dao;
 
-import java.io.Serializable;
+import org.opennms.netmgt.config.reporting.DateParm;
+import org.opennms.netmgt.config.reporting.StringParm;
 
-public class DatabaseReportParm implements Serializable {
-
-    private static final long serialVersionUID = -7987984390575422836L;
+public interface AvailabilityReportConfigDao {
     
-    String m_name;
-    String m_displayName;
-
-    public String getName() {
-        return m_name;
-    }
-
-    public void setName(String name) {
-        m_name = name;
-    }
-
-    public String getDisplayName() {
-        return m_displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        m_displayName = displayName;
-    }
+    DateParm[] getDateParms(String id);
+    
+    StringParm[] getStringParms(String id);
+    
+    String getPdfStylesheetLocation(String id);
+    
+    String getSvgStylesheetLocation(String id);
+    
+    String getHtmlStylesheetLocation(String id);
+    
+    String getType(String id);
+    
+    String getLogo(String logo);
 
 }

@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,31 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.svclayer;
+package org.opennms.api.reporting.parameter;
 
-import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import java.io.Serializable;
 
-public interface DatabaseReportCriteriaService {
+public class ReportParm implements Serializable {
+
+    private static final long serialVersionUID = -7987984390575422836L;
     
-    ReportParameters getCriteria(String id);
-    
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    String m_name;
+    String m_displayName;
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    public String getDisplayName() {
+        return m_displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        m_displayName = displayName;
+    }
 
 }

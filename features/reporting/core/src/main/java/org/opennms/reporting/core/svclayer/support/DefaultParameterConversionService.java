@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: January 27th, 2010 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -38,32 +38,28 @@ package org.opennms.reporting.core.svclayer.support;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
-import org.opennms.netmgt.config.databaseReports.DateParm;
-import org.opennms.netmgt.config.databaseReports.IntParm;
-import org.opennms.netmgt.config.databaseReports.StringParm;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.reporting.core.svclayer.DatabaseReportCriteriaService;
+import org.opennms.netmgt.config.reporting.DateParm;
+import org.opennms.netmgt.config.reporting.IntParm;
+import org.opennms.netmgt.config.reporting.StringParm;
+import org.opennms.netmgt.config.reporting.Parameters;
+import org.opennms.reporting.core.svclayer.ParameterConversionService;
 
-public class DefaultDatabaseReportCriteriaService implements
-        DatabaseReportCriteriaService {
-    
-    DatabaseReportConfigDao m_dao;
+public class DefaultParameterConversionService implements
+        ParameterConversionService {
 
-    public ReportParameters getCriteria(String id) {
-       
-        ReportParameters criteria = new ReportParameters();
+    public ReportParameters convert(Parameters configParameters) {
+
+        ReportParameters reportParameters = new ReportParameters();
         
-        criteria.setReportId(id);
-        criteria.setDisplayName(m_dao.getDisplayName(id));
         
         // add date parms to criteria
         
         ArrayList<ReportDateParm> dateParms = new ArrayList<ReportDateParm>();
-        DateParm[] dates = m_dao.getDateParms(id);
+        DateParm[] dates = configParameters.getDateParm();
         if (dates.length > 0) {
             for (int i = 0 ; i < dates.length ; i++ ) {
                 ReportDateParm dateParm = new ReportDateParm();
@@ -87,12 +83,12 @@ public class DefaultDatabaseReportCriteriaService implements
                 dateParms.add(dateParm);
             }
         }
-        criteria.setDateParms(dateParms);
+        reportParameters.setDateParms(dateParms);
         
         // add string parms to criteria
         
         ArrayList<ReportStringParm> stringParms = new ArrayList<ReportStringParm>();
-        StringParm[] strings = m_dao.getStringParms(id);
+        StringParm[] strings = configParameters.getStringParm();
         if (strings.length > 0) {
             for (int i = 0 ; i < strings.length ; i++ ) {
                 ReportStringParm stringParm = new ReportStringParm();
@@ -103,12 +99,12 @@ public class DefaultDatabaseReportCriteriaService implements
                 stringParms.add(stringParm);
             }
         }
-        criteria.setStringParms(stringParms);
+        reportParameters.setStringParms(stringParms);
         
         // add int parms to criteria
         
         ArrayList<ReportIntParm> intParms = new ArrayList<ReportIntParm>();
-        IntParm[] integers = m_dao.getIntParms(id);
+        IntParm[] integers = configParameters.getIntParm();
         if (integers.length > 0) {
             for (int i = 0 ; i < integers.length ; i++ ) {
                 ReportIntParm intParm = new ReportIntParm();
@@ -119,13 +115,9 @@ public class DefaultDatabaseReportCriteriaService implements
                 intParms.add(intParm);
             }
         }
-        criteria.setIntParms(intParms);
+        reportParameters.setIntParms(intParms);
 
-        return criteria;
-    }
-    
-    public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportDao) {
-        m_dao = databaseReportDao;
+        return reportParameters;
     }
 
 }

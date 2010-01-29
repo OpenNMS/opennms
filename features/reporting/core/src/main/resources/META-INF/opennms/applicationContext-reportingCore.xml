@@ -20,4 +20,6 @@
     	<property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
 	</bean>
 	
+	<bean id="parameterConversionService" class="org.opennms.reporting.core.svclayer.support.DefaultParameterConversionService" />
+	
 </beans>

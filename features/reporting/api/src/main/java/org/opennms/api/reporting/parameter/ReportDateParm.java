@@ -33,12 +33,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.model;
+package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class DatabaseReportDateParm extends DatabaseReportParm implements Serializable {
+public class ReportDateParm extends ReportParm implements Serializable {
 
     private static final long serialVersionUID = -8528562178984136887L;
     
@@ -47,7 +47,7 @@ public class DatabaseReportDateParm extends DatabaseReportParm implements Serial
     String m_interval;
     Integer m_count;
     
-    public DatabaseReportDateParm() {
+    public ReportDateParm() {
         super();
     }
     

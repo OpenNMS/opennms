@@ -3,7 +3,7 @@ package org.opennms.web.svclayer;
 import java.util.List;
 
 import org.opennms.api.reporting.DeliveryOptions;
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.web.svclayer.support.TriggerDescription;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.webflow.execution.RequestContext;
@@ -22,14 +22,16 @@ public interface SchedulerService {
     public abstract Boolean exists(String triggerName);
 
     @Transactional(readOnly = false)
-    public abstract String addCronTrigger(DatabaseReportCriteria criteria, 
+    public abstract String addCronTrigger(String id,
+            ReportParameters criteria, 
             DeliveryOptions deliveryOptions,
             String triggerName, 
             String cronExpression, 
             RequestContext context);
 
     @Transactional(readOnly = false)
-    public abstract String execute(DatabaseReportCriteria criteria, 
+    public abstract String execute(String id,
+            ReportParameters criteria, 
             DeliveryOptions deliveryOptions,
             RequestContext context);
 

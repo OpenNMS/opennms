@@ -46,9 +46,9 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.api.reporting.DeliveryOptions;
 import org.opennms.api.reporting.ReportService;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.web.svclayer.SchedulerService;
@@ -158,20 +158,20 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * java.lang.String, java.lang.String, java.lang.String,
      * org.springframework.webflow.execution.RequestContext)
      */
-    public String addCronTrigger(DatabaseReportCriteria criteria,
+    public String addCronTrigger(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions, String triggerName,
             String cronExpression, RequestContext context) {
 
         CronTrigger cronTrigger = null;
 
-        String reportServiceName = m_configDao.getReportService(criteria.getReportId());
+        String reportServiceName = m_configDao.getReportService(id);
         
         try {
             
             ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
             
             if (reportService.validate(criteria.getReportParms(),
-                                       criteria.getReportId()) == false) {
+                                       id) == false) {
                 log().error(PARAMETER_ERROR);
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
@@ -195,7 +195,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 }
 
                 cronTrigger.setJobName(m_jobDetail.getName());
-                cronTrigger.getJobDataMap().put("criteria", (DatabaseReportCriteria) criteria);
+                cronTrigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
+                cronTrigger.getJobDataMap().put("reportId", id);
                 cronTrigger.getJobDataMap().put("deliveryOptions",
                                                 (DeliveryOptions) deliveryOptions);
                 cronTrigger.getJobDataMap().put("reportServiceName", reportServiceName);
@@ -229,15 +230,15 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * .web.report.database.model.DatabaseReportCriteria, java.lang.String,
      * org.springframework.webflow.execution.RequestContext)
      */
-    public String execute(DatabaseReportCriteria criteria,
+    public String execute(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions, RequestContext context) {
 
-        String reportServiceName = m_configDao.getReportService(criteria.getReportId());
+        String reportServiceName = m_configDao.getReportService(id);
         ReportService reportService;
         try {
             reportService = m_reportServiceLocator.getReportService(reportServiceName);
             if (reportService.validate(criteria.getReportParms(),
-                                       criteria.getReportId()) == false) {
+                                       id) == false) {
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
                                                                                                 PARAMETER_ERROR).build());
@@ -247,7 +248,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                                                           m_triggerGroup,
                                                           new Date(), null, 0, 0L);
                 trigger.setJobName(m_jobDetail.getName());
-                trigger.getJobDataMap().put("criteria", (DatabaseReportCriteria) criteria);
+                trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
+                trigger.getJobDataMap().put("reportId", id);
                 trigger.getJobDataMap().put("deliveryOptions", (DeliveryOptions) deliveryOptions);
                 trigger.getJobDataMap().put("reportServiceName", reportServiceName);
                 try {

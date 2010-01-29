@@ -3,44 +3,44 @@ package org.opennms.web.report.database;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
-import org.opennms.reporting.core.model.DatabaseReportDateParm;
-import org.opennms.reporting.core.model.DatabaseReportIntParm;
-import org.opennms.reporting.core.model.DatabaseReportStringParm;
+import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.api.reporting.parameter.ReportDateParm;
+import org.opennms.api.reporting.parameter.ReportIntParm;
+import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
 public class ReportCriteriaValidator {
     
-    public void  validateReportCriteria(DatabaseReportCriteria reportCriteria, ValidationContext context) {
+    public void  validateReportCriteria(ReportParameters reportCriteria, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
         
         
-        List<DatabaseReportDateParm> dateParms = reportCriteria.getDateParms();
+        List<ReportDateParm> dateParms = reportCriteria.getDateParms();
         
-        for (Iterator<DatabaseReportDateParm> dateParmIter = dateParms.iterator(); dateParmIter.hasNext();) {
-            DatabaseReportDateParm dateParm = dateParmIter.next();
+        for (Iterator<ReportDateParm> dateParmIter = dateParms.iterator(); dateParmIter.hasNext();) {
+            ReportDateParm dateParm = dateParmIter.next();
             if (dateParm.getValue() == null) {
                 messages.addMessage(new MessageBuilder().error().source("date parms").
                                     defaultText("cannot have null date field" + dateParm.getDisplayName()).build());
             }
         }
         
-        List<DatabaseReportStringParm> stringParms = reportCriteria.getStringParms();
+        List<ReportStringParm> stringParms = reportCriteria.getStringParms();
         
-        for (Iterator<DatabaseReportStringParm> stringParmIter = stringParms.iterator(); stringParmIter.hasNext();) {
-            DatabaseReportStringParm stringParm = stringParmIter.next();
+        for (Iterator<ReportStringParm> stringParmIter = stringParms.iterator(); stringParmIter.hasNext();) {
+            ReportStringParm stringParm = stringParmIter.next();
             if (stringParm.getValue() == "" ) {
                 messages.addMessage(new MessageBuilder().error().source("string parms").
                                     defaultText("cannot have empty string field " + stringParm.getDisplayName()).build());
             }
         }
         
-        List<DatabaseReportIntParm> intParms = reportCriteria.getIntParms();
+        List<ReportIntParm> intParms = reportCriteria.getIntParms();
         
-        for (Iterator<DatabaseReportIntParm> intParmIter = intParms.iterator(); intParmIter.hasNext();) {
-            DatabaseReportIntParm intParm = intParmIter.next();
+        for (Iterator<ReportIntParm> intParmIter = intParms.iterator(); intParmIter.hasNext();) {
+            ReportIntParm intParm = intParmIter.next();
             // TODO add a more sensible check here
             if (intParm.getValue() == 0 ) {
                 messages.addMessage(new MessageBuilder().error().source("int parms").

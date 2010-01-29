@@ -5,7 +5,7 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="calendarAvailabilityCalculator"
-		class="org.opennms.reporting.availability.AvailabilityCalculator"
+		class="org.opennms.reporting.availability.AvailabilityCalculatorImpl"
 		scope="prototype">
 		<property name="monthFormat">
 			<value>calendar</value>
@@ -20,7 +20,7 @@
 	</bean>
 
 	<bean id="classicAvailabilityCalculator"
-		class="org.opennms.reporting.availability.AvailabilityCalculator"
+		class="org.opennms.reporting.availability.AvailabilityCalculatorImpl"
 		scope="prototype">
 		<property name="monthFormat">
 			<value>classic</value>
@@ -34,10 +34,25 @@
 		</property>
 	</bean>
 	
+	<!-- 
 	<bean id="onmsReportService"
 		class="org.opennms.reporting.availability.svclayer.OnmsReportService"
 		scope="prototype">
 		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
+		<property name="calendarCalculator">
+			<ref local="calendarAvailabilityCalculator" />
+		</property>
+		<property name="classicCalculator">
+			<ref local="classicAvailabilityCalculator" />
+		</property>
+	</bean>
+	-->
+	
+	<bean id="availabilityReportService"
+		class="org.opennms.reporting.availability.svclayer.AvailabilityReportService"
+		scope="prototype">
+		<property name="parameterConversionService" ref="parameterConversionService" />
+		<property name="configDao" ref="availabilityReportConfigDao" />  
 		<property name="calendarCalculator">
 			<ref local="calendarAvailabilityCalculator" />
 		</property>

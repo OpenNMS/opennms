@@ -225,7 +225,15 @@
   <bean id="onmsDatabaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsDatabaseReportConfigDao">
     <property name="configResource" ref="onmsDatabaseReportConfigResourceLocation" />
   </bean>
-
+  
+  <bean id="availabilityReportConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/availability-reports.xml" />
+  </bean>
+  
+  <bean id="availabilityReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao">
+    <property name="configResource" ref="availabilityReportConfigResourceLocation" />
+  </bean>
+  
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>

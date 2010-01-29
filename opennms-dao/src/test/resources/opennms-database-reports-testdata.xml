@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opennms-database-reports
-	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
 	<report id="defaultCalendarReport" 
 		type="calendar">
 		<logo>logo.gif</logo>

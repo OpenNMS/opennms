@@ -210,7 +210,7 @@ public class AvailabilityCalculatorTest extends TestCase {
 
         //AvailabilityData availData = null;
         try {
-            AvailabilityCalculator calculator = new AvailabilityCalculator();
+            AvailabilityCalculator calculator = new AvailabilityCalculatorImpl();
             AvailabilityData data = new AvailabilityData();
             data.setAvailabilityDataService(new LegacyAvailabilityDataService());
             calculator.setAvailabilityData(data);

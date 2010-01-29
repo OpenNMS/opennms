@@ -33,7 +33,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.model;
+package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -42,40 +42,40 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class DatabaseReportCriteria implements Serializable {
+public class ReportParameters implements Serializable {
 
     private static final long serialVersionUID = -3848794546173077375L;
     protected String m_reportId;
     protected String m_displayName;
-    protected List <DatabaseReportDateParm> m_dateParms;
-    protected List <DatabaseReportStringParm> m_stringParms;
-    protected List <DatabaseReportIntParm> m_intParms;
+    protected List <ReportDateParm> m_dateParms;
+    protected List <ReportStringParm> m_stringParms;
+    protected List <ReportIntParm> m_intParms;
 
-    public DatabaseReportCriteria() {
+    public ReportParameters() {
         super();
     }
 
-    public List<DatabaseReportDateParm> getDateParms() {
+    public List<ReportDateParm> getDateParms() {
         return m_dateParms;
     }
 
-    public void setDateParms(List<DatabaseReportDateParm> dateParms) {
+    public void setDateParms(List<ReportDateParm> dateParms) {
         m_dateParms = dateParms;
     }
     
-    public List<DatabaseReportStringParm> getStringParms() {
+    public List<ReportStringParm> getStringParms() {
         return m_stringParms;
     }
 
-    public void setStringParms(List<DatabaseReportStringParm> strings) {
+    public void setStringParms(List<ReportStringParm> strings) {
         m_stringParms = strings;
     }
     
-    public List<DatabaseReportIntParm> getIntParms() {
+    public List<ReportIntParm> getIntParms() {
         return m_intParms;
     }
 
-    public void setIntParms(List<DatabaseReportIntParm> ints) {
+    public void setIntParms(List<ReportIntParm> ints) {
         m_intParms = ints;
     }
 
@@ -101,17 +101,17 @@ public class DatabaseReportCriteria implements Serializable {
         
         // Add all the strings from the report
         if (m_stringParms != null ) {
-            Iterator<DatabaseReportStringParm>stringIter = m_stringParms.iterator();
+            Iterator<ReportStringParm>stringIter = m_stringParms.iterator();
             while (stringIter.hasNext()) {
-                DatabaseReportStringParm parm = stringIter.next();
+                ReportStringParm parm = stringIter.next();
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }
         // Add all the dates from the report
         if (m_dateParms != null) {
-            Iterator<DatabaseReportDateParm>dateIter = m_dateParms.iterator();
+            Iterator<ReportDateParm>dateIter = m_dateParms.iterator();
             while (dateIter.hasNext()) {
-                DatabaseReportDateParm parm = dateIter.next();
+                ReportDateParm parm = dateIter.next();
                 if (parm.getUseAbsoluteDate()) {
                     // use the absolute date set when the report was scheduled.
                     parmMap.put(parm.getName(), parm.getValue());
@@ -135,9 +135,9 @@ public class DatabaseReportCriteria implements Serializable {
         
         // Add all the integers from the report
         if (m_intParms != null) {
-            Iterator<DatabaseReportIntParm>intIter = m_intParms.iterator();
+            Iterator<ReportIntParm>intIter = m_intParms.iterator();
             while (intIter.hasNext()) {
-                DatabaseReportIntParm parm = intIter.next();
+                ReportIntParm parm = intIter.next();
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }

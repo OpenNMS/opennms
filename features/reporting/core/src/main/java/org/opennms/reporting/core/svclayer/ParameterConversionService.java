@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: December 3th, 2009 jonathan@opennms.org
+// Created: January 27th, 2010 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,34 +33,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.model;
+package org.opennms.reporting.core.svclayer;
 
-import java.io.Serializable;
+import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.netmgt.config.reporting.Parameters;
 
-public class DatabaseReportIntParm extends DatabaseReportParm implements Serializable {
+public interface ParameterConversionService {
     
-    private static final long serialVersionUID = 4587512112540000518L;
-    
-    int m_value;
-    String m_type;
-    
-    public DatabaseReportIntParm() {
-      super();
-    }
-    
-    public int getValue() {
-        return m_value;
-    }
-    
-    public void setValue(int value) {
-        m_value = value;
-    }
-    
-    public String getInputType() {
-        return m_type;
-    }
-    public void setInputType(String type) {
-        m_type = type;
-    }
+    public ReportParameters convert(Parameters parameters);
 
 }

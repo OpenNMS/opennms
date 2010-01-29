@@ -38,7 +38,7 @@ package org.opennms.reporting.core;
 
 import org.opennms.api.reporting.DeliveryOptions;
 import org.opennms.api.reporting.ReportService;
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -55,7 +55,7 @@ public class BatchReportJob extends QuartzJobBean {
             throws JobExecutionException {
         
         JobDataMap dataMap = jobContext.getMergedJobDataMap();
-        DatabaseReportCriteria criteria = (DatabaseReportCriteria) dataMap.get("criteria");
+        ReportParameters criteria = (ReportParameters) dataMap.get("criteria");
         DeliveryOptions deliveryOptions = (DeliveryOptions) dataMap.get("deliveryOptions");
         
         // TODO this needs the reportServiceName in the criteria 
@@ -64,7 +64,9 @@ public class BatchReportJob extends QuartzJobBean {
         
         ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
         
-        reportService.run(criteria.getReportParms(), deliveryOptions, criteria.getReportId());
+        reportService.run(criteria.getReportParms(), 
+                          deliveryOptions, 
+                          (String)dataMap.get("reportId"));
         
     }
     

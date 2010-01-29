@@ -35,11 +35,11 @@
  */
 package org.opennms.web.svclayer;
 
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.springframework.webflow.execution.RequestContext;
 
 public interface DatabaseReportService {
     
-    public String execute(DatabaseReportCriteria criteria, RequestContext context);
+    public String execute(ReportParameters criteria, RequestContext context);
 
 }

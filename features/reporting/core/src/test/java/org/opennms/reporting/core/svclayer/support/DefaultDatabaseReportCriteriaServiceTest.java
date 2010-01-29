@@ -41,8 +41,8 @@ import java.util.Calendar;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
-import org.opennms.reporting.core.model.DatabaseReportCriteria;
 import org.opennms.reporting.core.svclayer.DatabaseReportCriteriaService;
 import org.opennms.reporting.core.svclayer.support.DefaultDatabaseReportCriteriaService;
 import org.springframework.core.io.ClassPathResource;
@@ -86,7 +86,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testDatabaseReportService() throws Exception {
         
-        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID);
+        ReportParameters criteria = m_criteriaService.getCriteria(ID);
         
         assertEquals(criteria.getStringParms().size(),1);
         assertEquals(criteria.getStringParms().get(0).getDisplayName(),STRING_DISPLAY_NAME);
@@ -109,7 +109,7 @@ public class DefaultDatabaseReportCriteriaServiceTest {
     @Test
     public void testCalendarOffset() {
         
-        DatabaseReportCriteria criteria = m_criteriaService.getCriteria(ID);
+        ReportParameters criteria = m_criteriaService.getCriteria(ID);
         
         assertEquals(OFFSET_COUNT,criteria.getDateParms().get(0).getCount());
         assertEquals(OFFSET_INTERVAL,criteria.getDateParms().get(0).getInterval());

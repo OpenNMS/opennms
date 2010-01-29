@@ -13,7 +13,7 @@
 
 	<on-start>
 		<evaluate expression="databaseReportConfigDao.getReportService(reportId)" result="flowScope.reportServiceName" />
-		<evaluate expression="databaseReportCriteriaService.getCriteria(reportId)" result="flowScope.criteria" />
+		<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getParameters(reportId)" result="flowScope.criteria" />
 	</on-start>
 	
 	<view-state id="scheduledReportParameters" model="criteria">
@@ -65,7 +65,7 @@
 	</decision-state>
 
 	<action-state id="executeReport">
-		<evaluate expression="reportSchedulerService.execute(criteria, deliveryOptions, flowRequestContext)" />
+		<evaluate expression="reportSchedulerService.execute(reportId, criteria, deliveryOptions, flowRequestContext)" />
 		<transition on="success" to="reportRunning" />
 		<transition on="error" to="reportError" />
 	</action-state>
@@ -77,7 +77,8 @@
 	</view-state>
 	
 	<action-state id="scheduleReport">
-		<evaluate expression="reportSchedulerService.addCronTrigger(criteria, 
+		<evaluate expression="reportSchedulerService.addCronTrigger(reportId,
+			criteria, 
 			deliveryOptions, 
 			triggerDetails.getTriggerName(),
         	triggerDetails.getCronExpression(),

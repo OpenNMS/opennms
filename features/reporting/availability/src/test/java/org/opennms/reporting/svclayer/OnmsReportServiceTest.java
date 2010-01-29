@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009
+// Created: October 5th, 2009 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,15 +33,43 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.svclayer;
+package org.opennms.reporting.svclayer;
 
-import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.OnmsDatabaseReportConfigDao;
+import org.opennms.reporting.availability.AvailabilityCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-public interface DatabaseReportCriteriaService {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    DependencyInjectionTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:org/opennms/reporting/availability/svclayer/OnmsReportServiceTest.xml"
+})
+
+// FIXME: This test fails as AvailabilityCalculator is not an interface (
+
+public class OnmsReportServiceTest {
     
-    ReportParameters getCriteria(String id);
+    @Autowired
+    AvailabilityCalculator m_classicCalculator;
+    @Autowired
+    AvailabilityCalculator m_calendarCalculator;
+    @Autowired
+    OnmsDatabaseReportConfigDao m_configDao;
     
-    void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
+    @Test
+    public void testWiring() {
+        Assert.assertNotNull(m_classicCalculator);
+        Assert.assertNotNull(m_calendarCalculator);
+        Assert.assertNotNull(m_configDao);
+    }
 
 }

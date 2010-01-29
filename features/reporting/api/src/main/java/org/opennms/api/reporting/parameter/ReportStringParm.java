@@ -33,11 +33,11 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.reporting.core.model;
+package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
 
-public class DatabaseReportStringParm extends DatabaseReportParm implements Serializable {
+public class ReportStringParm extends ReportParm implements Serializable {
     
     
     private static final long serialVersionUID = -2057597127243217834L;
@@ -45,7 +45,7 @@ public class DatabaseReportStringParm extends DatabaseReportParm implements Seri
     String m_value;
     String m_type;
     
-    public DatabaseReportStringParm() {
+    public ReportStringParm() {
       super();
     }
     
