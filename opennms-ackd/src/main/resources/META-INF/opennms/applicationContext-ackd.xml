@@ -27,6 +27,7 @@
   </bean>
 
   <bean id="hypericAckProcessor" class="org.opennms.netmgt.ackd.readers.HypericAckProcessor" >
+    <property name="ackdConfigDao" ref="ackdConfigurationDao" />
   </bean>
 
   <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >

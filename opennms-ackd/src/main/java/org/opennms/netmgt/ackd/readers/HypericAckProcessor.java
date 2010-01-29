@@ -35,13 +35,30 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.AckdConfigurationDao;
+
 public class HypericAckProcessor implements AckProcessor {
 
+    private AckdConfigurationDao m_ackdDao;
+
+    private static Logger log() {
+        return ThreadCategory.getInstance(HypericAckProcessor.class);
+    }
+
     public void reloadConfigs() {
+        log().debug("reloadConfigs: reloading configuration...");
+        m_ackdDao.reloadConfiguration();
+        log().debug("reloadConfigs: configuration reloaded");
     }
 
     public void run() {
         // Parse Hyperic alert states
+    }
+
+    public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
+        m_ackdDao = configDao;
     }
 
     public void afterPropertiesSet() throws Exception {
