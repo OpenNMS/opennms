@@ -40,6 +40,11 @@
       <artifactId>mail</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
 
     <!-- runtime only dependencies -->
