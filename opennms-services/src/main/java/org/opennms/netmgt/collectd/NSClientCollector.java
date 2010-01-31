@@ -325,7 +325,6 @@ public class NSClientCollector implements ServiceCollector {
     private void initializeRrdRepository() {
         log().debug("initializeRrdRepository: Initializing RRD repo from NSClientCollector...");
         initializeRrdDirs();
-        initializeRrdInterface();
     }
 
     private void initializeRrdDirs() {
@@ -338,15 +337,6 @@ public class NSClientCollector implements ServiceCollector {
             if (!f.mkdirs()) {
                 throw new RuntimeException("Unable to create RRD file " + "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
             }
-        }
-    }
-
-    private void initializeRrdInterface() {
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
     }
 

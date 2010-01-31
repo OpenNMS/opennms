@@ -10,6 +10,7 @@
   <name>OpenNMS Features</name>
   <modules>
     <module>acl</module>
+    <module>http-remoting</module>
     <module>poller</module>
     <module>provisioning</module>
     <module>ticketing</module>
@@ -26,6 +27,8 @@
       </activation>
       <modules>
         <module>remote-poller</module>
+        <module>remote-poller-jnlp</module>
+        <module>remote-poller-onejar</module>
       </modules>
     </profile>
 

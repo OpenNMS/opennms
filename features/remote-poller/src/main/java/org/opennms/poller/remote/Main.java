@@ -36,10 +36,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -52,8 +51,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.Appender;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -68,7 +65,7 @@ public class Main {
     String[] m_args;
     ClassPathXmlApplicationContext m_context;
     PollerFrontEnd m_frontEnd;
-    String m_url;
+    URI m_uri;
     String m_locationName;
     boolean m_shuttingDown = false;
     boolean m_gui = false;
@@ -95,7 +92,7 @@ public class Main {
         Handler fh = new FileHandler(logFile);
         Logger.getLogger("").addHandler(fh);
         Logger.getLogger("").setLevel(Level.WARNING);
-        ThreadCategory.getInstance().getRoot().removeAllAppenders();
+		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();
     }
 
     private void run() {
@@ -137,7 +134,7 @@ public class Main {
         options.addOption("d", "debug", false, "write debug messages to the log");
         options.addOption("g", "gui", false, "start a GUI (default: false)");
         options.addOption("l", "location", true, "the location name of this remote poller");
-        options.addOption("u", "url", true, "the RMI URL for OpenNMS (rmi://server-name/)");
+        options.addOption("u", "url", true, "the URL for OpenNMS (default: rmi://server-name/)");
 
         CommandLineParser parser = new PosixParser();
         m_cl = parser.parse(options, m_args);
@@ -156,21 +153,13 @@ public class Main {
         }
         if (m_cl.hasOption("u")) {
             String arg = m_cl.getOptionValue("u").toLowerCase();
-            if (arg.startsWith("http")) {
-                try {
-                    URL url = new URL(arg);
-                    m_url = "rmi://"+url.getHost();
-                    
-                } catch (MalformedURLException e) {
-                    usage(options);
-                    e.printStackTrace();
-                    System.exit(2);
-                }
-                
-            } else {
-                m_url = arg;
-            }
-
+        	try {
+				m_uri = new URI(arg);
+			} catch (URISyntaxException e) {
+                usage(options);
+                e.printStackTrace();
+                System.exit(2);
+			}
         } else {
             usage(options);
             System.exit(3);
@@ -207,13 +196,14 @@ public class Main {
         log().fine("user.home.url = "+homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
-        log().fine("opennms.poller.server.url = "+m_url);
-        System.setProperty("opennms.poller.server.url", m_url);
+        String serverURI = m_uri.toString().replaceAll("/*$", "");
+        log().fine("opennms.poller.server.url = " + serverURI);
+        System.setProperty("opennms.poller.server.url", serverURI);
 
         log().fine("location name = " + m_locationName);
-        
+
         List<String> configs = new ArrayList<String>();
-        configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml");
+        configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
         configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
 
         if (m_gui) {

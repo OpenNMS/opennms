@@ -128,13 +128,6 @@ public final class SnmpThresholder implements ServiceThresholder {
         setupThresholdsDao();
         setupIfInfoGetter();
        
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log().error("initialize: Unable to initialize RrdUtils: " + e, e);
-            throw new RuntimeException("Unable to initialize RrdUtils: " + e, e);
-        }
-
         log().debug("initialize: successfully instantiated RRD subsystem");
        
         m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface, SnmpThresholdNetworkInterface>()); 

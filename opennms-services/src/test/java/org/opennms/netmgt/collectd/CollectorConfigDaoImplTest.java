@@ -94,11 +94,11 @@ public class CollectorConfigDaoImplTest extends TestCase {
         return getClass().getResourceAsStream(fileName);
     }
 	
-	public void testInstantiate() throws MarshalException, ValidationException, IOException, RrdException {
+	public void testInstantiate() throws MarshalException, ValidationException, IOException, Exception {
 		initialize();
 	}
 	
-	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, RrdException {
+	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, Exception {
         RrdTestUtils.initialize();
 
         InputStream stream = null;

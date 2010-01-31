@@ -10,6 +10,7 @@
   <artifactId>org.opennms.features.remote-poller</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Remote Poller</name>
+  <url>http://maven.apache.org</url>
   <build>
     <plugins>
       <plugin>
@@ -26,22 +27,6 @@
               <sources>
                 <source>src/main/groovy</source>
               </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-signed-jar-with-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</file>
-                  <type>jar</type>
-                  <classifier>signed-jar-with-dependencies</classifier>
-                </artifact>
-              </artifacts>
             </configuration>
           </execution>
         </executions>
@@ -108,46 +93,6 @@ groovy.compiler.output.path=target/classes
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.dstovall</groupId>
-           <artifactId>onejar-maven-plugin</artifactId>
-           <version>1.4.1</version>
-           <executions>
-              <execution>
-                <configuration>
-                   <mainClass>org.opennms.poller.remote.Main</mainClass>
-                   <onejarVersion>0.96</onejarVersion>
-                   <attachToBuild>true</attachToBuild>
-                </configuration>
-                <phase>package</phase>
-                <goals>
-                   <goal>one-jar</goal>
-                </goals>
-              </execution>
-           </executions>
-        </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <jarPath>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</jarPath>
-          <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -173,6 +118,10 @@ groovy.compiler.output.path=target/classes
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
@@ -180,10 +129,4 @@ groovy.compiler.output.path=target/classes
       <artifactId>groovy</artifactId>
     </dependency>
   </dependencies>
-   <pluginRepositories>
-      <pluginRepository>
-        <id>onejar-maven-plugin.googlecode.com</id>
-        <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-      </pluginRepository>
-   </pluginRepositories>
 </project>

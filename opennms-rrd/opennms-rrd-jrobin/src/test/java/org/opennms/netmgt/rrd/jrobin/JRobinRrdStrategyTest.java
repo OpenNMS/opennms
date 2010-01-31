@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
@@ -64,6 +65,8 @@ import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
@@ -77,16 +80,17 @@ import org.springframework.util.StringUtils;
  */
 public class JRobinRrdStrategyTest {
     
-    private JRobinRrdStrategy m_strategy;
+    private RrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     
     @Before
     public void setUp() throws Exception {
+        // Make sure that AWT headless mode is enabled
+        System.setProperty("java.awt.headless", "true");
         
         MockLogAppender.setupLogging();
         
         m_strategy = new JRobinRrdStrategy();
-        m_strategy.initialize();
 
         // Don't initialize by default since not all tests need it.
         m_fileAnticipator = new FileAnticipator(false);
@@ -101,7 +105,7 @@ public class JRobinRrdStrategyTest {
     }
 
     @Test
-    public void testInitilize() {
+    public void testInitialize() {
        // Don't do anything... just check that setUp works 
     }
     
@@ -229,13 +233,13 @@ public class JRobinRrdStrategyTest {
                 "COMMENT:foo2\\n"
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         
         int firstHeight = graph.getRrdGraphInfo().getHeight();
 
-        RrdGraphDef graphDef2 = m_strategy.createGraphDef(new File(""), command2);
+        RrdGraphDef graphDef2 = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command2);
         RrdGraph graph2 = new RrdGraph(graphDef2);
         assertNotNull("second graph object", graph2);
         
@@ -263,13 +267,13 @@ public class JRobinRrdStrategyTest {
                 "GPRINT:b:AVERAGE:\"%8.2lf\\n\""
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         
         int firstHeight = graph.getRrdGraphInfo().getHeight();
 
-        RrdGraphDef graphDef2 = m_strategy.createGraphDef(new File(""), command2);
+        RrdGraphDef graphDef2 = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command2);
         RrdGraph graph2 = new RrdGraph(graphDef2);
         assertNotNull("second graph object", graph2);
         
@@ -289,7 +293,7 @@ public class JRobinRrdStrategyTest {
                 "PRINT:something:AVERAGE:\"%le\""
         };
 
-        RrdGraphDef graphDef = m_strategy.createGraphDef(new File(""), command);
+        RrdGraphDef graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         RrdGraph graph = new RrdGraph(graphDef);
         assertNotNull("graph object", graph);
         
@@ -364,14 +368,9 @@ public class JRobinRrdStrategyTest {
 
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
-        String rrdExtension = ".jrb";
 
         m_fileAnticipator.initialize();
-        
-        // This is so the RrdUtils.getExtension() call in the strategy works
-        Properties properties = new Properties();
-        properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
-        RrdConfig.setProperties(properties);
+        String rrdExtension = RrdUtils.getExtension();
         
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
         dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));

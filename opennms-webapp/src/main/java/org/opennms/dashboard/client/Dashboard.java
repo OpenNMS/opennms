@@ -131,7 +131,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     
     private SurveillanceServiceAsync getSurveillanceService() {
         if (m_surveillanceService == null) {
-            String serviceEntryPoint = GWT.getModuleBaseURL()+"surveillanceService.gwt";
+            String serviceEntryPoint = GWT.getHostPageBaseURL()+"surveillanceService.gwt";
 
             // define the service you want to call
             final SurveillanceServiceAsync svc = (SurveillanceServiceAsync) GWT.create(SurveillanceService.class);

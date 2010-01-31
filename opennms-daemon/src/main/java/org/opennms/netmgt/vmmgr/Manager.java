@@ -218,7 +218,6 @@ public class Manager implements ManagerMBean {
         setLogPrefix();
 
         testIcmpSocket();
-        testRrdInitialize();
         testGetLocalHost();
     }
 
@@ -238,14 +237,6 @@ public class Manager implements ManagerMBean {
             throw new UndeclaredThrowableException(t, ("Could not initialize ICMP socket: " + t.getMessage()));
         }
         s.close();
-    }
-
-    private void testRrdInitialize() {
-        try {
-            RrdUtils.initialize();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t, ("Could not initialize RRD subsystem: " + t.getMessage()));
-        }
     }
 
     private void setLogPrefix() {
