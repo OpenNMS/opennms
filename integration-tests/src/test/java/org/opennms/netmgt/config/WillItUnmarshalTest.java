@@ -76,7 +76,6 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.common.JavamailConfiguration;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
-import org.opennms.netmgt.config.databaseReports.opennms.OpennmsDatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
@@ -100,6 +99,7 @@ import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
+import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -220,6 +220,10 @@ public class WillItUnmarshalTest {
         unmarshal("ami-config.xml", AmiConfig.class);
     }
     @Test
+    public void testAvailabilityReportsConfiguration() throws Exception {
+        unmarshal("availability-reports.xml", OpennmsReports.class);
+    }
+    @Test
     public void testCapsdConfiguration() throws Exception {
         unmarshal("capsd-configuration.xml", CapsdConfiguration.class);
     }
@@ -250,10 +254,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testDatabaseReportsConfiguration() throws Exception {
         unmarshal("database-reports.xml", DatabaseReports.class);
-    }
-    @Test
-    public void testOpennmsDatabaseReportsConfiguration() throws Exception {
-        unmarshal("opennms-database-reports.xml", OpennmsDatabaseReports.class);
     }
     @Test
     public void testDatabaseSchema() throws Exception {

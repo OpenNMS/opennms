@@ -37,30 +37,19 @@ package org.opennms.netmgt.dao.castor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
-
 import org.junit.Test;
-import org.opennms.netmgt.config.databaseReports.DateParm;
-import org.opennms.netmgt.config.databaseReports.IntParm;
-import org.opennms.netmgt.config.databaseReports.StringParm;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportConfigDaoTest {
     
     private static final String NAME = "defaultCalendarReport";
     private static final String DESCRIPTION = "default calendar report";
-    private static final String DATE_DISPLAY_NAME = "end date";
-    private static final String DATE_NAME = "endDate";
-    private static final String REPORT_SERVICE = "onmsReportService";
-    private static final String STRING_NAME = "offenderCount";
-    private static final String STRING_DISPLAY_NAME = "top offender count";
+    private static final String REPORT_SERVICE = "availabilityReportService";
     
 
     @Test
-    public void testGetParmsByName() throws Exception {
+    public void testGetReportService() throws Exception {
         
         DefaultDatabaseReportConfigDao dao = new DefaultDatabaseReportConfigDao();
         Resource resource = new ClassPathResource("/database-reports-testdata.xml");
@@ -68,20 +57,6 @@ public class DefaultDatabaseReportConfigDaoTest {
         dao.afterPropertiesSet();
         
         assertEquals(dao.getReportService(NAME),REPORT_SERVICE);
-        
-        DateParm[] dates = dao.getDateParms(NAME);
-        assertEquals(1, dates.length);
-        assertEquals(DATE_NAME,dates[0].getName());
-        assertEquals(DATE_DISPLAY_NAME,dates[0].getDisplayName());
-        assertEquals(false,dates[0].getUseAbsoluteDate());
-        assertEquals(1,dates[0].getDefaultCount());
-        assertEquals("day",dates[0].getDefaultInterval());
-        
-        IntParm[] integers = dao.getIntParms(NAME);
-        assertEquals(1,integers.length);
-        assertEquals(STRING_NAME,integers[0].getName());
-        assertEquals(STRING_DISPLAY_NAME,integers[0].getDisplayName());
-        assertEquals(20,integers[0].getDefault());
         
     }
 

@@ -58,42 +58,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
     }
     
     
-    public DateParm[] getDateParms(String id) {
-        
-        DateParm[] dateParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            dateParms =  report.getDateParm();
-        }
-        
-        return dateParms;
-        
-    }
-    
-    public StringParm[] getStringParms(String id) {
-        
-        StringParm[] stringParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            stringParms =  report.getStringParm();
-        }
-        
-        return stringParms;
-        
-    }
-    
-    public IntParm[] getIntParms(String id) {
-        
-        IntParm[] intParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            intParms =  report.getIntParm();
-        }
-        
-        return intParms;
-        
-    }
-    
     public String getReportService(String name) {
         
         Report report = getReport(name);
