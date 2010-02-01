@@ -1086,18 +1086,6 @@ function setMapElemDim(){
 	enableMenu();
 }
 
-function refreshMapElements()
-{
-	if(currentMapId!=MAP_NOT_OPENED && map.mapElements!=null){
-		for (mapElemId in map.mapElements) {
-			var el = map.mapElements[mapElemId];
-			map.mapElements[mapElemId].setSemaphoreColor(getSemaphoreColorForNode(el.severity,el.avail,el.status));
-			map.mapElements[mapElemId].setSemaphoreFlash(getSemaphoreFlash(el.severity,el.avail));
-		}
-		map.render();
-	}
-}
-
 function startRefreshNodesTime() {
         refreshingMapElems=false;
 		stopCountdown = false;	
