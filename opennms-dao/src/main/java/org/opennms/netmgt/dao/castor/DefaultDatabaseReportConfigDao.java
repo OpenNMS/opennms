@@ -39,10 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
-import org.opennms.netmgt.config.databaseReports.DateParm;
-import org.opennms.netmgt.config.databaseReports.IntParm;
 import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.config.databaseReports.StringParm;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 
 public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
