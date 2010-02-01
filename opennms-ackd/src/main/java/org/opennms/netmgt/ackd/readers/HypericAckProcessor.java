@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,6 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
-/*
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -52,7 +52,6 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.HttpVersion;
- */
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -62,6 +61,11 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.xml.event.Parms;
 
 public class HypericAckProcessor implements AckProcessor {
+
+    private static final String HYPERIC_IP_ADDRESS = "127.0.0.1";
+    private static final int HYPERIC_PORT = 7080;
+    private static final String HYPERIC_USER = "hqadmin";
+    private static final String HYPERIC_PASSWORD = "hqadmin";
 
     private AckdConfigurationDao m_ackdDao;
     private AlarmDao m_alarmDao;
@@ -112,6 +116,39 @@ public class HypericAckProcessor implements AckProcessor {
                 String hypericSystem = alarmList.getKey();
                 for (OnmsAlarm alarmsForSystem : alarmList.getValue()) {
                     // Construct a sane query for the Hyperic system
+                }
+
+                HttpClient httpClient = new HttpClient();
+                HostConfiguration hostConfig = new HostConfiguration();
+                GetMethod  getMethod = new GetMethod("/opennms/alerts");
+                httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
+                httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
+                // Change these parameters to be configurable
+                hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
+                // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "????");
+                // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
+                // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
+
+                if (HYPERIC_USER != null && !"".equals(HYPERIC_USER) && HYPERIC_PASSWORD != null && !"".equals(HYPERIC_PASSWORD)) {
+                    httpClient.getParams().setAuthenticationPreemptive(true);
+                    httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(HYPERIC_USER, HYPERIC_PASSWORD));
+                }
+
+                try {
+                    log().debug("httpClient request with the following parameters: " + httpClient);
+                    log().debug("hostConfig parameters: " + hostConfig);
+                    log().debug("getMethod parameters: " + getMethod);
+                    httpClient.executeMethod(hostConfig, getMethod);
+
+                    Integer statusCode = getMethod.getStatusCode();
+                    String statusText = getMethod.getStatusText();
+                    String responseText = getMethod.getResponseBodyAsString(); 
+                } catch (HttpException e) {
+                    log().info(e);
+                } catch (IOException e) {
+                    log().info(e);
+                } finally{
+                    getMethod.releaseConnection();
                 }
             }
 
