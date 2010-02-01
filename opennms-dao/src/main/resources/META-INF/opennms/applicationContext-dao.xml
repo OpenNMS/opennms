@@ -218,14 +218,6 @@
     <property name="configResource" ref="databaseReportConfigResourceLocation" />
   </bean>
   
-  <bean id="onmsDatabaseReportConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/opennms-database-reports.xml" />
-  </bean>
-  
-  <bean id="onmsDatabaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsDatabaseReportConfigDao">
-    <property name="configResource" ref="onmsDatabaseReportConfigResourceLocation" />
-  </bean>
-  
   <bean id="availabilityReportConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/availability-reports.xml" />
   </bean>
