@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-enterprise-reporting</artifactId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.9-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reportd</artifactId>
@@ -14,6 +14,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
