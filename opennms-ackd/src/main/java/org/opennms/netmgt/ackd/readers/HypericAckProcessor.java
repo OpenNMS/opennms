@@ -37,6 +37,7 @@ package org.opennms.netmgt.ackd.readers;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +45,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.EventFilter;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -75,15 +79,30 @@ import org.opennms.netmgt.xml.event.Parms;
 public class HypericAckProcessor implements AckProcessor {
 
     private static final String HYPERIC_IP_ADDRESS = "127.0.0.1";
-    private static final int HYPERIC_PORT = 7080;
+    private static final int HYPERIC_PORT = 7081;
     private static final String HYPERIC_USER = "hqadmin";
     private static final String HYPERIC_PASSWORD = "hqadmin";
 
     private AckdConfigurationDao m_ackdDao;
     private AlarmDao m_alarmDao;
 
+    @XmlRootElement(name="hyperic-alert-statuses")
+    static class HypericAlertStatuses {
+        private List<HypericAlertStatus> statusList;
+
+        @XmlElement
+        public List<HypericAlertStatus> getStatusList() {
+            return statusList;
+        }
+
+        public void setStatusList(List<HypericAlertStatus> statusList) {
+            this.statusList = statusList;
+        }
+
+    }
+
     @XmlRootElement(name="hyperic-alert-status")
-    private static class HypericAlertStatus {
+    static class HypericAlertStatus {
         private int alertId;
         private boolean isAcknowledged;
         private boolean isFixed;
@@ -96,7 +115,7 @@ public class HypericAckProcessor implements AckProcessor {
             this.alertId = alertId;
         }
 
-        @XmlAttribute(name="ackd", required=true)
+        @XmlAttribute(name="ack", required=true)
         public boolean isAcknowledged() {
             return isAcknowledged;
         }
@@ -161,65 +180,7 @@ public class HypericAckProcessor implements AckProcessor {
                     // Construct a sane query for the Hyperic system
                 }
 
-                HttpClient httpClient = new HttpClient();
-                HostConfiguration hostConfig = new HostConfiguration();
-                GetMethod  getMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu");
-                httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
-                httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
-                // Change these parameters to be configurable
-                hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
-                // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "????");
-                // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
-                // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
-
-                if (HYPERIC_USER != null && !"".equals(HYPERIC_USER) && HYPERIC_PASSWORD != null && !"".equals(HYPERIC_PASSWORD)) {
-                    httpClient.getParams().setAuthenticationPreemptive(true);
-                    httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(HYPERIC_USER, HYPERIC_PASSWORD));
-                }
-
-                try {
-                    log().debug("httpClient request with the following parameters: " + httpClient);
-                    log().debug("hostConfig parameters: " + hostConfig);
-                    log().debug("getMethod parameters: " + getMethod);
-                    httpClient.executeMethod(hostConfig, getMethod);
-
-                    Integer statusCode = getMethod.getStatusCode();
-                    String statusText = getMethod.getStatusText();
-                    String responseText = getMethod.getResponseBodyAsString();
-
-                    // Instantiate a JAXB context to parse the alert status
-                    JAXBContext context = JAXBContext.newInstance(new Class[] { HypericAckProcessor.HypericAlertStatus.class });
-                    XMLInputFactory xmlif = XMLInputFactory.newInstance();
-                    XMLEventReader xmler = xmlif.createXMLEventReader(new StringReader(responseText));
-                    EventFilter filter = new EventFilter() {
-                        public boolean accept(XMLEvent event) {
-                            return event.isStartElement();
-                        }
-                    };
-                    XMLEventReader xmlfer = xmlif.createFilteredReader(xmler, filter);
-                    // Read up until the beginning of the root element
-                    StartElement e = (StartElement)xmlfer.nextEvent();
-                    // Fetch the root element name for {@link HypericAlertStatus} objects
-                    String rootElementName = context.createJAXBIntrospector().getElementName(new HypericAlertStatus()).getLocalPart();
-                    if (rootElementName.equals(e.getName().getLocalPart())) {
-                        Unmarshaller unmarshaller = context.createUnmarshaller();
-                        // Use StAX to pull parse the incoming alert statuses
-                        while (xmlfer.peek() != null) {
-                            Object object = unmarshaller.unmarshal(xmler);
-                            if (object instanceof HypericAlertStatus) {
-                                HypericAlertStatus alertStatus = (HypericAlertStatus)object;
-                            }
-                        }
-                    } else {
-                        // Formatting exception
-                    }
-                } catch (HttpException e) {
-                    log().info(e);
-                } catch (IOException e) {
-                    log().info(e);
-                } finally{
-                    getMethod.releaseConnection();
-                }
+                // Call fetchHypericAlerts() for each system
             }
 
             // Iterate and update any acknowledged or fixed alerts
@@ -229,6 +190,83 @@ public class HypericAckProcessor implements AckProcessor {
             log().warn("run: threw exception: "+e);
         }
     }
+
+    public static List<HypericAlertStatus> fetchHypericAlerts() {
+        HttpClient httpClient = new HttpClient();
+        HostConfiguration hostConfig = new HostConfiguration();
+        GetMethod  getMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu");
+        httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
+        httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
+        // Change these parameters to be configurable
+        hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
+        // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "????");
+        // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
+        // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
+
+        if (HYPERIC_USER != null && !"".equals(HYPERIC_USER) && HYPERIC_PASSWORD != null && !"".equals(HYPERIC_PASSWORD)) {
+            httpClient.getParams().setAuthenticationPreemptive(true);
+            httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(HYPERIC_USER, HYPERIC_PASSWORD));
+        }
+
+        List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
+        try {
+            log().debug("httpClient request with the following parameters: " + httpClient);
+            log().debug("hostConfig parameters: " + hostConfig);
+            log().debug("getMethod parameters: " + getMethod);
+            httpClient.executeMethod(hostConfig, getMethod);
+
+            Integer statusCode = getMethod.getStatusCode();
+            String statusText = getMethod.getStatusText();
+            String responseText = getMethod.getResponseBodyAsString();
+
+            retval = parseHypericAlerts(new StringReader(responseText));
+        } catch (HttpException e) {
+            log().warn(e);
+        } catch (IOException e) {
+            log().warn(e);
+        } catch (JAXBException e) {
+            log().warn(e);
+        } catch (XMLStreamException e) {
+            log().warn(e);
+        } finally{
+            getMethod.releaseConnection();
+        }
+        return retval;
+    }
+
+    public static List<HypericAlertStatus> parseHypericAlerts(Reader reader) throws JAXBException, XMLStreamException {
+        List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
+
+        // Instantiate a JAXB context to parse the alert status
+        JAXBContext context = JAXBContext.newInstance(new Class[] { HypericAlertStatuses.class, HypericAlertStatus.class });
+        XMLInputFactory xmlif = XMLInputFactory.newInstance();
+        XMLEventReader xmler = xmlif.createXMLEventReader(reader);
+        EventFilter filter = new EventFilter() {
+            public boolean accept(XMLEvent event) {
+                return event.isStartElement();
+            }
+        };
+        XMLEventReader xmlfer = xmlif.createFilteredReader(xmler, filter);
+        // Read up until the beginning of the root element
+        StartElement startElement = (StartElement)xmlfer.nextEvent();
+        // Fetch the root element name for {@link HypericAlertStatus} objects
+        String rootElementName = context.createJAXBIntrospector().getElementName(new HypericAlertStatuses()).getLocalPart();
+        if (rootElementName.equals(startElement.getName().getLocalPart())) {
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            // Use StAX to pull parse the incoming alert statuses
+            while (xmlfer.peek() != null) {
+                Object object = unmarshaller.unmarshal(xmler);
+                if (object instanceof HypericAlertStatus) {
+                    HypericAlertStatus alertStatus = (HypericAlertStatus)object;
+                    retval.add(alertStatus);
+                }
+            }
+        } else {
+            System.err.println("*** ERROR *** Wrong root element: " + rootElementName + " != " + startElement.getName().getLocalPart());
+        }
+        return retval;
+    }
+
 
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdDao = configDao;
