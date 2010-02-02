@@ -95,22 +95,16 @@ public class PageSequenceMonitorTest extends TestCase {
 		super.tearDown();
 	}
     
-    public void testSimpleGoogle() throws Exception {
-        setPageSequenceParam("www.google.com");
-        PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
-        assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+    public void testSimpleOpenNMS() throws Exception {
+        setPageSequenceParam("www.opennms.com");
+        PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
     }
         
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
-    }
-
-    public void testSimpleYahoo() throws Exception {
-        setPageSequenceParam("www.yahoo.com");
-        PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
-        assertTrue("should not be available", yahooStatus.isUnavailable());
     }
 
     private void setPageSequenceParam(String virtualHost) {
