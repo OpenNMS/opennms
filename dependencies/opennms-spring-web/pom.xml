@@ -53,6 +53,42 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-binding</artifactId>
+      <version>${springWebFlowVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-js</artifactId>
+      <version>${springWebFlowVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-webflow</artifactId>
+      <version>${springWebFlowVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-beans</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
+        <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- Spring Dependencies -->
 
     <dependency>
