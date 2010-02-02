@@ -1880,6 +1880,7 @@
   <event-file>events/RiverbedSteelhead.events.xml</event-file>
   <event-file>events/Sensaphone.events.xml</event-file>
   <event-file>events/Sentry.events.xml</event-file>
+  <event-file>events/ServerTech.Sentry3.events.xml</event-file>
   <event-file>events/Snort.events.xml</event-file>
   <event-file>events/SonicWall.events.xml</event-file>
   <event-file>events/Sonus.events.xml</event-file>

@@ -86,6 +86,7 @@
     <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/1.6</url>
   </scm>
   <modules>
+    <module>features</module>
     <module>dependencies</module>
     <module>opennms-test</module>
     <module>mock-snmp-agent</module>
@@ -101,7 +102,6 @@
     <module>opennms-snmp</module>
     <module>opennms-config</module>
     <module>opennms-services</module>
-    <module>opennms-remote-poller</module>
     <module>integrations</module>
     <module>opennms-import</module>
     <module>opennms-jetty</module>
@@ -880,7 +880,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-	<artifactId>opennms-qosdaemon</artifactId>
+        <artifactId>opennms-qosdaemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
