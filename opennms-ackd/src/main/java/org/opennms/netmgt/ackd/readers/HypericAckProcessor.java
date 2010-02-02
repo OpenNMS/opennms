@@ -35,10 +35,10 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,28 +58,26 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.log4j.Logger;
-import org.hibernate.criterion.Restrictions;
-
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.HttpVersion;
-
+import org.apache.log4j.Logger;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.acknowledgments.AckService;
-import org.opennms.netmgt.xml.event.Parms;
 
 public class HypericAckProcessor implements AckProcessor {
 
@@ -193,18 +191,20 @@ public class HypericAckProcessor implements AckProcessor {
                 // Iterate and update any acknowledged or fixed alerts
                 List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
                 for (HypericAlertStatus alert : alertsForSystem) {
-                    if (alert.isAcknowledged()) {
-                        // OnmsAlarm alarm = getByPlatformIdAndAlertId(alarmsForSystem, hypericSystem, i);
-                        OnmsAcknowledgment ack = new OnmsAcknowledgment(new Date(), "Ackd.HypericAckProcessor");
-                        ack.setAckType(AckType.ALARM);
+                    OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
+                    // If the Hyperic alert has been ack'd and the local alarm is not yet ack'd, then ack it
+                    if (alert.isAcknowledged() && alarm.getAckTime() == null) {
+                        // TODO Get the ack time from Hyperic??
+                        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
                         ack.setAckAction(AckAction.ACKNOWLEDGE);
                         ack.setLog("Acknowledged by Ackd.HypericAckProcessor");
                         acks.add(ack);
                     }
-                    if (alert.isFixed()) {
-                        // OnmsAlarm alarm = getByPlatformIdAndAlertId(alarmsForSystem, hypericSystem, i);
-                        OnmsAcknowledgment ack = new OnmsAcknowledgment(new Date(), "Ackd.HypericAckProcessor");
-                        ack.setAckType(AckType.ALARM);
+
+                    // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
+                    if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
+                        // TODO Get the ack time from Hyperic??
+                        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
                         ack.setAckAction(AckAction.CLEAR);
                         ack.setLog("Cleared by Ackd.HypericAckProcessor");
                         acks.add(ack);
@@ -220,6 +220,25 @@ public class HypericAckProcessor implements AckProcessor {
         } catch (Throwable e) {
             log().warn("run: threw exception: "+e);
         }
+    }
+
+    public static OnmsAlarm findAlarmForHypericAlert(List<OnmsAlarm> alarms, String platformId, HypericAlertStatus alert) {
+        String targetPlatformId = "platform.id=" + platformId + "(string,text)";
+        String targetAlertId = "alert.id="+ String.valueOf(alert.getAlertId()) + "(string,text)";
+        for (OnmsAlarm alarm : alarms) {
+            String parmString = alarm.getEventParms();
+            String[] parms = parmString.split(";");
+            for (String parm : parms) {
+                if (targetPlatformId.equals(parm)) {
+                    for (String alertparm : parms) {
+                        if (targetAlertId.equals(alertparm)) {
+                            return alarm;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static List<HypericAlertStatus> fetchHypericAlerts() {
@@ -248,9 +267,9 @@ public class HypericAckProcessor implements AckProcessor {
 
             Integer statusCode = getMethod.getStatusCode();
             String statusText = getMethod.getStatusText();
-            String responseText = getMethod.getResponseBodyAsString();
+            InputStream responseText = getMethod.getResponseBodyAsStream();
 
-            retval = parseHypericAlerts(new StringReader(responseText));
+            retval = parseHypericAlerts(new InputStreamReader(responseText));
         } catch (HttpException e) {
             log().warn(e);
         } catch (IOException e) {
