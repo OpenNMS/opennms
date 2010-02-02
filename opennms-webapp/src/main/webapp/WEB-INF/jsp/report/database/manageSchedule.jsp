@@ -46,11 +46,11 @@
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage Report Schedule" />
-  <jsp:param name="headTitle" value="Scheduled Reports" />
+  <jsp:param name="headTitle" value="Manage Report Schedule" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-  <jsp:param name="breadcrumb" value="Manage Schedule"/>
+  <jsp:param name="breadcrumb" value="Manage Report Schedule"/>
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"

@@ -9,7 +9,7 @@ public class TriggerDetailsValidator {
     
     SchedulerService m_schedulerService;
 
-    public void ValidateEnterTriggerDetails(TriggerDetails triggerDetails, ValidationContext context) {
+    public void ValidateTriggerDetails(TriggerDetails triggerDetails, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
         if (m_schedulerService.exists(triggerDetails.getTriggerName())) {
             messages.addMessage(new MessageBuilder().error().source("triggerName").

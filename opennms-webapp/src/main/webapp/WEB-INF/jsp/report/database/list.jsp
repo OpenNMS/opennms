@@ -45,13 +45,13 @@
 <%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Availability Reports" />
-  <jsp:param name="headTitle" value="Availability Reports" />
+  <jsp:param name="title" value="List Reports" />
+  <jsp:param name="headTitle" value="List Reports" />
 	<jsp:param name="breadcrumb"
 		value="<a href='report/index.jsp'>Reports</a>" />
 	<jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="List" />
+	<jsp:param name="breadcrumb" value="List Reports" />
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"

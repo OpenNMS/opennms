@@ -47,12 +47,12 @@
 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Database Reports" />
-  <jsp:param name="headTitle" value="Database Reports" />
+  <jsp:param name="title" value="Manage Reports" />
+  <jsp:param name="headTitle" value="Manage Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-  <jsp:param name="breadcrumb" value="Manage"/>
+  <jsp:param name="breadcrumb" value="Manage Reports"/>
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"

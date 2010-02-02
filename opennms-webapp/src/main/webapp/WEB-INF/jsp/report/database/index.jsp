@@ -55,9 +55,9 @@
     <h3>Database Reports</h3>
     <div class="boxWrapper">
       <ul class="plain">
-        <li><a href="report/database/list.htm">Show available database reports</a></li>
-        <li><a href="report/database/manage.htm">View and manage pre-run database reports</a></li>
-        <li><a href="report/database/manageSchedule.htm">Manage the database report schedule</a></li>
+        <li><a href="report/database/list.htm">Run or schedule a report</a></li>
+        <li><a href="report/database/manage.htm">View and manage pre-run reports</a></li>
+        <li><a href="report/database/manageSchedule.htm">Manage the report schedule</a></li>
       </ul>
     </div>
   </div>
@@ -65,12 +65,12 @@
   <div class="TwoColRight">
     <h3>Descriptions</h3>
     <div class="boxWrapper">
-      <p><b>Database Reports</b> provide graphical or numeric
+      <p>These reports provide graphical or numeric
           view of your service level metrics for the current
           month-to-date, previous month, and last twelve months by categories.
       </p>
       
-      <p>You may run database reports for any of the report categories defined.
+      <p>You may run or schedule a report for any of the report categories defined.
       You can have these reports mailed to you when they have been run. You can also
       chose to save these reports on the OpenNMS server so that they may be viewed later
       </p>

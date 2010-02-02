@@ -229,7 +229,7 @@
   
   <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator" />
   
-  <bean id="ReportCriteriaValidator" class="org.opennms.web.report.database.ReportCriteriaValidator" />
+  <bean id="ReportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
   
   <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator">
   	<property name="schedulerService">

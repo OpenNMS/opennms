@@ -13,10 +13,10 @@
 
 	<on-start>
 		<evaluate expression="databaseReportConfigDao.getReportService(reportId)" result="flowScope.reportServiceName" />
-		<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getParameters(reportId)" result="flowScope.criteria" />
+		<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getParameters(reportId)" result="flowScope.parameters" />
 	</on-start>
 	
-	<view-state id="scheduledReportParameters" model="criteria">
+	<view-state id="reportParameters" model="parameters">
 		<!--<binder>
 			<binding property="dates" converter="shortDate" required="true" />
 			<binding property="categories" required="true" />
@@ -44,7 +44,7 @@
 				result="viewScope.formats" />
 		</on-render>
 		<transition on="proceed" to="scheduleOrExecute" />
-		<transition on="revise" to="scheduledReportParameters" />
+		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 	
@@ -54,7 +54,7 @@
 	
 	<view-state id="reviewReport" model="criteria">
 		<transition on="proceed" to="scheduleOrExecute" />
-		<transition on="revise" to="scheduledReportParameters" />
+		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 	
@@ -65,20 +65,20 @@
 	</decision-state>
 
 	<action-state id="executeReport">
-		<evaluate expression="reportSchedulerService.execute(reportId, criteria, deliveryOptions, flowRequestContext)" />
+		<evaluate expression="reportSchedulerService.execute(reportId, parameters, deliveryOptions, flowRequestContext)" />
 		<transition on="success" to="reportRunning" />
 		<transition on="error" to="reportError" />
 	</action-state>
 	
 	<view-state id="triggerDetails" model="triggerDetails">
-		<transition on="revise" to="scheduledReportParameters" />
+		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 		<transition on="proceed" to="scheduleReport" />
 	</view-state>
 	
 	<action-state id="scheduleReport">
 		<evaluate expression="reportSchedulerService.addCronTrigger(reportId,
-			criteria, 
+			parameters, 
 			deliveryOptions, 
 			triggerDetails.getTriggerName(),
         	triggerDetails.getCronExpression(),

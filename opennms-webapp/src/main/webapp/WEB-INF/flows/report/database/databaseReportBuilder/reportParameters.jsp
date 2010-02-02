@@ -12,7 +12,7 @@
  *
  * Modifications:
  *
- * 2009 October 19: Created jonathan@opennms.org
+ * 2009 December 14th: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -55,12 +55,11 @@
 
 <h3>Report Parameters</h3>
 
-
-<form:form modelAttribute="criteria">
+<form:form modelAttribute="parameters">
 	
 	<table>
 		<%-- // string parameters --%>
-		<c:forEach items="${criteria.stringParms}" var="stringParm" varStatus="stringParmRow">
+		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
 			<tr>
 				<td><c:out value="${stringParm.displayName}"/></td>
                 <td>
@@ -77,20 +76,44 @@
 				</td>
 			</tr>
 		</c:forEach>
-		<%-- // date fields --%>
-		<c:forEach items="${criteria.dateParms}" var="date" varStatus="dateParmRow">
+		<%-- // int parameters --%>
+		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
 			<tr>
-				<td><c:out value="${date.displayName}"/></td>
-				<td>
-					<form:input path="dateParms[${dateParmRow.index}].value" />
-					<script type="text/javascript">
-						Spring.addDecoration(new Spring.ElementDecoration({
-						elementId : "dateParms${dateParmRow.index}.value",
-						widgetType : "dijit.form.DateTextBox",
-						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
-					</script>
+				<td><c:out value="${intParm.displayName}"/></td>
+                <td>
+	                <form:input path="intParms[${intParmRow.index}].value"/>
 				</td>
 			</tr>
+		</c:forEach>
+		<%-- // date parameters --%>
+		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
+			<c:choose>
+				<c:when test="${ schedule && !date.useAbsoluteDate}">
+					<tr>
+						<td><c:out value="${date.displayName}"/></td>
+						<td>
+							<form:input path="dateParms[${dateParmRow.index}].count" />
+							<form:input path="dateParms[${dateParmRow.index}].interval" />
+							ago.
+						</td>
+					</tr>
+				</c:when>
+				<c:otherwise>
+					<tr>
+					<td>
+					<c:out value="${date.displayName}"/></td>
+						<td>
+							<form:input path="dateParms[${dateParmRow.index}].value" />
+							<script type="text/javascript">
+								Spring.addDecoration(new Spring.ElementDecoration({
+								elementId : "dateParms${dateParmRow.index}.value",
+								widgetType : "dijit.form.DateTextBox",
+								widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
+							</script>
+						</td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
 		</c:forEach>
 	</table>
   
