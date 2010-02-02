@@ -147,7 +147,6 @@ public class HypericAckProcessorTest {
         return new AckdConfigDao();
     }
 
-    @Ignore
     @Test
     @JUnitHttpServer(port=7081)
     public void testFetchHypericAlerts() throws Exception {

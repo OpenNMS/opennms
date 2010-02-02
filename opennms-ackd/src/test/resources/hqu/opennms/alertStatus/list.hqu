@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hyperic-alert-statuses>
-  <hyperic-alert-status alert-id="1" ack="true" fixed="true"/>
-  <hyperic-alert-status alert-id="2" ack="true" fixed="true"/>
-  <hyperic-alert-status alert-id="3" ack="true" fixed="false"/>
-  <hyperic-alert-status alert-id="4" ack="false" fixed="true"/>
-  <hyperic-alert-status alert-id="5" ack="false" fixed="false"/>
+  <alert id="1" ack="true" fixed="true"/>
+  <alert id="2" ack="true" fixed="true"/>
+  <alert id="3" ack="true" fixed="false"/>
+  <alert id="4" ack="false" fixed="true"/>
+  <alert id="5" ack="false" fixed="false"/>
 </hyperic-alert-statuses>

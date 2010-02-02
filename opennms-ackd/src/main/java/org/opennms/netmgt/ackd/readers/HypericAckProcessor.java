@@ -101,13 +101,13 @@ public class HypericAckProcessor implements AckProcessor {
 
     }
 
-    @XmlRootElement(name="hyperic-alert-status")
+    @XmlRootElement(name="alert")
     static class HypericAlertStatus {
         private int alertId;
         private boolean isAcknowledged;
         private boolean isFixed;
 
-        @XmlAttribute(name="alert-id", required=true)
+        @XmlAttribute(name="id", required=true)
         public int getAlertId() {
             return alertId;
         }
@@ -199,7 +199,7 @@ public class HypericAckProcessor implements AckProcessor {
         httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
         // Change these parameters to be configurable
         hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
-        // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "????");
+        // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
         // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
         // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
 
