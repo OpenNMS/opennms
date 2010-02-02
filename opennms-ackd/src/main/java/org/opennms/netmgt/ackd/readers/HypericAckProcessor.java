@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -72,8 +73,12 @@ import org.apache.commons.httpclient.HttpVersion;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.xml.event.Parms;
 
 public class HypericAckProcessor implements AckProcessor {
@@ -85,6 +90,7 @@ public class HypericAckProcessor implements AckProcessor {
 
     private AckdConfigurationDao m_ackdDao;
     private AlarmDao m_alarmDao;
+    private AckService m_ackService;
 
     @XmlRootElement(name="hyperic-alert-statuses")
     static class HypericAlertStatuses {
@@ -176,14 +182,39 @@ public class HypericAckProcessor implements AckProcessor {
             // Connect to each Hyperic system and query for the status of corresponding alerts 
             for (Map.Entry<String, List<OnmsAlarm>> alarmList : organizedAlarms.entrySet()) {
                 String hypericSystem = alarmList.getKey();
-                for (OnmsAlarm alarmsForSystem : alarmList.getValue()) {
+                List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
+                for (OnmsAlarm alarmForSystem : alarmList.getValue()) {
                     // Construct a sane query for the Hyperic system
                 }
 
                 // Call fetchHypericAlerts() for each system
-            }
+                List<HypericAlertStatus> alertsForSystem = new ArrayList<HypericAlertStatus>();
 
-            // Iterate and update any acknowledged or fixed alerts
+                // Iterate and update any acknowledged or fixed alerts
+                List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
+                for (HypericAlertStatus alert : alertsForSystem) {
+                    if (alert.isAcknowledged()) {
+                        // OnmsAlarm alarm = getByPlatformIdAndAlertId(alarmsForSystem, hypericSystem, i);
+                        OnmsAcknowledgment ack = new OnmsAcknowledgment(new Date(), "Ackd.HypericAckProcessor");
+                        ack.setAckType(AckType.ALARM);
+                        ack.setAckAction(AckAction.ACKNOWLEDGE);
+                        ack.setLog("Acknowledged by Ackd.HypericAckProcessor");
+                        acks.add(ack);
+                    }
+                    if (alert.isFixed()) {
+                        // OnmsAlarm alarm = getByPlatformIdAndAlertId(alarmsForSystem, hypericSystem, i);
+                        OnmsAcknowledgment ack = new OnmsAcknowledgment(new Date(), "Ackd.HypericAckProcessor");
+                        ack.setAckType(AckType.ALARM);
+                        ack.setAckAction(AckAction.CLEAR);
+                        ack.setLog("Cleared by Ackd.HypericAckProcessor");
+                        acks.add(ack);
+                    }
+                }
+
+                if (acks.size() > 0) {
+                    m_ackService.processAcks(acks);
+                }
+            }
 
             log().info("run: Finished processing Hyperic acknowledgments (" + count + " acks processed)" );
         } catch (Throwable e) {
@@ -270,6 +301,10 @@ public class HypericAckProcessor implements AckProcessor {
 
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdDao = configDao;
+    }
+
+    public synchronized void setAckService(final AckService ackService) {
+        m_ackService = ackService;
     }
 
     public void afterPropertiesSet() throws Exception {
