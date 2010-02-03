@@ -66,6 +66,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
@@ -81,6 +82,8 @@ import org.opennms.netmgt.model.acknowledgments.AckService;
 
 public class HypericAckProcessor implements AckProcessor {
 
+    // TODO Fetch the list of Hyperic HQ instances from the config
+    // Each URL should include all of these parameters
     private static final String HYPERIC_IP_ADDRESS = "127.0.0.1";
     private static final int HYPERIC_PORT = 7081;
     private static final String HYPERIC_USER = "hqadmin";
@@ -90,6 +93,21 @@ public class HypericAckProcessor implements AckProcessor {
     private AlarmDao m_alarmDao;
     private AckService m_ackService;
 
+    /**
+     * <p>This class is used as the data bean for parsing XML responses from the Hyperic HQ
+     * systems that are serving up our alert status groovy servlet. The expected data 
+     * format is:</p>
+     * <pre>
+     * <?xml version="1.0" encoding="UTF-8"?>
+     *   <hyperic-alert-statuses>
+     *   <alert id="1" ack="true" fixed="true"/>
+     *   <alert id="2" ack="true" fixed="true"/>
+     *   <alert id="3" ack="true" fixed="false"/>
+     *   <alert id="4" ack="false" fixed="true"/>
+     *   <alert id="5" ack="false" fixed="false"/>
+     * </hyperic-alert-statuses>
+     * </pre>
+     */
     @XmlRootElement(name="hyperic-alert-statuses")
     static class HypericAlertStatuses {
         private List<HypericAlertStatus> statusList;
@@ -105,6 +123,13 @@ public class HypericAckProcessor implements AckProcessor {
 
     }
 
+    /**
+     * <p>This class represents each individual alarm status within the message. The expected
+     * format is:</p>
+     * <pre>
+     * <alert id="1" ack="true" fixed="true"/>
+     * </pre>
+     */
     @XmlRootElement(name="alert")
     static class HypericAlertStatus {
         private int alertId;
@@ -149,26 +174,26 @@ public class HypericAckProcessor implements AckProcessor {
     public void run() {
         int count = 0;
 
-        // Parse Hyperic alert states
         try {
             log().info("run: Processing Hyperic acknowledgments..." );
 
+            // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
             OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
             criteria.add(Restrictions.isNull("alarmAckUser"));
             // Restrict to Hyperic alerts
             criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
-            // TODO Figure out how to query by parameters
+            // TODO Figure out how to query by parameters (maybe necessary)
 
             Map<String,List<OnmsAlarm>> organizedAlarms = new TreeMap<String,List<OnmsAlarm>>();
 
             // Query list of outstanding alerts with remote platform identifiers
             List<OnmsAlarm> unAckdAlarms = m_alarmDao.findMatching(criteria);
 
-            // Organize the alarms according to the Hyperic system where they originated
+            // Split the list of alarms up according to the Hyperic system where they originated
             for (OnmsAlarm alarm : unAckdAlarms) {
-                String hypericSystem = alarm.getEventParms();
-                // Figure out how to parse the event parms into a list, get the platform.agent.address or platform.id
-                String key = "blah";
+                // TODO Map by platform.agent.address or platform.id?
+                // TODO If the platform.id doesn't match anything in our current config, just ignore it, maybe warn in the logs with a counter
+                String key = getPlatformIdParmValue(alarm);
                 List<OnmsAlarm> targetList = organizedAlarms.get(key);
                 if (targetList == null) {
                     targetList = new ArrayList<OnmsAlarm>();
@@ -181,49 +206,55 @@ public class HypericAckProcessor implements AckProcessor {
             for (Map.Entry<String, List<OnmsAlarm>> alarmList : organizedAlarms.entrySet()) {
                 // TODO Match this string to the Hyperic URL via the config
                 String hypericSystem = alarmList.getKey();
-
-                List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
-                List<String> alertIdList = new ArrayList<String>();
-                for (OnmsAlarm alarmForSystem : alarmList.getValue()) {
-                    // Construct a sane query for the Hyperic system
-                    String alertId = getAlertIdParmValue(alarmForSystem);
-                    alertIdList.add(alertId);
-                }
-
-                // Call fetchHypericAlerts() for each system
-                List<HypericAlertStatus> alertsForSystem = fetchHypericAlerts(alertIdList);
-
-                // Iterate and update any acknowledged or fixed alerts
                 List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
-                for (HypericAlertStatus alert : alertsForSystem) {
-                    OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
-                    // If the Hyperic alert has been ack'd and the local alarm is not yet ack'd, then ack it
-                    if (alert.isAcknowledged() && alarm.getAckTime() == null) {
-                        // TODO Get the ack time from Hyperic??
-                        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
-                        ack.setAckAction(AckAction.ACKNOWLEDGE);
-                        ack.setLog("Acknowledged by Ackd.HypericAckProcessor");
-                        acks.add(ack);
+                try {
+
+                    List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
+                    List<String> alertIdList = new ArrayList<String>();
+                    for (OnmsAlarm alarmForSystem : alarmList.getValue()) {
+                        // Construct a sane query for the Hyperic system
+                        String alertId = getAlertIdParmValue(alarmForSystem);
+                        alertIdList.add(alertId);
                     }
 
-                    // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
-                    if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
-                        // TODO Get the ack time from Hyperic??
-                        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
-                        ack.setAckAction(AckAction.CLEAR);
-                        ack.setLog("Cleared by Ackd.HypericAckProcessor");
-                        acks.add(ack);
-                    }
-                }
+                    // Call fetchHypericAlerts() for each system
+                    List<HypericAlertStatus> alertsForSystem = fetchHypericAlerts(hypericSystem, alertIdList);
 
-                if (acks.size() > 0) {
-                    m_ackService.processAcks(acks);
+                    // Iterate and update any acknowledged or fixed alerts
+                    for (HypericAlertStatus alert : alertsForSystem) {
+                        OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
+
+                        // If the Hyperic alert has been ack'd and the local alarm is not yet ack'd, then ack it
+                        if (alert.isAcknowledged() && alarm.getAckTime() == null) {
+                            // TODO Get the ack time from Hyperic??
+                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
+                            ack.setAckAction(AckAction.ACKNOWLEDGE);
+                            ack.setLog("Acknowledged by Ackd.HypericAckProcessor");
+                            acks.add(ack);
+                        }
+
+                        // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
+                        if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
+                            // TODO Get the ack time from Hyperic??
+                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
+                            ack.setAckAction(AckAction.CLEAR);
+                            ack.setLog("Cleared by Ackd.HypericAckProcessor");
+                            acks.add(ack);
+                        }
+                    }
+                } catch (Throwable e) {
+                    log().warn("run: threw exception when processing alarms for Hyperic system " + hypericSystem + ": " + e.getMessage());
+                    log().warn("run: " + acks.size() + " acknowledgements processed successfully before exception");
+                } finally {
+                    if (acks.size() > 0) {
+                        m_ackService.processAcks(acks);
+                    }
                 }
             }
 
             log().info("run: Finished processing Hyperic acknowledgments (" + count + " acks processed)" );
         } catch (Throwable e) {
-            log().warn("run: threw exception: "+e);
+            log().warn("run: threw exception: " + e.getMessage());
         }
     }
 
@@ -246,9 +277,16 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
+    public static String getPlatformIdParmValue(OnmsAlarm alarm) {
+        return getParmValueByRegex(alarm, "platform.id=([0-9]*)[(]string,text[)]");
+    }
+
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
-        String alertIdRegex = "alert.id=([0-9]*)[(]string,text[)]";
-        Pattern pattern = Pattern.compile(alertIdRegex);
+        return getParmValueByRegex(alarm, "alert.id=([0-9]*)[(]string,text[)]");
+    }
+
+    public static String getParmValueByRegex(OnmsAlarm alarm, String regex) {
+        Pattern pattern = Pattern.compile(regex);
         String parmString = alarm.getEventParms();
         String[] parms = parmString.split(";");
         for (String parm : parms) {
@@ -260,17 +298,20 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static List<HypericAlertStatus> fetchHypericAlerts(List<String> alertIds) {
+    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericSystem, List<String> alertIds) {
         StringBuffer alertIdString = new StringBuffer();
         for (int i = 0; i < alertIds.size(); i++) {
-            if (i > 0) alertIdString.append("-");
+            if (i > 0) alertIdString.append(" ");
             alertIdString.append(alertIds.get(i));
         }
 
         HttpClient httpClient = new HttpClient();
         HostConfiguration hostConfig = new HostConfiguration();
 
-        GetMethod httpMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu?alertIds=" + alertIdString.toString().trim());
+        // TODO Change to a POST method if possible
+        GetMethod httpMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu");
+        // httpMethod.addParameter("alertIds", alertIdString.toString());
+
         httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
         httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
         // Change these parameters to be configurable
@@ -291,8 +332,8 @@ public class HypericAckProcessor implements AckProcessor {
             log().debug("getMethod parameters: " + httpMethod);
             httpClient.executeMethod(hostConfig, httpMethod);
 
-            Integer statusCode = httpMethod.getStatusCode();
-            String statusText = httpMethod.getStatusText();
+            //Integer statusCode = httpMethod.getStatusCode();
+            //String statusText = httpMethod.getStatusText();
             InputStream responseText = httpMethod.getResponseBodyAsStream();
 
             retval = parseHypericAlerts(new InputStreamReader(responseText));

@@ -35,53 +35,28 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.javamail.JavaMailerException;
-import org.opennms.javamail.JavaSendMailer;
-import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
-import org.opennms.netmgt.config.common.End2endMailConfig;
-import org.opennms.netmgt.config.common.ReadmailConfig;
-import org.opennms.netmgt.config.common.ReadmailHost;
-import org.opennms.netmgt.config.common.ReadmailProtocol;
-import org.opennms.netmgt.config.common.SendmailConfig;
-import org.opennms.netmgt.config.common.SendmailHost;
-import org.opennms.netmgt.config.common.SendmailMessage;
-import org.opennms.netmgt.config.common.SendmailProtocol;
-import org.opennms.netmgt.config.common.UserAuth;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.model.AckAction;
-import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -152,7 +127,7 @@ public class HypericAckProcessorTest {
     @JUnitHttpServer(port=7081)
     public void testFetchHypericAlerts() throws Exception {
         // Test reading alerts over the HTTP server        
-        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts(Arrays.asList(new String[] { "1", "2", "3" }));
+        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("myHypericSystem", Arrays.asList(new String[] { "1", "2", "3" }));
         assertEquals(5, alerts.size());
         for (HypericAckProcessor.HypericAlertStatus alert : alerts) {
             System.out.println(alert.toString());
