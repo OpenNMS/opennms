@@ -124,7 +124,7 @@ public class PageSequenceMonitorTest extends TestCase {
         m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"I'm Feeling Lucky\" " + virtualHostParam + "/>\n" + 
+				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"About Google\" " + virtualHostParam + "/>\n" + 
 				"</page-sequence>\n");
     }
 
