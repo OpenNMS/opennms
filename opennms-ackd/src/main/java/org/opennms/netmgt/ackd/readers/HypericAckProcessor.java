@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -71,8 +73,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
-import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -179,14 +179,19 @@ public class HypericAckProcessor implements AckProcessor {
 
             // Connect to each Hyperic system and query for the status of corresponding alerts 
             for (Map.Entry<String, List<OnmsAlarm>> alarmList : organizedAlarms.entrySet()) {
+                // TODO Match this string to the Hyperic URL via the config
                 String hypericSystem = alarmList.getKey();
+
                 List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
+                List<String> alertIdList = new ArrayList<String>();
                 for (OnmsAlarm alarmForSystem : alarmList.getValue()) {
                     // Construct a sane query for the Hyperic system
+                    String alertId = getAlertIdParmValue(alarmForSystem);
+                    alertIdList.add(alertId);
                 }
 
                 // Call fetchHypericAlerts() for each system
-                List<HypericAlertStatus> alertsForSystem = new ArrayList<HypericAlertStatus>();
+                List<HypericAlertStatus> alertsForSystem = fetchHypericAlerts(alertIdList);
 
                 // Iterate and update any acknowledged or fixed alerts
                 List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
@@ -241,10 +246,31 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static List<HypericAlertStatus> fetchHypericAlerts() {
+    public static String getAlertIdParmValue(OnmsAlarm alarm) {
+        String alertIdRegex = "alert.id=([0-9]*)[(]string,text[)]";
+        Pattern pattern = Pattern.compile(alertIdRegex);
+        String parmString = alarm.getEventParms();
+        String[] parms = parmString.split(";");
+        for (String parm : parms) {
+            Matcher matcher = pattern.matcher(parm);
+            if (matcher.matches()) {
+                return matcher.group();
+            }
+        }
+        return null;
+    }
+
+    public static List<HypericAlertStatus> fetchHypericAlerts(List<String> alertIds) {
+        StringBuffer alertIdString = new StringBuffer();
+        for (int i = 0; i < alertIds.size(); i++) {
+            if (i > 0) alertIdString.append("-");
+            alertIdString.append(alertIds.get(i));
+        }
+
         HttpClient httpClient = new HttpClient();
         HostConfiguration hostConfig = new HostConfiguration();
-        GetMethod  getMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu");
+
+        GetMethod httpMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu?alertIds=" + alertIdString.toString().trim());
         httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
         httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
         // Change these parameters to be configurable
@@ -262,12 +288,12 @@ public class HypericAckProcessor implements AckProcessor {
         try {
             log().debug("httpClient request with the following parameters: " + httpClient);
             log().debug("hostConfig parameters: " + hostConfig);
-            log().debug("getMethod parameters: " + getMethod);
-            httpClient.executeMethod(hostConfig, getMethod);
+            log().debug("getMethod parameters: " + httpMethod);
+            httpClient.executeMethod(hostConfig, httpMethod);
 
-            Integer statusCode = getMethod.getStatusCode();
-            String statusText = getMethod.getStatusText();
-            InputStream responseText = getMethod.getResponseBodyAsStream();
+            Integer statusCode = httpMethod.getStatusCode();
+            String statusText = httpMethod.getStatusText();
+            InputStream responseText = httpMethod.getResponseBodyAsStream();
 
             retval = parseHypericAlerts(new InputStreamReader(responseText));
         } catch (HttpException e) {
@@ -279,7 +305,7 @@ public class HypericAckProcessor implements AckProcessor {
         } catch (XMLStreamException e) {
             log().warn(e);
         } finally{
-            getMethod.releaseConnection();
+            httpMethod.releaseConnection();
         }
         return retval;
     }

@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -150,8 +151,8 @@ public class HypericAckProcessorTest {
     @Test
     @JUnitHttpServer(port=7081)
     public void testFetchHypericAlerts() throws Exception {
-        // Test reading alerts over the HTTP server
-        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts();
+        // Test reading alerts over the HTTP server        
+        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts(Arrays.asList(new String[] { "1", "2", "3" }));
         assertEquals(5, alerts.size());
         for (HypericAckProcessor.HypericAlertStatus alert : alerts) {
             System.out.println(alert.toString());
