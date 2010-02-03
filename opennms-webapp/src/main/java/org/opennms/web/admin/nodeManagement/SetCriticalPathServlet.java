@@ -107,6 +107,7 @@ public class SetCriticalPathServlet extends HttpServlet {
             PreparedStatement stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
             d.watch(stmt);
             stmt.setInt(1, node);
+            stmt.executeUpdate();
         } finally {
             d.cleanUp();
         }
@@ -125,6 +126,7 @@ public class SetCriticalPathServlet extends HttpServlet {
             stmt.setInt(1, node);
             stmt.setString(2, criticalIp);
             stmt.setString(3, criticalSvc);
+            stmt.executeUpdate();
         } finally {
             d.cleanUp();
         }
