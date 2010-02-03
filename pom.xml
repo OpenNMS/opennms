@@ -1713,6 +1713,11 @@
         <version>1.5.6</version>
       </dependency>
       <dependency>
+        <groupId>org.tuckey</groupId>
+        <artifactId>urlrewrite</artifactId>
+        <version>2.5.2</version>
+      </dependency>
+      <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
         <groupId>org.opennms.smslib</groupId>
         <artifactId>smslib</artifactId>
