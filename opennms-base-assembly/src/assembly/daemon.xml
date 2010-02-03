@@ -112,11 +112,11 @@
     </fileSet>
     <fileSet>
       <directory>target/jnlp</directory>
-      <outputDirectory>webapps/opennms/webstart</outputDirectory>
+      <outputDirectory>webapps/opennms-remoting/webstart</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/jnlp</directory>
-      <outputDirectory>jetty-webapps/opennms/webstart</outputDirectory>
+      <outputDirectory>jetty-webapps/opennms-remoting/webstart</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
