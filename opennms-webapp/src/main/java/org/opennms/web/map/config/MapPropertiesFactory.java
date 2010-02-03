@@ -147,6 +147,8 @@ public class MapPropertiesFactory extends Object {
 
 	protected  ContextMenu cmenu;
 	
+	protected String mapScale ="disabled"; 
+	
 	
 	public String getMapPropertiesFileString() {
 		return mapPropertiesFileString;
@@ -757,6 +759,9 @@ public class MapPropertiesFactory extends Object {
 		}
 		log.debug("default node icon: "+defaultNodeIcon);
 		
+		mapScale = props.getProperty("icon.default.scale");
+		
+		
 		String defaultMapElementDimensionString = props.getProperty("icon.default.mapelementdimension");
         if (defaultMapElementDimensionString != null) {
             defaultMapElementDimension = WebSecurityUtils.safeParseInt(defaultMapElementDimensionString);
@@ -802,6 +807,10 @@ public class MapPropertiesFactory extends Object {
 		return defaultNodeIcon;
 	}
 
+	public String getMapScale() {
+	    return mapScale;
+	}
+	
 	/**
 	 * Gets the array of ordered Severity by id.
 	 * 

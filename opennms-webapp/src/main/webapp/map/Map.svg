@@ -133,6 +133,7 @@ function handleInit(data) {
 		}
 	
 		mapElemDimension=mapsPropertiesFactory.defaultMapElementDimension;
+		mapScale=mapsPropertiesFactory.mapScale;
 		
 		for(var icon in mapsPropertiesFactory.icons)
 		{

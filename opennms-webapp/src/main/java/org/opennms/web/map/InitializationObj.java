@@ -30,6 +30,7 @@ public class InitializationObj extends  MapPropertiesFactory {
     String defaultNodeIcon;
     String defaultMapIcon;
     String defaultBackgroundColor;
+    String mapScale;
 	String NODE_TYPE = MapsConstants.NODE_TYPE;
 	String MAP_TYPE=MapsConstants.MAP_TYPE;
 	int MAP_NOT_OPENED = MapsConstants.MAP_NOT_OPENED;
@@ -242,31 +243,14 @@ public class InitializationObj extends  MapPropertiesFactory {
 	        mapElementDimensions=mpf.getMapElementDimensions();
 	        defaultNodeIcon=mpf.getDefaultNodeIcon();
 	        defaultMapIcon=mpf.getDefaultMapIcon();
+	        mapScale = mpf.getMapScale();
 	        defaultBackgroundColor=mpf.getDefaultBackgroundColor();
 	        this.isUserAdmin=isUserAdmin;
 	        categories=manager.getCategories();
 	    }
 
 	InitializationObj(MapPropertiesFactory mpf, Manager manager)throws Exception{
-		
-		doubleClickEnabled=mpf.isDoubleClickEnabled();
-		contextMenuEnabled=mpf.isContextMenuEnabled();
-		reload=mpf.isReload();
-		contextMenu=mpf.getContextMenu();
-		links=mpf.getLinks();
-		linkStatuses=mpf.getLinkStatuses();
-		statuses=mpf.getStatuses();
-		severities=mpf.getSeverities();
-		avails=mpf.getAvails();
-		icons=mpf.getIcons();
-		iconsBySysoid=mpf.getIconsBySysoid();
-		backgroundImages=mpf.getBackgroundImages();
-		mapElementDimensions=mpf.getMapElementDimensions();
-        defaultNodeIcon=mpf.getDefaultNodeIcon();
-        defaultMapIcon=mpf.getDefaultMapIcon();
-        defaultBackgroundColor=mpf.getDefaultBackgroundColor();
-        isUserAdmin=false;
-        categories=manager.getCategories();
+		this(mpf,manager,false);
     }
     
 }

@@ -34,7 +34,7 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.avail = avail;
 	this.status = status;
 	this.severity = severity;
-        	
+        this.dimension = dimension;	
 	//mantains the number of links on this elements
 	this.numOfLinks=0;
 	// renderize element
@@ -102,13 +102,14 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 
 
 MapElement.prototype.setDimension = function(newDimension){
-	//this.width = newDimension;
-	//this.height = newDimension*4/3;
-	//this.image.setAttributeNS(null,"width", this.width);
-	//this.image.setAttributeNS(null,"height", this.height);	
-	//this.label.setFontSize(newDimension/2);
-	
-	//this.semaphore.setDimension(newDimension/4);
+        if (mapScale != "disabled" ) {
+     	this.width = newDimension;
+	this.height = newDimension;
+	this.image.setAttributeNS(null,"width", this.width);
+	this.image.setAttributeNS(null,"height", this.height);	
+	this.label.setFontSize(newDimension/2);
+	this.semaphore.setDimension(newDimension/4);
+        }
 }
 
 MapElement.prototype.getMapId = function() {

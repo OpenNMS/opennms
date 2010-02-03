@@ -34,6 +34,8 @@ var refreshNodesIntervalInSec=300;
 // variable for setting element dimension
 var mapElemDimension=25;	
 
+var mapScale="enabled";
+
 // Variable that states the current mode of the map. If true the user can modify the maps
 var isAdminMode = false;
 	
