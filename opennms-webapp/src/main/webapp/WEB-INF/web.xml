@@ -175,6 +175,15 @@
     <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
   </filter>
   
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    <init-param>
+      <param-name>statusEnabled</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -241,6 +250,11 @@
   <filter-mapping>
     <filter-name>eXtremeExport</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>*.jnlp</url-pattern>
   </filter-mapping>
 
   <listener>
