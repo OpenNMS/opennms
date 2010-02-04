@@ -118,7 +118,7 @@ public class PageSequenceMonitorTest extends TestCase {
         m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"About Google\" " + virtualHostParam + "/>\n" + 
+				"  <page path=\"/\" port=\"80\" user-agent=\"OpenNMS PageSequenceMonitor\" successMatch=\"About Google\" " + virtualHostParam + "/>\n" + 
 				"</page-sequence>\n");
     }
 
@@ -159,7 +159,7 @@ public class PageSequenceMonitorTest extends TestCase {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page user-agent=\"Donald\" path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
+				"  <page user-agent=\"OpenNMS PageSequenceMonitor\" path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
 				"</page-sequence>\n");
 		
 		
