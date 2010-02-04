@@ -26,4 +26,11 @@
 
 	</changeSet>
 	
+	<changeSet author="jsartin" id="1.7.9-drop-reportlocator">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="reportlocator" />
+		</preConditions>
+		<dropTable tableName="reportlocator" />
+	</changeSet>
+	
 </databaseChangeLog>
