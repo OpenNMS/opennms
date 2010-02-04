@@ -55,6 +55,7 @@ import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -95,11 +96,14 @@ public class HypericAckProcessorTest {
     @Autowired
     private AckService m_ackService;
 
+    @Autowired
+    private HypericAckProcessor m_processor;
 
     @Test
     public void verifyWiring() {
         Assert.assertNotNull(m_ackService);
         Assert.assertNotNull(m_daemon);
+        Assert.assertNotNull(m_processor);
     }
 
     private AckdConfigurationDao createAckdConfigDao() {
@@ -121,6 +125,12 @@ public class HypericAckProcessorTest {
         }
 
         return new AckdConfigDao();
+    }
+
+    @Test
+    public void testFetchUnackdHypericAlarms() throws Exception {
+        List<OnmsAlarm> alarms = m_processor.fetchUnackdHypericAlarms();
+        System.out.println(alarms.size());
     }
 
     @Test

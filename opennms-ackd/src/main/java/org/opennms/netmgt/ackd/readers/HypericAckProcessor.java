@@ -171,24 +171,28 @@ public class HypericAckProcessor implements AckProcessor {
         log().debug("reloadConfigs: configuration reloaded");
     }
 
+    public List<OnmsAlarm> fetchUnackdHypericAlarms() {
+        // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
+        criteria.add(Restrictions.isNull("alarmAckUser"));
+        // Restrict to Hyperic alerts
+        criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
+        // TODO Figure out how to query by parameters (maybe necessary)
+    
+        // Query list of outstanding alerts with remote platform identifiers
+        return m_alarmDao.findMatching(criteria);
+    }
+
     public void run() {
         int count = 0;
 
         try {
             log().info("run: Processing Hyperic acknowledgments..." );
 
-            // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
-            OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
-            criteria.add(Restrictions.isNull("alarmAckUser"));
-            // Restrict to Hyperic alerts
-            criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
-            // TODO Figure out how to query by parameters (maybe necessary)
+            // Query list of outstanding alerts with remote platform identifiers
+            List<OnmsAlarm> unAckdAlarms = fetchUnackdHypericAlarms();
 
             Map<String,List<OnmsAlarm>> organizedAlarms = new TreeMap<String,List<OnmsAlarm>>();
-
-            // Query list of outstanding alerts with remote platform identifiers
-            List<OnmsAlarm> unAckdAlarms = m_alarmDao.findMatching(criteria);
-
             // Split the list of alarms up according to the Hyperic system where they originated
             for (OnmsAlarm alarm : unAckdAlarms) {
                 // TODO Map by platform.agent.address or platform.id?
@@ -396,7 +400,7 @@ public class HypericAckProcessor implements AckProcessor {
     public void afterPropertiesSet() throws Exception {
     }
 
-    public synchronized void setAlertDao(final AlarmDao dao) {
+    public synchronized void setAlarmDao(final AlarmDao dao) {
         m_alarmDao = dao;
     }
 }

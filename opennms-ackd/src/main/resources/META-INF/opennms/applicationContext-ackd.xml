@@ -28,6 +28,7 @@
 
   <bean id="hypericAckProcessor" class="org.opennms.netmgt.ackd.readers.HypericAckProcessor" >
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
+    <property name="alarmDao" ref="alarmDao" />
     <property name="ackService" ref="ackService" />
   </bean>
 
