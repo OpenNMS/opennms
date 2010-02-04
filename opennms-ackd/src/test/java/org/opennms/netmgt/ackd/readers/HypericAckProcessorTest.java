@@ -53,6 +53,7 @@ import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -64,6 +65,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
@@ -80,18 +82,18 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-"classpath:/META-INF/opennms/applicationContext-ackd.xml" })
+        "classpath:/META-INF/opennms/applicationContext-ackd.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+})
 
 /**
- * Integration test of for the Javamail Acknowledgement Reader Implementation.
+ * Integration test for the Hyperic Acknowledgement Reader Implementation.
  */
+@JUnitTemporaryDatabase(populate=true) @Transactional
 public class HypericAckProcessorTest {
 
     @Autowired
     private Ackd m_daemon;
-
-    // @Autowired
-    // private AckReader m_reader;
 
     @Autowired
     private AckService m_ackService;

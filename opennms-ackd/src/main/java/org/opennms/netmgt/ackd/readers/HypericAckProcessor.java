@@ -38,6 +38,7 @@ package org.opennms.netmgt.ackd.readers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -159,6 +160,16 @@ public class HypericAckProcessor implements AckProcessor {
         public void setFixed(boolean isFixed) {
             this.isFixed = isFixed;
         }
+
+        public String toString() {
+            StringBuffer retval = new StringBuffer();
+            retval.append("{ ");
+            retval.append("id: ").append(String.valueOf(alertId)).append(", ");
+            retval.append("ack: ").append(String.valueOf(isAcknowledged)).append(", ");
+            retval.append("fixed: ").append(String.valueOf(isFixed));
+            retval.append(" }");
+            return retval.toString();
+        }
     }
 
     private static Logger log() {
@@ -178,7 +189,7 @@ public class HypericAckProcessor implements AckProcessor {
         // Restrict to Hyperic alerts
         criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
         // TODO Figure out how to query by parameters (maybe necessary)
-    
+
         // Query list of outstanding alerts with remote platform identifiers
         return m_alarmDao.findMatching(criteria);
     }
@@ -302,7 +313,7 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericSystem, List<String> alertIds) {
+    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericSystem, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
         StringBuffer alertIdString = new StringBuffer();
         for (int i = 0; i < alertIds.size(); i++) {
             if (i > 0) alertIdString.append(" ");
@@ -341,14 +352,6 @@ public class HypericAckProcessor implements AckProcessor {
             InputStream responseText = httpMethod.getResponseBodyAsStream();
 
             retval = parseHypericAlerts(new InputStreamReader(responseText));
-        } catch (HttpException e) {
-            log().warn(e);
-        } catch (IOException e) {
-            log().warn(e);
-        } catch (JAXBException e) {
-            log().warn(e);
-        } catch (XMLStreamException e) {
-            log().warn(e);
         } finally{
             httpMethod.releaseConnection();
         }
@@ -383,7 +386,26 @@ public class HypericAckProcessor implements AckProcessor {
                 }
             }
         } else {
-            System.err.println("*** ERROR *** Wrong root element: " + rootElementName + " != " + startElement.getName().getLocalPart());
+            // Try to pull in the HTTP response to give the user a better idea of what went wrong
+            StringBuffer errorContent = new StringBuffer();
+            LineNumberReader lineReader = new LineNumberReader(reader);
+            try {
+                String line;
+                while (true) {
+                    line = lineReader.readLine();
+                    if (line == null) {
+                        break;
+                    } else {
+                        errorContent.append(line.trim());
+                    }
+                }
+            } catch (IOException e) {
+                errorContent.append("Exception while trying to print out message content: " + e.getMessage());
+            }
+
+            // Throw an exception and include the erroneous HTTP response in the exception text
+            throw new JAXBException("Found wrong root element in Hyperic XML document, expected: \"" + rootElementName + "\", found \"" + startElement.getName().getLocalPart() + "\"\n" + 
+                    errorContent.toString());
         }
         return retval;
     }
