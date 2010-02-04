@@ -95,22 +95,16 @@ public class PageSequenceMonitorTest extends TestCase {
 		super.tearDown();
 	}
     
-    public void testSimpleGoogle() throws Exception {
-        setPageSequenceParam("www.google.com");
-        PollStatus googleStatus = m_monitor.poll(getHttpService("www.google.com"), m_params);
-        assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+    public void testSimpleOpenNMS() throws Exception {
+        setPageSequenceParam("www.opennms.com");
+        PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
     }
         
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
-    }
-
-    public void testSimpleYahoo() throws Exception {
-        setPageSequenceParam("www.yahoo.com");
-        PollStatus yahooStatus = m_monitor.poll(getHttpService("www.yahoo.com"), m_params);
-        assertTrue("should not be available", yahooStatus.isUnavailable());
     }
 
     private void setPageSequenceParam(String virtualHost) {
@@ -124,7 +118,7 @@ public class PageSequenceMonitorTest extends TestCase {
         m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"I'm Feeling Lucky\" " + virtualHostParam + "/>\n" + 
+				"  <page path=\"/\" port=\"80\" user-agent=\"OpenNMS PageSequenceMonitor\" successMatch=\"Get the Network to Work\" " + virtualHostParam + "/>\n" + 
 				"</page-sequence>\n");
     }
 
@@ -165,7 +159,7 @@ public class PageSequenceMonitorTest extends TestCase {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
+				"  <page user-agent=\"OpenNMS PageSequenceMonitor\" path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
 				"</page-sequence>\n");
 		
 		
