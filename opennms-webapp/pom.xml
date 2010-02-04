@@ -425,11 +425,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.samples.jnlp</groupId>
-      <artifactId>jnlp-servlet</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <scope>compile</scope>
@@ -468,6 +463,10 @@
     <dependency>
       <groupId>org.opensymphony.quartz</groupId>
       <artifactId>quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewrite</artifactId>
     </dependency>
     <dependency>
       <groupId>poi</groupId>

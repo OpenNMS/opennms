@@ -68,16 +68,25 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <!--  servlet for HTTP remoting (Hessian) -->
+  <!-- servlet for HTTP remoting (Hessian) -->
   <servlet>
     <servlet-name>pollerBackEnd</servlet-name>
     <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  <!-- servlet for java webstart -->
+  <servlet>
+    <servlet-name>JnlpDownloadServlet</servlet-name>
+    <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>pollerBackEnd</servlet-name>
     <url-pattern>/pollerBackEnd</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JnlpDownloadServlet</servlet-name>
+    <url-pattern>/webstart/*</url-pattern>
   </servlet-mapping>
 
 </web-app>
