@@ -118,7 +118,7 @@ public class PageSequenceMonitorTest extends TestCase {
         m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/\" port=\"80\" user-agent=\"OpenNMS PageSequenceMonitor\" successMatch=\"About Google\" " + virtualHostParam + "/>\n" + 
+				"  <page path=\"/\" port=\"80\" user-agent=\"OpenNMS PageSequenceMonitor\" successMatch=\"Get the Network to Work\" " + virtualHostParam + "/>\n" + 
 				"</page-sequence>\n");
     }
 
