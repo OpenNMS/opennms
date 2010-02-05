@@ -203,16 +203,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             //
             for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
             	if (svc.getName().equals(serviceName)) {
-            		String groupName = null;
             		for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
             			if (parameter.getKey().equals("thresholding-group")) {
-            				groupName = parameter.getValue();
-            			}
-            		}
-            		if (groupName != null) {
-            			groupNameList.add(groupName);
-            			if (log.isDebugEnabled()) {
-            			    log.debug("createThresholdingVisitor:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+            				String groupName = parameter.getValue();
+            			    groupNameList.add(groupName);
+               	            if (log.isDebugEnabled()) {
+                                log.debug("createThresholdingVisitor:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+            			    }
             			}
             		}
             	}
