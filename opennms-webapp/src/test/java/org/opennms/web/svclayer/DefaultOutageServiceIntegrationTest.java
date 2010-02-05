@@ -69,6 +69,7 @@ public class DefaultOutageServiceIntegrationTest extends AbstractTransactionalTe
 	protected String[] getConfigLocations() {
 		return new String[] {
 				"META-INF/opennms/applicationContext-dao.xml",
+				"classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
 				"org/opennms/web/svclayer/applicationContext-svclayer.xml",
 				"classpath*:/META-INF/opennms/component-dao.xml",
 				"classpath*:/META-INF/opennms/component-service.xml",
