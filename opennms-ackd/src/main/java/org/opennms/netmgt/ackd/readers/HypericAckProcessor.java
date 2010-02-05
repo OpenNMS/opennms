@@ -72,6 +72,7 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
@@ -82,6 +83,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 
 public class HypericAckProcessor implements AckProcessor {
+
+    public static final String READER_NAME_HYPERIC = "HypericReader";
+    public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
 
     // TODO Fetch the list of Hyperic HQ instances from the config
     // Each URL should include all of these parameters
@@ -194,8 +198,40 @@ public class HypericAckProcessor implements AckProcessor {
         return m_alarmDao.findMatching(criteria);
     }
 
+    public String getUrlForHypericPlatformId(String platformId) {
+        if (platformId == null) {
+            throw new IllegalArgumentException("Cannot search for null Hyperic platform IDs inside the ackd configuration");
+        } else if ("".equals(platformId)) {
+            throw new IllegalArgumentException("Cannot search for blank Hyperic platform IDs inside the ackd configuration");
+        }
+
+        List<Parameter> params = m_ackdDao.getParametersForReader(READER_NAME_HYPERIC);
+        if (params == null) {
+            throw new IllegalStateException("There is no configuration for the '" + READER_NAME_HYPERIC + "' reader inside the ackd configuration");
+        }
+        for (Parameter param : params) {
+            if (PARAMETER_HYPERIC_HOSTS.equalsIgnoreCase(param.getKey())) {
+                String[] hosts = param.getValue().split(",");
+                for (String host : hosts) {
+                    host = host.trim();
+                    String[] hostParts = host.split(" ");
+                    if (hostParts.length != 2) {
+                        throw new IllegalArgumentException("The '" + PARAMETER_HYPERIC_HOSTS + "' parameter inside the ackd configuration should contain space-separated key-value pairs, this segment is malformed: " + host);
+                    } else if ("".equals(hostParts[0]) || "".equals(hostParts[1])) {
+                        throw new IllegalArgumentException("The '" + PARAMETER_HYPERIC_HOSTS + "' parameter inside the ackd configuration contains a bad key-value pair: " + host);
+                    }
+
+                    if (platformId.equals(hostParts[0])) {
+                        return hostParts[1];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public void run() {
-        int count = 0;
+        List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
 
         try {
             log().info("run: Processing Hyperic acknowledgments..." );
@@ -219,12 +255,19 @@ public class HypericAckProcessor implements AckProcessor {
 
             // Connect to each Hyperic system and query for the status of corresponding alerts 
             for (Map.Entry<String, List<OnmsAlarm>> alarmList : organizedAlarms.entrySet()) {
-                // TODO Match this string to the Hyperic URL via the config
                 String hypericSystem = alarmList.getKey();
-                List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
+                List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
+
+                // Match the platform.id to the Hyperic URL via the config
+                String hypericUrl = getUrlForHypericPlatformId(hypericSystem);
+                if (hypericUrl == null) {
+                    log().warn("Could not find Hyperic host URL for the following platform ID: " + hypericSystem);
+                    log().warn("Skipping processing of " + alarmsForSystem.size() + " alarms with that platform ID");
+                    continue;
+                }
+
                 try {
 
-                    List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
                     List<String> alertIdList = new ArrayList<String>();
                     for (OnmsAlarm alarmForSystem : alarmList.getValue()) {
                         // Construct a sane query for the Hyperic system
@@ -233,7 +276,7 @@ public class HypericAckProcessor implements AckProcessor {
                     }
 
                     // Call fetchHypericAlerts() for each system
-                    List<HypericAlertStatus> alertsForSystem = fetchHypericAlerts(hypericSystem, alertIdList);
+                    List<HypericAlertStatus> alertsForSystem = fetchHypericAlerts(hypericUrl, alertIdList);
 
                     // Iterate and update any acknowledged or fixed alerts
                     for (HypericAlertStatus alert : alertsForSystem) {
@@ -267,7 +310,7 @@ public class HypericAckProcessor implements AckProcessor {
                 }
             }
 
-            log().info("run: Finished processing Hyperic acknowledgments (" + count + " acks processed)" );
+            log().info("run: Finished processing Hyperic acknowledgments (" + acks.size() + " acks processed)" );
         } catch (Throwable e) {
             log().warn("run: threw exception: " + e.getMessage());
         }
@@ -313,7 +356,7 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericSystem, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
+    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericUrl, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
         StringBuffer alertIdString = new StringBuffer();
         for (int i = 0; i < alertIds.size(); i++) {
             if (i > 0) alertIdString.append(" ");
@@ -324,13 +367,13 @@ public class HypericAckProcessor implements AckProcessor {
         HostConfiguration hostConfig = new HostConfiguration();
 
         // TODO Change to a POST method if possible
-        GetMethod httpMethod = new GetMethod("/hqu/opennms/alertStatus/list.hqu");
+        GetMethod httpMethod = new GetMethod(hypericUrl);
         // httpMethod.addParameter("alertIds", alertIdString.toString());
 
         httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
         httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
         // Change these parameters to be configurable
-        hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
+        // hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
         // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
         // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
         // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);

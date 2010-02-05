@@ -51,6 +51,9 @@ import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Parameter;
+import org.opennms.netmgt.config.ackd.Reader;
+import org.opennms.netmgt.config.ackd.Readers;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -77,13 +80,13 @@ import org.springframework.transaction.annotation.Transactional;
     JUnitHttpServerExecutionListener.class
 })
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-ackd.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+    "classpath*:/META-INF/opennms/component-service.xml",
+    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "classpath:/META-INF/opennms/applicationContext-ackd.xml",
+    "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 
 /**
@@ -121,12 +124,59 @@ public class HypericAckProcessorTest {
                 config.setEscalateExpression("~(?i)^esc$");
                 config.setNotifyidMatchExpression("~(?i).*RE:.*Notice #([0-9]+).*");
                 config.setUnackExpression("~(?i)^unAck$");
+
+                Readers readers = new Readers();
+                {
+                    Reader reader = new Reader();
+                    reader.setEnabled(false);
+                    reader.setReaderName("JavaMailReader");
+
+                    Parameter hypericHosts = new Parameter();
+                    hypericHosts.setKey("readmail-config");
+                    hypericHosts.setValue("localhost");
+                    reader.addParameter(hypericHosts);
+
+                    org.opennms.netmgt.config.ackd.ReaderSchedule hypericSchedule = new org.opennms.netmgt.config.ackd.ReaderSchedule();
+                    hypericSchedule.setInterval(60);
+                    hypericSchedule.setUnit("s");
+
+                    readers.addReader(reader);
+                }
+
+                {
+                    Reader reader = new Reader();
+                    reader.setEnabled(true);
+                    reader.setReaderName(HypericAckProcessor.READER_NAME_HYPERIC);
+
+                    Parameter hypericHosts = new Parameter();
+                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_HYPERIC_HOSTS);
+                    hypericHosts.setValue("10001 http://127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
+                    reader.addParameter(hypericHosts);
+
+                    org.opennms.netmgt.config.ackd.ReaderSchedule hypericSchedule = new org.opennms.netmgt.config.ackd.ReaderSchedule();
+                    hypericSchedule.setInterval(8);
+                    hypericSchedule.setUnit("s");
+                    reader.setReaderSchedule(hypericSchedule);
+
+                    readers.addReader(reader);
+                }
+
+                config.setReaders(readers);
                 return config;
             }
 
         }
 
         return new AckdConfigDao();
+    }
+
+    @Test
+    @JUnitHttpServer(port=7081)
+    public void testStartAckd() throws Exception {
+        m_daemon.setConfigDao(createAckdConfigDao());
+        m_daemon.start();
+        try { Thread.sleep(10000); } catch (InterruptedException e) {}
+        m_daemon.destroy();
     }
 
     @Test
@@ -139,7 +189,7 @@ public class HypericAckProcessorTest {
     @JUnitHttpServer(port=7081)
     public void testFetchHypericAlerts() throws Exception {
         // Test reading alerts over the HTTP server        
-        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("myHypericSystem", Arrays.asList(new String[] { "1", "2", "3" }));
+        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("http://127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu", Arrays.asList(new String[] { "1", "2", "3" }));
         assertEquals(5, alerts.size());
         for (HypericAckProcessor.HypericAlertStatus alert : alerts) {
             System.out.println(alert.toString());
