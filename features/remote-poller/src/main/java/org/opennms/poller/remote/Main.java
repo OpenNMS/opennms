@@ -53,6 +53,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 
 /**
  * 
@@ -67,6 +69,8 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     URI m_uri;
     String m_locationName;
+    String m_username = null;
+    String m_password = null;
     boolean m_shuttingDown = false;
     boolean m_gui = false;
     CommandLine m_cl;
@@ -104,6 +108,9 @@ public class Main {
             registerShutDownHook();
 
             if (!m_gui) {
+            	if (m_username != null) {
+            		m_frontEnd.authenticate(m_username, m_password);
+            	}
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
                         log().severe("No location name provided.  You must pass a location name the first time you start the remote poller!");
@@ -113,7 +120,6 @@ public class Main {
                     }
                 }
             }
-            
         } catch(Exception e) {
             // a fatal exception occurred
             log().log(Level.SEVERE, "Exception occurred during registration!", e);
@@ -135,6 +141,8 @@ public class Main {
         options.addOption("g", "gui", false, "start a GUI (default: false)");
         options.addOption("l", "location", true, "the location name of this remote poller");
         options.addOption("u", "url", true, "the URL for OpenNMS (default: rmi://server-name/)");
+        options.addOption("n", "name", true, "the name of the user to connect as");
+        options.addOption("p", "password", true, "the password to use when connecting");
 
         CommandLineParser parser = new PosixParser();
         m_cl = parser.parse(options, m_args);
@@ -168,11 +176,19 @@ public class Main {
         if (m_cl.hasOption("g")) {
             m_gui = true;
         }
+        
+        if (m_cl.hasOption("n")) {
+        	m_username = m_cl.getOptionValue("n");
+        	m_password = m_cl.getOptionValue("p");
+        	if (m_password == null) {
+        		m_password = "";
+        	}
+        }
     }
 
     private void usage(Options o) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("usage: ", o);
+        formatter.printHelp("", o);
     }
     
     private void registerShutDownHook() {
@@ -209,9 +225,12 @@ public class Main {
         if (m_gui) {
             configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
         }
-        
+
         m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
+        if (m_username != null) {
+        	SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
+        }
         
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             

@@ -69,6 +69,8 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -363,6 +365,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         public String toString() {
             return getClass().getSimpleName();
         }
+
+        public void authenticate(String username, String password) {
+        	SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, password));
+        }
         
     }
     
@@ -548,6 +554,10 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         m_state.pollService(polledServiceId);
     }
 
+    public void authenticate(String username, String password) {
+    	m_state.authenticate(username, password);
+    }
+    
     public void register(String monitoringLocation) {
         m_state.register(monitoringLocation);
     }

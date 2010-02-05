@@ -20,15 +20,14 @@
   </context-param>
 
   <!--  This is used by the Spring ContextLoaderListener <listener> below -->
-  <!--
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
+        /WEB-INF/applicationContext-common.xml
         /WEB-INF/applicationContext-spring-security.xml
-        /WEB-INF/applicationContext-jersey.xml
+        /WEB-INF/applicationContext-svclayer.xml
     </param-value>
   </context-param>
-  -->
 
   <context-param>
     <param-name>parentContextKey</param-name>
@@ -67,6 +66,16 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <filter>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <!-- servlet for HTTP remoting (Hessian) -->
   <servlet>

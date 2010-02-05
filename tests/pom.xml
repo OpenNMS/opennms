@@ -5,35 +5,13 @@
     <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.features</artifactId>
+  <artifactId>org.opennms.tests</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features</name>
+  <name>OpenNMS Test Code</name>
   <modules>
-    <module>acl</module>
-    <module>http-remoting</module>
-    <module>poller</module>
-    <module>provisioning</module>
-    <module>ticketing</module>
-    <module>phonebook</module>
-    <module>sms-reflector</module>
-    <module>springframework-security</module>
+    <module>mock-elements</module>
+    <module>mock-snmp-agent</module>
   </modules>
-
-  <profiles>
-
-    <profile>
-      <id>build.features.remote-poller</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>remote-poller</module>
-        <module>remote-poller-jnlp</module>
-        <module>remote-poller-onejar</module>
-      </modules>
-    </profile>
-
-  </profiles>
 
   <repositories>
     <repository>
