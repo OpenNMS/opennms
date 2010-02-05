@@ -4,19 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
 	<report id="defaultCalendarReport" display-name="default calendar report"
-		report-service="onmsReportService" description="standard opennms report in calendar format">
-		<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-		<date-parm name="endDate" display-name="end date" use-absolute-date="false">
-			<default-interval>day</default-interval>
-			<default-count>1</default-count>
-		</date-parm>
-	</report>
+		report-service="availabilityReportService" description="standard opennms report in calendar format" />
 	<report id="defaultClassicReport" display-name="default classic report"
-		report-service="onmsReportService" description="standard opennms report in tabular format">
-		<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-		<date-parm name="endDate" display-name="end date" use-absolute-date="false">
-			<default-interval>day</default-interval>
-			<default-count>1</default-count>
-		</date-parm>
-	</report>
+		report-service="availabilityReportService" description="standard opennms report in tabular format" />
 </database-reports>
