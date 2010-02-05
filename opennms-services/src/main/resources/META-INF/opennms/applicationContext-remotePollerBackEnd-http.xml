@@ -21,6 +21,9 @@
 			<bean class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
 				<property name="serviceUrl" value="${opennms.poller.server.url}/pollerBackEnd"/>
 				<property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd"/>
+				<property name="httpInvokerRequestExecutor">
+					<bean class="org.springframework.security.context.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+				</property>
 			</bean>
     	</property>
 	</bean>

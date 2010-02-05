@@ -94,7 +94,6 @@
     <!-- new structure -->
     <module>assemblies</module>
     <module>opennms-test</module>
-    <module>mock-snmp-agent</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-install</module>
@@ -117,11 +116,13 @@
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
+    <module>opennms-web-api</module>
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
+    <module>tests</module>
     <module>integration-tests</module>
   </modules>
   <build>
@@ -356,6 +357,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
         <configuration>
           <systemProperties>
             <property>
@@ -520,6 +522,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -571,7 +574,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>2.5</maven.surefire.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
@@ -867,6 +870,11 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.springframework-security</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1173,6 +1181,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-elements</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-reporting</artifactId>
         <version>${project.version}</version>
@@ -1251,6 +1264,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-web-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

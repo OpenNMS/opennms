@@ -16,6 +16,7 @@
     <module>ticketing</module>
     <module>phonebook</module>
     <module>sms-reflector</module>
+    <module>springframework-security</module>
   </modules>
 
   <profiles>

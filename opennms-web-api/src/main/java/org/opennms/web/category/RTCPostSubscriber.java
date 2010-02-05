@@ -49,7 +49,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
