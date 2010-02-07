@@ -217,10 +217,10 @@ public class HttpMonitorTest extends TestCase {
         assertNotNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("Feeling Lucky");
+        p.setValue("<title>Google</title>");
         m.put(p.getKey(), p.getValue());
         
-        MockUtil.println("\nliteral text check: \"Feeling Lucky\"");
+        MockUtil.println("\nliteral text check: \"Google in title\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -228,10 +228,10 @@ public class HttpMonitorTest extends TestCase {
         assertNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("~.*[Gg]oogle [Ss]earch.*");
+        p.setValue("~.*window.add[Ee]vent[Ll]istener.*");
         m.put(p.getKey(), p.getValue());
 
-        MockUtil.println("\nregex check: \".*[Gg]oogle [Ss]earch.*\"");
+        MockUtil.println("\nregex check: \".*window.add[Ee]vent[Ll]istener.*\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
