@@ -2,6 +2,7 @@
 .*.swp
 target
 .classpath
+.externalToolBuilders
 .project
 .settings
 build.properties

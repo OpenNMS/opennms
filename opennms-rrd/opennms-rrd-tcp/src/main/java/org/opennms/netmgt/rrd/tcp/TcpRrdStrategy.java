@@ -41,9 +41,7 @@
  */
 package org.opennms.netmgt.rrd.tcp;
 
-import java.awt.Color;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,21 +49,14 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
-import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
 
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
@@ -73,19 +64,13 @@ import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
  */
 public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocket> {
     public static class RrdDefinition {
-        private final String m_creator, m_directory, m_rrdName;
-        private final int m_step;
-
+        private final String m_directory, m_rrdName;
         public RrdDefinition(
-                String creator,
                 String directory,
-                String rrdName,
-                int step
+                String rrdName
         ) {
-            m_creator = creator;
             m_directory = directory;
             m_rrdName = rrdName;
-            m_step = step;
         }
 
         public String getPath() {
@@ -198,7 +183,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     }
 
     public RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-        return new RrdDefinition(creator, directory, rrdName, step);
+        return new RrdDefinition(directory, rrdName);
     }
 
     public void createFile(RrdDefinition rrdDef) throws Exception {
