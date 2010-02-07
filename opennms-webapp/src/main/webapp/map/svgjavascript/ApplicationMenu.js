@@ -945,7 +945,7 @@ function setMapElemDimSetUp(){
 function viewBySeveritySetUp() {
 	closeAllMenu();
 	colorSemaphoreBy='S';
-	refreshMapElements();
+	refreshNodes();
 	clearTopInfo();
 	addLegend();
 	showMapInfo();
@@ -955,7 +955,7 @@ function viewBySeveritySetUp() {
 function viewByAvailSetUp() {
 	closeAllMenu();
 	colorSemaphoreBy='A';
-	refreshMapElements();
+	refreshNodes();
 	clearTopInfo();
 	addLegend();
 	showMapInfo();
@@ -965,7 +965,7 @@ function viewByAvailSetUp() {
 function viewByStatusSetUp() {
 	closeAllMenu();
 	colorSemaphoreBy='T';
-	refreshMapElements();
+	refreshNodes();
 	clearTopInfo();
 	addLegend();
 	showMapInfo();

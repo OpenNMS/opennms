@@ -10,6 +10,8 @@
  *
  * Modifications:
  * 
+ * 2010 Feb 02: Fixed bug #2479: NPE seen if stop() is called without init().
+ *              - dj@opennms.org
  * 2008 Jul 29: Genericized with the class of the service daemon and added a
  *              getDaemon() method to return the daemon. - dj@opennms.org
  * 
@@ -124,8 +126,10 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
         setLoggingCategory();
         
         setStatus(Fiber.STOP_PENDING);
-        m_context.close();
-        
+
+        if (m_context != null) {
+            m_context.close();
+        }
         
         setStatus(Fiber.STOPPED);
     }
