@@ -463,7 +463,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
         
         //Verify service count
-        assertEquals(1, getServiceTypeDao().countAll());
+        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
