@@ -28,8 +28,8 @@
 
 %{!?jdk:%define jdk jdk >= 1:1.5}
 
-%{!?extrainfo:%define extrainfo ""}
-%{!?extrainfo2:%define extrainfo2 ""}
+%{!?extrainfo:%define extrainfo }
+%{!?extrainfo2:%define extrainfo2 }
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
