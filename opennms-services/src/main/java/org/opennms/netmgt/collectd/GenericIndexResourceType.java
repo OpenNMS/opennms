@@ -60,6 +60,7 @@ public class GenericIndexResourceType extends ResourceType {
         m_name = resourceType.getName();
         instantiatePersistenceSelectorStrategy(resourceType.getPersistenceSelectorStrategy().getClazz());
         instantiateStorageStrategy(resourceType.getStorageStrategy().getClazz());
+        m_storageStrategy.setParameters(resourceType.getStorageStrategy().getParameterCollection());
     }
 
     private void instantiatePersistenceSelectorStrategy(String className) {
