@@ -222,11 +222,6 @@ pushd opennms-tools
         -Dopennms.home=%{instprefix} install
 popd
 
-pushd opennms-remote-poller
-    sh ../build.sh $SETTINGS_XML -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-        -Dopennms.home=%{instprefix} package
-popd
-
 echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
@@ -255,7 +250,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 opennms-remote-poller/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 features/remote-poller-onejar/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
