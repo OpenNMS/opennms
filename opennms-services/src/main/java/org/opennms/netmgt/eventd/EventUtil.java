@@ -300,6 +300,11 @@ public final class EventUtil {
 	final static char ATTRIB_DELIM = ',';
 
 	/**
+	 * Substitute the actual percent sign
+	 */
+	static final String TAG_PERCENT_SIGN = "pctsign";
+
+	/**
 	 * Converts the value of a parm ('Value') of the instance to a string
 	 */
 	public static String getValueAsString(Value pvalue) {
@@ -457,6 +462,9 @@ public final class EventUtil {
 				retParmVal = ifAlias;
 			else
 				retParmVal = event.getInterface();
+		} else if (parm.equals(TAG_PERCENT_SIGN)) {
+			String pctSign = "%";
+			retParmVal = pctSign;
 		} else if (parm.equals(TAG_SNMPHOST)) {
 			retParmVal = event.getSnmphost();
 		} else if (parm.equals(TAG_SERVICE)) {
