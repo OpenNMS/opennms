@@ -35,6 +35,14 @@
       <outputDirectory>share</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/jnlp</directory>
+      <outputDirectory>webapps/opennms/webstart</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/jnlp</directory>
+      <outputDirectory>jetty-webapps/opennms/webstart</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/xsds</directory>
       <outputDirectory>share/xsds</outputDirectory>
     </fileSet>
