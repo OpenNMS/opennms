@@ -1,8 +1,8 @@
-opennms (1.6.8-2) stable; urgency=low
+opennms (1.6.9-1) stable; urgency=low
 
   * Fix missing setup war.
 
- -- Benjamin Reed <ranger@opennms.org>  Thu, 10 Dec 2009 11:31:00 -0500
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 08 Feb 2010 15:16:00 -0500
 
 opennms (1.6.8-1) stable; urgency=low
 
