@@ -4,6 +4,73 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+	<section id="opennms-1.6.9">
+		<title>Changes in OpenNMS 1.6.8</title>
+
+		<section id="opennms-1.6.9-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Thresholding packages can now contain multiple thresholding groups.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3390">#3390</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>HTTP data collection logs give better debug information.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3452">#3452</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graphing has been added or updated for
+					Liebert and Server Technology Sentry devices.
+					(Bugs 
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3522">#3522</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3523">#3523</ulink>,
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3538">#3538</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A new configurable <ulink url="http://www.opennms.org/wiki/Sibling_column_storage_strategy_specification">sibling-column storage strategy</ulink>
+					was added. (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3528">#3528</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The mock SNMP agent has proper command-line parsing and better resource location.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3546">#3546</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.6.9-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The remote poller now works better when behind restrictive firewalls.
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2827">#2827</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Availability report sub-headers were missing spaces.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3486">#3486</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The NRPE Capsd plugin now properly detects services in a WARNING/CRITICAL state.
+					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3521">#3521</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.6.8">
 		<title>Changes in OpenNMS 1.6.8</title>
 
