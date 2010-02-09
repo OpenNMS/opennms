@@ -55,7 +55,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
+    OpenNMSConfigurationExecutionListener.class
 })
 public class CollectdConfigFactoryTest {
 
