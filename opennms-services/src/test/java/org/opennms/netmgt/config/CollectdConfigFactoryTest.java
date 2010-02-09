@@ -35,21 +35,37 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Reader;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-public class CollectdConfigFactoryTest extends TestCase {
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+})
+public class CollectdConfigFactoryTest  {
 
     private CollectdConfigFactory m_factory;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
+        
+        MockLogAppender.setupLogging();
 
         MockNetwork network = new MockNetwork();
 
@@ -57,6 +73,9 @@ public class CollectdConfigFactoryTest extends TestCase {
         db.populate(network);
 
         DataSourceFactory.setInstance(db);
+        
+        // ensure that this is working 
+        FilterDaoFactory.getInstance();
 
         Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "collectd-testdata.xml");
         try {
@@ -66,12 +85,7 @@ public class CollectdConfigFactoryTest extends TestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
-        super.tearDown();
-    }
-
+    @Test
     public void testGetName() {
         String pkgName = "example1";
         CollectdPackage wpkg = m_factory.getPackage(pkgName);
