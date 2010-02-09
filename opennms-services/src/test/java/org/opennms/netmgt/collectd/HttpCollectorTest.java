@@ -63,6 +63,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
@@ -139,6 +140,7 @@ public class HttpCollectorTest {
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
         assertNotNull(m_mockEventIpcManager);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_nodeDao);
