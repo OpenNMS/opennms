@@ -26,7 +26,7 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
    </resourceType>
 
-    <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
+    <resourceType name="frCircuitIfIndex" label="Frame-Relay Circuit (RFC1315)">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
     </resourceType>
@@ -103,7 +103,7 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="pgmonIndex" label="Process Group Monitor (SystemEDGE)"
+    <resourceType name="pgmonIndex" label="SystemEDGE Process Group Monitor"
                   resourceLabel="${pgmonDescr} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
@@ -153,13 +153,13 @@
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
      
-    <resourceType name="ltmPoolStatName" label="ltm Pool Stats (F5 BigIP MIB)"
+    <resourceType name="ltmPoolStatName" label="F5 LTM Pool Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmPoolStatName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
      
-    <resourceType name="ltmVSStatName" label="ltm Virtual Server Stats (F5 BigIP MIB)"
+    <resourceType name="ltmVSStatName" label="F5 LTM Virtual Server Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmVSStatName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
@@ -201,28 +201,28 @@
     </resourceType>
 
     <!-- DELL Remote Access Controller Resource Types -->
-    <resourceType name="drsChassisIndex" label="Chassis">
+    <resourceType name="drsChassisIndex" label="Dell DRAC Chassis">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="drsPSUIndex" label="PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
+    <resourceType name="drsPSUIndex" label="Dell DRAC PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Dell OpenManage Resource Types -->
-    <resourceType name="coolingDeviceIndex" label="Cooling Device" resourceLabel="${coolingDeviceLocationName}">
+    <resourceType name="coolingDeviceIndex" label="Dell Cooling Device" resourceLabel="${coolingDeviceLocationName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="temperatureProbeIndex" label="Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
+    <resourceType name="temperatureProbeIndex" label="Dell Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="powerUsageIndex" label="Power Usage" resourceLabel="${powerUsageEntityName}">
+    <resourceType name="powerUsageIndex" label="Dell Power Usage" resourceLabel="${powerUsageEntityName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
@@ -240,7 +240,7 @@
     </resourceType>
 
     <!-- Netware Resource Types -->
-    <resourceType name="netwareDisk" label="Netware Disk Information" resourceLabel="${nwLabel}">
+    <resourceType name="netwareDisk" label="Netware Disk" resourceLabel="${nwLabel}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
