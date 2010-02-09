@@ -64,6 +64,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -86,13 +87,6 @@ public class HypericAckProcessor implements AckProcessor {
 
     public static final String READER_NAME_HYPERIC = "HypericReader";
     public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
-
-    // TODO Fetch the list of Hyperic HQ instances from the config
-    // Each URL should include all of these parameters
-    private static final String HYPERIC_IP_ADDRESS = "127.0.0.1";
-    private static final int HYPERIC_PORT = 7081;
-    private static final String HYPERIC_USER = "hqadmin";
-    private static final String HYPERIC_PASSWORD = "hqadmin";
 
     private AckdConfigurationDao m_ackdDao;
     private AlarmDao m_alarmDao;
@@ -134,6 +128,8 @@ public class HypericAckProcessor implements AckProcessor {
      * <pre>
      * <alert id="1" ack="true" fixed="true"/>
      * </pre>
+     * 
+     * <p>TODO: Add ackUser, ackTime, fixedUser, fixedTime attributes to objects if possible</p>
      */
     @XmlRootElement(name="alert")
     static class HypericAlertStatus {
@@ -187,6 +183,7 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
     public List<OnmsAlarm> fetchUnackdHypericAlarms() {
+        // TODO: Verify that this is an appropriate query for all workflows
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
         criteria.add(Restrictions.isNull("alarmAckUser"));
@@ -365,22 +362,38 @@ public class HypericAckProcessor implements AckProcessor {
 
         HttpClient httpClient = new HttpClient();
         HostConfiguration hostConfig = new HostConfiguration();
+        
+        URI uri = new URI(hypericUrl, true);
 
+        // TODO Add alertIds parameter
         // TODO Change to a POST method if possible
-        GetMethod httpMethod = new GetMethod(hypericUrl);
+        GetMethod httpMethod = new GetMethod(uri.getURI());
         // httpMethod.addParameter("alertIds", alertIdString.toString());
 
         httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
         httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
-        // Change these parameters to be configurable
-        // hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
         // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
-        // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
-        // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
 
-        if (HYPERIC_USER != null && !"".equals(HYPERIC_USER) && HYPERIC_PASSWORD != null && !"".equals(HYPERIC_PASSWORD)) {
+        String userinfo = uri.getUserinfo();
+        if (userinfo != null && !"".equals(userinfo)) {
             httpClient.getParams().setAuthenticationPreemptive(true);
-            httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(HYPERIC_USER, HYPERIC_PASSWORD));
+            int colonIndex = userinfo.indexOf(":");
+            if (colonIndex < 0) {
+                // If there is no colon separator, use the entire string as a username
+                httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
+            } else if (colonIndex == 0) {
+                throw new IllegalArgumentException("Illegal Hyperic HTTP credentials starting with a colon in the ackd configuration: " + userinfo);
+            } else {
+                // If there is a colon separator, parse out the username and password
+                String username = userinfo.substring(0, colonIndex);
+                if (colonIndex < (userinfo.length() - 1)) {
+                    // Note that this can return an empty string ""
+                    String password = userinfo.substring(colonIndex + 1);
+                    httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+                } else {
+                    httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username));
+                }
+            }
         }
 
         List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
