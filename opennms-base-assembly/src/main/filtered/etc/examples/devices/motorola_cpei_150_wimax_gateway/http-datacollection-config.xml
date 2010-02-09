@@ -36,7 +36,7 @@
             <parameter key="var:pagetitle" value="Network" />
             <parameter key="var:pagemaster" value="status_network" />
             <parameter key="login:command/username" value="router" />
-            <parameter key="login:command/password" value="motorola" />
+            <parameter key="login:command/password" value="CLEAR123" /><!-- Factory default is "motorola" -->
           </parameters>
         </url>
         <attributes>

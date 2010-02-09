@@ -31,6 +31,10 @@
 //
 package org.opennms.netmgt.config;
 
+import java.util.List;
+
+import org.opennms.netmgt.config.datacollection.Parameter;
+
 public interface StorageStrategy {
     public String getRelativePathForAttribute(String resourceParent, String resource, String attribute);
 
@@ -51,5 +55,7 @@ public interface StorageStrategy {
      * For this kind of resources we must send some additional SNMP queries to build a unique name.
      */ 
     public void setStorageStrategyService(StorageStrategyService agent);
+
+    public void setParameters(List<Parameter> parameterCollection);
 
 }

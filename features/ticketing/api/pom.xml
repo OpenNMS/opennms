@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ticketing</artifactId>
-    <version>1.7.9-TESTING-SNAPSHOT</version>
+    <version>1.7.10-TESTING-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ticketing</groupId>
