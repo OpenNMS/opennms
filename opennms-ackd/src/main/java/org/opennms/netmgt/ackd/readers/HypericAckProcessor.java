@@ -186,9 +186,16 @@ public class HypericAckProcessor implements AckProcessor {
         // TODO: Verify that this is an appropriate query for all workflows
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
-        criteria.add(Restrictions.isNull("alarmAckUser"));
+
+        // criteria.add(Restrictions.isNull("alarmAckUser"));
+
         // Restrict to Hyperic alerts
         criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
+
+        // Only consider alarms that are above severity NORMAL
+        // {@see org.opennms.netmgt.model.OnmsSeverity}
+        criteria.add(Restrictions.gt("severityId", 3));
+
         // TODO Figure out how to query by parameters (maybe necessary)
 
         // Query list of outstanding alerts with remote platform identifiers
@@ -362,7 +369,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         HttpClient httpClient = new HttpClient();
         HostConfiguration hostConfig = new HostConfiguration();
-        
+
         URI uri = new URI(hypericUrl, true);
 
         // TODO Add alertIds parameter
