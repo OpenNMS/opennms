@@ -152,12 +152,17 @@ public class HypericAckProcessorTest {
                     reader.setReaderName(HypericAckProcessor.READER_NAME_HYPERIC);
 
                     Parameter hypericHosts = new Parameter();
-                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_HYPERIC_HOSTS);
-                    hypericHosts.setValue("10001 http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
+                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_PREFIX_HYPERIC_SOURCE + "HQ-Datacenter");
+                    hypericHosts.setValue("http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
+                    reader.addParameter(hypericHosts);
+
+                    hypericHosts = new Parameter();
+                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_PREFIX_HYPERIC_SOURCE + "HQ-Corporate-IT");
+                    hypericHosts.setValue("http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
                     reader.addParameter(hypericHosts);
 
                     org.opennms.netmgt.config.ackd.ReaderSchedule hypericSchedule = new org.opennms.netmgt.config.ackd.ReaderSchedule();
-                    hypericSchedule.setInterval(8);
+                    hypericSchedule.setInterval(3);
                     hypericSchedule.setUnit("s");
                     reader.setReaderSchedule(hypericSchedule);
 
@@ -178,13 +183,13 @@ public class HypericAckProcessorTest {
     public void testStartAckd() throws Exception {
         m_daemon.setConfigDao(createAckdConfigDao());
         m_daemon.start();
-        try { Thread.sleep(10000); } catch (InterruptedException e) {}
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
         m_daemon.destroy();
     }
 
     @Test
-    public void testFetchUnackdHypericAlarms() throws Exception {
-        List<OnmsAlarm> alarms = m_processor.fetchUnackdHypericAlarms();
+    public void testFetchUnclearedHypericAlarms() throws Exception {
+        List<OnmsAlarm> alarms = m_processor.fetchUnclearedHypericAlarms();
         System.out.println(alarms.size());
     }
 
@@ -206,19 +211,8 @@ public class HypericAckProcessorTest {
         // Try with bad credentials to make sure we get a malformed response
         {
             boolean caughtAuthFailure = false;
-            try {
-                List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("http://:badcredentials@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu", Arrays.asList(new String[] { "1", "2", "3" }));
-            } catch (IllegalArgumentException e) {
-                // Expected state
-                caughtAuthFailure = true;
-            }
-            assertTrue("Did not catch expected authorization failure", caughtAuthFailure);
-        }
-
-        // Try with bad credentials to make sure we get a malformed response
-        {
-            boolean caughtAuthFailure = false;
             for (String url : new String[] {
+                    "http://:badcredentials@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
                     "http://blankpass@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
                     "http://blankpass:@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
                     "http://hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
