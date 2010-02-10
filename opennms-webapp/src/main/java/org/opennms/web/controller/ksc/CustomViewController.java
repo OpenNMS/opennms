@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2008 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2010 Feb 10: Catch NPE when referenced resource's parent node is missing.
+//              Addresses bug 3535. - jeffg@opennms.org
 // 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
 // 2008 Feb 03: Use Asserts in afterPropertiesSet() and setDefaultGraphsPerLine().
 //              Use new getReportByIndex method on the KSC factory. - dj@opennms.org
@@ -43,6 +45,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -132,7 +135,12 @@ public class CustomViewController extends AbstractController implements Initiali
             for (int i = 0; i < report.getGraphCount(); i++) {
                 Graph graph = report.getGraph(i);
                 OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-                prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
+                try {
+                    prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
+                } catch (NullPointerException npe) {
+                    log().error("Removing graph '" + graph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ graph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
+                    report.removeGraphAt(i);
+                }
             }
             
             graph_options = prefabGraphs.toArray(new PrefabGraph[prefabGraphs.size()]);
