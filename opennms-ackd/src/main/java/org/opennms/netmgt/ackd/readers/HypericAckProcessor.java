@@ -234,7 +234,7 @@ public class HypericAckProcessor implements AckProcessor {
             Map<String,List<OnmsAlarm>> organizedAlarms = new TreeMap<String,List<OnmsAlarm>>();
             // Split the list of alarms up according to the Hyperic system where they originated
             for (OnmsAlarm alarm : unAckdAlarms) {
-                String key = getPlatformIdParmValue(alarm);
+                String key = getAlertSourceParmValue(alarm);
                 List<OnmsAlarm> targetList = organizedAlarms.get(key);
                 if (targetList == null) {
                     targetList = new ArrayList<OnmsAlarm>();
@@ -326,7 +326,7 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static String getPlatformIdParmValue(OnmsAlarm alarm) {
+    public static String getAlertSourceParmValue(OnmsAlarm alarm) {
         return getParmValueByRegex(alarm, "alert.source=([0-9]*)[(]string,text[)]");
     }
 
