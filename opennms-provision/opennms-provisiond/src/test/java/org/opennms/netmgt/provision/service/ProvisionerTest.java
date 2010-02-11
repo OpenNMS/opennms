@@ -80,6 +80,8 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -358,10 +360,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
-        
-        importFromResource("classpath:/requisition_then_scan.xml");
+        importFromResource("classpath:/requisition_then_scan2.xml");
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -386,7 +387,6 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         OnmsNode node = nodes.get(0);
 
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
         scan.run();
         
         //Verify distpoller count
@@ -438,7 +438,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         assertEquals(2, getInterfaceDao().countAll());
 
-        m_agent.updateValuesFromResource(m_resourceLoader.getResource("classpath:snmpTestData2.properties"));
+        m_agent.updateValuesFromResource(m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
         
         importFromResource("classpath:/requisition_primary_addr_changed.xml");
         
@@ -457,6 +457,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         System.err.println(getInterfaceDao().findAll());
         
         //Verify ipinterface count
+        List<OnmsIpInterface> ifaces = getInterfaceDao().findAll();
         assertEquals(2, getInterfaceDao().countAll());
         
         //Verify ifservices count - discover snmp service on other if

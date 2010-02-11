@@ -84,14 +84,14 @@
     		   	<select name="dsType">
     				<c:forEach items="${dsTypes}" var="thisDsType">
    						<c:choose>
-  							<c:when test="${threshold.dsType==thisDsType}">
+  							<c:when test="${threshold.dsType==thisDsType.key}">
     							<c:set var="selected" value="selected"/>
   							</c:when>
 	 						<c:otherwise>
 	    						<c:set var="selected" value=""/>
 	  						</c:otherwise>
 						</c:choose>
-						<option ${selected} value='${thisDsType}'>${thisDsType}</option>
+						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
     				</c:forEach>
     			</select></td>
  			<td class="standard"><input type="text" name="dsLabel" size=30" value="${threshold.dsLabel}"/></td>
