@@ -578,14 +578,18 @@ function updateOutageTypeDisplay(selectElement) {
 							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
 							for (int i = 0; i < outageNodes.length; i++) {
 								org.opennms.netmgt.config.poller.Node node = outageNodes[i];
-								if (node != null && nodeMap.containsKey(node.getId())) {
-									org.opennms.web.element.Node thisNode = nodeMap.get(node.getId());
-									nodeMap.remove(node.getId());
+								int nodeId = node.getId();
+								out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
+								if (node != null && nodeMap.containsKey(nodeId)) {
+									org.opennms.web.element.Node thisNode = nodeMap.get(nodeId);
+									nodeMap.remove(nodeId);
 									if (thisNode != null) {
-										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-										out.println(thisNode.getLabel());
-										out.println("<br>");
+										out.println(thisNode.getLabel() + "<br>");
+									} else {
+										out.println("Node " + nodeId + " Is Null<br>");
 									}
+								} else {
+									out.println("Node Id " + nodeId + " Not Found<br>");
 								}
 							}
 						}
@@ -604,12 +608,12 @@ function updateOutageTypeDisplay(selectElement) {
 					<td valign="top">
 						<%
 						{
-						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces());
+						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces(false));
 						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
 						for ( org.opennms.web.element.Interface element : allInterfaces ) {
 							String addr = element.getIpAddress();
-							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManaged()) {
-								interfaceMap.put(element.getName(), element);
+							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
+								interfaceMap.put(addr, element);
 							}
 						}
 						allInterfaces = null;
@@ -620,26 +624,42 @@ function updateOutageTypeDisplay(selectElement) {
 							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
 							for (int i = 0; i < outageInterfaces.length; i++) {
 								org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
-								if (iface != null && interfaceMap.containsKey(iface.getAddress())) {
-									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(iface.getAddress());
+								String addr = iface.getAddress();
+								if (iface != null && interfaceMap.containsKey(addr)) {
+									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
 									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
-										interfaceMap.remove(thisInterface.getName());
+										String thisAddr = thisInterface.getIpAddress();
+										String thisName = thisInterface.getHostname();
+										interfaceMap.remove(thisAddr);
+										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
+										if(thisName != null && !thisName.equals(thisAddr)) {
+											out.println(thisAddr + " " + thisName);
+										} else {
+											out.println(thisAddr);
+										}
 										if (thisInterface.isManaged()) {
-											out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-											out.println(thisInterface.getName());
 											out.println("<br>");
+										} else {
+											out.println(" (unmanaged)<br>");
 										}
 									}
+								} else {
+									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
+									out.println(addr + " Not Found<br>");
 								}
 							}
 						}
 
 						out.println("<select name=\"newInterface\">");
 						if (interfaceMap.size() > 0) {
-							for ( String hostname : interfaceMap.keySet() ) {
-								org.opennms.web.element.Interface iface = interfaceMap.get(hostname);
+							for ( String address : interfaceMap.keySet() ) {
+								org.opennms.web.element.Interface iface = interfaceMap.get(address);
 								if (iface != null && interfaceMap.containsValue(iface)) {
-									out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getName() + "</option>");
+									if (address.equals(iface.getHostname())) {
+										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + "</option>");
+									} else {
+										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + " " + iface.getHostname() + "</option>");
+									}
 								}
 							}
 						}
