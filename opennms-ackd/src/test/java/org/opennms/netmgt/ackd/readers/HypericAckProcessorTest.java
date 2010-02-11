@@ -37,6 +37,7 @@ package org.opennms.netmgt.ackd.readers;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.easymock.EasyMock.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -181,10 +182,20 @@ public class HypericAckProcessorTest {
     @Test
     @JUnitHttpServer(port=7081)
     public void testStartAckd() throws Exception {
-        m_daemon.setConfigDao(createAckdConfigDao());
+        AckdConfigurationDao realDao = createAckdConfigDao();
+
+        AckdConfigurationDao mockDao = createMock(AckdConfigurationDao.class);
+        expect(mockDao.getEnabledReaderCount()).andDelegateTo(realDao);
+        expect(mockDao.isReaderEnabled("JavaMailReader")).andDelegateTo(realDao).times(2);
+        expect(mockDao.isReaderEnabled("HypericReader")).andReturn(realDao.isReaderEnabled("HypericReader")).times(2);
+        expect(mockDao.getReaderSchedule("HypericReader")).andReturn(realDao.getReaderSchedule("HypericReader")).times(2);
+        replay(mockDao);
+
+        m_daemon.setConfigDao(mockDao);
         m_daemon.start();
         try { Thread.sleep(5000); } catch (InterruptedException e) {}
         m_daemon.destroy();
+        verify(mockDao);
     }
 
     @Test
