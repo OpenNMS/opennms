@@ -422,10 +422,10 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
     public void testImportAddrThenChangeAddr() throws Exception {
         
-        importFromResource("classpath:/requisition_then_scan.xml");
+        importFromResource("classpath:/requisition_then_scan2.xml");
 
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
@@ -457,7 +457,6 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         System.err.println(getInterfaceDao().findAll());
         
         //Verify ipinterface count
-        List<OnmsIpInterface> ifaces = getInterfaceDao().findAll();
         assertEquals(2, getInterfaceDao().countAll());
         
         //Verify ifservices count - discover snmp service on other if
