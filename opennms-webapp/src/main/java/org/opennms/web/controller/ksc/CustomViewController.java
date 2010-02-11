@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2010 Feb 10: Catch exception when referenced resource's parent node is missing.
+//              Addresses bug 3535. - jeffg@opennms.org
 // 2009 Jan 26: Modified handleRequestInternal - part of ksc performance improvement. - ayres@opennms.org
 // 2008 Oct 22: Lots of cleanup.  - dj@opennms.org
 // 2008 Sep 28: Handle XSS security issues. - ranger@opennms.org
@@ -134,6 +136,7 @@ public class CustomViewController extends AbstractController implements Initiali
         // Get the list of available prefabricated graph options 
         HashMap<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
+        removeBrokenGraphsFromReport(report);
         List<Graph> graphCollection = report.getGraphCollection();
         if (!graphCollection.isEmpty()) {
             List<OnmsResource> resources = getKscReportService().getResourcesFromGraphs(graphCollection);
@@ -267,6 +270,22 @@ public class CustomViewController extends AbstractController implements Initiali
         }
         
         return modelAndView;
+    }
+    
+    private void removeBrokenGraphsFromReport(Report report) {
+        List<Graph> badGraphs = new ArrayList<Graph>();
+        for (Graph graph : report.getGraphCollection()) {
+            try {
+                getKscReportService().getResourceFromGraph(graph);
+            } catch (ObjectRetrievalFailureException orfe) {
+                badGraphs.add(graph);
+            }
+        }
+        
+        for (Graph badGraph : badGraphs) {
+            log().error("Removing graph '" + badGraph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ badGraph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
+            report.removeGraph(badGraph);
+        }
     }
 
     private void promoteResourceAttributesIfNecessary(final OnmsResource resource) {
