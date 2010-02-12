@@ -11,7 +11,7 @@
   <properties>
     <bundle.symbolicName>org.opennms.features.sms-reflector.sms-ping</bundle.symbolicName>
     <bundle.namespace>org.opennms.sms.ping</bundle.namespace>
-    <spring.maven.artifact.version>2.5.6</spring.maven.artifact.version>
+    <spring.maven.artifact.version>3.0.0.RELEASE</spring.maven.artifact.version>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
