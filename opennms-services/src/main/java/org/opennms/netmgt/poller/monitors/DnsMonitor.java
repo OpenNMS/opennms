@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2010 Feb 16: Make fatal error codes configurable (bug 3564) - jeffg@opennms.org
 // 2003 Jul 18: Enabled retries for monitors.
 // 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
 // 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
@@ -51,15 +52,17 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.dns.DNSAddressRequest;
 
 /**
@@ -91,6 +94,13 @@ final public class DnsMonitor extends IPv4Monitor {
      * for data from the monitored interface.
      */
     private static final int DEFAULT_TIMEOUT = 5000;
+    
+    /**
+     * Default list of fatal response codes. Original behavior was hard-coded
+     * so that only a ServFail(2) was fatal, so make that the configurable
+     * default even though it makes little sense.
+     */
+    private static final int[] DEFAULT_FATAL_RESP_CODES = { 2 };
 
     /**
      * <P>
@@ -142,12 +152,23 @@ final public class DnsMonitor extends IPv4Monitor {
                 throw new UndeclaredThrowableException(ukE);
             }
         }
-
+        
         // get the address and DNS address request
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
         DNSAddressRequest request = new DNSAddressRequest(lookup);
 
+        // List of fatal response codes?
+        //
+        int[] fatalCodes = ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES);
+        if (fatalCodes != DEFAULT_FATAL_RESP_CODES) {
+            List<Integer> codeList = new ArrayList<Integer>();
+            for (int code : fatalCodes) {
+                codeList.add(code);
+            }
+            request.setFatalResponseCodes(codeList);
+        }
+        
         PollStatus serviceStatus = PollStatus.unavailable();
         DatagramSocket socket = null;
         try {
