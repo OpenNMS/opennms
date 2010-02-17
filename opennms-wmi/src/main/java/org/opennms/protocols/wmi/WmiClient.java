@@ -8,7 +8,8 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 12 Feb 2010: Clarify log message when COM session establishment fails. - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -213,7 +214,7 @@ public class WmiClient implements IWmiClient {
             m_WbemServices = (IJIDispatch) JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
 
         } catch (JIException e) {
-            throw new WmiException("Failed to connect to host '" + m_Address
+            throw new WmiException("Failed to establish COM session with host '" + m_Address
                     + "': " + e.getMessage(), e);
         } catch (UnknownHostException e) {
             throw new WmiException("Unknown host '" + m_Address
