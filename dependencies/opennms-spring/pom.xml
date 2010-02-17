@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.7.9-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-spring</artifactId>
@@ -19,7 +19,7 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-agent</artifactId>
+      <artifactId>spring-instrument</artifactId>
       <version>${springVersion}</version>
       <exclusions>
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>

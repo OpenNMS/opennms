@@ -7,9 +7,9 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
 
-	<include file="1.7.9/reportcatalog.xml" />
+	<include file="1.7.10/reportcatalog.xml" />
 
-	<changeSet author="jsartin" id="1.7.9-quartz-priority">
+	<changeSet author="jsartin" id="1.7.10-quartz-priority">
 
 		<addColumn tableName="qrtz_triggers">
                         <column name="priority" type="integer" />
@@ -26,7 +26,7 @@
 
 	</changeSet>
 	
-	<changeSet author="jsartin" id="1.7.9-drop-reportlocator">
+	<changeSet author="jsartin" id="1.7.10-drop-reportlocator">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="reportlocator" />
 		</preConditions>

@@ -52,6 +52,18 @@ opennms (1.7.0-1) unstable; urgency=low
 
  -- Benjamin Reed <ranger@opennms.org>  Wed, 15 Oct 2008 21:38:55 -0500
 
+opennms (1.6.9-1) stable; urgency=low
+
+  * Fix missing setup war.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 08 Feb 2010 15:16:00 -0500
+
+opennms (1.6.8-1) stable; urgency=low
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 09 Dec 2009 22:05:00 -0500
+
 opennms (1.6.7-1) stable; urgency=low
 
   * New upstream release.

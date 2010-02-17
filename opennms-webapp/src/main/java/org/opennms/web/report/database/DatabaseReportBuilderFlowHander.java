@@ -13,7 +13,7 @@ public class DatabaseReportBuilderFlowHander extends AbstractFlowHandler {
     @Override
     public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request,
         HttpServletResponse response) {
-    return "contextRelative:/report/database/list.htm";
+    return "contextRelative:/report/database/batchList.htm";
     }
 
     @Override

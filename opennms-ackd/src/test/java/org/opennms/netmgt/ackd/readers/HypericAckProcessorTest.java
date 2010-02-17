@@ -35,13 +35,17 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.easymock.EasyMock.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import junit.framework.Assert;
 
@@ -51,6 +55,9 @@ import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
+import org.opennms.netmgt.config.ackd.Parameter;
+import org.opennms.netmgt.config.ackd.Reader;
+import org.opennms.netmgt.config.ackd.Readers;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
@@ -121,6 +128,49 @@ public class HypericAckProcessorTest {
                 config.setEscalateExpression("~(?i)^esc$");
                 config.setNotifyidMatchExpression("~(?i).*RE:.*Notice #([0-9]+).*");
                 config.setUnackExpression("~(?i)^unAck$");
+
+                Readers readers = new Readers();
+                {
+                    Reader reader = new Reader();
+                    reader.setEnabled(false);
+                    reader.setReaderName("JavaMailReader");
+
+                    Parameter hypericHosts = new Parameter();
+                    hypericHosts.setKey("readmail-config");
+                    hypericHosts.setValue("localhost");
+                    reader.addParameter(hypericHosts);
+
+                    org.opennms.netmgt.config.ackd.ReaderSchedule hypericSchedule = new org.opennms.netmgt.config.ackd.ReaderSchedule();
+                    hypericSchedule.setInterval(60);
+                    hypericSchedule.setUnit("s");
+
+                    readers.addReader(reader);
+                }
+
+                {
+                    Reader reader = new Reader();
+                    reader.setEnabled(true);
+                    reader.setReaderName(HypericAckProcessor.READER_NAME_HYPERIC);
+
+                    Parameter hypericHosts = new Parameter();
+                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_PREFIX_HYPERIC_SOURCE + "HQ-Datacenter");
+                    hypericHosts.setValue("http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
+                    reader.addParameter(hypericHosts);
+
+                    hypericHosts = new Parameter();
+                    hypericHosts.setKey(HypericAckProcessor.PARAMETER_PREFIX_HYPERIC_SOURCE + "HQ-Corporate-IT");
+                    hypericHosts.setValue("http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu");
+                    reader.addParameter(hypericHosts);
+
+                    org.opennms.netmgt.config.ackd.ReaderSchedule hypericSchedule = new org.opennms.netmgt.config.ackd.ReaderSchedule();
+                    hypericSchedule.setInterval(3);
+                    hypericSchedule.setUnit("s");
+                    reader.setReaderSchedule(hypericSchedule);
+
+                    readers.addReader(reader);
+                }
+
+                config.setReaders(readers);
                 return config;
             }
 
@@ -130,19 +180,64 @@ public class HypericAckProcessorTest {
     }
 
     @Test
-    public void testFetchUnackdHypericAlarms() throws Exception {
-        List<OnmsAlarm> alarms = m_processor.fetchUnackdHypericAlarms();
+    @JUnitHttpServer(port=7081)
+    public void testStartAckd() throws Exception {
+        AckdConfigurationDao realDao = createAckdConfigDao();
+
+        AckdConfigurationDao mockDao = createMock(AckdConfigurationDao.class);
+        expect(mockDao.getEnabledReaderCount()).andDelegateTo(realDao);
+        expect(mockDao.isReaderEnabled("JavaMailReader")).andDelegateTo(realDao).times(2);
+        expect(mockDao.isReaderEnabled("HypericReader")).andReturn(realDao.isReaderEnabled("HypericReader")).times(2);
+        expect(mockDao.getReaderSchedule("HypericReader")).andReturn(realDao.getReaderSchedule("HypericReader")).times(2);
+        replay(mockDao);
+
+        m_daemon.setConfigDao(mockDao);
+        m_daemon.start();
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
+        m_daemon.destroy();
+        verify(mockDao);
+    }
+
+    @Test
+    public void testFetchUnclearedHypericAlarms() throws Exception {
+        List<OnmsAlarm> alarms = m_processor.fetchUnclearedHypericAlarms();
         System.out.println(alarms.size());
     }
 
     @Test
-    @JUnitHttpServer(port=7081)
+    @JUnitHttpServer(port=7081,basicAuth=true)
     public void testFetchHypericAlerts() throws Exception {
-        // Test reading alerts over the HTTP server        
-        List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("myHypericSystem", Arrays.asList(new String[] { "1", "2", "3" }));
-        assertEquals(5, alerts.size());
-        for (HypericAckProcessor.HypericAlertStatus alert : alerts) {
-            System.out.println(alert.toString());
+        // Test reading alerts over the HTTP server
+        {
+            List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts("http://hqadmin:hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu", Arrays.asList(new String[] { "1", "2", "3" }));
+            assertEquals(5, alerts.size());
+            for (HypericAckProcessor.HypericAlertStatus alert : alerts) {
+                System.out.println(alert.toString());
+            }
+
+            alerts = HypericAckProcessor.fetchHypericAlerts("http://uhohcolons:this%3Apassword%3Ahas%3Acolons@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu", Arrays.asList(new String[] { "1", "2", "3" }));
+            assertEquals(5, alerts.size());
+        }
+
+        // Try with bad credentials to make sure we get a malformed response
+        {
+            boolean caughtAuthFailure = false;
+            for (String url : new String[] {
+                    "http://:badcredentials@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
+                    "http://blankpass@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
+                    "http://blankpass:@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
+                    "http://hqadmin@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
+                    "http://hqadmin:@127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu",
+                    "http://127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu"
+            }) {
+                try {
+                    List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts(url, Arrays.asList(new String[] { "1", "2", "3" }));
+                } catch (JAXBException e) {
+                    // Expected state
+                    caughtAuthFailure = true;
+                }
+                assertTrue("Did not catch expected authorization failure for URL: " + url, caughtAuthFailure);
+            }
         }
     }
 

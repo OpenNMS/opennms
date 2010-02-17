@@ -136,7 +136,7 @@
 			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
 					org.opennms.web.element.Node elementNode = NetworkElementFactory.getNode(nodeList[j].getId());
-		%> <%=elementNode == null ? "NoNodeFound" : elementNode.getLabel()%><BR>
+		%> <%=elementNode == null || elementNode.getNodeType()=='D' ? "Node: Node Id " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><BR>
 		<%
 			}
 				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
@@ -148,10 +148,24 @@
 					} else {
 						display = new StringBuffer();
 						org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(rawAddress);
+						if (interfaces.length == 0) {
+							display.append("Intfc: " + rawAddress + " Not Found<BR>");
+						}
 						for (int k = 0; k < interfaces.length; k++) {
 							org.opennms.web.element.Interface thisInterface = interfaces[k];
-							if (thisInterface.isManaged()) {
-								display.append(thisInterface.getName() + "<BR>");
+							if (thisInterface.isManagedChar()=='D') {
+								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<BR>");
+							} else {
+								if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
+									display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
+								} else {
+									display.append("Intfc: " + thisInterface.getIpAddress());
+								}
+								if (thisInterface.isManaged()) {
+									display.append("<BR>");
+								} else {
+									display.append(" (unmanaged)<BR>");
+								}
 							}
 						}
 					}

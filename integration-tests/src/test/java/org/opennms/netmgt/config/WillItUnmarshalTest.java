@@ -100,6 +100,7 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
+import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -562,6 +563,10 @@ public class WillItUnmarshalTest {
     @Test
     public void provisiondConfiguration() throws Exception {
         unmarshal("provisiond-configuration.xml", ProvisiondConfiguration.class);
+    }
+    @Test
+    public void testReportdConfiguration() throws Exception {
+        unmarshal("reportd-configuration.xml", ReportdConfiguration.class);
     }
     @Test
     public void testRwsConfiguration() throws Exception {

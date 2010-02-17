@@ -28,8 +28,8 @@
 
 %{!?jdk:%define jdk jdk >= 1:1.5}
 
-%{!?extrainfo:%define extrainfo %{nil}}
-%{!?extrainfo2:%define extrainfo2 %{nil}}
+%{!?extrainfo:%define extrainfo }
+%{!?extrainfo2:%define extrainfo2 }
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -284,11 +284,6 @@ sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}
 pushd opennms-tools
     sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
         -Dopennms.home=%{instprefix} install
-popd
-
-pushd features/remote-poller
-    sh ../../build.sh $SETTINGS_XML -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-        -Dopennms.home=%{instprefix} package
 popd
 
 echo "=== INSTALL COMPLETED ==="

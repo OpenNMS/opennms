@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-	<changeSet author="jsartin" id="1.7.9-reportcatalog">
+	<changeSet author="jsartin" id="1.7.10-reportcatalog">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="reportcatalog" /></not>
 		</preConditions> 

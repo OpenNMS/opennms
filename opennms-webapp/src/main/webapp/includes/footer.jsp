@@ -2,6 +2,7 @@
 
   Modifications:
 
+  2010 Feb 09: Happy new year - jeffg@opennms.org
   2009 Jan 14: Happy new year, copyright update. - jeffg@opennms.org
   2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 
@@ -44,7 +45,7 @@
 
     <div id="footer">
       <p>
-        OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2009
+        OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2010
 	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
 	    OpenNMS&reg; is a registered trademark of
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

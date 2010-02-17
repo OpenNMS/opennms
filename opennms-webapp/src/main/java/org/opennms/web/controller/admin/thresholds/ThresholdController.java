@@ -39,6 +39,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,9 @@ import org.opennms.web.WebSecurityUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * 
@@ -140,15 +144,30 @@ public class ThresholdController extends AbstractController implements Initializ
     }
     
     private void addStandardEditingBits(ModelAndView modelAndView) {
-        Collection<String> dsTypes=new ArrayList<String>();
-        dsTypes.add("node");
-        dsTypes.add("if"); // "interface" is a wrong word
+        Map<String,String> dsTypes=new LinkedHashMap<String,String>();
+        dsTypes.put("node", "Node");
+        dsTypes.put("if", "Interface"); // "interface" is a wrong word
         
         Collection<OnmsResourceType> resourceTypes = m_resourceDao.getResourceTypes();
+        Multimap<String,String> genericDsTypes = TreeMultimap.create();
         for (OnmsResourceType resourceType : resourceTypes) {
             if (resourceType instanceof GenericIndexResourceType)
-                dsTypes.add(resourceType.getName());
+                // Put these in by label to sort them, we'll get them out in a moment
+                genericDsTypes.put(resourceType.getLabel(), resourceType.getName());
         }
+
+        // Now get the resource types out of the TreeMultimap
+        for (String rtLabel : genericDsTypes.keys()) {
+            Collection<String> rtNames = genericDsTypes.get(rtLabel);
+            for (String rtName : rtNames) {
+                if (rtNames.size() > 1)
+                    dsTypes.put(rtName, rtLabel + " [" + rtName + "]");
+                else
+                    dsTypes.put(rtName, rtLabel);
+            }
+        }
+
+        // Finally, set the sorted resource types into the model
         modelAndView.addObject("dsTypes",dsTypes);
 
         Collection<String> thresholdTypes=new ArrayList<String>();

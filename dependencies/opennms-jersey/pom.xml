@@ -2,7 +2,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.9-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-jersey</artifactId>
@@ -64,11 +64,23 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>

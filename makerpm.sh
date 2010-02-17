@@ -14,16 +14,22 @@ fi
 
 EXTRA_INFO=""
 EXTRA_INFO2=""
-if [ $RELEASE_MAJOR -eq 0 ]; then
+
+GIT=`which git 2>/dev/null`
+if [ -n "$GIT" ] && [ -x "$GIT" ]; then
+	BRANCH=`git branch | grep -E '^\*' | awk '{ print $2 }'`
+	COMMIT=`git log -1 | grep -E '^commit' | cut -d' ' -f2`
+	if [ $RELEASE_MAJOR = 0 ]; then
+		EXTRA_INFO="This is an OpenNMS build from the $BRANCH branch.  For a complete log, see:"
+	else
+		EXTRA_INFO="This is an OpenNMS build from Git.  For a complete log, see:"
+	fi
+	EXTRA_INFO2="  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$COMMIT"
+fi
+
+if [ $RELEASE_MAJOR = 0 ]; then
 	RELEASE_MINOR=`date '+%Y%m%d'`
 	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR
-	GIT=`which git 2>/dev/null`
-	if [ -n "$GIT" ] && [ -x "$GIT" ]; then
-		BRANCH=`git branch | grep -E '^\*' | awk '{ print $2 }'`
-		COMMIT=`git log -1 | grep -E '^commit' | cut -d' ' -f2`
-		EXTRA_INFO="This is a snapshot build from the $BRANCH branch.  For a complete log, see:"
-		EXTRA_INFO2="  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$COMMIT"
-	fi
 else
 	RELEASE=$RELEASE_MAJOR
 fi

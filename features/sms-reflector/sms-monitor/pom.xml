@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.7.9-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -92,12 +92,12 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
+      <artifactId>org.osgi.core</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
+      <artifactId>org.osgi.compendium</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -197,7 +197,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
