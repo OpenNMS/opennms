@@ -1,14 +1,15 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications: 
+// 2010 Feb 16: Allow configuration of fatal response codes (bug 3564) - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -191,6 +192,13 @@ public class DNSAddressRequest {
      * </P>
      */
     private static int globalID = 1;
+    
+    /**
+     * <P>
+     * The list of response codes to be considered fatal
+     * </P>
+     */
+    private List<Integer> m_fatalResponseCodes;
 
     /**
      * <P>
@@ -211,10 +219,8 @@ public class DNSAddressRequest {
         //
         int code = (flags >> SHIFT_RESPONSE_CODE) & 15;
 
-        if (code != 0) {
-            if (code == 2) // Throw exception if error code indicates 'Server
-                            // Failure'
-                throw new IOException(codeName(code) + " (" + code + ")");
+        if (isResponseCodeFatal(code)) {
+            throw new IOException(codeName(code) + " (" + code + ")");
         }
 
         //
@@ -238,6 +244,12 @@ public class DNSAddressRequest {
      *            hostname for which address is to be constructed
      */
     public DNSAddressRequest(String host) {
+        //
+        // Imitate the original behavior of only a ServFail being fatal
+        //
+        m_fatalResponseCodes = new ArrayList<Integer>();
+        m_fatalResponseCodes.add(2);
+        
         //
         // Split the host into its component
         // parts.
@@ -404,7 +416,7 @@ public class DNSAddressRequest {
 
     /**
      * <P>
-     * Return an enumeration of the recieved answers.
+     * Return an enumeration of the received answers.
      * </P>
      * 
      * @return The list of received answers.
@@ -469,9 +481,23 @@ public class DNSAddressRequest {
      * @return The error string corresponding to the error code
      */
     public static String codeName(int code) {
-        String[] codeNames = { "Format error", "Server failure", "Name not known", "Not implemented", "Refused" };
+        String[] codeNames = { "Format Error", "Server Failure", "Non-Existent Domain", "Not Implemented", "Query Refused" };
 
         return ((code >= 1) && (code <= 5)) ? codeNames[code - 1] : "Unknown error";
+    }
+    
+    public List<Integer> getFatalResponseCodes() {
+        return m_fatalResponseCodes;
+    }
+    
+    public void setFatalResponseCodes(List<Integer> codes) {
+        m_fatalResponseCodes = codes;
+    }
+    
+    private boolean isResponseCodeFatal(int code) {
+        if (m_fatalResponseCodes.contains(code))
+            return true;
+        return false;
     }
 
 }

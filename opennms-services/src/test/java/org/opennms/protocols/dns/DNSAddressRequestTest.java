@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2010 Feb 16: Create some real tests (bug 3564) - jeffg@opennms.org
  * Created: February 24, 2008
  *
  *
@@ -37,58 +38,137 @@ package org.opennms.protocols.dns;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * 
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- */
-public class DNSAddressRequestTest {
-    private static final byte[] responseBytes = new byte[] {
-            (byte) 0x5e,
-            (byte) 0x94,
-            (byte) 0x81,
-            (byte) 0x82,
-            (byte) 0x00,
-            (byte) 0x01,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x06,
-            (byte) 0x67,
-            (byte) 0x72,
-            (byte) 0x65,
-            (byte) 0x67,
-            (byte) 0x6f,
-            (byte) 0x72,
-            (byte) 0x03,
-            (byte) 0x63,
-            (byte) 0x6f,
-            (byte) 0x6d,
-            (byte) 0x00,
-            (byte) 0x00,
-            (byte) 0x01,
-            (byte) 0x00,
-            (byte) 0x01      
+public class DNSAddressRequestTest extends TestCase {
+
+    private static final byte[] normalResponseBytes = new byte[] {
+        (byte) 0x9e, (byte) 0xf2, (byte) 0x81, (byte) 0x80,
+        (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x01,
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+        (byte) 0x09, (byte) 0x6c, (byte) 0x6f, (byte) 0x63,
+        (byte) 0x61, (byte) 0x6c, (byte) 0x68, (byte) 0x6f,
+        (byte) 0x73, (byte) 0x74, (byte) 0x00, (byte) 0x00,
+        (byte) 0x01, (byte) 0x00, (byte) 0x01, (byte) 0xc0,
+        (byte) 0x0c, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+        (byte) 0x01, (byte) 0x00, (byte) 0x0a, (byte) 0x00,
+        (byte) 0x00, (byte) 0x00, (byte) 0x04, (byte) 0x7f,
+        (byte) 0x00, (byte) 0x00, (byte) 0x01
+    };
+    
+    private static final byte[] servFailResponseBytes = new byte[] {
+        (byte) 0x5e,
+        (byte) 0x94,
+        (byte) 0x81,
+        (byte) 0x82,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x06,
+        (byte) 0x67,
+        (byte) 0x72,
+        (byte) 0x65,
+        (byte) 0x67,
+        (byte) 0x6f,
+        (byte) 0x72,
+        (byte) 0x03,
+        (byte) 0x63,
+        (byte) 0x6f,
+        (byte) 0x6d,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x00,
+        (byte) 0x01      
+    };
+    
+    private static final byte[] nxDomainResponseBytes = new byte[] {
+        (byte) 0x2f, (byte) 0x3e, (byte) 0x81, (byte) 0x83,
+        (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00,
+        (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00,
+        (byte) 0x09, (byte) 0x6c, (byte) 0x6f, (byte) 0x63,
+        (byte) 0x61, (byte) 0x6c, (byte) 0x68, (byte) 0x6f,
+        (byte) 0x73, (byte) 0x74, (byte) 0x00, (byte) 0x00,
+        (byte) 0x01, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+        (byte) 0x00, (byte) 0x06, (byte) 0x00, (byte) 0x01,
+        (byte) 0x00, (byte) 0x01, (byte) 0x3f, (byte) 0x0a,
+        (byte) 0x00, (byte) 0x40, (byte) 0x01, (byte) 0x41,
+        (byte) 0x0c, (byte) 0x52, (byte) 0x4f, (byte) 0x4f,
+        (byte) 0x54, (byte) 0x2d, (byte) 0x53, (byte) 0x45,
+        (byte) 0x52, (byte) 0x56, (byte) 0x45, (byte) 0x52,
+        (byte) 0x53, (byte) 0x03, (byte) 0x4e, (byte) 0x45,
+        (byte) 0x54, (byte) 0x00, (byte) 0x05, (byte) 0x4e,
+        (byte) 0x53, (byte) 0x54, (byte) 0x4c, (byte) 0x44,
+        (byte) 0x0c, (byte) 0x56, (byte) 0x45, (byte) 0x52,
+        (byte) 0x49, (byte) 0x53, (byte) 0x49, (byte) 0x47,
+        (byte) 0x4e, (byte) 0x2d, (byte) 0x47, (byte) 0x52,
+        (byte) 0x53, (byte) 0x03, (byte) 0x43, (byte) 0x4f,
+        (byte) 0x4d, (byte) 0x00, (byte) 0x77, (byte) 0xce,
+        (byte) 0x7e, (byte) 0xe0, (byte) 0x00, (byte) 0x00,
+        (byte) 0x07, (byte) 0x08, (byte) 0x00, (byte) 0x00,
+        (byte) 0x03, (byte) 0x84, (byte) 0x00, (byte) 0x09,
+        (byte) 0x3a, (byte) 0x80, (byte) 0x00, (byte) 0x01,
+        (byte) 0x51, (byte) 0x80
     };
     
     private DNSAddressRequest m_request;
-    
+
     @Before
     public void setUp() throws UnknownHostException {
         final String question = InetAddress.getLocalHost().getCanonicalHostName();
         m_request = new DNSAddressRequest(question);
     }
 
-    @Test(expected=IOException.class)
-    public void testServerFailed() throws IOException {
+    @Test
+    public void testNormalResponse() throws Exception {
+        m_request.m_reqID = 0x9ef2;
+        m_request.verifyResponse(normalResponseBytes, normalResponseBytes.length);
+        
+        m_request.receiveResponse(normalResponseBytes, normalResponseBytes.length);
+        assertEquals(1, m_request.getAnswers().size());
+        DNSAddressRR answer = (DNSAddressRR) m_request.getAnswers().get(0);
+        assertEquals(4, answer.getAddress().length);
+        assertEquals(127, answer.getAddress()[0]);
+        assertEquals(0, answer.getAddress()[1]);
+        assertEquals(0, answer.getAddress()[2]);
+        assertEquals(1, answer.getAddress()[3]);
+    }
+    
+    @Test
+    public void testServerFailed() throws Exception {
         m_request.m_reqID = 24212;
-        // we pass in a server failed request... expect it to throw an exception
-        m_request.verifyResponse(responseBytes, responseBytes.length);
+        try {
+            m_request.verifyResponse(servFailResponseBytes, servFailResponseBytes.length);            
+        } catch (IOException ioe) {
+            assertEquals("Server Failure (2)", ioe.getMessage());
+            return;
+        }
+        throw new Exception("Should have caught an IOException for ServFail!");
+    }
+    
+    @Test
+    public void testNxDomainPass() throws Exception {
+        List<Integer> fatalCodes = new ArrayList<Integer>();
+        fatalCodes.add(2);
+        fatalCodes.add(3);
+        m_request.m_reqID = 0x2f3e;
+        m_request.setFatalResponseCodes(fatalCodes);
+        try {
+            m_request.verifyResponse(nxDomainResponseBytes, nxDomainResponseBytes.length);
+        } catch (IOException ioe) {
+            assertEquals("Non-Existent Domain (3)", ioe.getMessage());
+            return;
+        }
+        throw new Exception("Should have caught an IOException for NXDomain!");
     }
 }
