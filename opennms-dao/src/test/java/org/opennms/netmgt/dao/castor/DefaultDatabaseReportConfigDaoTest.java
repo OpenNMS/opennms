@@ -37,7 +37,10 @@ package org.opennms.netmgt.dao.castor;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -46,17 +49,36 @@ public class DefaultDatabaseReportConfigDaoTest {
     private static final String NAME = "defaultCalendarReport";
     private static final String DESCRIPTION = "default calendar report";
     private static final String REPORT_SERVICE = "availabilityReportService";
+    private static DefaultDatabaseReportConfigDao m_dao;
     
+    @BeforeClass
+    public static void setUpDao() {
+        
+        m_dao = new DefaultDatabaseReportConfigDao();
+        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
+        m_dao.setConfigResource(resource);
+        m_dao.afterPropertiesSet();
+        
+    }
+    
+    @Test
+    public void testGetReports() throws Exception {
+        
+        assertEquals(2,m_dao.getReports().size());
+        
+    }
+    
+    @Test
+    public void testGetOnlineReports() throws Exception {
+        
+        assertEquals(1,m_dao.getOnlineReports().size());
+        
+    }
 
     @Test
     public void testGetReportService() throws Exception {
         
-        DefaultDatabaseReportConfigDao dao = new DefaultDatabaseReportConfigDao();
-        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
-        dao.setConfigResource(resource);
-        dao.afterPropertiesSet();
-        
-        assertEquals(dao.getReportService(NAME),REPORT_SERVICE);
+        assertEquals(REPORT_SERVICE,m_dao.getReportService(NAME));
         
     }
 

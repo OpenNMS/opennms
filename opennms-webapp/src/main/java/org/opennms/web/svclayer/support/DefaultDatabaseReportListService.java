@@ -49,19 +49,35 @@ public class DefaultDatabaseReportListService implements
 
     public List<DatabaseReportDescription> getAll() {
         
-        List <DatabaseReportDescription> summaryList = new ArrayList<DatabaseReportDescription>();
+        List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
         
         for(Report report : m_dao.getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
             summary.setId(report.getId());
             summary.setDisplayName(report.getDisplayName());
             summary.setDescription(report.getDescription());
-            summaryList.add(summary);
+            allReports.add(summary);
         }
         
-        return summaryList;
+        return allReports;
         
     }
+
+    public List<DatabaseReportDescription> getAllOnline() {
+
+        List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
+        
+        for(Report report : m_dao.getOnlineReports()) {
+            DatabaseReportDescription summary = new DatabaseReportDescription();
+            summary.setId(report.getId());
+            summary.setDisplayName(report.getDisplayName());
+            summary.setDescription(report.getDescription());
+            onlineReports.add(summary);
+        }
+        
+        return onlineReports;
+    }
+   
 
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao dao) {
         

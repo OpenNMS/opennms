@@ -2311,11 +2311,19 @@ CREATE TABLE qrtz_locks
     constraint pk_qrtz_locks PRIMARY KEY (LOCK_NAME)
 );
 
-
-INSERT INTO qrtz_locks values('TRIGGER_ACCESS');
-INSERT INTO qrtz_locks values('JOB_ACCESS');
-INSERT INTO qrtz_locks values('CALENDAR_ACCESS');
-INSERT INTO qrtz_locks values('STATE_ACCESS');
-INSERT INTO qrtz_locks values('MISFIRE_ACCESS');
+--##################################################################
+--# The following command should populate the qrtz_locks table
+--# are no categories in the category table
+--##################################################################
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('TRIGGER_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('JOB_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('CALENDAR_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('STATE_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('MISFIRE_ACCESS');
 
 --# End Quartz persistence tables

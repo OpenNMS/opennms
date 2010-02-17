@@ -15,7 +15,10 @@
 // 
 // Created: December 15th, 2009 jonathan@opennms.org
 //
-// Copyright (C) 2009 The OpenNMS Group, Inc. All rights reserved.
+// Modified: February 10th, 2010 jonathan@opennms.org
+//           reworked to use ReportWrapperService
+//
+// Copyright (C) 2010 The OpenNMS Group, Inc. All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,13 +47,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.api.reporting.DeliveryOptions;
-import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
-import org.opennms.reporting.core.svclayer.ReportServiceLocator;
+import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
+import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.SchedulerService;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
@@ -73,9 +74,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     
     private Scheduler m_scheduler;
     private JobDetail m_jobDetail;
-    private DatabaseReportConfigDao m_configDao;
     private String m_triggerGroup;
-    private ReportServiceLocator m_reportServiceLocator;
+    private ReportWrapperService m_reportWrapperService;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -100,8 +100,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
             }
         } catch (SchedulerException e) {
-            log().error("exception looking retrieving trigger descriptions",
-                        e);
+            log().error("exception lretrieving trigger descriptions", e);
         }
 
         return triggerDescriptions;
@@ -163,15 +162,9 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             String cronExpression, RequestContext context) {
 
         CronTrigger cronTrigger = null;
-
-        String reportServiceName = m_configDao.getReportService(id);
         
-        try {
-            
-            ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
-            
-            if (reportService.validate(criteria.getReportParms(),
-                                       id) == false) {
+        try {            
+            if (m_reportWrapperService.validate(criteria,id) == false ) {
                 log().error(PARAMETER_ERROR);
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
@@ -199,7 +192,6 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 cronTrigger.getJobDataMap().put("reportId", id);
                 cronTrigger.getJobDataMap().put("deliveryOptions",
                                                 (DeliveryOptions) deliveryOptions);
-                cronTrigger.getJobDataMap().put("reportServiceName", reportServiceName);
                 try {
                     m_scheduler.scheduleJob(cronTrigger);
                 } catch (SchedulerException e) {
@@ -233,12 +225,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     public String execute(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions, RequestContext context) {
 
-        String reportServiceName = m_configDao.getReportService(id);
-        ReportService reportService;
         try {
-            reportService = m_reportServiceLocator.getReportService(reportServiceName);
-            if (reportService.validate(criteria.getReportParms(),
-                                       id) == false) {
+            if (m_reportWrapperService.validate(criteria,id) == false ) {
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
                                                                                                 PARAMETER_ERROR).build());
@@ -251,7 +239,6 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 trigger.getJobDataMap().put("reportId", id);
                 trigger.getJobDataMap().put("deliveryOptions", (DeliveryOptions) deliveryOptions);
-                trigger.getJobDataMap().put("reportServiceName", reportServiceName);
                 try {
                     m_scheduler.scheduleJob(trigger);
                 } catch (SchedulerException e) {
@@ -287,16 +274,12 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         m_jobDetail = reportJob;
     }
 
-    public void setDatabaseReportConfigDao(DatabaseReportConfigDao configDao) {
-        m_configDao = configDao;
-    }
-
     public void setTriggerGroup(String triggerGroup) {
         m_triggerGroup = triggerGroup;
     }
 
-    public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
-        m_reportServiceLocator = reportServiceLocator;
+    public void setReportWrapperService(ReportWrapperService reportWrapperService) {
+        m_reportWrapperService = reportWrapperService;
     }
 
 

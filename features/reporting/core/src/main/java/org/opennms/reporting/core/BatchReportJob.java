@@ -36,10 +36,8 @@
 
 package org.opennms.reporting.core;
 
-import org.opennms.api.reporting.DeliveryOptions;
-import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.reporting.core.svclayer.ReportServiceLocator;
+import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -55,18 +53,25 @@ public class BatchReportJob extends QuartzJobBean {
             throws JobExecutionException {
         
         JobDataMap dataMap = jobContext.getMergedJobDataMap();
-        ReportParameters criteria = (ReportParameters) dataMap.get("criteria");
-        DeliveryOptions deliveryOptions = (DeliveryOptions) dataMap.get("deliveryOptions");
-        
+       
         // TODO this needs the reportServiceName in the criteria 
-        ReportServiceLocator reportServiceLocator =
-            (ReportServiceLocator)m_context.getBean("reportServiceLocator");
         
-        ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
+//        
+//        ReportServiceLocator reportServiceLocator =
+//            (ReportServiceLocator)m_context.getBean("reportServiceLocator");
+//        
+//        ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
+//        
+//        reportService.run(criteria.getReportParms(), 
+//                          deliveryOptions, 
+//                          (String)dataMap.get("reportId"));
         
-        reportService.run(criteria.getReportParms(), 
-                          deliveryOptions, 
-                          (String)dataMap.get("reportId"));
+        ReportWrapperService reportWrapperService = 
+            (ReportWrapperService)m_context.getBean("reportWrapperService");
+        
+        reportWrapperService.run((ReportParameters) dataMap.get("criteria"),
+                                 (DeliveryOptions) dataMap.get("deliveryOptions"),
+                                 (String)dataMap.get("reportId"));
         
     }
     

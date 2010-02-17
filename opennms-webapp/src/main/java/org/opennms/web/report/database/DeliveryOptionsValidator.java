@@ -1,6 +1,6 @@
 package org.opennms.web.report.database;
 
-import org.opennms.api.reporting.DeliveryOptions;
+import org.opennms.reporting.core.DeliveryOptions;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;

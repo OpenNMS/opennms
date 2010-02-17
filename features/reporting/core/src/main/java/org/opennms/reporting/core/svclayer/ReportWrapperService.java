@@ -10,11 +10,7 @@
  *
  * Modifications:
  * 
- * Created: December 8th, 2009 jonathan@opennms.org
- * 
- * Modified: January 13th 2010 jonathan@opennms.org
- * 
- * Moved into report API package
+ * Created: February 3rd 2010 jonathan@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -37,22 +33,25 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.api.reporting;
+package org.opennms.reporting.core.svclayer;
 
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.reporting.core.DeliveryOptions;
 
 /**
- * This interface provides an API for implementing additional database reports 
- * inside the opennms webapp
+ * Interface for to execure individual reportServices. 
+ * Always run a report service via this wrapper as the implemenation will find 
+ * the correct service for the reportId and wrap it as necessary.
  * 
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  *
  */
-public interface ReportService {
+public interface ReportWrapperService {
 
     /**
      * This method validates that the map of report parameters matches the report
@@ -62,7 +61,7 @@ public interface ReportService {
      * @param reportId reportId as defined in database-reports.xml
      * @return true if the reportParms supplied match those in the report definition.
      */
-    public abstract boolean validate(HashMap<String, Object> reportParms,
+    public abstract boolean validate(ReportParameters reportParms,
             String reportId);
     
     /**
@@ -72,9 +71,20 @@ public interface ReportService {
      * @param options delivery options for the report
      * @param reportId reportId as defined in database-reports.xml
      */
-    public abstract String run(HashMap<String, Object> reportParms,
+    public abstract void run(ReportParameters reportParms, DeliveryOptions options,
             String reportId);
-
+    
+    /**
+     * This method returns the delivery options for the report. Providing a userID will
+     * allow the report service to pre-populate the destination address 
+     * 
+     * @param userId
+     * @param reportId
+     * @return a delivery options object containing information that describes how the report might
+     *         be delivered.
+     */
+    public abstract DeliveryOptions getDeliveryOptions(String userId, String reportId);
+    
     /**
      * This method provides a list of formats supported by the report
      * 
@@ -83,6 +93,7 @@ public interface ReportService {
      */
     public abstract List<ReportFormat> getFormats(String reportId);
     
+
     /**
      * This method renders the report into a given output stream.
      * 
@@ -92,16 +103,6 @@ public interface ReportService {
      * @param outputStream stream to render the resulting report
      */
     public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
-    
-    /**
-     * This method runs the report and renders in into the given output stream
-     * with no intermediate steps
-     *
-     * @param ReportId reportId as defined in database-reports.xml
-     * @param format format to render the report
-     * @param outputStream stream to render the resulting report
-     */
-    public abstract void runAndRender(HashMap<String, Object> reportParms, String ReportId, ReportFormat format, OutputStream outputStream);
     
     /**
      * This method retrieves the runtime parameters taken by the report

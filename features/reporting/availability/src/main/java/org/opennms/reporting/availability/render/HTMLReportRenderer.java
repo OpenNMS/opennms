@@ -41,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
@@ -142,6 +143,36 @@ public class HTMLReportRenderer implements ReportRenderer {
 
             xsl.close();
             xml.close();
+
+        } catch (IOException ioe) {
+            log.fatal("IOException ", ioe);
+            throw new ReportRenderException(ioe);
+        } catch (TransformerConfigurationException tce) {
+            log.fatal("ransformerConfigurationException ", tce);
+            throw new ReportRenderException(tce);
+        } catch (TransformerException te) {
+            log.fatal("TransformerException ", te);
+            throw new ReportRenderException(te);
+        }
+    }
+    
+    public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
+        
+        try {
+            
+            log.debug("XSL File " + xsltResource.getDescription());
+
+            Reader xsl = new FileReader(xsltResource.getFile());
+
+            log.debug("rendering input stream");
+
+            TransformerFactory tfact = TransformerFactory.newInstance();
+            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
+            processor.transform(new StreamSource(inputStream),
+                                new StreamResult(outputStream));
+
+            xsl.close();
+            inputStream.close();
 
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);

@@ -37,16 +37,15 @@ package org.opennms.web.svclayer;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 import org.opennms.web.svclayer.support.DefaultDatabaseReportListService;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportListServiceTest {
     
@@ -62,8 +61,8 @@ public class DefaultDatabaseReportListServiceTest {
     public void setupDao() throws Exception {
 
         m_dao = new DefaultDatabaseReportConfigDao();
-        InputStream in = ConfigurationTestUtils.getInputStreamForConfigFile("/database-reports.xml");
-        m_dao.setConfigResource(new InputStreamResource(in));
+        Resource resource = new ClassPathResource("/database-reports-testdata.xml");
+        m_dao.setConfigResource(resource);
         m_dao.afterPropertiesSet();
         
         m_descriptionService = new DefaultDatabaseReportListService();
@@ -76,11 +75,20 @@ public class DefaultDatabaseReportListServiceTest {
     
     
     @Test
-    public void testDatabaseReportService() throws Exception {
+    public void testGetAll() throws Exception {
         
         List<DatabaseReportDescription> description = m_descriptionService.getAll();
         
-        assertEquals(description.size(),2);
+        assertEquals(2,description.size());
+        
+    }
+    
+    @Test
+    public void testGetAlOnlinel() throws Exception {
+        
+        List<DatabaseReportDescription> description = m_descriptionService.getAllOnline();
+        
+        assertEquals(1,description.size());
         
     }
 

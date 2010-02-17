@@ -84,7 +84,7 @@ public class DownloadReportController extends AbstractController {
                                         ReportFormat.valueOf(requestFormat),
                                         (OutputStream) response.getOutputStream());
         } catch (NumberFormatException e) {
-            // TODO something usefule here.
+            // TODO something useful here.
         }
 
         return null;

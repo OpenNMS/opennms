@@ -1,6 +1,7 @@
 package org.opennms.reporting.availability;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -14,6 +15,9 @@ public interface AvailabilityCalculator {
 
     public abstract void writeXML(String outputFileName)
             throws AvailabilityCalculationException;
+    
+    public abstract void writeXML(OutputStream outputStream)
+        throws AvailabilityCalculationException;
 
     public abstract String writeLocateableXML(String id)
             throws AvailabilityCalculationException;

@@ -63,7 +63,7 @@
 
 <c:choose>
 	<c:when test="${empty pagedListHolder.pageList}">
-		<p>None found.</p>
+		<p>No batch reports are defined</p>
 	</c:when>
 
 	<c:otherwise>

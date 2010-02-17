@@ -48,10 +48,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.api.reporting.DeliveryOptions;
-import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -90,10 +89,7 @@ public class DefaultSchedulerServiceTest {
     private JobDetailBean m_jobDetail;
  
     @Autowired
-    private ReportService m_reportService;
-    
-    @Autowired
-    private DatabaseReportConfigDao m_reportConfigDao;
+    private ReportWrapperService m_reportWrapperService;
     
     Scheduler m_scheduler;
     
@@ -113,8 +109,7 @@ public class DefaultSchedulerServiceTest {
     }
     @Before
     public void resetReportService() {
-        reset(m_reportService);
-        reset(m_reportConfigDao);
+        reset(m_reportWrapperService);
         m_scheduler = (Scheduler) m_schedulerFactory.getScheduler();
         
     }
@@ -124,62 +119,49 @@ public class DefaultSchedulerServiceTest {
         Assert.assertNotNull(m_schedulerService);
         Assert.assertNotNull(m_schedulerFactory);
         Assert.assertNotNull(m_jobDetail);
-        Assert.assertNotNull(m_reportService);
-        Assert.assertNotNull(m_reportConfigDao);
+        Assert.assertNotNull(m_reportWrapperService);
     }
     
     @Test
     public void testExecuteSuccess() throws InterruptedException {
         //
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        m_reportService.run(m_criteria.getReportParms(), m_deliveryOptions, REPORT_ID);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        m_reportWrapperService.run(m_criteria, m_deliveryOptions, REPORT_ID);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success",m_schedulerService.execute(REPORT_ID, m_criteria, m_deliveryOptions, context));
         //give the trigger a chance to fire
         Thread.sleep(1000);
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
     }
     
     @Test
     public void testExecuteFailure() throws InterruptedException {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(false);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(false);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("error",m_schedulerService.execute(REPORT_ID, m_criteria, m_deliveryOptions, context));
         // give the trigger a chance to fire
         Thread.sleep(1000);
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
     }
 
     @Test
     public void testScheduleBadCronExpression() {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("error", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "invalidTrigger", "bad expression", context));
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
     }
     
     @Test
     public void testScheduleAndRemove() throws SchedulerException {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
         String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
         assertEquals(1,triggers.length);
         assertEquals("validTrigger",triggers[0]);
@@ -189,17 +171,14 @@ public class DefaultSchedulerServiceTest {
     
     @Test
     public void testMultipleTriggers() throws SchedulerException {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true).times(2);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE).times(2);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true).times(2);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         // this trigger fires every 10 minutes starting at 0 minutes past the hour
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", "0 0/10 * * * ?", context));
         // this trigger fires every 10 minutes starting at 5 minutes past the hour
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "secondValidTrigger", "0 5/10 * * * ?", context));
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
         String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
         assertEquals(2,triggers.length);
         assertEquals("validTrigger",triggers[0]);
@@ -211,32 +190,26 @@ public class DefaultSchedulerServiceTest {
     
     @Test
     public void testScheduleAndRun() throws SchedulerException, InterruptedException {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        m_reportService.run(m_criteria.getReportParms(), m_deliveryOptions, REPORT_ID);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        m_reportWrapperService.run(m_criteria, m_deliveryOptions, REPORT_ID);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
         // give the trigger a chance to fire (one minute)
         Thread.sleep(61000);
         m_schedulerService.removeTrigger("validTrigger");
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
         m_schedulerService.removeTrigger("validTrigger");
         assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);  
     }
     
     @Test
     public void testExists() {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
         assertTrue(m_schedulerService.exists("validTrigger"));
         assertFalse(m_schedulerService.exists("bogusTrigger"));
         m_schedulerService.removeTrigger("validTrigger");
@@ -245,14 +218,11 @@ public class DefaultSchedulerServiceTest {
     
     @Test
     public void testGetTriggerDescriptions() {
-        expect(m_reportService.validate(m_criteria.getReportParms(), REPORT_ID)).andReturn(true);
-        replay(m_reportService);
-        expect(m_reportConfigDao.getReportService(REPORT_ID)).andReturn(REPORT_SERVICE);
-        replay(m_reportConfigDao);
+        expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
+        replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
-        verify(m_reportService);
-        verify(m_reportConfigDao);
+        verify(m_reportWrapperService);
         assertEquals(1,m_schedulerService.getTriggerDescriptions().size());
         assertEquals("validTrigger",m_schedulerService.getTriggerDescriptions().get(0).getTriggerName());
         m_schedulerService.removeTrigger("validTrigger");

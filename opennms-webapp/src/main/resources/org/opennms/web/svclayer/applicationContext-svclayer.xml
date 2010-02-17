@@ -244,9 +244,8 @@
 	<property name="jobDetail">
 		<ref local="batchReportJobDetail" />
 	</property>
-	<property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
 	<property name="triggerGroup" value="reporting" />
-	<property name="reportServiceLocator" ref="reportServiceLocator"/>
+	<property name="reportWrapperService" ref="reportWrapperService"/>
   </bean>
   
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

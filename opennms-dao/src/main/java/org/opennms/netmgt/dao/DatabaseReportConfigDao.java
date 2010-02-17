@@ -43,6 +43,8 @@ public interface DatabaseReportConfigDao {
     
     List <Report> getReports();
     
+    List <Report> getOnlineReports();
+    
     String getReportService(String id);
     
     String getDisplayName(String id);

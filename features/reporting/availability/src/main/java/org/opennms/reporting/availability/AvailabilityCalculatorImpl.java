@@ -41,6 +41,8 @@ package org.opennms.reporting.availability;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -215,10 +217,10 @@ public String writeXML() throws AvailabilityCalculationException {
             // Create a file name of type Category-monthFormat-startDate.xml
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
             String catFileName = m_categoryName.replace(' ', '-');
-            m_outputFileName = catFileName + "-" + m_monthFormat
+            m_outputFileName = m_baseDir + catFileName + "-" + m_monthFormat
                     + fmt.format(m_periodEndDate) + ".xml";
             log.debug("Report Store XML file: " + m_outputFileName);
-            File reportFile = new File(m_baseDir, m_outputFileName);
+            File reportFile = new File(m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
             
@@ -283,6 +285,17 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
         return m_outputFileName;
         
     }
+    
+    public void writeXML(OutputStream outputStream) throws AvailabilityCalculationException {
+        try {
+            log.debug("Writing the XML");
+            marshal(outputStream);
+        } catch (AvailabilityCalculationException e) {
+            log.fatal("Unable to marshal report as XML");
+            throw new AvailabilityCalculationException(e);
+        }
+    }
+    
 
     /* (non-Javadoc)
      * @see org.opennms.reporting.availability.AvailabilityCalculator#marshal(java.io.File)
@@ -297,6 +310,27 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
             log.debug("The xml marshalled from the castor classes is saved in "
                     + outputFile.getAbsoluteFile());
             fileWriter.close();
+        } catch (MarshalException me) {
+            log.fatal("MarshalException ", me);
+            throw new AvailabilityCalculationException(me);
+        } catch (ValidationException ve) {
+            log.fatal("Validation Exception ", ve);
+            throw new AvailabilityCalculationException(ve);
+        } catch (IOException ioe) {
+            log.fatal("IO Exception ", ioe);
+            throw new AvailabilityCalculationException(ioe);
+        }
+    }
+    
+    private void marshal(OutputStream outputStream) 
+            throws AvailabilityCalculationException {
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            Marshaller marshaller = new Marshaller(writer);
+            marshaller.setSuppressNamespaces(true);
+            marshaller.marshal(m_report);
+            log.debug("The xml marshalled from the castor classes has been written to the output stream");
+            writer.flush();
         } catch (MarshalException me) {
             log.fatal("MarshalException ", me);
             throw new AvailabilityCalculationException(me);

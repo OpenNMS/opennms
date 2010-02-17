@@ -44,6 +44,8 @@ public interface DatabaseReportListService {
     
     List<DatabaseReportDescription> getAll();
     
+    List<DatabaseReportDescription> getAllOnline();
+    
     void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
 }

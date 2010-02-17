@@ -35,7 +35,13 @@
  */
 package org.opennms.reporting.availability.svclayer;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -45,20 +51,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.api.reporting.DeliveryOptions;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.ReportValidationService;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculationException;
 import org.opennms.reporting.availability.AvailabilityCalculator;
-import org.opennms.reporting.availability.ReportMailer;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.opennms.reporting.availability.render.ReportRenderException;
@@ -84,9 +84,6 @@ public class AvailabilityReportService implements ReportService,
 
     private static final String CAL_TYPE = "calendar";
 
-    private static final String HTML_OUTPUT_FILE_NAME = "AvailReport.html";
-    private static final String SVG_OUTPUT_FILE_NAME = "SVGAvailReport.pdf";
-    private static final String PDF_OUTPUT_FILE_NAME = "PDFAvailReport.pdf";
 
     public AvailabilityReportService() {
 
@@ -122,86 +119,25 @@ public class AvailabilityReportService implements ReportService,
 
     }
 
-    public void run(HashMap<String, Object> reportParms,
-            DeliveryOptions deliveryOptions, String reportId) {
-
-        Resource xsltResource;
-        String inputFileName;
-        String outputFileName;
-        ReportRenderer renderer;
-
-        inputFileName = runInternal(reportParms, reportId,
-                                    deliveryOptions.getPersist());
-
-        if ((inputFileName != null) && deliveryOptions.getSendMail()) {
-
-            try {
-
-                
-                switch (deliveryOptions.getFormat()) {
-
-                case HTML:
-                    log.debug("rendering as HTML");
-                    renderer = new HTMLReportRenderer();
-                    xsltResource = new UrlResource(
-                                                   m_configDao.getHtmlStylesheetLocation(reportId));
-                    outputFileName = HTML_OUTPUT_FILE_NAME;
-                    break;
-                case PDF:
-                    log.debug("rendering as PDF");
-                    renderer = new PDFReportRenderer();
-                    xsltResource = new UrlResource(
-                                                   m_configDao.getPdfStylesheetLocation(reportId));
-                    outputFileName = PDF_OUTPUT_FILE_NAME;
-                    break;
-                case SVG:
-                    log.debug("rendering as PDF with embedded SVG");
-                    renderer = new PDFReportRenderer();
-                    xsltResource = new UrlResource(
-                                                   m_configDao.getSvgStylesheetLocation(reportId));
-                    outputFileName = SVG_OUTPUT_FILE_NAME;
-                    break;
-                default:
-                    log.debug("No vaild format found in delivery options. Rendering as HTML");
-                    renderer = new HTMLReportRenderer();
-                    xsltResource = new UrlResource(
-                                               m_configDao.getHtmlStylesheetLocation(reportId));
-                    outputFileName = HTML_OUTPUT_FILE_NAME;
-                }
-                String baseDir = System.getProperty("opennms.report.dir");
-                log.debug("render base dir: " + baseDir);
-                log.debug("render input file: " + inputFileName);
-                log.debug("render output file: " + outputFileName);
-                log.debug("render template: " + xsltResource);
-                renderer.setBaseDir(baseDir);
-                renderer.render(inputFileName, outputFileName, xsltResource);
-                ReportMailer mailer = new ReportMailer(
-                                                       deliveryOptions.getMailTo(),
-                                                       baseDir
-                                                               + "/"
-                                                               + outputFileName);
-                mailer.send();
-
-            } catch (MalformedURLException e) {
-                log.fatal("Malformed URL for xslt template");
-            } catch (ReportRenderException e) {
-                log.fatal("unable to render report");
-            } catch (IOException e) {
-                log.fatal("unable to mail report");
-            }
-        }
-
-    }
-
 
     public void render(String id, String location, ReportFormat format,
+            OutputStream outputStream) {
+        
+        FileInputStream inputStream = null;
+        
+            try {
+                inputStream = new FileInputStream(location);
+                render(id, inputStream, format, outputStream);
+            } catch (FileNotFoundException e) {
+                log.error("could not open input file", e);
+            }
+    }
+    
+    private void render(String id, InputStream inputStream, ReportFormat format,
             OutputStream outputStream) {
 
         Resource xsltResource;
         ReportRenderer renderer;
-
-        log.debug("request to render report type " + id + " at " + location
-                + " as " + format);
 
         try {
 
@@ -234,47 +170,18 @@ public class AvailabilityReportService implements ReportService,
 
             String baseDir = System.getProperty("opennms.report.dir");
             renderer.setBaseDir(baseDir);
-            renderer.render(location, outputStream, xsltResource);
+            renderer.render(inputStream, outputStream, xsltResource);
+            outputStream.flush();
 
         } catch (MalformedURLException e) {
             log.fatal("Malformed URL for xslt template");
         } catch (ReportRenderException e) {
             log.fatal("unable to render report");
-        }
-
-    }
-
-    public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
-
-        DeliveryOptions options = new DeliveryOptions();
-
-        options.setMailFormat("HTML");
-        options.setCanPersist(true);
-        options.setPersist(true);
-        options.setSendMail(true);
-
-        UserManager userFactory = UserFactory.getInstance();
-
-        try {
-            String emailAddress = userFactory.getEmail(userId);
-            if (emailAddress != null) {
-                options.setMailTo(userFactory.getEmail(userId));
-            }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.fatal("IO exception flushing output stream ", e);
         }
 
-        return options;
-
     }
-
 
     public List<ReportFormat> getFormats(String id) {
 
@@ -290,9 +197,11 @@ public class AvailabilityReportService implements ReportService,
         return formats;
     }
 
-    private String runInternal(HashMap<String, Object> reportParms,
-            String reportId, Boolean persist) {
-
+    // this new version needs the report wrapper to persist the entry
+    
+    public String run(HashMap<String, Object> reportParms,
+            String reportId) {
+        
         AvailabilityCalculator calculator;
         String reportFileName = null;
 
@@ -323,17 +232,62 @@ public class AvailabilityReportService implements ReportService,
         log.debug("Starting Availability Report Calculations");
         try {
             calculator.calculate();
-            if (persist) {
-                reportFileName = calculator.writeLocateableXML(reportId);
-            } else {
-                reportFileName = calculator.writeXML();
-            }
+            reportFileName = calculator.writeXML();
         } catch (AvailabilityCalculationException ce) {
             log.fatal("Unable to calculate report data ", ce);
         }
 
         return reportFileName;
 
+    }
+    
+    public void runAndRender(HashMap<String, Object> reportParms,
+            String reportId, ReportFormat format, OutputStream outputStream) {
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        BufferedOutputStream bout = new BufferedOutputStream(out);
+        
+        AvailabilityCalculator calculator;
+
+        log.debug("running OpenNMS database report " + reportId);
+
+        if (m_configDao.getType(reportId).equalsIgnoreCase(CAL_TYPE)) {
+            calculator = m_calendarCalculator;
+            log.debug("Calendar report format selected");
+        } else {
+            calculator = m_classicCalculator;
+            log.debug("Classic report format selected");
+        }
+
+        calculator.setCategoryName((String) reportParms.get("reportCategory"));
+
+        calculator.setCalendar(new GregorianCalendar());
+        calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
+
+        calculator.setLogoURL(m_configDao.getLogo(reportId));
+
+        // have the calculator calculate everything to enable any of the
+        // templates to work
+        // This has changed since the last version
+        // This will have some performance impact.
+
+        calculator.setReportFormat("all");
+
+        log.debug("Starting Availability Report Calculations");
+        try {
+            calculator.calculate();
+            calculator.writeXML(bout);
+            render(reportId,
+                   new ByteArrayInputStream(out.toByteArray()),
+                   format,
+                   outputStream);
+            outputStream.flush();
+        } catch (AvailabilityCalculationException ce) {
+            log.fatal("Unable to calculate report data ", ce);
+        } catch (IOException e) {
+            log.fatal("IO exception flushing output stream ", e);
+        } 
+        
     }
 
     
@@ -356,5 +310,7 @@ public class AvailabilityReportService implements ReportService,
     public void setParameterConversionService(ParameterConversionService parameterConversionService) {
         m_parameterConversionService = parameterConversionService;
     }
+
+
 
 }

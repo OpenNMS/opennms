@@ -34,20 +34,6 @@
 		</property>
 	</bean>
 	
-	<!-- 
-	<bean id="onmsReportService"
-		class="org.opennms.reporting.availability.svclayer.OnmsReportService"
-		scope="prototype">
-		<property name="configDao" ref="onmsDatabaseReportConfigDao" /> 
-		<property name="calendarCalculator">
-			<ref local="calendarAvailabilityCalculator" />
-		</property>
-		<property name="classicCalculator">
-			<ref local="classicAvailabilityCalculator" />
-		</property>
-	</bean>
-	-->
-	
 	<bean id="availabilityReportService"
 		class="org.opennms.reporting.availability.svclayer.AvailabilityReportService"
 		scope="prototype">

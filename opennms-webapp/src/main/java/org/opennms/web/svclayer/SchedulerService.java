@@ -2,8 +2,8 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
-import org.opennms.api.reporting.DeliveryOptions;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.web.svclayer.support.TriggerDescription;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.webflow.execution.RequestContext;

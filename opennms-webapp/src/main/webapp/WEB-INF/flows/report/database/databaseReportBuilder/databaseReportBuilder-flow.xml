@@ -12,8 +12,7 @@
 	<input name="schedule" type="boolean" required="true" />
 
 	<on-start>
-		<evaluate expression="databaseReportConfigDao.getReportService(reportId)" result="flowScope.reportServiceName" />
-		<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getParameters(reportId)" result="flowScope.parameters" />
+		<evaluate expression="reportWrapperService.getParameters(reportId)" result="flowScope.parameters" />
 	</on-start>
 	
 	<view-state id="reportParameters" model="parameters">
@@ -38,9 +37,9 @@
 		</binder>
 		-->
 		<on-render>
-			<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getDeliveryOptions(reportId, currentUser.name)" 
+			<evaluate expression="reportWrapperService.getDeliveryOptions(reportId, currentUser.name)" 
 				result="flowScope.deliveryOptions" />
-			<evaluate expression="reportServiceLocator.getReportServiceForId(reportId).getFormats(reportId)"
+			<evaluate expression="reportWrapperService.getFormats(reportId)"
 				result="viewScope.formats" />
 		</on-render>
 		<transition on="proceed" to="scheduleOrExecute" />

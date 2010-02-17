@@ -475,8 +475,14 @@
   <bean name="/report/database/index.htm"
   		class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
   
-  <bean name="/report/database/list.htm"
-  		class="org.opennms.web.controller.DatabaseReportListController">
+  <bean name="/report/database/batchList.htm"
+  		class="org.opennms.web.controller.BatchReportListController">
+  	<property name="databaseReportListService" ref="databaseReportListService"/>
+  	<property name="pageSize" value="10"/>
+  </bean>
+  
+    <bean name="/report/database/onlineList.htm"
+  		class="org.opennms.web.controller.OnlineReportListController">
   	<property name="databaseReportListService" ref="databaseReportListService"/>
   	<property name="pageSize" value="10"/>
   </bean>

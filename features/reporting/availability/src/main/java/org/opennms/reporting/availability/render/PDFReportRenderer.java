@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
@@ -163,6 +164,43 @@ public class PDFReportRenderer implements ReportRenderer {
                                                                             xsl));
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.transform(new StreamSource(xml),
+                                  new SAXResult(driver.getContentHandler()));
+
+        } catch (IOException ioe) {
+            log.fatal("IOException ", ioe);
+            throw new ReportRenderException(ioe);
+        } catch (TransformerConfigurationException tce) {
+            log.fatal("transformerConfigurationException ", tce);
+            throw new ReportRenderException(tce);
+        } catch (TransformerException te) {
+            log.fatal("TransformerException ", te);
+            throw new ReportRenderException(te);
+        }
+        
+    }
+    
+    public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
+        try {
+
+            log.debug("XSL File " + xsltResource.getDescription());
+
+            Reader xsl = new FileReader(xsltResource.getFile());
+            
+            log.debug("rendering input stream");
+
+            Logger nullLogger = new NullLogger();
+            MessageHandler.setScreenLogger(nullLogger);
+            MessageHandler.setOutputMethod(MessageHandler.NONE);
+
+            Driver driver = new Driver();
+            driver.setLogger(avalonLogger);
+            driver.setOutputStream(outputStream);
+            driver.setRenderer(Driver.RENDER_PDF);
+            TransformerFactory tfact = TransformerFactory.newInstance();
+            Transformer transformer = tfact.newTransformer(new StreamSource(
+                                                                            xsl));
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(new StreamSource(inputStream),
                                   new SAXResult(driver.getContentHandler()));
 
         } catch (IOException ioe) {

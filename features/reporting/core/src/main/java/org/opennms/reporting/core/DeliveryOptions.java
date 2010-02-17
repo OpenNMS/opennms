@@ -36,9 +36,11 @@
 // http://www.opennms.org/
 // http://www.opennms.com/
 //
-package org.opennms.api.reporting;
+package org.opennms.reporting.core;
 
 import java.io.Serializable;
+
+import org.opennms.api.reporting.ReportFormat;
 
 public class DeliveryOptions implements Serializable {
 

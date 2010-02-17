@@ -46,6 +46,13 @@
 					<documentation>report description</documentation>
 				</annotation>
 			</attribute>
+			<attribute name="online" type="boolean" use="optional">
+				<annotation>
+					<documentation>determines if the report may be executed and immediately
+					displayed in the browser. If not set OpenNMS assumes that the report
+					must be executed in batch mode.</documentation>
+				</annotation>
+			</attribute>
 		</complexType>
 	</element>
 

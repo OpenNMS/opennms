@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.dao.castor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,6 +96,20 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
         return getContainer().getObject();
     
+    }
+    
+    public List<Report> getOnlineReports() {
+        
+        List<Report> onlineReports = new ArrayList<Report>();
+        
+        for(Report report : getContainer().getObject()) {
+            if (report.isOnline()) {
+                onlineReports.add(report);
+            }
+        }
+        
+        return onlineReports;
+        
     }
     
 }

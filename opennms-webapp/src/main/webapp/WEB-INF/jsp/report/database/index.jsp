@@ -55,9 +55,10 @@
     <h3>Database Reports</h3>
     <div class="boxWrapper">
       <ul class="plain">
-        <li><a href="report/database/list.htm">Run or schedule a report</a></li>
+        <li><a href="report/database/batchList.htm">Batch reports</a></li>
+        <li><a href="report/database/onlineList.htm">Online reports</a></li>
         <li><a href="report/database/manage.htm">View and manage pre-run reports</a></li>
-        <li><a href="report/database/manageSchedule.htm">Manage the report schedule</a></li>
+        <li><a href="report/database/manageSchedule.htm">Manage the batch report schedule</a></li>
       </ul>
     </div>
   </div>

@@ -7,6 +7,15 @@
 	<bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator">
 		<property name="databaseReportConfigDao" ref="databaseReportConfigDao" />
 	</bean>
+	
+	<bean id="reportWrapperService" class="org.opennms.reporting.core.svclayer.support.DefaultReportWrapperService">
+		<property name="reportServiceLocator">
+			<ref local="reportServiceLocator" />
+		</property>
+		<property name="reportStoreService">
+			<ref local="reportStoreService" />
+		</property>
+	</bean>
 
 	<bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService" >
 		<property name="reportCatalogDao" ref="reportCatalogDao" />

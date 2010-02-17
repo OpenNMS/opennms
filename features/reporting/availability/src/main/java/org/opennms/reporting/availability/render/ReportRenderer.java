@@ -37,6 +37,7 @@
  */
 package org.opennms.reporting.availability.render;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.core.io.Resource;
@@ -55,6 +56,8 @@ public interface ReportRenderer {
     public void render(String inputFileName, String outputFileName, Resource xlstResource) throws ReportRenderException;
     
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException;
+    
+    public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException;
     
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException;
 

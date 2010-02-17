@@ -5,4 +5,7 @@
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
 	<report id="defaultCalendarReport" display-name="default calendar report"
 		report-service="availabilityReportService" description="standard opennms report in calendar format" />
+	<report id="defaultClassicReport" display-name="default classic report"
+		report-service="availabilityReportService" description="standard opennms report in calendar format" 
+		online="true" />
 </database-reports>

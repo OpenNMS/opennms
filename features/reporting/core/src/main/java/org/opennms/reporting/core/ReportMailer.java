@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.reporting.availability;
+package org.opennms.reporting.core;
 
 import java.io.IOException;
 
@@ -42,6 +42,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
+
 
 /**
  * 
@@ -60,7 +61,7 @@ public class ReportMailer {
 	
 	public ReportMailer() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(AvailabilityReport.class);
+		log = ThreadCategory.getInstance(ReportMailer.class);
 	}
 	
 	
@@ -68,7 +69,7 @@ public class ReportMailer {
 		this.m_address = address;
 		this.m_filename = filename;
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(AvailabilityReport.class);
+		log = ThreadCategory.getInstance(ReportMailer.class);
 	}
 	
 	public void send() throws IOException {

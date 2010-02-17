@@ -58,6 +58,11 @@
       <artifactId>org.opennms.features.reporting.api</artifactId>
       <scope>compile</scope>
     </dependency>
+        <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring</artifactId>
