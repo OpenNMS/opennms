@@ -69,12 +69,12 @@
     -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
+      <artifactId>org.osgi.core</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
+      <artifactId>org.osgi.compendium</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -92,8 +92,6 @@
     <dependency>
       <groupId>org.springframework.osgi</groupId>
       <artifactId>spring-osgi-core</artifactId>
-      <version>1.2.0</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
