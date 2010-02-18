@@ -32,6 +32,8 @@ import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.hqu.rendit.BaseController
 import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 import org.hyperic.hq.events.server.session.AlertManagerEJBImpl as AlertManager
+import org.hyperic.hq.events.shared.AlertValue
+import org.hyperic.hq.authz.server.session.RoleManagerEJBImpl as RoleManager
 
 class AlertstatusController
     extends BaseController
@@ -45,20 +47,49 @@ class AlertstatusController
 
         xml.'hyperic-alert-statuses'() {
             if (params['id'] == null) {
-                // TODO: Fetch all alerts
+                // This call returns a list of mixed Alert and AlertValue objects; we just need
+                // the AlertValue objects since they have easy-to-parse lists of the actions
+                // and escalations associated with them
+                man.findAllAlerts().each { al ->
+                    if (al instanceof AlertValue) {
+                        'alert'(getAlertAttribs(al))
+                    }
+                }
             } else {
-                params['id'].each { aval ->
-                    def a = man.findAlertById(aval.toInteger())
-                    def attribs = [:]
-                    attribs['fixed'] = a.fixed
-                    attribs['id'] = a.id
-                    attribs['state'] = a.stateId
-                    if(a.ackedBy != null) { attribs['ackedBy'] =  a.ackedBy }
-                    //'alert'(fixed: a.fixed, id: a.id, state: a.stateId, 'ackUser': a.ackedBy )
-                    'alert'(attribs)
+                params['id'].each { alertId ->
+                    def al = man.getById(alertId.toInteger())
+                    'alert'(getAlertAttribs(al))
                 }
             }
         }
         xml
+    }
+
+    private def getAlertAttribs(alert) {
+        def attribs = [:]
+        if (alert.respondsTo('getId').size > 0) { attribs['id'] = alert.id }
+        if (alert.respondsTo('isFixed').size > 0) {
+            attribs['fixed'] = alert.fixed
+            if (attribs['fixed'] == true) {
+                if (alert.respondsTo('getActionLogs').size > 0) {
+                    alert.actionLogs.each { actionLog ->
+                        // If the action field is null, this is either an acknowledgement or fixed message
+                        if (actionLog.action == null) {
+                            attribs['fixUserId'] == actionLog.subject.fullName
+                        } else {
+                        }
+                        attribs['actionDetail'] = actionLog.detail
+                    }
+                }
+            }
+            // if (alert.stateId != null) { attribs['state'] = alert.stateId }
+            /*
+            if(alert.ackedBy != null) { 
+                def roleMan = RoleManager.one
+                attribs['ackedBy'] = roleMan.findRoleById(alert.ackedBy).name 
+            }
+            */
+        }
+        attribs
     }
 }
