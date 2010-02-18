@@ -34,7 +34,6 @@ import org.hyperic.hq.hqu.rendit.BaseController
 import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 import org.hyperic.hq.events.server.session.AlertManagerEJBImpl as AlertManager
 import org.hyperic.hq.events.shared.AlertValue
-// import org.hyperic.hq.authz.server.session.RoleManagerEJBImpl as RoleManager
 
 class AlertstatusController
     extends BaseController
@@ -94,7 +93,9 @@ class AlertstatusController
                             if (actionLog.subject != null && actionLog.subject.name != null && actionLog.subject.name != "") {
                                 attribs["fixUser"] = actionLog.subject.name
                             }
+                            // Non-null in Hyperic database
                             attribs["fixMessage"] = actionLog.detail
+                            // Non-null in Hyperic database
                             attribs["fixTime"] = formatter.format(new Date(actionLog.timeStamp))
                         } else {
                             // Skip the action; it is not a "fixed" or "acknowledgement" action
@@ -110,7 +111,9 @@ class AlertstatusController
                             if (actionLog.subject != null && actionLog.subject.name != null && actionLog.subject.name != "") {
                                 attribs["ackUser"] = actionLog.subject.name
                             }
+                            // Non-null in Hyperic database
                             attribs["ackMessage"] = actionLog.detail
+                            // Non-null in Hyperic database
                             attribs["ackTime"] = formatter.format(new Date(actionLog.timeStamp))
                         } else {
                             // Skip the action; it is not a "fixed" or "acknowledgement" action
