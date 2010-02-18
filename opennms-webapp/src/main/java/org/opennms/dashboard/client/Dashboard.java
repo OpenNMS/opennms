@@ -34,6 +34,7 @@
  */
 package org.opennms.dashboard.client;
 
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -62,7 +63,8 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     private SurveillanceServiceAsync m_surveillanceService;
 
     public void onModuleLoad() {
-
+        
+        
         add(createSurveillanceDashlet(), "surveillanceView");
         add(createAlarmDashlet(),        "alarms");
         add(createGraphDashlet(),        "graphs");

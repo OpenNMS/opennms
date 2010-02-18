@@ -19,7 +19,7 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-agent</artifactId>
+      <artifactId>spring-instrument</artifactId>
       <version>${springVersion}</version>
       <exclusions>
         <exclusion><groupId>asm</groupId><artifactId>asm</artifactId></exclusion>

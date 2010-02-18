@@ -64,10 +64,10 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
@@ -85,14 +85,9 @@ import org.opennms.netmgt.model.acknowledgments.AckService;
 public class HypericAckProcessor implements AckProcessor {
 
     public static final String READER_NAME_HYPERIC = "HypericReader";
-    public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
-
-    // TODO Fetch the list of Hyperic HQ instances from the config
-    // Each URL should include all of these parameters
-    private static final String HYPERIC_IP_ADDRESS = "127.0.0.1";
-    private static final int HYPERIC_PORT = 7081;
-    private static final String HYPERIC_USER = "hqadmin";
-    private static final String HYPERIC_PASSWORD = "hqadmin";
+    public static final String PARAMETER_PREFIX_HYPERIC_SOURCE = "source:";
+    public static final int ALERTS_PER_HTTP_TRANSACTION = 200;
+    // public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
 
     private AckdConfigurationDao m_ackdDao;
     private AlarmDao m_alarmDao;
@@ -134,6 +129,8 @@ public class HypericAckProcessor implements AckProcessor {
      * <pre>
      * <alert id="1" ack="true" fixed="true"/>
      * </pre>
+     * 
+     * <p>TODO: Add ackUser, ackTime, fixedUser, fixedTime attributes to objects if possible</p>
      */
     @XmlRootElement(name="alert")
     static class HypericAlertStatus {
@@ -180,28 +177,36 @@ public class HypericAckProcessor implements AckProcessor {
         return ThreadCategory.getInstance(HypericAckProcessor.class);
     }
 
+    /// TODO Verify that this works properly
     public void reloadConfigs() {
         log().debug("reloadConfigs: reloading configuration...");
         m_ackdDao.reloadConfiguration();
         log().debug("reloadConfigs: configuration reloaded");
     }
 
-    public List<OnmsAlarm> fetchUnackdHypericAlarms() {
+    public List<OnmsAlarm> fetchUnclearedHypericAlarms() {
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
-        criteria.add(Restrictions.isNull("alarmAckUser"));
+
+        // criteria.add(Restrictions.isNull("alarmAckUser"));
+
         // Restrict to Hyperic alerts
         criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
+
+        // Only consider alarms that are above severity NORMAL
+        // {@see org.opennms.netmgt.model.OnmsSeverity}
+        criteria.add(Restrictions.gt("severityId", 3));
+
         // TODO Figure out how to query by parameters (maybe necessary)
 
         // Query list of outstanding alerts with remote platform identifiers
         return m_alarmDao.findMatching(criteria);
     }
 
-    public String getUrlForHypericPlatformId(String platformId) {
-        if (platformId == null) {
+    public String getUrlForHypericSource(String source) {
+        if (source == null) {
             throw new IllegalArgumentException("Cannot search for null Hyperic platform IDs inside the ackd configuration");
-        } else if ("".equals(platformId)) {
+        } else if ("".equals(source)) {
             throw new IllegalArgumentException("Cannot search for blank Hyperic platform IDs inside the ackd configuration");
         }
 
@@ -210,21 +215,8 @@ public class HypericAckProcessor implements AckProcessor {
             throw new IllegalStateException("There is no configuration for the '" + READER_NAME_HYPERIC + "' reader inside the ackd configuration");
         }
         for (Parameter param : params) {
-            if (PARAMETER_HYPERIC_HOSTS.equalsIgnoreCase(param.getKey())) {
-                String[] hosts = param.getValue().split(",");
-                for (String host : hosts) {
-                    host = host.trim();
-                    String[] hostParts = host.split(" ");
-                    if (hostParts.length != 2) {
-                        throw new IllegalArgumentException("The '" + PARAMETER_HYPERIC_HOSTS + "' parameter inside the ackd configuration should contain space-separated key-value pairs, this segment is malformed: " + host);
-                    } else if ("".equals(hostParts[0]) || "".equals(hostParts[1])) {
-                        throw new IllegalArgumentException("The '" + PARAMETER_HYPERIC_HOSTS + "' parameter inside the ackd configuration contains a bad key-value pair: " + host);
-                    }
-
-                    if (platformId.equals(hostParts[0])) {
-                        return hostParts[1];
-                    }
-                }
+            if ((PARAMETER_PREFIX_HYPERIC_SOURCE + source).equalsIgnoreCase(param.getKey())) {
+                return param.getValue();
             }
         }
         return null;
@@ -237,14 +229,12 @@ public class HypericAckProcessor implements AckProcessor {
             log().info("run: Processing Hyperic acknowledgments..." );
 
             // Query list of outstanding alerts with remote platform identifiers
-            List<OnmsAlarm> unAckdAlarms = fetchUnackdHypericAlarms();
+            List<OnmsAlarm> unAckdAlarms = fetchUnclearedHypericAlarms();
 
             Map<String,List<OnmsAlarm>> organizedAlarms = new TreeMap<String,List<OnmsAlarm>>();
             // Split the list of alarms up according to the Hyperic system where they originated
             for (OnmsAlarm alarm : unAckdAlarms) {
-                // TODO Map by platform.agent.address or platform.id?
-                // TODO If the platform.id doesn't match anything in our current config, just ignore it, maybe warn in the logs with a counter
-                String key = getPlatformIdParmValue(alarm);
+                String key = getAlertSourceParmValue(alarm);
                 List<OnmsAlarm> targetList = organizedAlarms.get(key);
                 if (targetList == null) {
                     targetList = new ArrayList<OnmsAlarm>();
@@ -259,8 +249,9 @@ public class HypericAckProcessor implements AckProcessor {
                 List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
 
                 // Match the platform.id to the Hyperic URL via the config
-                String hypericUrl = getUrlForHypericPlatformId(hypericSystem);
+                String hypericUrl = getUrlForHypericSource(hypericSystem);
                 if (hypericUrl == null) {
+                    // If the platform.id doesn't match anything in our current config, just ignore it, warn in the logs
                     log().warn("Could not find Hyperic host URL for the following platform ID: " + hypericSystem);
                     log().warn("Skipping processing of " + alarmsForSystem.size() + " alarms with that platform ID");
                     continue;
@@ -335,14 +326,27 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
-    public static String getPlatformIdParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "platform.id=([0-9]*)[(]string,text[)]");
+    public static String getAlertSourceParmValue(OnmsAlarm alarm) {
+        return getParmValueByRegex(alarm, "alert.source=([0-9]*)[(]string,text[)]");
     }
 
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
         return getParmValueByRegex(alarm, "alert.id=([0-9]*)[(]string,text[)]");
     }
 
+    /**
+     * <p>Some parameter values that you might be interested in inside this class:</p>
+     * 
+     * <ul>
+     * <li><code>alert.id</code>: ID of the alert in the remote Hyperic HQ system</li>
+     * <li><code>alert.baseURL</code>: Base URL of the Hyperic HQ service that generated the alert</li>
+     * <li><code>alert.source</code>: String key that identifies the Hyperic HQ service that generated the alert</li>
+     * </ul>
+     * 
+     * @param alarm The alarm to fetch parameters from
+     * @param regex Java regex expression with a () group that will be returned
+     * @return The matching group from the regex
+     */
     public static String getParmValueByRegex(OnmsAlarm alarm, String regex) {
         Pattern pattern = Pattern.compile(regex);
         String parmString = alarm.getEventParms();
@@ -357,46 +361,53 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
     public static List<HypericAlertStatus> fetchHypericAlerts(String hypericUrl, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
-        StringBuffer alertIdString = new StringBuffer();
-        for (int i = 0; i < alertIds.size(); i++) {
-            if (i > 0) alertIdString.append(" ");
-            alertIdString.append(alertIds.get(i));
-        }
-
-        HttpClient httpClient = new HttpClient();
-        HostConfiguration hostConfig = new HostConfiguration();
-
-        // TODO Change to a POST method if possible
-        GetMethod httpMethod = new GetMethod(hypericUrl);
-        // httpMethod.addParameter("alertIds", alertIdString.toString());
-
-        httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
-        httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
-        // Change these parameters to be configurable
-        // hostConfig.setHost(HYPERIC_IP_ADDRESS, HYPERIC_PORT);
-        // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
-        // if(ParameterMap.getKeyedBoolean(map, "http-1.0", false))
-        // httpClient.getParams().setParameter(HttpClientParams.PROTOCOL_VERSION,HttpVersion.HTTP_1_0);
-
-        if (HYPERIC_USER != null && !"".equals(HYPERIC_USER) && HYPERIC_PASSWORD != null && !"".equals(HYPERIC_PASSWORD)) {
-            httpClient.getParams().setAuthenticationPreemptive(true);
-            httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(HYPERIC_USER, HYPERIC_PASSWORD));
-        }
-
         List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
-        try {
-            log().debug("httpClient request with the following parameters: " + httpClient);
-            log().debug("hostConfig parameters: " + hostConfig);
-            log().debug("getMethod parameters: " + httpMethod);
-            httpClient.executeMethod(hostConfig, httpMethod);
 
-            //Integer statusCode = httpMethod.getStatusCode();
-            //String statusText = httpMethod.getStatusText();
-            InputStream responseText = httpMethod.getResponseBodyAsStream();
+        if (alertIds.size() < 1) {
+            return retval; 
+        }
 
-            retval = parseHypericAlerts(new InputStreamReader(responseText));
-        } finally{
-            httpMethod.releaseConnection();
+        for (int i = 0; i < alertIds.size(); i++) {
+            // Construct the query string for the HTTP operation
+            StringBuffer alertIdString = new StringBuffer();
+            alertIdString.append("?");
+            for (int j = 0; (j < ALERTS_PER_HTTP_TRANSACTION) && (i < alertIds.size()); j++,i++) {
+                if (j > 0) alertIdString.append("&");
+                // Numeric values, no need to worry about URL encoding
+                alertIdString.append("id=").append(alertIds.get(i));
+            }
+
+            HttpClient httpClient = new HttpClient();
+            HostConfiguration hostConfig = new HostConfiguration();
+
+            URI uri = new URI(hypericUrl, true);
+
+            GetMethod httpMethod = new GetMethod(uri.getURI() + alertIdString.toString());
+
+            httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
+            httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
+            // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
+
+            String userinfo = uri.getUserinfo();
+            if (userinfo != null && !"".equals(userinfo)) {
+                httpClient.getParams().setAuthenticationPreemptive(true);
+                httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
+            }
+
+            try {
+                log().debug("httpClient request with the following parameters: " + httpClient);
+                log().debug("hostConfig parameters: " + hostConfig);
+                log().debug("getMethod parameters: " + httpMethod);
+                httpClient.executeMethod(hostConfig, httpMethod);
+
+                //Integer statusCode = httpMethod.getStatusCode();
+                //String statusText = httpMethod.getStatusText();
+                InputStream responseText = httpMethod.getResponseBodyAsStream();
+
+                retval = parseHypericAlerts(new InputStreamReader(responseText));
+            } finally{
+                httpMethod.releaseConnection();
+            }
         }
         return retval;
     }
