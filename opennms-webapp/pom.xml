@@ -60,6 +60,13 @@
               <goal>compile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>test</id>
+            <phase>test</phase>
+            <goals>
+                <goal>test</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -201,6 +208,23 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <!-- Generates the GWT Container and Nature for GWT projects when eclipse:eclipse is run -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+          <configuration>
+          <additionalBuildcommands>
+            <buildcommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildcommand>
+          </additionalBuildcommands>
+          <additionalProjectnatures>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+          </additionalProjectnatures>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
+          </classpathContainers>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -385,7 +409,6 @@
       <groupId>org.gwtwidgets</groupId>
       <artifactId>gwt-widgets-server</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
@@ -473,21 +496,18 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-core</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-server-jndi</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>
