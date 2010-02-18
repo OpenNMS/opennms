@@ -18,11 +18,11 @@ public class DatabaseReportBuilderFlowHander extends AbstractFlowHandler {
 
     @Override
     public String handleException(FlowException e, HttpServletRequest request, HttpServletResponse response) {
-    if (e instanceof NoSuchFlowExecutionException) {
-        return "contextRelative:/report/database/batchList.htm";
-    } else {
-        throw e;
-    }
+        if (e instanceof NoSuchFlowExecutionException) {
+            return "contextRelative:/report/database/batchList.htm";
+        } else {
+            throw e;
+        }
     }
 
 }
