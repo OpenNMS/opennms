@@ -41,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -212,6 +213,13 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     
     public void setReportStoreService(ReportStoreService reportStoreService) {
         m_reportStoreService = reportStoreService;
+    }
+
+    public void runAndRender(HashMap<String, Object> reportParms,
+            String reportId, ReportFormat format, OutputStream outputStream) {
+        getReportService(reportId).runAndRender(reportParms, reportId, format, outputStream);
+        // TODO Auto-generated method stub
+        
     }
 
 }

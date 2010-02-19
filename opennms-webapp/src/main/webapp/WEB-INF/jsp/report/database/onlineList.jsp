@@ -84,8 +84,7 @@
 				<tr>
 					<td>${report.displayName}</td>
 					<td>${report.description}</td>
-					<td> <a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=false">Execute Report</a>
-					<a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=true">Schedule Report</a></td>
+					<td><a href="report/database/onlineReport.htm?reportId=${report.id}">Execute Report</a></td>
 				</tr>
 			</c:forEach>
 		</table>

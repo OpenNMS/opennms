@@ -93,7 +93,16 @@ public interface ReportWrapperService {
      */
     public abstract List<ReportFormat> getFormats(String reportId);
     
-
+    /**
+     * This method runs the report and renders in into the given output stream
+     * with no intermediate steps
+     *
+     * @param ReportId reportId as defined in database-reports.xml
+     * @param format format to render the report
+     * @param outputStream stream to render the resulting report
+     */
+    public abstract void runAndRender(HashMap<String, Object> reportParms, String ReportId, ReportFormat format, OutputStream outputStream);
+    
     /**
      * This method renders the report into a given output stream.
      * 

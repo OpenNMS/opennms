@@ -481,10 +481,21 @@
   	<property name="pageSize" value="10"/>
   </bean>
   
-    <bean name="/report/database/onlineList.htm"
+  <bean name="/report/database/onlineList.htm"
   		class="org.opennms.web.controller.OnlineReportListController">
   	<property name="databaseReportListService" ref="databaseReportListService"/>
   	<property name="pageSize" value="10"/>
+  </bean>
+  
+  <bean name="/report/database/onlineReport.htm"
+  		class="org.opennms.web.controller.OnlineReportController">
+  	<property name="reportWrapperService" ref="reportWrapperService" />
+  	<property name="categoryConfigService" ref="categoryConfigService" />
+  	<property name="bindOnNewForm" value="true" />
+  	<property name="commandName" value="parameters" />
+  	<!--
+    <property name="commandClass" value="org.opennms.api.reporting.parameter.ReportParameters" />
+    -->
   </bean>
   
   <bean name="/report/database/databaseReportBuilder.htm" 

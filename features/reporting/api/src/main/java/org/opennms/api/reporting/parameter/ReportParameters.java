@@ -41,11 +41,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.api.reporting.ReportFormat;
+
 
 public class ReportParameters implements Serializable {
 
     private static final long serialVersionUID = -3848794546173077375L;
     protected String m_reportId;
+    protected ReportFormat m_format;
     protected String m_displayName;
     protected List <ReportDateParm> m_dateParms;
     protected List <ReportStringParm> m_stringParms;
@@ -93,6 +96,14 @@ public class ReportParameters implements Serializable {
 
     public String getDisplayName() {
         return m_displayName;
+    }
+    
+    public void setFormat(ReportFormat format) {
+        m_format = format;
+    }
+
+    public ReportFormat getFormat() {
+        return m_format;
     }
 
     public HashMap<String, Object> getReportParms() {
