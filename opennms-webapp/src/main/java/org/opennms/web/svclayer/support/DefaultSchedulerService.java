@@ -158,7 +158,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * org.springframework.webflow.execution.RequestContext)
      */
     public String addCronTrigger(String id, ReportParameters criteria,
-            DeliveryOptions deliveryOptions, String triggerName,
+            DeliveryOptions deliveryOptions,
             String cronExpression, RequestContext context) {
 
         CronTrigger cronTrigger = null;
@@ -174,7 +174,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 try {
                     cronTrigger = new CronTrigger();
                     cronTrigger.setGroup(m_triggerGroup);
-                    cronTrigger.setName(triggerName);
+                    cronTrigger.setName(deliveryOptions.getInstanceId());
                     cronTrigger.setJobName(m_jobDetail.getName());
                     cronTrigger.setCronExpression(cronExpression);
                     // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
@@ -232,7 +232,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                                                                                                 PARAMETER_ERROR).build());
                 return ERROR;
             } else {
-                SimpleTrigger trigger = new SimpleTrigger("immediateTrigger",
+                SimpleTrigger trigger = new SimpleTrigger(deliveryOptions.getInstanceId(),
                                                           m_triggerGroup,
                                                           new Date(), null, 0, 0L);
                 trigger.setJobName(m_jobDetail.getName());

@@ -56,29 +56,20 @@
 <form:form commandName="deliveryOptions">
 
 	<B>Report Delivery</B><br>
-	<c:choose>
-		<c:when test="${deliveryOptions.canPersist}">
-			<form:checkbox path="sendMail"/>
-			Email a copy of the report in 
-			<form:select path="format"> 
-				<form:options items="${formats}"/>
-			</form:select>
-			format, to: 
-		    <form:input path="mailTo"/>
-		    <br><B>Report Persistence</B><br>
-		    <form:checkbox path="persist"/>
-		    Save a copy of the report 
-	 	</c:when>
-	    <c:otherwise>
-		    <input path="sendMail" type="hidden" value="true" />
-			Email a copy of the report in 
-			<form:select path="mailFormat"> 
-				<form:options items="${availableFormats}"/>
-			</form:select>
-			format, to: 
-		    <form:input path="mailTo"/>
-	    </c:otherwise>
-    </c:choose>
+
+	Name to identify this report
+	<form:input path="instanceId"/>
+	<br><form:checkbox path="sendMail"/>
+	Email a copy of the report in 
+	<form:select path="format"> 
+		<form:options items="${formats}"/>
+	</form:select>
+	format, to: 
+    <form:input path="mailTo"/>
+    <br><B>Report Persistence</B><br>
+    <form:checkbox path="persist"/>
+    Save a copy of the report 
+
 
     <br>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;

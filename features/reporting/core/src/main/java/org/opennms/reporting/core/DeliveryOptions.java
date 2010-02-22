@@ -48,10 +48,9 @@ public class DeliveryOptions implements Serializable {
 
     protected String m_mailTo;
     protected Boolean m_persist;
-    protected Boolean m_canPersist;
     protected Boolean m_sendMail;
-    protected String m_mailFormat;
     protected ReportFormat m_format;
+    protected String m_instanceId;
 
     public String getMailTo() {
         return m_mailTo;
@@ -59,22 +58,6 @@ public class DeliveryOptions implements Serializable {
 
     public void setMailTo(String email) {
         m_mailTo = email;
-    }
-
-    public String getMailFormat() {
-        return m_mailFormat;
-    }
-
-    public void setMailFormat(String format) {
-        m_mailFormat = format;
-    }
-
-    public void setCanPersist(Boolean canPersist) {
-        m_canPersist = canPersist;
-    }
-
-    public Boolean getCanPersist() {
-        return m_canPersist;
     }
 
     public void setPersist(Boolean persist) {
@@ -99,6 +82,14 @@ public class DeliveryOptions implements Serializable {
 
     public void setFormat(ReportFormat format) {
         m_format = format;
+    }
+
+    public String getInstanceId() {
+        return m_instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        m_instanceId = instanceId;
     }
 
 }

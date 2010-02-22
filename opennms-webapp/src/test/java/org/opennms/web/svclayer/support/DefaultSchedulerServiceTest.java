@@ -97,13 +97,11 @@ public class DefaultSchedulerServiceTest {
     private static String REPORT_ID = "test";
     private static String REPORT_SERVICE = "mockReportService";
     private static String CRON_EXPRESSION = "0 * * * * ?";
-    private static DeliveryOptions m_deliveryOptions;
     private static final String TRIGGER_GROUP = "reporting";
     
     @BeforeClass
     public static void setUp() {
         MockLogAppender.setupLogging();
-        m_deliveryOptions = new DeliveryOptions();
         m_criteria = new ReportParameters();
         m_criteria.setReportId(REPORT_ID);
     }
@@ -126,10 +124,12 @@ public class DefaultSchedulerServiceTest {
     public void testExecuteSuccess() throws InterruptedException {
         //
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
-        m_reportWrapperService.run(m_criteria, m_deliveryOptions, REPORT_ID);
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testExecuteSuccessTrigger");
+        m_reportWrapperService.run(m_criteria, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("success",m_schedulerService.execute(REPORT_ID, m_criteria, m_deliveryOptions, context));
+        assertEquals("success",m_schedulerService.execute(REPORT_ID, m_criteria, deliveryOptions, context));
         //give the trigger a chance to fire
         Thread.sleep(1000);
         verify(m_reportWrapperService);
@@ -140,7 +140,9 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(false);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("error",m_schedulerService.execute(REPORT_ID, m_criteria, m_deliveryOptions, context));
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testExecuteFailureTrigger");
+        assertEquals("error",m_schedulerService.execute(REPORT_ID, m_criteria, deliveryOptions, context));
         // give the trigger a chance to fire
         Thread.sleep(1000);
         verify(m_reportWrapperService);
@@ -151,7 +153,9 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("error", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "invalidTrigger", "bad expression", context));
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testScheduleBadCronExpressionTrigger");
+        assertEquals("error", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, "bad expression", context));
         verify(m_reportWrapperService);
     }
     
@@ -160,12 +164,14 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testScheduleAndRemoveTrigger");
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
         verify(m_reportWrapperService);
         String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
         assertEquals(1,triggers.length);
-        assertEquals("validTrigger",triggers[0]);
-        m_schedulerService.removeTrigger("validTrigger");
+        assertEquals("testScheduleAndRemoveTrigger",triggers[0]);
+        m_schedulerService.removeTrigger("testScheduleAndRemoveTrigger");
         assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);
     }
     
@@ -175,31 +181,37 @@ public class DefaultSchedulerServiceTest {
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         // this trigger fires every 10 minutes starting at 0 minutes past the hour
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", "0 0/10 * * * ?", context));
+        DeliveryOptions deliveryOptions1 = new DeliveryOptions();
+        deliveryOptions1.setInstanceId("trigger1");
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions1, "0 0/10 * * * ?", context));
         // this trigger fires every 10 minutes starting at 5 minutes past the hour
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "secondValidTrigger", "0 5/10 * * * ?", context));
+        DeliveryOptions deliveryOptions2 = new DeliveryOptions();
+        deliveryOptions2.setInstanceId("trigger2");
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions2, "0 5/10 * * * ?", context));
         verify(m_reportWrapperService);
         String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
         assertEquals(2,triggers.length);
-        assertEquals("validTrigger",triggers[0]);
-        assertEquals("secondValidTrigger",triggers[1]);
-        m_schedulerService.removeTrigger("validTrigger");
-        m_schedulerService.removeTrigger("secondValidTrigger");
+        assertEquals("trigger1",triggers[0]);
+        assertEquals("trigger2",triggers[1]);
+        m_schedulerService.removeTrigger("trigger1");
+        m_schedulerService.removeTrigger("trigger2");
         assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);
     }
     
     @Test
     public void testScheduleAndRun() throws SchedulerException, InterruptedException {
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testScheduleAndRunTrigger");
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
-        m_reportWrapperService.run(m_criteria, m_deliveryOptions, REPORT_ID);
+        m_reportWrapperService.run(m_criteria, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
         // give the trigger a chance to fire (one minute)
         Thread.sleep(61000);
-        m_schedulerService.removeTrigger("validTrigger");
+        m_schedulerService.removeTrigger("testScheduleAndRunTrigger");
         verify(m_reportWrapperService);
-        m_schedulerService.removeTrigger("validTrigger");
+        m_schedulerService.removeTrigger("testScheduleAndRunTrigger");
         assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);  
     }
     
@@ -208,11 +220,13 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testExistsTrigger");
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
         verify(m_reportWrapperService);
-        assertTrue(m_schedulerService.exists("validTrigger"));
+        assertTrue(m_schedulerService.exists("testExistsTrigger"));
         assertFalse(m_schedulerService.exists("bogusTrigger"));
-        m_schedulerService.removeTrigger("validTrigger");
+        m_schedulerService.removeTrigger("testExistsTrigger");
         
     }
     
@@ -221,10 +235,12 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
-        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, m_deliveryOptions, "validTrigger", CRON_EXPRESSION, context));
+        DeliveryOptions deliveryOptions = new DeliveryOptions();
+        deliveryOptions.setInstanceId("testGetTriggerDescriptionsTrigger");
+        assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));
         verify(m_reportWrapperService);
         assertEquals(1,m_schedulerService.getTriggerDescriptions().size());
-        assertEquals("validTrigger",m_schedulerService.getTriggerDescriptions().get(0).getTriggerName());
-        m_schedulerService.removeTrigger("validTrigger");
+        assertEquals("testGetTriggerDescriptionsTrigger",m_schedulerService.getTriggerDescriptions().get(0).getTriggerName());
+        m_schedulerService.removeTrigger("testGetTriggerDescriptionsTrigger");
     }
 }

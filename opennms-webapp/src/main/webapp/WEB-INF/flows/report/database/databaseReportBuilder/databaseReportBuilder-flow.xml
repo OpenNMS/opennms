@@ -78,8 +78,7 @@
 	<action-state id="scheduleReport">
 		<evaluate expression="reportSchedulerService.addCronTrigger(reportId,
 			parameters, 
-			deliveryOptions, 
-			triggerDetails.getTriggerName(),
+			deliveryOptions,
         	triggerDetails.getCronExpression(),
         	flowRequestContext)" />
 		<transition on="success" to="reportScheduled" />

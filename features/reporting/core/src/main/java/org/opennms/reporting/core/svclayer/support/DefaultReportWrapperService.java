@@ -84,8 +84,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
         DeliveryOptions options = new DeliveryOptions();
 
-        options.setMailFormat("HTML");
-        options.setCanPersist(true);
+        options.setFormat(ReportFormat.HTML);
         options.setPersist(true);
         options.setSendMail(true);
 
@@ -106,6 +105,8 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        options.setInstanceId("reportId " + " userId");
 
         return options;
     }

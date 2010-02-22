@@ -25,7 +25,6 @@ public interface SchedulerService {
     public abstract String addCronTrigger(String id,
             ReportParameters criteria, 
             DeliveryOptions deliveryOptions,
-            String triggerName, 
             String cronExpression, 
             RequestContext context);
 
