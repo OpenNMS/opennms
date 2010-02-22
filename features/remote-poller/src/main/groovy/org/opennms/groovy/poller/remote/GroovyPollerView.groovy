@@ -71,8 +71,6 @@ class GroovyPollerView implements InitializingBean {
    def m_frame;
    def m_cardPanel;
    def m_monLocation;
-   def m_username;
-   def m_password;
    def m_idLabel;
    def m_statusLabel;
    SimpleDateFormat m_dateFormat;
@@ -105,22 +103,6 @@ class GroovyPollerView implements InitializingBean {
 		                    }
 		                }
 		                tr {
-		                    td(colfill:true) {
-		                        label(text:'Username: ')
-		                    }
-		                    td {
-		                        m_username = textField();
-		                    }
-		                }
-		                tr {
-		                    td(colfill:true) {
-		                        label(text:'Password: ')
-		                    }
-		                    td {
-		                        m_password = textField();
-		                    }
-		                }
-		                tr {
 		                    td (colspan:2, align:"CENTER"){
 		    	    		  button(text:'Register', constraints:BorderLayout.SOUTH, actionPerformed:{ doRegistration() })
 		                    }
@@ -144,7 +126,7 @@ class GroovyPollerView implements InitializingBean {
 		}
 		
 		updateCurrentPanel();
-
+		
 		m_frontEnd.pollStateChange = { updateTable() }
 		m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = 'Monitor: '+m_frontEnd.getMonitorName(); m_statusLabel.text = m_frontEnd.getStatus() }
 		m_frontEnd.configurationChanged = { updateTableModel(); m_idLabel.text = m_frontEnd.getMonitorName() }
@@ -154,10 +136,6 @@ class GroovyPollerView implements InitializingBean {
    }
    
    private void doRegistration() {
-       if (m_username != null) {
-           System.err.println("Authenticating");
-           m_frontEnd.authenticate(m_username, m_password);
-       }
        String loc = m_monLocation.selectedItem.name;
        System.err.println("Registering for location "+loc)
        m_frontEnd.register(loc);
