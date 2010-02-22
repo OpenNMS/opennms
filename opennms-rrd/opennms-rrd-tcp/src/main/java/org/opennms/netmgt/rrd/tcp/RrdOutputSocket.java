@@ -56,12 +56,6 @@ public class RrdOutputSocket {
         m_messages = PerformanceDataProtos.PerformanceDataReadings.newBuilder();
     }
 
-/*
-    public String getPath() {
-        return m_filename; // m_def.getPath();
-    };
- */
-
     public void addData(String filename, String owner, String data) {
         Long timestamp = parseRrdTimestamp(data);
         List<Double> values = parseRrdValues(data);
