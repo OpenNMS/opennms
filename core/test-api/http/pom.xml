@@ -20,9 +20,9 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${pom.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.test.*;version="${pom.version}",org.opennms.core.test.annotations.*;version="${pom.version}"</Export-Package>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.core.test.*;version="${project.version}",org.opennms.core.test.annotations.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

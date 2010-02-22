@@ -20,7 +20,7 @@ public class DeliveryOptionsValidator {
                                     defaultText("cannot have empty mail recipient").build());
             }
         }
-        if (!(deliveryOptions.getInstanceId().length() == 0)) {
+        if (deliveryOptions.getInstanceId().length() == 0) {
             messages.addMessage(new MessageBuilder().error().source("instanceId").
                                 defaultText("cannot have an empty Id for the report instance").build());
         }

@@ -106,7 +106,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             e.printStackTrace();
         }
         
-        options.setInstanceId("reportId " + " userId");
+        options.setInstanceId(reportId +"_"+userId);
 
         return options;
     }

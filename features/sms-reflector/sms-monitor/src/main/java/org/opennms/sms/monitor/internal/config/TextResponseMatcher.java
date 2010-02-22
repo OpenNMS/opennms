@@ -1,12 +1,11 @@
 package org.opennms.sms.monitor.internal.config;
 
-import java.util.Properties;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
-import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.sms.monitor.MobileSequenceSession;
+import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
+import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
 
 @XmlRootElement(name="matches")
 public class TextResponseMatcher extends SequenceResponseMatcher {
@@ -20,8 +19,14 @@ public class TextResponseMatcher extends SequenceResponseMatcher {
 	}
 
 	@Override
-	public MobileMsgResponseMatcher getMatcher(Properties session) {
-		return MobileMsgResponseMatchers.textMatches(PropertiesUtils.substitute(getText(), session));
-	}
+    public boolean matches(MobileSequenceSession session, MobileMsgRequest request, MobileMsgResponse response) {
+        LogUtils.tracef(this, "textMatches(%s, %s, %s)", session.substitute(getText()), request, response);
+        return session.matches(getText(), response.getText());
+    }
+
+    @Override
+    public String toString() {
+        return "textMatches(\"" + getText() + "\")";
+    }
 
 }

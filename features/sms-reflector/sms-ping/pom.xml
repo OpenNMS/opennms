@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -84,13 +84,13 @@
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>
     	<artifactId>org.opennms.core.soa</artifactId>
-    	<version>${pom.version}</version>
+    	<version>${project.version}</version>
     	<scope>provided</scope>
     	<optional>true</optional>
     </dependency>
