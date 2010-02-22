@@ -58,7 +58,6 @@
         <executions>
           <execution>
             <id>gui-app</id>
-            <phase>process-resources</phase>
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
@@ -81,7 +80,6 @@
           </execution>
           <execution>
             <id>headless-app</id>
-            <phase>process-resources</phase>
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
@@ -140,7 +138,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>
-      <scope>process-sources</scope>
     </dependency>
   </dependencies>
 </project>

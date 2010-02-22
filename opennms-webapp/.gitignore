@@ -4,3 +4,4 @@ src/main/webapp/WEB-INF/version.properties
 bin
 tomcat
 www-test
+war
