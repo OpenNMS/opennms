@@ -23,6 +23,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
