@@ -672,10 +672,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             Integer nodeId = ite.next();
             RancidNode rnode = m_onmsNodeRancidNodeMap.get(nodeId);
             if (group.equals(rnode.getGroup())) {
+                boolean stateUp = rnode.isStateUp();
+                rnode.setStateUp(false);
                 updateConfiguration(nodeId.intValue(), rnode, m_cp, true);
+                rnode.setStateUp(stateUp);
             }
         }
-
     }
     
     private void updateRancidNodeState(int nodeid, boolean up) {
