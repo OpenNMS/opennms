@@ -61,6 +61,7 @@
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
@@ -83,6 +84,7 @@
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
