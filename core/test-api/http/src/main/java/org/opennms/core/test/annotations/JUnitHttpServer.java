@@ -35,4 +35,8 @@ public @interface JUnitHttpServer {
     
     /** the key password **/
     String keyPassword() default "opennms";
+
+    /** zero or more webapps to include, with contexts **/
+    Webapp[] webapps() default { };
+    
 }
