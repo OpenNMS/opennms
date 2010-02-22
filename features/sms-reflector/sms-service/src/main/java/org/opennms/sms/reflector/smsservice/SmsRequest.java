@@ -35,6 +35,9 @@
 
 package org.opennms.sms.reflector.smsservice;
 
+
+import java.util.concurrent.TimeUnit;
+
 import org.smslib.OutboundMessage;
 import org.springframework.core.style.ToStringCreator;
 
@@ -57,6 +60,14 @@ public class SmsRequest extends MobileMsgRequest {
         super(timeout, retries, cb, responseMatcher);
         m_msg = msg;
         
+    }
+    
+    public int getValidityPeriodInHours() {
+        return m_msg.getValidityPeriod();
+    }
+    
+    public void setValidityPeriodInHours(int validityPeriod) {
+        m_msg.setValidityPeriod(validityPeriod);
     }
 
     /**

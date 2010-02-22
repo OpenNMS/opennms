@@ -29,20 +29,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.sms.reflector.smsservice.internal;
+package org.opennms.sms.reflector.smsservice;
 
 import java.io.IOException;
 
 import org.opennms.protocols.rt.Messenger;
 import org.opennms.protocols.rt.RequestTracker;
-import org.opennms.sms.reflector.smsservice.MatchingRequestLocator;
-import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
-import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
-import org.opennms.sms.reflector.smsservice.MobileMsgResponseCallback;
-import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher;
-import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
-import org.opennms.sms.reflector.smsservice.SmsRequest;
-import org.opennms.sms.reflector.smsservice.UssdRequest;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,12 +53,16 @@ public class MobileMsgTrackerImpl extends RequestTracker<MobileMsgRequest, Mobil
     }
     
     
-    public void sendSmsRequest(OutboundMessage msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
-        sendRequest(new SmsRequest(msg, timeout, retries, cb, matcher));
+    public MobileMsgRequest sendSmsRequest(OutboundMessage msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
+        SmsRequest request = new SmsRequest(msg, timeout, retries, cb, matcher);
+        sendRequest(request);
+        return request;
     }
 
-    public void sendUssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
-        sendRequest(new UssdRequest(msg, timeout, retries, cb, matcher));
+    public MobileMsgRequest sendUssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
+        UssdRequest request = new UssdRequest(msg, timeout, retries, cb, matcher);
+        sendRequest(request);
+        return request;
     }
 
 

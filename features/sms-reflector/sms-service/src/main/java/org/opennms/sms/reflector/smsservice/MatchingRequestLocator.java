@@ -62,8 +62,7 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
     }
     
     public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
-        m_requests.remove(timedOutRequest);
-        return timedOutRequest;
+        return m_requests.remove(timedOutRequest) ? timedOutRequest : null;
     }
 
     public void requestComplete(MobileMsgRequest request) {

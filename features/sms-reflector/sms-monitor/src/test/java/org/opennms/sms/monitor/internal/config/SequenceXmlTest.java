@@ -33,7 +33,11 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.sms.monitor.internal.MobileSequenceConfigBuilder;
+import org.opennms.sms.monitor.internal.MobileSequenceConfigBuilder.MobileSequenceTransactionBuilder;
+import org.opennms.sms.monitor.session.UniqueNumber;
 import org.opennms.test.FileAnticipator;
+import org.smslib.USSDSessionStatus;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -61,48 +65,31 @@ public class SequenceXmlTest {
     public void setUp() throws Exception {
     	m_fileAnticipator = new FileAnticipator();
 
-    	m_smsSequence = new MobileSequenceConfig();
+    	MobileSequenceConfigBuilder bldr = new MobileSequenceConfigBuilder();
+    	
+    	bldr.variable("amount", UniqueNumber.class).parameter("min", 1).parameter("max", 15);
+    	
+    	bldr.ussdRequest("req-balance-transfer", "ACM0", "*327*${recipient}*${amount}#").withTransactionLabel("ussd-transfer").withGatewayId("ACM0")
+    	    .expectUssdResponse("balance-conf-resp")
+    	    .onGateway("ACM0")
+    	    .withSessionStatus(USSDSessionStatus.FURTHER_ACTION_REQUIRED)
+    	    .matching("^Transfiere L ${amount} al ${recipient}$");
+    	
 
-    	SequenceSessionVariable amountSessionVar = new SequenceSessionVariable("amount", "org.opennms.sms.monitor.session.UniqueNumber");
-    	amountSessionVar.addParameter("min", "1");
-    	amountSessionVar.addParameter("max", "15");
-    	m_smsSequence.addSessionVariable(amountSessionVar);
-    	
-    	MobileSequenceTransaction reqBalanceTransfer = new MobileSequenceTransaction("ussd-transfer");
-    	reqBalanceTransfer.setGatewayId("ACM0");
-    	
-    	UssdSequenceRequest request = new UssdSequenceRequest("req-balance-transfer", "*327*${recipient}*${amount}#");
-    	request.setGatewayId("ACM0");
-    	reqBalanceTransfer.setRequest(request);
-    	
-    	UssdSequenceResponse response = new UssdSequenceResponse("balance-conf-resp");
-    	response.setGatewayId("ACM0");
-    	response.addMatcher(new UssdSessionStatusMatcher("FURTHER_ACTION_REQUIRED"));
-    	response.addMatcher(new TextResponseMatcher("^Transfiere L ${amount} al ${recipient}$"));
-    	reqBalanceTransfer.addResponse(response);
+    	MobileSequenceTransactionBuilder transBldr = bldr.ussdRequest("conf-transfer", "ACM0", "1");
 
-    	m_smsSequence.addTransaction(reqBalanceTransfer);
+    	transBldr.withTransactionLabel("req-conf").withGatewayId("ACM0")
+    	    .expectUssdResponse("processing")
+    	    .onGateway("ACM0")
+    	    .withSessionStatus(USSDSessionStatus.NO_FURTHER_ACTION_REQUIRED)
+    	    .matching("^.*Su transaccion se esta procesando.*$");
     	
-    	MobileSequenceTransaction reqConf = new MobileSequenceTransaction("req-conf");
-    	reqConf.setGatewayId("ACM0");
+    	transBldr.expectSmsResponse("transferred")
+    	    .onGateway("ACM0")
+    	    .matching("^.*le ha transferido L ${amount}.*$")
+    	    .srcMatches("+3746");
     	
-    	request = new UssdSequenceRequest("conf-transfer", "1");
-    	request.setGatewayId("ACM0");
-    	reqConf.setRequest(request);
-    	
-    	response = new UssdSequenceResponse("processing");
-    	response.setGatewayId("ACM0");
-    	response.addMatcher(new UssdSessionStatusMatcher("NO_FURTHER_ACTION_REQUIRED"));
-    	response.addMatcher(new TextResponseMatcher("^.*Su transaccion se esta procesando.*$"));
-    	reqConf.addResponse(response);
-
-    	SmsSequenceResponse smsResponse = new SmsSequenceResponse("transferred");
-    	smsResponse.setGatewayId("ACM0");
-    	smsResponse.addMatcher(new TextResponseMatcher("^.*le ha transferido L ${amount}.*$"));
-    	smsResponse.addMatcher(new SmsSourceMatcher("+3746"));
-    	reqConf.addResponse(smsResponse);
-
-    	m_smsSequence.addTransaction(reqConf);
+    	m_smsSequence = bldr.getSequence();
 
     	m_context = JAXBContext.newInstance(
     			MobileSequenceConfig.class,
@@ -134,17 +121,6 @@ public class SequenceXmlTest {
     	m_fileAnticipator.tearDown();
     }
 
-    private void printFile(File file) throws IOException {
-    	BufferedReader br = new BufferedReader(new FileReader(file));
-    	StringBuilder sb = new StringBuilder();
-    	String line = null;
-
-    	while ((line = br.readLine()) != null) {
-    		sb.append(line).append("\n");
-    	}
-    	System.err.println(sb.toString());
-    }
-
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = m_fileAnticipator.expecting("mobile-sequence.xsd");
@@ -170,6 +146,8 @@ public class SequenceXmlTest {
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
+    	
+        assertTransactionParentsSet(s);
     }
     
     @Test(expected=UnmarshalException.class)
@@ -179,15 +157,17 @@ public class SequenceXmlTest {
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
+        assertTransactionParentsSet(s);
     }
     
-    @Test()
+    @Test
     public void readAnotherSampleXML() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("alternate-ping-sequence.xml").getFile());
     	ValidationEventHandler handler = new DefaultValidationEventHandler();
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
+        assertTransactionParentsSet(s);
     }
     
     @Test
@@ -197,6 +177,7 @@ public class SequenceXmlTest {
     	m_unmarshaller.setEventHandler(handler);
     	MobileSequenceConfig s = (MobileSequenceConfig)m_unmarshaller.unmarshal(exampleFile);
     	System.err.println("sequence = " + s);
+        assertTransactionParentsSet(s);
     }
 
     @Test
@@ -241,6 +222,7 @@ public class SequenceXmlTest {
             m_fileAnticipator.deleteExpected();
         }
     }
+
     @Test
     public void tryFactory() throws Exception {
     	File exampleFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
@@ -260,6 +242,12 @@ public class SequenceXmlTest {
         return myDiff;
     }
 
+    private void assertTransactionParentsSet(MobileSequenceConfig s) {
+        for ( MobileSequenceTransaction t : s.getTransactions() ) {
+            assertEquals(s, t.getSequenceConfig());
+        }
+    }
+
     private StringBuffer getXmlBuffer(String fileName) throws IOException {
         StringBuffer xmlBuffer = new StringBuffer();
         File xmlFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
@@ -277,4 +265,16 @@ public class SequenceXmlTest {
         }
         return xmlBuffer;
     }
+
+    private void printFile(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+
+        while ((line = br.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        System.err.println(sb.toString());
+    }
+
 }

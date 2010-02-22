@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	
+	<xs:element name="pageablecombobox" type="component"/>
+	
+	<xs:complexType name="component">
+		<xs:attribute name="id" type="xs:string"/>
+		<xs:attribute name="width" type="xs:positiveInteger"/>
+		<xs:attribute name="height" type="xs:positiveInteger"/>
+	</xs:complexType>
+	
+</xs:schema>
