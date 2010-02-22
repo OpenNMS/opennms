@@ -1688,11 +1688,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>org.extremecomponents</groupId>
-        <artifactId>extremecomponents</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.samba.jcifs</groupId>
         <artifactId>jcifs</artifactId>
         <version>1.2.15</version>
