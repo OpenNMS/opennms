@@ -42,10 +42,10 @@ import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.authz.server.session.ResourceSortField
 import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 
-class ExporterController 
+class ModelexportController 
     extends BaseController
 {
-    def ExporterController() {
+    def ModelexportController() {
         setXMLMethods(['list'])
     }
 

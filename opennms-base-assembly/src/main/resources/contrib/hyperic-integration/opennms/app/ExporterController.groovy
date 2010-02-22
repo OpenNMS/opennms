@@ -42,6 +42,12 @@ import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.authz.server.session.ResourceSortField
 import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 
+/**
+ * @deprecated THIS CONTROLLER IS DEPRECATED. It has been replaced by 
+ * ModelexportController.groovy which offers more precise service and
+ * interface lists. If you are using OpenNMS 1.7.10+, configure it to
+ * point to the /hqu/opennms/modelExport/list.hqu URL.
+ */
 class ExporterController 
     extends BaseController
 {
