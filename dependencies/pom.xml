@@ -22,7 +22,7 @@
     <module>opennms-spring-test</module>
   </modules>
   <properties>
-    <springVersion>3.0.0.RELEASE</springVersion>
+    <springVersion>3.0.1.RELEASE</springVersion>
     <springSecurityVersion>2.0.4</springSecurityVersion>
     <springLdapVersion>1.2.1</springLdapVersion>
   </properties>
