@@ -41,8 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
@@ -60,6 +58,9 @@ public class ParameterMap extends Object {
      * @return The long value associated with the key.
      */
 	public static long getKeyedLong(final Map map, final String key, final long defValue) {
+	    
+	    if (map == null) return defValue;
+	    
         long value = defValue;
         Object oValue = map.get(key);
 
@@ -68,7 +69,7 @@ public class ParameterMap extends Object {
                 value = Long.parseLong((String) oValue);
             } catch (NumberFormatException ne) {
                 value = defValue;
-                ThreadCategory.getInstance(ParameterMap.class).info("getLongByKey: Failed to convert value " + oValue + " for key " + key);
+                LogUtils.infof(ParameterMap.class, ne, "getKeyedLong: Failed to convert value %s for key %s", oValue , key);
             }
             map.put(key, new Long(value));
         } else if (oValue != null) {
@@ -100,23 +101,27 @@ public class ParameterMap extends Object {
      * @return The array of integer values associated with the key.
      */
     public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
+        
+        if (map == null) return defValues;
+        
         int[] result = defValues;
         Object oValue = map.get(key);
 
         if (oValue != null && oValue instanceof int[]) {
             result = (int[]) oValue;
         } else if (oValue != null) {
-            List tmpList = new ArrayList(5);
+            List<Integer> tmpList = new ArrayList<Integer>(5);
 
             // Split on spaces, commas, colons, or semicolons
             //
             StringTokenizer ints = new StringTokenizer(oValue.toString(), " ;:,");
             while (ints.hasMoreElements()) {
+                String token = ints.nextToken();
                 try {
-                    int x = Integer.parseInt(ints.nextToken());
-                    tmpList.add(new Integer(x));
+                    int x = Integer.parseInt(token);
+                    tmpList.add(Integer.valueOf(x));
                 } catch (NumberFormatException e) {
-                    ThreadCategory.getInstance(ParameterMap.class).warn("getKeyedIntegerList: list member for key " + key + " is malformed", e);
+                    LogUtils.warnf(ParameterMap.class, e, "getKeyedIntegerArray: failed to convert value %s to int array for key %s due to value %s", oValue, key, token);
                 }
             }
             result = new int[tmpList.size()];
@@ -139,6 +144,8 @@ public class ParameterMap extends Object {
      * @return The String value associated with the key.
      */
     public static String getKeyedString(final Map map, final String key, final String defValue) {
+        
+        if (map == null) return defValue;
 
         String value = defValue;
         Object oValue = map.get(key);
@@ -163,6 +170,9 @@ public class ParameterMap extends Object {
      * @return The bool value associated with the key.
      */
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
+        
+        if (map == null) return defValue;
+        
         boolean value = defValue;
         Object oValue = map.get(key);
 
@@ -175,7 +185,7 @@ public class ParameterMap extends Object {
                 value = ((Boolean) oValue).booleanValue();
             } catch (NumberFormatException ne) {
                 value = defValue;
-               ThreadCategory.getInstance(ParameterMap.class).info("getBoolByKey: Failed to convert value " + oValue + " for key " + key);
+                LogUtils.infof(ParameterMap.class, ne, "getKeyedBoolean: Failed to convert value %s for key %s", oValue, key);
             }
             map.put(key, Boolean.valueOf(value));
         } else if (oValue != null) {

@@ -46,12 +46,8 @@ import org.opennms.sms.reflector.smsservice.SmsService;
 import org.opennms.sms.reflector.smsservice.UssdRequest;
 import org.opennms.sms.reflector.smsservice.UssdResponse;
 import org.smslib.AGateway;
-import org.smslib.GatewayException;
 import org.smslib.IUSSDNotification;
-import org.smslib.InboundBinaryMessage;
 import org.smslib.InboundMessage;
-import org.smslib.OutboundMessage;
-import org.smslib.TimeoutException;
 import org.smslib.USSDResponse;
 import org.smslib.Message.MessageTypes;
 import org.springframework.beans.factory.InitializingBean;
@@ -109,8 +105,8 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
-    	long receiveTime = System.currentTimeMillis();
-    	
+        long receiveTime = System.currentTimeMillis();
+        
         debugf("SmsMessenger.processInboundMessage");
         
         if (m_replyQueue != null) {
@@ -119,7 +115,13 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     public void process(String gatewayId, USSDResponse ussdResponse) {
-        m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse, System.currentTimeMillis()));
+        long receiveTime = System.currentTimeMillis();
+        
+        debugf("SmsMessenger.processUSSDResponse");
+        
+        if (m_replyQueue != null) {
+            m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse, receiveTime));
+        }
     }
 
 

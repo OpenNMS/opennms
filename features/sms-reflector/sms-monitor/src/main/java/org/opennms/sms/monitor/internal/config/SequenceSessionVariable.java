@@ -1,10 +1,13 @@
 package org.opennms.sms.monitor.internal.config;
 
+import static org.opennms.core.utils.LogUtils.warnf;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,9 +15,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.sms.monitor.session.SessionVariableGenerator;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="SequenceSessionVariableType", propOrder={"m_name", "m_className", "m_parameters"})
@@ -29,6 +34,9 @@ public class SequenceSessionVariable {
 	@XmlElementWrapper(name="parameters", required=false)
 	@XmlElement(name="parameter")
 	private List<SequenceParameter> m_parameters;
+
+	@XmlTransient
+    private SessionVariableGenerator m_generator;
 	
 	public SequenceSessionVariable() {
 	}
@@ -84,4 +92,41 @@ public class SequenceSessionVariable {
 			.append("parameters", getParameters())
 			.toString();
 	}
+
+    public SessionVariableGenerator getGenerator() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        
+        if (m_generator == null) {
+            Class<?> c = Class.forName(getClassName());
+            if (SessionVariableGenerator.class.isAssignableFrom(c)) {
+                SessionVariableGenerator generator = (SessionVariableGenerator)c.newInstance();
+                generator.setParameters(getParametersAsMap());
+                m_generator = generator;
+    
+            } else {
+                warnf(this, "unable to get instance of session class: %s", c);
+            }
+        }
+        return m_generator;
+    }
+
+    public void checkOut(Properties properties) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        
+        SessionVariableGenerator generator = getGenerator();
+        
+        if (generator != null) {
+            
+            String value = generator.checkOut();
+            if (value == null) {
+                value = "";
+            }
+            properties.setProperty(getName(), value);
+        }
+    }
+
+    public void checkIn(Properties properties) {
+        SessionVariableGenerator generator = m_generator;
+        if (generator != null) {
+            generator.checkIn(properties.getProperty(getName()));
+        }
+    }
 }
