@@ -86,7 +86,7 @@
       <type>pom</type>
       <groupId>${parent.groupId}</groupId>
       <artifactId>provision</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <optional>true</optional>
       <scope>test</scope>
     </dependency>
@@ -137,7 +137,7 @@
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -155,23 +155,23 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-ping</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.api</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -208,19 +208,19 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-test</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -233,7 +233,7 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

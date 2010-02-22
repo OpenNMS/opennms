@@ -42,11 +42,11 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-            <Bundle-Version>${pom.version}</Bundle-Version>
+            <Bundle-Version>${project.version}</Bundle-Version>
             <!--
              | assume public classes are in the top package, and private classes are under ".internal"
             -->
-            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${pom.version}"</Export-Package>
+            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
             <!--
              | each module can override these defaults in their osgi.bnd file
