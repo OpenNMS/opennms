@@ -33,12 +33,9 @@ package org.opennms.netmgt.provision.detector.generic.response;
 
 public class GpResponse {
     
-    private int m_exitStatus;
     private String m_response;
-    private String m_error;
     
     public void setExitStatus(int exitStatus) {
-        m_exitStatus = exitStatus;
     }
 
     public void setResponse(String response) {
@@ -46,7 +43,6 @@ public class GpResponse {
     }
 
     public void setError(String error) {
-        m_error = error;
     }
 
     public boolean validate(String banner) {

@@ -525,6 +525,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven.surefire.report.plugin.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -576,7 +577,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>2.5</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.5</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
