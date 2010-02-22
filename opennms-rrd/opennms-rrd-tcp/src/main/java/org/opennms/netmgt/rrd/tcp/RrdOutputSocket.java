@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.rrd.tcp;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -50,7 +51,7 @@ public class RrdOutputSocket {
     private final int m_port;
     private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
 
-    public RrdOutputSocket(String host, int port) throws Exception {
+    public RrdOutputSocket(String host, int port) {
         m_host = host;
         m_port = port;
         m_messages = PerformanceDataProtos.PerformanceDataReadings.newBuilder();
@@ -67,7 +68,7 @@ public class RrdOutputSocket {
         );
     }
 
-    public void writeData() throws Exception {
+    public void writeData() {
         Socket socket = null;
         try {
             socket = new Socket(InetAddress.getByName(m_host), m_port);
@@ -80,7 +81,11 @@ public class RrdOutputSocket {
             ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messages.getMessageCount() + " performance messages: " + e.getMessage());
         } finally {
             if (socket != null) {
-                socket.close();
+                try { 
+                    socket.close(); 
+                } catch (IOException e) {
+                    ThreadCategory.getInstance(this.getClass()).warn("IOException when closing TCP performance data socket: " + e.getMessage());
+                }
             }
         }
     };

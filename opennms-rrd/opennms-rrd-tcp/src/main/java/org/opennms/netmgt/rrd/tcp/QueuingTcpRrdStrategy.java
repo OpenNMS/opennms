@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -94,6 +95,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         public ConsumerThread(final TcpRrdStrategy strategy, final BlockingQueue<PerformanceDataReading> queue) {
             m_strategy = strategy;
             m_myQueue = queue;
+            this.setName(this.getClass().getSimpleName());
         }
 
         public void run() {
@@ -111,7 +113,9 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
                     }
                 }
             } catch (InterruptedException e) {
-            } catch (Exception e) {
+                ThreadCategory.getInstance(this.getClass()).warn("InterruptedException caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread");
+            } catch (Throwable e) {
+                ThreadCategory.getInstance(this.getClass()).fatal("Unexpected exception caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread", e);
             }
         }
     }
@@ -145,7 +149,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     public void updateFile(String fileName, String owner, String data) throws Exception {
         if (m_queue.offer(new PerformanceDataReading(fileName, owner, data), 500, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
-                // TODO Log something about m_skippedReadings
+                ThreadCategory.getInstance().warn("Skipped " + m_skippedReadings + " performance data message(s) because of queue overflow");
                 m_skippedReadings = 0;
             }
         } else {
