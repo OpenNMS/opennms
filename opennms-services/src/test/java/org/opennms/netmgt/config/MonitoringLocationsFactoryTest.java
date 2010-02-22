@@ -40,33 +40,44 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import junit.framework.TestCase;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class MonitoringLocationsFactoryTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class
+})
+public class MonitoringLocationsFactoryTest {
 
     private MonitoringLocationsFactory m_locationFactory;
 
     private PollerConfigManager m_pollerConfigManager;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
+        
         MockNetwork network = new MockNetwork();
 
         MockDatabase db = new MockDatabase();
@@ -77,16 +88,16 @@ public class MonitoringLocationsFactoryTest extends TestCase {
         InputStream stream = getClass().getResourceAsStream("/org/opennms/netmgt/config/monitoring-locations.testdata.xml");
         m_locationFactory = new MonitoringLocationsFactory(stream);
         stream.close();
-
+        
+        SnmpPeerFactory.init();
+        
         stream = getClass().getResourceAsStream("/org/opennms/netmgt/config/poller-configuration.testdata.xml");
         m_pollerConfigManager = new TestPollerConfigManager(stream, "localhost", false);
         stream.close();
+        
     }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    
+    @Test
     public void testGetName() throws MarshalException, ValidationException,
             IOException {
         final String locationName = "RDU";

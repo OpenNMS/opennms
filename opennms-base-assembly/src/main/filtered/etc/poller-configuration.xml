@@ -27,6 +27,7 @@
       <parameter key="timeout" value="5000" />
       <parameter key="port" value="53" />
       <parameter key="lookup" value="localhost" />
+      <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="rrd-base-name" value="dns" />
       <parameter key="ds-name" value="dns" />
