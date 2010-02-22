@@ -79,7 +79,7 @@ public class Main {
         m_args = args;
         initializeLogging();
     }
-    
+
     private void initializeLogging() throws Exception {
         String logFile;
         if (System.getProperty("os.name").contains("Windows")) {
@@ -99,11 +99,25 @@ public class Main {
 		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();
     }
 
+    private void getAuthenticationInfo() {
+    	if (m_uri == null) {
+    		throw new RuntimeException("no URI specified!");
+    	}
+    	if (m_uri.getScheme().equals("rmi")) {
+    		// RMI doesn't have authentication
+    		return;
+    	}
+    	
+    	if (m_username == null) {
+    		// FIXME: ask for username/password
+    	}
+    }
+    
     private void run() {
         
         try {
             parseArguments();
-
+            getAuthenticationInfo();
             createAppContext();
             registerShutDownHook();
 
@@ -229,7 +243,7 @@ public class Main {
         m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
         if (m_username != null) {
-        	SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
+        	m_frontEnd.authenticate(m_username, m_password);
         }
         
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
@@ -238,7 +252,7 @@ public class Main {
             	log().fine("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
-                
+
                 // if exitNecessary becomes true.. then return true
                 if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
                 	log().info("shouldExit: Exiting because exitNecessary is TRUE");
