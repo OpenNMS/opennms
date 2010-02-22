@@ -85,6 +85,7 @@ public class MatchingRequestLocatorTest {
     
     OutboundMessage getMessage(String originator, String recipient, String text) {
         OutboundMessage msg = new OutboundMessage(recipient, text);
+        msg.setValidityPeriod(1);
         msg.setFrom(originator);
         return msg;
     }
