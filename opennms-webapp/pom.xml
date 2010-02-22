@@ -91,7 +91,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
         <configuration>
-          <path>/${pom.artifactId}</path>
+          <path>/${project.artifactId}</path>
           <port>${web.port}</port>
         </configuration>
       </plugin>
@@ -299,7 +299,7 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <classifier>signed-jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
