@@ -11,7 +11,9 @@ import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.security.SslSocketConnector;
+import org.mortbay.jetty.webapp.WebAppContext;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.annotations.Webapp;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestContext;
 
@@ -23,6 +25,8 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         super.beforeTestMethod(testContext);
         
         JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
+        Webapp[] webapps = config.webapps();
+        
         if (config == null)
             return;
 
@@ -65,6 +69,13 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
             sh.setConstraintMappings(new ConstraintMapping[]{cm});
 
             handlers.addHandler(sh);
+        }
+
+        for (Webapp webapp : webapps) {
+            WebAppContext wac = new WebAppContext();
+            wac.setWar(webapp.path());
+            wac.setContextPath(webapp.context());
+            handlers.addHandler(wac);
         }
 
         ResourceHandler rh = new ResourceHandler();
