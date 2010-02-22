@@ -50,9 +50,9 @@
        <extensions>true</extensions>
        <configuration>
          <instructions>
-           <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
-           <Bundle-Version>${pom.version}</Bundle-Version>
-           <Export-Package>org.opennms.core.tasks.*;version="${pom.version}"</Export-Package>
+           <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+           <Bundle-Version>${project.version}</Bundle-Version>
+           <Export-Package>org.opennms.core.tasks.*;version="${project.version}"</Export-Package>
           </instructions>
        </configuration>
      </plugin>

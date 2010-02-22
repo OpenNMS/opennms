@@ -48,9 +48,9 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${pom.version}</Bundle-Version>
-            <Export-Package>org.opennms.sms.reflector.smsservice.*;version="${pom.version}"</Export-Package>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.sms.reflector.smsservice.*;version="${project.version}"</Export-Package>
            </instructions>
         </configuration>
       </plugin>
@@ -107,32 +107,32 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-test</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>
     	<artifactId>org.opennms.core.soa</artifactId>
-    	<version>${pom.version}</version>
+    	<version>${project.version}</version>
     	<scope>provided</scope>
     	<optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.phonebook</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
