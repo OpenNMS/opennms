@@ -60,7 +60,7 @@
 	-->
 	
 	<decision-state id="scheduleOrExecute">
-    	<if test="schedule" then="triggerDetails" else="executeReport" />
+    	<if test="schedule" then="cronExpression" else="executeReport" />
 	</decision-state>
 
 	<action-state id="executeReport">
@@ -69,8 +69,8 @@
 		<transition on="error" to="reportError" />
 	</action-state>
 	
-	<view-state id="triggerDetails" model="triggerDetails">
-		<transition on="revise" to="reportParameters" />
+	<view-state id="cronExpression" model="triggerDetails">
+		<transition on="revise" to="deliveryOptions" />
 		<transition on="cancel" to="reportCancelled" />
 		<transition on="proceed" to="scheduleReport" />
 	</view-state>

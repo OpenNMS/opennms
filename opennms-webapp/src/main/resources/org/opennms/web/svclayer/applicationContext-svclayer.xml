@@ -225,18 +225,6 @@
     <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
   
-  <!-- Validators for Database Report web flow -->
-  
-  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator" />
-  
-  <bean id="ReportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
-  
-  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator">
-  	<property name="schedulerService">
-  		<ref local="reportSchedulerService" />
-  	</property>
-  </bean>
-  
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
 	<property name="scheduler">
 		<ref local="schedulerFactory" />
@@ -281,6 +269,23 @@
 	  </property>
 	  <property name="durability" value="true" />
   </bean> 
+  
+    
+  <!-- Validators for Database Report web flow -->
+  
+  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
+    	<property name="reportSchedulerService">
+    		<ref local="reportSchedulerService" />
+    	</property>
+  </bean>
+  
+  <bean id="ReportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
+  
+  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator" />
+  
+  <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
+    <property name="graphResultsService" ref="graphResultsService"/>
+  </bean>
   
   <!-- Node List page -->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">

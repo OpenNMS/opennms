@@ -42,21 +42,13 @@ public class TriggerDetails  implements Serializable {
     private static final long serialVersionUID = 3258199709023045243L;
     
     String m_cronExpression;
-    String m_triggerName;
     
     public String getCronExpression() {
         return m_cronExpression;
     }
+    
     public void setCronExpression(String cronExpression) {
         m_cronExpression = cronExpression;
     }
-    public String getTriggerName() {
-        return m_triggerName;
-    }
-    public void setTriggerName(String triggerName) {
-        m_triggerName = triggerName;
-    }
-    
-    
 
 }

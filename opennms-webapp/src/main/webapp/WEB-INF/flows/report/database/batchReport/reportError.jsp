@@ -12,7 +12,7 @@
  *
  * Modifications:
  *
- * 2009 Oct 18: Created jonathan@opennms.org
+ * 2009 October 28: Created jonathan@opennms.org
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -37,58 +37,29 @@
  */
 
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib tagdir="/WEB-INF/tags/element" prefix="element"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="List Reports" />
-  <jsp:param name="headTitle" value="List Reports" />
-	<jsp:param name="breadcrumb"
-		value="<a href='report/index.jsp'>Reports</a>" />
-	<jsp:param name="breadcrumb" 
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Database Reports" />
+  <jsp:param name="headTitle" value="Database Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="Online Reports" />
+  <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<jsp:useBean id="pagedListHolder" scope="request"
-	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/database/onlineList.htm" var="pagedLink">
-	<c:param name="p" value="~" />
-</c:url>
+<h3>Report Error</h3>
 
-
-<c:choose>
-	<c:when test="${empty pagedListHolder.pageList}">
-		<p>No online reports are defined.</p>
-	</c:when>
-
-	<c:otherwise>
-		<element:pagedList pagedListHolder="${pagedListHolder}"
-			pagedLink="${pagedLink}" />
-
-		<div class="spacer"><!--  --></div>
-		<table>
-			<thead>
-				<tr>
-					<th>name</th>
-					<th>description</th>
-					<th>action</th>
-				</tr>
-			</thead>
-			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="report">
-				<tr>
-					<td>${report.displayName}</td>
-					<td>${report.description}</td>
-					<td><a href="report/database/onlineReport.htm?reportId=${report.id}">execute</a></td>
-				</tr>
-			</c:forEach>
-		</table>
-	</c:otherwise>
-</c:choose>
+      <p>
+        It has not been possible to execute your report.
+      </p>
+      
+<form:form>  
+    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+</form:form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -53,15 +53,23 @@
 <h3>Report Delivery Options</h3>
 
   
-<form:form commandName="triggerDetails">
+<form:form commandName="deliveryOptions">
 
-	<B>Enter Trigger Details</B><br>
-	
-	Trigger Name: 
-	<form:input path="triggerName"/>
-	Cron Expression: 
-	<form:input path="cronExpression"/>
-		   
+	<p>
+	Name to identify this report
+	<form:input path="instanceId"/>
+	<br><form:checkbox path="sendMail"/>
+	Email a copy of the report in 
+	<form:select path="format"> 
+		<form:options items="${formats}"/>
+	</form:select>
+	format, to: 
+    <form:input path="mailTo"/>
+    <br><B>Report Persistence</B><br>
+    <form:checkbox path="persist"/>
+    Save a copy of the report
+    </p> 
+
 
     <br>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;

@@ -11,9 +11,9 @@
  *
  * Modifications:
  *
- * 2009 October 28: Created jonathan@opennms.org
+ * 2010 February 23rd: Created jonathan@opennms.org
  * 
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,26 +50,15 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Report Delivery Options</h3>
+<h3>Cron Expression</h3>
 
   
-<form:form commandName="deliveryOptions">
-
-	<B>Report Delivery</B><br>
-
-	Name to identify this report
-	<form:input path="instanceId"/>
-	<br><form:checkbox path="sendMail"/>
-	Email a copy of the report in 
-	<form:select path="format"> 
-		<form:options items="${formats}"/>
-	</form:select>
-	format, to: 
-    <form:input path="mailTo"/>
-    <br><B>Report Persistence</B><br>
-    <form:checkbox path="persist"/>
-    Save a copy of the report 
-
+<form:form commandName="triggerDetails">
+	
+	<p>
+	Cron Expression: 
+	<form:input path="cronExpression"/>
+	</p>	   
 
     <br>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;

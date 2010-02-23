@@ -1,5 +1,4 @@
 <%--
-
 /*
  * This file is part of the OpenNMS(R) Application.
  *
@@ -35,7 +34,6 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -52,14 +50,21 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Database Report Error</h3>
+<h3>Report Delivery Options</h3>
 
-      <p>
-        It has not been possible to execute your report.
-      </p>
-      
-<form:form>  
-    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+  
+<form:form commandName="triggerDetails">
+
+	<B>Enter scheduler cron expression</B><br>
+	
+	Cron Expression: 
+	<form:input path="cronExpression"/>
+		   
+
+    <br>
+    <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
+	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
 </form:form>
-
+  
 <jsp:include page="/includes/footer.jsp" flush="false" />

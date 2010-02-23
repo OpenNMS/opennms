@@ -8,7 +8,7 @@ import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.execution.repository.NoSuchFlowExecutionException;
 import org.springframework.webflow.mvc.servlet.AbstractFlowHandler;
 
-public class DatabaseReportBuilderFlowHander extends AbstractFlowHandler {
+public class BatchReportFlowHander extends AbstractFlowHandler {
     
     @Override
     public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request,

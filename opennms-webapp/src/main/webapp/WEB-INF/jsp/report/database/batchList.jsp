@@ -51,12 +51,12 @@
 		value="<a href='report/index.jsp'>Reports</a>" />
 	<jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
-	<jsp:param name="breadcrumb" value="List Reports" />
+	<jsp:param name="breadcrumb" value="Batch Reports" />
 </jsp:include>
 
 <jsp:useBean id="pagedListHolder" scope="request"
 	type="org.springframework.beans.support.PagedListHolder" />
-<c:url value="/report/availability/list.htm" var="pagedLink">
+<c:url value="/report/database/batchList.htm" var="pagedLink">
 	<c:param name="p" value="~" />
 </c:url>
 
@@ -76,7 +76,7 @@
 				<tr>
 					<th>name</th>
 					<th>description</th>
-					<th>execute report</th>
+					<th>action</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -84,8 +84,8 @@
 				<tr>
 					<td>${report.displayName}</td>
 					<td>${report.description}</td>
-					<td> <a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=false">Execute Report</a>
-					<a href="report/database/databaseReportBuilder.htm?reportId=${report.id}&schedule=true">Schedule Report</a></td>
+					<td> <a href="report/database/batchReport.htm?reportId=${report.id}&schedule=false">execute</a>
+					<a href="report/database/batchReport.htm?reportId=${report.id}&schedule=true">schedule</a></td>
 				</tr>
 			</c:forEach>
 		</table>

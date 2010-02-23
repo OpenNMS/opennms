@@ -1,11 +1,14 @@
 package org.opennms.web.report.database;
 
 import org.opennms.reporting.core.DeliveryOptions;
+import org.opennms.web.svclayer.SchedulerService;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
 public class DeliveryOptionsValidator {
+
+    private SchedulerService m_reportSchedulerService;
 
     public void validateDeliveryOptions(DeliveryOptions deliveryOptions, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
@@ -23,7 +26,14 @@ public class DeliveryOptionsValidator {
         if (deliveryOptions.getInstanceId().length() == 0) {
             messages.addMessage(new MessageBuilder().error().source("instanceId").
                                 defaultText("cannot have an empty Id for the report instance").build());
+        } else if (m_reportSchedulerService.exists(deliveryOptions.getInstanceId())) {
+            messages.addMessage(new MessageBuilder().error().source("instanceId").
+                                defaultText("report instanceId is already in use").build());
         }
         
+    }
+    
+    public void setReportSchedulerService(SchedulerService reportSchedulerService) {
+        m_reportSchedulerService = reportSchedulerService;
     }
 }

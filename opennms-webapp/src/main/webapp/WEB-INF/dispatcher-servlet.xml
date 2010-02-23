@@ -487,21 +487,18 @@
   	<property name="pageSize" value="10"/>
   </bean>
   
+  <bean name="/report/database/batchReport.htm" 
+  		class="org.opennms.web.report.database.BatchReportFlowHander" />
+  		
   <bean name="/report/database/onlineReport.htm"
   		class="org.opennms.web.controller.OnlineReportController">
   	<property name="reportWrapperService" ref="reportWrapperService" />
   	<property name="categoryConfigService" ref="categoryConfigService" />
   	<property name="bindOnNewForm" value="true" />
   	<property name="commandName" value="parameters" />
-  	<!--
-    <property name="commandClass" value="org.opennms.api.reporting.parameter.ReportParameters" />
-    -->
   </bean>
   
-  <bean name="/report/database/databaseReportBuilder.htm" 
-  		class="org.opennms.web.report.database.DatabaseReportBuilderFlowHander" />
-  		
-   <bean name="/report/database/manage.htm" 
+  <bean name="/report/database/manage.htm" 
   		class="org.opennms.web.controller.ManageDatabaseReportController">
     <property name="bindOnNewForm" value="true" />
 	<property name="reportStoreService" ref="reportStoreService"/>

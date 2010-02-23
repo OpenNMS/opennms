@@ -51,7 +51,7 @@
   <jsp:param name="breadcrumb" 
 		value="<a href='report/database/index.htm'>Database</a>" />
   <jsp:param name="breadcrumb" 
-		value="<a href='report/database/onlineList.htm'>online reports</a>" />
+		value="<a href='report/database/onlineList.htm'>Online Reports</a>" />
   <jsp:param name="breadcrumb" value="run"/>
 </jsp:include>
 
