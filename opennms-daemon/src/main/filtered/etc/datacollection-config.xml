@@ -21,7 +21,8 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-   <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)">
+   <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
+                 resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
    </resourceType>
