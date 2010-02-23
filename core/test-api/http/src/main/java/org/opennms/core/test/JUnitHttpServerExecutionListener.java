@@ -25,7 +25,6 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         super.beforeTestMethod(testContext);
         
         JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
-        Webapp[] webapps = config.webapps();
         
         if (config == null)
             return;
@@ -71,11 +70,14 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
             handlers.addHandler(sh);
         }
 
-        for (Webapp webapp : webapps) {
-            WebAppContext wac = new WebAppContext();
-            wac.setWar(webapp.path());
-            wac.setContextPath(webapp.context());
-            handlers.addHandler(wac);
+        Webapp[] webapps = config.webapps();
+        if (webapps != null) {
+            for (Webapp webapp : webapps) {
+                WebAppContext wac = new WebAppContext();
+                wac.setWar(webapp.path());
+                wac.setContextPath(webapp.context());
+                handlers.addHandler(wac);
+            }
         }
 
         ResourceHandler rh = new ResourceHandler();
