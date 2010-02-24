@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -284,7 +285,7 @@
          <additionalConfig>
            <file>
              <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
            </file>
          </additionalConfig>
        </configuration>
@@ -325,11 +326,11 @@
                      properties.  They aren't passed automatically, even
                      when inheritAll="true" is used with <ant />.  -->
                 <ant target="java.check">
-                  <property name="java.vm.version" value="${java.vm.version}" />
-                  <property name="java.version" value="${java.version}" />
-                  <property name="java.home" value="${java.home}" />
+                  <property name="java.vm.version" value="${java.vm.version}"/>
+                  <property name="java.version" value="${java.version}"/>
+                  <property name="java.home" value="${java.home}"/>
                 </ant>
-                <echo message="update policy is ${updatePolicy}" />
+                <echo message="update policy is ${updatePolicy}"/>
               </tasks>
             </configuration>
             <goals>
@@ -591,7 +592,7 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword />
+    <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
@@ -614,14 +615,14 @@
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
 
     <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix />
+    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
     <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password />
+    <install.database.admin.password/>
     <install.database.driver>org.postgresql.Driver</install.database.driver> 
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -636,7 +637,7 @@
     <rpm.sign>false</rpm.sign>
     <rpm.buildtests>false</rpm.buildtests>
     <rpm.database.user>opennms</rpm.database.user>
-    <rpm.additional.args /> 
+    <rpm.additional.args/> 
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
@@ -650,9 +651,9 @@
    <webstart.keystore.delete>true</webstart.keystore.delete>
    <webstart.keygen>true</webstart.keygen>
    <webstart.dnameCn>${user.name}</webstart.dnameCn>
-   <webstart.dnameL />
-   <webstart.dnameSt />
-   <webstart.dnameC />
+   <webstart.dnameL/>
+   <webstart.dnameSt/>
+   <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
 
@@ -874,6 +875,21 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.availability</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

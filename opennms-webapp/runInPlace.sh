@@ -5,12 +5,12 @@ function err() {
 }
 
 function warInPlace() {
-    ../build.sh compile war:inplace
+    ../build.sh -o  compile war:inplace
 }
 
 function runInPlace() {
     local PORT=$1
-    ../build.sh -Dweb.port=$PORT jetty:run
+    ../build.sh -o -Dweb.port=$PORT jetty:run
 }
 
 function removeGwtModuleFiles() {

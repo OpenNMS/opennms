@@ -20,7 +20,14 @@
     </property>
   </bean>
 
-  <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+  <bean	class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+  	    <property name="order" value="0"/>
+  </bean>
+  
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+    <property name="flowRegistry" ref="flowRegistry"/>
+    <property name="order" value="1"/>
+  </bean>
 
   <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 	<property name="viewClass"
@@ -33,6 +40,19 @@
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
     <property name="basename"><value>/WEB-INF/messages</value></property>
     <property name="cacheSeconds"><value>2</value></property>
+  </bean>
+  
+  <!-- Dispatches requests mapped to org.springframework.web.servlet.mvc.Controller implementations -->
+  <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+  
+  <!-- Enables FlowHandler URL mapping -->
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+    <property name="flowExecutor" ref="flowExecutor" />
+  </bean>
+  
+  <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+    <property name="flowRegistry" ref="flowRegistry"/>
+    <property name="order" value="1"/>
   </bean>
 
   <!-- Home Page -->
@@ -449,35 +469,58 @@
     <property name="chooseResourceService" ref="chooseResourceService"/>
     <property name="defaultEndUrl"><value>graph/results.htm</value></property>
   </bean>
+      
+  <!-- Database Reports -->
   
-  <!-- Availability Reports -->
-  
-  <bean name="/report/availability/index.htm"
+  <bean name="/report/database/index.htm"
   		class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
   
-  <bean name="/report/availability/report.htm"
-  		class="org.opennms.web.controller.AvailabilityReportController">
-  	<property name="availabilityReportService" ref="availabilityReportService"/>
-  	<property name="categoryConfigService" ref="categoryConfigService"/>
-  	<property name="logo">
-  		<value>"${opennms.report.logo}"</value>
-  	</property>
-  </bean>
-  
-  <bean name="/report/availability/list.htm"
-  		class="org.opennms.web.controller.ReportListController">
-  	<property name="reportListService" ref="reportListService"/>
+  <bean name="/report/database/batchList.htm"
+  		class="org.opennms.web.controller.BatchReportListController">
+  	<property name="databaseReportListService" ref="databaseReportListService"/>
   	<property name="pageSize" value="10"/>
   </bean>
   
-  <bean name="/report/availability/manage.htm" 
-  		class="org.opennms.web.controller.ManageAvailabilityReportController">
+  <bean name="/report/database/onlineList.htm"
+  		class="org.opennms.web.controller.OnlineReportListController">
+  	<property name="databaseReportListService" ref="databaseReportListService"/>
+  	<property name="pageSize" value="10"/>
+  </bean>
+  
+  <bean name="/report/database/batchReport.htm" 
+  		class="org.opennms.web.report.database.BatchReportFlowHander" />
+  		
+  <bean name="/report/database/onlineReport.htm"
+  		class="org.opennms.web.controller.OnlineReportController">
+  	<property name="reportWrapperService" ref="reportWrapperService" />
+  	<property name="categoryConfigService" ref="categoryConfigService" />
+  	<property name="bindOnNewForm" value="true" />
+  	<property name="commandName" value="parameters" />
+  </bean>
+  
+  <bean name="/report/database/manage.htm" 
+  		class="org.opennms.web.controller.ManageDatabaseReportController">
     <property name="bindOnNewForm" value="true" />
-  	<property name="reportListService" ref="reportListService"/>
-    <property name="commandName" value="ManageAvailabilityReportCommand" />
-    <property name="commandClass" value="org.opennms.web.command.ManageAvailabilityReportCommand" />
+	<property name="reportStoreService" ref="reportStoreService"/>
+    <property name="commandName" value="ManageDatabaseReportCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageDatabaseReportCommand" />
     <property name="pageSize" value="10"/>
-    <property name="successView" value="redirect:/report/availability/manage.htm" />
+    <property name="successView" value="redirect:/report/database/manage.htm" />
+  </bean>
+  
+  <bean name="/report/database/manageSchedule.htm" 
+  		class="org.opennms.web.controller.ManageReportScheduleController">
+    <property name="bindOnNewForm" value="true" />
+  	<property name="reportSchedulerService" ref="reportSchedulerService"/>
+    <property name="commandName" value="ManageReportScheduleCommand" />
+    <property name="commandClass" value="org.opennms.web.command.ManageReportScheduleCommand" />
+    <property name="pageSize" value="10"/>
+    <property name="successView" value="redirect:/report/database/manageSchedule.htm" />
+  </bean>
+  
+  <bean name="/report/database/downloadReport.htm" 
+  		class="org.opennms.web.controller.DownloadReportController">
+	<property name="reportStoreService" ref="reportStoreService"/>
   </bean>
   
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">

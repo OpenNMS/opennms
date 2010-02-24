@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/database-reports"
+	elementFormDefault="qualified">
+
+	<element name="database-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for database reports
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>A report definition</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<attribute name="id" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report as defined in engine
+						configuration</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="display-name" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report as displayed in the webui
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="report-service" type="string" use="required">
+				<annotation>
+					<documentation>the name of the engine to use to process and
+						render this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="description" type="string" use="required">
+				<annotation>
+					<documentation>report description</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="online" type="boolean" use="optional">
+				<annotation>
+					<documentation>determines if the report may be executed and immediately
+					displayed in the browser. If not set OpenNMS assumes that the report
+					must be executed in batch mode.</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>

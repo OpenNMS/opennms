@@ -102,7 +102,6 @@ public class DatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
@@ -384,17 +383,6 @@ public class DatabasePopulator {
 
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
-    }
-
-
-    public AvailabilityReportLocatorDao getAvailabilityReportLocatorDao() {
-        return m_availabilityReportLocatorDao;
-    }
-
-
-    public void setAvailabilityReportLocatorDao(
-            AvailabilityReportLocatorDao availabilityReportLocatorDao) {
-        m_availabilityReportLocatorDao = availabilityReportLocatorDao;
     }
 
 

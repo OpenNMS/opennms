@@ -367,6 +367,18 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.availability</artifactId>
+    </dependency>
+    <dependency>
       <groupId>alt.dev.jmta</groupId>
       <artifactId>jmta</artifactId>
     </dependency>
@@ -459,12 +471,21 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
+	<groupId>ognl</groupId>
+	  <artifactId>ognl</artifactId>
+	  <version>2.6.9</version>
+	</dependency>
+    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
     </dependency>
     <dependency>
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensymphony.quartz</groupId>
+      <artifactId>quartz</artifactId>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>

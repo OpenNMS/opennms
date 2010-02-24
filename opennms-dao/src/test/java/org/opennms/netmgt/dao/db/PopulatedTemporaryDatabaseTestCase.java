@@ -56,6 +56,8 @@ public class PopulatedTemporaryDatabaseTestCase extends
     private ByteArrayOutputStream m_outputStream;
 
     private boolean m_setupIpLike = false;
+
+    private boolean m_insertData = false;
     
     @Override
     protected void setUp() throws Exception {
@@ -84,14 +86,13 @@ public class PopulatedTemporaryDatabaseTestCase extends
         m_installerDb.setCreateSqlLocation(ConfigurationTestUtils.getFileForConfigFile("create.sql").getAbsolutePath());
         m_installerDb.setStoredProcedureDirectory(ConfigurationTestUtils.getFileForConfigFile("getPercentAvailabilityInWindow.sql").getParentFile().getAbsolutePath());
 
-        //installerDb.setDebug(true);
+        //m_installerDb.setDebug(true);
 
         m_installerDb.readTables();
         
         m_installerDb.createSequences();
         m_installerDb.updatePlPgsql();
         m_installerDb.addStoredProcedures();
-        
 
         /*
          * Here's an example of an iplike function that always returns true.
@@ -106,6 +107,11 @@ public class PopulatedTemporaryDatabaseTestCase extends
         }
 
         m_installerDb.createTables();
+        
+        if(m_insertData) {
+            m_installerDb.insertData();
+        }
+        
     }
 
     protected File findIpLikeLibrary() {
@@ -164,6 +170,10 @@ public class PopulatedTemporaryDatabaseTestCase extends
     public void resetOutputStream() {
         m_outputStream = new ByteArrayOutputStream();
         m_installerDb.setOutputStream(new PrintStream(m_outputStream));
+    }
+    
+    public void setInsertData(boolean insertData) throws Exception {
+        m_insertData = insertData;
     }
     
     public void setSetupIpLike(boolean setupIpLike) {

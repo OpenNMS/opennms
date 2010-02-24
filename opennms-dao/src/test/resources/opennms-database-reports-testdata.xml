@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opennms-database-reports
+	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
+	<report id="defaultCalendarReport" 
+		type="calendar">
+		<logo>logo.gif</logo>
+		<svg-template>SVGAvailReport.xsl</svg-template>
+		<pdf-template>PDFAvailReport.xsl</pdf-template>
+		<html-template>HTMLAvailReport.xsl</html-template>
+	</report>
+	<report id="defaultClassicReport" 
+		type="calendar">
+		<logo>logo.gif</logo>
+		<pdf-template>PDFAvailReport.xsl</pdf-template>
+		<html-template>HTMLAvailReport.xsl</html-template>
+	</report>
+</opennms-database-reports>

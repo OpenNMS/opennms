@@ -5,6 +5,7 @@
 
   <bean id="populatedTemporaryDatabaseTestCase" class="org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase" init-method="setUp">
     <property name="setupIpLike" ref="setupIpLike"/>
+    <property name="insertData" ref="insertData"/>
   </bean>
 
   <bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
