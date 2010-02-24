@@ -74,7 +74,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-class MailAckProcessor implements Runnable, InitializingBean {
+class MailAckProcessor implements AckProcessor {
     
     private static final int LOG_FIELD_WIDTH = 128;
     
@@ -82,10 +82,8 @@ class MailAckProcessor implements Runnable, InitializingBean {
     
     private AckService m_ackService;
     
-    private JavaMailConfigurationDao m_jmConfigDao;
+    private volatile JavaMailConfigurationDao m_jmConfigDao;
     
-    volatile Object m_lock = new Object();
-
     public void afterPropertiesSet() throws Exception {
     }
 
@@ -111,15 +109,14 @@ class MailAckProcessor implements Runnable, InitializingBean {
                 log().debug("findAndProcessAcks: acks processed.");
             }
         } catch (JavaMailerException e) {
-            log().error("findAndProcessAcks: Exception thrown in JavaMail: "+e);
-            e.printStackTrace();
+            log().error("findAndProcessAcks: Exception thrown in JavaMail: "+e, e);
         }
         
         log().debug("findAndProcessAcks: completed checking for and processing acknowledgments.");
     }
 
     private static Logger log() {
-        return ThreadCategory.getInstance();
+        return ThreadCategory.getInstance(MailAckProcessor.class);
     }
 
     //should probably be static
@@ -350,26 +347,18 @@ class MailAckProcessor implements Runnable, InitializingBean {
         return config;
     }
     
-    public void setAckdConfigDao(final AckdConfigurationDao configDao) {
-        synchronized (m_lock) {
-            m_ackdDao = configDao;
-        }
+    public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
+        m_ackdDao = configDao;
     }
     
-    public void setAckService(final AckService ackService) {
-        synchronized (m_lock) {
-            m_ackService = ackService;
-        }
+    public synchronized void setAckService(final AckService ackService) {
+        m_ackService = ackService;
     }
     
-    protected void reloadConfigs() {
-        log().debug("reloadConfigs: acquiring lock...");
-        synchronized (m_lock) {
-            log().debug("reloadConfigs: lock acquired; reloading configuration...");
-            m_jmConfigDao.reloadConfiguration();
-            log().debug("reloadConfigs: configuration reloaded");
-        }
-        log().debug("reloadConfigs: lock released.");
+    public synchronized void reloadConfigs() {
+        log().debug("reloadConfigs: lock acquired; reloading configuration...");
+        m_jmConfigDao.reloadConfiguration();
+        log().debug("reloadConfigs: configuration reloaded");
     }
     
     protected JavaMailConfigurationDao getJmConfigDao() {

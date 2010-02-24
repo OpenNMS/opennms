@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hyperic-alert-statuses>
+  <alert id="11058" fixed="false"/>
+  <alert id="11059" fixed="false"/>
+  <alert id="11061" fixed="false"/>
+  <alert id="11069" fixed="true" fixUser="hqadmin" fixMessage="(Fixed by hqadmin) Really fixed it this time." fixTime="2010-02-18T11:09:39.963"/>
+  <alert id="11073" fixed="false" ackUser="hqadmin" ackMessage="HQ Administrator acknowledged the alert and paused escalation for 3 days 00:00:00. Hello, trying to ack an alert with a custom message!" ackTime="2010-02-18T11:26:03.645"/>
+</hyperic-alert-statuses>

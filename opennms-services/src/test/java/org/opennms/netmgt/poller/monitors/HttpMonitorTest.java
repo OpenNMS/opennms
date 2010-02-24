@@ -36,15 +36,25 @@
 //
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitHttpServerExecutionListener;
+import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -54,16 +64,29 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
-public class HttpMonitorTest extends TestCase {
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    JUnitHttpServerExecutionListener.class
+})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
+public class HttpMonitorTest {
 
     private boolean m_runTests = true;
 
-
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
     }
     
+    @Test
     public void testParms() {
         Parms eventParms = new Parms();
         Parm eventParm = new Parm();
@@ -85,6 +108,7 @@ public class HttpMonitorTest extends TestCase {
     /*
      * Test method for 'org.opennms.netmgt.poller.monitors.HttpMonitor.poll(NetworkInterface, Map, Package)'
      */
+    @Test
     public void testPollStatusReason() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -105,7 +129,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         PollStatus status = monitor.poll(svc, m);        
@@ -115,6 +139,8 @@ public class HttpMonitorTest extends TestCase {
         
     }
     
+    @Test
+    @JUnitHttpServer(port=10342)
     public void testResponseRange() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -123,11 +149,10 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "localhost", "HTTP");
 
-        
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -135,7 +160,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
@@ -167,7 +192,9 @@ public class HttpMonitorTest extends TestCase {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
     }
-        
+
+    @Test
+    @JUnitHttpServer(port=10342)
     public void testMatchingTextInResponse() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -177,10 +204,10 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "localhost", "HTTP");
 
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -188,7 +215,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
@@ -200,7 +227,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("host-name");
-        p.setValue("www.google.com");
+        p.setValue("localhost");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
@@ -217,10 +244,10 @@ public class HttpMonitorTest extends TestCase {
         assertNotNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("<title>Google</title>");
+        p.setValue("written by monkeys");
         m.put(p.getKey(), p.getValue());
         
-        MockUtil.println("\nliteral text check: \"Google in title\"");
+        MockUtil.println("\nliteral text check: \"written by monkeys\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -228,10 +255,10 @@ public class HttpMonitorTest extends TestCase {
         assertNull(status.getReason());
 
         p.setKey("response-text");
-        p.setValue("~.*window.add[Ee]vent[Ll]istener.*");
+        p.setValue("~.*[Tt]est HTTP [Ss]erver.*");
         m.put(p.getKey(), p.getValue());
 
-        MockUtil.println("\nregex check: \".*window.add[Ee]vent[Ll]istener.*\"");
+        MockUtil.println("\nregex check: \".*[Tt]est HTTP [Ss]erver.*\"");
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -240,6 +267,7 @@ public class HttpMonitorTest extends TestCase {
 
     }
     
+    @Test
     public void testBase64Encoding() {
         if (m_runTests == false) return;
         
@@ -253,11 +281,12 @@ public class HttpMonitorTest extends TestCase {
         assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(monitor.determineBasicAuthentication(m)));
     }
     
-    
     private MonitoredService getMonitoredService(int nodeId, String hostname, String svcName) throws UnknownHostException {
         return new MockMonitoredService(nodeId, hostname, InetAddress.getByName(hostname).getHostAddress(), svcName);
     }
-    
+
+    @Test
+    @JUnitHttpServer(port=10342, basicAuth=true)
     public void testBasicAuthentication() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -267,10 +296,10 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(1, "prism.library.cornell.edu", "HTTP");
+        MonitoredService svc = getMonitoredService(1, "localhost", "HTTP");
         
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -278,7 +307,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
@@ -289,12 +318,16 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("true");
         m.put(p.getKey(), p.getValue());
         
+        p.setKey("host-name");
+        p.setValue("localhost");
+        m.put(p.getKey(), p.getValue());
+        
         p.setKey("url");
-        p.setValue("/control/authBasic/authTest/");
+        p.setValue("/");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("basic-authentication");
-        p.setValue("test:this");
+        p.setValue("admin:istrator");
         m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m);
@@ -304,7 +337,7 @@ public class HttpMonitorTest extends TestCase {
         
         
         p.setKey("basic-authentication");
-        p.setValue("test:that");
+        p.setValue("admin:flagrator");
         m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m);
@@ -314,8 +347,10 @@ public class HttpMonitorTest extends TestCase {
 
         
     }
-    
-    public void _testBasicAuthenticationWithHttps() throws UnknownHostException {
+
+    @Test
+    @JUnitHttpServer(port=10342, https=true)
+    public void testBasicAuthenticationWithHttps() throws UnknownHostException {
         
         if (m_runTests == false) return;
         
@@ -324,10 +359,10 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpsMonitor();
-        MonitoredService svc = getMonitoredService(1, "blah.opennms.com", "HTTP");
+        MonitoredService svc = getMonitoredService(1, "localhost", "HTTP");
         
         p.setKey("port");
-        p.setValue("443");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -335,7 +370,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
@@ -346,14 +381,14 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("true");
         m.put(p.getKey(), p.getValue());
         
-        p.setKey("url");
-        p.setValue("/index.php/Main_Page");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("basic-authentication");
-        p.setValue("zzzz:zzzz");
+        p.setKey("host-name");
+        p.setValue("localhost");
         m.put(p.getKey(), p.getValue());
         
+        p.setKey("url");
+        p.setValue("/index.html");
+        m.put(p.getKey(), p.getValue());
+
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
@@ -361,6 +396,8 @@ public class HttpMonitorTest extends TestCase {
         
     }
 
+    @Test
+    @JUnitHttpServer(port=10342)
     public void testWithUrl() throws UnknownHostException {
         if (m_runTests == false) return;
         
@@ -369,18 +406,18 @@ public class HttpMonitorTest extends TestCase {
         PollStatus status = null;
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "localhost", "HTTP");
         
         p.setKey("host-name");
-        p.setValue("www.google.com");
+        p.setValue("localhost");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/search?hl=en&q=monkey&btnG=Google+Search");
+        p.setValue("/twinkies.html");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -388,7 +425,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("2000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
@@ -396,7 +433,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response-text");
-        p.setValue("Results");
+        p.setValue("~.*Don.t you love twinkies..*");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("verbose");
@@ -410,7 +447,48 @@ public class HttpMonitorTest extends TestCase {
 
     }
 
-    
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"opennms.com"})
+    public void testPollInInvalidVirtualDomain() throws UnknownHostException {
+
+        if (m_runTests == false) return;
+        
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+        Parameter p = new Parameter();
+        
+        ServiceMonitor monitor = new HttpMonitor();
+        MonitoredService svc = getMonitoredService(3, "localhost", "HTTP");
+        
+        p.setKey("port");
+        p.setValue("10342");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("retry");
+        p.setValue("1");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("timeout");
+        p.setValue("500");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("host-name");
+        p.setValue("www.google.com");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("url");
+        p.setValue("/twinkies.html");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("response-text");
+        p.setValue("~.*twinkies.*");
+        m.put(p.getKey(), p.getValue());
+
+        PollStatus status = monitor.poll(svc, m);
+        assertEquals("poll status available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, vhosts={"www.opennms.org"})
     public void testPollInValidVirtualDomain() throws UnknownHostException {
 
         if (m_runTests == false) return;
@@ -419,10 +497,10 @@ public class HttpMonitorTest extends TestCase {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(3, "www.google.com", "HTTP");
+        MonitoredService svc = getMonitoredService(3, "localhost", "HTTP");
         
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("10342");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -430,24 +508,23 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("timeout");
-        p.setValue("1000");
+        p.setValue("500");
         m.put(p.getKey(), p.getValue());
 
-        p.setKey("host name");
-        p.setValue("opennms.com");
+        p.setKey("host-name");
+        p.setValue("www.opennms.org");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/solutions/");
+        p.setValue("/twinkies.html");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("response-text");
-        p.setValue("~.*[Ff]eeling [Ll]ucky.*");
+        p.setValue("~.*twinkies.*");
         m.put(p.getKey(), p.getValue());
 
         PollStatus status = monitor.poll(svc, m);
-        assertEquals("poll status not available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
-        
+        assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
 
 }

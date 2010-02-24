@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -60,6 +60,13 @@
               <goal>compile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>test</id>
+            <phase>test</phase>
+            <goals>
+                <goal>test</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -84,7 +91,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
         <configuration>
-          <path>/${pom.artifactId}</path>
+          <path>/${project.artifactId}</path>
           <port>${web.port}</port>
         </configuration>
       </plugin>
@@ -202,6 +209,23 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Generates the GWT Container and Nature for GWT projects when eclipse:eclipse is run -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+          <configuration>
+          <additionalBuildcommands>
+            <buildcommand>com.google.gwt.eclipse.core.gwtProjectValidator</buildcommand>
+          </additionalBuildcommands>
+          <additionalProjectnatures>
+            <projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+          </additionalProjectnatures>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
+          </classpathContainers>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -275,7 +299,7 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <classifier>signed-jar-with-dependencies</classifier>
       <scope>provided</scope>
     </dependency>
@@ -385,7 +409,6 @@
       <groupId>org.gwtwidgets</groupId>
       <artifactId>gwt-widgets-server</artifactId>
     </dependency>
-
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
@@ -411,11 +434,6 @@
       <groupId>jakarta-regexp</groupId>
       <artifactId>jakarta-regexp</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.samples.jnlp</groupId>
-      <artifactId>jnlp-servlet</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -449,6 +467,10 @@
       <artifactId>extremecomponents</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewrite</artifactId>
+    </dependency>
+    <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
     </dependency>
@@ -474,21 +496,18 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-core</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.directory.server</groupId>
       <artifactId>apacheds-server-jndi</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>

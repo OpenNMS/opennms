@@ -46,15 +46,22 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.mock.TestSnmpValue;
+import org.opennms.test.mock.MockLogAppender;
 
 public class RescanProcessorTest extends TestCase {
+    
+    @Override
+    protected void setUp(){
+        MockLogAppender.setupLogging();
+    }
+    
     /**
      * Test for bug #2448.
      */
     public void testBadSnmpIfSpeed() {
         int nodeId = 1;
         int ifIndex = 10;
-
+        
         RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
         RescanProcessor processor = new RescanProcessor(nodeId, false, null, null);
         

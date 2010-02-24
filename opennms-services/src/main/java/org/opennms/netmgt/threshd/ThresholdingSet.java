@@ -339,16 +339,13 @@ public abstract class ThresholdingSet {
             // Getting thresholding-group for selected service and adding to groupNameList
             for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
                 if (svc.getName().equals(serviceName)) {
-                    String groupName = null;
                     for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
                         if (parameter.getKey().equals("thresholding-group")) {
-                            groupName = parameter.getValue();
-                        }
-                    }
-                    if (groupName != null) {
-                        groupNameList.add(groupName);
-                        if (log().isDebugEnabled()) {
-                            log().debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            String groupName = parameter.getValue();
+                            groupNameList.add(groupName);
+                            if (log().isDebugEnabled()) {
+                                log().debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            }
                         }
                     }
                 }

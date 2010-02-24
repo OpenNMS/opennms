@@ -41,9 +41,17 @@ package org.opennms.mock.snmp;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -78,8 +86,9 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.ThreadPool;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 /*
  * The <code>MockSnmpAgent</code> class extends the SNMP4J BaseAgent
@@ -165,20 +174,68 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     }
     
     public static void main(String[] args) {
-    	if (args.length < 2) {
-    	    System.err.println("Usage: MockSnmpAgent props-file listen-addr\n\nWhere props-file is relative to CLASSPATH\nand listen-addr is of the form 10.11.12.13/1161 to listen on port 1161");
-    	    System.exit(1);
-    	}
-    	ClassPathResource moFile = new ClassPathResource(args[0]);
-       	String bindAddress = args[1];
+        AgentConfigData agentConfig = parseCli(args);
+        if (agentConfig == null) {
+            System.err.println("Could not parse configuration.");
+            System.exit(1);
+        }
+        String listenSpec = agentConfig.getListenAddr().getHostAddress() + "/" + agentConfig.getListenPort();
     	
        	try {
-       	    MockSnmpAgent.createAgentAndRun(moFile, bindAddress);
+       	    MockSnmpAgent.createAgentAndRun(agentConfig.getMoFile(), listenSpec);
        	} catch (InterruptedException e) {
        	    System.exit(0);
        	}
-    }    
+    }
 
+    public static AgentConfigData parseCli(String[] args) {
+        Options opts = new Options();
+        opts.addOption("d", "dump-file", true, "Pathname or URL of file containing MIB dump");
+        opts.addOption("l", "listen-addr", true, "IP address to bind to (default: 127.0.0.1)");
+        opts.addOption("p", "port", true, "UDP port to listen on (default: 1691)");
+        
+        String dumpFile = "";
+        String listenAddr;
+        long listenPort;
+        AgentConfigData agentConfig;
+
+        CommandLineParser parser = new PosixParser();
+        try {
+            CommandLine cmd = parser.parse(opts, args);
+            if (cmd.hasOption('d')) {
+                dumpFile = cmd.getOptionValue('d');
+            } else {
+                usage("You must specify at least a pathname or URL for the dump file.", opts);
+            }
+
+            if (cmd.hasOption('l')) {
+                listenAddr = cmd.getOptionValue('l');
+            } else {
+                listenAddr = "127.0.0.1";
+            }
+            if (cmd.hasOption('p')) {
+                listenPort = Long.valueOf(cmd.getOptionValue('p'));
+            } else {
+                listenPort = 1691L;
+            }
+            return new AgentConfigData(dumpFile, listenAddr, listenPort);
+        } catch (ParseException e) {
+            usage("Failed to parse provided options.", opts);
+        } catch (UnknownHostException e) {
+            usage("Unknown host in dump file URL specifier", opts);
+        } catch (MalformedURLException e) {
+            usage("Malformed dump file URL specifier", opts);
+        }
+
+        return null;
+    }
+    
+    private static void usage(String why, Options opts) {
+        System.err.println(why);
+        System.err.println(opts.toString());
+        System.exit(1);
+    }
+    
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
             return;

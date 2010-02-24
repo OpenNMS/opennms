@@ -139,7 +139,6 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         return pluginInstance;
     }
 
-    @SuppressWarnings("unchecked")
     private <T> Map<String, T> beansOfType(Class<T> pluginClass) {
         return BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, pluginClass, true, true);
     }

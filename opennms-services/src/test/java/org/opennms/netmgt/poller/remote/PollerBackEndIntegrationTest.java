@@ -37,51 +37,75 @@
 //
 package org.opennms.netmgt.poller.remote;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
-    private PollerBackEnd m_backEnd;
-    private SessionFactory m_sessionFactory;
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
+        "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml",
+        "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
+})
+@JUnitTemporaryDatabase()
+public class PollerBackEndIntegrationTest{
     
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
+    @Autowired
+    PollerBackEnd m_backEnd;
+    
+    @Autowired
+    SessionFactory m_sessionFactory;
+    
+    @Autowired
+    JdbcTemplate m_jdbcTemplate;
+    
+    @Before
+    public void setUp(){
+        MockLogAppender.setupLogging();
     }
     
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-                "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                "classpath*:/META-INF/opennms/component-dao.xml",
-                "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-                "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
-                "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
-        };
-    }
-    
-    public void setPollerBackEnd(PollerBackEnd backEnd) {
-        m_backEnd = backEnd;
-    }
-    
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        m_sessionFactory = sessionFactory;
-    }
-    
+    @Test
+    @Transactional
     public void testRegister() {
         
         Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
@@ -97,10 +121,12 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         }
         
         
-        assertEquals(initialCount + locations.size(), jdbcTemplate.queryForInt("select count(*) from location_monitors"));
+        assertEquals(initialCount + locations.size(), m_jdbcTemplate.queryForInt("select count(*) from location_monitors"));
         
     }
-
+    
+    @Test
+    @Transactional
     public void testPollingStarted() {
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
@@ -111,6 +137,8 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         assertEquals("WonkaOS", queryForString("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", locationMonitorId, "os.name"));
     }
     
+    @Test
+    @Transactional
     public void testPollingStopped() {
 
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
@@ -126,6 +154,8 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         
     }
     
+    @Test
+    @Transactional
     public void testPollerDisconnected() throws Exception {
 
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
@@ -149,6 +179,8 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         
     }
     
+    @Test
+    @Transactional
     public void testGetServiceMonitorLocators() {
         
         Collection<ServiceMonitorLocator> results = m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR);
@@ -158,12 +190,13 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
         assertTrue(results.size() > 0);
     }
 
-    
+    @Test
+    @Transactional
     public void testReportResults() {
-        jdbcTemplate.execute("INSERT INTO node (nodeId, nodeCreateTime) VALUES (1, now())");
-        jdbcTemplate.execute("INSERT INTO ipInterface (id, nodeId, ipAddr)  VALUES (1, 1, '192.168.1.1')");
-        jdbcTemplate.execute("INSERT INTO service (serviceId, serviceName) VALUES (1, 'HTTP')");
-        jdbcTemplate.execute("INSERT INTO ifServices (id, nodeId, ipAddr, serviceId, ipInterfaceId) VALUES (1, 1, '192.168.1.1', 1, 1)");
+        m_jdbcTemplate.execute("INSERT INTO node (nodeId, nodeCreateTime) VALUES (1, now())");
+        m_jdbcTemplate.execute("INSERT INTO ipInterface (id, nodeId, ipAddr)  VALUES (1, 1, '192.168.1.1')");
+        m_jdbcTemplate.execute("INSERT INTO service (serviceId, serviceName) VALUES (1, 'HTTP')");
+        m_jdbcTemplate.execute("INSERT INTO ifServices (id, nodeId, ipAddr, serviceId, ipInterfaceId) VALUES (1, 1, '192.168.1.1', 1, 1)");
         
         int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         int serviceId = findServiceId();
@@ -188,7 +221,7 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     }
 
     private int findServiceId() {
-        return jdbcTemplate.queryForInt("select id from ifservices, service where ifservices.serviceid = service.serviceid and service.servicename='HTTP' limit 1");
+        return m_jdbcTemplate.queryForInt("select id from ifservices, service where ifservices.serviceid = service.serviceid and service.servicename='HTTP' limit 1");
     }
 
     private void flush() {
@@ -197,12 +230,12 @@ public class PollerBackEndIntegrationTest extends AbstractTransactionalTemporary
     
     private String queryForString(String sql, Object... args) {
         flush();
-        return (String) jdbcTemplate.queryForObject(sql, args, String.class);
+        return (String) m_jdbcTemplate.queryForObject(sql, args, String.class);
     }
     
     public int queryForInt(String sql, Object... args) {
         flush();
-        return jdbcTemplate.queryForInt(sql, args);
+        return m_jdbcTemplate.queryForInt(sql, args);
     }
     
     public Map<String, String> getPollerDetails() {

@@ -64,12 +64,12 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Holds thresholds configuration for a node/interface/service
      */
-    private CollectorThresholdingSet m_thresholdingSet;
+    CollectorThresholdingSet m_thresholdingSet;
     
     /*
      * Holds required attribute from CollectionResource to evaluate thresholds.
      */
-    private Map<String, CollectionAttribute> m_attributesMap;
+    Map<String, CollectionAttribute> m_attributesMap;
     
     /*
      * Is static because successful creation depends on thresholding-enabled parameter.

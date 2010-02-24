@@ -75,6 +75,7 @@ import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
@@ -706,6 +707,36 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 50, 45, 60, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 40, 100);
         verifyEvents(0);
+    }
+    
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3390.xml
+     * - test-thresholds-bug3390.xml
+     * 
+     * The idea is to define many threshold-group parameters on a service inside a package
+     */
+    @Test
+    public void testBug3390() throws Exception {
+        initFactories("/threshd-configuration-bug3390.xml","/test-thresholds-bug3390.xml");
+        
+        // Validating threshd-configuration.xml
+        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
+        assertEquals(1, configManager.getConfiguration().getPackageCount());
+        org.opennms.netmgt.config.threshd.Package pkg = configManager.getConfiguration().getPackage(0);
+        assertEquals(1, pkg.getServiceCount());
+        org.opennms.netmgt.config.threshd.Service svc = pkg.getService(0);
+        assertEquals(5, svc.getParameterCount());
+        int count = 0;
+        for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
+            if (parameter.getKey().equals("thresholding-group"))
+                count++;
+        }
+        assertEquals(5, count);
+
+        // Validating Thresholding Set
+        ThresholdingVisitor visitor = createVisitor();
+        assertEquals(5, visitor.m_thresholdingSet.m_thresholdGroups.size());
     }
 
     /*

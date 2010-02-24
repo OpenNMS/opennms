@@ -49,7 +49,6 @@ import org.opennms.netmgt.provision.support.Client;
  */
 public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
     
-    private String m_address;
     private boolean m_isSupported = false;
     
     public void close() {
@@ -57,7 +56,6 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
     }
 
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        m_address = address.getHostAddress();
     }
 
     public SmsResponse receiveBanner() throws IOException, Exception {

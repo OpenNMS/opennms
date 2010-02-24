@@ -243,6 +243,23 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
+    <name>OpenNMS:Name=Reportd</name>
+    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
+    <attribute>
+      <name>LoggingPrefix</name>
+      <value type="java.lang.String">Reportd</value>
+    </attribute>
+    <attribute>
+      <name>SpringContext</name>
+      <value type="java.lang.String">reportdContext</value>
+    </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+
+  <service>
     <name>OpenNMS:Name=Alarmd</name>
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>

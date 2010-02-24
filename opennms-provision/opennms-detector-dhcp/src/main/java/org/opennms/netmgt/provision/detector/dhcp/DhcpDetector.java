@@ -51,7 +51,7 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     private static final int DEFAULT_TIMEOUT = 3000;
     
     public DhcpDetector() {
-        super("DCHP", 0);
+        super("DHCP", 0);
         setTimeout(DEFAULT_TIMEOUT);
         setRetries(DEFAULT_RETRY);
     }
