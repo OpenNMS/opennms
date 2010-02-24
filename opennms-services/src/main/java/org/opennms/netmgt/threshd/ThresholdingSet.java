@@ -196,9 +196,13 @@ public abstract class ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     protected List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
+        List<Event> eventsList = new LinkedList<Event>();
+        if (attributesMap == null || attributesMap.size() == 0) {
+            log().debug("applyThresholds: Ignoring resource " + resourceWrapper + " because required attributes map is empty.");
+            return eventsList;
+        }
         log().debug("applyThresholds: Applying thresholds on " + resourceWrapper + " using " + attributesMap.size() + " attributes.");
         Date date = new Date();
-        List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
             if (entityMap != null) {
