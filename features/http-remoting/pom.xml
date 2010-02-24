@@ -16,6 +16,12 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <webResources>
+            <resource>
+              <filtering>true</filtering>
+              <directory>${basedir}/src/main/web-filtered</directory>
+            </resource>
+          </webResources>
         </configuration>
       </plugin>
     </plugins>
@@ -36,6 +42,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -5,4 +5,5 @@ target
 .externalToolBuilders
 .project
 .settings
+.springBeans
 build.properties

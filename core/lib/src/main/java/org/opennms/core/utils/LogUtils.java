@@ -1,5 +1,8 @@
 package org.opennms.core.utils;
 
+import java.util.Properties;
+
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 
 public class LogUtils {
@@ -86,7 +89,30 @@ public class LogUtils {
         errorf(logee, null, format, args);
     }
 
-    private static Logger getLogger(Object logee) {
+    public static void logToConsole() {
+    	Properties logConfig = new Properties();
+    	logConfig.setProperty("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+    	logConfig.setProperty("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+    	logConfig.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+    	PropertyConfigurator.configure(logConfig);
+    }
+
+    public static void logToFile(String file) {
+    	Properties logConfig = new Properties();
+    	logConfig.setProperty("log4j.appender.FILE", "org.apache.log4j.RollingFileAppender");
+    	logConfig.setProperty("log4j.appender.FILE.MaxFileSize", "100MB");
+    	logConfig.setProperty("log4j.appender.FILE.MaxBackupIndex", "4");
+    	logConfig.setProperty("log4j.appender.FILE.File", file);
+    	logConfig.setProperty("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+    	logConfig.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+    	PropertyConfigurator.configure(logConfig);
+    }
+    
+	public static void enableDebugging() {
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
+	}
+
+	private static Logger getLogger(Object logee) {
         Logger log;
         if (logee instanceof String) {
             log = ThreadCategory.getSlf4jInstance((String)logee);
@@ -97,4 +123,5 @@ public class LogUtils {
         }
         return log;
     }
+
 }
