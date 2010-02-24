@@ -44,25 +44,19 @@ package org.opennms.netmgt.rrd.tcp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
 
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
  * out in a simple serialized format.
  */
-public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocket> {
+public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocketWithFilename> {
     public static class RrdDefinition {
         private final String m_directory, m_rrdName;
         public RrdDefinition(
@@ -78,79 +72,21 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
         };
     }
 
-    public class RrdOutputSocket {
-        // private final RrdDefinition m_def;
+    public static class RrdOutputSocketWithFilename {
+        private final RrdOutputSocket m_socket;
         private final String m_filename;
-        private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
 
-        /*
-        public RrdOutputSocket(RrdDefinition def) throws Exception {
-            m_socket = new Socket(InetAddress.getByName("127.0.0.1"), TCP_PORT);
-            m_def = def;
-        }
-         */
-
-        public RrdOutputSocket(String filename) throws Exception {
+        public RrdOutputSocketWithFilename(RrdOutputSocket socket, String filename) {
+            m_socket = socket;
             m_filename = filename;
-            m_messages = PerformanceDataProtos.PerformanceDataReadings.newBuilder();
         }
 
-        public String getPath() {
-            return m_filename; // m_def.getPath();
-        };
-
-        public void addData(String owner, String data) {
-            Long timestamp = parseRrdTimestamp(data);
-            List<Double> values = parseRrdValues(data);
-            m_messages.addMessage(PerformanceDataReading.newBuilder()
-                    .setPath(m_filename)
-                    .setOwner(owner)
-                    .setTimestamp(timestamp).
-                    addAllValue(values)
-            );
+        public RrdOutputSocket getSocket() {
+            return m_socket;
         }
 
-        public void writeData() throws Exception {
-            Socket socket = null;
-            try {
-                socket = new Socket(InetAddress.getByName(m_host), m_port);
-                OutputStream out = socket.getOutputStream();
-                m_messages.build().writeTo(out);
-                // out = new FileOutputStream(new File("/tmp/testdata.protobuf"));
-                // m_messages.build().writeTo(out);
-                out.flush();
-            } catch (Throwable e) {
-                ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messages.getMessageCount() + " performance messages: " + e.getMessage());
-            } finally {
-                if (socket != null) {
-                    socket.close();
-                }
-            }
-        };
-
-        private Long parseRrdTimestamp(String data) {
-            if (data.startsWith("N:")) {
-                return System.currentTimeMillis();
-            } else {
-                String timestamp = data.split(":")[0];
-                // RRD timestamps are in seconds, we want to return milliseconds
-                return Long.valueOf(timestamp) * 1000;
-            }
-        }
-
-        private List<Double> parseRrdValues(String data) {
-            List<Double> retval = new ArrayList<Double>();
-            String[] values = data.split(":");
-            // Skip index zero, that's the timestamp
-            for (int i = 1; i < values.length; i++) {
-                // Parse the RRD value for "unknown"
-                if ("U".equals(values[i])) {
-                    retval.add(Double.NaN);
-                } else {
-                    retval.add(new Double(values[i]));
-                }
-            }
-            return retval;
+        public String getFilename() {
+            return m_filename;
         }
     }
 
@@ -187,18 +123,19 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     }
 
     public void createFile(RrdDefinition rrdDef) throws Exception {
+        // Do nothing
     }
 
-    public RrdOutputSocket openFile(String fileName) throws Exception {
-        return new RrdOutputSocket(fileName);
+    public RrdOutputSocketWithFilename openFile(String fileName) throws Exception {
+        return new RrdOutputSocketWithFilename(new RrdOutputSocket(m_host, m_port), fileName);
     }
 
-    public void updateFile(RrdOutputSocket rrd, String owner, String data) throws Exception {
-        rrd.addData(owner, data);
+    public void updateFile(RrdOutputSocketWithFilename rrd, String owner, String data) throws Exception {
+        rrd.getSocket().addData(rrd.getFilename(), owner, data);
     }
 
-    public void closeFile(RrdOutputSocket rrd) throws Exception {
-        rrd.writeData();
+    public void closeFile(RrdOutputSocketWithFilename rrd) throws Exception {
+        rrd.getSocket().writeData();
     }
 
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {

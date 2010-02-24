@@ -135,8 +135,13 @@ public class HypericAckProcessor implements AckProcessor {
     @XmlRootElement(name="alert")
     static class HypericAlertStatus {
         private int alertId;
-        private boolean isAcknowledged;
+        private String ackUser;
+        private String ackMessage;
+        private Date ackTime;
         private boolean isFixed;
+        private String fixUser;
+        private String fixMessage;
+        private Date fixTime;
 
         @XmlAttribute(name="id", required=true)
         public int getAlertId() {
@@ -144,14 +149,6 @@ public class HypericAckProcessor implements AckProcessor {
         }
         public void setAlertId(int alertId) {
             this.alertId = alertId;
-        }
-
-        @XmlAttribute(name="ack", required=true)
-        public boolean isAcknowledged() {
-            return isAcknowledged;
-        }
-        public void setAcknowledged(boolean isAcknowledged) {
-            this.isAcknowledged = isAcknowledged;
         }
 
         @XmlAttribute(name="fixed", required=true)
@@ -162,12 +159,65 @@ public class HypericAckProcessor implements AckProcessor {
             this.isFixed = isFixed;
         }
 
+        @XmlAttribute(name="ackUser")
+        public String getAckUser() {
+            return ackUser;
+        }
+        public void setAckUser(String ackUser) {
+            this.ackUser = ackUser;
+        }
+
+        @XmlAttribute(name="ackMessage")
+        public String getAckMessage() {
+            return ackMessage;
+        }
+        public void setAckMessage(String ackMessage) {
+            this.ackMessage = ackMessage;
+        }
+
+        @XmlAttribute(name="ackTime")
+        public Date getAckTime() {
+            return ackTime;
+        }
+        public void setAckTime(Date ackTime) {
+            this.ackTime = ackTime;
+        }
+
+        @XmlAttribute(name="fixUser")
+        public String getFixUser() {
+            return fixUser;
+        }
+        public void setFixUser(String fixUser) {
+            this.fixUser = fixUser;
+        }
+
+        @XmlAttribute(name="fixMessage")
+        public String getFixMessage() {
+            return fixMessage;
+        }
+        public void setFixMessage(String fixMessage) {
+            this.fixMessage = fixMessage;
+        }
+
+        @XmlAttribute(name="fixTime")
+        public Date getFixTime() {
+            return fixTime;
+        }
+        public void setFixTime(Date fixTime) {
+            this.fixTime = fixTime;
+        }
+
         public String toString() {
             StringBuffer retval = new StringBuffer();
             retval.append("{ ");
             retval.append("id: ").append(String.valueOf(alertId)).append(", ");
-            retval.append("ack: ").append(String.valueOf(isAcknowledged)).append(", ");
-            retval.append("fixed: ").append(String.valueOf(isFixed));
+            retval.append("fixed: ").append(String.valueOf(isFixed)).append(", ");
+            retval.append("ackUser: ").append(String.valueOf(ackUser)).append(", ");
+            retval.append("ackMessage: ").append(String.valueOf(ackMessage)).append(", ");
+            retval.append("ackTime: ").append(String.valueOf(ackTime)).append(", ");
+            retval.append("fixUser: ").append(String.valueOf(fixUser)).append(", ");
+            retval.append("fixMessage: ").append(String.valueOf(fixMessage)).append(", ");
+            retval.append("fixTime: ").append(String.valueOf(fixTime));
             retval.append(" }");
             return retval.toString();
         }
@@ -248,10 +298,10 @@ public class HypericAckProcessor implements AckProcessor {
                 String hypericSystem = alarmList.getKey();
                 List<OnmsAlarm> alarmsForSystem = alarmList.getValue();
 
-                // Match the platform.id to the Hyperic URL via the config
+                // Match the alert.source to the Hyperic URL via the config
                 String hypericUrl = getUrlForHypericSource(hypericSystem);
                 if (hypericUrl == null) {
-                    // If the platform.id doesn't match anything in our current config, just ignore it, warn in the logs
+                    // If the alert.source doesn't match anything in our current config, just ignore it, warn in the logs
                     log().warn("Could not find Hyperic host URL for the following platform ID: " + hypericSystem);
                     log().warn("Skipping processing of " + alarmsForSystem.size() + " alarms with that platform ID");
                     continue;
@@ -273,23 +323,20 @@ public class HypericAckProcessor implements AckProcessor {
                     for (HypericAlertStatus alert : alertsForSystem) {
                         OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
 
-                        // If the Hyperic alert has been ack'd and the local alarm is not yet ack'd, then ack it
-                        if (alert.isAcknowledged() && alarm.getAckTime() == null) {
-                            // TODO Get the ack time from Hyperic??
-                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
+                        // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
+                        if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
+                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", (alert.getFixTime() != null) ? alert.getFixTime() : new Date());
+                            ack.setAckAction(AckAction.CLEAR);
+                            ack.setLog(alert.getFixMessage());
+                            acks.add(ack);
+                        } else if(alert.getAckMessage() != null && alarm.getAckTime() == null) {
+                            // If the Hyperic alert has been ack'd and the local alarm is not yet ack'd, then ack it
+                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", (alert.getAckTime() != null) ? alert.getAckTime() : new Date());
                             ack.setAckAction(AckAction.ACKNOWLEDGE);
-                            ack.setLog("Acknowledged by Ackd.HypericAckProcessor");
+                            ack.setLog(alert.getAckMessage());
                             acks.add(ack);
                         }
 
-                        // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
-                        if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
-                            // TODO Get the ack time from Hyperic??
-                            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", new Date());
-                            ack.setAckAction(AckAction.CLEAR);
-                            ack.setLog("Cleared by Ackd.HypericAckProcessor");
-                            acks.add(ack);
-                        }
                     }
                 } catch (Throwable e) {
                     log().warn("run: threw exception when processing alarms for Hyperic system " + hypericSystem + ": " + e.getMessage());
@@ -308,7 +355,7 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
     public static OnmsAlarm findAlarmForHypericAlert(List<OnmsAlarm> alarms, String platformId, HypericAlertStatus alert) {
-        String targetPlatformId = "platform.id=" + platformId + "(string,text)";
+        String targetPlatformId = "alert.source=" + platformId + "(string,text)";
         String targetAlertId = "alert.id="+ String.valueOf(alert.getAlertId()) + "(string,text)";
         for (OnmsAlarm alarm : alarms) {
             String parmString = alarm.getEventParms();

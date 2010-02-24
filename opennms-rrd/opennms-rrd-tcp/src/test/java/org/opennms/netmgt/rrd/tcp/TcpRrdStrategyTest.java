@@ -53,6 +53,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -123,6 +124,7 @@ public class TcpRrdStrategyTest {
 
                             Socket socket = ssocket.accept();
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
+                            System.out.println("Number of messages in current packet: " + messages.getMessageCount());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 StringBuffer values = new StringBuffer();
                                 values.append("{ ");
@@ -212,15 +214,19 @@ public class TcpRrdStrategyTest {
         File rrdFile = createRrdFile();
 
         Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
-        m_strategy.updateFile(openedFile, "huh?", "N:1.234234");
+        long currentTimeInSeconds = (long)(new Date().getTime() / 100);
+        m_strategy.updateFile(openedFile, "huh?", String.valueOf(currentTimeInSeconds - 9) + ":1.234234");
+        m_strategy.updateFile(openedFile, "oh  ", String.valueOf(currentTimeInSeconds - 8) + ":1.234234");
+        m_strategy.updateFile(openedFile, "ok  ", String.valueOf(currentTimeInSeconds - 7) + ":1.234234");
         // Sleep in between updates so that we don't underrun the 1-second step size
-        Thread.currentThread().sleep(1000);
-        m_strategy.updateFile(openedFile, "oh", "N:1.234234");
-        Thread.currentThread().sleep(1000);
-        m_strategy.updateFile(openedFile, "ok", "N:1.234234");
-        Thread.currentThread().sleep(1000);
-        m_strategy.updateFile(openedFile, "lol", "N:1.234234");
+        Thread.sleep(5000);
+        currentTimeInSeconds = (long)(new Date().getTime() / 100);
+        m_strategy.updateFile(openedFile, "lol ", String.valueOf(currentTimeInSeconds - 6) + ":1.234234");
+        m_strategy.updateFile(openedFile, "lolz", String.valueOf(currentTimeInSeconds - 5) + ":1.234234");
+        m_strategy.updateFile(openedFile, "lolz", String.valueOf(currentTimeInSeconds - 4) + ":1.234234");
+        m_strategy.updateFile(openedFile, "zzzz", String.valueOf(currentTimeInSeconds - 3) + ":1.234234");
         m_strategy.closeFile(openedFile);
+        Thread.sleep(1000);
     }
 
     public File createRrdFile() throws Exception {
