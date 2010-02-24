@@ -292,10 +292,11 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testInterfaceResourceWithDBAttributeFilter() throws Exception {
-        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "1");
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "1");
-        runInterfaceResource("127.0.0.1", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        Integer ifIndex = 1;
+        String ifName = "wlan0";
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        runInterfaceResource("127.0.0.1", ifName, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -308,18 +309,19 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testInterfaceResourceWithStringAttributeFilter() throws Exception {
-        setupSnmpInterfaceDatabase("127.0.0.1", "sis0");
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "sis0", "1");
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", "1", "ifInOctets", "sis0", "1");
+        Integer ifIndex = 1;
+        String ifName = "sis0";
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
 
-        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/sis0");
+        File resourceDir = new File(getRepository().getRrdBaseDir(), "1/" + ifName);
         resourceDir.deleteOnExit();
         resourceDir.mkdirs();
         Properties p = new Properties();
         p.put("myMockParam", "myMockValue");
         ResourceTypeUtils.saveUpdatedProperties(new File(resourceDir, "strings.properties"), p);
         
-        runInterfaceResource("127.0.0.1", "sis0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        runInterfaceResource("127.0.0.1", ifName, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
         deleteDirectory(new File(getRepository().getRrdBaseDir(), "1"));
     }
@@ -603,11 +605,12 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug2711_noIpAddress() throws Exception {
+        Integer ifIndex = 2;
+        String ifName = "wlan0";
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, false);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("0.0.0.0", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        runInterfaceResource("0.0.0.0", ifName, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
 
@@ -619,29 +622,13 @@ public class ThresholdingVisitorTest {
      * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
-    public void testBug2711_noIP_noSnmpIfInfo() throws Exception {
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        setupSnmpInterfaceWithoutIpDatabase("wlan0", 2, true);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "10.10.0.1", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("10.10.0.1", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
-        verifyEvents(2);
-    }
-
-    /*
-     * This test uses this files from src/test/resources:
-     * - thresd-configuration.xml
-     * - test-thresholds-2.xml
-     * 
-     * Updated to reflect the fact that counter are treated as rates.
-     */
-    @Test
     public void testBug2711_noIP_badIfIndex() throws Exception {
+        Integer ifIndex = -100;
+        String ifName = "wlan0";
         initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        setupSnmpInterfaceWithoutIpDatabase("wlan0", -100, false);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifOutOctets", "wlan0", "2");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", "1", "ifInOctets", "wlan0", "2");
-        runInterfaceResource("0.0.0.0", "wlan0", 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        runInterfaceResource("0.0.0.0", ifName, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(2);
     }
 
@@ -745,7 +732,9 @@ public class ThresholdingVisitorTest {
      */
     @Test    
     public void testLatencyThresholdingSet() throws Exception {
-        setupSnmpInterfaceDatabase("127.0.0.1", "lo0");
+        Integer ifIndex = 1;
+        String ifName = "lo0";
+        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
 
         LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
@@ -780,8 +769,8 @@ public class ThresholdingVisitorTest {
         }
 
         // Validate Events
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "lo0", "1");
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", "lo0", "1");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", ifName, ifIndex.toString());
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -877,10 +866,10 @@ public class ThresholdingVisitorTest {
         EasyMock.verify(agent);
     }
 
-    private void runInterfaceResource(String ipAddress, String ifName, long v1, long v2) {
+    private void runInterfaceResource(String ipAddress, String ifName, Integer ifIndex, long v1, long v2) {
         ThresholdingVisitor visitor = createVisitor();
         
-        SnmpIfData ifData = createSnmpIfData(ipAddress, ifName);
+        SnmpIfData ifData = createSnmpIfData(ipAddress, ifName, ifIndex);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -940,13 +929,15 @@ public class ThresholdingVisitorTest {
      * Counters are treated as rates so 60000/300 is 200.
      */
     private void runCounterWrapTest(double bits, double expectedValue) throws Exception {
+        Integer ifIndex = 1;
+        String ifName = "wlan0";
+
         initFactories("/threshd-configuration.xml","/test-thresholds-bug3194.xml");
-        setupSnmpInterfaceDatabase("127.0.0.1", "wlan0");
-        addHighThresholdEvent(1, 100, 90, expectedValue, "Unknown", "1", "ifOutOctets", "wlan0", "1");
+        addHighThresholdEvent(1, 100, 90, expectedValue, "Unknown", "1", "ifOutOctets", ifName, ifIndex.toString());
         ThresholdingVisitor visitor = createVisitor();
         
         // Creating Interface Resource Type
-        SnmpIfData ifData = createSnmpIfData("127.0.0.1", "wlan0");
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifIndex);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
 
@@ -1155,11 +1146,11 @@ public class ThresholdingVisitorTest {
         m_anticipatedEvents.clear();
     }
 
-    private SnmpIfData createSnmpIfData(String ipAddress, String ifName) {
+    private SnmpIfData createSnmpIfData(String ipAddress, String ifName, Integer ifIndex) {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("testNode");
-        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddress, 1, node);
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddress, ifIndex, node);
         snmpIface.setIfDescr(ifName);
         snmpIface.setIfName(ifName);
         snmpIface.setIfAlias(ifName);
@@ -1182,27 +1173,7 @@ public class ThresholdingVisitorTest {
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
     }
-    
-    private void setupSnmpInterfaceWithoutIpDatabase(String ifName, int ifIndex, boolean skipUpdate) throws Exception {
-        // Setup Non-IP Address Interface
-        MockNetwork network = new MockNetwork();
-        network.setCriticalService("ICMP");
-        network.addNode(1, "testNode");
-        network.addInterface("127.0.0.1");
-        network.setIfAlias("eth0");
-        network.addService("ICMP");
-        network.addService("SNMP");
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-        // Updating SNMP ifData for eth0
-        db.update("update snmpInterface set snmpifName=?, snmpifDescr=? where id=?", "eth0", "eth0", 1);
-        // Adding non-IP Interface wlan0
-        if (!skipUpdate)
-            db.update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias, snmpifName, snmpifDescr, snmpifIndex) values (?, ?, ?, ?, ?, ?)", 1, "0.0.0.0", ifName, ifName, ifName, ifIndex);
-        DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
-    }
-    
+
     private boolean deleteDirectory(File path) {
         if (path.exists()) {
             File[] files = path.listFiles();

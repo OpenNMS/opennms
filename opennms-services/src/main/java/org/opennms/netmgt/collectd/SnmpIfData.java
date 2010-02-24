@@ -35,6 +35,9 @@
  */
 package org.opennms.netmgt.collectd;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 /**
@@ -49,6 +52,8 @@ public class SnmpIfData {
     private int m_ifType;
     private String m_rrdLabel;
     private String m_ifAlias;
+    
+    private Map<String,String> m_attributes;
 
     public SnmpIfData(OnmsSnmpInterface snmpIface) {
         m_nodeId = nullSafeUnbox(snmpIface.getNode().getId(), -1);
@@ -57,9 +62,24 @@ public class SnmpIfData {
         m_ifType = nullSafeUnbox(snmpIface.getIfType(), -1);
         m_rrdLabel = snmpIface.computeLabelForRRD();
         m_ifAlias = snmpIface.getIfAlias();
+        m_attributes = new HashMap<String,String>();
+        m_attributes.put("ipaddr", snmpIface.getIpAddress());
+        m_attributes.put("snmpphysaddr", snmpIface.getPhysAddr());
+        m_attributes.put("snmpifindex", Integer.toString(m_ifIndex));
+        m_attributes.put("snmpifdescr", snmpIface.getIfDescr());
+        m_attributes.put("snmpiftype", Integer.toString(m_ifType));
+        m_attributes.put("snmpifname", snmpIface.getIfName());
+        m_attributes.put("snmpifadminstatus", Integer.toString(nullSafeUnbox(snmpIface.getIfAdminStatus(), -1)));
+        m_attributes.put("snmpifoperstatus", Integer.toString(nullSafeUnbox(snmpIface.getIfOperStatus(), -1)));
+        m_attributes.put("snmpifspeed", Long.toString(nullSafeUnbox(snmpIface.getIfSpeed(), -1)));
+        m_attributes.put("snmpifalias", m_ifAlias);
     }
     
     int nullSafeUnbox(Integer num, int dflt) {
+        return (num == null ? dflt : num.intValue());
+    }
+
+    long nullSafeUnbox(Long num, int dflt) {
         return (num == null ? dflt : num.intValue());
     }
 
@@ -85,6 +105,10 @@ public class SnmpIfData {
 
     public String getIfAlias() {
         return m_ifAlias;
+    }
+    
+    public Map<String,String> getAttribtuesMap() {
+        return m_attributes;
     }
 
 }
