@@ -78,15 +78,12 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#getDeliveryOptions(java.lang.String, java.lang.String)
-     */
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
         DeliveryOptions options = new DeliveryOptions();
 
         options.setFormat(ReportFormat.HTML);
         options.setPersist(true);
-        options.setSendMail(true);
+        options.setSendMail(false);
 
         UserManager userFactory = UserFactory.getInstance();
 
@@ -96,14 +93,11 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 options.setMailTo(userFactory.getEmail(userId));
             }
         } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("marshal exception trying to set destination email address", e);
         } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("validation exception trying to set destination email address", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("IO exception trying to set destination email address", e);
         }
         
         options.setInstanceId(reportId +"_"+userId);
@@ -111,32 +105,24 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         return options;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#getFormats(java.lang.String)
-     */
+
     public List<ReportFormat> getFormats(String reportId) {
         return getReportService(reportId).getFormats(reportId);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#getParameters(java.lang.String)
-     */
+
     public ReportParameters getParameters(String reportId) {
         return getReportService(reportId).getParameters(reportId);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#render(java.lang.String, java.lang.String, org.opennms.api.reporting.ReportFormat, java.io.OutputStream)
-     */
+
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {
         getReportService(reportId).render(reportId, location, format, outputStream);
 
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#run(java.util.HashMap, org.opennms.api.reporting.DeliveryOptions, java.lang.String)
-     */
+
     public void run(ReportParameters reportParms,
             DeliveryOptions deliveryOptions, String reportId) {
         if (!deliveryOptions.getPersist()) {
@@ -148,7 +134,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             String outputPath = getReportService(reportId).run(reportParms.getReportParms(), reportId);
             ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
             catalogEntry.setReportId(reportId);
-            catalogEntry.setTitle(reportId);
+            catalogEntry.setTitle(deliveryOptions.getInstanceId());
             catalogEntry.setLocation(outputPath);
             catalogEntry.setDate(new Date());
             m_reportStoreService.save(catalogEntry);
@@ -196,9 +182,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.api.reporting.ReportService#validate(java.util.HashMap, java.lang.String)
-     */
+
     public boolean validate(ReportParameters reportParms,
             String reportId) {
         return getReportService(reportId).validate(reportParms.getReportParms(), reportId);
@@ -219,7 +203,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     public void runAndRender(HashMap<String, Object> reportParms,
             String reportId, ReportFormat format, OutputStream outputStream) {
         getReportService(reportId).runAndRender(reportParms, reportId, format, outputStream);
-        // TODO Auto-generated method stub
         
     }
 
