@@ -42,16 +42,10 @@ import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.authz.server.session.ResourceSortField
 import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 
-/**
- * @deprecated THIS CONTROLLER IS DEPRECATED. It has been replaced by 
- * ModelexportController.groovy which offers more precise service and
- * interface lists. If you are using OpenNMS 1.7.10+, configure it to
- * point to the /hqu/opennms/modelExport/list.hqu URL.
- */
-class ExporterController 
+class ModelexportController 
     extends BaseController
 {
-    def ExporterController() {
+    def ModelexportController() {
         setXMLMethods(['list'])
     }
 
@@ -62,10 +56,16 @@ class ExporterController
         xml.'model-import'('foreign-source':'HQ', 'date-stamp':formatter.format(new Date())) {
             platforms.each { res ->   
                 def p = man.findPlatformById(res.instanceId)
+
                 node('node-label':p.fqdn, 'foreign-id':p.id) {
-                    'interface'('ip-addr': p.agent.address, descr: 'agent-address', status: 1, 'snmp-primary': 'N') {
-                        'monitored-service'('service-name': 'ICMP')
-                        'monitored-service'('service-name': 'HypericAgent')
+                   p.ips.each { ip ->
+                    'interface'('ip-addr': ip.address, descr: ip.macAddress,
+                        status: 1) {
+                            'monitored-service'('service-name': 'ICMP')
+                            if(ip.address == p.agent.address) {
+                                'monitored-service'('service-name': 'HypericAgent')
+                            }
+                        }
                     }
                 }
             }

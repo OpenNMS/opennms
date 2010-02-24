@@ -175,7 +175,7 @@ final class MergeableRange implements Comparable<Range> {
     protected Range removeSpecificFromRange(final String spec) {
         
         if (!coversSpecific(spec))
-            throw new IllegalArgumentException("Specific: "+spec+", doesn't effect range: ");
+            throw new IllegalArgumentException("Specific: "+spec+", doesn't affect range: ");
 
         MergeableSpecific specific = new MergeableSpecific(spec);
         
