@@ -69,8 +69,8 @@
           </assignment>
           <assignment name="nodeid" type="field" >
             <value type="sql" result="SELECT n.nodeid FROM node n WHERE n.foreignid = ? AND n.foreignsource = ?" >
-              <value type="parameter" name="platform.id" matches=".*" result="${0}" />
-              <value type="constant" result="HQ" />
+              <value type="parameter" name="platform.id"  matches=".*" result="${0}" />
+              <value type="parameter" name="alert.source" matches=".*" result="${0}" />
             </value>
           </assignment>
         </mapping>
