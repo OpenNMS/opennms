@@ -44,8 +44,8 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 
 /**
- * Interface for to execure individual reportServices. 
- * Always run a report service via this wrapper as the implemenation will find 
+ * Interface that finds and executes individual reportServices. 
+ * Always run a report service via this wrapper as the implementation will find 
  * the correct service for the reportId and wrap it as necessary.
  * 
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>

@@ -279,7 +279,7 @@
     	</property>
   </bean>
   
-  <bean id="ReportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
+  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
   
   <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator" />
   
