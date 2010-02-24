@@ -9,6 +9,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
+import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -56,24 +57,26 @@ public class CollectionResourceWrapper {
         m_resource = resource;
         m_attributes = attributes;
         if (isAnInterfaceResource()) {
-            File resourceDir = getResourceDir();
-            if (resourceDir != null) {
+            if (resource instanceof IfInfo) {
+                m_iflabel = ((IfInfo) resource).getLabel();
+                m_ifInfo = ((IfInfo) resource).getAttributesMap();
+            }
+            if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
-                if (resource instanceof LatencyCollectionResource) {
-                    m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), resourceDir.getName());
+                String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
+                if (m_iflabel != null) { // See Bug 3488
+                    m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
                 } else {
-                    m_iflabel = resourceDir.getName();
+                    log().info("Can't find ifLabel for latency resource " + resource.getInstance() + " on node " + getNodeId());                    
                 }
-                m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
-                if (m_ifInfo != null) {
-                    m_hostAddress = m_ifInfo.get("ipaddr"); // See Bug 2711
-                    m_ifindex = m_ifInfo.get("snmpifindex");
-                } else {
-                    log().info("Can't find ifInfo for " + m_iflabel);
-                }
+            }
+            if (m_ifInfo != null) {
+                m_hostAddress = m_ifInfo.get("ipaddr"); // See Bug 2711
+                m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
-                log().info("Can't find resource directory for " + m_resource);
-            }        
+                log().info("Can't find ifInfo for " + resource);
+            }
         }
     }    
     
@@ -109,10 +112,6 @@ public class CollectionResourceWrapper {
         return m_resource != null ? m_resource.getResourceTypeName() : null;
     }
     
-    public File getResourceDir() {
-        return m_resource != null ? m_resource.getResourceDir(m_repository) : null;
-    }
-    
     public String getIfLabel() {
         return m_iflabel;
     }
@@ -121,7 +120,7 @@ public class CollectionResourceWrapper {
         return m_ifindex;
     }
     
-    public String getIfInfoValue(String attribute) {
+    protected String getIfInfoValue(String attribute) {
         return m_ifInfo.get(attribute);
     }
     

@@ -215,7 +215,7 @@ doStart(){
 	case $status in
 		0)
 			echo "OpenNMS is already running." >&2
-			return 1
+			return 0
 			;;
 
 		160)

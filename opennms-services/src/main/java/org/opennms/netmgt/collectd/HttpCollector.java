@@ -406,8 +406,11 @@ public class HttpCollector implements ServiceCollector {
                                                         num);
                         log().debug("processResponse: adding found numeric attribute: "+bute);
                         butes.add(bute);
+                    } catch (IndexOutOfBoundsException e) {
+                        log().error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
+                        log().error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
                     } catch (ParseException e) {
-                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched "+m.group(attribDef.getMatchGroup())+" instead.");
+                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched \""+m.group(attribDef.getMatchGroup())+"\" instead.");
                     }
                 } else {
                     HttpCollectionAttribute bute =
@@ -614,7 +617,6 @@ public class HttpCollector implements ServiceCollector {
     private void initializeRrdRepository() {
         log().debug("initializeRrdRepository: Initializing RRD repo from HttpCollector...");
         initializeRrdDirs();
-        initializeRrdInterface();
     }
 
     private void initializeRrdDirs() {
@@ -632,15 +634,6 @@ public class HttpCollector implements ServiceCollector {
                 log().error(sb.toString());
                 throw new RuntimeException(sb.toString());
             }
-        }
-    }
-
-    private void initializeRrdInterface() {
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
     }
 

@@ -15,6 +15,11 @@
       <reader-schedule interval="60" unit="s"/>
       <parameter key="readmail-config" value="localhost" />
     </reader>
+    <reader enabled="false" reader-name="HypericReader">
+      <reader-schedule interval="180" unit="s"/>
+      <!-- This parameter associates Hyperic platform IDs with URLs that provide alert status lists -->
+      <parameter key="source:HQ" value="http://127.0.0.1:7080/hqu/opennms/alertStatus/list.hqu" />
+    </reader>
   </readers>
 
 </ackd-configuration>

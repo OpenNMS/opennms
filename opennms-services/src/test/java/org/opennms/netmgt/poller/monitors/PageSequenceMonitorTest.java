@@ -50,9 +50,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitHttpServerExecutionListener;
+import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.annotations.Webapp;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.mock.JUnitMockHttpServer;
-import org.opennms.netmgt.mock.JUnitMockHttpServerExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -70,23 +71,22 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
-    JUnitMockHttpServerExecutionListener.class
+    JUnitHttpServerExecutionListener.class
 })
-@ContextConfiguration(locations={})
-@JUnitMockHttpServer(port=10342)
+@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@JUnitHttpServer(port=10342)
 public class PageSequenceMonitorTest {
 	
 	PageSequenceMonitor m_monitor;
 	Map<String, Object> m_params;
 	
 
-    @SuppressWarnings("unchecked")
     @Before
 	public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 		
     	m_monitor = new PageSequenceMonitor();
-    	m_monitor.initialize(Collections.EMPTY_MAP);
+    	m_monitor.initialize(Collections.<String, Object>emptyMap());
     	
 		m_params = new HashMap<String, Object>();
 		m_params.put("timeout", "8000");
@@ -120,6 +120,8 @@ public class PageSequenceMonitorTest {
     @Test
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
+        m_params.put("timeout", "500");
+        m_params.put("retries", "0");
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
     }
@@ -155,23 +157,22 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
 	public void testLogin() throws Exception {
-	// NOTE we need to chagne j_acegi_security_check to j_spring_security_check when we upgrade demo
-	// aslo change j_acegi_logout to j_spring_security_logout
+        
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/opennms\" port=\"80\" successMatch=\"Password\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Password\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
 				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
 				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
 				"  </page>\n" + 
-				"  <page path=\"/opennms/event/index.jsp\" port=\"80\" successMatch=\"Event Queries\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
 				"</page-sequence>\n");
 		
-		
-		PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+		PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
 		assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
 		
 	}

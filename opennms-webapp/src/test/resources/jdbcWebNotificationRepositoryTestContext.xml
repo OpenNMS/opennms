@@ -16,7 +16,6 @@
      <property name="alarmDao" ref="alarmDao" />
      <property name="notificationDao" ref="notificationDao" />
      <property name="userNotificationDao" ref="userNotificationDao" />
-     <property name="availabilityReportLocatorDao" ref="availabilityReportLocatorDao" />
      <property name="locationMonitorDao" ref="locationMonitorDao" />
      <property name="acknowledgmentDao" ref="acknowledgmentDao" />
      <property name="serviceTypeDao" ref="serviceTypeDao" />

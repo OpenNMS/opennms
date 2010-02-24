@@ -117,6 +117,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
                 "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath*:/META-INF/opennms/component-service.xml",
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml",
+                "META-INF/opennms/applicationContext-reportingCore.xml",
+                "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml"
                 
         };
     }

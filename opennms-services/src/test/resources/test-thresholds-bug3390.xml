@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<thresholding-config>
+	<group name="netsnmp-disk-relchange" rrdRepository="/opt/opennms/share/rrd/snmp/">
+		<threshold type="relativeChange" ds-name="ns-dskPercent"
+			ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="1" />
+		<threshold type="relativeChange" ds-name="ns-dskPercentNode"
+			ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="1" />
+	</group>
+
+	<group name="netsnmp-disk90" rrdRepository="/opt/opennms/share/rrd/snmp/">
+		<threshold type="high" ds-name="ns-dskPercent" ds-type="dskIndex"
+			ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2" />
+		<threshold type="high" ds-name="ns-dskPercentNode" ds-type="dskIndex"
+			ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2" />
+
+	</group>
+
+	<group name="netsnmp-cpu-1core" rrdRepository="/opt/opennms/share/rrd/snmp/">
+		<expression type="high" expression="loadavg5 / 100.0"
+			ds-type="node" ds-label="" value="1.5" rearm="0.9" trigger="2" />
+		<expression type="high" expression="loadavg15 / 100.0"
+			ds-type="node" ds-label="" value="1.1" rearm="0.9" trigger="2" />
+		<expression type="high" expression="loadavg1 / 100.0"
+			ds-type="node" ds-label="" value="8.0" rearm="2.0" trigger="2" />
+	</group>
+
+	<group name="netsnmp-mem8" rrdRepository="/opt/opennms/share/rrd/snmp/">
+		<expression type="low" expression="(memAvailReal + memCached) / memTotalReal * 100.0"
+			ds-type="node" ds-label="" value="8.0" rearm="10.0" trigger="1" />
+	</group>
+
+	<group name="netsnmp-swap10" rrdRepository="/opt/opennms/share/rrd/snmp/">
+		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0"
+			ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="1" />
+	</group>
+</thresholding-config>

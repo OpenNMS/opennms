@@ -128,18 +128,18 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         log().info("startReaders: starting "+enabledReaderCount+" enabled readers of "+m_ackReaders.size()+" readers registered.");
         for (AckReader reader : m_ackReaders) {
             
-            log().debug("startReaders: starting reader: "+reader);
+            log().debug("startReaders: starting reader: "+reader.getName());
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
             allowedStates.add(AckReaderState.STOPPED);
             
             try {
                 adjustReaderState(reader, AckReaderState.STARTED, allowedStates, reloadConfig);
             } catch (Exception e) {
-                log().error("startReaders: Could not start reader: "+reader, e);
+                log().error("startReaders: Could not start reader: "+reader.getName(), e);
                 continue;
             }
             
-            log().debug("startReaders: reader: "+reader+" started.");
+            log().debug("startReaders: reader: "+reader.getName()+" started.");
         }
         log().info("startReaders: "+m_ackReaders.size()+" readers started.");
     }
@@ -147,7 +147,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     protected void stopReaders() {
         log().info("stopReaders: stopping "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
-            log().debug("stopReaders: stopping reader: "+reader);
+            log().debug("stopReaders: stopping reader: "+reader.getName());
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
             allowedStates.add(AckReaderState.PAUSE_PENDING);
             allowedStates.add(AckReaderState.PAUSED);
@@ -160,10 +160,10 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             try {
                 adjustReaderState(reader, AckReaderState.STOPPED, allowedStates, false);
             } catch (Exception e) {
-                log().error("startReaders: Could not stop reader: "+reader, e);
+                log().error("startReaders: Could not stop reader: "+reader.getName(), e);
             }
             
-            log().debug("stopReaders: reader: "+reader+" stopped.");
+            log().debug("stopReaders: reader: "+reader.getName()+" stopped.");
         }
         log().info("stopReaders: "+m_ackReaders.size()+" readers stopped.");
     }
@@ -177,7 +177,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             try {
                 adjustReaderState(reader, AckReaderState.PAUSED, allowedStates, false);
             } catch (Exception e) {
-                log().error("startReaders: Could not pause reader: "+reader, e);
+                log().error("startReaders: Could not pause reader: "+reader.getName(), e);
             }
         }
     }
@@ -190,7 +190,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             try {
                 adjustReaderState(reader, AckReaderState.RESUMED, allowedStates, false);
             } catch (Exception e) {
-                log().error("startReaders: Could not resume reader: "+reader, e);
+                log().error("startReaders: Could not resume reader: "+reader.getName(), e);
             }
         }
     }
@@ -219,7 +219,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                     return;
                 }
                 
-                log().warn("adjustReaderState: Not adjustingReaderState, disabled reader: "+reader);
+                log().warn("adjustReaderState: Not adjustingReaderState, disabled reader: "+reader.getName());
                 return;
             }
     

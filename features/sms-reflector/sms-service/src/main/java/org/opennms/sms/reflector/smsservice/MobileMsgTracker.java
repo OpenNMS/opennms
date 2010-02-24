@@ -41,11 +41,11 @@ import org.smslib.USSDRequest;
  */
 public interface MobileMsgTracker {
 
-    public abstract void sendSmsRequest(OutboundMessage msg, long timeout,
+    public abstract MobileMsgRequest sendSmsRequest(OutboundMessage msg, long timeout,
             int retries, MobileMsgResponseCallback cb,
             MobileMsgResponseMatcher matcher) throws Exception;
 
-    public abstract void sendUssdRequest(USSDRequest msg,
+    public abstract MobileMsgRequest sendUssdRequest(USSDRequest msg,
             long timeout, int retries, MobileMsgResponseCallback cb,
             MobileMsgResponseMatcher matcher) throws Exception;
 

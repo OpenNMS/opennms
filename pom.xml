@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.7.10-TESTING-SNAPSHOT</version>
+  <version>1.7.10-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -109,6 +110,7 @@
     <module>opennms-rrd</module>
     <module>opennms-config</module>
     <module>opennms-provision</module>
+    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>integrations</module>
     <module>opennms-import</module>
@@ -131,6 +133,11 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <version>1.4.3</version>
         <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.5</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -261,7 +268,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-jspc-plugin</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -278,7 +285,7 @@
          <additionalConfig>
            <file>
              <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
            </file>
          </additionalConfig>
        </configuration>
@@ -319,11 +326,11 @@
                      properties.  They aren't passed automatically, even
                      when inheritAll="true" is used with <ant />.  -->
                 <ant target="java.check">
-                  <property name="java.vm.version" value="${java.vm.version}" />
-                  <property name="java.version" value="${java.version}" />
-                  <property name="java.home" value="${java.home}" />
+                  <property name="java.vm.version" value="${java.vm.version}"/>
+                  <property name="java.version" value="${java.version}"/>
+                  <property name="java.home" value="${java.home}"/>
                 </ant>
-                <echo message="update policy is ${updatePolicy}" />
+                <echo message="update policy is ${updatePolicy}"/>
               </tasks>
             </configuration>
             <goals>
@@ -519,6 +526,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven.surefire.report.plugin.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -570,7 +578,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>2.5</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.5</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
@@ -583,7 +592,7 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword />
+    <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
@@ -606,14 +615,14 @@
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
 
     <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix />
+    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
     <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password />
+    <install.database.admin.password/>
     <install.database.driver>org.postgresql.Driver</install.database.driver> 
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -628,7 +637,7 @@
     <rpm.sign>false</rpm.sign>
     <rpm.buildtests>false</rpm.buildtests>
     <rpm.database.user>opennms</rpm.database.user>
-    <rpm.additional.args /> 
+    <rpm.additional.args/> 
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
@@ -642,9 +651,9 @@
    <webstart.keystore.delete>true</webstart.keystore.delete>
    <webstart.keygen>true</webstart.keygen>
    <webstart.dnameCn>${user.name}</webstart.dnameCn>
-   <webstart.dnameL />
-   <webstart.dnameSt />
-   <webstart.dnameC />
+   <webstart.dnameL/>
+   <webstart.dnameSt/>
+   <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
 
@@ -849,13 +858,38 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.http-remoting</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.availability</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1168,6 +1202,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-reportd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1179,6 +1218,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-jrobin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-tcp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1460,7 +1504,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>2.2</version>
+        <version>2.5.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1472,6 +1516,11 @@
         <groupId>org.extremecomponents</groupId>
         <artifactId>extremecomponents</artifactId>
         <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.caucho</groupId>
+        <artifactId>hessian</artifactId>
+        <version>3.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.gwtwidgets</groupId>
@@ -1572,27 +1621,27 @@
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-ajp</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-util</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>servlet-api-2.5</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-2.1-jetty</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>
@@ -1637,7 +1686,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.4</version>
+        <version>4.7</version>
       </dependency>
       <dependency>
         <groupId>jwebunit</groupId>
@@ -1688,11 +1737,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>org.extremecomponents</groupId>
-        <artifactId>extremecomponents</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.samba.jcifs</groupId>
         <artifactId>jcifs</artifactId>
         <version>1.2.19</version>
@@ -1706,6 +1750,11 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.5.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.tuckey</groupId>
+        <artifactId>urlrewrite</artifactId>
+        <version>2.5.2</version>
       </dependency>
       <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
@@ -1884,16 +1933,6 @@
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
   </repositories>
   <pluginRepositories>

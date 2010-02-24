@@ -136,7 +136,7 @@ OpenNMS.ux.EditorSNMPInterfaceGrid = Ext.extend(OpenNMS.ux.EditorPageableGrid, {
 					{name:"ifType", mapping:"ifType"},
 					{name:"ipAddress", mapping:"ipAddress"},
 					{name:"physAddr", mapping:"physAddr"},
-					{name:"collect", mapping:"collectFlag"},
+					{name:"collect", mapping:"@collectFlag"},
 					{name:'collectionEnabled', mapping:'@collect', type:'bool'}
 		],
 		

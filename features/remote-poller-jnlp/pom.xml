@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -58,10 +58,10 @@
         <executions>
           <execution>
             <id>gui-app</id>
-            <phase>process-resources</phase>
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
@@ -81,10 +81,10 @@
           </execution>
           <execution>
             <id>headless-app</id>
-            <phase>process-resources</phase>
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
@@ -140,7 +140,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.remote-poller</artifactId>
-      <scope>process-sources</scope>
     </dependency>
   </dependencies>
 </project>

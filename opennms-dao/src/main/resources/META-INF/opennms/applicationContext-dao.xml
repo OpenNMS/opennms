@@ -51,7 +51,6 @@
         <value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
         <value>org.opennms.netmgt.model.OnmsLocationSpecificStatus</value>
         <value>org.opennms.netmgt.model.PollStatus</value>
-        <value>org.opennms.netmgt.model.AvailabilityReportLocator</value>
         <value>org.opennms.netmgt.model.OnmsApplication</value>
         <value>org.opennms.netmgt.model.ResourceReference</value>
         <value>org.opennms.netmgt.model.StatisticsReportData</value>
@@ -61,6 +60,7 @@
         <value>org.opennms.netmgt.model.DataLinkInterface</value>
         <value>org.opennms.netmgt.model.OnmsAcknowledgment</value>
         <value>org.opennms.netmgt.model.OnmsLinkState</value>
+        <value>org.opennms.netmgt.model.ReportCatalogEntry</value>
         <!--
         <value>org.opennms.netmgt.model.OnmsUser</value>
         <value>org.opennms.netmgt.model.OnmsGroup</value>
@@ -141,6 +141,10 @@
   <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+  
+  <bean id="reportCatalogDao" class="org.opennms.netmgt.dao.hibernate.ReportCatalogDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
 
   <bean id="notificationDao" class="org.opennms.netmgt.dao.hibernate.NotificationDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -177,10 +181,6 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
   <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.hibernate.StatisticsReportDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -201,7 +201,7 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResourceLocation" />
   </bean>
-  
+ 
   <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
   </bean>
@@ -209,7 +209,23 @@
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
     <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
   </bean>
-
+  
+  <bean id="databaseReportConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/database-reports.xml" />
+  </bean>
+  
+  <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao">
+    <property name="configResource" ref="databaseReportConfigResourceLocation" />
+  </bean>
+  
+  <bean id="availabilityReportConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/availability-reports.xml" />
+  </bean>
+  
+  <bean id="availabilityReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao">
+    <property name="configResource" ref="availabilityReportConfigResourceLocation" />
+  </bean>
+  
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>
@@ -248,11 +264,7 @@
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
 
-  <bean id="rrdStrategy-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize</value></property>
-  </bean>
-
-  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="rrdStrategy-init">
+  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
   </bean>
 

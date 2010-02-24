@@ -1,4 +1,7 @@
+src/main/webapp/WEB-INF/configuration.properties
+src/main/webapp/WEB-INF/log4j.properties
+src/main/webapp/WEB-INF/version.properties
 bin
-www-test
 tomcat
+www-test
 war

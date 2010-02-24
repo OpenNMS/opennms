@@ -11,6 +11,8 @@
  * Modifications:
  * 
  * Created: February 21, 2007
+ * 
+ * October 22, 2009: added getCategoriesList method jonathan@opennms.org
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,7 +36,10 @@
  */
 package org.opennms.web.svclayer.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.web.svclayer.CategoryConfigService;
@@ -50,6 +55,17 @@ public class DefaultCategoryConfigService implements CategoryConfigService {
 
     public Collection<Category> getCategories() {
         return m_categoryConfigDao.findAll();
+    }
+    
+    public List<String> getCategoriesList() {
+        List<String> categories = new ArrayList<String>();
+        Collection<Category> catCollection = m_categoryConfigDao.findAll();;
+        Iterator<Category> i = catCollection.iterator();
+        while (i.hasNext()) {
+            categories.add(i.next().getLabel());
+        }
+        return categories;
+        
     }
 
     public CategoryConfigDao getCategoryConfigDao() {

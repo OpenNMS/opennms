@@ -83,6 +83,10 @@ public class MockPlatformTransactionManager implements
             public void rollbackToSavepoint(Object savepoint) throws TransactionException {
                 throw new UnsupportedOperationException(".rollbackToSavepoint not yet implemented.");
             }
+
+            public void flush() {
+                throw new UnsupportedOperationException(".flush not yet implemented.");
+            }
         };
     }
 

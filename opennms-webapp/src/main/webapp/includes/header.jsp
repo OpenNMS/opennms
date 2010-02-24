@@ -51,7 +51,7 @@
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "<html>" %>
+<%= "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en' xmlns:opennms='xsds/coreweb.xsd'>" %>
 <head>
   <title>
     <c:forEach var="headTitle" items="${paramValues.headTitle}">
@@ -86,6 +86,9 @@
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
   <script type="text/javascript" src="js/global.js"></script>
+    <c:if test="${!empty pageContext.request.remoteUser}">
+        <script type="text/javascript" language="javascript" src="coreweb/coreweb.nocache.js"></script>
+    </c:if>
 	<c:if test="${param.enableExtJS == 'true'}">
   		<script type='text/javascript' src='extJS/source/core/Ext.js'></script>
   		<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>
@@ -96,6 +99,12 @@
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='js/rwsStorage.js'></script>
 	</c:if>
+
+	<c:if test="${param.enableSpringDojo == 'true'}">	
+		<script type="text/javascript" src="<c:url value="/resources/dojo/dojo.js" />"></script>
+   		<script type="text/javascript" src="<c:url value="/resources/spring/Spring.js" />"></script>
+    	<script type="text/javascript" src="<c:url value="/resources/spring/Spring-Dojo.js" />"></script>
+    </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
