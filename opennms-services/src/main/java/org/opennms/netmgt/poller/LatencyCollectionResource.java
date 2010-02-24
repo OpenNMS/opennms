@@ -55,6 +55,14 @@ public class LatencyCollectionResource implements CollectionResource {
     public String getInstance() {
         return m_ipAddress + "[" + m_serviceName + "]";
     }
+    
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    public String getIpAddress() {
+        return m_ipAddress;
+    }
 
     public String getLabel() {
         return m_serviceName;

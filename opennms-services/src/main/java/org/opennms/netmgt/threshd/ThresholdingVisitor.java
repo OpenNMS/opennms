@@ -100,12 +100,18 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     /*
+     * Get a list of thresholds groups (for junit only at this time)
+     */
+    public List<ThresholdGroup> getThresholdGroups() {
+        return m_thresholdingSet.m_thresholdGroups;
+    }
+    
+    /*
      * Force reload thresholds configuration, and merge threshold states
      */
     public void reload() {
         m_thresholdingSet.reinitialize();
     }
-    
     
     /*
      *  Initialize required attributes map (m_attributesMap)

@@ -82,12 +82,6 @@
 	             </artifactItem>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-services</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-webapp</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
