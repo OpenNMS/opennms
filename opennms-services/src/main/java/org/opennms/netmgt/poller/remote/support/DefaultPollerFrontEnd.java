@@ -366,10 +366,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
             return getClass().getSimpleName();
         }
 
-        public void authenticate(String username, String password) {
-        	SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, password));
-        }
-        
     }
     
 
@@ -554,10 +550,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         m_state.pollService(polledServiceId);
     }
 
-    public void authenticate(String username, String password) {
-    	m_state.authenticate(username, password);
-    }
-    
     public void register(String monitoringLocation) {
         m_state.register(monitoringLocation);
     }

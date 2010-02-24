@@ -109,9 +109,25 @@ public class Main {
     	}
     	
     	if (m_username == null) {
-    		// FIXME: ask for username/password
+    		GroovyGui gui = createGui();
+            gui.createAndShowGui();
+            AuthenticationBean auth = gui.getAuthenticationBean();
+            m_username = auth.getUsername();
+            m_password = auth.getPassword();
+    	}
+    	
+    	if (m_username != null) {
+    		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
     	}
     }
+
+	private GroovyGui createGui() {
+		try {
+			return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to find Configuration GUI!", e);
+		}
+	}
     
     private void run() {
         
@@ -122,9 +138,6 @@ public class Main {
             registerShutDownHook();
 
             if (!m_gui) {
-            	if (m_username != null) {
-            		m_frontEnd.authenticate(m_username, m_password);
-            	}
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
                         log().severe("No location name provided.  You must pass a location name the first time you start the remote poller!");
@@ -202,7 +215,7 @@ public class Main {
 
     private void usage(Options o) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("", o);
+        formatter.printHelp(HelpFormatter.DEFAULT_SYNTAX_PREFIX, o);
     }
     
     private void registerShutDownHook() {
@@ -242,10 +255,7 @@ public class Main {
 
         m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
-        if (m_username != null) {
-        	m_frontEnd.authenticate(m_username, m_password);
-        }
-        
+
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
@@ -282,7 +292,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
         File killSwitch = null;
-        
+
         if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
             killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
             if (!killSwitch.exists()) {

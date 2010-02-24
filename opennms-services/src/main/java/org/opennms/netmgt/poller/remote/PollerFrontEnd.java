@@ -64,11 +64,6 @@ public interface PollerFrontEnd {
     public String getMonitorName();
     
     /**
-     * Authenticate with the given username and password, if necessary.
-     */
-    public void authenticate(String username, String password);
-
-    /**
      * Register the poller if it has not been registered before.
      * 
      * @param monitoringLocationName The name of the monitoring Location definition under

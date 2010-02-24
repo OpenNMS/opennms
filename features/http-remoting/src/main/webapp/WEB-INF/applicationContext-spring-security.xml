@@ -13,7 +13,7 @@
       <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/webstart/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
-		<intercept-url pattern="/**"          access="ROLE_REMOTING" />
+		<intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
 		<anonymous />
 		<http-basic />
 	</http>
