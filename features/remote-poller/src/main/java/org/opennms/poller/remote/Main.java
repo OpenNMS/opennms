@@ -40,10 +40,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -51,6 +47,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.context.SecurityContextHolder;
@@ -93,10 +90,11 @@ public class Main {
                 throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
             }
         }
-        Handler fh = new FileHandler(logFile);
-        Logger.getLogger("").addHandler(fh);
-        Logger.getLogger("").setLevel(Level.WARNING);
-		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();
+        if (Boolean.getBoolean("debug")) {
+        	LogUtils.logToConsole();
+        } else {
+        	LogUtils.logToFile(logFile);
+        }
     }
 
     private void getAuthenticationInfo() {
@@ -117,6 +115,7 @@ public class Main {
     	}
     	
     	if (m_username != null) {
+    		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
     		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
     	}
     }
@@ -140,7 +139,7 @@ public class Main {
             if (!m_gui) {
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        log().severe("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        LogUtils.fatalf(this, "No location name provided.  You must pass a location name the first time you start the remote poller!");
                         System.exit(27);
                     } else {
                         m_frontEnd.register(m_locationName);
@@ -149,14 +148,10 @@ public class Main {
             }
         } catch(Exception e) {
             // a fatal exception occurred
-            log().log(Level.SEVERE, "Exception occurred during registration!", e);
+            LogUtils.errorf(this, "Exception occurred during registration!", e);
             System.exit(27);
         }
         
-    }
-
-    private Logger log() {
-        return Logger.getLogger("");
     }
 
     private void parseArguments() throws ParseException {
@@ -180,7 +175,7 @@ public class Main {
         }
 
         if (m_cl.hasOption("d")) {
-            Logger.getLogger("").setLevel(Level.ALL);
+        	LogUtils.enableDebugging();
         }
         
         if (m_cl.hasOption("l")) {
@@ -236,14 +231,14 @@ public class Main {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
 
-        log().fine("user.home.url = "+homeUrl);
+        LogUtils.infof(this, "user.home.url = %s", homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
         String serverURI = m_uri.toString().replaceAll("/*$", "");
-        log().fine("opennms.poller.server.url = " + serverURI);
+        LogUtils.infof(this, "opennms.poller.server.url = %s", serverURI);
         System.setProperty("opennms.poller.server.url", serverURI);
 
-        log().fine("location name = " + m_locationName);
+        LogUtils.infof(this, "location name = %s", m_locationName);
 
         List<String> configs = new ArrayList<String>();
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
@@ -259,23 +254,23 @@ public class Main {
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
-            	log().fine("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
+            	LogUtils.infof(this, "shouldExit: received property change event: %s;oldvalue:%s;newvalue:%s", e.getPropertyName(), e.getOldValue(), e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
 
                 // if exitNecessary becomes true.. then return true
                 if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
-                	log().info("shouldExit: Exiting because exitNecessary is TRUE");
+                	LogUtils.infof(this, "shouldExit: Exiting because exitNecessary is TRUE");
                     return true;
                 }
                 
                 // if started becomes false the we should exit
                 if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
-                	log().info("shouldExit: Exiting because started is now false");
+                	LogUtils.infof(this, "shouldExit: Exiting because started is now false");
                     return true;
                 }
                 
-            	log().fine("shouldExit: not exiting");
+            	LogUtils.infof(this, "shouldExit: not exiting");
                 return false;
                 
             }

@@ -133,6 +133,10 @@ groovy.compiler.output.path=target/classes
       <artifactId>groovy</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
       <scope>test</scope>

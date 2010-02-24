@@ -3,6 +3,8 @@ package org.opennms.poller.remote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.annotation.Resource;
 
 import org.junit.BeforeClass;
@@ -37,8 +39,9 @@ public class SimpleBackEndTest {
 	@BeforeClass
 	public static void setup() {
 		MockLogAppender.setupLogging();
+		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 	}
-	
+
 	@Test
 	@JUnitHttpServer(port=9162, webapps=@Webapp(context="/", path="src/test/resources/simple-test-webapp"))
 	public void testBackend() throws Exception {
@@ -46,7 +49,7 @@ public class SimpleBackEndTest {
 		assertEquals("first get should be 0", 0, m_noAuthBackEnd.getCount());
 		assertEquals("second should be 1", 1, m_noAuthBackEnd.getCount());
 	}
-	
+
 	@Test
 	@JUnitHttpServer(port=9162, basicAuth=true, webapps=@Webapp(context="/", path="src/test/resources/simple-test-webapp"))
 	public void testBackendWithBasicAuth() throws Exception {
@@ -54,5 +57,26 @@ public class SimpleBackEndTest {
 		assertNotNull(m_authBackEnd);
 		assertEquals("first get should be 0", 0, m_authBackEnd.getCount());
 		assertEquals("second should be 1", 1, m_authBackEnd.getCount());
+	}
+
+	@Test
+	@JUnitHttpServer(port=9162, basicAuth=true, webapps=@Webapp(context="/", path="src/test/resources/simple-test-webapp"))
+	public void testBackendWithBasicAuthInDifferentThread() throws Exception {
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("testuser", "testpassword"));
+		assertNotNull(m_authBackEnd);
+		
+		final AtomicInteger first = new AtomicInteger(-1);
+		final AtomicInteger second = new AtomicInteger(-1);
+		
+		Thread t = new Thread() {
+			public void run() {
+				first.set(m_authBackEnd.getCount());
+				second.set(m_authBackEnd.getCount());
+			}
+		};
+		t.start();
+		t.join();
+		assertEquals("first get should be 0", 0, first.get());
+		assertEquals("second should be 1", 1, second.get());
 	}
 }
