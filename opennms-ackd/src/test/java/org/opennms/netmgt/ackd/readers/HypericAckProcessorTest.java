@@ -187,8 +187,8 @@ public class HypericAckProcessorTest {
         AckdConfigurationDao mockDao = createMock(AckdConfigurationDao.class);
         expect(mockDao.getEnabledReaderCount()).andDelegateTo(realDao);
         expect(mockDao.isReaderEnabled("JavaMailReader")).andDelegateTo(realDao).times(2);
-        expect(mockDao.isReaderEnabled("HypericReader")).andReturn(realDao.isReaderEnabled("HypericReader")).times(2);
-        expect(mockDao.getReaderSchedule("HypericReader")).andReturn(realDao.getReaderSchedule("HypericReader")).times(2);
+        expect(mockDao.isReaderEnabled("HypericReader")).andDelegateTo(realDao).times(2);
+        expect(mockDao.getReaderSchedule("HypericReader")).andDelegateTo(realDao).times(2);
         replay(mockDao);
 
         m_daemon.setConfigDao(mockDao);

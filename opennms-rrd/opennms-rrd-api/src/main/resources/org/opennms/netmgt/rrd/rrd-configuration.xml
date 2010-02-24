@@ -52,13 +52,13 @@
 		<constructor-arg type="java.lang.String" value="${org.opennms.rrd.fileExtension}" />
 	</bean>
 
-    <bean id="useQueue" class="java.lang.Boolean">
-        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usequeue}" />
-    </bean>
+	<bean id="useQueue" class="java.lang.Boolean">
+		<constructor-arg type="java.lang.String" value="${org.opennms.rrd.usequeue}" />
+	</bean>
 
-    <bean id="useTcp" class="java.lang.Boolean">
-        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usetcp}" />
-    </bean>
+	<bean id="useTcp" class="java.lang.Boolean">
+		<constructor-arg type="java.lang.String" value="${org.opennms.rrd.usetcp}" />
+	</bean>
 
 	<bean id="tcpRrdStrategy" class="org.opennms.netmgt.rrd.tcp.TcpRrdStrategy" lazy-init="true">
 		<property name="host" value="${org.opennms.rrd.tcp.host}" />
@@ -93,7 +93,9 @@
 		<property name="delegates">
 			<list>
 				<ref local="basicRrdStrategy" />
-				<ref local="tcpRrdStrategy" />
+				<bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
+					<constructor-arg ref="tcpRrdStrategy" />
+				</bean>
 			</list>
 		</property>
 		<!-- Use JRobinRrdStrategy for all graphing calls -->
@@ -106,7 +108,9 @@
 		<property name="delegates">
 			<list>
 				<ref local="queuingRrdStrategy" />
-				<ref local="tcpRrdStrategy" />
+				<bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
+					<constructor-arg ref="tcpRrdStrategy" />
+				</bean>
 			</list>
 		</property>
 		<!-- Use JRobinRrdStrategy for all graphing calls -->
