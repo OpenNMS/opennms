@@ -88,7 +88,7 @@
     <beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
     <beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
     <beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-    <beans:property name="useGroups" value="true" />
+    <beans:property name="useGroups" value="false" />
   </beans:bean>
 
   <beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">

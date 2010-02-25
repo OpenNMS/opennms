@@ -40,10 +40,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -51,8 +47,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 
 /**
  * 
@@ -67,6 +66,8 @@ public class Main {
     PollerFrontEnd m_frontEnd;
     URI m_uri;
     String m_locationName;
+    String m_username = null;
+    String m_password = null;
     boolean m_shuttingDown = false;
     boolean m_gui = false;
     CommandLine m_cl;
@@ -75,7 +76,7 @@ public class Main {
         m_args = args;
         initializeLogging();
     }
-    
+
     private void initializeLogging() throws Exception {
         String logFile;
         if (System.getProperty("os.name").contains("Windows")) {
@@ -89,41 +90,68 @@ public class Main {
                 throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
             }
         }
-        Handler fh = new FileHandler(logFile);
-        Logger.getLogger("").addHandler(fh);
-        Logger.getLogger("").setLevel(Level.WARNING);
-		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();
+        if (Boolean.getBoolean("debug")) {
+        	LogUtils.logToConsole();
+        } else {
+        	LogUtils.logToFile(logFile);
+        }
     }
 
+    private void getAuthenticationInfo() {
+    	if (m_uri == null) {
+    		throw new RuntimeException("no URI specified!");
+    	}
+    	if (m_uri.getScheme().equals("rmi")) {
+    		// RMI doesn't have authentication
+    		return;
+    	}
+    	
+    	if (m_username == null) {
+    		GroovyGui gui = createGui();
+            gui.createAndShowGui();
+            AuthenticationBean auth = gui.getAuthenticationBean();
+            m_username = auth.getUsername();
+            m_password = auth.getPassword();
+    	}
+    	
+    	if (m_username != null) {
+    		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
+    		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
+    	}
+    }
+
+	private GroovyGui createGui() {
+		try {
+			return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to find Configuration GUI!", e);
+		}
+	}
+    
     private void run() {
         
         try {
             parseArguments();
-
+            getAuthenticationInfo();
             createAppContext();
             registerShutDownHook();
 
             if (!m_gui) {
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        log().severe("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        LogUtils.fatalf(this, "No location name provided.  You must pass a location name the first time you start the remote poller!");
                         System.exit(27);
                     } else {
                         m_frontEnd.register(m_locationName);
                     }
                 }
             }
-            
         } catch(Exception e) {
             // a fatal exception occurred
-            log().log(Level.SEVERE, "Exception occurred during registration!", e);
+            LogUtils.errorf(this, "Exception occurred during registration!", e);
             System.exit(27);
         }
         
-    }
-
-    private Logger log() {
-        return Logger.getLogger("");
     }
 
     private void parseArguments() throws ParseException {
@@ -135,6 +163,8 @@ public class Main {
         options.addOption("g", "gui", false, "start a GUI (default: false)");
         options.addOption("l", "location", true, "the location name of this remote poller");
         options.addOption("u", "url", true, "the URL for OpenNMS (default: rmi://server-name/)");
+        options.addOption("n", "name", true, "the name of the user to connect as");
+        options.addOption("p", "password", true, "the password to use when connecting");
 
         CommandLineParser parser = new PosixParser();
         m_cl = parser.parse(options, m_args);
@@ -145,7 +175,7 @@ public class Main {
         }
 
         if (m_cl.hasOption("d")) {
-            Logger.getLogger("").setLevel(Level.ALL);
+        	LogUtils.enableDebugging();
         }
         
         if (m_cl.hasOption("l")) {
@@ -168,11 +198,19 @@ public class Main {
         if (m_cl.hasOption("g")) {
             m_gui = true;
         }
+        
+        if (m_cl.hasOption("n")) {
+        	m_username = m_cl.getOptionValue("n");
+        	m_password = m_cl.getOptionValue("p");
+        	if (m_password == null) {
+        		m_password = "";
+        	}
+        }
     }
 
     private void usage(Options o) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("usage: ", o);
+        formatter.printHelp(HelpFormatter.DEFAULT_SYNTAX_PREFIX, o);
     }
     
     private void registerShutDownHook() {
@@ -193,14 +231,14 @@ public class Main {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
 
-        log().fine("user.home.url = "+homeUrl);
+        LogUtils.infof(this, "user.home.url = %s", homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
         String serverURI = m_uri.toString().replaceAll("/*$", "");
-        log().fine("opennms.poller.server.url = " + serverURI);
+        LogUtils.infof(this, "opennms.poller.server.url = %s", serverURI);
         System.setProperty("opennms.poller.server.url", serverURI);
 
-        log().fine("location name = " + m_locationName);
+        LogUtils.infof(this, "location name = %s", m_locationName);
 
         List<String> configs = new ArrayList<String>();
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
@@ -209,30 +247,30 @@ public class Main {
         if (m_gui) {
             configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
         }
-        
+
         m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
         m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
-        
+
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
-            	log().fine("shouldExit: received property change event: "+e.getPropertyName()+";oldvalue:"+e.getOldValue()+";newvalue:"+e.getNewValue());
+            	LogUtils.infof(this, "shouldExit: received property change event: %s;oldvalue:%s;newvalue:%s", e.getPropertyName(), e.getOldValue(), e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
-                
+
                 // if exitNecessary becomes true.. then return true
                 if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
-                	log().info("shouldExit: Exiting because exitNecessary is TRUE");
+                	LogUtils.infof(this, "shouldExit: Exiting because exitNecessary is TRUE");
                     return true;
                 }
                 
                 // if started becomes false the we should exit
                 if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
-                	log().info("shouldExit: Exiting because started is now false");
+                	LogUtils.infof(this, "shouldExit: Exiting because started is now false");
                     return true;
                 }
                 
-            	log().fine("shouldExit: not exiting");
+            	LogUtils.infof(this, "shouldExit: not exiting");
                 return false;
                 
             }
@@ -249,7 +287,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
         File killSwitch = null;
-        
+
         if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
             killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
             if (!killSwitch.exists()) {

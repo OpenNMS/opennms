@@ -109,11 +109,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-web</artifactId>
+      <artifactId>opennms-spring-security</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-security</artifactId>
+      <artifactId>opennms-spring-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -171,6 +171,11 @@
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.jcraft</groupId>
