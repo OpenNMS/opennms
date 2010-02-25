@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/jmx-datacollection" xmlns:this="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
-
-	<element name="jmx-datacollection-config">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/jmx-datacollection" xmlns:this="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
+    <element name="jmx-datacollection-config">
 		<complexType>
 			<sequence>
 				<!-- JMX data collection element -->
@@ -12,7 +10,6 @@
 			<attribute name="rrdRepository" type="string" use="required"/>
 		</complexType>
 	</element>
-
 	<!-- a grouping of JMX related RRD parms, JMX object groups and sysoid based
 		 system definitions. 
 	-->
@@ -73,12 +70,15 @@
 		<complexType>
 			<sequence>
 				<!-- a JMX object -->
-				<element ref="this:attrib" minOccurs="0" maxOccurs="unbounded"/>
-				
+				<element ref="this:attrib" minOccurs="0"
+					maxOccurs="unbounded" />
+
 				<!-- sub group -->
-				<element name="includeMbean" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="includeMbean" type="string" minOccurs="0"
+					maxOccurs="unbounded" />
+				<element ref="this:comp-attrib" maxOccurs="unbounded" minOccurs="0"></element>
 			</sequence>
-			
+
 			<!-- mbean name -->
 			<attribute name="name"       type="string" use="required"/>
 			<attribute name="objectname" type="string" use="required"/>
@@ -89,7 +89,6 @@
 	</element>
 
 	<!-- an attribute object -->
-
 	<element name="attrib">
 		<complexType>
 			<attribute name="name" type="string" use="required"/>
@@ -97,7 +96,7 @@
 			<attribute name="alias" type="string" use="required"/>
 			
 			<attribute name="type" use="required">
-				<simpleType>
+                                <simpleType>
 					<restriction base="string">
 						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))$"/>
 					</restriction>
@@ -107,7 +106,49 @@
 			<attribute name="maxval" type="string" use="optional"/>
 			<attribute name="minval" type="string" use="optional"/>
 		</complexType>
-	</element>
+	</element>	
+	
+	<!-- a composite attribute object -->
+	<element name="comp-attrib">
+		<complexType>
+			<sequence>
+						<element ref="this:comp-member" maxOccurs="unbounded" minOccurs="0"></element>
+			</sequence>
+		
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="alias" type="string" use="optional"/>
+			
+			<attribute name="type" use="required">
+				<simpleType value="^[Cc](omposite|OMPOSITE)$">
+					<restriction base="string">
+						<pattern value="^[Cc](omposite|OMPOSITE)$"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>	
+	
+	<!-- a composite attribute member object -->
+	<element name="comp-member">
+		<complexType>
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="alias" type="string" use="optional"/>
+			
+			<attribute name="type" use="required">
+				<simpleType value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING)?|[Cc](omposite|OMPOSITE))$">
+					<restriction base="string">
+						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING)?|[Cc](omposite|OMPOSITE))$"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+
+			<attribute name="maxval" type="string" use="optional"/>
+
+			<attribute name="minval" type="string" use="optional"/>
+		</complexType>
+	</element>	
 
 	<!--jmx-systems>
 
@@ -149,5 +190,8 @@
 			</sequence>
 		</complexType>
 	</element-->
+
+
+
 
 </schema>

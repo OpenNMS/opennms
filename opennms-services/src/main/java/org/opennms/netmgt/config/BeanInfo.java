@@ -47,20 +47,32 @@ public class BeanInfo {
     private String excludes;
     
     private String keyAlias;
-
-    private String[] attributes;
-
+    
     private ArrayList<Object> operations;
+    
+    private List<String> attributes;
+    
+    private List<String> compositeAttributes;
+
+    public List<String> getCompositeAttributeNames() {
+        return compositeAttributes;
+    }
+
+    public void setCompositeAttributes(List<String> compAttr) {
+        compositeAttributes = compAttr;
+    }
 
     public BeanInfo() {
         operations = new ArrayList<Object>();
+        attributes = new ArrayList<String>();
+        compositeAttributes = new ArrayList<String>();
     }
 
-    public void setAttributes(String[] attr) {
+    public void setAttributes(List<String> attr) {
         attributes = attr;
     }
 
-    public String[] getAttributeNames() {
+    public List<String> getAttributeNames() {
         return attributes;
     }
 
