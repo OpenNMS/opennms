@@ -811,6 +811,21 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3487.xml
+     * - test-thresholds.xml
+     */
+    @Test
+    public void testBug3487() throws Exception {
+        initFactories("/threshd-configuration-bug3487.xml","/test-thresholds.xml");
+        assertNotNull(createVisitor());
+        m_defaultErrorLevelToCheck = Level.FATAL;
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
+        assertEquals("expecting 1 event", 1, events.length);
+        assertEquals("initialize: Can't process threshold group SMS_Dieta", events[0].getMessage());
+    }
+
+    /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing (Bug 3448)
      */
     @Test
