@@ -165,7 +165,7 @@ function doDelete() {
         %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
-      <input type="hidden" name="ifindex" value="<%=(ifIndex == -1 ? "" : ifIndex)%>"/>
+      <input type="hidden" name="ifindex" value="<%=(ifIndex == -1 ? "" : "" + ifIndex)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
       <%
       }
