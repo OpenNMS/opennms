@@ -84,7 +84,7 @@
   <dependencies>
     <dependency>
       <type>pom</type>
-      <groupId>${parent.groupId}</groupId>
+      <groupId>${project.parent.groupId}</groupId>
       <artifactId>provision</artifactId>
       <version>${project.version}</version>
       <optional>true</optional>
