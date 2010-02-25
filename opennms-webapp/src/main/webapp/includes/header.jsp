@@ -100,6 +100,12 @@
   		<script type='text/javascript' src='js/rwsStorage.js'></script>
 	</c:if>
 
+	<c:if test="${param.enableSpringDojo == 'true'}">	
+		<script type="text/javascript" src="<c:url value="/resources/dojo/dojo.js" />"></script>
+   		<script type="text/javascript" src="<c:url value="/resources/spring/Spring.js" />"></script>
+    	<script type="text/javascript" src="<c:url value="/resources/spring/Spring-Dojo.js" />"></script>
+    </c:if>
+
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>

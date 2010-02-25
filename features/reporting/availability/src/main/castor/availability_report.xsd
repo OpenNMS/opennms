@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/report/availability"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/report/availability"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for OpenNMS availability reports in intermediate
+    XML form. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="report">
+    <annotation>
+      <documentation>The top-level element for availability
+      reports.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="logo" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:created"/>
+
+        <element maxOccurs="1" minOccurs="0" name="author" type="string"/>
+
+        <element minOccurs="0" ref="this:viewInfo"/>
+
+        <element minOccurs="0" ref="this:categories"/>
+
+        <element minOccurs="0" name="catCount" type="int"/>
+
+        <element minOccurs="0" name="sectionCount" type="int"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="viewInfo">
+    <annotation>
+      <documentation>element name="viewInfo"</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="viewName" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="viewTitle" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="viewComments" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="categories">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:category"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="created">
+    <complexType>
+      <simpleContent>
+        <extension base="integer">
+          <attribute name="year" type="int" use="required"/>
+
+          <attribute name="month" type="string" use="required"/>
+
+          <attribute name="day" type="int" use="required"/>
+
+          <attribute name="hour" type="int" use="required"/>
+
+          <attribute name="min" type="int" use="required"/>
+
+          <attribute name="sec" type="int" use="required"/>
+
+          <attribute name="period" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="category">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="catName" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:catSections"/>
+
+        <element maxOccurs="1" minOccurs="0" name="catComments" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="warning" type="double"/>
+
+        <element maxOccurs="1" minOccurs="0" name="normal" type="double"/>
+
+        <element maxOccurs="1" minOccurs="0" name="catIndex" type="int"/>
+
+        <element maxOccurs="1" minOccurs="0" name="nodeCount" type="int"/>
+
+        <element maxOccurs="1" minOccurs="0" name="ipaddrCount" type="int"/>
+
+        <element maxOccurs="1" minOccurs="0" name="serviceCount" type="int"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="catSections">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:section"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="section">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="sectionName" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="sectionTitle" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="sectionDescr" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="period" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:classicTable"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:calendarTable"/>
+
+        <element maxOccurs="1" minOccurs="0" name="sectionIndex" type="int"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="classicTable">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" ref="this:col"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:rows"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="col">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="colTitle"
+                 type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="rows">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:row"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="row">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:value"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="value">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="type" type="string" use="optional"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="calendarTable">
+    <complexType>
+      <sequence>
+        <element minOccurs="0" ref="this:daysOfWeek"/>
+
+        <element maxOccurs="6" minOccurs="5" ref="this:week"/>
+      </sequence>
+
+      <attribute name="month" type="string"/>
+    </complexType>
+  </element>
+
+  <element name="daysOfWeek">
+    <complexType>
+      <sequence>
+        <element maxOccurs="7" minOccurs="7" name="dayName" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="week">
+    <complexType>
+      <sequence>
+        <element maxOccurs="7" minOccurs="7" ref="this:day"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="day">
+    <complexType>
+      <attribute name="date" type="int"/>
+
+      <attribute name="pctValue" type="double"/>
+
+      <attribute name="visible" type="boolean"/>
+    </complexType>
+  </element>
+</schema>

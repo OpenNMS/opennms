@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threshd-configuration
+    xmlns="http://xmlns.opennms.org/xsd/config/threshd" threads="5">
+    <package name="mib2">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="mib2"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="hrstorage">
+        <filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.311.%' | nodeSysOID LIKE '.1.3.6.1.4.1.2.3.1.2.1.1.3.%')</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="hrstorage"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="cisco">
+        <filter>IPADDR != '0.0.0.0' &amp; nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="cisco"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="ciscoIPRA">
+        <filter>catincIPRA &amp; nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="ciscoIPRA"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="ciscoIPBA">
+        <filter>catincIPBA &amp; nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="ciscoIPBA"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="ciscoNAS">
+        <filter>catincNAS &amp; nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="ciscoNAS"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="extreme">
+        <filter>catincManExtreme &amp; nodeSysOID LIKE '.1.3.6.1.4.1.1916.%'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="extreme"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="netsnmp">
+        <filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.2021.%' | nodeSysOID LIKE '.1.3.6.1.4.1.8072.%')</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="netsnmp"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+    <package name="TestThresholds">
+        <filter>catincBackBone &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.9.1.385%' | nodeSysOID LIKE '.1.3.6.1.4.1.2636.1.1.1.2.%')</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="TestThresholds"/>
+        </service>
+        <outage-calendar xmlns="">RMCC-B02</outage-calendar>
+    </package>
+</threshd-configuration>
