@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<thresholding-config>
+	<group name="strafe" rrdRepository="${install.share.dir}/rrd/response/">
+		<threshold type="high" ds-name="loss" ds-type="if" value="50" rearm="25" trigger="1" />
+	</group>
+</thresholding-config>
