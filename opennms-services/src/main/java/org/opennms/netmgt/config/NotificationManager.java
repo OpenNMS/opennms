@@ -577,7 +577,7 @@ public abstract class NotificationManager {
             d.watch(statement);
     
             // notifications textMsg field
-            String textMsg = (String) params.get(NotificationManager.PARAM_TEXT_MSG);
+            String textMsg = params.get(NotificationManager.PARAM_TEXT_MSG);
             if (textMsg != null && textMsg.length() > 4000) {
                 log().warn("textmsg too long, it will be truncated");
                 textMsg = textMsg.substring(0, 4000);
@@ -585,7 +585,7 @@ public abstract class NotificationManager {
             statement.setString(1, textMsg);
     
             // notifications numericMsg field
-            String numMsg = (String) params.get(NotificationManager.PARAM_NUM_MSG);
+            String numMsg = params.get(NotificationManager.PARAM_NUM_MSG);
             if (numMsg != null && numMsg.length() > 256) {
                 log().warn("numericmsg too long, it will be truncated");
                 numMsg = numMsg.substring(0, 256);
@@ -599,7 +599,7 @@ public abstract class NotificationManager {
             statement.setTimestamp(4, new Timestamp((new Date()).getTime()));
     
             // notifications nodeID field
-            String node = (String) params.get(NotificationManager.PARAM_NODE);
+            String node = params.get(NotificationManager.PARAM_NODE);
             if (node != null && !node.trim().equals("") && !node.toLowerCase().equals("null") && !node.toLowerCase().equals("%nodeid%")) {
                 statement.setInt(5, Integer.parseInt(node));
             } else {
@@ -607,7 +607,7 @@ public abstract class NotificationManager {
             }
     
             // notifications interfaceID field
-            String ipaddr = (String) params.get(NotificationManager.PARAM_INTERFACE);
+            String ipaddr = params.get(NotificationManager.PARAM_INTERFACE);
             if (ipaddr != null && !ipaddr.trim().equals("") && !ipaddr.toLowerCase().equals("null") && !ipaddr.toLowerCase().equals("%interface%")) {
                 statement.setString(6, ipaddr);
             } else {
@@ -615,7 +615,7 @@ public abstract class NotificationManager {
             }
     
             // notifications serviceID field
-            String service = (String) params.get(NotificationManager.PARAM_SERVICE);
+            String service = params.get(NotificationManager.PARAM_SERVICE);
             if (service != null && !service.trim().equals("") && !service.toLowerCase().equals("null") && !service.toLowerCase().equals("%service%")) {
                 statement.setInt(7, getServiceId(service));
             } else {
@@ -623,13 +623,13 @@ public abstract class NotificationManager {
             }
     
             // eventID field
-            final String eventID = (String) params.get("eventID");
+            final String eventID = params.get("eventID");
             statement.setInt(8, Integer.parseInt(eventID));
     
-            statement.setString(9, (String) params.get("eventUEI"));
+            statement.setString(9, params.get("eventUEI"));
             
             // notifications subject field
-            statement.setString(10, (String) params.get(NotificationManager.PARAM_SUBJECT));
+            statement.setString(10, params.get(NotificationManager.PARAM_SUBJECT));
             
             // the queue this will be sent on
             statement.setString(11, queueID);
@@ -721,7 +721,7 @@ public abstract class NotificationManager {
     public Notification getNotification(final String name) throws IOException, MarshalException, ValidationException {
         update();
     
-        return (Notification) getNotifications().get(name);
+        return getNotifications().get(name);
     }
     /**
      */
