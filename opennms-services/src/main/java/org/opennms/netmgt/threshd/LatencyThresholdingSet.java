@@ -52,10 +52,15 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     
     /*
      * Latency thresholds use ds-type="if"
-     * Returns true if the specified service is involved in any of defined thresholds
+     * Returns true if any attribute of the service is involved in any of defined thresholds.
      */
-    public boolean hasThresholds(String svcName) {
-        return hasThresholds() ? hasThresholds("if", svcName) : false;
+    public boolean hasThresholds(Map<String, Double> attributes) {
+        if (hasThresholds()) {
+            for (String ds : attributes.keySet())
+                if (hasThresholds("if", ds))
+                    return true;
+        }
+        return false;
     }
 
     /*
