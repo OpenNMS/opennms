@@ -811,6 +811,36 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing (Bug 3448)
+     */
+    @Test
+    public void testBug3488() throws Exception {
+        String ipAddress = "127.0.0.1";
+        setupSnmpInterfaceDatabase(ipAddress, null);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository(), 0);
+        assertTrue(thresholdingSet.hasThresholds()); // Global Test
+        assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
+        Map<String, Double> attributes = new HashMap<String, Double>();
+        attributes.put("http", 200.0);
+
+        m_defaultErrorLevelToCheck = Level.ERROR;
+        List<Event> triggerEvents = new ArrayList<Event>();
+        for (int i=0; i<5; i++)
+            triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        assertEquals("expecting 5 events", 5, events.length);
+        for (LoggingEvent e : events)
+            assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
+        assertTrue(triggerEvents.size() == 1);
+
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(triggerEvents);
+        proxy.sendAllEvents();
+        verifyEvents(0);
+    }
+
+    /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
      * This test validate that Bug 1582 has been fixed.
@@ -1250,13 +1280,15 @@ public class ThresholdingVisitorTest {
         network.setCriticalService("ICMP");
         network.addNode(1, "testNode");
         network.addInterface(ipAddress);
-        network.setIfAlias(ifName);
+        if (ifName != null)
+            network.setIfAlias(ifName);
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
+        if (ifName != null)
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
     }
