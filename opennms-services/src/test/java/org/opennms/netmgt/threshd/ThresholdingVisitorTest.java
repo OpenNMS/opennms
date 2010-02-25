@@ -834,9 +834,9 @@ public class ThresholdingVisitorTest {
         setupSnmpInterfaceDatabase(ipAddress, null);
         LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
         Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 200.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
 
         m_defaultErrorLevelToCheck = Level.ERROR;
         List<Event> triggerEvents = new ArrayList<Event>();
@@ -849,6 +849,34 @@ public class ThresholdingVisitorTest {
         assertTrue(triggerEvents.size() == 1);
 
         addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(triggerEvents);
+        proxy.sendAllEvents();
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3575.xml
+     * - test-thresholds-bug3575.xml
+     */
+    @Test
+    public void testBug3575() throws Exception {
+        initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
+        String ipAddress = "127.0.0.1";
+        setupSnmpInterfaceDatabase(ipAddress, "eth0");
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository(), 0);
+        assertTrue(thresholdingSet.hasThresholds());
+        Map<String, Double> attributes = new HashMap<String, Double>();
+        for (double i=1; i<21; i++)
+            attributes.put("ping" + i, 2 * i);
+        attributes.put("loss", 60.0);
+        attributes.put("response-time", 100.0);
+        attributes.put("median", 100.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes));
+        List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
+        assertTrue(triggerEvents.size() == 1);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "StrafePing", 1, 50, 25, 60, "Unknown", "127.0.0.1[StrafePing]", "loss", "eth0", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -869,10 +897,9 @@ public class ThresholdingVisitorTest {
 
         LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
-        Map<String, Double> attributes = new HashMap<String, Double>();        
-
+        Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
         List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
         assertTrue(triggerEvents.size() == 0);
 
@@ -880,12 +907,12 @@ public class ThresholdingVisitorTest {
         attributes.put("http", 200.0);
         for (int i = 1; i < 5; i++) {
             log().debug("testLatencyThresholdingSet: run number " + i);
-            if (thresholdingSet.hasThresholds("http")) {
+            if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
             }
         }
-        if (thresholdingSet.hasThresholds("http")) {
+        if (thresholdingSet.hasThresholds(attributes)) {
             log().debug("testLatencyThresholdingSet: run number 5");
             triggerEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(triggerEvents.size() == 1);
@@ -893,7 +920,7 @@ public class ThresholdingVisitorTest {
         
         // Test Rearm
         List<Event> rearmEvents = null;
-        if (thresholdingSet.hasThresholds("http")) {
+        if (thresholdingSet.hasThresholds(attributes)) {
             attributes.put("http", 40.0);
             rearmEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(rearmEvents.size() == 1);
