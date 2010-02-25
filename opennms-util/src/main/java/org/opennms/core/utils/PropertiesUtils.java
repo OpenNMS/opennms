@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2010 Feb 23: Add substitute methods that take multiple Properties via
+//              varargs. - jeffg@opennms.org
 // 2007 Jun 23: Use Java 5 generics. - dj@opennms.org
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -66,8 +68,13 @@ public class PropertiesUtils {
      * @param properties the properties to take the values from
      * @return The string with appropriate substitutions made.
      */
-    public static String substitute(String initialString, Properties properties) {
-        return substitute(initialString, new PropertyBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+    public static String substitute(String initialString, Properties... propertiesArray) {
+        String workingString = initialString;
+        for (Properties properties : propertiesArray) {
+            if (properties != null)
+                workingString = substitute(workingString, new PropertyBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+        }
+        return workingString;
     }
 
     public static String substitute(String initialString, Properties properties, String prefix, String suffix) {
@@ -75,8 +82,12 @@ public class PropertiesUtils {
     }
 
 
-    public static String substitute(String initialString, SymbolTable symbols) {
-        return substitute(initialString, symbols, PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+    public static String substitute(String initialString, SymbolTable... symbolsArray) {
+        String workingString = initialString;
+        for (SymbolTable symbols : symbolsArray) {
+            workingString = substitute(workingString, symbols, PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+        }
+        return workingString;
     }
 
     private static String substitute(String initialString,

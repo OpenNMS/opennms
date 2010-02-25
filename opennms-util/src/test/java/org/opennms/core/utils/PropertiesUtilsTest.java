@@ -1,14 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+// 2010 Feb 23: Add tests for substitute methods that take multiple
+//              Properties via varargs. - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,60 +39,63 @@ import junit.framework.TestCase;
 
 public class PropertiesUtilsTest extends TestCase {
 
-    private Properties m_props;
+    private Properties m_propsOne;
+    private Properties m_propsTwo;
 
     protected void setUp() throws Exception {
-        m_props = new Properties();
-        m_props.setProperty("prop.one", "one");
-        m_props.setProperty("prop.two", "two");
-        m_props.setProperty("prop.three", "3");
-        m_props.setProperty("prop.four", "${prop.three}+1");
-        m_props.setProperty("prop.five", "${prop.three}+${prop.two}");
-        m_props.setProperty("prop.six", "${prop.five}+${prop.one}");
-        m_props.setProperty("prop.infinite1", "${prop.infinite1}");
-        m_props.setProperty("prop.infinite2", "calling ${prop.infinite5}");
-        m_props.setProperty("prop.infinite3", "call ${prop.infinite2} again");
-        m_props.setProperty("prop.infinite4", "x${prop.three}+${prop.infinite3}x");
-        m_props.setProperty("prop.infinite5", "call ${prop.infinite4} ");
+        m_propsOne = new Properties();
+        m_propsOne.setProperty("prop.one", "one");
+        m_propsOne.setProperty("prop.two", "two");
+        m_propsOne.setProperty("prop.three", "3");
+        m_propsOne.setProperty("prop.four", "${prop.three}+1");
+        m_propsOne.setProperty("prop.five", "${prop.three}+${prop.two}");
+        m_propsOne.setProperty("prop.six", "${prop.five}+${prop.one}");
+        m_propsOne.setProperty("prop.infinite1", "${prop.infinite1}");
+        m_propsOne.setProperty("prop.infinite2", "calling ${prop.infinite5}");
+        m_propsOne.setProperty("prop.infinite3", "call ${prop.infinite2} again");
+        m_propsOne.setProperty("prop.infinite4", "x${prop.three}+${prop.infinite3}x");
+        m_propsOne.setProperty("prop.infinite5", "call ${prop.infinite4} ");
+        m_propsOne.setProperty("prop.foo", "eff oh oh");
         
-        
+        m_propsTwo = new Properties();
+        m_propsTwo.setProperty("prop.foo", "first geek ordinal");
     }
 
     protected void tearDown() throws Exception {
     }
     
     public void testNull() {
-        assertNull(PropertiesUtils.substitute(null, m_props));
+        assertNull(PropertiesUtils.substitute(null, m_propsOne));
     }
 
     public void testNoSubstitution() {
-        assertEquals("nosubst", PropertiesUtils.substitute("nosubst", m_props));
-        assertEquals("no${subst", PropertiesUtils.substitute("no${subst", m_props));
-        assertEquals("no}subst", PropertiesUtils.substitute("no}subst", m_props));
-        assertEquals("no${no.such.property}subst", PropertiesUtils.substitute("no${no.such.property}subst", m_props));
+        assertEquals("nosubst", PropertiesUtils.substitute("nosubst", m_propsOne));
+        assertEquals("no${subst", PropertiesUtils.substitute("no${subst", m_propsOne));
+        assertEquals("no}subst", PropertiesUtils.substitute("no}subst", m_propsOne));
+        assertEquals("no${no.such.property}subst", PropertiesUtils.substitute("no${no.such.property}subst", m_propsOne));
     }
     
     public void testSingleSubstitution() {
-        assertEquals("xonex", PropertiesUtils.substitute("x${prop.one}x", m_props));
-        assertEquals("onebegin", PropertiesUtils.substitute("${prop.one}begin", m_props));
-        assertEquals("endone", PropertiesUtils.substitute("end${prop.one}", m_props));
+        assertEquals("xonex", PropertiesUtils.substitute("x${prop.one}x", m_propsOne));
+        assertEquals("onebegin", PropertiesUtils.substitute("${prop.one}begin", m_propsOne));
+        assertEquals("endone", PropertiesUtils.substitute("end${prop.one}", m_propsOne));
     }
     
     public void testMultiSubstition() {
-        assertEquals("xoneytwoz", PropertiesUtils.substitute("x${prop.one}y${prop.two}z", m_props));
-        assertEquals("wonextwoy3z", PropertiesUtils.substitute("w${prop.one}x${prop.two}y${prop.three}z", m_props));
-        assertEquals("onetwo3", PropertiesUtils.substitute("${prop.one}${prop.two}${prop.three}", m_props));
+        assertEquals("xoneytwoz", PropertiesUtils.substitute("x${prop.one}y${prop.two}z", m_propsOne));
+        assertEquals("wonextwoy3z", PropertiesUtils.substitute("w${prop.one}x${prop.two}y${prop.three}z", m_propsOne));
+        assertEquals("onetwo3", PropertiesUtils.substitute("${prop.one}${prop.two}${prop.three}", m_propsOne));
     }
     
     public void testRecursiveSubstitution() {
-        assertEquals("a3+1b", PropertiesUtils.substitute("a${prop.four}b", m_props));
-        assertEquals("a3+twob", PropertiesUtils.substitute("a${prop.five}b", m_props));
-        assertEquals("a3+two+oneb", PropertiesUtils.substitute("a${prop.six}b", m_props));
+        assertEquals("a3+1b", PropertiesUtils.substitute("a${prop.four}b", m_propsOne));
+        assertEquals("a3+twob", PropertiesUtils.substitute("a${prop.five}b", m_propsOne));
+        assertEquals("a3+two+oneb", PropertiesUtils.substitute("a${prop.six}b", m_propsOne));
     }
     
     public void testSimpleInfiniteRecursion() {
         try {
-            String val = PropertiesUtils.substitute("a${prop.infinite1}b", m_props);
+            String val = PropertiesUtils.substitute("a${prop.infinite1}b", m_propsOne);
             fail("Unexpected value "+val);
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().indexOf("prop.infinite1") >= 0);
@@ -99,10 +104,15 @@ public class PropertiesUtilsTest extends TestCase {
 
     public void testComplexInfiniteRecursion() {
         try {
-            String val = PropertiesUtils.substitute("a${prop.infinite5}b", m_props);
+            String val = PropertiesUtils.substitute("a${prop.infinite5}b", m_propsOne);
             fail("Unexpected value "+val);
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().indexOf("prop.infinite5") >= 0);
         }
+    }
+    
+    public void testMultiPropsSubstitution() {
+        assertEquals("eff oh oh", PropertiesUtils.substitute("${prop.foo}", m_propsOne, m_propsTwo));
+        assertEquals("first geek ordinal", PropertiesUtils.substitute("${prop.foo}", m_propsTwo, m_propsOne));
     }
 }
