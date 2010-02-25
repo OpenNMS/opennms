@@ -391,7 +391,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         autoNotifyChar = "C";
                     }
                     if(autoNotifyChar.equals("Y") || (autoNotifyChar.equals("C") && !wasAcked)) {
-                        List<String> cmdList = (List<String>) userNotifications.get(userID);
+                        List<String> cmdList = userNotifications.get(userID);
                         if (cmdList == null) {
                             cmdList = new ArrayList<String>();
                             userNotifications.put(userID, cmdList);

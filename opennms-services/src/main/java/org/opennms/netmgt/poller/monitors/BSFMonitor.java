@@ -57,7 +57,7 @@ public class BSFMonitor extends IPv4Monitor {
                         bsfManager.declareBean(obj.toString(),map.get(obj),String.class);
                     }
                     
-                    status = (String) bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString();
+                    status = bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString();
                     
                     if(status=="OK"){
                         pollStatus = PollStatus.available();

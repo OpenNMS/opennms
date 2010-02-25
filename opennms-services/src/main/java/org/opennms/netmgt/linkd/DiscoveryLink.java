@@ -409,7 +409,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 				while (sub_ite.hasNext()) {
 					Map.Entry<String, List<BridgeStpInterface>> me = sub_ite.next();
-					String vlan = (String) me.getKey();
+					String vlan = me.getKey();
 					String curBaseBridgeAddress = curNode
 							.getBridgeIdentifier(vlan);
 
@@ -1120,7 +1120,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			Iterator<String> sub_ite = curNode.getBridgeIdentifiers().iterator();
 			while (sub_ite.hasNext()) {
-				String curBridgeIdentifier = (String) sub_ite.next();
+				String curBridgeIdentifier = sub_ite.next();
 				if (macs.contains((curBridgeIdentifier)))
 					bridges.add(curNode);
 			}
@@ -1285,11 +1285,11 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	public NodeToNodeLink[] getLinks() {
-		return (NodeToNodeLink[]) links.toArray(new NodeToNodeLink[0]);
+		return links.toArray(new NodeToNodeLink[0]);
 	}
 
 	public MacToNodeLink[] getMacLinks() {
-		return (MacToNodeLink[]) maclinks.toArray(new MacToNodeLink[0]);
+		return maclinks.toArray(new MacToNodeLink[0]);
 	}
 
 	/**

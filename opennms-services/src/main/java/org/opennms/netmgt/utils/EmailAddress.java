@@ -71,13 +71,13 @@ public class EmailAddress {
         }
 
         // walk this list backward filling in TLD, domain and server
-        tld = (String) tokenList.get(tokenList.size() - 1);
-        domain = (String) tokenList.get(tokenList.size() - 2);
+        tld = tokenList.get(tokenList.size() - 1);
+        domain = tokenList.get(tokenList.size() - 2);
 
         if (tokenList.size() - 3 >= 0) {
             String serverParts = (String) tokenList.get(tokenList.size() - 3);
             for (int i = tokenList.size() - 4; i >= 0; i--) {
-                serverParts = (String) tokenList.get(i) + "." + serverParts;
+                serverParts = tokenList.get(i) + "." + serverParts;
             }
             server = serverParts;
         } else {

@@ -337,7 +337,7 @@ public final class JMXDataCollectionConfigFactory {
             while (en.hasMoreElements()) {
                 BeanInfo beanInfo = new BeanInfo();
                 
-                Mbean mbean = (Mbean)en.nextElement();
+                Mbean mbean = en.nextElement();
                 beanInfo.setMbeanName(mbean.getName());
                 beanInfo.setObjectName(mbean.getObjectname());
                 beanInfo.setKeyField(mbean.getKeyfield());
@@ -367,7 +367,7 @@ public final class JMXDataCollectionConfigFactory {
         Mbeans beans = collection.getMbeans();
         Enumeration<Mbean> en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
-            Mbean mbean = (Mbean)en.nextElement();
+            Mbean mbean = en.nextElement();
             int count = mbean.getAttribCount();
             String[] attribs = new String[count];
             Attrib[] attributes = mbean.getAttrib();
@@ -395,7 +395,7 @@ public final class JMXDataCollectionConfigFactory {
         //TODO: Delete this method, it is not referenced anywhere
         Iterator<Attrib>i = objectList.iterator();
         while (i.hasNext()) {
-            Attrib mibObj = (Attrib) i.next();
+            Attrib mibObj = i.next();
 
             // Create a MibObject from the castor MibObj
             Attr aMibObject = new Attr();

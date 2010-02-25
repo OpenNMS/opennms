@@ -79,7 +79,7 @@ public class IfResourceType extends ResourceType {
                 instances.add(new SnmpInstId(ifInfo.getIndex()));
             }
         }
-        return (SnmpInstId[]) instances.toArray(new SnmpInstId[instances.size()]);
+        return instances.toArray(new SnmpInstId[instances.size()]);
     }
 
     public SnmpCollectionResource findResource(SnmpInstId inst) {

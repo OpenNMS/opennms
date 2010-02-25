@@ -218,7 +218,7 @@ public abstract class NotificationManager {
         }
     
         if (!notifList.isEmpty()) {
-            notif = (Notification[]) notifList.toArray(new Notification[0]);
+            notif = notifList.toArray(new Notification[0]);
         }
         return notif;
     }
