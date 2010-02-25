@@ -40,6 +40,7 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
@@ -55,40 +56,32 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo extends SnmpCollectionResource {
+public final class IfInfo extends SnmpCollectionResource {
 
-    private CollectionType m_collType;
     private SNMPCollectorEntry m_entry;
-    private int m_nodeId;
-    private int m_ifIndex;
-    private int m_ifType;
-    private String m_label;
     private String m_ifAlias;
+    private SnmpIfData m_snmpIfData;
 
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
         super(def);
-        m_nodeId = snmpIfData.getNodeId();
-        m_collType = snmpIfData.getCollectionType();
-        m_ifIndex = snmpIfData.getIfIndex();
-        m_ifType = snmpIfData.getIfType();
-        m_label = snmpIfData.getLabelForRRD();
+        m_snmpIfData = snmpIfData;
         m_ifAlias = snmpIfData.getIfAlias();
     }
     
     private int getNodeId() {
-        return m_nodeId;
+        return m_snmpIfData.getNodeId();
     }
 
     public int getIndex() {
-        return m_ifIndex;
+        return m_snmpIfData.getIfIndex();
     }
 
     public int getType() {
-        return m_ifType;
+        return m_snmpIfData.getIfType();
     }
 
     public String getLabel() {
-        return m_label;
+        return m_snmpIfData.getLabelForRRD();
     }
 
     public void setIfAlias(String ifAlias) {
@@ -100,7 +93,7 @@ final class IfInfo extends SnmpCollectionResource {
     }
 
     public CollectionType getCollType() {
-        return m_collType;
+        return m_snmpIfData.getCollectionType();
     }
 
     public void setEntry(SNMPCollectorEntry ifEntry) {
@@ -111,6 +104,9 @@ final class IfInfo extends SnmpCollectionResource {
         return m_entry;
     }
 
+    public Map<String,String> getAttributesMap() {
+        return m_snmpIfData.getAttribtuesMap();
+    }
 
     /**
      ** @deprecated

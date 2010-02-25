@@ -55,6 +55,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
+import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -149,7 +150,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
     //Holds collection interval step. Counter attributes values must be returned as rates.
     private long m_interval;
- 
+
+    //Holds the IfInfo of the currently processed resource if it is an interface.
+    private Map<String,String> m_currentIfInfo;
+
     public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map params, long interval) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
         
@@ -253,6 +257,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * When called, we're starting a new resource.  Clears out any stored attribute values from previous resource visits
      */
     public void visitResource(CollectionResource resource) {
+        if (resource.getResourceTypeName().equals("if")) {
+            m_currentIfInfo = ((IfInfo) resource).getAttributesMap();
+        } else {
+            m_currentIfInfo = null;
+        }
         if (log().isDebugEnabled()) {
             log().debug(this+" visiting resource "+resource);
         }
@@ -317,14 +326,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
     
-    private String getIfInfo(int nodeid, String ifLabel, String attributeName) {
-        return getIfInfoMap(nodeid,ifLabel).get(attributeName);
-    }
-    
-    private Map<String,String> getIfInfoMap(int nodeid, String ifLabel) {
-    	return new JdbcIfInfoGetter().getIfInfoForNodeAndLabel(m_nodeId, ifLabel);
-    }
-    
     public void completeResource(CollectionResource resource) {
         Date date=new Date();
         List<Event> eventsList=new ArrayList<Event>();
@@ -374,14 +375,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                    String snmpIfIndex;
                    String interfaceAddr;
                    if(typeInterface) {
-                           Map<String,String> ifiMap = this.getIfInfoMap(m_nodeId, ifLabel);
-                           if(null == ifiMap) {
+                           if(null == m_currentIfInfo) {
                                    log().info("Could not get data interface information for '" + ifLabel + "'.  Not evaluating threshold.");
                                    continue;
                            }
  
-                           snmpIfIndex = ifiMap.get("snmpifindex");
-                           interfaceAddr = ifiMap.get("ipaddr");
+                           snmpIfIndex = m_currentIfInfo.get("snmpifindex");
+                           interfaceAddr = m_currentIfInfo.get("ipaddr");
                            
                            // Don't threshold the loopback interface on the router, or on invalid interfaces!
                            try {
@@ -393,7 +393,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                                    continue;
                            }
                    } else {
-                           snmpIfIndex = this.getIfInfo(m_nodeId, ifLabel, "snmpifindex");
+                           snmpIfIndex = null; // because this only make sense for interface resource
                            interfaceAddr = m_hostAddress;
                    }
 
@@ -691,8 +691,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
         try {
             if (resourceType.equals("if")) {
-                String ifLabel = resourceDirectory.getName();
-                value = this.getIfInfo(m_nodeId, ifLabel, attribute);
+                value = m_currentIfInfo != null ? m_currentIfInfo.get(attribute) : null;
             }
             if (value == null) {
                 //Check in the current set of collected string vars first, then check numeric vars; only then check on disk (in string properties)
