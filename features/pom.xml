@@ -18,6 +18,7 @@
     <module>phonebook</module>
     <module>sms-reflector</module>
     <module>reporting</module>
+    <module>springframework-security</module>
   </modules>
 
   <profiles>

@@ -32,7 +32,7 @@
 package org.opennms.netmgt.mock;
 
 
-import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
