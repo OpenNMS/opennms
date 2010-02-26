@@ -12,8 +12,8 @@
   <name>OpenNMS Tasks</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -29,8 +29,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -29,12 +29,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interop</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interopdeps</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jinterop-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.samba.jcifs</groupId>
@@ -48,12 +44,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

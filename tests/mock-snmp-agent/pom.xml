@@ -15,14 +15,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+    </dependency>
+    <dependency>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -30,19 +33,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j-agent</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 </project>

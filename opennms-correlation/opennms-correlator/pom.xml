@@ -75,8 +75,8 @@
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

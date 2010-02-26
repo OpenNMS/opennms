@@ -47,8 +47,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-castor</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -88,36 +88,26 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.joesnmp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.lib.snmp</groupId>
       <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-security</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-web-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-web</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-security-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -141,14 +131,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -180,7 +165,7 @@
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.39</version>
+      <version>0.1.42</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
@@ -191,16 +176,8 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.jradius</groupId>
-      <artifactId>jradius-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.jradius</groupId>
-      <artifactId>jradius-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.jradius</groupId>
-      <artifactId>jradius-dictionary</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jradius-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.dhcp.jdhcp</groupId>
@@ -318,8 +295,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
-      <artifactId>quartz</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>jep</groupId>
@@ -334,8 +311,17 @@
       <artifactId>aspectjweaver</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>rancid-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rancid-dependencies</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 </project>

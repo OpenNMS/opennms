@@ -32,21 +32,20 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
-      <artifactId>quartz</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>jasperreports</artifactId>
-      <version>3.6.0</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jasper-dependencies</artifactId>
     </dependency>
 
     <!-- runtime only dependencies -->

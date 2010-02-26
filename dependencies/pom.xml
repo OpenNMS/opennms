@@ -20,6 +20,13 @@
     <module>opennms-jersey</module>
     <module>opennms-mina</module>
     <module>opennms-spring-test</module>
+    <module>dnsjava</module>
+    <module>gwt</module>
+    <module>jinterop</module>
+    <module>jradius</module>
+    <module>quartz</module>
+    <module>rancid</module>
+    <module>snmp</module>
   </modules>
   <properties>
     <springVersion>3.0.1.RELEASE</springVersion>

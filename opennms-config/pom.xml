@@ -61,8 +61,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-castor</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

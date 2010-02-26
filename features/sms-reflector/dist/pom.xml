@@ -106,6 +106,7 @@
   </dependencies>
   
   <repositories>
+<!--
     <repository>
       <id>OPS4J</id>
       <url>http://repository.ops4j.org/maven2</url>
@@ -115,18 +116,19 @@
       <name>SpringSource Enterprise Bundle Repository (External Bundles)</name>
       <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
+-->
   </repositories>
 
   <build>
     <plugins>
       <plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<configuration>
-	  <finalName>sms-reflector-${project.version}</finalName>
-	  <descriptors>
-	    <descriptor>src/main/assembly/assembly.xml</descriptor>
-	  </descriptors>
-	</configuration>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>sms-reflector-${project.version}</finalName>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
     </plugins>
   </build>

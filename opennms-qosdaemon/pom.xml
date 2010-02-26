@@ -243,8 +243,8 @@
     </dependency>
     
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-castor</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
     </dependency>
 
     <dependency>
@@ -258,8 +258,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     
     <dependency>

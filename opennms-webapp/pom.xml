@@ -10,7 +10,6 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
-    <gwtVersion>2.0.0</gwtVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -231,21 +230,21 @@
   <dependencies>
     <!-- Sort dependencies by groupId then artifactId, but put dependencies with a groupId of org.opennms first. -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-security</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-security-dependencies</artifactId>
     </dependency>
     <!-- Rancid -->
     <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>rancid-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rancid-dependencies</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.dnsjava</groupId>
-        <artifactId>dnsjava</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-castor</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -263,8 +262,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-hibernate</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>hibernate-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -344,16 +343,16 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-web</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-web-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jersey</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jersey-dependencies</artifactId>
     </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
@@ -363,12 +362,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.api</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -412,22 +411,8 @@
     </dependency>
     <!-- GWT Dependencies -->
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.gwtwidgets</groupId>
-      <artifactId>gwt-widgets</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.gwtwidgets</groupId>
-      <artifactId>gwt-widgets-server</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>gwt-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -498,8 +483,8 @@
       <artifactId>extremecomponents</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
-      <artifactId>quartz</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
