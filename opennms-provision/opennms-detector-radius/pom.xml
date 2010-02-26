@@ -15,24 +15,16 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-    	<groupId>net.jradius</groupId>
-    	<artifactId>jradius-core</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jradius-dependencies</artifactId>
     </dependency>
     <dependency>
-    	<groupId>net.jradius</groupId>
-    	<artifactId>jradius-dictionary</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
-    	<groupId>net.sf.jradius</groupId>
-    	<artifactId>jradius-client</artifactId>
-    </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-spring</artifactId>
-    </dependency>
-    <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-spring-test</artifactId>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
     	<scope>test</scope>
     </dependency>
   </dependencies>

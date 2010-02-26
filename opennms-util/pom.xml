@@ -9,16 +9,16 @@
   <name>OpenNMS Utilities</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jaxb</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

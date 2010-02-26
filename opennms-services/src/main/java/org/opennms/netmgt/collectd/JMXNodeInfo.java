@@ -45,10 +45,8 @@ import org.opennms.netmgt.config.collectd.Attrib;
  */
 public class JMXNodeInfo {
     private int m_nodeId;
-
     private Map<String, List<Attrib>> m_oidList;
     private Map<String, BeanInfo> m_mbeans;
-
     private Map<String, JMXDataSource> m_dsList;
 
     public JMXNodeInfo(int nodeId) {

@@ -57,7 +57,6 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.web.asset.AssetModel;
 
 public class CategoryModel extends Object {
     /** The name of the category that includes all services and nodes. */

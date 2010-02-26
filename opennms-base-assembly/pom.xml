@@ -303,14 +303,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

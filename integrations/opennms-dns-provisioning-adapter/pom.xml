@@ -18,8 +18,12 @@
       <artifactId>opennms-dao</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <!-- test dependencies -->
     <dependency>
@@ -48,10 +52,6 @@
       <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.dnsjava</groupId>
-      <artifactId>dnsjava</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -38,12 +38,16 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
-      <artifactId>quartz</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
     </dependency>
 
     <!-- runtime only dependencies -->
@@ -63,6 +67,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

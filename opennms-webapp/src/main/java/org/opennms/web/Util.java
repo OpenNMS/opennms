@@ -66,7 +66,7 @@ import org.opennms.web.element.NetworkElementFactory;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public abstract class Util extends Object {
+public abstract class Util {
 
     /**
      * Return a string that represents the fully qualified URL for our servlet
@@ -88,64 +88,12 @@ public abstract class Util extends Object {
      *            the servlet request you are servicing
      */
     public static String calculateUrlBase(HttpServletRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String tmpl = Vault.getProperty("opennms.web.base-url");
-        if (tmpl == null) {
-            tmpl = "%s://%x%c/";
-        }
-        return substituteUrl(request, tmpl);
+        return org.opennms.web.api.Util.calculateUrlBase(request);
     }
-
-    protected static final char[] substKeywords = { 's', 'h', 'p', 'x', 'c' };
-
-    protected static String substituteUrl(HttpServletRequest request,
-                                          String tmpl) {
-        String[] replacements = {
-            request.getScheme(),                        // %s
-            request.getServerName(),                    // %h
-            Integer.toString(request.getServerPort()),  // %p
-            getHostHeader(request),                     // %x
-            request.getContextPath()                    // %c
-        };
-
-        StringBuffer out = new StringBuffer(48);
-        for (int i = 0; i < tmpl.length();) {
-            char c = tmpl.charAt(i++);
-            if (c == '%' && i < tmpl.length()) {
-                char d = tmpl.charAt(i++);
-                for (int key = 0; key < substKeywords.length; ++key) {
-                    if (d == substKeywords[key]) {
-                        out.append(replacements[key]);
-                        break;
-                    }
-                }
-            }
-            else {
-                out.append(c);
-            }
-        }
-        return out.toString();
-    }
-
-    protected static final String[] hostHeaders = {
-        "X-Forwarded-Host",     // Apache ProxyPass
-        "X-Host",               // lighttpd
-        "Host"                  // unproxied
-    };
 
     /** Obtains the host and port used by the end user. */
     public static String getHostHeader(HttpServletRequest request) {
-        for (int i = 0; i < hostHeaders.length; ++i) {
-            String ret = request.getHeader(hostHeaders[i]);
-            if (ret != null) {
-                return ret;
-            }
-        }
-        return request.getServerName() + ":"
-                + Integer.toString(request.getServerPort());
+        return org.opennms.web.api.Util.getHostHeader(request);
     }
 
     /**
@@ -178,12 +126,7 @@ public abstract class Util extends Object {
      * @return encoded string
      */
     public static String encode(String string) {
-        try {
-            return URLEncoder.encode(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // UTF-8 should *never* throw this
-            throw new UndeclaredThrowableException(e);
-        }
+        return org.opennms.web.api.Util.encode(string);
     }
 
     /**
@@ -194,12 +137,7 @@ public abstract class Util extends Object {
      * @return decoded string
      */
     public static String decode(String string) {
-        try {
-            return URLDecoder.decode(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // UTF-8 should *never* throw this
-            throw new UndeclaredThrowableException(e);
-        }
+        return org.opennms.web.api.Util.decode(string);
     }
 
     /**
@@ -237,7 +175,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(HttpServletRequest request) {
-        return (makeHiddenTags(request, new HashMap(), new String[0]));
+        return (org.opennms.web.api.Util.makeHiddenTags(request, new HashMap(), new String[0]));
     }
 
     /**
@@ -253,7 +191,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(HttpServletRequest request, Map additions) {
-        return (makeHiddenTags(request, additions, new String[0]));
+        return (org.opennms.web.api.Util.makeHiddenTags(request, additions, new String[0]));
     }
 
     /**
@@ -269,7 +207,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(HttpServletRequest request, String[] ignores) {
-        return (makeHiddenTags(request, new HashMap(), ignores));
+        return (org.opennms.web.api.Util.makeHiddenTags(request, new HashMap(), ignores));
     }
 
     /**
@@ -289,7 +227,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter not in the ignore list.
      */
     public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores) {
-        return (makeHiddenTags(request, additions, ignores, IgnoreType.BOTH));
+        return (org.opennms.web.api.Util.makeHiddenTags(request, additions, ignores, org.opennms.web.api.Util.IgnoreType.BOTH));
     }
 
     /**
@@ -310,60 +248,8 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter not in the ignore list.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
-        if (request == null || additions == null || ignores == null || ignoreType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        StringBuffer buffer = new StringBuffer();
-
-        ArrayList<String> ignoreList = new ArrayList<String>();
-        for (int i = 0; i < ignores.length; i++) {
-            ignoreList.add(ignores[i]);
-        }
-
-        Enumeration names = request.getParameterNames();
-
-        while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
-            String[] values = request.getParameterValues(name);
-
-            if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
-                    buffer.append("<input type=\"hidden\" name=\"");
-                    buffer.append(name);
-                    buffer.append("\" value=\"");
-                    buffer.append(WebSecurityUtils.sanitizeString(values[i]));
-                    buffer.append("\" />");
-                    buffer.append("\n");
-                }
-            }
-        }
-
-        // Add the additions in
-        Set keySet = additions.keySet();
-        Iterator keys = keySet.iterator();
-
-        while (keys.hasNext()) {
-            String name = (String) keys.next();
-
-            // handle both a String value or a String[] value
-            Object tmp = additions.get(name);
-            String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
-
-            if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
-                    buffer.append("<input type=\"hidden\" name=\"");
-                    buffer.append(name);
-                    buffer.append("\" value=\"");
-                    buffer.append(values[i]);
-                    buffer.append("\" />");
-                    buffer.append("\n");
-                }
-            }
-        }
-
-        return (buffer.toString());
+    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores, org.opennms.web.api.Util.IgnoreType ignoreType) {
+        return org.opennms.web.api.Util.makeHiddenTags(request, additions, ignores, ignoreType);
     }
 
     /**
@@ -373,7 +259,7 @@ public abstract class Util extends Object {
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
      */
     public static String makeQueryString(HttpServletRequest request) {
-        return (makeQueryString(request, new HashMap(), new String[0]));
+        return (org.opennms.web.api.Util.makeQueryString(request, new HashMap(), new String[0]));
     }
 
     /**
@@ -384,7 +270,7 @@ public abstract class Util extends Object {
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
      */
     public static String makeQueryString(HttpServletRequest request, Map additions) {
-        return (makeQueryString(request, additions, new String[0]));
+        return (org.opennms.web.api.Util.makeQueryString(request, additions, new String[0]));
     }
 
     /**
@@ -395,7 +281,7 @@ public abstract class Util extends Object {
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
      */
     public static String makeQueryString(HttpServletRequest request, String[] ignores) {
-        return (makeQueryString(request, new HashMap(), ignores));
+        return (org.opennms.web.api.Util.makeQueryString(request, new HashMap(), ignores));
     }
 
     /**
@@ -415,7 +301,7 @@ public abstract class Util extends Object {
      *         suitable for adding to a URL as a query string.
      */
     public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores) {
-        return (makeQueryString(request, additions, ignores, IgnoreType.BOTH));
+        return (org.opennms.web.api.Util.makeQueryString(request, additions, ignores, org.opennms.web.api.Util.IgnoreType.BOTH));
     }
 
     /**
@@ -434,135 +320,20 @@ public abstract class Util extends Object {
      * @return A string in the <em>x-www-form-urlencoded</em> format that is
      *         suitable for adding to a URL as a query string.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
-        if (request == null || additions == null || ignores == null || ignoreType == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        StringBuffer buffer = new StringBuffer();
-
-        ArrayList<String> ignoreList = new ArrayList<String>();
-        for (int i = 0; i < ignores.length; i++) {
-            ignoreList.add(ignores[i]);
-        }
-
-        Enumeration names = request.getParameterNames();
-
-        while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
-            String[] values = request.getParameterValues(name);
-
-            if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
-                    buffer.append("&");
-                    buffer.append(name);
-                    buffer.append("=");
-                    buffer.append(Util.encode(values[i]));
-                }
-            }
-        }
-
-        Set keySet = additions.keySet();
-        Iterator keys = keySet.iterator();
-
-        while (keys.hasNext()) {
-            String name = (String) keys.next();
-
-            // handle both a String value or a String[] value
-            Object tmp = additions.get(name);
-            String[] values;
-            if (tmp instanceof String[]) {
-                values = (String[]) tmp;
-            } else if (tmp instanceof String) {
-                values = new String[] { (String) tmp };
-            } else {
-                throw new IllegalArgumentException("addition \"" + name + "\" is not of type String or String[], but is of type: "
-                                                   + tmp.getClass().getName());
-            }
-
-            if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
-                    buffer.append("&");
-                    buffer.append(name);
-                    buffer.append("=");
-                    buffer.append(Util.encode(values[i]));
-                }
-            }
-        }
-
-        // removes the first & from the buffer
-        if (buffer.length() > 0 && buffer.charAt(0) == '&') {
-            buffer.deleteCharAt(0);
-        }
-
-        return buffer.toString();
-    }
-
-    public static class IgnoreType extends Object {
-        public static final int _REQUEST_ONLY = 0;
-
-        public static final int _ADDITIONS_ONLY = 0;
-
-        public static final int _BOTH = 0;
-
-        public static final IgnoreType REQUEST_ONLY = new IgnoreType(_REQUEST_ONLY);
-
-        public static final IgnoreType ADDITIONS_ONLY = new IgnoreType(_ADDITIONS_ONLY);
-
-        public static final IgnoreType BOTH = new IgnoreType(_BOTH);
-
-        protected int value;
-
-        private IgnoreType(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return this.value;
-        }
+    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores, org.opennms.web.api.Util.IgnoreType ignoreType) {
+        return org.opennms.web.api.Util.makeQueryString(request, additions, ignores, ignoreType);
     }
 
     public static Map<String, String> getOrderedMap(String names[][]) {
-        TreeMap<String, String> orderedMap = new TreeMap<String, String>();
-
-        for (int i = 0; i < names.length; i++) {
-            orderedMap.put(names[i][1], names[i][0]);
-        }
-
-        return orderedMap;
+        return org.opennms.web.api.Util.getOrderedMap(names);
     }
 
     public static String htmlify(String input) {
-        return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+        return org.opennms.web.api.Util.htmlify(input);
     }
     
     public static EventProxy createEventProxy() {
-        /*
-         * Rather than defaulting to localhost all the time, give an option in properties
-         */
-        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "127.0.0.1" : Vault.getProperty("opennms.rtc.event.proxy.host");
-        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? Integer.toString(TcpEventProxy.DEFAULT_PORT) : Vault.getProperty("opennms.rtc.event.proxy.port");
-        String proxyHostTimeout = Vault.getProperty("opennms.rtc.event.proxy.timeout") == null ? Integer.toString(TcpEventProxy.DEFAULT_TIMEOUT) : Vault.getProperty("opennms.rtc.event.proxy.timeout");
-        InetAddress proxyAddr = null;
-        EventProxy proxy = null;
-
-        try {
-            proxyAddr = InetAddress.getByName(proxyHostName);
-        } catch (UnknownHostException e) {
-            proxyAddr = null;
-        }
-
-        if (proxyAddr == null) {
-            try {
-                proxy = new TcpEventProxy();
-            } catch (UnknownHostException e) {
-                // XXX Ewwww!  We should just let the first UnknownException bubble up. 
-                throw new UndeclaredThrowableException(e);
-            }
-        } else {
-            proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
-        }
-        return proxy;
+        return org.opennms.web.api.Util.createEventProxy();
     }
 
     /**
@@ -573,20 +344,11 @@ public abstract class Util extends Object {
      * @see java.text.DateFormat
      */
     public static final String formatDateToUIString(Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
+        return org.opennms.web.api.Util.formatDateToUIString(date);
     }
     
     public static String convertToJsSafeString(String str){
-        
-        String retStr  = str
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\t", "\\t")
-        .replace("\r", "\\r")
-        .replace("\n", "\\n")
-        .replace("\b", "\\b");
-        
-        return retStr;
+        return org.opennms.web.api.Util.convertToJsSafeString(str);
     }
 
 }

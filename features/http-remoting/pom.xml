@@ -16,6 +16,12 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <webResources>
+            <resource>
+              <filtering>true</filtering>
+              <directory>${basedir}/src/main/web-filtered</directory>
+            </resource>
+          </webResources>
         </configuration>
       </plugin>
     </plugins>
@@ -26,16 +32,20 @@
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-security</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-security-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-web</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-web-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -66,8 +76,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
     </dependency>
 

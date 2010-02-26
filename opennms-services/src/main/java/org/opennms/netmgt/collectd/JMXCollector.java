@@ -41,6 +41,8 @@ import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +56,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
@@ -429,26 +432,72 @@ public abstract class JMXCollector implements ServiceCollector {
                         String excludeList = beanInfo.getExcludes();
                         //All JMX collected values are per node
                         AttributeGroupType attribGroupType=new AttributeGroupType(fixGroupName(objectName),"all");
+                        
+                        List<String> attribNames = beanInfo.getAttributeNames();
+                        List<String> compAttribNames = beanInfo.getCompositeAttributeNames();
+                        
+                        for (String compAttribName : compAttribNames) {
+                            if (attribNames.contains(compAttribName) ) {
+                                attribNames.remove(compAttribName);
+                                String[] ac = (String[])compAttribName.split("\\|", -1);       
+                                String attrName = ac[0];
+                                if (!attribNames.contains(attrName)) {
+                                    attribNames.add(attrName);
+                                }
+                            }
+                        }                        
+                        //log.debug(" JMXCollector: processed the following attributes: " + attribNames.toString());
+                        //log.debug(" JMXCollector: processed the following Composite Attributes: " + compAttribNames.toString());
+                        
+                        String[] attrNames = (String[])attribNames.toArray(new String[attribNames.size()]);
 
-                        String[] attrNames = beanInfo.getAttributeNames();
-
-                        if (objectName.indexOf("*") == -1) {
+                        if (objectName.indexOf("*") == -1) {                            
                             log.debug(serviceName
                                     + " Collector - getAttributes: "
                                     + objectName + " #attributes: "
-                                    + attrNames.length);
-
+                                    + attrNames.length + "#compositeAttributeMembers: "
+                                    + compAttribNames.size() );
                             try {
                                 ObjectName oName = new ObjectName(objectName);
                                 if (mbeanServer.isRegistered(oName)) {
                                     AttributeList attrList = mbeanServer.getAttributes(oName, attrNames);
                                     Map<String, JMXDataSource> dsMap = nodeInfo.getDsMap();
                                     for(Object attribute : attrList) {
-                                        Attribute attrib=(Attribute)attribute;
-                                        JMXDataSource ds = dsMap.get(objectName + "|"
-                                                     + attrib.getName());
-                                        JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
-                                        collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                        List<String> compositeMemberKeys = new ArrayList<String>();
+                                        Boolean isComposite = false;
+                                        Attribute attrib=(Attribute)attribute;;
+                                        for (String compAttrName : compAttribNames ) {
+                                            String[] attribKeys = compAttrName.split("\\|", -1);
+                                            if (attrib.getName().equals(attribKeys[0])) {
+                                                compositeMemberKeys.add(attribKeys[1]);
+                                                isComposite = true;
+                                            }
+                                        }
+                                        if (isComposite) {
+                                            try {
+                                                CompositeData cd = (CompositeData)attrib.getValue();
+                                                 for (String key : compositeMemberKeys) {
+                                                     /*
+                                                     value = cd.get(key);
+                                                     
+                                                     log.debug(" JMXCollector - got CompositeData: " + 
+                                                               objectName + "|" + attrib.getName() + "|" + key + " |-> " + cd.get(key).toString());
+                                                     */
+                                                     JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName() + "|" + key);
+                                                     JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
+                                                     collectionResource.setAttributeValue(attribType, cd.get(key).toString());
+                                                 }
+                                            } catch (ClassCastException cce) {
+                                                log.debug(" Collection - getAttributes (try CompositeData) - ERROR: " + 
+                                                          "Failed to cast attribute value to type CompositeData!");
+                                            }
+                                        }
+                                        else {
+                                            // this is a normal attribute, so fallback to default handler
+                                            JMXDataSource ds = dsMap.get(objectName + "|" + attrib.getName());
+                                            JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
+                                            collectionResource.setAttributeValue(attribType, attrib.getValue().toString());
+                                        }
                                     }  
                                 }
                             } catch (InstanceNotFoundException e) {
@@ -535,11 +584,10 @@ public abstract class JMXCollector implements ServiceCollector {
                                 }
                             }
                         }
-                        // serviceStatus = COLLECTION_SUCCEEDED;
                     }
                     break;
                 } catch (Exception e) {
-                    e.fillInStackTrace();
+                    //e.fillInStackTrace(); <-  this throws it's own class cast exception - try printStackTrace() instead
                     log.debug(serviceName
                               + " Collector.collect: IOException while collect "
                               + "address: " + agent.getAddress(), e);

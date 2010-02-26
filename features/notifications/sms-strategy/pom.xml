@@ -29,13 +29,13 @@
         <artifactId>org.opennms.lib.sms</artifactId>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-hibernate</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>hibernate-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-spring</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
       </dependency>
       <dependency>
@@ -45,30 +45,4 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/snapshots</url>
-    </repository>
-  </repositories>
-
 </project>

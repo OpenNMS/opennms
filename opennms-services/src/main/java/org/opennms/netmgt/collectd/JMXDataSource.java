@@ -68,7 +68,7 @@ public class JMXDataSource  {
 	public static final String RRD_ERROR = "RRD_ERROR";
 
     /**
-     * Defines the list of supported (MIB) object types whic may be mapped to
+     * Defines the list of supported (MIB) object types which may be mapped to
      * one of the supported RRD data source types. Currently the only two
      * supported RRD data source types are: COUNTER & GAUGE. A simple string
      * comparison is performed against this list of supported types to determine

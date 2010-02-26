@@ -18,13 +18,13 @@
   		<artifactId>opennms-icmp-api</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-spring-test</artifactId>
-  		<scope>test</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms.lib.snmp</groupId>
-  		<artifactId>org.opennms.lib.snmp.api</artifactId>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
+  		<scope>test</scope>
   	</dependency>
   	<dependency>
   		<groupId>org.opennms.lib.snmp</groupId>
@@ -60,8 +60,8 @@
   		<scope>test</scope>
   	</dependency>
   	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
   	</dependency>
   	<dependency>
   		<groupId>org.opennms</groupId>

@@ -114,23 +114,6 @@
       </snapshots>
     </repository>
     <repository>
-      <id>opennms-repo</id>
-      <url>http://repo.opennms.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-snapshots</id>
-      <url>http://repo.opennms.org/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-    <repository>
       <id>com.springsource.repository.bundles.external</id>
       <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
       <url>http://repository.springsource.com/maven/bundles/external</url>

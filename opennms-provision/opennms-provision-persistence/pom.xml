@@ -89,8 +89,8 @@
       <artifactId>commons-beanutils-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jaxb</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -118,12 +118,12 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-web</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-web-dependencies</artifactId>
     </dependency>
 
     <!-- runtime only dependencies -->
