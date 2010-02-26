@@ -47,4 +47,13 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>codehaus</id>
+      <name>Maven/Codehaus Repository</name>
+      <url>http://repository.codehaus.org</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
