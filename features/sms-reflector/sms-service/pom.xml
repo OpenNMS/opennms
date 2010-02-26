@@ -138,7 +138,7 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
