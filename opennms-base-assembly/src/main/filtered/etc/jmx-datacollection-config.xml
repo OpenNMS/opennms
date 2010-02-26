@@ -106,6 +106,8 @@
           </mbean>
           
           <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+              <attrib name="CollectionUsageThreshold"       alias="EdenCollUseThrsh"      type="gauge"/>
+              <attrib name="CollectionUsageThresholdCount"    alias="EdenCollUseThrshCnt"   type="gauge"/>
               <comp-attrib name="Usage"         type="Composite" alias="EdenUsage">
                   <comp-member name="init"      type="gauge"     alias="EdenUsage.init" />
           		  <comp-member name="max"       type="gauge"     alias="EdenUsage.max" />
@@ -118,11 +120,11 @@
           		  <comp-member name="used"      type="gauge"     alias="EdenPeakUsage.used" />
           		  <comp-member name="committed" type="gauge"     alias="EdenPeakUsage.committed" />
               </comp-attrib>
-              <attrib name="CollectionUsageThreshold"     	alias="EdenCollUseThrsh"      type="gauge"/>
-              <attrib name="CollectionUsageThresholdCount"    alias="EdenCollUseThrshCnt"   type="gauge"/>
           </mbean>
 	  	
           <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+              <attrib name="CollectionUsageThreshold"       alias="SurvCollUseThresh"      type="gauge"/>
+              <attrib name="CollectionUsageThresholdCount"    alias="SurvCollUseThreshCnt"   type="gauge"/>
               <comp-attrib name="Usage"         type="Composite" alias="SurvUsage">
                   <comp-member name="init"      type="gauge"     alias="SurvUsage.init" />
           		  <comp-member name="max"       type="gauge"     alias="SurvUsage.max" />
@@ -135,8 +137,6 @@
           		  <comp-member name="used"      type="gauge"     alias="SurvPeakUsage.used" />
           		  <comp-member name="committed" type="gauge"     alias="SurvPeakUsage.committed" />
               </comp-attrib>
-              <attrib name="CollectionUsageThreshold"     	alias="SurvCollUseThresh"      type="gauge"/>
-              <attrib name="CollectionUsageThresholdCount"    alias="SurvCollUseThreshCnt"   type="gauge"/>
           </mbean>
 	  	  		  
         </mbeans>
