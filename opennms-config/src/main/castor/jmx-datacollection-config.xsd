@@ -120,7 +120,7 @@
 			<attribute name="alias" type="string" use="optional"/>
 			
 			<attribute name="type" use="required">
-				<simpleType value="^[Cc](omposite|OMPOSITE)$">
+				<simpleType>
 					<restriction base="string">
 						<pattern value="^[Cc](omposite|OMPOSITE)$"/>
 					</restriction>
@@ -137,7 +137,7 @@
 			<attribute name="alias" type="string" use="optional"/>
 			
 			<attribute name="type" use="required">
-				<simpleType value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING)?|[Cc](omposite|OMPOSITE))$">
+				<simpleType>
 					<restriction base="string">
 						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING)?|[Cc](omposite|OMPOSITE))$"/>
 					</restriction>

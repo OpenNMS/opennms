@@ -19,7 +19,7 @@
         <documentation>The base directory rendered reports are saved on the file system.</documentation>
       </annotation>
     </attribute>
-    <attribute name="persist-reports" type="string" use="required" >
+    <attribute name="persist-reports" use="required" >
       <annotation>
         <documentation>Should reports be kept after delivered?</documentation>
       </annotation>
@@ -57,14 +57,14 @@
       </sequence>
       <attribute name="report-template" type="string" use="required" />
       <attribute name="report-name" type="string" use="required" />
-      <attribute name="report-format" type="string" use="optional" default="pdf">
+      <attribute name="report-format" use="optional" default="pdf">
         <simpleType>
           <restriction base="string">
             <pattern value="(pdf|csv|html)"/> 
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="report-engine" type="string" use="optional" default="opennms">
+      <attribute name="report-engine" use="optional" default="opennms">
         <simpleType>
           <restriction base="string">
             <pattern value="(jdbc|opennms)" />
