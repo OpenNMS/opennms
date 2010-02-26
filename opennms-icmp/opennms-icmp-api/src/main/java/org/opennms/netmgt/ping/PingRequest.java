@@ -39,6 +39,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -97,6 +98,9 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      * The thread logger associated with this request.
      */
     private Category m_log = ThreadCategory.getInstance(this.getClass());
+    
+    
+    private AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
     PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, Category logger, PingResponseCallback cb) {
@@ -195,7 +199,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
     
     public boolean processResponse(PingReply reply) {
-        processResponse(reply.getPacket());
+        try {
+            processResponse(reply.getPacket());
+        } finally {
+            setProcessed(true);
+        }
         return true;
     }
 
@@ -206,17 +214,21 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public PingRequest processTimeout() {
-        PingRequest returnval = null;
-        if (this.isExpired()) {
-            if (this.getRetries() > 0) {
-                returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, log(), m_callback);
-                log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
-            } else {
-                log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                m_callback.handleTimeout(getAddress(), getRequest());
+        try {
+            PingRequest returnval = null;
+            if (this.isExpired()) {
+                if (this.getRetries() > 0) {
+                    returnval = new PingRequest(getAddress(), getTid(), getSequenceId(), getTimeout(), getRetries() - 1, log(), m_callback);
+                    log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
+                } else {
+                    log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
+                    m_callback.handleTimeout(getAddress(), getRequest());
+                }
             }
+            return returnval;
+        } finally {
+            setProcessed(true);
         }
-        return returnval;
     }
     
     public boolean isExpired() {
@@ -252,7 +264,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public void processError(Throwable t) {
-        m_callback.handleError(getAddress(), getRequest(), t);
+        try {
+            m_callback.handleError(getAddress(), getRequest(), t);
+        } finally {
+            setProcessed(true);
+        }
     }
     
     static class LogPrefixPreservingCallbackAdapter implements PingResponseCallback {
@@ -295,6 +311,14 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         
         
         
+    }
+    
+    private void setProcessed(boolean processed) {
+        m_processed.set(processed);
+    }
+
+    public boolean isProcessed() {
+        return m_processed.get();
     }
 
 }
