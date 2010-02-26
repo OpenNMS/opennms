@@ -247,18 +247,9 @@
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0-rc-5</version>
+        <version>${gmavenVersion}</version>
         <configuration>
           <providerSelection>1.5</providerSelection>
-        </configuration>
-      </plugin>
-      <plugin>
-        <inherited>false</inherited>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
-        <configuration>
-          <fileName>${groovy.fileName}</fileName>
         </configuration>
       </plugin>
       <plugin>
@@ -664,7 +655,7 @@
    <minaVersion>2.0.0-M6</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.6.2</xercesVersion>
-   <gmavenVersion>1.0-rc-5</gmavenVersion>
+   <gmavenVersion>1.0</gmavenVersion>
   </properties>
 
   <profiles>
@@ -1821,8 +1812,8 @@
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-mojo</artifactId>
         <version>${gmavenVersion}</version>
-	  </dependency>
-	  <dependency>
+	   </dependency>
+	   <dependency>
         <groupId>org.codehaus.groovy.maven.runtime</groupId>
         <artifactId>gmaven-runtime-1.5</artifactId>
         <version>${gmavenVersion}</version>
