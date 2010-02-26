@@ -99,7 +99,7 @@ fi
 show_help () {
 	cat <<END
 
-Usage: $0 [-n] [-t] [-c timeout] [-v] [-Q] <command> [<service>]
+Usage: $0 [-n] [-t] [-p] [-c timeout] [-v] [-Q] <command> [<service>]
  
   command options: start|stop|restart|status|check|pause|resume|kill
 
@@ -110,6 +110,7 @@ Usage: $0 [-n] [-t] [-c timeout] [-v] [-Q] <command> [<service>]
 
       -n  "No execute" mode.  Don't call Java to do anything.
       -t  Test mode.  Enable JPDA on port 8001.
+      -p  Enable TIJMP profiler
       -c  Controller HTTP connection timeout in seconds.
       -v  Verbose mode.  When used with the "status" command, gives the
           results for all OpenNMS services.  When used with "start", enables
@@ -244,6 +245,12 @@ doStart(){
 	if [ $TEST -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001"
 		JPDA="-Xdebug -Xnoagent -Djava.compiler=none -Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n"
+	fi
+
+	# See: http://www.khelekore.org/jmp/tijmp/
+	if [ $PROFILE -gt 0 ]; then
+		echo "- enabling TIJMP Profiling"
+		JPDA="-Dtijmp.jar=/usr/share/java/tijmp-0.6.jar -agentlib:tijmp ${JPDA}"
 	fi
 
 
@@ -483,12 +490,13 @@ if [ x"$ADDITIONAL_CONTROLLER_OPTIONS" != x"" ]; then
 fi
 
 TEST=0
+PROFILE=0
 NOEXECUTE=""
 VERBOSE=0
 
 NAME="opennms"
 
-while getopts c:ntvQ c; do
+while getopts c:ntvpQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER="$APP_PARMS_CONTROLLER -t $OPTARG"
@@ -501,6 +509,9 @@ while getopts c:ntvQ c; do
 			;;
 		t)
 			TEST=1
+			;;
+		p)
+			PROFILE=1
 			;;
 		v)
 			VERBOSE=1
