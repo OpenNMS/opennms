@@ -102,6 +102,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             ServletRequestHandledEvent authEvent = (ServletRequestHandledEvent) event;
             log().debug("ServletRequestHandledEvent received - " + authEvent.getDescription() + "\n  Servlet - " + authEvent.getServletName() +
                         "\n  URL - " + authEvent.getRequestUrl());
+            log().info(authEvent.getRequestUrl() + " requested from " + authEvent.getClientAddress() + " by user " + authEvent.getUserName());
         }
         
     }
