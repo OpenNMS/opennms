@@ -133,11 +133,12 @@ function handleInit(data) {
 		}
 	
 		mapElemDimension=mapsPropertiesFactory.defaultMapElementDimension;
+		mapScale=mapsPropertiesFactory.mapScale;
 		
 		for(var icon in mapsPropertiesFactory.icons)
 		{
             MEIcons.push(icon);
-            MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+mapsPropertiesFactory.icons[icon]);
+	    MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
         }
               
 		for (var image in mapsPropertiesFactory.backgroundImages)
