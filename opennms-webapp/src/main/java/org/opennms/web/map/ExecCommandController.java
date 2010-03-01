@@ -111,6 +111,19 @@ public class ExecCommandController implements Controller {
 		    } else {
                 commandToExec = commandToExec + " " + address;		        
 		    }
+		} else if (command.equals("ipmitool")) {
+		    String ipmiCommand = request.getParameter("ipmiCommand");
+		    String ipmiUserName = request.getParameter("ipmiUser");
+		    String ipmiPassword = request.getParameter("ipmiPassword");
+		    String ipmiProtocol = request.getParameter("ipmiProtocol");
+		    
+		    if(ipmiCommand !=null && ipmiUserName != null &&  ipmiPassword != null ){
+		        commandToExec = commandToExec + " -I "+ipmiProtocol+" -U " 
+		        + ipmiUserName +" -P " + ipmiPassword + " -H " + address +" " + ipmiCommand;
+		    }
+		    else
+		        throw new IllegalStateException("IPMITool requires Protocol, Command, Usernane and Password");
+		       
 		} else {
 		    throw new IllegalStateException("Command "+ command+" not supported.");   
 		}
@@ -185,7 +198,7 @@ public class ExecCommandController implements Controller {
 	    
 	    public Command(String command) throws IOException, IllegalStateException
 	    {
-	    	if(command.startsWith("traceroute") || command.startsWith("ping")){
+	    	if(command.startsWith("traceroute") || command.startsWith("ping") || command.startsWith("ipmitool")){
 	    		 p = Runtime.getRuntime().exec(command);
 	 	        out = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    	}else{
