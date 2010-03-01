@@ -22,7 +22,7 @@ if [ -f "$JAVA_CONF" ]; then
 fi
 
 printHelp() {
-	echo "usage: $0 [-h] -u <URI> -l <location> [-g]"
+	echo "usage: $0 [-h] [-j java_exe] -u <URI> -l <location> [-g] [-n username] [-p password]"
 	echo ""
 	echo "	-h this help"
 	echo "	-u URI to the remote host"
@@ -31,10 +31,12 @@ printHelp() {
 	echo "	-l location name for this poller"
 	echo "	-g start the remote poller GUI"
 	echo "	-j override Java executable"
+	echo "	-n the userName to connect as"
+	echo "	-P the Password to connect with"
 	echo ""
 }
 
-while getopts "u:l:gj:" OPT
+while getopts ":u:l:gj:" OPT
 do
 	case $OPT in
 		h)
@@ -88,11 +90,20 @@ fi
 log_file="/tmp/poll.log"
 #log_file="/dev/null"
 
+JVM_ARGS="-Xmx384m -Dlog4j.logger=DEBUG"
+EXTRA_ARGS=""
+if [ -n "$REMOTE_USERNAME" ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -n $REMOTE_USERNAME"
+fi
+if [ -n "$REMOTE_PASSWORD" ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -p $REMOTE_PASSWORD"
+fi
+
 exec nohup $JAVA_EXE \
-	-Xmx384m \
+	$JVM_ARGS \
 	-Djava.rmi.activation.port="$REMOTE_PORT" \
-	-Dlog4j.logger="DEBUG" \
 	-jar "$MONITOR_JAR" \
 	--url="$REMOTE_URI" \
 	--location="$REMOTE_LOCATION" \
+	$EXTRA_ARGS \
 	"$@" > $log_file 2>&1 &
