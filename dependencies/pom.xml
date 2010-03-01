@@ -29,7 +29,7 @@
     <module>snmp</module>
   </modules>
   <properties>
-    <springVersion>3.0.1.RELEASE</springVersion>
+    <springVersion>3.0.0.RELEASE</springVersion>
     <springWebFlowVersion>2.0.7.RELEASE</springWebFlowVersion>
     <springSecurityVersion>2.0.4</springSecurityVersion>
     <springLdapVersion>1.2.1</springLdapVersion>
