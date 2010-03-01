@@ -89,12 +89,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.4.3</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>net.sourceforge.cobertura.datafile</name>
-              <value>${basedir}/target/cobertura/cobertura.ser</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <net.sourceforge.cobertura.datafile>${basedir}/target/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
+          </systemPropertyVariables>
           <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
           <includes>
