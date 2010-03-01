@@ -40,19 +40,11 @@
 
 --%>
 
-<%--
-  This page is included by other JSPs to create a box containing a
-  table that provides links for notification queries.
-  
-  It expects that a <base> tag has been set in the including page
-  that directs all URLs to be relative to the servlet context.
---%>
-
-<h3 class="o-box">Quick-Search</h3>
+<h3 class="o-box">Quick Search</h3>
 <div class="boxWrapper">
   <div class="searchHost" style="position:relative; left: 0px;">
     <form action="element/nodeList.htm" method="GET">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Nodelabel like:</font><br />
+      <font style="font-size: 70%; line-height: 1.25em; align=left">Node label like:</font><br />
       <input type="hidden" name="listInterfaces" value="true"/>
       <input type="text" size="20" name="nodename" />
       <input type="submit" value="Search"/>
