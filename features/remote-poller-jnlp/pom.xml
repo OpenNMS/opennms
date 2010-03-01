@@ -142,4 +142,13 @@
       <artifactId>org.opennms.features.remote-poller</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 </project>
