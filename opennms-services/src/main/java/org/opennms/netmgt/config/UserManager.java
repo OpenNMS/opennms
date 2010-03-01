@@ -801,7 +801,7 @@ public abstract class UserManager {
             }
         }
         
-        return (String[]) usersWithRole.toArray(new String[usersWithRole.size()]);
+        return usersWithRole.toArray(new String[usersWithRole.size()]);
         
     }
     

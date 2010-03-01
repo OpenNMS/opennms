@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threshd-configuration
+    xmlns="http://xmlns.opennms.org/xsd/config/threshd" threads="5">
+    <package name="default-snmp">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="default-snmp"/>
+        </service>
+    </package>
+     <package name="SMS">
+        <filter>IPADDR != '0.0.0.0'</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="SMS_Dieta"/>
+        </service>
+    </package>
+</threshd-configuration>

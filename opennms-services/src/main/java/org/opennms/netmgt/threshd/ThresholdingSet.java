@@ -90,13 +90,17 @@ public abstract class ThresholdingSet {
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         m_thresholdGroups = new LinkedList<ThresholdGroup>();
         for (String groupName : groupNameList) {
-            ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
-            if (thresholdGroup == null) {
-                log().error("initialize: Could not get threshold group with name " + groupName);
-            }
-            m_thresholdGroups.add(thresholdGroup);
-            if (log().isDebugEnabled()) {
-                log().debug("initialize: Adding threshold group: " + thresholdGroup);
+            try {
+                ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                if (thresholdGroup == null) {
+                    log().error("initialize: Could not get threshold group with name " + groupName);
+                }
+                m_thresholdGroups.add(thresholdGroup);
+                if (log().isDebugEnabled()) {
+                    log().debug("initialize: Adding threshold group: " + thresholdGroup);
+                }
+            } catch (Exception e) {
+                log().error("initialize: Can't process threshold group " + groupName, e);
             }
         }
         m_hasThresholds = !m_thresholdGroups.isEmpty();

@@ -125,7 +125,7 @@ final public class CitrixMonitor extends IPv4Monitor {
 
         // Extract the address
         //
-        InetAddress ipv4Addr = (InetAddress) svc.getAddress();
+        InetAddress ipv4Addr = svc.getAddress();
         String host = ipv4Addr.getHostAddress();
 
         if (log().isDebugEnabled())

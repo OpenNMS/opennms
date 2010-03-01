@@ -4,7 +4,7 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
 	xmlns:reportParms="http://xmlns.opennms.org/xsd/config/report-parms">
 
-	<import namespace="http://xmlns.opennms.org/xsd/report-parms" schemaLocation="report-parms.xsd" />
+	<import namespace="http://xmlns.opennms.org/xsd/config/report-parms" schemaLocation="report-parms.xsd" />
 
 	<element name="opennms-reports">
 		<annotation>
@@ -26,8 +26,7 @@
 	<element name="report">
 		<complexType>
 			<all>
-				<element maxOccurs="0" minOccurs="1"
-					ref="reportParms:parameters" />
+				<element minOccurs="0" maxOccurs="1" ref="reportParms:parameters" />
 				<element name="pdf-template" minOccurs="0" maxOccurs="1" type="string">
 					<annotation>
             			<documentation>template to convert to display the report

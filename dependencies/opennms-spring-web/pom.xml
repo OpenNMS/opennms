@@ -5,7 +5,8 @@
     <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-spring-web</artifactId>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>spring-web-dependencies</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Spring Web Dependencies</name>
   <description>
@@ -92,8 +93,8 @@
     <!-- Spring Dependencies -->
 
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
 
   </dependencies>

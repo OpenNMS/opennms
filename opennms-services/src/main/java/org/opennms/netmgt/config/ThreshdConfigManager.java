@@ -313,7 +313,7 @@ public abstract class ThreshdConfigManager {
         long addr = IPSorter.convertToLong(iface);
         Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
+            IncludeRange rng = eincs.nextElement();
             long start = IPSorter.convertToLong(rng.getBegin());
             if (addr > start) {
                 long end = IPSorter.convertToLong(rng.getEnd());
@@ -334,7 +334,7 @@ public abstract class ThreshdConfigManager {
 
         Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
+            has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
         Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();

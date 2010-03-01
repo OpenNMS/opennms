@@ -105,8 +105,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring-test</artifactId>
+  		<groupId>org.opennms.dependencies</groupId>
+  		<artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.2</version>
+      <version>0.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

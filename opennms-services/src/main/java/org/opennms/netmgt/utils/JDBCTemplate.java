@@ -54,33 +54,7 @@ abstract public class JDBCTemplate {
         m_sql = sql;
     }
 
-    public void execute() {
-         execute(new Object[0]);
-     }
-
-    public void execute(Object o) {
-         execute(new Object[] { o });
-     }
-
-    public void execute(Object o1, Object o2) {
-         execute(new Object[] { o1, o2 } );
-     }
-    
-    public void execute(Object o1, Object o2, Object o3) {
-        execute (new Object[] { o1, o2, o3 } );
-    }
-    
-    public void execute(Object o1, Object o2, Object o3, Object o4) {
-        execute (new Object[] { o1, o2, o3, o4 } );
-    }
-
-    public void execute(Object o1, Object o2, Object o3, Object o4, Object o5) {
-        execute (new Object[] { o1, o2, o3, o4, o5 } );
-    }
-
-
-
-    public void execute(Object values[]) {
+    public void execute(Object ... values) {
          try {
              doExecute(values);
          } catch (SQLException e) {

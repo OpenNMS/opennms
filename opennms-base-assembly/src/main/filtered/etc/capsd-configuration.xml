@@ -171,4 +171,15 @@
         <property key="retry" value="1" />
         <property key="service-name" value="Task Scheduler" />
     </protocol-plugin>
+    <protocol-plugin protocol="OpenNMS-JVM" class-name="org.opennms.netmgt.capsd.plugins.Jsr160Plugin" scan="on" user-defined="false">
+        <property key="port" value="18980" />
+        <property key="factory" value="PASSWORD-CLEAR"/>
+        <property key="username" value="admin" />
+        <property key="password" value="admin" />
+        <property key="protocol" value="rmi"/>
+        <property key="urlPath" value="/jmxrmi"/>
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="type" value="default" />
+    </protocol-plugin>
 </capsd-configuration>

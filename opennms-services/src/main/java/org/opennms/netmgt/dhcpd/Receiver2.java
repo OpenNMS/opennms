@@ -130,7 +130,7 @@ final class Receiver2 implements Runnable, Fiber {
                         log.debug("No client waiting for response.");
                     }
                     while (iter.hasNext()) {
-                        Client c = (Client) iter.next();
+                        Client c = iter.next();
                         if (c.getStatus() == RUNNING) {
                             try {
                                 log.debug("sending DHCP response pkt to client " + c.getName());

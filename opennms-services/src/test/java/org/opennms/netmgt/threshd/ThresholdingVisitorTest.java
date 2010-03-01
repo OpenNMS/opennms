@@ -811,6 +811,79 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3487.xml
+     * - test-thresholds.xml
+     */
+    @Test
+    public void testBug3487() throws Exception {
+        initFactories("/threshd-configuration-bug3487.xml","/test-thresholds.xml");
+        assertNotNull(createVisitor());
+        m_defaultErrorLevelToCheck = Level.FATAL;
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
+        assertEquals("expecting 1 event", 1, events.length);
+        assertEquals("initialize: Can't process threshold group SMS_Dieta", events[0].getMessage());
+    }
+
+    /*
+     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing (Bug 3448)
+     */
+    @Test
+    public void testBug3488() throws Exception {
+        String ipAddress = "127.0.0.1";
+        setupSnmpInterfaceDatabase(ipAddress, null);
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository(), 0);
+        assertTrue(thresholdingSet.hasThresholds()); // Global Test
+        Map<String, Double> attributes = new HashMap<String, Double>();
+        attributes.put("http", 200.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
+
+        m_defaultErrorLevelToCheck = Level.ERROR;
+        List<Event> triggerEvents = new ArrayList<Event>();
+        for (int i=0; i<5; i++)
+            triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        assertEquals("expecting 5 events", 5, events.length);
+        for (LoggingEvent e : events)
+            assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
+        assertTrue(triggerEvents.size() == 1);
+
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(triggerEvents);
+        proxy.sendAllEvents();
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3575.xml
+     * - test-thresholds-bug3575.xml
+     */
+    @Test
+    public void testBug3575() throws Exception {
+        initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
+        String ipAddress = "127.0.0.1";
+        setupSnmpInterfaceDatabase(ipAddress, "eth0");
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository(), 0);
+        assertTrue(thresholdingSet.hasThresholds());
+        Map<String, Double> attributes = new HashMap<String, Double>();
+        for (double i=1; i<21; i++)
+            attributes.put("ping" + i, 2 * i);
+        attributes.put("loss", 60.0);
+        attributes.put("response-time", 100.0);
+        attributes.put("median", 100.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes));
+        List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
+        assertTrue(triggerEvents.size() == 1);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "StrafePing", 1, 50, 25, 60, "Unknown", "127.0.0.1[StrafePing]", "loss", "eth0", null);
+        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        proxy.add(triggerEvents);
+        proxy.sendAllEvents();
+        verifyEvents(0);
+    }
+
+    /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
      * This test validate that Bug 1582 has been fixed.
@@ -824,10 +897,9 @@ public class ThresholdingVisitorTest {
 
         LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        assertTrue(thresholdingSet.hasThresholds("http")); // Datasource Test
-        Map<String, Double> attributes = new HashMap<String, Double>();        
-
+        Map<String, Double> attributes = new HashMap<String, Double>();
         attributes.put("http", 90.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
         List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
         assertTrue(triggerEvents.size() == 0);
 
@@ -835,12 +907,12 @@ public class ThresholdingVisitorTest {
         attributes.put("http", 200.0);
         for (int i = 1; i < 5; i++) {
             log().debug("testLatencyThresholdingSet: run number " + i);
-            if (thresholdingSet.hasThresholds("http")) {
+            if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
             }
         }
-        if (thresholdingSet.hasThresholds("http")) {
+        if (thresholdingSet.hasThresholds(attributes)) {
             log().debug("testLatencyThresholdingSet: run number 5");
             triggerEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(triggerEvents.size() == 1);
@@ -848,7 +920,7 @@ public class ThresholdingVisitorTest {
         
         // Test Rearm
         List<Event> rearmEvents = null;
-        if (thresholdingSet.hasThresholds("http")) {
+        if (thresholdingSet.hasThresholds(attributes)) {
             attributes.put("http", 40.0);
             rearmEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(rearmEvents.size() == 1);
@@ -1250,13 +1322,15 @@ public class ThresholdingVisitorTest {
         network.setCriticalService("ICMP");
         network.addNode(1, "testNode");
         network.addInterface(ipAddress);
-        network.setIfAlias(ifName);
+        if (ifName != null)
+            network.setIfAlias(ifName);
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
+        if (ifName != null)
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
     }

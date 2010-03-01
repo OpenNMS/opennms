@@ -15,8 +15,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-mina</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>mina-dependencies</artifactId>
     </dependency>
 
   </dependencies>

@@ -268,7 +268,7 @@ public class LinkableNode extends Object {
 	}
 
 	String getBridgeIdentifier(String vlan) {
-		return (String) vlanBridgeIdentifier.get(vlan);
+		return vlanBridgeIdentifier.get(vlan);
 	}
 
 	void addMacAddress(int bridgeport, String macAddress, String vlan) {
@@ -298,7 +298,7 @@ public class LinkableNode extends Object {
 		return !portMacs.isEmpty();
 	}
 	String getVlan(String macAddress) {
-		return (String) macsVlan.get(macAddress);
+		return macsVlan.get(macAddress);
 	}
 
 	Set<String> getMacAddressesOnBridgePort(int bridgeport) {
@@ -324,7 +324,7 @@ public class LinkableNode extends Object {
 
 	int getIfindex(int bridgeport) {
 		if (bridgePortIfindex.containsKey(new Integer(bridgeport))) {
-			Integer ifindex = (Integer) bridgePortIfindex.get(new Integer(
+			Integer ifindex = bridgePortIfindex.get(new Integer(
 					bridgeport));
 			return ifindex.intValue();
 		}
@@ -335,7 +335,7 @@ public class LinkableNode extends Object {
 		Iterator<Integer> ite = bridgePortIfindex.keySet().iterator();
 		while (ite.hasNext() ) {
 			Integer curBridgePort = ite.next();
-			Integer curIfIndex = (Integer) bridgePortIfindex.get(curBridgePort);
+			Integer curIfIndex = bridgePortIfindex.get(curBridgePort);
 			if (curIfIndex.intValue() == ifindex) return curBridgePort.intValue();
 		}
 		return -1;
@@ -376,7 +376,7 @@ public class LinkableNode extends Object {
 
 	String getStpRoot(String vlan) {
 		if (vlanStpRoot.containsKey(vlan)) {
-			return (String) vlanStpRoot.get(vlan);
+			return vlanStpRoot.get(vlan);
 		}
 		return null;
 	}

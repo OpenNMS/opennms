@@ -50,31 +50,14 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  <!--
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>reucon-public-repository</id>
-      <name>Reucon Public Repository</name>
-      <url>http://maven.reucon.com/public/</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <id>reucon-public-snapshot-repository</id>
-      <name>Reucon Public Snapshot Repository</name>
-      <url>http://maven.reucon.com/public-snapshot/</url>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
     </repository>
   </repositories>
-  -->
 </project>
 

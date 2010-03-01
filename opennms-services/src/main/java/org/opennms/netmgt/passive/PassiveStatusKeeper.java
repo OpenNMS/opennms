@@ -152,7 +152,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
 
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
-        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.unknown() : m_statusTable.get(new PassiveStatusKey(nodeLabel, ipAddr, svcName)));
+        PollStatus status = (m_statusTable == null ? PollStatus.unknown() : m_statusTable.get(new PassiveStatusKey(nodeLabel, ipAddr, svcName)));
         return (status == null ? PollStatus.up() : status);
     }
 

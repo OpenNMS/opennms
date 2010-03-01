@@ -161,7 +161,7 @@ public class SiteStatusViewsFactory {
 
         this.updateFromFile();
 
-        View view = (View) m_viewsMap.get(viewName);
+        View view = m_viewsMap.get(viewName);
 
         return view;
     }

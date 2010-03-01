@@ -1273,161 +1273,32 @@ public class EventUtils {
         return newEvent;
     }
 
+    /**
+     * @deprecated Use org.opennms.netmgt.model.events.EventUtils.toString(event) instead.
+     */
     public static String toString(Event event) {
-            StringBuffer b = new StringBuffer("Event: ");
-            if (event.getAutoacknowledge() != null) {
-            	b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
-            }
-            if (event.getAutoactionCount() > 0) {
-            	b.append(" Autoactions:");
-            	for (Iterator<Autoaction> i = event.getAutoactionCollection().iterator(); i.hasNext(); ) {
-            		b.append(" " + i.next().toString());
-            	}
-            b.append("\n");
-            }
-            if (event.getCreationTime() != null) {
-            	b.append(" CreationTime: " + event.getCreationTime() + "\n");
-          }
-    b.append(" Dbid: " + event.getDbid() + "\n");
-    if (event.getDescr() != null) {
-            b.append(" Descr: " + event.getDescr() + "\n");
-    }
-    if (event.getDistPoller() != null) {
-            b.append(" DistPoller: " + event.getDistPoller() + "\n");
-    }
-    if (event.getForwardCount() > 0) {
-            b.append(" Forwards:");
-            for (Iterator<Forward> i = event.getForwardCollection().iterator(); i.hasNext(); ) {
-            	b.append(" " + i.next().toString());
-            }
-            b.append("\n");
-    }
-    if (event.getHost() != null) {
-            b.append(" Host: " + event.getHost() + "\n");
-    }
-    if (event.getInterface() != null) {
-            b.append(" Interface: " + event.getInterface() + "\n");
-    }
-    if (event.getLoggroupCount() > 0) {
-            b.append(" Loggroup:");
-            for (Iterator<String> i = event.getLoggroupCollection().iterator(); i.hasNext(); ) {
-            	b.append(" " + i.next().toString());
-            }
-            b.append("\n");
-    }
-    if (event.getLogmsg() != null) {
-            b.append(" Logmsg: " + event.getLogmsg() + "\n");
-    }
-    if (event.getMask() != null) {
-            b.append(" Mask: " + event.getMask() + "\n");
-    }
-    if (event.getMasterStation() != null) {
-            b.append(" MasterStation: " + event.getMasterStation() + "\n");
-    }
-    if (event.getMouseovertext() != null) {
-            b.append(" Mouseovertext: " + event.getMouseovertext() + "\n");
-    }
-    b.append(" Nodeid: " + event.getNodeid() + "\n");
-    if (event.getOperactionCount() > 0) {
-            b.append(" Operaction:");
-            for (Iterator<Operaction> i = event.getOperactionCollection().iterator(); i.hasNext(); ) {
-            	b.append(" " + i.next().toString());
-            }
-            b.append("\n");
-    }
-    if (event.getOperinstruct() != null) {
-            b.append(" Operinstruct: " + event.getOperinstruct() + "\n");
-    }
-    if (event.getParms() != null) {
-            b.append(" Parms: " + toString(event.getParms()) + "\n");
-    }
-    if (event.getScriptCount() > 0) {
-            b.append(" Script:");
-            for (Iterator<Script> i = event.getScriptCollection().iterator(); i.hasNext(); ) {
-            	b.append(" " + i.next().toString());
-            }
-            b.append("\n");
-    }
-    if (event.getService() != null) {
-            b.append(" Service: " + event.getService() + "\n");
-    }
-    if (event.getSeverity() != null) {
-            b.append(" Severity: " + event.getSeverity() + "\n");
-    }
-    if (event.getSnmp() != null) {
-            b.append(" Snmp: " + toString(event.getSnmp()) + "\n");
-    }
-    if (event.getSnmphost() != null) {
-            b.append(" Snmphost: " + event.getSnmphost() + "\n");
-    }
-    if (event.getSource() != null) {
-            b.append(" Source: " + event.getSource() + "\n");
-    }
-    if (event.getTime() != null) {
-            b.append(" Time: " + event.getTime() + "\n");
-    }
-    if (event.getTticket() != null) {
-            b.append(" Tticket: " + event.getTticket() + "\n");
-    }
-    if (event.getUei() != null) {
-            b.append(" Uei: " + event.getUei() + "\n");
-    }
-    if (event.getUuid() != null) {
-            b.append(" Uuid: " + event.getUuid() + "\n");
-    }
-          
-    b.append("End Event\n");
-          return b.toString();
-        }
-
-    public static String toString(Parms parms) {
-        if (parms.getParmCount() == 0) {
-    		return "Parms: (none)\n";
-    	}
-    	
-    	StringBuffer b = new StringBuffer();
-    	b.append("Parms:\n");
-    	for (Enumeration<Parm> e = parms.enumerateParm(); e.hasMoreElements(); ) {
-    		Parm p = e.nextElement();
-    		b.append(" ");
-    		b.append(p.getParmName());
-    		b.append(" = ");
-    		b.append(toString(p.getValue()));
-    		b.append("\n");
-    	}
-    	b.append("End Parms\n");
-    	return b.toString();
+        return org.opennms.netmgt.model.events.EventUtils.toString(event);
     }
     
+    /**
+     * @deprecated Use org.opennms.netmgt.model.events.EventUtils.toString(value) instead.
+     */
     public static String toString(Value value) {
-        return value.getType() + "(" + value.getEncoding() + "): " + value.getContent();
+        return org.opennms.netmgt.model.events.EventUtils.toString(value);
     }
 
+    /**
+     * @deprecated Use org.opennms.netmgt.model.events.EventUtils.toString(snmp) instead.
+     */
     public static String toString(Snmp snmp) {
-        StringBuffer b = new StringBuffer("Snmp: ");
-    
-        if (snmp.getVersion() != null) {
-    		b.append("Version: " + snmp.getVersion() + "\n");
-    	}
-    	
-    	b.append("TimeStamp: " + new Date(snmp.getTimeStamp()) + "\n");
-    	
-    	if (snmp.getCommunity() != null) {
-    		b.append("Community: " + snmp.getCommunity() + "\n");
-    	}
-    
-    	b.append("Generic: " + snmp.getGeneric() + "\n");
-    	b.append("Specific: " + snmp.getSpecific() + "\n");
-    	
-    	if (snmp.getId() != null) {
-    		b.append("Id: " + snmp.getId() + "\n");
-    	}
-    	if (snmp.getIdtext() != null) {
-    		b.append("Idtext: " + snmp.getIdtext() + "\n");
-    	}
-    	
-    	b.append("End Snmp\n");
-    	return b.toString();
+        return org.opennms.netmgt.model.events.EventUtils.toString(snmp);
+    }
+
+    /**
+     * @deprecated Use org.opennms.netmgt.model.events.EventUtils.toString(snmp) instead.
+     */
+    public static String toString(Parms parms) {
+        return org.opennms.netmgt.model.events.EventUtils.toString(parms);
     }
 
 	public static void addParam(Event event, String parmName, Object pollResultId) {

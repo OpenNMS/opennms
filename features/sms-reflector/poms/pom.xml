@@ -22,7 +22,7 @@
   </modules>
 
   <properties>
-    <spring.version>3.0.0.RELEASE</spring.version>
+    <spring.version>3.0.1.RELEASE</spring.version>
     <spring.osgi.version>1.2.1</spring.osgi.version>
   </properties>
 
@@ -37,12 +37,21 @@
            | to switch back to the standard bundle life-cycle, move this setting
            | down to the maven-bundle-plugin section
           -->
-          <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>1.4.3</version>
+          <extensions>true</extensions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+            <encoding>UTF-8</encoding>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

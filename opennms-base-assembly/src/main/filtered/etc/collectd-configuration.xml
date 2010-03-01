@@ -18,10 +18,22 @@
 		<service name="XMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
 		</service>
+                <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+                        <parameter key="port" value="18980"/>
+                        <parameter key="retry" value="2"/>
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="protocol" value="rmi"/>
+                        <parameter key="urlPath" value="/jmxrmi"/>
+                        <parameter key="rrd-base-name" value="java" />
+                        <parameter key="ds-name" value="opennms-jvm"/>
+                        <parameter key="friendly-name" value="opennms-jvm"/>
+                        <parameter key="collection" value="jsr160"/>
+                </service>
 	</package>
 	
 	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
 	<collector service="WMI"  class-name="org.opennms.netmgt.collectd.WmiCollector"/>
 	<collector service="XMP"  class-name="org.opennms.netmgt.collectd.XmpCollector"/>
+        <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 </collectd-configuration>
 

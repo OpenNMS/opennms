@@ -5,7 +5,8 @@
     <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-spring-test</artifactId>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>spring-test-dependencies</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Spring Test Dependencies</name>
   <description>
@@ -24,8 +25,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
 
     <dependency>

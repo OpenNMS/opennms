@@ -107,7 +107,7 @@ public class EuiLevelMapper extends Object {
         org.opennms.netmgt.xml.rtc.Category levelCat = new org.opennms.netmgt.xml.rtc.Category();
 
         // get a handle to data
-        DataManager rtcDataMgr = (DataManager) RTCManager.getDataManager();
+        DataManager rtcDataMgr = RTCManager.getDataManager();
         synchronized (rtcDataMgr) {
             // category label
             levelCat.setCatlabel(rtcCat.getLabel());
