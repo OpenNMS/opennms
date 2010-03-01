@@ -71,6 +71,8 @@
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
 		<hr />
+                <jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
+                <hr />
 		<%--
 		<!-- security box -->    
 		Commenting out the security box include until it is functional
