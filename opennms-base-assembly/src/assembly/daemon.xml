@@ -57,6 +57,7 @@
       <outputDirectory>lib</outputDirectory>
       <excludes>
         <exclude>opennms-webapp-*.jar</exclude>
+        <exclude>org.opennms.features.springframework-security*.jar</exclude>
         <exclude>gwt-*.jar</exclude>
         <exclude>extremecomponents-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
@@ -70,6 +71,7 @@
       <outputDirectory>jetty-webapps/opennms/WEB-INF/lib</outputDirectory>
       <includes>
         <include>opennms-webapp-*.jar</include>
+        <include>org.opennms.features.springframework-security*.jar</include>
         <include>gwt-*.jar</include>
         <include>extremecomponents-*.jar</include>
         <exclude>jsp-api-*.jar</exclude>
@@ -90,6 +92,7 @@
       <outputDirectory>lib</outputDirectory>
       <excludes>
         <exclude>opennms-webapp-*.jar</exclude>
+        <exclude>org.opennms.features.springframework-security*.jar</exclude>
         <exclude>gwt-*.jar</exclude>
         <exclude>extremecomponents-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
@@ -103,6 +106,7 @@
       <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF/lib</outputDirectory>
       <includes>
         <include>opennms-webapp-*.jar</include>
+        <include>org.opennms.features.springframework-security*.jar</include>
         <include>gwt-*.jar</include>
         <include>extremecomponents-*.jar</include>
         <exclude>jsp-api-*.jar</exclude>
