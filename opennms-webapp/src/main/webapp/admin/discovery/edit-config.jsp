@@ -381,7 +381,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 		  	</tr>
 		    </table>     
 			
-			<input type="submit" value="Save and Restart Discovery" onclick="restartDiscovery();">
+			<input type="button" value="Save and Restart Discovery" onclick="restartDiscovery();">
 </FORM>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
