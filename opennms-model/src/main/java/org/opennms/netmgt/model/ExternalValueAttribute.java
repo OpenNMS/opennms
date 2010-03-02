@@ -44,8 +44,8 @@ public class ExternalValueAttribute implements OnmsAttribute {
     private OnmsResource m_resource;
 
     /**
-     * @param string
-     * @param string2
+     * @param name
+     * @param value
      */
     public ExternalValueAttribute(String name, String value) {
         m_name = name;
