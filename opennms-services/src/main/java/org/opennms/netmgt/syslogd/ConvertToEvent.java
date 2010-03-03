@@ -183,12 +183,7 @@ final class ConvertToEvent {
         event.setSource("syslogd");
 
         // Set nodeId
-
-        long nodeId = SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/",
-                ""));
-        // log.debug("Nodeid via SyslogdIPMgr " +
-        // SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/","")));
-
+        long nodeId = SyslogdIPMgr.getNodeId(addr.getHostAddress().replaceAll("/", ""));
         if (nodeId != -1)
             event.setNodeid(nodeId);
 
@@ -201,7 +196,7 @@ final class ConvertToEvent {
             log.warn("Failed to resolve local hostname", uhE);
         }
 
-        event.setInterface(addr.toString().replaceAll("/", ""));
+        event.setInterface(addr.getHostAddress().replaceAll("/", ""));
 
         event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
         Logmsg logmsg = new Logmsg();
