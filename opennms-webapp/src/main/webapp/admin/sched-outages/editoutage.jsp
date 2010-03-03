@@ -46,7 +46,7 @@
 	private static String getMonthSelectField(String name, int month) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<select name=\"").append(name).append("\">");
-		SimpleDateFormat shortDF = new SimpleDateFormat("MMM");
+		SimpleDateFormat shortDF = new SimpleDateFormat("MMM", Locale.US);
 		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
 		for (int mon = 0; mon < 12; mon++) {
 			Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
