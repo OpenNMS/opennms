@@ -251,7 +251,33 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
             }
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
-            if ("true".equals(walkstr)) {
+            // This if block will count the number of matches within a walk and mark the service
+            // as up if it is between the minimum and maximum number, down if otherwise. Setting
+            // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
+            if ("count".equals(matchstr)) {
+                if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
+                    reasonTemplate = "Value: ${matchCount} outside of range Min: ${minimum} to Max: ${maximum}";
+                }
+                int matchCount = 0;
+                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
+                for(SnmpValue result : results) {
+
+                    if (result != null) {
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        if (meetsCriteria(result, operator, operand)) {
+                            matchCount++;
+                        }
+                    }
+                }
+                svcParams.setProperty("matchCount", String.valueOf(matchCount));
+                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
+                if ((countMin <= matchCount) && (matchCount <= countMax)) {
+                    status = PollStatus.available();
+                } else {
+                    status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
+                    return status;
+                }
+            } else if ("true".equals(walkstr)) {
                 if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
                     reasonTemplate = "SNMP poll failed, addr=${ipaddr} oid=${oid}";
                 }
@@ -270,33 +296,6 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                             return status;
                         }
                     }
-                }
-
-                // This if block will count the number of matches within a walk and mark the service
-                // as up if it is between the minimum and maximum number, down if otherwise. Setting
-                // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
-            } else if ("count".equals(matchstr)) {
-                if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
-                    reasonTemplate = "Value: ${matchCount} outside of range Min: ${minimum} to Max: ${maximum}";
-                }
-                int matchCount = 0;
-                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
-                for(SnmpValue result : results) {
-
-                    if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                        if (meetsCriteria(result, operator, operand)) {
-                            matchCount++;
-                        }
-                    }
-                }
-                svcParams.setProperty("matchCount", String.valueOf(matchCount));
-                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
-                if ((matchCount < countMax) && (matchCount > countMin)) {
-                    status = PollStatus.available();
-                } else {
-                    status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
-                    return status;
                 }
 
             } else {
