@@ -68,6 +68,8 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
     
     protected void commitBuilder() {
+        if (isPersistDisabled())
+            return;
         String name = m_builder.getName();
         try {
             m_builder.commit();
@@ -76,6 +78,12 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             log().error("Unable to persist data for " + name + ": " + e, e);
     
         }
+    }
+
+    private boolean isPersistDisabled() {
+        return m_params != null &&
+               m_params.getParameters().containsKey("storing-enabled") &&
+               m_params.getParameters().get("storing-enabled").equals("false");
     }
 
     public void completeAttribute(CollectionAttribute attribute) {
