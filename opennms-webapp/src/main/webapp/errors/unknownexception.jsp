@@ -12,9 +12,8 @@
 //
 // Modifications:
 //
+// 2010 Mar 03: Made kinder and gentler. - jeffg@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
-// 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,6 +40,7 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
+	import="org.opennms.core.resource.Vault"
  %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -57,10 +57,21 @@
     }
 %>
 
-<h1>The Web User Interface Has Experienced an Unexpected Error</h1>
+<script type="text/javascript">
+function toggleDiv(divName) {
+    var targetDiv = document.getElementById(divName);
+    if (! targetDiv) {
+    	return;
+	}
+	targetDiv.style.display = (targetDiv.style.display == "none" ? "block" : "none");
+}
+</script>
+
+<h3>The OpenNMS Web User Interface Has Experienced an Error</h3>
+<br/>
 
 <p>
-  The webUI has encountered an exception condition that it does
+  The OpenNMS web UI has encountered an error that it does
   not know how to handle.
 </p>
 
@@ -71,17 +82,27 @@
 </p>
 
 <p>
-  You can try going to the main page and hitting "refresh"
-  in your browser, but there is a good chance that will have
-  no effect. Please bring this message to the attention of the
+  Please bring this message to the attention of the
   person responsible for maintaining OpenNMS for your organization,
-  and have them insure that OpenNMS, the external servlet container
+  and have him or her check that OpenNMS, the external servlet container
   (if applicable), and the database are all running without errors.
 </p>
 
+<p>
+  To reveal details of the error encountered and instructions for
+  reporting it, click
+  <strong><a href="javascript:toggleDiv('errorDetails')">here</a></strong>.
+</p>
+
+<div id="errorDetails" style="display: none;">
 <h3>Error Details</h3>
 
-  <pre><%
+<p>
+Please include the information below when reporting problems.
+</p>
+
+<h3>Exception Trace</h3>
+  <pre id="exceptionTrace"><%
     while (exception != null) {
       exception.printStackTrace(new java.io.PrintWriter(out));
 
@@ -96,5 +117,149 @@
       }
     }
   %></pre>
+  
+<h3>Request Details</h3>
+<table class="standard">
+  <tr>
+    <td class="standardheader">Locale</td>
+    <td class="standard"><%=request.getLocale()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Method</td>
+    <td class="standard"><%=request.getMethod()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Path Info</td>
+    <td class="standard"><%=request.getPathInfo()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Path Info (translated)</td>
+    <td class="standard"><%=request.getPathTranslated()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Protocol</td>
+    <td class="standard"><%=request.getProtocol()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">URI</td>
+    <td class="standard"><%=request.getRequestURI()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">URL</td>
+    <td class="standard"><%=request.getRequestURL()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Scheme</td>
+    <td class="standard"><%=request.getScheme()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Server Name</td>
+    <td class="standard"><%=request.getServerName()%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Server Port</td>
+    <td class="standard"><%=request.getServerPort()%></td>
+  </tr>
+  
+</table>
+
+<h3>System Details</h3>
+<table class="standard">
+  <tr>
+    <td class="standardheader">OpenNMS Version:</td>
+    <td class="standard"><%=Vault.getProperty("version.display")%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Java Version:</td>
+    <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
+  </tr>  
+  <tr>
+    <td class="standardheader">Java Virtual Machine:</td>
+    <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+  </tr>
+  <tr>
+    <td class="standardheader">Operating System:</td>
+    <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+  </tr>
+  <tr>
+    <td class="standardheader">Servlet Container:</td>
+    <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+  </tr>
+  <tr>
+    <td class="standardheader">User Agent:</td>
+    <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
+  </tr>
+</table>
+
+<h3>Options for Reporting This Problem</h3>
+<p>
+There are two options for reporting this problem outside your own organization.
+</p>
+
+<h5>OpenNMS Bug Tracker</h5>
+<p>
+If you have an account on the <a href="http://bugzilla.opennms.org/">OpenNMS bug tracker</a>,
+please consider reporting this problem. Bug reports help us make OpenNMS better, and are
+often the only way we become aware of problems. Please do search the tracker first to check
+that others have not already reported the problem that you have encountered.
+</p>
+
+<h5>OpenNMS Commercial Support</h5>
+<p>
+If you have a commercial support agreement with <a href="http://www.opennms.com/">The
+OpenNMS Group</a>, please consider opening a support ticket about this problem at
+<strong><a href="https://support.opennms.com/">support.opennms.com</a></strong> or via
+e-mail. Tickets from our customers receive priority treatment from our support staff.
+If you create a support ticket and the support engineer handling the ticket determines
+that you have found a bug, he or she will create a record in the bug tracker.
+</p>
+
+<p>
+For a plain-text version of the information above suitable for pasting into a bug report
+or support ticket, click
+<strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
+</p>
+
+<div id="plainTextErrorDetails" style="display: none;">
+<h3>Plain Text Error Details</h3>
+<div class="boxWrapper">
+
+<textarea id="plainTextArea" style="width: 100%; height: 300px;">
+Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
+
+
+System Details
+--------------
+OpenNMS Version: <%=Vault.getProperty("version.display")%>
+Java Version: <%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%>
+Java Virtual Machine: <%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%>
+Operating System: <%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)
+Servlet Container: <%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)
+User Agent: <%=request.getHeader( "User-Agent" )%>
+
+
+Request Details
+---------------
+Locale: <%=request.getLocale()%>
+Method: <%=request.getMethod()%>
+Path Info: <%=request.getPathInfo()%>
+Path Info (translated): <%=request.getPathTranslated()%>
+Protocol: <%=request.getProtocol()%>
+URI: <%=request.getRequestURI()%>
+URL: <%=request.getRequestURL()%>
+Scheme: <%=request.getScheme()%>
+Server Name: <%=request.getServerName()%>
+Server Port: <%=request.getServerPort()%>
+</textarea>
+
+</div>
+
+</div>
+
+<script type="text/javascript">
+var reportArea = document.getElementById("plainTextArea");
+reportArea.innerHTML += "\n\nException Trace:\n\n" + document.getElementById("exceptionTrace").innerHTML;
+</script>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
