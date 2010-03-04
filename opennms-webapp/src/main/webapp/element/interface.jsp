@@ -292,19 +292,7 @@ function doDelete() {
                 <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
-              <tr>
-                <th>Physical Address</th>
-                <td>
-                  <% String macAddr = intf_db.getPhysicalAddress(); %>
-                  <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
-                    <%=macAddr%>
-                  <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
-                  <%=atif_db.get_physaddr()%>
-                  <% } else { %>
-                    &nbsp;
-                  <% } %>
-                </td>
-              </tr>
+              
             </table>
             
             <!-- Node Link box -->
@@ -347,7 +335,19 @@ function doDelete() {
                       <th>Alias</th>
                       <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
                     </tr>
-
+					<tr>
+		              <th>Physical Address</th>
+		              <td>
+		                <% String macAddr = intf_db.getPhysicalAddress(); %>
+		                <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
+		                  <%=macAddr%>
+		                <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
+		                <%=atif_db.get_physaddr()%>
+		                <% } else { %>
+		                  &nbsp;
+		                <% } %>
+		              </td>
+		            </tr>
                   </table>
             <% } %>
 
