@@ -46,8 +46,6 @@
         contentType="text/html"
         session="true"
 %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <script type="text/javascript" src="js/opennms/ux/ComboFilterBox.js" ></script>
 <script type="text/javascript" src="js/opennms/ux/NodePageableComboBox.js" ></script>
@@ -58,91 +56,18 @@
   }
 </script>
 
-<script type="text/javascript">
-  function resetChooseResourceBoxSelected() {
-    document.chooseResourceBoxNodeList.parentResource[0].selected = true;
-  }
-  
-  function validateChooseResourceBoxNodeChosen() {
-    var selectedParentResource = false
-    
-    for (i = 0; i < document.chooseResourceBoxNodeList.parentResource.length; i++) {
-      // make sure something is checked before proceeding
-      if (document.chooseResourceBoxNodeList.parentResource[i].selected
-          && document.chooseResourceBoxNodeList.parentResource[i].value != "") {
-        selectedParentResource = document.chooseResourceBoxNodeList.parentResource[i].value;
-        break;
-      }
-    }
-    
-    return selectedParentResource;
-  }
-  
-  function goChooseResourceBoxChange() {
-    var nodeChosen = validateChooseResourceBoxNodeChosen();
-    if (nodeChosen != false) {
-      document.chooseResourceBoxForm.parentResource.value = nodeChosen;
-      document.chooseResourceBoxForm.submit();
-      /*
-       * We reset the selection after submitting the form so if the user
-       * uses the back button to get back to this page, it will be set at
-       * the "choose a node" option.  Without this, they wouldn't be able
-       * to proceed forward to the same node because won't trigger the
-       * onChange action on the <select/> element.  We also do the submit
-       * in a separate form after we copy the chosen value over, just to
-       * ensure that no problems happen by resetting the selection
-       * immediately after calling submit().
-       */
-      resetChooseResourceBoxSelected();
-    }
-  }
-</script>
-
 <h3 class="o-box"><a href="graph/index.jsp">Resource Graphs</a></h3>
 <div class="boxWrapper">
-  	
-	<c:choose>
-		
-		<c:when test="${empty resources}">
-			<p>No nodes are in the database or no nodes have RRD data</p>
-		</c:when>
-		
-		<c:when test="${! empty resources && fn:length(resources) <= 20}">
-			<form method="get" name="chooseResourceBoxForm"
-				action="graph/chooseresource.htm"><input type="hidden"
-				name="parentResourceType" value="node" /> <input type="hidden"
-				name="reports" value="all" /> <input type="hidden"
-				name="relativetime" value="lastday" /> <input type="hidden"
-				name="parentResource" value="" /></form>
-	
-			<form name="chooseResourceBoxNodeList"><select
-				style="width: 100%;" name="parentResource"
-				onchange="goChooseResourceBoxChange();">
-				<option value="">-- Choose a node --</option>
-				<c:forEach var="resource" items="${resources}">
-					<option value="${resource.name}">${resource.label}</option>
-				</c:forEach>
-			</select></form>
-	
-			<script type="text/javascript">
-		        resetChooseResourceBoxSelected();
-		      </script>
-		</c:when>
-		
-		<c:when test="${! empty resources && fn:length(resources) > 20}">
-			<script type="text/javascript">
-		   		Ext.onReady(function(){
-		   		  var combo = new OpenNMS.ux.NodePageableComboBox({
-		   			text:'hello',
-		   			renderTo:'node-combo',
-		   			onSelect:chooseResourceBoxChange
-		   		  })
-		   	  	});
-		   	</script>
-		   	<div id="node-combo"></div>
-		</c:when>
-	</c:choose>
-  	
-   	
+  
+    	<script type="text/javascript">
+    		Ext.onReady(function(){
+    		  var combo = new OpenNMS.ux.NodePageableComboBox({
+    			text:'hello',
+    			renderTo:'node-combo',
+    			onSelect:chooseResourceBoxChange
+    		  })
+    	  	});
+    	</script>
+    	<div id="node-combo"></div>
      
 </div>
