@@ -351,17 +351,6 @@ function doDelete() {
                   </table>
             <% } %>
 
-            <!-- services box -->
-            
-            <h3>Services</h3>
-            
-		    <table>
-              <% for( int i=0; i < services.length; i++ ) { %>
-                <tr>
-                  <td><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
-                </tr>
-              <% } %>
-            </table>
 
             <!-- Availability box -->
             <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />
