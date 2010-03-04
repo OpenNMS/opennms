@@ -148,7 +148,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+        ThresholdingEventProxy proxy = ThresholdingEventProxyFactory.getFactory().getProxy();
         proxy.add(eventList);
         proxy.sendAllEvents();
     }
