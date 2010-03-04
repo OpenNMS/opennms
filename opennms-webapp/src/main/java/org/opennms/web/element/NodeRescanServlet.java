@@ -93,7 +93,7 @@ public class NodeRescanServlet extends HttpServlet {
             this.proxy.send(outEvent);
 
             // redirect the request for display
-            response.sendRedirect(request.getContextPath() + "/" + returnUrl);
+            response.sendRedirect(Util.calculateUrlBase(request) + "/" + returnUrl);
         } catch (Exception e) {
             throw new ServletException("Exception sending node rescan event", e);
         }
