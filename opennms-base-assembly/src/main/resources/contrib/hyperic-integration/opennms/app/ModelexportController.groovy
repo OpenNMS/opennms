@@ -50,10 +50,10 @@ class ModelexportController
     }
 
     def list(xml, params) {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         def platforms = resourceHelper.findPlatforms(new PageInfo(ResourceSortField.NAME, true));
         def man = PlatformManager.one
-        xml.'model-import'('foreign-source':'HQ', 'date-stamp':formatter.format(new Date())) {
+        xml.'model-import'('xmlns':'http://xmlns.opennms.org/xsd/config/model-import', 'foreign-source':'HQ', 'date-stamp':formatter.format(new Date())) {
             platforms.each { res ->   
                 def p = man.findPlatformById(res.instanceId)
 
