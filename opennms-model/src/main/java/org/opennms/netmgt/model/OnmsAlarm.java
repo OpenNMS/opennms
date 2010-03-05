@@ -252,13 +252,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_uei = eventuei;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="dpname"
-     *             length="12"
-     *             not-null="true"
-     *         
-     */
 	@XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="dpName", nullable=false)
