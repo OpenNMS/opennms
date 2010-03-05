@@ -248,13 +248,6 @@ public class OnmsAlarm implements Serializable {
         this.m_uei = eventuei;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="dpname"
-     *             length="12"
-     *             not-null="true"
-     *         
-     */
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="dpName", nullable=false)
     public OnmsDistPoller getDistPoller() {
