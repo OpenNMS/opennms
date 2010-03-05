@@ -3076,7 +3076,7 @@
       </systemDef>
 
       <systemDef name="Cisco ASA5510">
-        <sysoid>1.3.6.1.4.1.9.1.669</sysoid>
+        <sysoid>.1.3.6.1.4.1.9.1.669</sysoid>
         <collect>
 	      <includeGroup>cisco-pix</includeGroup>
 	      <includeGroup>cisco-cike</includeGroup>
