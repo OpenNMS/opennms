@@ -202,11 +202,12 @@
     <property name="reloadCheckInterval" value="-1" />
   </bean>
   
-  <bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory" >
-  <!-- <constructor-arg value="file:${opennms.home}/etc/org.quartz.properties" /> -->
-  </bean>
+  
 
-  <bean id="quartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
+
+ <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="schedulerName" value="provisiond" />
+  </bean>  
      
   <bean id="provisiondImportSchedule" class="org.opennms.netmgt.provision.service.ImportScheduler" >
     <constructor-arg ref="quartzScheduler" />
