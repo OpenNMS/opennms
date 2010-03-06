@@ -1178,6 +1178,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrdcached-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-jrobin</artifactId>
         <version>${project.version}</version>
       </dependency>

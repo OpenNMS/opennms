@@ -10,5 +10,6 @@
   <name>OpenNMS RRDTool RRD Implementation</name>
   <modules>
     <module>opennms-rrdtool-api</module>
+    <module>opennms-rrdcached-api</module>
   </modules>
 </project>
