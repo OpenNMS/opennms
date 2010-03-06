@@ -50,6 +50,8 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     
     private long m_expiration;
 	private long m_sentTime;
+	
+	private volatile boolean m_processed = false;
 
     public MobileMsgRequest(long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
         m_timeout = timeout;
@@ -130,20 +132,32 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     public abstract String getId();
 
     public void processError(Throwable t) {
-        m_cb.handleError(this, t);
+        try {
+            m_cb.handleError(this, t);
+        } finally {
+            m_processed = true;
+        }
     }
 
     public boolean processResponse(MobileMsgResponse response) {
-    	response.setRequest(this);
-        return m_cb.handleResponse(this, response);
+        try {
+            response.setRequest(this);
+            return m_cb.handleResponse(this, response);
+        } finally {
+            m_processed = true;
+        }
     }
 
     public MobileMsgRequest processTimeout() {
-        MobileMsgRequest retry = createNextRetry();
-        if (retry == null) {
-            m_cb.handleTimeout(this);
+        try {
+            MobileMsgRequest retry = createNextRetry();
+            if (retry == null) {
+                m_cb.handleTimeout(this);
+            }
+            return retry;
+        } finally {
+            m_processed = true;
         }
-        return retry;
     }
     
     public abstract MobileMsgRequest createNextRetry();
@@ -158,5 +172,9 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
         return m_responseMatcher.matches(this, response);
     }
 
+    public boolean isProcessed() {
+        return m_processed;
+    }
 
+    
 }

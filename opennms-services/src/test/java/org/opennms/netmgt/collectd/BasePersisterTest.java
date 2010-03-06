@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -47,9 +46,6 @@ import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.rrd.RrdConfig;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -62,8 +58,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class BasePersisterTest extends TestCase {
-    private static boolean s_rrdInitialized = false;
-    
     private FileAnticipator m_fileAnticipator;
     private File m_snmpDirectory;
     private BasePersister m_persister;
@@ -72,6 +66,7 @@ public class BasePersisterTest extends TestCase {
     private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     private IpInterfaceDao m_ifDao;
+    private ServiceParameters m_serviceParams;
 
     @Override
     protected void setUp() throws Exception {
@@ -90,14 +85,8 @@ public class BasePersisterTest extends TestCase {
         m_intf.setIpAddress("1.1.1.1");
         
         m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
+        m_serviceParams = new ServiceParameters(new HashMap<String,String>());
         
-        // Grumble grumble... side effects... grumble grumble
-        if (!s_rrdInitialized) {
-            RrdConfig.setProperties(new Properties());
-            RrdUtils.setStrategy(new JRobinRrdStrategy());
-            RrdUtils.initialize();
-            s_rrdInitialized  = true;
-        }
     }
     
     @Override
@@ -171,6 +160,11 @@ public class BasePersisterTest extends TestCase {
         m_persister.popShouldPersist();
     }
 
+    public void testBug2733() throws Exception {
+        m_serviceParams.getParameters().put("storing-enabled", "false");
+        testPersistStringAttributeUsingBuilder();
+    }
+
     private SnmpAttribute buildStringAttribute() {
         
         EasyMock.expect(m_ifDao.load(m_intf.getId())).andReturn(m_intf).anyTimes();
@@ -201,8 +195,7 @@ public class BasePersisterTest extends TestCase {
     }
 
     private void initPersister() throws IOException {
-        m_persister = new BasePersister();
-        m_persister.setRepository(createRrdRepository());
+        m_persister = new BasePersister(m_serviceParams, createRrdRepository());
     }
 
     private RrdRepository createRrdRepository() throws IOException {

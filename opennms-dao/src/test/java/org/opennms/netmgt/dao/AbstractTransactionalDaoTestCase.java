@@ -56,13 +56,13 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
-    private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
     private LocationMonitorDaoHibernate m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private LinkStateDao m_linkStateDao;
+    private ReportCatalogDao m_reportCatalogDao;
     
     private DatabasePopulator m_populator;
     
@@ -114,17 +114,6 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
-    }
-
-
-    public AvailabilityReportLocatorDao getAvailabilityReportLocatorDao() {
-        return m_availabilityReportLocatorDao;
-    }
-
-
-    public void setAvailabilityReportLocatorDao(
-            AvailabilityReportLocatorDao availabilityReportLocatorDao) {
-        m_availabilityReportLocatorDao = availabilityReportLocatorDao;
     }
 
 
@@ -303,5 +292,13 @@ public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTempo
 
     public LinkStateDao getLinkStateDao() {
         return m_linkStateDao;
+    }
+
+    public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
+        m_reportCatalogDao = reportCatalogDao;
+    }
+
+    public ReportCatalogDao getReportCatalogDao() {
+        return m_reportCatalogDao;
     }
 }

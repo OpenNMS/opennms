@@ -2,42 +2,33 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-provision</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-snmp-scanners</artifactId>
   <name>OpenNMS SNMP Scanners</name>
   <dependencies>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-provision-api</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms.lib.snmp</groupId>
-  		<artifactId>org.opennms.lib.snmp.api</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>opennms-dao</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms</groupId>
-  		<artifactId>mock-snmp-agent</artifactId>
-  		<version>${project.version}</version>
-		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms.lib.snmp</groupId>
-  		<artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  	 <groupId>org.opennms.lib.snmp</groupId>
-  	 <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-  	 <scope>test</scope>
-  	</dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>mock-snmp-agent</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
 </project>

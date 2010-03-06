@@ -156,7 +156,7 @@ public class Statsd implements SpringServiceDaemon {
         }
     }
     
-    private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException {
+    private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException, Exception {
         
         //this is most likely reentrant since the method is private and called from start via plural version.
         synchronized (m_scheduler) {

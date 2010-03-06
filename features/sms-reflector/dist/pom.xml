@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>provision</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
     <relativePath>../provision</relativePath>
   </parent>
 
@@ -18,22 +18,22 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-ping</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-gateway</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>commands</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.smslib</groupId>
@@ -106,6 +106,7 @@
   </dependencies>
   
   <repositories>
+<!--
     <repository>
       <id>OPS4J</id>
       <url>http://repository.ops4j.org/maven2</url>
@@ -115,18 +116,19 @@
       <name>SpringSource Enterprise Bundle Repository (External Bundles)</name>
       <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
+-->
   </repositories>
 
   <build>
     <plugins>
       <plugin>
-	<artifactId>maven-assembly-plugin</artifactId>
-	<configuration>
-	  <finalName>sms-reflector-${project.version}</finalName>
-	  <descriptors>
-	    <descriptor>src/main/assembly/assembly.xml</descriptor>
-	  </descriptors>
-	</configuration>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>sms-reflector-${project.version}</finalName>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.7.10-TESTING-SNAPSHOT</version>
+  <version>1.7.10-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -94,7 +95,6 @@
     <!-- new structure -->
     <module>assemblies</module>
     <module>opennms-test</module>
-    <module>mock-snmp-agent</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-install</module>
@@ -109,6 +109,7 @@
     <module>opennms-rrd</module>
     <module>opennms-config</module>
     <module>opennms-provision</module>
+    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>integrations</module>
     <module>opennms-import</module>
@@ -116,11 +117,13 @@
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
     <module>opennms-qosdaemon</module>
+    <module>opennms-web-api</module>
     <module>opennms-webapp</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
+    <module>tests</module>
     <module>integration-tests</module>
   </modules>
   <build>
@@ -131,6 +134,11 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <version>1.4.3</version>
         <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.5</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -148,8 +156,8 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-castor</artifactId>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>castor-dependencies</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
             <exclusions>
@@ -239,18 +247,9 @@
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <version>1.0-rc-5</version>
+        <version>${gmavenVersion}</version>
         <configuration>
           <providerSelection>1.5</providerSelection>
-        </configuration>
-      </plugin>
-      <plugin>
-        <inherited>false</inherited>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
-        <configuration>
-          <fileName>${groovy.fileName}</fileName>
         </configuration>
       </plugin>
       <plugin>
@@ -261,7 +260,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-jspc-plugin</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </plugin>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
@@ -278,7 +277,7 @@
          <additionalConfig>
            <file>
              <name>.settings/org.eclipse.jdt.core.prefs</name>
-             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/branches/1.7/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
            </file>
          </additionalConfig>
        </configuration>
@@ -319,11 +318,11 @@
                      properties.  They aren't passed automatically, even
                      when inheritAll="true" is used with <ant />.  -->
                 <ant target="java.check">
-                  <property name="java.vm.version" value="${java.vm.version}" />
-                  <property name="java.version" value="${java.version}" />
-                  <property name="java.home" value="${java.home}" />
+                  <property name="java.vm.version" value="${java.vm.version}"/>
+                  <property name="java.version" value="${java.version}"/>
+                  <property name="java.home" value="${java.home}"/>
                 </ant>
-                <echo message="update policy is ${updatePolicy}" />
+                <echo message="update policy is ${updatePolicy}"/>
               </tasks>
             </configuration>
             <goals>
@@ -355,85 +354,29 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>java.awt.headless</name>
-              <value>true</value>
-            </property>
-            <property>
-              <name>mock.logLevel</name>
-              <value>${mock.logLevel}</value>
-            </property>
-            <property>
-              <name>mock.debug</name>
-              <value>${mock.debug}</value>
-            </property>
-            <property>
-              <name>mock.rundbtests</name>
-              <value>${mock.rundbtests}</value>
-            </property>
-            <property>
-              <name>mock.leaveDatabase</name>
-              <value>${mock.leaveDatabase}</value>
-            </property>
-            <property>
-              <name>mock.leaveDatabaseOnFailure</name>
-              <value>${mock.leaveDatabaseOnFailure}</value>
-            </property>
-            <property>
-              <name>mock.db.driver</name>
-              <value>${mock.db.driver}</value>
-            </property>
-            <property>
-              <name>mock.db.url</name>
-              <value>${mock.db.url}</value>
-            </property>
-            <property>
-              <name>mock.db.adminUser</name>
-              <value>${mock.db.adminUser}</value>
-            </property>
-            <property>
-              <name>mock.db.adminPassword</name>
-              <value>${mock.db.adminPassword}</value>
-            </property>
-            <property>
-              <name>mock.runSnmpTests</name>
-              <value>${mock.runSnmpTests}</value>
-            </property>
-            <property>
-              <name>mock.snmpHost</name>
-              <value>${mock.snmpHost}</value>
-            </property>
-            <property>
-              <name>opennms.library.jicmp</name>
-              <value>${opennms.library.jicmp}</value>
-            </property>
-            <property>
-              <name>opennms.library.jrrd</name>
-              <value>${opennms.library.jrrd}</value>
-            </property>
-            <property>
-              <name>install.rrdtool.bin</name>
-              <value>${install.rrdtool.bin}</value>
-            </property>
-            <property>
-              <name>runOtrsTests</name>
-              <value>${runOtrsTests}</value>
-            </property>
-            <property>
-              <name>runRtTests</name>
-              <value>${runRtTests}</value>
-            </property>
-            <property>
-              <name>runMailTests</name>
-              <value>${runMailTests}</value>
-            </property>
-            <property>
-              <name>runPingTests</name>
-              <value>${runPingTests}</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <java.awt.headless>true</java.awt.headless>
+            <mock.logLevel>${mock.logLevel}</mock.logLevel>
+            <mock.debug>${mock.debug}</mock.debug>
+            <mock.rundbtests>${mock.rundbtests}</mock.rundbtests>
+            <mock.leaveDatabase>${mock.leaveDatabase}</mock.leaveDatabase>
+            <mock.leaveDatabaseOnFailure>${mock.leaveDatabaseOnFailure}</mock.leaveDatabaseOnFailure>
+            <mock.db.driver>${mock.db.driver}</mock.db.driver>
+            <mock.db.url>${mock.db.url}</mock.db.url>
+            <mock.db.adminUser>${mock.db.adminUser}</mock.db.adminUser>
+            <mock.db.adminPassword>${mock.db.adminPassword}</mock.db.adminPassword>
+            <mock.runSnmpTests>${mock.runSnmpTests}</mock.runSnmpTests>
+            <mock.snmpHost>${mock.snmpHost}</mock.snmpHost>
+            <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
+            <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
+            <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
+            <runOtrsTests>${runOtrsTests}</runOtrsTests>
+            <runRtTests>${runRtTests}</runRtTests>
+            <runMailTests>${runMailTests}</runMailTests>
+            <runPingTests>${runPingTests}</runPingTests>
+          </systemPropertyVariables>
 	  <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
           <includes>
@@ -519,6 +462,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven.surefire.report.plugin.version}</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -570,7 +514,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.4.3</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>2.5</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.5</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
@@ -583,7 +528,7 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword />
+    <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
@@ -606,14 +551,14 @@
     <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
 
     <!-- install.prefix: a prefix used for installation in or chroot -->
-    <install.prefix />
+    <install.prefix/>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
     <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password />
+    <install.database.admin.password/>
     <install.database.driver>org.postgresql.Driver</install.database.driver> 
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -628,7 +573,7 @@
     <rpm.sign>false</rpm.sign>
     <rpm.buildtests>false</rpm.buildtests>
     <rpm.database.user>opennms</rpm.database.user>
-    <rpm.additional.args /> 
+    <rpm.additional.args/> 
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
@@ -642,9 +587,9 @@
    <webstart.keystore.delete>true</webstart.keystore.delete>
    <webstart.keygen>true</webstart.keygen>
    <webstart.dnameCn>${user.name}</webstart.dnameCn>
-   <webstart.dnameL />
-   <webstart.dnameSt />
-   <webstart.dnameC />
+   <webstart.dnameL/>
+   <webstart.dnameSt/>
+   <webstart.dnameC/>
 
    <updatePolicy>daily</updatePolicy>
 
@@ -653,7 +598,7 @@
    <minaVersion>2.0.0-M6</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.6.2</xercesVersion>
-   <gmavenVersion>1.0-rc-5</gmavenVersion>
+   <gmavenVersion>1.0</gmavenVersion>
   </properties>
 
   <profiles>
@@ -849,13 +794,43 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.http-remoting</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.springframework-security</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.availability</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -896,38 +871,7 @@
       <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.tracker</artifactId>
-        <version>0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib</groupId>
-        <artifactId>org.opennms.lib.joesnmp</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib</groupId>
-        <artifactId>org.opennms.lib.service-registration</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.api</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-        <version>2.0.0</version>
-        <scope>test</scope>
+        <version>0.5</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
@@ -953,8 +897,28 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-spring-security</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>gwt-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jinterop-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-security-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>quartz-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1011,8 +975,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-castor</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>castor-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1056,13 +1020,13 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-drools</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>drools-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-hibernate</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>hibernate-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1096,8 +1060,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-jersey</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jersey-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1106,13 +1070,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-joesnmp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-mina</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>mina-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1162,8 +1121,18 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.tests</groupId>
+        <artifactId>org.opennms.tests.mock-elements</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-reporting</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1188,6 +1157,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-tcp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-rws</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1208,23 +1182,28 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-jaxb</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jasper-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-spring</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-spring-web</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-spring-test</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-web-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+  		  <groupId>org.opennms.dependencies</groupId>
+  		  <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1235,6 +1214,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-web-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1253,18 +1237,23 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>rancid-api</artifactId>
-        <version>0.98</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dnsjava</groupId>
-        <artifactId>dnsjava</artifactId>
-        <version>2.0.6</version>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>rancid-dependencies</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-asterisk</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>dnsjava-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1465,7 +1454,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>2.2</version>
+        <version>2.5.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -1479,17 +1468,9 @@
         <version>1.0.1</version>
       </dependency>
       <dependency>
-        <groupId>org.gwtwidgets</groupId>
-        <artifactId>gwt-widgets</artifactId>
-        <version>0.1.3</version>
-        <!-- we use provided since this is copiled to javascript 
-              and need to not be included with opennms -->
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.gwtwidgets</groupId>
-        <artifactId>gwt-widgets-server</artifactId>
-        <version>0.1.2</version>
+        <groupId>com.caucho</groupId>
+        <artifactId>hessian</artifactId>
+        <version>3.1.5</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
@@ -1577,27 +1558,27 @@
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-ajp</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-util</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>servlet-api-2.5</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-2.1-jetty</artifactId>
-        <version>6.1.18</version>
+        <version>6.1.22</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>
@@ -1620,21 +1601,6 @@
         <version>1.6</version>
       </dependency>
       <dependency>
-        <groupId>net.sf.jradius</groupId>
-        <artifactId>jradius-client</artifactId>
-        <version>20040211</version>
-      </dependency>
-      <dependency>
-        <groupId>net.jradius</groupId>
-        <artifactId>jradius-core</artifactId>
-        <version>1.0.0-20080911</version>
-      </dependency>
-      <dependency>
-        <groupId>net.jradius</groupId>
-        <artifactId>jradius-dictionary</artifactId>
-        <version>1.0.0-20080911</version>
-      </dependency>
-      <dependency>
         <groupId>org.jrobin</groupId>
         <artifactId>jrobin</artifactId>
         <version>1.5.9</version>
@@ -1642,7 +1608,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.4</version>
+        <version>4.7</version>
       </dependency>
       <dependency>
         <groupId>jwebunit</groupId>
@@ -1693,11 +1659,6 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>org.extremecomponents</groupId>
-        <artifactId>extremecomponents</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.samba.jcifs</groupId>
         <artifactId>jcifs</artifactId>
         <version>1.2.19</version>
@@ -1711,6 +1672,11 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.5.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.tuckey</groupId>
+        <artifactId>urlrewrite</artifactId>
+        <version>2.5.2</version>
       </dependency>
       <dependency>
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
@@ -1729,17 +1695,6 @@
         <version>2.2-pre2</version>
       </dependency>
       <dependency>
-        <groupId>org.snmp4j</groupId>
-        <artifactId>snmp4j</artifactId>
-        <version>1.9.2a</version>
-      </dependency>
-      <dependency>
-        <groupId>org.snmp4j</groupId>
-        <artifactId>snmp4j-agent</artifactId>
-        <version>1.2d</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
         <version>${oroVersion}</version>
@@ -1754,18 +1709,6 @@
         <artifactId>postgresql</artifactId>
         <version>8.1-407.jdbc3</version>
       </dependency>
-<dependency>
-  <groupId>org.opensymphony.quartz</groupId>
-  <artifactId>quartz</artifactId>
-  <version>1.6.5</version>
-</dependency>
-<!--
-      <dependency>
-        <groupId>quartz</groupId>
-        <artifactId>quartz</artifactId>
-        <version>1.6.5</version>
-      </dependency>
--->
       <dependency>
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
@@ -1814,21 +1757,11 @@
         <version>2.40</version>
       </dependency>
       <dependency>
-        <groupId>org.jinterop</groupId>
-        <artifactId>j-interop</artifactId>
-        <version>2.0.8</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jinterop</groupId>
-        <artifactId>j-interopdeps</artifactId>
-        <version>2.0.8</version>
-      </dependency>
-      <dependency>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-mojo</artifactId>
         <version>${gmavenVersion}</version>
-	  </dependency>
-	  <dependency>
+	   </dependency>
+	   <dependency>
         <groupId>org.codehaus.groovy.maven.runtime</groupId>
         <artifactId>gmaven-runtime-1.5</artifactId>
         <version>${gmavenVersion}</version>
@@ -1836,35 +1769,24 @@
     </dependencies>
   </dependencyManagement>
   <repositories>
+<!--
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
     </repository>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-releases</id>
       <name>OpenNMS Maven Release Repository</name>
       <url>http://repo.opennms.org/releases</url>
     </repository>
     <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
@@ -1883,55 +1805,35 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <releases><enabled>true</enabled></releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2</url>
     </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository>
+-->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
     </pluginRepository>
+<!--
     <pluginRepository>
       <snapshots>
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
+      <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
     </pluginRepository>
     <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>codehaus</id>
       <name>Maven/Codehaus Repository</name>
       <url>http://repository.codehaus.org</url>
@@ -1941,9 +1843,7 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
+      <releases><enabled>false</enabled></releases>
       <id>codehaus-snapshots</id>
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.repository.codehaus.org</url>
@@ -1953,13 +1853,12 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
+      <releases><enabled>true</enabled></releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2</url>
     </pluginRepository>
+-->
   </pluginRepositories>
   <distributionManagement>
     <site>

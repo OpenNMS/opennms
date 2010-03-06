@@ -2,28 +2,36 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-jasper</artifactId>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>jasper-dependencies</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Jasper Report Dependencies</name>
   <dependencies>
     <dependency>
       <groupId>jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.5.2</version>
+      <version>3.6.0</version>
     </dependency>
   </dependencies>
-<!-- out of date
   <repositories>
+<!-- // we had to mirror this on our own, it requires authentication
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>jasperforge-repo</id>
       <name>JasperForge Maven Repository</name>
-      <url>http://jasperforge.org/maven2</url>
+      <url>http://jasperforge.org/svn/repos/maven2/</url>
+    </repository>
+-->
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
     </repository>
   </repositories>
--->
 </project>

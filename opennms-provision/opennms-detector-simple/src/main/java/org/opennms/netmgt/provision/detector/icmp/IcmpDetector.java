@@ -30,7 +30,6 @@
  */
 package org.opennms.netmgt.provision.detector.icmp;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.ping.PingConstants;

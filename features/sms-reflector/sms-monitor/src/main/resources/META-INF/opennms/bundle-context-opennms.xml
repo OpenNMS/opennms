@@ -4,5 +4,19 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry"/>
+	
+    <bean id="sequenceExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+        <property name="poolSize" value="10" />
+    </bean>
+  
+
+    <bean id="sequenceTaskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
+      <property name="defaultExecutor" value="default" />
+      <property name="executors">
+          <map>
+             <entry key="default" value-ref="sequenceExecutor" />
+         </map>
+      </property>
+    </bean>
 
 </beans>

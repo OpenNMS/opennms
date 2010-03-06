@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -68,6 +68,14 @@
             <param>--platform=equinox</param>
           </provision>
         </configuration>
+	 <executions>
+ 	   <execution>
+	     <id>ide-support</id>
+	     <goals>
+	       <goal>eclipse</goal>
+	     </goals>
+	   </execution>
+	 </executions>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -81,12 +89,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.4.3</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>net.sourceforge.cobertura.datafile</name>
-              <value>${basedir}/target/cobertura/cobertura.ser</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <net.sourceforge.cobertura.datafile>${basedir}/target/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
+          </systemPropertyVariables>
           <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
           <includes>
@@ -104,23 +109,6 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <url>http://repo.opennms.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-snapshots</id>
-      <url>http://repo.opennms.org/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
     </repository>
     <repository>
       <id>com.springsource.repository.bundles.external</id>

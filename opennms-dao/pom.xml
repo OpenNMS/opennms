@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao</artifactId>
@@ -23,6 +23,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- Turn off queuing in the RRD output -->
+            <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
+            <java.awt.headless>true</java.awt.headless>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -62,8 +72,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-castor</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -74,8 +84,8 @@
       <artifactId>opennms-config-utils</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-hibernate</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>hibernate-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -91,8 +101,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -103,20 +113,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.api</artifactId>
-    </dependency>
-     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <scope>test</scope>
-    </dependency>
    
     <!--  This is needed for the IPv4Address class - should probably move that -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>jicmp-api</artifactId>
+      <artifactId>opennms-icmp-api</artifactId>
     </dependency>
 
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
@@ -165,8 +166,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.dnsjava</groupId>
-      <artifactId>dnsjava</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>dnsjava-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

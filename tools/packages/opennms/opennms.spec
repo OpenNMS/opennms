@@ -286,11 +286,6 @@ pushd opennms-tools
         -Dopennms.home=%{instprefix} install
 popd
 
-pushd features/remote-poller
-    sh ../../build.sh $SETTINGS_XML -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-        -Dopennms.home=%{instprefix} package
-popd
-
 echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
@@ -319,7 +314,7 @@ END
 
 ### install the remote poller jar
 
-install -c -m 644 features/remote-poller/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
+install -c -m 644 features/remote-poller-onejar/target/*-signed-jar-with-dependencies.jar $RPM_BUILD_ROOT%{instprefix}/bin/remote-poller.jar
 
 %if %{with_docs}
 
@@ -432,12 +427,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %{instprefix}/jetty-webapps
 %config %{jettydir}/%{servletdir}/WEB-INF/*.xml
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
+%config %{jettydir}/opennms-remoting/WEB-INF/*.properties
 
 %files webapp-standalone -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
 %config %{webappsdir}/%{servletdir}/WEB-INF/*.xml
+%config %{webappsdir}/opennms-remoting/WEB-INF/*.xml
 %config %{webappsdir}/%{servletdir}/WEB-INF/*.properties
+%config %{webappsdir}/opennms-remoting/WEB-INF/*.properties
 
 %files plugins
 

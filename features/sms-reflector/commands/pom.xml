@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -33,12 +33,12 @@
     -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
+      <artifactId>org.osgi.core</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
+      <artifactId>org.osgi.compendium</artifactId>
       <optional>true</optional>
     </dependency>
 
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-ping</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -66,14 +66,12 @@
     <dependency>
     	<groupId>org.opennms.features.sms-reflector</groupId>
     	<artifactId>sms-service</artifactId>
-    	<version>${pom.version}</version>
+    	<version>${project.version}</version>
     	<scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.springframework.osgi</groupId>
     	<artifactId>spring-osgi-core</artifactId>
-    	<version>1.2.0</version>
-    	<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
@@ -84,19 +82,19 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.2</version>
+      <version>0.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.tasks</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>
     	<artifactId>org.opennms.core.lib</artifactId>
-    	<version>${pom.version}</version>
+    	<version>${project.version}</version>
     	<scope>provided</scope>
     </dependency>
 

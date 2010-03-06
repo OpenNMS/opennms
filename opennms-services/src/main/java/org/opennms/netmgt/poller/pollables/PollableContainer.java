@@ -64,7 +64,7 @@ abstract public class PollableContainer extends PollableElement {
      * @return
      */
     protected synchronized PollableElement getMember(Object key) {
-        return (PollableElement)m_members.get(key);
+        return m_members.get(key);
     }
 
     protected synchronized int getMemberCount() {
@@ -201,7 +201,7 @@ abstract public class PollableContainer extends PollableElement {
                     }
                 };
                 forEachMember(iter);
-                updateStatus((PollStatus)iter.getResult());
+                updateStatus(iter.getResult());
             }
         };
         withTreeLock(r);

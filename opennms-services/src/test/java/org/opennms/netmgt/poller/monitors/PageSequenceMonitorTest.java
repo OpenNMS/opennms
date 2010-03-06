@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,12 +10,11 @@
 //
 // Modifications:
 //
+// 2010 Feb 23: Add test for ${matchingGroup[n]} syntax. - jeffg@opennms.org
 // 2007 Apr 06: Separate out testSimple into individual tests and
 //              pass the virtual host in the config to keep cookie
 //              warnings from happening.  Verify that nothing is
 //              logged at a level at WARN or higher. - dj@opennms.org
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -50,9 +49,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitHttpServerExecutionListener;
+import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.annotations.Webapp;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
-import org.opennms.netmgt.mock.JUnitMockHttpServer;
-import org.opennms.netmgt.mock.JUnitMockHttpServerExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -70,23 +70,22 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
-    JUnitMockHttpServerExecutionListener.class
+    JUnitHttpServerExecutionListener.class
 })
-@ContextConfiguration(locations={})
-@JUnitMockHttpServer(port=10342)
+@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@JUnitHttpServer(port=10342)
 public class PageSequenceMonitorTest {
 	
 	PageSequenceMonitor m_monitor;
 	Map<String, Object> m_params;
 	
 
-    @SuppressWarnings("unchecked")
     @Before
 	public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 		
     	m_monitor = new PageSequenceMonitor();
-    	m_monitor.initialize(Collections.EMPTY_MAP);
+    	m_monitor.initialize(Collections.<String, Object>emptyMap());
     	
 		m_params = new HashMap<String, Object>();
 		m_params.put("timeout", "8000");
@@ -120,6 +119,8 @@ public class PageSequenceMonitorTest {
     @Test
     public void testSimpleBogus() throws Exception {
         setPageSequenceParam(null);
+        m_params.put("timeout", "500");
+        m_params.put("retries", "0");
 		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
     }
@@ -155,23 +156,22 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
 	public void testLogin() throws Exception {
-	// NOTE we need to chagne j_acegi_security_check to j_spring_security_check when we upgrade demo
-	// aslo change j_acegi_logout to j_spring_security_logout
+        
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page path=\"/opennms\" port=\"80\" successMatch=\"Password\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_security_check\"  port=\"80\" method=\"POST\" failureMatch=\"(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Password\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
 				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
 				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
 				"  </page>\n" + 
-				"  <page path=\"/opennms/event/index.jsp\" port=\"80\" successMatch=\"Event Queries\" />\n" + 
-				"  <page path=\"/opennms/j_acegi_logout\" port=\"80\" successMatch=\"logged off\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
 				"</page-sequence>\n");
 		
-		
-		PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+		PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
 		assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
 		
 	}
@@ -195,7 +195,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
                 "<?xml version=\"1.0\"?>" +
                 "<page-sequence>\n" + 
-                "  <page path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" virtual-host=\"www.opennms.com\"/>\n" + 
+                "  <page path=\"/\" port=\"80\" successMatch=\"Get the Network to Work\" user-agent=\"Jakarta Commons-HttpClient/3.0.1\" virtual-host=\"www.opennms.com\"/>\n" + 
                 "</page-sequence>\n");
         
         
@@ -204,4 +204,81 @@ public class PageSequenceMonitorTest {
         
     }
 	
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testLoginDynamicCredentials() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+                "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                "  </page>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" +
+                "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "  </page>\n" + 
+                "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+                "</page-sequence>\n");
+        
+        PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testLoginDynamicCredentialsTwice() throws Exception {
+
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&gt;Login (.)(.)(.)(.) Username and Password&lt;\">\n" +
+                     "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                     "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                     "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                     "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                     "  </page>\n" +
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\">\n" +
+                     "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                     "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                     "  </page>\n" + 
+                     "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+                     "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                     "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                     "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                     "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                     "  </page>\n" +                     
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login Failed: ${1}\" successMatch=\"Log out\">\n" +
+                     "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                     "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                     "  </page>\n" + 
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+                     "</page-sequence>\n");
+             
+             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+             
+    }
+    
+    @Test
+    public void testDsNamePerPage() throws Exception {
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page path=\"/opennms/\" ds-name=\"slash\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
+                     "  <page path=\"/opennms/acegilogin.jsp\" ds-name=\"acegilogin\"  port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
+                     "</page-sequence>\n");
+                          
+             PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+             assertTrue("Expected three DSes", (3 == status.getProperties().size()));
+             assertTrue("Expected a DS called 'slash' but did not find one", status.getProperties().containsKey("slash"));
+             assertTrue("Expected a DS called 'acegilogin' but did not find one", status.getProperties().containsKey("acegilogin"));
+    }
+    
 }

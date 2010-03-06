@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding-config">
+    <group name="mib2" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high" ds-type="node" value="10.0" rearm="5.0"
+            trigger="1" ds-name="tcpInErrors"/>
+        <expression type="high" ds-type="if" value="10.0" rearm="5.0"
+            trigger="2" ds-label="ifName" expression="ifInErrors + ifOutErrors"/>
+        <expression type="high" ds-type="if" value="10.0" rearm="5.0"
+            trigger="2" ds-label="ifName" expression="ifInDiscards + ifOutDiscards"/>
+        <expression type="high" ds-type="if" value="90.0" rearm="75.0"
+            trigger="3" ds-label="ifName" expression="ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100">
+            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+        </expression>
+        <expression type="high" ds-type="if" value="90.0" rearm="75.0"
+            trigger="3" ds-label="ifName" expression="ifHCOutOctets * 8 / 1000000 / ifHighSpeed * 100">
+            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+        </expression>
+    </group>
+    <group name="hrstorage" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <expression type="high" ds-type="hrStorageIndex" value="90.0"
+            rearm="75.0" trigger="2" ds-label="hrStorageDescr" expression="hrStorageUsed / hrStorageSize * 100.0">
+            <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+        </expression>
+        <expression type="relativeChange" ds-type="hrStorageIndex"
+            value="0.5" rearm="0.0" trigger="2"
+            ds-label="hrStorageDescr" expression="hrStorageUsed / hrStorageSize * 100.0">
+            <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+        </expression>
+    </group>
+    <group name="cisco" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high" ds-type="node" value="80.0" rearm="50.0"
+            trigger="3" ds-name="avgBusy5"/>
+        <threshold type="relativeChange" ds-type="ciscoMemoryPoolType"
+            value="0.25" rearm="0.0" trigger="1"
+            ds-label="cscoMemoryPoolName" ds-name="cscoMemPoolUtl5Min"/>
+    </group>
+    <group name="extreme" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <expression type="absoluteChange" ds-type="if" value="5.0"
+            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCOutOctets * 8 / ifHighSpeed /1000000 * 100)">
+            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+        </expression>
+        <expression type="absoluteChange" ds-type="if" value="5.0"
+            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+        </expression>
+    </group>
+    <group name="TestThresholds" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="absoluteChange" ds-type="if" value="2.0"
+            rearm="0.0" trigger="1" ds-label="ifName" ds-name="locIfInCRC"/>
+        <expression type="absoluteChange" ds-type="if" value="12.0"
+            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+        </expression>
+        <expression type="absoluteChange" ds-type="if" value="12.0"
+            rearm="0.0" trigger="1" ds-label="ifName" expression="abs(ifHCOutOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
+        </expression>
+    </group>
+    <group name="netsnmp" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high" ds-type="node" value="90.0" rearm="75.0"
+            trigger="2" ds-label="ns-dskPath" ds-name="ns-dskPercent"/>
+        <threshold type="high" ds-type="dskIndex" value="90.0"
+            rearm="75.0" trigger="2" ds-label="ns-dskPath" ds-name="ns-dskPercentNode"/>
+        <threshold type="relativeChange" ds-type="dskIndex" value="0.5"
+            rearm="0.0" trigger="2" ds-label="ns-dskPath" ds-name="ns-dskPercent"/>
+        <threshold type="relativeChange" ds-type="dskIndex" value="0.5"
+            rearm="0.0" trigger="2" ds-label="ns-dskPath" ds-name="ns-dskPercentNode"/>
+        <expression type="high" ds-type="node" value="10.0" rearm="7.5"
+            trigger="2" ds-label="" expression="loadavg5 / 100.0"/>
+        <expression type="low" ds-type="node" value="5.0" rearm="10.0"
+            trigger="2" ds-label="" expression="memAvailReal / memTotalReal * 100.0"/>
+        <expression type="low" ds-type="node" value="10.0" rearm="15.0"
+            trigger="2" ds-label="" expression="memAvailSwap / memTotalSwap * 100.0"/>
+    </group>
+    <group name="coffee" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <expression type="low" ds-type="node" value="25.0" rearm="100.0"
+            trigger="1" ds-label="" expression="coffeePotLevel / coffeePotCapacity * 100.0"/>
+    </group>
+    <group name="ciscoIPRA" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high"
+            ds-type="ciscoEnvMonTemperatureStatusIndex" value="60.0"
+            rearm="55.0" trigger="2" ds-label="cvmTempStatusDescr" ds-name="cvmTempStatusValue">
+            <resource-filter field="cvmTempStatusDescr">^module\s\d\soutlet.*$</resource-filter>
+        </threshold>
+        <threshold type="high"
+            ds-type="ciscoEnvMonTemperatureStatusIndex" value="55.0"
+            rearm="50.0" trigger="2" ds-label="cvmTempStatusDescr" ds-name="cvmTempStatusValue">
+            <resource-filter field="cvmTempStatusDescr">^module\s\d\sinlet.*$</resource-filter>
+        </threshold>
+        <threshold type="high" ds-type="node" value="2.0" rearm="1.0"
+            trigger="2" ds-label="SkySport"
+            triggeredUEI="uei.opennms.org/wind/thresholds/multicastFlowDown"
+            rearmedUEI="uei.opennms.org/wind/thresholds/multicastFlowResolved" ds-name="csIpMRJFSkySport"/>
+        <threshold type="high" ds-type="node" value="2.0" rearm="1.0"
+            trigger="2" ds-label="FoxCrime"
+            triggeredUEI="uei.opennms.org/wind/thresholds/multicastFlowDown"
+            rearmedUEI="uei.opennms.org/wind/thresholds/multicastFlowResolved" ds-name="csIpMRJFFoxCrime"/>
+    </group>
+    <group name="ciscoNAS" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high"
+            ds-type="ciscoEnvMonTemperatureStatusIndex" value="42.0"
+            rearm="40.0" trigger="2" ds-label="cvmTempStatusDescr" ds-name="cvmTempStatusValue">
+            <resource-filter field="cvmTempStatusDescr">^.*Hot.*$</resource-filter>
+        </threshold>
+        <threshold type="high"
+            ds-type="ciscoEnvMonTemperatureStatusIndex" value="55.0"
+            rearm="50.0" trigger="2" ds-label="cvmTempStatusDescr" ds-name="cvmTempStatusValue">
+            <resource-filter field="cvmTempStatusDescr">^.*Inlet.*$</resource-filter>
+        </threshold>
+    </group>
+    <group name="ciscoIPBA" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <threshold type="high" ds-type="node" value="70.0" rearm="50.0"
+            trigger="3" ds-name="avgBusy5"/>
+    </group>
+</thresholding-config>

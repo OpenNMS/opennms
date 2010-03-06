@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-import</artifactId>
@@ -32,19 +32,23 @@
     </plugins>
   </build>
   <repositories>
+<!--
     <repository>
       <id>opennms-repo</id>
       <name>OpenNMS Rep</name>
       <url>http://repo.opennms.org/maven2</url>
     </repository>
+-->
   </repositories>
   <pluginRepositories>
+<!--
     <pluginRepository>
       <releases />
       <snapshots />
       <id>codehaus-plugins</id>
       <url>http://dist.codehaus.org/</url>
     </pluginRepository>
+-->
   </pluginRepositories>
 
   <dependencies>
@@ -71,8 +75,8 @@
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -92,6 +96,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>mock-snmp-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -118,8 +127,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
-      <artifactId>quartz</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>quartz-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>oro</groupId>

@@ -361,13 +361,6 @@ public class XmpCollector implements ServiceCollector {
             }
         }
 
-        try {
-            RrdUtils.initialize();
-        } catch (RrdException e) {
-            log().error("initialize: rrdutils failed to initialize");
-            throw new RuntimeException("Unable to initialize RrdUtils", e);
-        }
-
         // get our top-level object for our protocol config file,
         // xmp-config.xml, already parsed and ready to examine
         XmpConfig protoConfig = XmpConfigFactory.getXmpConfig();

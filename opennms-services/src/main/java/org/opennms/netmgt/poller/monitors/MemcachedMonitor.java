@@ -109,7 +109,7 @@ final public class MemcachedMonitor extends IPv4Monitor {
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
         // Extract the address
-        InetAddress ipv4Addr = (InetAddress) svc.getAddress();
+        InetAddress ipv4Addr = svc.getAddress();
         String host = ipv4Addr.getHostAddress();
 
         if (log().isDebugEnabled())

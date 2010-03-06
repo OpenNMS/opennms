@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-doc</artifactId>
   <packaging>tgz</packaging>
@@ -15,7 +15,7 @@
       <plugin>
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.8</version>
+        <version>2.0.8-onms</version>
         <executions>
           <execution>
             <goals>
@@ -41,7 +41,7 @@
           <entities>
             <entity>
               <name>version</name>
-              <value>${pom.version}</value>
+              <value>${project.version}</value>
             </entity>
           </entities>
           <postProcess>

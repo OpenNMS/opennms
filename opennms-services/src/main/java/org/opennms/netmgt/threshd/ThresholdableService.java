@@ -118,11 +118,6 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      */
     private static final boolean ABORT_THRESHOLD_CHECK = true;
 
-    /**
-     * The map of thresholding parameters
-     */
-    private static Map m_properties = new TreeMap();
-
     private ServiceThresholder m_thresholder;
 
     /**
@@ -135,7 +130,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * The map of service parameters. These parameters are mapped by the
      * composite key <em>(package name, service name)</em>.
      */
-    private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
+    private static Map<String,Map> SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap<String,Map>());
 
     private Threshd m_threshd;
 
@@ -192,10 +187,10 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         m_svcPropKey = m_package.getName() + "." + m_service.getName();
         synchronized (SVC_PROP_MAP) {
             if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
-                Map m = Collections.synchronizedMap(new TreeMap());
-                Enumeration ep = m_service.enumerateParameter();
+                Map<String,String> m = Collections.synchronizedMap(new TreeMap<String,String>());
+                Enumeration<Parameter> ep = m_service.enumerateParameter();
                 while (ep.hasMoreElements()) {
-                    Parameter p = (Parameter) ep.nextElement();
+                    Parameter p = ep.nextElement();
                     m.put(p.getKey(), p.getValue());
                 }
 
@@ -351,7 +346,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
             log.debug("run: starting new threshold check for " + m_address.getHostAddress());
 
         int status = ServiceThresholder.THRESHOLDING_FAILED;
-        Map propertiesMap = (Map) SVC_PROP_MAP.get(m_svcPropKey);
+        Map propertiesMap = SVC_PROP_MAP.get(m_svcPropKey);
         try {
             status = m_thresholder.check(this, m_proxy, propertiesMap);
         } catch (Throwable t) {

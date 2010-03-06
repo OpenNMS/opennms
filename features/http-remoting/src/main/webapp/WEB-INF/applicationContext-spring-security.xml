@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd"> 
+
+
+	<!-- this is a pidgin version of the context from opennms-webapps, start there if you haven't already -->
+
+   <!-- was mappedEntryPoint -->
+	<http realm="OpenNMS Realm" entry-point-ref="_basicAuthenticationEntryPoint">
+      <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
+      <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
+      <intercept-url pattern="/webstart/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
+		<intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
+		<anonymous />
+		<http-basic />
+	</http>
+
+	<authentication-provider user-service-ref="openNMSUserDetailsService">
+		<password-encoder ref="upperCaseMd5PasswordEncoder" />
+	</authentication-provider>
+
+	<!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->
+	<beans:bean id="authFilterEnabler" class="org.opennms.web.springframework.security.AuthFilterEnabler">
+		<custom-filter position="LAST"/>
+		<beans:property name="filterManager" ref="filterManager" />
+		<beans:property name="groupDao" ref="groupDao" />
+	</beans:bean>
+
+	<!-- ===================== USER DAO AUTHENTICATION ==================== -->
+	<beans:bean id="userDao" class="org.opennms.web.springframework.security.UserDaoImpl">
+		<beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
+		<beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
+		<beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
+		<beans:property name="useGroups" value="false" />
+	</beans:bean>
+
+	<beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">
+		<beans:property name="userDao" ref="userDao" />
+	</beans:bean>
+
+	<beans:bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.springframework.security.UpperCaseMd5PasswordEncoder"/>
+
+	<!-- ====================== RADIUS AUTHENTICATION ===================== -->
+	<!--
+		To use Radius Authentication, uncomment the following section to enable
+		the radiusAuthenticationProvider
+		The first constructor argument to radiusAuthenticationProvider is the
+		Radius Server to authenticate against, the second constructor argument
+		is the Shared Secret to use during authentication. The port, timeout,
+		retries, authTypeClass, and defaultRoles properties are optional and
+		default to the values shown.
+
+		If you would like to use a Radius Attribute to assign roles to users,
+		set the rolesAttribute property to the name of the attribute. Your
+		Radius server should be configured to return a comma-separated string of
+		roles (such as "ROLE_USER, ROLE_ADMIN") in this attribute in the
+		authentication reply. To specify a locally-defined vendor-specific Radius
+		Attribute, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)".
+		If the reply from the radius server does not actually contain the
+		specified attribute, the user will be assigned the roles specified by
+		the defaultRoles property.
+	-->
+	<!-- 
+	<beans:bean id="radiusAuthenticationProvider" class="org.opennms.web.springframework.security.RadiusAuthenticationProvider">
+		<custom-authentication-provider />
+		<beans:constructor-arg value="%%% Radius Server %%%"/>
+		<beans:constructor-arg value="%%% Shared Secret %%%"/>
+	-->
+		<!--<beans:property name="port" value="1812"/>-->
+		<!--<beans:property name="timeout" value="5"/>-->
+		<!--<beans:property name="retries" value="3"/>-->
+		<!--<beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>-->
+		<!--<beans:property name="defaultRoles" value="ROLE_USER"/>-->
+		<!--<beans:property name="rolesAttribute" value="Unknown-VSAttribute(%%% Vendor ID %%%:%%% Attribute Number %%%)"/>-->
+		<!-- 
+	</beans:bean>
+	-->
+
+	<!--  this is used to send events on login success and failure -->
+	<beans:bean class="org.opennms.web.springframework.security.SecurityAuthenticationEventOnmsEventBuilder">
+		<beans:property name="eventProxy" ref="eventProxy"/>
+	</beans:bean>
+
+</beans:beans>

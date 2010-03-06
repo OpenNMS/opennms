@@ -90,21 +90,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     public void initialize(Map<String, Object> parameters) {
-        try {
-            RrdUtils.initialize();
-            m_serviceMonitor.initialize(parameters);
-        } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
-        }
+        m_serviceMonitor.initialize(parameters);
     }
 
     public void initialize(MonitoredService svc) {
-        try {
-            RrdUtils.initialize();
-            m_serviceMonitor.initialize(svc);
-        } catch (RrdException e){
-            throw new IllegalStateException("Unable to initialize RrdUtils: " + e, e);
-        }
+        m_serviceMonitor.initialize(svc);
     }
 
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
@@ -157,11 +147,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             // Interval does not make sense for Latency Thresholding, because all values are gauge.
             m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository, 0);
         }
-        if (m_thresholdingSet.hasThresholds(dsName)) {
-            LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
-            for (String ds : entries.keySet()) {
-                attributes.put(ds, entries.get(ds).doubleValue());
-            }
+        LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
+        for (String ds : entries.keySet()) {
+            attributes.put(ds, entries.get(ds).doubleValue());
+        }
+        if (m_thresholdingSet.hasThresholds(attributes)) {
             List<Event> events = m_thresholdingSet.applyThresholds(dsName, attributes);
             if (events.size() > 0) {
                 ThresholdingEventProxy proxy = new ThresholdingEventProxy();

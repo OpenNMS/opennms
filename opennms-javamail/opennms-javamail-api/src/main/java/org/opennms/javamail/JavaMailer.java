@@ -10,6 +10,7 @@
  *
  * Modifications:
  * 
+ * 2010 Feb 11: Added support for attachments from input stream - jonathan@opennms.org.
  * 2008 Jan 06: Indent. - dj@opennms.org
  * 2008 Jan 06: Moved initialization of the mailer session to constructor so
  *              that properties can be overridden by the implementer.
@@ -38,9 +39,12 @@
  */
 package org.opennms.javamail;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -50,6 +54,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.Authenticator;
@@ -57,6 +62,7 @@ import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
+import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -92,7 +98,7 @@ public class JavaMailer {
     private static final boolean DEFAULT_USE_JMTA = true;
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
-    private static final String DEFAULT_ENCODING = "7-bit";
+    private static final String DEFAULT_ENCODING = "Q"; // I think this means quoted-printable encoding, see bug 2825
     private static final boolean DEFAULT_STARTTLS_ENABLE = false;
     private static final boolean DEFAULT_QUIT_WAIT = true;
     private static final int DEFAULT_SMTP_PORT = 25;
@@ -132,6 +138,9 @@ public class JavaMailer {
     private String m_subject;
     private String m_messageText;
     private String m_fileName;
+    private InputStream m_inputStream;
+    private String m_inputStreamName;
+    private String m_inputStreamContentType;
 
     
     public JavaMailer(Properties javamailProps) throws JavaMailerException {
@@ -268,18 +277,26 @@ public class JavaMailer {
             Message message = initializeMessage();
 
             String encodedText = MimeUtility.encodeText(getMessageText(), m_charSet, m_encoding);
-            if (getFileName() == null) {
+            if ((getFileName() == null) && (getInputStream() == null))  {
                 message.setContent(encodedText, m_contentType+"; charset="+m_charSet);
-            } else {
-                BodyPart bp = new MimeBodyPart();
-                bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
-
+            } else if (getFileName() == null) {
+                BodyPart streamBodyPart = new MimeBodyPart();
+                streamBodyPart.setDataHandler(new DataHandler(new InputStreamDataSource(m_inputStreamName, m_inputStreamContentType, m_inputStream)));
+                streamBodyPart.setFileName(m_inputStreamName);
+                streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");  
+                streamBodyPart.setDisposition(Part.ATTACHMENT); 
                 MimeMultipart mp = new MimeMultipart();
-                mp.addBodyPart(bp);
-                mp = new MimeMultipart();
-                mp.addBodyPart(createFileAttachment(new File(getFileName())));
+                mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
-            }
+                } else {
+                    BodyPart bp = new MimeBodyPart();
+                    bp.setContent(encodedText, m_contentType+"; charset="+m_charSet);
+                    MimeMultipart mp = new MimeMultipart();
+                    mp.addBodyPart(bp);
+                    mp = new MimeMultipart();
+                    mp.addBodyPart(createFileAttachment(new File(getFileName())));
+                    message.setContent(mp);
+                }
 
             message.setHeader("X-Mailer", getMailer());
             message.setSentDate(new Date());
@@ -441,6 +458,50 @@ public class JavaMailer {
             }
         }
     }
+    
+    private class InputStreamDataSource implements DataSource {  
+        
+        private String name;  
+        private String contentType;  
+        private ByteArrayOutputStream baos;  
+          
+        InputStreamDataSource(String name, String contentType, InputStream inputStream) throws JavaMailerException {  
+            this.name = name;  
+            this.contentType = contentType;
+            
+            log().debug("setting contentType " + this.contentType);
+              
+            baos = new ByteArrayOutputStream();  
+              
+            int read;  
+            byte[] buff = new byte[256];  
+            try {
+                while((read = inputStream.read(buff)) != -1) {  
+                    baos.write(buff, 0, read);  
+                }
+            } catch (IOException e) {
+                log().error("Could not read attachment from input stream: " + e, e);
+                throw new JavaMailerException("Could not read attachment from input stream: " + e, e);
+            }  
+        }  
+          
+        public String getContentType() {
+            log().debug("getContentType: " + contentType);
+            return contentType;  
+        }  
+   
+        public InputStream getInputStream() throws IOException {  
+            return new ByteArrayInputStream(baos.toByteArray());  
+        }  
+   
+        public String getName() {  
+            return name;  
+        }  
+   
+        public OutputStream getOutputStream() throws IOException {  
+            throw new IOException("Cannot write to this read-only resource");  
+        }  
+    } 
 
     /**
      * @return Returns the password.
@@ -529,6 +590,51 @@ public class JavaMailer {
      */
     public void setFileName(String fileName) {
         m_fileName = fileName;
+    }
+    
+    /**
+     * @return Returns the input stream attachment.
+     */
+    public InputStream getInputStream() {
+        return m_inputStream;
+    }
+
+    /**
+     * @param inputStream
+     *            Sets the input stream to be attached to the message.
+     */
+    public void setInputStream(InputStream inputStream) {
+        m_inputStream = inputStream;
+    }
+    
+    /**
+     * @return Returns the name to use for stream attachments..
+     */
+    public String getInputStreamName() {
+        return m_inputStreamName;
+    }
+
+    /**
+     * @param inputStreamName
+     *            Sets the name to use for stream attachments.
+     */
+    public void setInputStreamName(String inputStreamName) {
+        m_inputStreamName = inputStreamName;
+    }
+    
+    /**
+     * @return Returns the name to use for stream attachments..
+     */
+    public String getInputStreamContentType() {
+        return m_inputStreamContentType;
+    }
+
+    /**
+     * @param inputStreamName
+     *            Sets the name to use for stream attachments.
+     */
+    public void setInputStreamContentType(String inputStreamContentType) {
+        m_inputStreamContentType = inputStreamContentType;
     }
 
     /**

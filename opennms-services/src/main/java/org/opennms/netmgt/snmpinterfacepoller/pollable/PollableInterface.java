@@ -5,12 +5,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.snmpinterfacepoller.Interface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 
@@ -84,10 +82,14 @@ public class PollableInterface {
         m_pollablesnmpinterface = new HashMap<String,PollableSnmpInterface>();
     }
 
-    public PollableSnmpInterface createPollableSnmpInterface(Interface pkgIface) {
+//    public PollableSnmpInterface createPollableSnmpInterface(Interface pkgIface) {
+  public PollableSnmpInterface createPollableSnmpInterface(String name, String criteria, boolean hasPort, 
+          int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries, 
+          boolean hasMaxVarsPerPdu,int maxVarsPerPdu) {
+
         PollableSnmpInterface iface = new PollableSnmpInterface(this);
-        iface.setName(pkgIface.getName());
-        iface.setCriteria(pkgIface.getCriteria());
+        iface.setName(name);
+        iface.setCriteria(criteria);
         InetAddress ipAddr = null;
 		try {
 			ipAddr = InetAddress.getByName(getIpaddress());
@@ -95,23 +97,19 @@ public class PollableInterface {
 			e.printStackTrace();
 		}
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (pkgIface.hasPort()) agentConfig.setPort(pkgIface.getPort());
-        if (pkgIface.hasTimeout()) agentConfig.setTimeout(pkgIface.getTimeout());
-        if (pkgIface.hasRetry()) agentConfig.setRetries(pkgIface.getRetry());
-        if (pkgIface.hasMaxVarsPerPdu()) agentConfig.setMaxVarsPerPdu(pkgIface.getMaxVarsPerPdu());
+        if (hasPort) agentConfig.setPort(port);
+        if (hasTimeout) agentConfig.setTimeout(timeout);
+        if (hasRetries) agentConfig.setRetries(retries);
+        if (hasMaxVarsPerPdu) agentConfig.setMaxVarsPerPdu(maxVarsPerPdu);
 
         iface.setAgentConfig(agentConfig);
-        
-        if(pkgIface.hasMaxInterfacePerPdu()) iface.setMaxInterfacePerPdu(pkgIface.getMaxInterfacePerPdu());
-        
-        m_pollablesnmpinterface.put(pkgIface.getName(),iface);
+               
+        m_pollablesnmpinterface.put(name,iface);
         return iface;
     }
     
     protected void refresh() {
-        Iterator<PollableSnmpInterface> ite = getSnmpinterfacepollableNodes().values().iterator();
-        while (ite.hasNext()) {
-            PollableSnmpInterface node = ite.next();
+        for ( PollableSnmpInterface node: getSnmpinterfacepollableNodes().values()){
             node = (getContext().refresh(node));
         }
     }
@@ -135,9 +133,8 @@ public class PollableInterface {
     
 
     protected void delete() {
-        Iterator<PollableSnmpInterface> ite = getSnmpinterfacepollableNodes().values().iterator();
-        while (ite.hasNext()) {
-            ite.next().delete();
+        for ( PollableSnmpInterface node: getSnmpinterfacepollableNodes().values()){
+            node.delete();
         }
     }
 

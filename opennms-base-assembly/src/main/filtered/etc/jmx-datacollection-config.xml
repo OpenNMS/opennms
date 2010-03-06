@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<jmx-datacollection-config
-    rrdRepository = "${install.share.dir}/rrd/snmp/">
+<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
     <jmx-collection name="jboss">
         <rrd step = "300">
             <rra>RRA:AVERAGE:0.5:1:8928</rra>
@@ -100,17 +99,48 @@
               <attrib name="CurrentThreadCpuTime"  alias="CurThreadCpuTime"     type="gauge"/>  
           </mbean> 
 
-          <mbean name="JMV MemoryPool" objectname="java.lang:type=MemoryPool">  
-              <attrib name="CollectionUsageThresholdCount"  alias="CollectionUsage"       type="counter"/>  
-          </mbean> 
-
           <mbean name="JMV ClassLoading" objectname="java.lang:type=ClassLoading">  
               <attrib name="TotalLoadedClassCount"  alias="TotLoadedClasses"   type="gauge"/>  
               <attrib name="LoadedClassCount"       alias="LoadedClasses"      type="gauge"/>  
               <attrib name="UnloadedClassCount"     alias="UnloadedClass"      type="gauge"/>  
-          </mbean> 
-
-       </mbeans>   
+          </mbean>
+          
+          <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+              <attrib name="CollectionUsageThreshold"       alias="EdenCollUseThrsh"      type="gauge"/>
+              <attrib name="CollectionUsageThresholdCount"    alias="EdenCollUseThrshCnt"   type="gauge"/>
+              <comp-attrib name="Usage"         type="Composite" alias="EdenUsage">
+                  <comp-member name="init"      type="gauge"     alias="EdenUsage.init" />
+          		  <comp-member name="max"       type="gauge"     alias="EdenUsage.max" />
+          		  <comp-member name="used"      type="gauge"     alias="EdenUsage.used" />
+          		  <comp-member name="committed" type="gauge"     alias="EdenUsage.committed" />
+              </comp-attrib>
+              <comp-attrib name="PeakUsage"     type="Composite" alias="EdenPeakUsage">
+          		  <comp-member name="init"      type="gauge"     alias="EdenPeakUsage.init" />
+          		  <comp-member name="max"       type="gauge"     alias="EdenPeakUsage.max" />
+          		  <comp-member name="used"      type="gauge"     alias="EdenPeakUsage.used" />
+          		  <comp-member name="committed" type="gauge"     alias="EdenPeakUsage.committed" />
+              </comp-attrib>
+          </mbean>
+	  	
+          <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+              <attrib name="CollectionUsageThreshold"       alias="SurvCollUseThresh"      type="gauge"/>
+              <attrib name="CollectionUsageThresholdCount"    alias="SurvCollUseThreshCnt"   type="gauge"/>
+              <comp-attrib name="Usage"         type="Composite" alias="SurvUsage">
+                  <comp-member name="init"      type="gauge"     alias="SurvUsage.init" />
+          		  <comp-member name="max"       type="gauge"     alias="SurvUsage.max" />
+          		  <comp-member name="used"      type="gauge"     alias="SurvUsage.used" />
+          		  <comp-member name="committed" type="gauge"     alias="SurvUsage.committed" />
+              </comp-attrib>
+              <comp-attrib name="PeakUsage"     type="Composite" alias="SurvPeakUsage">
+          		  <comp-member name="init"      type="gauge"     alias="SurvPeakUsage.init" />
+          		  <comp-member name="max"       type="gauge"     alias="SurvPeakUsage.max" />
+          		  <comp-member name="used"      type="gauge"     alias="SurvPeakUsage.used" />
+          		  <comp-member name="committed" type="gauge"     alias="SurvPeakUsage.committed" />
+              </comp-attrib>
+          </mbean>
+	  	  		  
+        </mbeans>
+        
     </jmx-collection>
-
+    
 </jmx-datacollection-config>

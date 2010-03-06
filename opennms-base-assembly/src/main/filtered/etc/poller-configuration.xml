@@ -94,7 +94,7 @@
     <service name="HypericHQ" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="timeout" value="3000" />
-      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="rrd-base-name" value="hyperic-hq" />
       <parameter key="ds-name" value="hyperic-hq" />
       <parameter key="page-sequence">
@@ -198,6 +198,17 @@
       <parameter key="port" value="161" />
       <parameter key="service-name" value="Task Scheduler" />
     </service>
+    <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="18980"/>
+      <parameter key="factory" value="PASSWORD-CLEAR"/>
+      <parameter key="username" value="admin"/>
+      <parameter key="password" value="admin"/>
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="opennms-jvm"/>
+      <parameter key="friendly-name" value="opennms-jvm"/>
+     </service>
 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -259,4 +270,5 @@
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="NSClientpp" class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
 </poller-configuration>

@@ -37,9 +37,12 @@
         /WEB-INF/applicationContext-common.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
         classpath*:/META-INF/opennms/component-service.xml
+        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
+        classpath:/META-INF/opennms/applicationContext-reportingAvailability.xml
         classpath:/META-INF/opennms/applicationContext-reporting.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
+        /WEB-INF/applicationContext-spring-webflow.xml
     </param-value>
   </context-param>
   
@@ -172,6 +175,15 @@
     <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
   </filter>
   
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    <init-param>
+      <param-name>statusEnabled</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -240,6 +252,11 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>*.jnlp</url-pattern>
+  </filter-mapping>
+
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
@@ -301,77 +318,20 @@
      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
      <load-on-startup>2</load-on-startup>
    </servlet>
-   
-   <!--  servlet that map requests get mapped to -->
-   <servlet>
-     <servlet-name>availabilityDispatcher</servlet-name>
-     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-     <load-on-startup>1</load-on-startup>
-   </servlet>
 
-   <!-- WebStart servlet -->
+   <!-- Serves static resource content from .jar files such as spring-js.jar -->
    <servlet>
-      <servlet-name>JnlpDownloadServlet</servlet-name>
-      <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
+	<servlet-name>Resources Servlet</servlet-name>
+	<servlet-class>org.springframework.js.resource.ResourceServlet</servlet-class>
+	<load-on-startup>0</load-on-startup>
    </servlet>
+	
+   <!-- Map all /resources requests to the Resource Servlet for handling -->
+   <servlet-mapping>
+		<servlet-name>Resources Servlet</servlet-name>
+		<url-pattern>/resources/*</url-pattern>
+   </servlet-mapping>
 
-  <servlet>
-    <!-- This servlet creates availability reports. -->
-    <servlet-name>availabilityXml</servlet-name>
-    <servlet-class>org.opennms.web.availability.raw.RawAvailabilityServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- This servlet creates availability reports. -->
-    <servlet-name>availability</servlet-name>
-    <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
-    <init-param>
-      <param-name>report.logo</param-name>
-      <param-value>/images/logo.gif</param-value>
-    </init-param>
-    <init-param>
-      <param-name>xslt.filename</param-name>
-      <param-value>etc/AvailabilityReports.xsl</param-value>
-    </init-param>
-    <init-param>
-      <param-name>pdf.xslt.filename</param-name>
-      <param-value>etc/PDFAvailReport.xsl</param-value>
-    </init-param>
-    <init-param>
-      <param-name>svg.xslt.filename</param-name>
-      <param-value>etc/SVGAvailReport.xsl</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>reportgenerating.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL on failure.</description>
-      <param-name>redirect.failure</param-name>
-      <param-value>reportfailed.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
-      <param-name>redirect.noEmail</param-name>
-      <param-value>noemail.jsp</param-value>
-    </init-param>
-    <init-param>
-      <description>Use this script to generate an Availability report on the command line.</description>
-      <param-name>script.generateReport</param-name>
-      <param-value>${opennms.bin.dir}/report.sh</param-value>
-    </init-param>
-    <init-param>
-      <description>Use this script to mail a file to a user from the command line.</description>
-      <param-name>script.mailReport</param-name>
-      <param-value>${opennms.bin.dir}/webreport.pl</param-value>
-    </init-param>
-    <init-param>
-      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
-      <param-name>script.useScript</param-name>
-      <param-value>false</param-value>
-    </init-param>
-  </servlet>
-  
   <!-- Servlet for modify Discovery configuration service -->
   <servlet>
     <servlet-name>actionDiscovery</servlet-name>
@@ -733,12 +693,6 @@
         <load-on-startup>1</load-on-startup>
   </servlet>
 
- <!-- WebStart Servlet mapping -->
-     <servlet-mapping>
-        <servlet-name>JnlpDownloadServlet</servlet-name>
-        <url-pattern>/webstart/*</url-pattern>
-     </servlet-mapping>
-
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
   
@@ -753,17 +707,10 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>availabilityXml</servlet-name>
-    <url-pattern>/availability/availabilityRaw</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>availability</servlet-name>
-    <url-pattern>/availability/availability</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
@@ -1010,11 +957,6 @@
   <servlet-mapping>
     <servlet-name>mapDispatcher</servlet-name>
     <url-pattern>*.map</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>availabilityDispatcher</servlet-name>
-    <url-pattern>/report/availability/view/*</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

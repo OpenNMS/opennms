@@ -48,6 +48,8 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Provides static methods for interacting with round robin files. Supports JNI
@@ -71,86 +73,43 @@ import org.opennms.core.utils.ThreadCategory;
  *  
  * </pre>
  */
-public class RrdUtils {
-
-    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
-
-    private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
-
-    private static final String RRD_STRATEGY_CLASSNAME = RrdConfig.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASSNAME);
+public abstract class RrdUtils {
 
     private static RrdStrategy m_rrdStrategy = null;
-    
-    private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension", null);
+
+    private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[] {
+            // Default RRD configuration context
+            "org/opennms/netmgt/rrd/rrd-configuration.xml"
+    }); 
 
     public static RrdStrategy getStrategy() {
+        RrdStrategy retval = null;
         if (m_rrdStrategy == null) {
+            if ((Boolean)m_context.getBean("useQueue")) {
+                if ((Boolean)m_context.getBean("useTcp")) {
+                    retval = (RrdStrategy)m_context.getBean("tcpAndQueuingRrdStrategy");
+                } else {
+                    retval = (RrdStrategy)m_context.getBean("queuingRrdStrategy");
+                }
+            } else {
+                if ((Boolean)m_context.getBean("useTcp")) {
+                    retval = (RrdStrategy)m_context.getBean("tcpAndBasicRrdStrategy");
+                } else {
+                    retval = (RrdStrategy)m_context.getBean("basicRrdStrategy");
+                }
+            }
+        } else {
+            retval = m_rrdStrategy;
+        }
+
+        if (retval == null) {
             throw new IllegalStateException("RrdUtils not initialized");
         }
-        return m_rrdStrategy;
+        return retval;
     }
-    
+
     public static void setStrategy(RrdStrategy strategy) {
         m_rrdStrategy = strategy;
-    }
-
-    /**
-     * Initializes the underlying round robin system and sets up the appropriate
-     * strategy. The strategies are currently selected using System properties.
-     * This creates the appropriate RrdStrategy and calls its initialize method
-     */
-    public static void initialize() throws RrdException {
-        try {
-            createStrategy();
-            m_rrdStrategy.initialize();
-        } catch (Exception e) {
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured initializing the Rrd subsytem", e);
-
-        }
-    }
-
-    /**
-     * 
-     * 
-     */
-    public static void graphicsInitialize() throws RrdException {
-        try {
-            createStrategy();
-            m_rrdStrategy.graphicsInitialize();
-        } catch (Exception e) {
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured initializing the Rrd subsytem", e);
-
-        }
-    }
-
-    /**
-     * Create the appropriate RrdStrategy object based on the configuration
-     * @throws RrdException 
-     */
-    private static void createStrategy() throws RrdException {
-        if (m_rrdStrategy == null) {
-            RrdStrategy rrdStategy = constructStrategyInstance();
-            if (USE_QUEUE) {
-                rrdStategy = new QueuingRrdStrategy(rrdStategy);
-            }
-
-            // would like to have this be queued as well, but queueing seems too
-            //   implementation-specific at the moment
-/*            if (USE_K5) {
-                rrdStategy = new K5RrdStrategy(rrdStategy);
-            }
-*/            m_rrdStrategy = rrdStategy;
-        }
-    }
-
-    private static RrdStrategy constructStrategyInstance() throws RrdException {
-        try {
-            return (RrdStrategy) Class.forName(RRD_STRATEGY_CLASSNAME).newInstance();
-        } catch (Exception e) {
-            log().error("constructStrategyInstance: Unable to load and instantiate RrdStrategy " + RRD_STRATEGY_CLASSNAME + ": " + e, e);
-            throw new RrdException("Unable to load and instantiate RrdStrategy " + RRD_STRATEGY_CLASSNAME + ": " + e, e);
-        }
-        
     }
 
     /**
@@ -198,7 +157,6 @@ public class RrdUtils {
             throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + completePath + ": " + e, e);
         }
     }
-
 
     private static Category log() {
         return ThreadCategory.getInstance(RrdUtils.class);
@@ -318,7 +276,7 @@ public class RrdUtils {
     public static Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         return getStrategy().fetchLastValueInRange(rrdFile, ds, interval, range);
     }
-    
+
     /**
      * Creates an InputStream representing the bytes of a graph created from
      * round robin data. It accepts an rrdtool graph command. The underlying
@@ -340,14 +298,14 @@ public class RrdUtils {
     }
 
     public static String getExtension() {
-        if (m_rrdExtension == null) {
+        String rrdExtension = (String)m_context.getBean("rrdFileExtension");
+        if (rrdExtension == null || "".equals(rrdExtension)) {
             return getStrategy().getDefaultFileExtension();
         }
-        return m_rrdExtension;
+        return rrdExtension;
     }
 
     public static void promoteEnqueuedFiles(Collection<String> files) {
         getStrategy().promoteEnqueuedFiles(files);
     }
-
 }

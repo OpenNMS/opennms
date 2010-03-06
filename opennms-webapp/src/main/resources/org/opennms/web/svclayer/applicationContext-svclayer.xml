@@ -219,10 +219,74 @@
     <property name="categoryConfigDao" ref="categoryConfigDao" />
   </bean>
   
-  <bean id="reportListService" class="org.opennms.web.svclayer.support.DefaultReportListService">
-    <property name="reportLocatorDao" ref="availabilityReportLocatorDao"/>
+  <!-- Database Report Beans -->
+  
+  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
+    <property name="databaseReportConfigDao" ref="databaseReportConfigDao"/>
   </bean>
-
+  
+  <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
+	<property name="scheduler">
+		<ref local="schedulerFactory" />
+	</property>
+	<property name="jobDetail">
+		<ref local="batchReportJobDetail" />
+	</property>
+	<property name="triggerGroup" value="reporting" />
+	<property name="reportWrapperService" ref="reportWrapperService"/>
+  </bean>
+  
+  <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="databaseReport" />
+        <property name="dataSource" ref="dataSource" />
+       	<property name="applicationContextSchedulerContextKey">
+       		<value>applicationContext</value>
+       	</property>
+       	<property name="waitForJobsToCompleteOnShutdown">
+			<value>true</value>
+		</property>
+		<property name="quartzProperties">
+			<props>
+				<!-- Configure Main Scheduler Properties -->
+				<prop key="org.quartz.scheduler.instanceId">ReportSchdeuler</prop>
+				<!-- Configure ThreadPool -->
+				<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+				<prop key="org.quartz.threadPool.threadCount">1</prop>
+				<!-- Configure JobStore -->
+				<prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreCMT</prop>
+				<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
+				<!-- Configure Plugins -->
+				<prop key="org.quartz.plugin.shutdownHook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
+				<prop key="org.quartz.plugin.shutdownHook.cleanShutdown">true</prop>
+				<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
+			</props>
+		</property>
+  </bean>
+  
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass">
+		<value>org.opennms.reporting.core.BatchReportJob</value>
+	  </property>
+	  <property name="durability" value="true" />
+  </bean> 
+  
+    
+  <!-- Validators for Database Report web flow -->
+  
+  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
+    	<property name="reportSchedulerService">
+    		<ref local="reportSchedulerService" />
+    	</property>
+  </bean>
+  
+  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator" />
+  
+  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator" />
+  
+  <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
+    <property name="graphResultsService" ref="graphResultsService"/>
+  </bean>
+  
   <!-- Node List page -->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
     <property name="nodeDao" ref="nodeDao" />

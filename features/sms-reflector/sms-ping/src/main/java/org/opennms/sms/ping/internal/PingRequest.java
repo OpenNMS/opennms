@@ -97,6 +97,8 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
 	private Long m_sentTimestamp;
 
 	private Long m_responseTimestamp;
+	
+	private volatile boolean m_processed = false;
     
 
     PingRequest(PingRequestId id, long timeout, int retries, Logger logger, PingResponseCallback cb) {
@@ -110,6 +112,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         
         m_request = new OutboundMessage(id.getDestination(), "ping");
         m_request.setSrcPort(6996);
+        m_request.setValidityPeriod(1);
     }
     
     public PingRequest(PingRequestId id, long timeout, int retries, PingResponseCallback cb) {
@@ -146,9 +149,13 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public boolean processResponse(PingReply reply) {
-    	setResponseTimestamp(reply.getReceiveTimestamp());
-    	processResponse(reply.getPacket());
-    	return true;
+        try {
+            setResponseTimestamp(reply.getReceiveTimestamp());
+            processResponse(reply.getPacket());
+            return true;
+        } finally {
+            m_processed = true;
+        }
     }
 
     private void processResponse(InboundMessage packet) {
@@ -158,17 +165,21 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public PingRequest processTimeout() {
-        PingRequest returnval = null;
-        if (this.isExpired()) {
-            if (this.getRetries() > 0) {
-                returnval = new PingRequest(getId(), getTimeout(), getRetries() - 1, log(), m_callback);
-                log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
-            } else {
-                log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                m_callback.handleTimeout(this, getRequest());
+        try {
+            PingRequest returnval = null;
+            if (this.isExpired()) {
+                if (this.getRetries() > 0) {
+                    returnval = new PingRequest(getId(), getTimeout(), getRetries() - 1, log(), m_callback);
+                    log().debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
+                } else {
+                    log().debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
+                    m_callback.handleTimeout(this, getRequest());
+                }
             }
+            return returnval;
+        } finally {
+            m_processed = true;
         }
-        return returnval;
     }
     
     public boolean isExpired() {
@@ -201,7 +212,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     public void processError(Throwable t) {
-        m_callback.handleError(this, getRequest(), t);
+        try {
+            m_callback.handleError(this, getRequest(), t);
+        } finally {
+            m_processed = true;
+        }
     }
     
     public void setSentTimestamp(Long millis){
@@ -215,5 +230,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     public long getRoundTripTime(){
     	return m_responseTimestamp - m_sentTimestamp;
     }
+
+    public boolean isProcessed() {
+        return m_processed;
+    }
+    
+    
 
 }

@@ -77,7 +77,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
                 "classpath*:/META-INF/opennms/component-dao.xml",
                 "classpath:/META-INF/opennms/applicationContext-daemon.xml",
                 "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd.xml",
+                "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml",
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
                 "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
         };
@@ -112,7 +112,7 @@ public class PollerFrontEndIntegrationTest extends AbstractTransactionalTemporar
         
         m_frontEndContext = new ClassPathXmlApplicationContext(
                 new String[] { 
-                        "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd.xml",
+                        "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-rmi.xml",
                         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
                 },
                 false

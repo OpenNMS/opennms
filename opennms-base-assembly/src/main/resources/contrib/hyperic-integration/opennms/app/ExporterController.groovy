@@ -37,49 +37,40 @@
  */
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import groovy.xml.MarkupBuilder;
+import java.text.SimpleDateFormat
+import org.hyperic.hibernate.PageInfo
+import org.hyperic.hq.authz.server.session.ResourceSortField
+import org.hyperic.hq.appdef.server.session.PlatformManagerEJBImpl as PlatformManager
 
-import java.text.*;
-
-import org.hyperic.dao.*;
-import org.hyperic.hq.appdef.server.session.*;
-import org.hyperic.hq.appdef.shared.*;
-import org.hyperic.hq.authz.server.session.*;
-import org.hyperic.hq.events.*;
-import org.hyperic.hq.dao.*;
-import org.hyperic.hq.hqu.rendit.util.HQUtil
-
+/**
+ * @deprecated THIS CONTROLLER IS DEPRECATED. It has been replaced by 
+ * ModelexportController.groovy which offers more precise service and
+ * interface lists. If you are using OpenNMS 1.7.10+, configure it to
+ * point to the /hqu/opennms/modelExport/list.hqu URL.
+ */
 class ExporterController 
-	extends BaseController
+    extends BaseController
 {
     def ExporterController() {
-//        setTemplate('standard')  // in views/templates/standard.gsp 
+        setXMLMethods(['list'])
     }
-    
-    def index(params) {
 
-        DAOFactory daoFactory = DAOFactory.getDAOFactory();
-
-        PlatformDAO platformDAO = daoFactory.platformDAO;
-
-        def platforms = platformDAO.findAll_orderName(true);
-
+    def list(xml, params) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-        def writer = new StringWriter();
-        def xml = new MarkupBuilder(writer);
+        def platforms = resourceHelper.findPlatforms(new PageInfo(ResourceSortField.NAME, true));
+        def man = PlatformManager.one
         xml.'model-import'('foreign-source':'HQ', 'date-stamp':formatter.format(new Date())) {
-            for(p in platforms) {
+            platforms.each { res ->   
+                def p = man.findPlatformById(res.instanceId)
                 node('node-label':p.fqdn, 'foreign-id':p.id) {
-                    'interface'('ip-addr':p.agent.address, descr:'agent-address', status:1, 'snmp-primary':'N') {
-                        'monitored-service'('service-name':'ICMP')
-                        'monitored-service'('service-name':'HypericAgent')
+                    'interface'('ip-addr': p.agent.address, descr: 'agent-address', status: 1, 'snmp-primary': 'N') {
+                        'monitored-service'('service-name': 'ICMP')
+                        'monitored-service'('service-name': 'HypericAgent')
                     }
                 }
             }
         }
 
-
-        render(setContentType:'text/xml', inline:writer.toString())
+        xml
     }
 }

@@ -54,7 +54,7 @@ if [ -n "$JAVA_HOME" ]; then
 	export PATH
 fi
 
-[ -z "$MAVEN_OPTS" ] && MAVEN_OPTS=-Xmx1g
+[ -z "$MAVEN_OPTS" ] && MAVEN_OPTS='-XX:PermSize=64M -XX:MaxPermSize=256M -Xmx1G'
 export MAVEN_OPTS
 [ -z "$MVN" ] && MVN="$PREFIX/maven/bin/mvn"
 "$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"

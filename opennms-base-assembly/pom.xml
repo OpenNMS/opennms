@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -24,12 +24,13 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack-xsds</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
 	         <configuration>
+	           <outputDirectory>${project.build.directory}</outputDirectory>
 	           <artifactItems>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
@@ -74,21 +75,8 @@
                   <classifier>xsds</classifier>
 	             </artifactItem>
 	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>jnlp</classifier>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
-	             </artifactItem>
-	             <artifactItem>
 	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-reporting</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-services</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
 	             </artifactItem>
@@ -104,6 +92,36 @@
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
 	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+          </execution>
+          <execution>
+            <id>unpack-jnlp</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}</outputDirectory>
+	           <artifactItems>
+	             <artifactItem>
+	               <groupId>org.opennms.features</groupId>
+	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>jnlp</classifier>
+	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+	       </execution>
+          <execution>
+            <id>unpack-webapp</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
+	           <artifactItems>
 	             <artifactItem>
 	               <groupId>org.opennms</groupId>
 	               <artifactId>opennms-webapp</artifactId>
@@ -112,7 +130,25 @@
 	             </artifactItem>
 	           </artifactItems>
 	         </configuration>
-          </execution>
+	       </execution>
+          <execution>
+            <id>unpack-remoting</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}/dependency-remoting</outputDirectory>
+	           <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.http-remoting</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+	       </execution>
         </executions>
       </plugin>
       <plugin>
@@ -184,6 +220,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-import</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-reportd</artifactId>
+    </dependency>
     <!-- begin provisiond dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -254,18 +294,17 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-tcp</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

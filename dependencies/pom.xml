@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -20,9 +20,17 @@
     <module>opennms-jersey</module>
     <module>opennms-mina</module>
     <module>opennms-spring-test</module>
+    <module>dnsjava</module>
+    <module>gwt</module>
+    <module>jinterop</module>
+    <module>jradius</module>
+    <module>quartz</module>
+    <module>rancid</module>
+    <module>snmp</module>
   </modules>
   <properties>
-    <springVersion>2.5.6</springVersion>
+    <springVersion>3.0.0.RELEASE</springVersion>
+    <springWebFlowVersion>2.0.7.RELEASE</springWebFlowVersion>
     <springSecurityVersion>2.0.4</springSecurityVersion>
     <springLdapVersion>1.2.1</springLdapVersion>
   </properties>

@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>org.opennms</groupId>
 		<artifactId>org.opennms.features</artifactId>
-		<version>1.7.10-TESTING-SNAPSHOT</version>
+		<version>1.7.10-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opennms.features</groupId>
@@ -30,20 +30,20 @@
 			<version>2.0.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-spring</artifactId>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>spring-dependencies</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-spring-web</artifactId>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>spring-web-dependencies</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-spring-security</artifactId>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>spring-security-dependencies</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-spring-test</artifactId>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>spring-test-dependencies</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -140,14 +140,4 @@
 			</plugin>
 		</plugins>
 	</build>
-<!--
-	<repositories>
-		<repository>
-			<snapshots><enabled>false</enabled></snapshots>
-			<releases><enabled>true</enabled></releases>
-			<id>atlassian-3rdparty</id>
-			<url>https://maven.atlassian.com/3rdparty/</url>
-		</repository>
-	</repositories>
--->
 </project>

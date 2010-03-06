@@ -2,10 +2,11 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-spring-security</artifactId>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>spring-security-dependencies</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Spring Security Dependencies</name>
   <description>
@@ -269,8 +270,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-spring</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

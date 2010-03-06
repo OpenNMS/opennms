@@ -328,7 +328,7 @@ public class Collectd extends AbstractServiceDaemon implements
         instrumentation().beginScheduleExistingInterfaces();
         try {
 
-            m_transTemplate.execute(new TransactionCallback() {
+            m_transTemplate.execute(new TransactionCallback<Object>() {
 
                 public Object doInTransaction(TransactionStatus status) {
                     

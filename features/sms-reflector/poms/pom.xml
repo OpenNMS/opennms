@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>sms-reflector</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -21,6 +21,11 @@
     <module>compiled</module>
   </modules>
 
+  <properties>
+    <spring.version>3.0.1.RELEASE</spring.version>
+    <spring.osgi.version>1.2.1</spring.osgi.version>
+  </properties>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -32,12 +37,21 @@
            | to switch back to the standard bundle life-cycle, move this setting
            | down to the maven-bundle-plugin section
           -->
-          <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>1.4.3</version>
+          <extensions>true</extensions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+            <encoding>UTF-8</encoding>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -52,23 +66,59 @@
         <type>pom</type>
         <groupId>org.opennms.sms-reflector.build</groupId>
         <artifactId>provision</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${project.version}</version>
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi_R4_core</artifactId>
-        <version>1.0</version>
+        <artifactId>org.osgi.core</artifactId>
+        <version>4.2.0</version>
         <scope>provided</scope>
         <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi_R4_compendium</artifactId>
-        <version>1.0</version>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>4.2.0</version>
         <scope>provided</scope>
         <optional>true</optional>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.aop</artifactId>
+        <version>${spring.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.beans</artifactId>
+        <version>${spring.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.core</artifactId>
+        <version>${spring.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>org.springframework.context</artifactId>
+        <version>${spring.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.osgi</groupId>
+        <artifactId>spring-osgi-core</artifactId>
+        <version>${spring.osgi.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.osgi</groupId>
+        <artifactId>spring-osgi-io</artifactId>
+        <version>${spring.osgi.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

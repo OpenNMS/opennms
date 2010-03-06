@@ -578,9 +578,9 @@ final class BroadcastEventProcessor implements EventListener {
         //boolean isPrimarySnmpInterface = false;
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            Iterator iter = m_thresholdableServices.iterator();
+            Iterator<ThresholdableService> iter = m_thresholdableServices.iterator();
             while (iter.hasNext()) {
-                tSvc = (ThresholdableService) iter.next();
+                tSvc = iter.next();
 
                 InetAddress addr = (InetAddress) tSvc.getAddress();
                 if (addr.getHostAddress().equals(event.getInterface())) {
@@ -622,9 +622,9 @@ final class BroadcastEventProcessor implements EventListener {
         // which match the deleted nodeId for deletion.
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            ListIterator liter = m_thresholdableServices.listIterator();
+            ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
             while (liter.hasNext()) {
-                tSvc = (ThresholdableService) liter.next();
+                tSvc = liter.next();
 
                 // Only interested in entries with matching nodeId
                 if (!(tSvc.getNodeId() == nodeId))
@@ -669,9 +669,9 @@ final class BroadcastEventProcessor implements EventListener {
         // which match the deleted nodeId/IP address pair for deletion
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            ListIterator liter = m_thresholdableServices.listIterator();
+            ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
             while (liter.hasNext()) {
-                tSvc = (ThresholdableService) liter.next();
+                tSvc = liter.next();
 
                 // Only interested in entries with matching nodeId and IP
                 // address
@@ -725,9 +725,9 @@ final class BroadcastEventProcessor implements EventListener {
         // for deletion.
         synchronized (m_thresholdableServices) {
             ThresholdableService tSvc = null;
-            ListIterator liter = m_thresholdableServices.listIterator();
+            ListIterator<ThresholdableService> liter = m_thresholdableServices.listIterator();
             while (liter.hasNext()) {
-                tSvc = (ThresholdableService) liter.next();
+                tSvc = liter.next();
 
                 // Only interested in entries with matching nodeId, IP address
                 // and service

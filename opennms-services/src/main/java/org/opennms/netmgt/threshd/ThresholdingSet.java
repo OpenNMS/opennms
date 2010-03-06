@@ -90,13 +90,17 @@ public abstract class ThresholdingSet {
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         m_thresholdGroups = new LinkedList<ThresholdGroup>();
         for (String groupName : groupNameList) {
-            ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
-            if (thresholdGroup == null) {
-                log().error("initialize: Could not get threshold group with name " + groupName);
-            }
-            m_thresholdGroups.add(thresholdGroup);
-            if (log().isDebugEnabled()) {
-                log().debug("initialize: Adding threshold group: " + thresholdGroup);
+            try {
+                ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                if (thresholdGroup == null) {
+                    log().error("initialize: Could not get threshold group with name " + groupName);
+                }
+                m_thresholdGroups.add(thresholdGroup);
+                if (log().isDebugEnabled()) {
+                    log().debug("initialize: Adding threshold group: " + thresholdGroup);
+                }
+            } catch (Exception e) {
+                log().error("initialize: Can't process threshold group " + groupName, e);
             }
         }
         m_hasThresholds = !m_thresholdGroups.isEmpty();
@@ -196,9 +200,13 @@ public abstract class ThresholdingSet {
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
     protected List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
+        List<Event> eventsList = new LinkedList<Event>();
+        if (attributesMap == null || attributesMap.size() == 0) {
+            log().debug("applyThresholds: Ignoring resource " + resourceWrapper + " because required attributes map is empty.");
+            return eventsList;
+        }
         log().debug("applyThresholds: Applying thresholds on " + resourceWrapper + " using " + attributesMap.size() + " attributes.");
         Date date = new Date();
-        List<Event> eventsList = new LinkedList<Event>();
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
             if (entityMap != null) {
@@ -335,16 +343,13 @@ public abstract class ThresholdingSet {
             // Getting thresholding-group for selected service and adding to groupNameList
             for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
                 if (svc.getName().equals(serviceName)) {
-                    String groupName = null;
                     for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
                         if (parameter.getKey().equals("thresholding-group")) {
-                            groupName = parameter.getValue();
-                        }
-                    }
-                    if (groupName != null) {
-                        groupNameList.add(groupName);
-                        if (log().isDebugEnabled()) {
-                            log().debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            String groupName = parameter.getValue();
+                            groupNameList.add(groupName);
+                            if (log().isDebugEnabled()) {
+                                log().debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            }
                         }
                     }
                 }

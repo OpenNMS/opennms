@@ -172,8 +172,10 @@ public class ProvisioningGroupsController extends SimpleFormController {
         Map<String,ForeignSource> foreignSources = new TreeMap<String,ForeignSource>();
 
         for (Requisition mi : m_provisioningService.getAllGroups()) {
-            names.add(mi.getForeignSource());
-            groups.put(mi.getForeignSource(), mi);
+            if(mi != null){
+                names.add(mi.getForeignSource());
+                groups.put(mi.getForeignSource(), mi);
+            }
         }
         for (ForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
             if (!fs.isDefault()) {

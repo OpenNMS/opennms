@@ -5,13 +5,13 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
 
   <properties>
     <bundle.symbolicName>org.opennms.features.sms-reflector.sms-ping</bundle.symbolicName>
     <bundle.namespace>org.opennms.sms.ping</bundle.namespace>
-    <spring.maven.artifact.version>2.5.6</spring.maven.artifact.version>
+    <spring.maven.artifact.version>3.0.0.RELEASE</spring.maven.artifact.version>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
@@ -34,24 +34,24 @@
     -->
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
+      <artifactId>org.osgi.core</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
+      <artifactId>org.osgi.compendium</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.2</version>
+      <version>0.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-service</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -84,15 +84,20 @@
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>
     	<artifactId>org.opennms.core.soa</artifactId>
-    	<version>${pom.version}</version>
+    	<version>${project.version}</version>
     	<scope>provided</scope>
     	<optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

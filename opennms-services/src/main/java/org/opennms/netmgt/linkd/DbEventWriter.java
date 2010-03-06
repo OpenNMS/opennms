@@ -665,7 +665,7 @@ public class DbEventWriter implements QueryManager {
                 if (snmpVlanColl.hasDot1dBase()) {
                     if (log().isDebugEnabled()) log().debug("store: saving Dot1dBaseGroup in stpnode table");
     
-                    Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl.getDot1dBase();
+                    Dot1dBaseGroup dod1db = snmpVlanColl.getDot1dBase();
     
                     DbStpNodeEntry dbStpNodeEntry = null;
     
@@ -694,7 +694,7 @@ public class DbEventWriter implements QueryManager {
                         if (snmpVlanColl.hasDot1dStp()) {
                             if (log().isDebugEnabled()) log().debug("store: adding Dot1dStpGroup in stpnode table");
     
-                            Dot1dStpGroup dod1stp = (Dot1dStpGroup) snmpVlanColl.getDot1dStp();
+                            Dot1dStpGroup dod1stp = snmpVlanColl.getDot1dStp();
                             int protospec = dod1stp.getStpProtocolSpecification();
                             int stppriority = dod1stp.getStpPriority();
                             int stprootcost = dod1stp.getStpRootCost();

@@ -292,7 +292,7 @@ final class MergeableDefinition {
      * 
      * @param range
      * @return the state of having updated any ranges in the definition 
-     *   due to being effected by the new range.
+     *   due to being affected by the new range.
      */
     public boolean mergeOverlappingRanges(final Range range) {
         boolean overlapped = false;

@@ -2,10 +2,11 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-TESTING-SNAPSHOT</version>
+    <version>1.7.10-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-castor</artifactId>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>castor-dependencies</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Castor Dependencies</name>
   <properties>
@@ -46,4 +47,13 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>codehaus</id>
+      <name>Maven/Codehaus Repository</name>
+      <url>http://repository.codehaus.org</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
