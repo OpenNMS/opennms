@@ -49,8 +49,7 @@ public interface PollContext {
     
     public String getServiceName();
     
-    public boolean suppressAdminDownEvent();
-
+    public void setServiceName(String serviceName);
     /**
      * @param event the event to send
      * @return the same event

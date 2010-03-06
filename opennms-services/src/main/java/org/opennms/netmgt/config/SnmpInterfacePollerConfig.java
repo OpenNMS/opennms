@@ -1,24 +1,31 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.util.Enumeration;
+
 import java.util.List;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.snmpinterfacepoller.Package;
 
 public interface SnmpInterfacePollerConfig {
     public int getThreads();
     public String getService();
-    public boolean suppressAdminDownEvent();
     public String[] getCriticalServiceIds();
-    public Enumeration<Package> enumeratePackage();
-    public Iterable<Package> packages();
-    public Package getPackage(String packageName);
-    public Package getPackageForAddress(String ipaddr);
     public List<String> getAllPackageMatches(String ipaddr);
-    public boolean interfaceInPackage(String iface, Package pkg);
+    public String getPackageName(String ipaddr);
+    public Set<String> getInterfaceOnPackage(String pkgName);
+    public boolean getStatus(String pkgName,String pkgInterfaceName);
+    public long getInterval(String pkgName,String pkgInterfaceName);
+    public String getCriteria(String pkgName,String pkgInterfaceName);
+    public boolean hasPort(String pkgName,String pkgInterfaceName);
+    public int getPort(String pkgName,String pkgInterfaceName);
+    public boolean hasTimeout(String pkgName,String pkgInterfaceName);
+    public int getTimeout(String pkgName,String pkgInterfaceName);
+    public boolean hasRetries(String pkgName,String pkgInterfaceName);
+    public int getRetries(String pkgName,String pkgInterfaceName);
+    public boolean hasMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+    public int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
     public void rebuildPackageIpListMap();
     public void update() throws IOException, MarshalException, ValidationException;
 }

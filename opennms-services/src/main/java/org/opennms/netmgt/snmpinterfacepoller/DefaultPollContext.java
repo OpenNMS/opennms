@@ -37,11 +37,13 @@ package org.opennms.netmgt.snmpinterfacepoller;
 import java.util.Date;
 
 import org.apache.log4j.Category;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
@@ -55,11 +57,20 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class DefaultPollContext implements PollContext {
     
-    private volatile SnmpInterfacePollerConfig m_pollerConfig;
-    private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
     private volatile String m_name;
     private volatile String m_localHostName;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+    
+    private String m_serviceName="SNMP";
+
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -85,27 +96,15 @@ public class DefaultPollContext implements PollContext {
         m_name = name;
     }
 
-    public SnmpInterfacePollerConfig getPollerConfig() {
-        return m_pollerConfig;
-    }
-
-    public void setPollerConfig(SnmpInterfacePollerConfig pollerConfig) {
-        m_pollerConfig = pollerConfig;
-    }
-
-    public QueryManager getQueryManager() {
-        return m_queryManager;
-    }
-
-    public void setQueryManager(QueryManager queryManager) {
-        m_queryManager = queryManager;
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
     public String getServiceName() {
-        return getPollerConfig().getService();
+        return m_serviceName;
+    }
+    
+    public void setServiceName(String serviceName) {
+        m_serviceName=serviceName;
     }
 
     /* (non-Javadoc)
@@ -123,10 +122,8 @@ public class DefaultPollContext implements PollContext {
      * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
      */
     public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface) {
-        Category log = ThreadCategory.getInstance(this.getClass());
         
-        if (log.isDebugEnabled())
-            log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
+            log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
@@ -152,19 +149,20 @@ public class DefaultPollContext implements PollContext {
     }
 
     public PollableSnmpInterface refresh(PollableSnmpInterface pollsnmpinterface) {
+        final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
+        onmsCriteria.add(Restrictions.sqlRestriction(pollsnmpinterface.getCriteria() + "and nodeid = " + pollsnmpinterface.getParent().getNodeid()));
+        getSnmpInterfaceDao().findMatching(onmsCriteria);
+
         pollsnmpinterface.setSnmpinterfaces(
-           (getQueryManager().getSnmpInterfaces(
-              pollsnmpinterface.getCriteria() + "and nodeid = " + pollsnmpinterface.getParent().getNodeid())
+           (getSnmpInterfaceDao().findMatching(onmsCriteria)
            )
         );
+        
         return pollsnmpinterface;
     }
-    
+        
     public void update(OnmsSnmpInterface snmpinterface) {
-        getQueryManager().saveSnmpInterface(snmpinterface);
+        getSnmpInterfaceDao().update(snmpinterface);
     }
 
-    public boolean suppressAdminDownEvent() {
-        return getPollerConfig().suppressAdminDownEvent();
-    }
 }
