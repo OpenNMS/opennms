@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006-2009 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2010 Mar 06: Catch undeclared throwable from HttpClient when creating
+//              HttpCollectorException (bug 3605) - jeffg@opennms.org
 // 2009 Jul 23: Actually use URL parameters (bug 3266) - jeffg@opennms.org
 // 2008 Dec 25: Make HttpCollectionSet have many HttpCollectionResources
 //              so that all resources get properly persisted when a collection
@@ -445,7 +447,12 @@ public class HttpCollector implements ServiceCollector {
             final HostConfiguration hostConfiguration = m_client.getHostConfiguration();
             
             if (hostConfiguration != null) {
-                buffer.append(hostConfiguration.getHostURL() == null ? "null" : hostConfiguration.getHostURL());
+                try {
+                    buffer.append(hostConfiguration.getHostURL() == null ? "null" : hostConfiguration.getHostURL());
+                } catch (IllegalStateException ise) {
+                    // Fall back to the old behavior
+                    buffer.append((hostConfiguration == null ? "null" : hostConfiguration.toString()));
+                }
             }
             
             return buffer.toString();
