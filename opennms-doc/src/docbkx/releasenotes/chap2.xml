@@ -265,6 +265,11 @@
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2587">#2587</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>A bug in URL calculation was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3348">#3348</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
