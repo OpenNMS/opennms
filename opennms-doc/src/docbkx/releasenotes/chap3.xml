@@ -15,7 +15,7 @@
 			milestone</ulink>
 		</para>
 	</section>
-	
+
 	<section id="previous-releases">
 		<title>Previous Releases</title>
 		<itemizedlist>
@@ -25,19 +25,19 @@
 
 					<para>A few small issues were found in the release candidates that did not make
 					it into 1.6.0.  They will be a part of the 1.6.1 release.</para>
-		
+
 					<itemizedlist>
 						<listitem><para>KSC reports sort by ID rather than by name (Bug <ulink
 						url="http://bugzilla.opennms.org/show_bug.cgi?id=2817">#2817</ulink>)</para></listitem>
-			
+
 						<listitem><para>Graphs for load averages should show typical units
 						rather than si units (Bug <ulink
 						url="http://bugzilla.opennms.org/show_bug.cgi?id=2824">#2824</ulink>)</para></listitem>
-			
+
 						<listitem><para>A URL added in the discovery admin UI cannot be
 						deleted. (Bug <ulink
 						url="http://bugzilla.opennms.org/show_bug.cgi?id=2829">#2829</ulink>)</para></listitem>
-			
+
 					</itemizedlist>
 				</formalpara>
 				<formalpara>
