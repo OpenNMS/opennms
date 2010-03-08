@@ -4,6 +4,98 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+	<section id="opennms-1.6.10">
+		<title>Changes in OpenNMS 1.6.10</title>
+
+		<section id="opennms-1.6.10-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The PageSequenceMonitor is now capable of capturing values and using them
+						in a later part of the sequence. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3142">#3142</ulink>)</para>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for TIJMP and OProfile profiler have been added to the OpenNMS
+						command-line. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3543">#3543</ulink>)</para>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>The drop-down list of resource types in the threshold editor now shows labels
+						instead of the resource type name. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3547">#3547</ulink>)</para>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>The DNS monitor can now be configured to specify which return codes are
+						considered a failed poll. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3564">#3564</ulink>)</para>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>Resources from the apCntTable on Cisco (former Arrowhead) CSS load balancers
+						now have human-readable indexes. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3577">#3577</ulink>)</para>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>The web UI shows a less confusing/scary error message when exceptions occur. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3601">#3601</ulink>)</para>
+					</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.6.10-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Specific scheduled outages was showing dates as roman numerals for
+						users in certain locales. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3312">#3312</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A performance issue in thresholding caused by excessive database traffic
+						has been resolved. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3446">#3446</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>KSC reports that referenced a deleted node would fail with an exception. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3535">#3535</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An exception when configuring discovery was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3580">#3580</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A regression in HTTP data collection that could occur with certain
+						configurations was resolved. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3605">#3605</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.6.9">
 		<title>Changes in OpenNMS 1.6.9</title>
 
@@ -166,7 +258,7 @@
 		</section>
 
 		<section id="opennms-1.6.8-changes">
-    
+
 			<title>Configuration/Behavior Changes</title>
 
 			<itemizedlist>
@@ -184,7 +276,7 @@
 			</itemizedlist>
 
 		</section>
-	
+
 	</section>
 
 	<section id="opennms-1.6.7">
@@ -214,28 +306,28 @@
 
 	<section id="opennms-1.6.6">
 		<title>Changes in OpenNMS 1.6.6</title>
-		
+
 		<section id="opennms-1.6.6-features">
 			<title>New Features and Enhancements</title>
-			
+
 			<itemizedlist>
-			
+
 				<listitem>
 					<para>The new in-memory thresholder now supports non-IP interfaces. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2711">#2711</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Linkd was updated with support for a number of HP ProCurve switches. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3076">#3076</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The web UI now (configurably) supports asynchronously loading some parts
 					of the front page. (Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3165">#3165</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Data collection and graphing has been added or updated for
 					Trango, Cisco AP1200, Cisco UBR/DOCSIS, Cisco IP SLA, Cisco CSS,
@@ -258,7 +350,7 @@
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3293">#3293</ulink>,
 					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3308">#3308</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>When you add a new interface, the landing page provides a breadcrumb back
 					to the add interface page.  (Bug
@@ -269,25 +361,25 @@
 					<para>OpenNMS now supports tuning (or disabling) the JVM's DNS cache. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3215">#3215</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The trivial time monitor can now persist clock skew data for data
 					collection. (Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3234">#3234</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A new monitor has been added for monitoring Dell OpenManage Chassis. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3243">#3243</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>It is now possible to configure the SSL ciphers accepted by the internal Jetty
 					web server in <filename>opennms.properties</filename>.  As of 1.6.6, by default, a
 					number of older, insecure ciphers are excluded.  (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3307">#3307</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The installer now accepts PostgreSQL 8.4.1+ for use with OpenNMS.  Please note
 					that PostgreSQL 8.4.0
@@ -313,17 +405,17 @@
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1526">#1526</ulink> and
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1776">#1776</ulink>)</para>
 				</listitem>				
-				
+
 				<listitem>
 					<para>In some cases, the ifIndex OpenNMS stores would not get updated on a Capsd
 					rescan. (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1578">#1578</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A layout issue in the asset modification page has been fixed. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1771">#1771</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A potential threading issue in notifications was fixed. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1803">#1803</ulink>)</para>
@@ -333,13 +425,13 @@
 					<para>The page counts in the event display were sometimes incorrect. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1843">#1843</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>OpenNMS now validates that ds-names are not too long for RRDtool (and
 					JRobin) to handle.  (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1846">#1846</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Adding users with non-ASCII names caused an exception. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2977">#2977</ulink>)</para>
@@ -349,98 +441,98 @@
 					<para>Syslogd had a race condition which sometimes garbled incoming logs. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3079">#3079</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>RPM upgrades no longer clobber a number of configuration files. (Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3122">#3122</ulink> and
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3166">#3166</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Linkd had a threading issue which could cause occasional exceptions. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3123">#3123</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A bug in database queries related to the SNMP interface table has been
 					fixed.  (Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3179">#3179</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A bug in thresholding that caused multiple thresholds using the same datasource
 					to not trigger has been fixed.  (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3193">#3193</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The BgpSessionPlugin could throw an exception during a Capsd rescan in some
 					cases. (Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3198">#3198</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The availability reports listed time in 12-hour format, but failed to say
 					AM or PM.  (Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3208">#3208</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The snmpphysaddr in the database was too small for some large MAC addreses. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3216">#3216</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The JMX monitor did not honor the "retries" config attribute. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3232">#3232</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>SNMP data collection and graphing configs have been updated to handle Net-SNMP
 					graphs for varying kernel implementations. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3248">#3248</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Rates are now treated as counters for the purposes of thresholding.  (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3263">#3263</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>URL parameters were ignored for HTTP GET and POST methods in the HttpCollector.
 					(Bug <ulink
 					url="http://bugzilla.opennms.org/show_bug.cgi?id=3266">#3266</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A few NullPointerExceptions were fixed in various places. (Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3271">#3271</ulink>
 					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3345">#3345</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>A date-parsing bug in Tl1d was fixed. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3318">#3318</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>It is now valid to have no http-collection tags in the
 					<filename>http-datacollection-config.xml</filename> filename. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3343">#3343</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>Some versions of RPM automatically generated perl dependencies, even though it
 					should be disabled since they come from contrib/ scripts. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3344">#3344</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>The JDBC code was vetted for possible connection and handle leaks that could
 					occur when a database exception is thrown. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3346">#3346</ulink>)</para>
 				</listitem>
-				
+
 				<listitem>
 					<para>An error in the build system that would cause intermittent failures was resolved.
 					(Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3347">#3347</ulink>)</para>
@@ -515,7 +607,7 @@
 			</itemizedlist>
 
 		</section>
-    
+
 		<section id="opennms-1.6.5-bugfixes">
 			<title>Bug Fixes</title>
 
@@ -567,7 +659,7 @@
 			</itemizedlist>
 
 		</section>
-    
+
 		<para>The full list of changes is available in <ulink
 		url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.6.5">bugzilla</ulink>.</para>
 
@@ -587,13 +679,13 @@
 
 	<section id="opennms-1.6.3">
 		<title>Changes in OpenNMS 1.6.3</title>
-    
+
 		<section id="opennms-1.6.3-features">
 			<title>New Features and Enhancements</title>
 
 			<itemizedlist>
 
-			
+
 				<listitem>
 					<para>A thresholding evaluator has been added that uses the absolute value
 					to compute deltas, and has the ability to rearm after a certain number of
@@ -673,7 +765,7 @@
 			</itemizedlist>
 
 		</section>
-    
+
 		<section id="opennms-1.6.3-bugfixes">
 			<title>Bug Fixes</title>
 
@@ -718,7 +810,7 @@
 			</itemizedlist>
 
 		</section>
-    
+
 		<para>The full list of changes is available in <ulink
 		url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.6.3">bugzilla</ulink>.</para>
 
@@ -726,7 +818,7 @@
 
   <section id="opennms-1.6.2">
     <title>Changes in OpenNMS 1.6.2</title>
-    
+
     <section id="opennms-1.6.2-features">
     	<title>New Features</title>
 
@@ -761,12 +853,12 @@
       </itemizedlist>
 
     </section>
-    
+
     <section id="opennms-1.6.2-bugfixes">
     	<title>Bug Fixes</title>
-    	
+
     	<itemizedlist>
-    	
+
           <listitem>
             <para>Jabber notifications would stop sending if the connection to the XMPP
             server failed; it now reconnects automatically.  (Bug <ulink
@@ -799,15 +891,15 @@
 
         </itemizedlist>
     </section>
-    
+
 	<para>The full list of changes is available in <ulink
     url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.6.2&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
-    
+
   </section>    
 
   <section id="opennms-1.6.1">
     <title>Changes in OpenNMS 1.6.1</title>
-    
+
     <section id="opennms-1.6.1-features">
     	<title>New Features</title>
 
@@ -836,12 +928,12 @@
       </itemizedlist>
 
     </section>
-    
+
     <section id="opennms-1.6.1-bugfixes">
     	<title>Bug Fixes</title>
-    	
+
     	<itemizedlist>
-    	
+
           <listitem>
             <para>An error when attempting to delete URLs in the discovery admin page
             was fixed.  (Bug <ulink
@@ -858,13 +950,13 @@
             was fixed.  (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2866">#2866</ulink>)</para>
           </listitem>
-          
+
           <listitem>
             <para>A few issues with ticket and alarm triggers were fixed.  (Bugs <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2868">#2868</ulink> and <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2869">#2869</ulink>)</para>
           </listitem>
-          
+
           <listitem>
             <para>A bug that would cause the OTRS ticketer plugin to ignore otrs.properties was
             fixed (Bug <ulink
@@ -876,18 +968,18 @@
             cause thresholding not to happen and throw an exception.  (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2873">#2873</ulink>)</para>
           </listitem>
-          
+
           <listitem>
             <para>The HTTP data collector now behaves properly when storeByGroup=true (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2875">#2875</ulink>)</para>
           </listitem>
-          
+
           <listitem>
             <para>The SSH monitor would cause a thread lock if a socket allowed connection
             but never returned any data.  (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2896">#2896</ulink>)</para>
           </listitem>
-          
+
           <listitem>
             <para>The mail transport monitor would not retry during the read test.  (Bug <ulink
             url="http://bugzilla.opennms.org/show_bug.cgi?id=2897">#2897</ulink>)</para>
@@ -895,9 +987,9 @@
 
         </itemizedlist>
     </section>
-    
+
     <section id="opennms-1.6.1-changes">
-    
+
       <title>Configuration/Behavior Changes</title>
 
       <para>A number of changes were done to configs to clean up usage and get rid of old
@@ -912,12 +1004,12 @@
         optional attribute, <code>notify</code>, which can be set to <code>false</code>
         to unilaterally suppress any notifications on that event. (Bug <ulink
         url="http://bugzilla.opennms.org/show_bug.cgi?id=2891">#2891</ulink>)</para></listitem>
-        
+
         <listitem><para><filename>http-datacollection-config.xml</filename>: The <code>name</code> attribute
         on URI tags in the HTTP data collection configuration file is now required.  It was common
         practice to do so anyways, but you will need to check your configs to make sure it is defined.
         (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2876">#2876</ulink>)</para></listitem>
-        
+
         <listitem>
           <para><filename>http-datacollection-config.xml</filename>: The <code>url</code> tag can now take
           a number of options relating to how regular expressions should be parsed.  (Bug
@@ -978,7 +1070,7 @@
 			   <glossdef><para>Enables Unix lines mode.  In this mode, only the '\n' line terminator
 			   is recognized in the behavior of ., ^, and $.</para></glossdef>
 			 </glossentry>
-               
+
           </glosslist>
         </listitem>
 
@@ -989,16 +1081,16 @@
         &lt;notifd-configuration&gt; tag at the top of the file, set to "<code>true</code>".</para></listitem>
 
       </itemizedlist>
-        
+
     </section>
-    
+
     <para>The full list of changes is available in <ulink
     url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.6.1&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
   </section>
 
   <section id="opennms-1.6.0">
     <title>Changes in OpenNMS 1.6.0</title>
-    
+
     <para>
     	OpenNMS 1.5.99 passed release candidate testing and was re-tagged as 1.6.0.
     </para>
@@ -1006,7 +1098,7 @@
 
   <section id="opennms-1.5.99">
     <title>Changes in OpenNMS 1.5.99</title>
-    
+
     <section id="opennms-1.5.99-bugfixes">
       <title>Bug Fixes</title>
 
@@ -1021,10 +1113,10 @@
       </itemizedlist>
     </section>
   </section>
-    
+
   <section id="opennms-1.5.98">
     <title>Changes in OpenNMS 1.5.98</title>
-    
+
     <section id="opennms-1.5.98-bugfixes">
       <title>Bug Fixes</title>
 
@@ -1045,7 +1137,7 @@
       </itemizedlist>
     </section>
   </section>
-    
+
   <section id="opennms-1.5.97">
     <title>Changes in OpenNMS 1.5.97</title>
 
@@ -1070,22 +1162,22 @@
           in-line collectd-based thresholder. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2611">#2611</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>The comment field in assets no longer has a size limit. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2763">#2763</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>The default logging level is now WARN instead of DEBUG.  (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2796">#2796</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>PostgreSQL 8.3 is now officially supported in the installer.  (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2808">#2808</ulink>)</para>
         </listitem>
-        
+
       </itemizedlist>
     </section>
 
@@ -1108,7 +1200,7 @@
 		  <para>The HTTP collector now handles string attributes correctly.  (Bug <ulink
 		  url="http://bugzilla.opennms.org/show_bug.cgi?id=2806">#2806</ulink>)</para>
 		</listitem>
-		
+
 		<listitem>
           <para>
             A few other bugs have been fixed since 1.5.96, in the process
@@ -1116,13 +1208,13 @@
             found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.97+%281.6+beta+8%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.
           </para>
         </listitem>
-      
+
       </itemizedlist>
-      
+
     </section>
-    
+
   </section>
-      
+
   <section id="opennms-1.5.96">
     <title>Changes in OpenNMS 1.5.96</title>
 
@@ -1140,7 +1232,7 @@
       </itemizedlist>
     </section>
   </section>
-      
+
   <section id="opennms-1.5.95">
     <title>Changes in OpenNMS 1.5.95</title>
 
@@ -1156,7 +1248,7 @@
 
       </itemizedlist>
     </section>
-    
+
     <section id="opennms-1.5.95-bugfixes">
       <title>Bug Fixes</title>
 
@@ -1164,7 +1256,7 @@
       as available was fixed.  (Bug
       <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2769">#2769</ulink>)
       </para>
-      
+
       <para>A few other bugs have been fixed since 1.5.94, in the process
       of preparing for 1.6.0.  A full list of bugs fixed in the release can be
       found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.95+%281.6+beta+6%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
@@ -1175,7 +1267,7 @@
 
     </section>
 
-    
+
   </section>
 
   <section id="opennms-1.5.94">
@@ -1192,18 +1284,18 @@
           tool with the "-Q" option. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2613">#2613</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>OpenNMS now automatically writes a thread dump to output.log on
           shutdown, for easier debugging. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2181">#2181</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>SNMP parameters can now be set in the Collectd configuration. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2195">#2195</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>Relative thresholds can now use negative numbers.  Additionally, you can
           now threshold on absolute changes as well (loss in dB on fiber links, etc.) (Bugs
@@ -1212,19 +1304,19 @@
           <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2604">#2604</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>XmlRpcNotifier now allows a timeout parameter. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2342">#2342</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>The java web start remote poller can now be run in a headless mode.
           See <ulink url="http://www.opennms.org/index.php/Remote_Poller">this page</ulink>
           for configuration details. (Bug <ulink
           url="http://bugzilla.opennms.org/show_bug.cgi?id=2354">#2354</ulink>)</para>
         </listitem>
-        
+
         <listitem>
           <para>Asset comments now retain formatting.  In addition, the exporter creates
           real CSV files, so you can have asset data with commas in them. ;) (Bug <ulink
@@ -1237,13 +1329,13 @@
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2618">bug #2618</ulink>
 	      for details.</para>
 	    </listitem>
-	    
+
 	    <listitem>
 	      <para>A new ticketing plugin for <ulink
 	      url="http://otrs.org/">OTRS</ulink> has been added.  (Bug <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2658">#2658</ulink>)</para>
 	    </listitem>
-	    
+
 	    <listitem>
 	      <para>Initial support was added for interfacing with devices that speak
          Transactional Language 1, or TL-1.  (Bug <ulink
@@ -1279,7 +1371,7 @@
 	      and <ulink
 	      url="http://bugzilla.opennms.org/show_bug.cgi?id=2722">#2722</ulink>)</para>
 	    </listitem>
-	    
+
 	    <listitem>
 	      <para>Support for new Brocade, Citrix, Dell, Fortinet, HP-UX, Kyocera,
 	      Liebert, Novell, and SNMP Informant data collections (Bugs <ulink
@@ -1314,7 +1406,7 @@
       be properly resolved was fixed.  (Bug
       <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2702">#2702</ulink>)
       </para>
-      
+
       <para>A large number of other bugs have been fixed since 1.5.93, in the process
       of preparing for 1.6.0.  A full list of bugs fixed in the release can be
       found in <ulink url="http://bugzilla.opennms.org/buglist.cgi?query_format=advanced&amp;target_milestone=1.5.94+%281.6+beta+5%29&amp;bug_status=VERIFIED&amp;cmdtype=doit">bugzilla</ulink>.</para>
@@ -1328,7 +1420,7 @@
     </section>
 
     <section id="opennms-1.5.94-changes">
-    
+
       <title>Changes</title>
 
       <para>In the plugins for capsd and the monitors for the service poller,
@@ -1397,7 +1489,7 @@
       not being stored.</para>
 
     </section>
-    
+
   </section>
 
   <section id="opennms-1.5.93">

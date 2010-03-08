@@ -72,7 +72,7 @@
 		<listitem>
 			<formalpara>
 				<title>Windows Server and Desktop (Windows 2000+)</title>
-				
+
 				<para>
 					Note that while it is technically possible to install on FAT32, NTFS
 					is the only officially supported filesystem for Windows installs.
