@@ -110,6 +110,11 @@
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3447">#3447</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>A number of performance and usability fixes were made to the scheduled outages editor. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3549">#3549</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
