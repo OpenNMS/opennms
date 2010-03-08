@@ -271,8 +271,13 @@
 				</listitem>
 
 				<listitem>
-					<para>A bug in the GpPoller's timeout management was fixed (Bug
+					<para>A bug in the GpPoller's timeout management was fixed. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3401">#3401</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An error in the DHCP monitor was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3445">#3445</ulink>)</para>
 				</listitem>
 
 			</itemizedlist>
