@@ -84,6 +84,12 @@
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3605">#3605</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>In some cases, event handling code would use an invalid hostname when
+						parsing addresses. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2587">#2587</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
