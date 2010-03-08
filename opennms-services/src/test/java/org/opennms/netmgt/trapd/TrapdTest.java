@@ -118,7 +118,7 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
 
         pdu.send(localhost, m_port, "public");
         
-        getMockEventIpcManager().getEventAnticipator().verifyAnticipated(100, 0, 0, 0, 0);
+        getMockEventIpcManager().getEventAnticipator().verifyAnticipated(1000, 0, 0, 0, 0);
     }
 
     public MockEventIpcManager getMockEventIpcManager() {
