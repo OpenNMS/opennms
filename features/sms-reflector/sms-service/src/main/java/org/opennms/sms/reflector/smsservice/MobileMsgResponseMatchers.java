@@ -118,7 +118,8 @@ public class MobileMsgResponseMatchers {
 			
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("textMatches(%s, %s, %s)", regex, request, response);
-				return response.getText().matches(regex);
+				String text = response.getText() == null ? "" : response.getText();
+				return text.matches(regex);
 			}
 			
 			public String toString() {

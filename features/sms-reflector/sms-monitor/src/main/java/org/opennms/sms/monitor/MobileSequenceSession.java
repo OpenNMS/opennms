@@ -111,7 +111,7 @@ public class MobileSequenceSession {
 	}
 
 	public boolean matches(String expected, String actual) {
-		return actual.matches(substitute(expected));
+		return actual == null ? expected == null : actual.matches(substitute(expected));
 	}
 
 	public boolean ussdStatusMatches(String expected, USSDSessionStatus actual) {
