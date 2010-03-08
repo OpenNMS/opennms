@@ -16,41 +16,35 @@
 					<para>The PageSequenceMonitor is now capable of capturing values and using them
 						in a later part of the sequence. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3142">#3142</ulink>)</para>
-					</para>
 				</listitem>
 
 				<listitem>
 					<para>Support for TIJMP and OProfile profiler have been added to the OpenNMS
 						command-line. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3543">#3543</ulink>)</para>
-					</para>
 				</listitem>
 
 				<listitem>
 					<para>The drop-down list of resource types in the threshold editor now shows labels
 						instead of the resource type name. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3547">#3547</ulink>)</para>
-					</para>
 				</listitem>
 
 				<listitem>
 					<para>The DNS monitor can now be configured to specify which return codes are
 						considered a failed poll. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3564">#3564</ulink>)</para>
-					</para>
 				</listitem>
 
 				<listitem>
 					<para>Resources from the apCntTable on Cisco (former Arrowhead) CSS load balancers
 						now have human-readable indexes. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3577">#3577</ulink>)</para>
-					</para>
 				</listitem>
 
 				<listitem>
 					<para>The web UI shows a less confusing/scary error message when exceptions occur. (Bug
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3601">#3601</ulink>)</para>
-					</para>
 				</listitem>
 
 			</itemizedlist>
