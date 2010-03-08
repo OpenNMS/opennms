@@ -183,13 +183,25 @@
 		</para>
 	</section>
 
+	<section id="introduction-1.6.10">
+		<title>Release 1.6.10</title>
+
+		<para>
+			Release 1.6.10 is a minor feature release in the 1.6 series.
+		</para>
+
+		<para>
+			The codename for 1.6.10 is <emphasis>Cowboy</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.6.9">
 		<title>Release 1.6.9</title>
-		
+
 		<para>
 			Release 1.6.9 is a minor feature release in the 1.6 series.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.9 is <emphasis>Bauer</emphasis>.
 		</para>
@@ -197,11 +209,11 @@
 
 	<section id="introduction-1.6.8">
 		<title>Release 1.6.8</title>
-		
+
 		<para>
 			Release 1.6.8 is a minor feature release in the 1.6 series.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.8 is <emphasis>Easy Button</emphasis>.
 		</para>
@@ -209,11 +221,11 @@
 
 	<section id="introduction-1.6.7">
 		<title>Release 1.6.7</title>
-		
+
 		<para>
 			Release 1.6.7 is a minor feature release in the 1.6 series.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.7 is <emphasis>Bonnie</emphasis>.
 		</para>
@@ -221,11 +233,11 @@
 
 	<section id="introduction-1.6.6">
 		<title>Release 1.6.6</title>
-		
+
 		<para>
 			Release 1.6.6 is a bugfix release in the 1.6 series.  It is a recommended upgrade for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.6 is <emphasis>Helmethead</emphasis>.
 		</para>
@@ -233,11 +245,11 @@
 
 	<section id="introduction-1.6.5">
 		<title>Release 1.6.5</title>
-		
+
 		<para>
 			Release 1.6.5 is a small bugfix release in the 1.6 series.  It is a recommended upgrade for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.5 is <emphasis>Eastern Conference Finals</emphasis>.
 		</para>
@@ -245,13 +257,13 @@
 
 	<section id="introduction-1.6.4">
 		<title>Release 1.6.4</title>
-		
+
 		<para>
 			Release 1.6.4 continues the 1.6 series with a fix for a showstopper exception
 			in OpenNMS 1.6.3.  It is a <emphasis>strongly</emphasis> recommended upgrade
 			for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.4 is <emphasis>mea</emphasis>.
 		</para>
@@ -264,12 +276,12 @@
 			Release 1.6.3 continues the 1.6 series with a small set of bug fixes and minor
 			feature enhancements.  It is a recommended upgrade for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.3 is <emphasis><ulink url="http://blogs.opennms.org/?p=733">waterfall</ulink></emphasis>.
 		</para>
 	</section>
-    
+
 	<section id="introduction-1.6.2">
 		<title>Release 1.6.2</title>
 
@@ -277,12 +289,12 @@
 			Release 1.6.2 continues the 1.6 series with a small set of bug fixes and minor
 			feature enhancements.  It is a recommended upgrade for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.2 is <emphasis>software mercenaries</emphasis>.
 		</para>
 	</section>
-    
+
 	<section id="introduction-1.6.1">
 		<title>Release 1.6.1</title>
 
@@ -290,12 +302,12 @@
 			Release 1.6.1 continues the 1.6 series with a small set of bug fixes and minor
 			feature enhancements.  It is a recommended upgrade for all users.
 		</para>
-		
+
 		<para>
 			The codename for 1.6.1 is <emphasis>bamboo army</emphasis>.
 		</para>
 	</section>
-    
+
 	<section id="introduction-1.6.0">
 		<title>Release 1.6.0</title>
 
