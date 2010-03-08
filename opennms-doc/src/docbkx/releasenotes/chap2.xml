@@ -179,6 +179,81 @@
 
 	</section>
 
+	<section id="opennms-1.7.10">
+		<title>Changes in OpenNMS 1.7.10</title>
+
+		<section id="opennms-1.7.10-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Support for collecting MXBeans (composite attributes) was added to the
+						JMX collector. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1444">#1444</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for thresholding without storing RRD/JRB data was added. (Bugs
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2733">#2733</ulink> and
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3575">#3575</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The remote monitor can now talk to the OpenNMS management system through HTTP
+						or RMI.  For details, see the
+						<ulink url="http://www.opennms.org/wiki/Configurable_Remoting_Specification">Configurable Remoting</ulink> specification.</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to push performance (RRD) data to an external daemon.
+						For details, see the
+						<ulink url="http://www.opennms.org/wiki/Performance_Data_Exporter_Specification">Performance Data Exporter</ulink> specification.</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for Jasper reports has been added, as well as a rework of the reporting
+						daemon.  For details, see the
+						<ulink url="http://www.opennms.org/wiki/Jasper_Report_Integration_Specification">Jasper Report Integration</ulink> specification.</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.10-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>A bug in form handling with Internet Explorer on a number of pages was
+						fixed. (Bugs
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2814">#2814</ulink> and
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2945">#2945</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An exception in the SshMonitor was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3501">#3501</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An upgrade issue in the Debian packages was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3503">#3503</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in quartz scheduling was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3616">#3616</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.6.10">
 		<title>Changes in OpenNMS 1.6.10</title>
 
