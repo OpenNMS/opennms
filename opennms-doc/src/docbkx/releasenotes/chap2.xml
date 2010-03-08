@@ -280,6 +280,11 @@
 						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3445">#3445</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>An issue with walk="true" and match-all="count" in the SnmpPoller was fixed. (Bug
+						<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3447">#3447</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
