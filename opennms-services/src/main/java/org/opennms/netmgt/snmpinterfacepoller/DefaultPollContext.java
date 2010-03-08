@@ -35,6 +35,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
@@ -151,13 +152,18 @@ public class DefaultPollContext implements PollContext {
     public PollableSnmpInterface refresh(PollableSnmpInterface pollsnmpinterface) {
         final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
         onmsCriteria.add(Restrictions.sqlRestriction(pollsnmpinterface.getCriteria() + "and nodeid = " + pollsnmpinterface.getParent().getNodeid()));
-        getSnmpInterfaceDao().findMatching(onmsCriteria);
+//        List<OnmsSnmpInterface> snmpifaces = getSnmpInterfaceDao().findMatching(onmsCriteria);
 
-        pollsnmpinterface.setSnmpinterfaces(
-           (getSnmpInterfaceDao().findMatching(onmsCriteria)
-           )
-        );
+//        for (OnmsSnmpInterface snmpiface: snmpifaces) {
+//            snmpiface.setPoll("P");
+//            update(snmpiface);
+//        }
+
+//      pollsnmpinterface.setSnmpinterfaces(
+//           (snmpifaces)
+//        );
         
+        pollsnmpinterface.setSnmpinterfaces(getSnmpInterfaceDao().findMatching(onmsCriteria));
         return pollsnmpinterface;
     }
         

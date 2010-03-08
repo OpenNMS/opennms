@@ -192,6 +192,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
         boolean refresh = false;
         
+//        Date now = new Date();
+        
         if (mifaces != null) {
             log().info("doPoll: PollerMonitor return interfaces number: " + mifaces.size());
             for (SnmpMinimalPollInterface miface : mifaces) {
@@ -234,11 +236,14 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP 
                             && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_DOWN
                             && miface.getOperstatus() == SnmpMinimalPollInterface.IF_UP) {
+                            sendAdminUpEvent(iface);
                             sendOperUpEvent(iface);
                     }
 
                     iface.setIfAdminStatus(new Integer(miface.getAdminstatus()));
                     iface.setIfOperStatus(new Integer(miface.getOperstatus()));
+                    //iface.setPoll("P");
+                    //iface.setLastSnmpPoll(now);
                                     
                     
                     // Save Data to Database
