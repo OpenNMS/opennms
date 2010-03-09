@@ -4,9 +4,26 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.10">
+		<title>Release 1.7.10</title>
+
+		<para>
+			Release 1.7.10 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.8.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			Since 1.7.9, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.7.10">more bugfixing</ulink>
+			has been going on in preparation for the 1.8 release, as well as the addition of a few new features.
+		</para>
+		<para>
+			The codename for 1.7.10 is <emphasis>Bebop</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.9">
 		<title>Release 1.7.9</title>
-		
+
 		<para>
 			Release 1.7.9 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -23,7 +40,7 @@
 
 	<section id="introduction-1.7.8">
 		<title>Release 1.7.8</title>
-		
+
 		<para>
 			Release 1.7.8 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -40,7 +57,7 @@
 
 	<section id="introduction-1.7.7">
 		<title>Release 1.7.7</title>
-		
+
 		<para>
 			Release 1.7.7 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -57,7 +74,7 @@
 
 	<section id="introduction-1.7.6">
 		<title>Release 1.7.6</title>
-		
+
 		<para>
 			Release 1.7.6 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -66,7 +83,7 @@
 		<para>
 			Since 1.7.5, more bugfixing has been going on, in preparation for the 1.8 release.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.6 is <emphasis>Orange Chicken</emphasis>
 		</para>
@@ -74,7 +91,7 @@
 
 	<section id="introduction-1.7.5">
 		<title>Release 1.7.5</title>
-		
+
 		<para>
 			Release 1.7.5 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -83,7 +100,7 @@
 		<para>
 			Since 1.7.4, more bugfixing has been going on, in preparation for the 1.8 release.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.5 is <emphasis>ShamWow!</emphasis>
 		</para>
@@ -91,7 +108,7 @@
 
 	<section id="introduction-1.7.4">
 		<title>Release 1.7.4</title>
-		
+
 		<para>
 			Release 1.7.4 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -102,7 +119,7 @@
 			reports, thresholding fixes, enabling maps by default, and an entirely new way of
 			creating the OpenNMS database under the covers.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.4 is <emphasis>eels</emphasis>
 		</para>
@@ -110,7 +127,7 @@
 
 	<section id="introduction-1.7.3">
 		<title>Release 1.7.3</title>
-		
+
 		<para>
 			Release 1.7.3 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -121,7 +138,7 @@
 			newSuspect events like Capsd does.  It also contains initial support for ACLs in the
 			web UI.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.3 is <emphasis>auto-tune</emphasis>
 		</para>
@@ -129,7 +146,7 @@
 
 	<section id="introduction-1.7.2">
 		<title>Release 1.7.2</title>
-		
+
 		<para>
 			Release 1.7.2 is the latest in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -139,7 +156,7 @@
 			It contains a fully functional Provisiond, the only major missing feature is handling
 			newSuspect events like Capsd does.
 		</para>
-		
+
 		<para>
 			1.7.2 is nearly identical to 1.7.1, and was released because of a <ulink
 			url="http://bugzilla.opennms.org/show_bug.cgi?id=3094">NullPointerException in the
@@ -153,7 +170,7 @@
 
 	<section id="introduction-1.7.1">
 		<title>Release 1.7.1</title>
-		
+
 		<para>
 			Release 1.7.1 is the second in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
@@ -163,7 +180,7 @@
 			It contains a fully functional Provisiond, the only major missing feature is handling
 			newSuspect events like Capsd does.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.1 is <emphasis>Oops We Did It Again</emphasis>
 		</para>
@@ -171,13 +188,13 @@
 
 	<section id="introduction-1.7.0">
 		<title>Release 1.7.0</title>
-		
+
 		<para>
 			Release 1.7.0 is the first in a series of development releases of OpenNMS.  This
 			represents what will eventually become OpenNMS 1.8.0 when it is declared
 			feature-complete and stable.
 		</para>
-		
+
 		<para>
 			The codename for 1.7.0 is <emphasis>GIRAFFES!</emphasis>
 		</para>

@@ -44,9 +44,9 @@
     <property name="reloadCheckInterval" value="-1" />
   </bean>
   
-  <bean id="quartzSchedulerFactory" class="org.quartz.impl.StdSchedulerFactory" />
-
-  <bean id="reportdQuartzScheduler" factory-bean="quartzSchedulerFactory" factory-method="getScheduler" class="org.quartz.Scheduler"/>
+  <bean id="reportdQuartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="schedulerName" value="reportd" />
+  </bean>  
   
   <bean id="reportJobFactory" class="org.opennms.netmgt.reporting.service.ReportJobFactory">
       <property name="reportd" ref="daemon" />

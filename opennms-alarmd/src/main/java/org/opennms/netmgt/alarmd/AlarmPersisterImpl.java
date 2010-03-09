@@ -99,7 +99,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
+        // Update any dynamic fields that the user will want to see the latest 
+        // values for to values from the latest event 
         alarm.setLogMsg(e.getEventLogMsg());
+        alarm.setEventParms(e.getEventParms());
         alarm.setCounter(alarm.getCounter() + 1);
         e.setAlarm(alarm);
     }

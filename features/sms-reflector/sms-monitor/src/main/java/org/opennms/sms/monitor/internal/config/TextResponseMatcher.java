@@ -21,7 +21,8 @@ public class TextResponseMatcher extends SequenceResponseMatcher {
 	@Override
     public boolean matches(MobileSequenceSession session, MobileMsgRequest request, MobileMsgResponse response) {
         LogUtils.tracef(this, "textMatches(%s, %s, %s)", session.substitute(getText()), request, response);
-        return session.matches(getText(), response.getText());
+        String responseText = response.getText() == null ? "" : response.getText();
+        return session.matches(getText(), responseText);
     }
 
     @Override
