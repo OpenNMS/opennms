@@ -170,7 +170,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
     
     public Integer getServiceID(String serviceName) {
-        if (serviceName == null) return new Integer(-1);
+        if (serviceName == null) return null;
         SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?");
         querier.execute(serviceName);
         return (Integer)querier.getResult();
