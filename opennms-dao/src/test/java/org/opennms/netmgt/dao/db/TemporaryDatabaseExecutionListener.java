@@ -91,9 +91,9 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
     public void prepareTestInstance(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
-        String dbName = getDatabaseName(testContext);
-        TemporaryDatabase dataSource = new TemporaryDatabase(dbName);
         JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+        String dbName = getDatabaseName(testContext);
+        TemporaryDatabase dataSource = (jtd == null ? new TemporaryDatabase(dbName) : (jtd.tempDbClass()).getConstructor(String.class).newInstance(dbName));
         dataSource.setPopulateSchema(jtd == null? true : jtd.populate());
         dataSource.create();
         
