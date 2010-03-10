@@ -26,7 +26,7 @@
     </bean>
     
         
-    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller">
+    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller" destroy-method="stop">
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
       <property name="network" ref="pollableNetwork" />
       <property name="dataSource" ref="dataSource" />
