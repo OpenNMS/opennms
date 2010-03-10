@@ -782,7 +782,7 @@ public class AutomationProcessor implements ReadyRunnable {
         int triggerRowCount = m_trigger.getTrigger().getRowCount();
         String triggerOperator = m_trigger.getTrigger().getOperator();
 
-        log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
+        log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+(triggerOperator == null ? "<null>" : triggerOperator)+" than "+triggerRowCount);
 
         if (!m_trigger.triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
             validRows = false;

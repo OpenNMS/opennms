@@ -74,6 +74,12 @@ public class Interface {
     String m_snmpIfAlias;
 
     String m_isSnmpPrimary;
+    
+    char m_isSnmpPoll;
+    
+    String m_snmpLastSnmpPoll;
+
+    String m_snmpLastCapsdPoll;
 
     public int getId() {
         return m_id;
@@ -143,12 +149,28 @@ public class Interface {
         return m_snmpIfAdminStatus;
     }
 
+    public char isSnmpPollChar() {
+        return m_isSnmpPoll;
+    }
+    
+    public String getSnmpLastSnmpPoll() {
+        return m_snmpLastSnmpPoll;
+    }
+
+    public String getSnmpLastCapsdPoll() {
+        return m_snmpLastCapsdPoll;
+    }
+
     public String toString() {
         return m_ipHostName;
     }
 
     public boolean isManaged() {
         return (m_isManaged == 'M');
+    }
+
+    public boolean isSnmpPoll() {
+        return (m_isSnmpPoll == 'P');
     }
 
     public String getSnmpIfAlias() {

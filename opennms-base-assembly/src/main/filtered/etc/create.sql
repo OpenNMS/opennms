@@ -367,6 +367,9 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --#                     : 'UC' means collect 'UN' means don't collect (user override)
 --#                       This has been moved from the isSnmpPrimary field in the
 --#                         ipinterface table
+--#  snmpLastCapsdPoll  : Date and time of last poll by capsd or provisiond
+--#  snmpPoll           : 'P' means polled 'N' means not polled (interface admin and oper status)
+--#  snmpLastSnmpPoll   : Date and time of last snmp poll 
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
@@ -391,6 +394,8 @@ create table snmpInterface (
 	snmpIfAlias		varchar(256),
     snmpLastCapsdPoll timestamp with time zone,
     snmpCollect     varchar(2) default 'N',
+    snmpPoll     varchar(1) default 'N',
+    snmpLastSnmpPoll timestamp with time zone,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -431,7 +436,7 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --#                    operational status (same as 'snmpIfOperStatus'
 --#                    field in the snmpInterface table).
 --#                      1 = Up, 2 = Down, 3 = Testing
---#  ipLastCapsdPoll : Date and time of last poll by capsd
+--#  ipLastCapsdPoll : Date and time of last poll by capsd or provisiond
 --#  isSnmpPrimary   : Character used as a boolean flag
 --#                      'P' - Primary SNMP
 --#                      'S' - Secondary SNMP
