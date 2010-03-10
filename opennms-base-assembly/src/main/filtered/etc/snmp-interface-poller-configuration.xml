@@ -7,7 +7,7 @@
   </node-outage>
   <package name="example1">
     <filter>IPADDR != '0.0.0.0'</filter>
-    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="1.1.1.1" end="1.1.1.1" />
     <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on"/>
   </package>
 
@@ -15,8 +15,7 @@
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
     <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on"
-    port="161" timeout="1000" retry="1" max-vars-per-pdu="10 max-interface-per-pdu="5"
-    />
+    port="161" timeout="1000" retry="1" max-vars-per-pdu="10" />
   </package-->
 
 </snmp-interface-poller-configuration>

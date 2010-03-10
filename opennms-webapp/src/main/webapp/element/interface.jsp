@@ -49,6 +49,8 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
 				java.util.*,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
@@ -122,6 +124,10 @@
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
+    
+    SnmpInterfacePollerConfigFactory.init();
+    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
+    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -292,6 +298,20 @@ function doDelete() {
                 <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
+			  <tr>
+	            <th>Snmp Polling Status</th>
+	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
+	          </tr>  
+       <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+              <tr>
+                <th>Snmp Polling Package</th>
+                <td><%= snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+              </tr>
+	   <% } %>
+              <tr> 
+                <th>Last Snmp Poll</th>
+    	        <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
+        	  </tr>
               
             </table>
             
@@ -347,8 +367,8 @@ function doDelete() {
 		                  &nbsp;
 		                <% } %>
 		              </td>
-		            </tr>
-                  </table>
+		            </tr>		            
+		            </table>
             <% } %>
 
 

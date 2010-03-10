@@ -64,6 +64,12 @@ public class ElementUtil extends Object {
     private static Map<Character, String> m_interfaceStatusMap;
 
     /**
+     * Do not use directly. Call {@link #getSnmpInterfaceStatusMap 
+     * getInterfaceStatusMap} instead.
+     */
+    private static Map<Character, String> m_interfaceSnmpStatusMap;
+
+    /**
      * Do not use directly. Call {@link #getServiceStatusMap 
      * getServiceStatusMap} instead.
      */
@@ -122,6 +128,23 @@ public class ElementUtil extends Object {
         m_interfaceStatusMap = map;
     }
 
+    /** Returns the interface status map, initializing a new one if necessary. */
+    protected static Map<Character, String> getSnmpInterfaceStatusMap() {
+        if (m_interfaceSnmpStatusMap == null) {
+            initSnmpInterfaceStatusMap();
+        }
+
+        return m_interfaceSnmpStatusMap;
+    }
+
+    private synchronized static void initSnmpInterfaceStatusMap() {
+        Map<Character, String> map = new HashMap<Character, String>();
+        map.put(new Character('P'), "Polled");
+        map.put(new Character('N'), "Not Monitored");
+        
+        m_interfaceSnmpStatusMap = map;
+    }
+
     /** Return the human-readable name for a interface's status, may be null. */
     public static String getInterfaceStatusString(Interface intf) {
         Assert.notNull(intf, "intf argument cannot be null");
@@ -135,6 +158,22 @@ public class ElementUtil extends Object {
      */
     public static String getInterfaceStatusString(char c) {
         Map<Character, String> statusMap = getInterfaceStatusMap();
+        return statusMap.get(new Character(c));
+    }
+
+    /** Return the human-readable name for a snmp interface's status, may be null. */
+    public static String getSnmpInterfaceStatusString(Interface intf) {
+        Assert.notNull(intf, "intf argument cannot be null");
+
+        return getSnmpInterfaceStatusString(intf.isSnmpPollChar());
+    }
+
+    /**
+     * Return the human-readable name for a interface status character, may be
+     * null.
+     */
+    public static String getSnmpInterfaceStatusString(char c) {
+        Map<Character, String> statusMap = getSnmpInterfaceStatusMap();
         return statusMap.get(new Character(c));
     }
 

@@ -33,29 +33,35 @@
  */
 package org.opennms.netmgt.snmpinterfacepoller;
 
-import java.io.IOException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
-import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
-import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterfaceConfig;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+
+/**
+ * SnmpPoller daemon class
+ * 
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ */
 
 @EventListener(name="snmpPoller")
 public class SnmpPoller extends AbstractServiceDaemon {
@@ -114,18 +120,23 @@ public class SnmpPoller extends AbstractServiceDaemon {
         // start the scheduler
         //
         try {
-            log().debug("start: Starting Snmp Interface Poller scheduler");
+            log().debug("onStart: Starting Snmp Interface Poller scheduler");
 
             getScheduler().start();
         } catch (RuntimeException e) {
-            log().fatal("start: Failed to start scheduler", e);
+            log().fatal("onStart: Failed to start scheduler", e);
             throw e;
         }
 
     }
 
     protected void onStop() {
+        log().debug("onStop: updating snmp interfaces poll status to 'N'");
+
+        updatesnmpInterface();
+        
         if(getScheduler()!=null) {
+            log().debug("onStop: stopping scheduler");
             getScheduler().stop();
         }
 
@@ -156,19 +167,25 @@ public class SnmpPoller extends AbstractServiceDaemon {
         // Schedule the interfaces currently in the database
         //
         try {
-            log().debug("start: Scheduling existing snmp interfaces polling");
+            log().debug("onInit: Scheduling existing snmp interfaces polling");
             scheduleExistingSnmpInterface();
         } catch (Exception sqlE) {
-            log().error("start: Failed to schedule existing interfaces", sqlE);
+            log().error("onInit: Failed to schedule existing interfaces", sqlE);
         }
 
         m_initialized = true;
         
     }
     
+    private void updatesnmpInterface() {
+
+        String sql = "update snmpinterface set snmppoll = 'N'";
+        
+        Updater updater = new Updater(m_dataSource, sql);
+        updater.execute();  
+    }
     
     protected void scheduleNewSnmpInterface(String ipaddr) {
-        getNetwork().getContext().setServiceName(getPollerConfig().getService());
  
         String sql = "SELECT nodeid, ipaddr from ipinterface where issnmpprimary = 'P' and ismanaged = 'M' and ipaddr = '" + ipaddr + "'";
         
@@ -184,6 +201,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     }
     
     protected void scheduleExistingSnmpInterface() {
+        
         String sql = "SELECT nodeid, ipaddr from ipinterface where issnmpprimary = 'P' and ismanaged='M'";
         
         Querier querier = new Querier(m_dataSource, sql) {
@@ -240,33 +258,14 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria, 
                    hasPort, port, hasTimeout, timeout, hasRetries, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
 
-                scheduleSnmpCollection(node, criteria,interval);
+                getNetwork().schedule(node, criteria,interval,getScheduler());
             } else {
                 log().debug("package interface status: Off");
             }
         }
     }
-
-    private void scheduleSnmpCollection(PollableSnmpInterface node, String criteria, long interval) {
-        criteria = criteria + " and nodeid = " + node.getParent().getNodeid();
-        node = getNetwork().getContext().refresh(node);
-        
-        PollableSnmpInterfaceConfig nodeconfig = new PollableSnmpInterfaceConfig(getScheduler(),interval);
-
-        node.setSnmppollableconfig(nodeconfig);
-
-        synchronized(node) {
-            if (node.getSchedule() == null) {
-                log().debug("Scheduling node: " + node.getParent().getIpaddress());
-                Schedule schedule = new Schedule(node, nodeconfig, getScheduler());
-                node.setSchedule(schedule);
-            }
-        }
-        
-            node.schedule();
-    }
     
-private void createScheduler() {
+    private void createScheduler() {
 
         // Create a scheduler
         //
@@ -280,30 +279,67 @@ private void createScheduler() {
         }
     }
     
+    @EventHandler(uei = EventConstants.CONFIGURE_SNMP_EVENT_UEI)
+    public void reloadSnmpConfig(Event event) {
+        log().debug("reloadSnmpConfig: managing event: " + event.getUei());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        SnmpEventInfo info = null;
+        try {
+            info = new SnmpEventInfo(event);
+            
+            if (info == null) {
+                log().error("reloadSnmpConfig: event contained invalid parameters.  "+event);
+                return;
+            }
+
+            if (StringUtils.isBlank(info.getFirstIPAddress())) {                
+                log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
+                return;
+            }
+        } catch (Exception e) {
+            log().error("reloadSnmpConfig: ",e);
+        }
+        
+        for (Long ipLong=info.getFirst(); ipLong <= info.getLast();ipLong++) {
+            String ipaddr = InetAddressUtils.getInetAddress(ipLong).getHostAddress();
+            log().debug("reloadSnmpConfig: found ipaddr: " + ipaddr);
+            if (getNetwork().hasPollableInterface(ipaddr)) {
+                log().debug("reloadSnmpConfig: recreating the Interface to poll: " + ipaddr);
+                getNetwork().delete(ipaddr);
+                scheduleNewSnmpInterface(ipaddr);
+            } else {
+                log().debug("reloadSnmpConfig: no Interface found for ipaddr: " + ipaddr);               
+            }
+                
+        }
+
+    }
+    
     @EventHandler(uei = EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
     public void reloadConfig(Event event) {
+        log().debug("reloadConfig: managing event: " + event.getUei());
         try {
             getPollerConfig().update();
-            
             getNetwork().deleteAll();
-            getPollerConfig().rebuildPackageIpListMap();
             scheduleExistingSnmpInterface();
-        } catch (MarshalException e) {
-            log().error("Update SnmpPoller configuration file failed",e);
-        } catch (ValidationException e) {
-            log().error("Update SnmpPoller configuration file failed",e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log().error("Update SnmpPoller configuration file failed",e);
         }
     }
 
     @EventHandler(uei = EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)
     public void primarychangeHandler(Event event) {
-        nodeDeletedHandler(event);
+        log().debug("primarychangeHandler: managing event: " + event.getUei());
+
+        getNetwork().delete(new Long(event.getNodeid()).intValue());
         
         for (Parm parm : event.getParms().getParmCollection()){
             if (parm.isValid() && parm.getParmName().equals("newPrimarySnmpAddress")) {
-                getPollerConfig().rebuildPackageIpListMap();
                 scheduleNewSnmpInterface(parm.getValue().getContent());
                 return;
             }
@@ -312,30 +348,22 @@ private void createScheduler() {
     
     @EventHandler(uei = EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void deleteInterfaceHaldler(Event event){
-        refreshInterface(event.getNodeid());
+        getNetwork().delete(event.getInterface());
     }
 
     @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
     public void scanCompletedHaldler(Event event){
-        refreshInterface(event.getNodeid());
+        getNetwork().refresh(new Long(event.getNodeid()).intValue());
     }
 
     @EventHandler(uei = EventConstants.RESCAN_COMPLETED_EVENT_UEI)
     public void rescanCompletedHaldler(Event event){
-        refreshInterface(event.getNodeid());
-    }
-
-    public void refreshInterface(long nodeid) {
-        Long nodeidlong = new Long(nodeid);
-        getNetwork().refresh(nodeidlong.intValue());
-        
+        getNetwork().refresh(new Long(event.getNodeid()).intValue());
     }
 
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void nodeDeletedHandler(Event event) {
-        long nodeid  = event.getNodeid();
-        Long nodeidlong = new Long(nodeid);
-        getNetwork().delete(getNetwork().getIp(nodeidlong.intValue()));
+        getNetwork().delete(new Long(event.getNodeid()).intValue());
     }
 
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
@@ -381,18 +409,13 @@ private void createScheduler() {
 
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void nodeUpHandler(Event event) {
-        long nodeid  = event.getNodeid();
-        Long nodeidlong = new Long(nodeid);
-        String ipprimary = getNetwork().getIp(nodeidlong.intValue());
-        if (ipprimary != null) getNetwork().activate(ipprimary);
+        getNetwork().activate(new Long(event.getNodeid()).intValue());
+
     }
 
     @EventHandler(uei = EventConstants.NODE_DOWN_EVENT_UEI)
     public void nodeDownHandler(Event event) {
-        long nodeid  = event.getNodeid();
-        Long nodeidlong = new Long(nodeid);
-        String ipprimary = getNetwork().getIp(nodeidlong.intValue());
-        if (ipprimary != null) getNetwork().suspend(ipprimary);
+        getNetwork().suspend(new Long(event.getNodeid()).intValue());
     }
 
 }
