@@ -69,7 +69,7 @@ public class Transaction {
 	
 	public static void begin() {
         
-        log().debug("About to being Transaction for "+Thread.currentThread());
+        log().debug("About to begin Transaction for "+Thread.currentThread());
 		Transaction tx = s_threadTX.get();
 		if (tx != null) {
 			throw new IllegalStateException("Cannot begin a transaction.. one has already been begun");
@@ -104,7 +104,7 @@ public class Transaction {
         try {
             Transaction tx = getTX();
             tx.doEnd();
-            log().debug((tx.m_rollbackOnly ? "Rolled Back" : "Committed") + " transcation for "+Thread.currentThread());
+            log().debug((tx.m_rollbackOnly ? "Rolled Back" : "Committed") + " transaction for "+Thread.currentThread());
         } finally {
             clearTX();
         }
