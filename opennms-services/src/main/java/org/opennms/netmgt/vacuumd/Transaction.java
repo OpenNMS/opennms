@@ -151,6 +151,9 @@ public class Transaction {
     private Connection doGetConnection(String dsName) throws SQLException {
         if (!m_connections.containsKey(dsName)) {
             DataSource ds = DataSourceFactory.getDataSource(dsName);
+            if (ds == null) {
+                throw new IllegalArgumentException("Could not find this datasource by using the DataSourceFactory: " + dsName);
+            }
             Connection conn = ds.getConnection();
             m_dbUtils.watch(conn);
             m_connections.put(dsName, conn);
