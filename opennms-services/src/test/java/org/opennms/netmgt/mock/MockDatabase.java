@@ -49,6 +49,7 @@ import java.util.List;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
@@ -267,13 +268,14 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
+                e.getParms() == null ? null : Parameter.format(e.getParms()),
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, eventDpName, " +
-                "eventLog, eventDisplay, eventtticket, eventtticketstate) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+                "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
