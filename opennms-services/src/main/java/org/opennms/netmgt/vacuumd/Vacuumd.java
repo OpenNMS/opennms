@@ -118,7 +118,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             throw new UndeclaredThrowableException(ex);
         }
 
-        log().info("Vaccumd initialization complete");
+        log().info("Vacuumd initialization complete");
 
         createScheduler();
         scheduleAutomations();
