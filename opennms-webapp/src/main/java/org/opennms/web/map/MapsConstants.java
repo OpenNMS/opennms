@@ -59,7 +59,7 @@ public final class MapsConstants extends JSTLConstants{
 
 	// load infos
 	
-	public static final String MAPS_STARTUP_ACTION = "StartUp";
+	public static final String MAPS_STARTUP_ACTION = "MapStartUp";
 	
 	public static final String LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
 	
@@ -67,7 +67,7 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String LOADNODES_ACTION = "LoadNodes";
 
-	public static final String LOADMAPINFO_ACTION = "LoadMapInfo";
+	public static final String LOADLABELMAP_ACTION = "LoadLabelMap";
 	
 	//map action
 	
@@ -81,7 +81,7 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String DELETEMAP_ACTION = "DeleteMap";	
 
-	public static final String CLEAR_ACTION = "Clear";
+	public static final String CLEAR_ACTION = "ClearMap";
 
 	public static final String RELOAD_ACTION = "Reload";
 
@@ -101,18 +101,16 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 
-	public static final String ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
-
 	public static final String ADDNODES_NEIG_ACTION = "AddNodesNeig";
 
-	public static final String ADDMAPS_NEIG_ACTION = "AddMapsNeig";
+    public static final String DELETEELEMENT_ACTION = "DeleteElements";
 
 	public static final String DELETENODES_ACTION = "DeleteNodes";
 
 	public static final String DELETEMAPS_ACTION = "DeleteMaps";
 	
 	// action mode
-	public static final String SWITCH_MODE_ACTION = "SwitchMode";
+	public static final String SWITCH_MODE_ACTION = "SwitchRole";
 	
 	// map roles
 	public static final String ROLE_USER = "RO";

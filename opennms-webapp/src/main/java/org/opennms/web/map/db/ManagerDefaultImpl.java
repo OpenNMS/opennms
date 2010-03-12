@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.map.InitializationObj;
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
@@ -82,15 +83,8 @@ import org.opennms.web.map.view.VMapInfo;
 public class ManagerDefaultImpl implements Manager {
     
 	private class AlarmInfo {
-		int nodeid;
 		int status;
 		float severity;
-		public int getNodeid() {
-			return nodeid;
-		}
-		public void setNodeid(int nodeid) {
-			this.nodeid = nodeid;
-		}
 		public float getSeverity() {
 			return severity;
 		}
@@ -103,9 +97,8 @@ public class ManagerDefaultImpl implements Manager {
 		public void setStatus(int status) {
 			this.status = status;
 		}
-		AlarmInfo(int nodeid, int status, float severity) {
+		AlarmInfo(int status, float severity) {
 			super();
-			this.nodeid = nodeid;
 			this.status = status;
 			this.severity = severity;
 		}
@@ -162,7 +155,7 @@ public class ManagerDefaultImpl implements Manager {
 		this.mapsPropertiesFactory = mapsPropertiesFactory;
 	}
 
-    public List<String> getCategories() throws MapsException {
+    private List<String> getCategories() throws MapsException {
     	List<String> categories=new ArrayList<String>();
     	try {
 			CategoryFactory.init();
@@ -230,18 +223,18 @@ public class ManagerDefaultImpl implements Manager {
     
     public VMap openMap(int id, String user, boolean refreshElems) throws MapsManagementException, MapNotFoundException, MapsException {
 
-    	List<VMapInfo> visibleMaps = getVisibleMapsMenu(user);
+    	List<VMapInfo> visibleMaps = getMapsMenuByuser(user);
 		
 		Iterator<VMapInfo> it = visibleMaps.iterator();
 		while(it.hasNext()){
 			VMapInfo mapMenu = it.next();
 			if(mapMenu.getId()==id){
-				sessionMap = openMap(id,refreshElems);
+				sessionMap = open(id,refreshElems);
 				return sessionMap;
 			}
 		}
 
-    	throw new MapNotFoundException();
+    	throw new MapNotFoundException(); 
     }
 
     /**
@@ -292,7 +285,11 @@ public class ManagerDefaultImpl implements Manager {
      */
     public VMap openMap(int id, boolean refreshElems) throws MapsManagementException,
             MapNotFoundException, MapsException {
-    	
+        return open(id,refreshElems);
+    }
+        
+    private VMap open(int id, boolean refreshElems) throws  MapsManagementException,
+    MapNotFoundException, MapsException {	
         VMap retVMap = null;
 
         Map m = dbManager.getMap(id);
@@ -654,6 +651,10 @@ public class ManagerDefaultImpl implements Manager {
      * @throws MapsException
      */
     public List<VMapInfo> getVisibleMapsMenu(String user)throws MapsException{
+        return getMapsMenuByuser(user);
+    }
+    
+    private List<VMapInfo> getMapsMenuByuser(String user) throws MapsException {
     	
         List<VMapInfo> maps = new ArrayList<VMapInfo>();
         List<Integer>  mapsIds = new ArrayList<Integer>();
@@ -941,19 +942,6 @@ public class ManagerDefaultImpl implements Manager {
         dbManager.saveElements(map.getAllElements());
     }
 
-    /**
-     * save the maps in input
-     * 
-     * @param maps
-     *            to save
-     * @throws MapsException
-     */
-    synchronized public void save(VMap[] maps) throws MapsException {
-        for (VMap map : maps) {
-            save(map);
-        }
-    }
-    
     /**
      * delete all defined node elements in existent maps
      * @throws MapsException
@@ -1343,7 +1331,7 @@ public class ManagerDefaultImpl implements Manager {
 			} else {
 				int curStatus = alarmStatus;
 				float curSeverity = alarmSeverity;
-				alarminfo = new AlarmInfo(veleminfo.getId(),curStatus,curSeverity);
+				alarminfo = new AlarmInfo(curStatus,curSeverity);
 			}
 			alarmedNodes.put(new Integer(veleminfo.getId()),alarminfo);
     		if (log.isDebugEnabled()) {
@@ -1472,5 +1460,61 @@ public class ManagerDefaultImpl implements Manager {
         return new VElement(dbManager.getElement(elementId, mapId, type));
     }
 
+    public VMap createMapByLabelSearch(String label, String user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
+    public java.util.Map<String, Set<Integer>> getNodeLabelToMaps(String user) throws MapsException {
+        List<Integer> maps = new ArrayList<Integer>();
+        for(VMapInfo mapinfo: getMapsMenuByuser(user)) {
+            maps.add(new Integer(mapinfo.getId()));   
+        }
+        Element[] elems = dbManager.getAllElements();
+        java.util.Map<String,Set<Integer>> nodelabelMap = new HashMap<String,Set<Integer>>(); 
+        for (int i=0;i<elems.length;i++) {
+            Element elem = elems[i];
+            String label = elem.getLabel();
+            log.debug("getNodeLabelToMaps: found element with label: " + label);
+            Integer mapId = new Integer(elem.getMapId());
+            if (!elem.isNode()) continue;
+            if (!maps.contains(mapId)) continue;
+
+            Set<Integer> mapids = null;
+            if (nodelabelMap.containsKey(label)) {
+                mapids = nodelabelMap.get(label);
+            } else {
+                mapids = new TreeSet<Integer>();
+            }
+            mapids.add(mapId);
+            nodelabelMap.put(label, mapids);
+        }
+        return nodelabelMap;
+    }
+
+    public InitializationObj getInitObj(boolean isUserAdmin) throws MapsException {
+        InitializationObj inObj = new InitializationObj();
+        inObj.setAvailEnabled(mapsPropertiesFactory.isAvailEnabled());
+        inObj.setDoubleClickEnabled(mapsPropertiesFactory.isDoubleClickEnabled());
+        inObj.setContextMenuEnabled(mapsPropertiesFactory.isContextMenuEnabled());
+        inObj.setReload(mapsPropertiesFactory.isReload());
+        inObj.setContextMenu(mapsPropertiesFactory.getContextMenu());
+        inObj.setLinks(mapsPropertiesFactory.getLinks());
+        inObj.setLinkStatuses(mapsPropertiesFactory.getLinkStatuses());
+        inObj.setStatuses(mapsPropertiesFactory.getStatuses());
+        inObj.setSeverities(mapsPropertiesFactory.getSeverities());
+        inObj.setAvails(mapsPropertiesFactory.getAvails());
+        inObj.setIcons(mapsPropertiesFactory.getIcons());
+        inObj.setIconsBySysoid(mapsPropertiesFactory.getIconsBySysoid());
+        inObj.setBackgroundImages(mapsPropertiesFactory.getBackgroundImages());
+        inObj.setMapElementDimensions(mapsPropertiesFactory.getMapElementDimensions());
+        inObj.setDefaultNodeIcon(mapsPropertiesFactory.getDefaultNodeIcon());
+        inObj.setDefaultMapIcon(mapsPropertiesFactory.getDefaultMapIcon());
+        inObj.setMapScale ( mapsPropertiesFactory.getMapScale());
+        inObj.setDefaultBackgroundColor(mapsPropertiesFactory.getDefaultBackgroundColor());
+        inObj.setUserAdmin(isUserAdmin);
+        inObj.setCategories(getCategories());
+        inObj.setUnknownstatusid(mapsPropertiesFactory.getDefaultStatusId());
+        return inObj;
+    }
 }

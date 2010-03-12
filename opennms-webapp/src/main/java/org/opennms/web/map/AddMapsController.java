@@ -82,9 +82,8 @@ public class AddMapsController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		String action = request.getParameter("action");
 		String elems = request.getParameter("elems");
-		log.debug("Adding Maps; action:"+action+", elems="+elems );
+		log.debug("Adding Maps: elems="+elems );
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
@@ -98,8 +97,6 @@ public class AddMapsController implements Controller {
 			
 			String type = VElement.MAP_TYPE;
 			
-			if (! action.equals(MapsConstants.ADDMAPS_ACTION))
-                throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
 			log.debug("Adding maps by id: "+ elems);
 			String[] smapids = elems.split(",");
 	         List<Integer> mapids = new ArrayList<Integer>(smapids.length);			
@@ -114,7 +111,7 @@ public class AddMapsController implements Controller {
 				
 			for (Integer id : mapids) {
 				if (map.containsElement(id, type)) {
-					log.debug("Action: " + action + " . Map Contains Element: " + id+type);
+					log.debug(" Map Contains Element: " + id+type);
 					continue;
 					
 				}
@@ -142,13 +139,13 @@ public class AddMapsController implements Controller {
 				//get links and add elements to map
 			if (velems != null) {
 				map.addElements(velems);
-				links = manager.getLinks(map.getAllElements());
+				links = manager.getLinks(map.getElements());
 			}
 			log.debug("After getting/adding links");
-			bw.write(ResponseAssembler.getAddMapsResponse(action, mapsWithLoop,velems, links));
+			bw.write(ResponseAssembler.getAddMapsResponse(MapsConstants.ADDMAPS_ACTION, mapsWithLoop,velems, links));
 		} catch (Exception e) {
-			log.error("Error while adding Maps for action: "+action,e);
-			bw.write(ResponseAssembler.getMapErrorResponse(action));
+			log.error("Error while adding Maps: ",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));
 		} finally {
 			bw.close();
 		}

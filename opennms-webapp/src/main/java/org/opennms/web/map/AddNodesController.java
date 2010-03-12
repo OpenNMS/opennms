@@ -168,15 +168,6 @@ public class AddNodesController implements Controller {
 				nodeids = linkednodeids.toArray(new Integer[linkednodeids.size()]);
 			} 
 			
-			if (action.equals(MapsConstants.ADDMAPS_ACTION)) {
-				actionfound = true;
-				type = VElement.MAP_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
-			}
 			List<VElement> velems = new ArrayList<VElement>();
 			List<VLink> links = new ArrayList<VLink>();
 			// response for addElement
@@ -210,7 +201,7 @@ public class AddNodesController implements Controller {
 				//get links and add elements to map
 				if (velems != null) {
 					map.addElements(velems);
-					links = manager.getLinks(map.getAllElements());
+					links = manager.getLinks(map.getElements());
 				}
 				
 				log.debug("After getting/adding links");

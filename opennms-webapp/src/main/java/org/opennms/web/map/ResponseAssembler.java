@@ -42,14 +42,13 @@ package org.opennms.web.map;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.map.config.MapPropertiesFactory;
-import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
@@ -334,11 +333,13 @@ public class ResponseAssembler {
 		
 	}
 	
-    protected static String getStartupResponse(String action,MapPropertiesFactory mpf, Manager manager, boolean isUserAdmin)throws Exception{
-              InitializationObj initObj = new InitializationObj(mpf, manager, isUserAdmin);
-               JSON json = JSONSerializer.toJSON(initObj);
-               return json.toString();
-       }
+    protected static String getStartupResponse(InitializationObj initObj)throws Exception{
+         return JSONSerializer.toJSON(initObj).toString();
+    }
+
+    protected static String getLoadLabelMapResponse(Map<String, Set<Integer>> labelMap) {
+        return JSONSerializer.toJSON(labelMap).toString();
+    }
 
 	protected static String getActionOKMapResponse(String action) {
 

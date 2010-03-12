@@ -120,7 +120,6 @@ public class RefreshMapController implements Controller {
 				map = manager.openMap();
 				// First refresh Element objects
 				map = manager.reloadMap(map);
-				VElement[] velements=map.getAllElements();
 				
 				// Second Refresh Link Object on Map
 				// Now is done using a very simple way
@@ -136,7 +135,7 @@ public class RefreshMapController implements Controller {
 
 				// get all links on map
 				//List links = null;
-				List<VLink> links = manager.getLinks(velements);
+				List<VLink> links = manager.getLinks(map.getElements());
 
 				// add links to map
 				map.addLinks(links.toArray(new VLink[links.size()]));

@@ -38,6 +38,9 @@
 	
 <script type="text/ecmascript"><![CDATA[
 
+var MAPS_STARTUP_ACTION = "MapStartUp";
+
+
 function startUp() {
 	// Instantiate the default map
 	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
@@ -62,6 +65,7 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 	
 	loadMaps();
 	loadNodes();
+	loadLabelMap();
 	loadDefaultMap();
 		
 	addLegend();
@@ -80,7 +84,8 @@ function handleInit(data) {
 		reloadMap = mapsPropertiesFactory.reload;
 		contextMenuEnabled = mapsPropertiesFactory.contextMenuEnabled;
 		doubleClickEnabled = mapsPropertiesFactory.doubleClickEnabled;
-		UNKNOWN_STATUS = mapsPropertiesFactory.unknownStatus.id;
+//		UNKNOWN_STATUS = mapsPropertiesFactory.unknownStatus.id;
+		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
 		var i=0;
 		
 		for (i=0;i<mapsPropertiesFactory.contextMenu.entries.length;i++) 

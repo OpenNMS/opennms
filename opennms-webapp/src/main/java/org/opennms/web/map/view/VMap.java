@@ -45,6 +45,7 @@ import java.util.List;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -251,6 +252,10 @@ final public class VMap extends Map {
     	}
         
     	return elements.values().toArray(new VElement[elements.size()]);
+    } 
+
+    public Collection<VElement> getElements() {        
+        return elements.values();
     } 
 
     public VLink[] getAllLinks() {

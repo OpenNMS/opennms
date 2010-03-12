@@ -37,11 +37,12 @@ package org.opennms.web.map.mapd;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.opennms.web.map.InitializationObj;
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.MapsManagementException;
 
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
@@ -67,43 +68,7 @@ public class ManagerMapdImpl implements Manager {
         
     }
 
-    public void deleteAllMapElements() throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteAllNodeElements() throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteElementsOfMap(int mapId) throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteMap(VMap map) throws MapsException,
-            MapNotFoundException {
-        // TODO Auto-generated method stub
-        
-    }
-
     public void deleteMap() throws MapsException, MapNotFoundException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteMap(int mapId) throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteMaps(VMap[] maps) throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void deleteMaps(int[] maps) throws MapsException {
         // TODO Auto-generated method stub
         
     }
@@ -119,17 +84,6 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VMapInfo[] getAllMapMenus() throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMap[] getAllMaps(boolean refreshElems)
-            throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public HashMap<Integer, Integer> getAllNodesOccursOnMap(VMap map)
             throws MapsException {
         // TODO Auto-generated method stub
@@ -141,13 +95,19 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VElementInfo[] getElementInfoLike(String like)
+    public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public VElement getElement(int mapId, int elementId, String type)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<VLink> getLinks(VElement[] elems) throws MapsException {
+    public VElementInfo[] getElementInfoLike(String like)
+            throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -158,74 +118,7 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public List<VLink> getLinksOnElem(VElement[] elems, VElement elem)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMap[] getMap(String mapname, String maptype, boolean refreshElems)
-            throws MapsManagementException, MapNotFoundException,
-            MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMapInfo getMapMenu(int mapId) throws MapNotFoundException,
-            MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMap[] getMapsByName(String mapName, boolean refreshElems)
-            throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMap[] getMapsLike(String likeLabel, boolean refreshElems)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMapInfo[] getMapsMenuByName(String mapName)
-            throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List getMapsMenuTreeByName(String mapName)
-            throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Set<Integer> getNodeidsOnElement(VElement elem)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public List<VMapInfo> getVisibleMapsMenu(String user)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElement newElement(int mapId, int elementId, String type, int x,
-            int y) throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElement newElement(int elementId, String type, int x, int y)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElement newElement(int mapId, int elementId, String type)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;
@@ -243,23 +136,6 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VElement newElement(int elementId, String type, String iconname,
-            int x, int y) throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElement newElement(int mapId, int elementId, String type,
-            String iconname) throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VMap newMap() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public VMap newMap(String name, String accessMode, String owner,
             String userModifies, int width, int height) {
         // TODO Auto-generated method stub
@@ -271,30 +147,8 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VMap openMap(int id, boolean refreshElems)
-            throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public VMap openMap(int id, String user, boolean refreshElems)
             throws MapNotFoundException, MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElement refreshElement(VElement mapElement) throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<VElement> refreshElements(VElement[] mapElements)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List refreshLinks(VLink[] mapLinks) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -314,17 +168,17 @@ public class ManagerMapdImpl implements Manager {
         
     }
 
-    public void save(VMap[] maps) throws MapsException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
+    public VMap createMapByLabelSearch(String label, String user) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public VElement getElement(int mapId, int elementId, String type)
+    public Map<String, Set<Integer>> getNodeLabelToMaps(String user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public InitializationObj getInitObj(boolean isUserAdmin)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;

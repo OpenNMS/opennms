@@ -140,7 +140,6 @@ public abstract class Manager {
 
 	public abstract Map[] getContainerMaps(int id, String type) throws MapsException ;
 	
-	
 	public abstract VMapInfo[] getAllMapMenus() throws MapsException ;
 	  
 	public abstract VMapInfo getMapMenu(int mapId) throws MapsException ;
