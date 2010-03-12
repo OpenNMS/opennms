@@ -64,54 +64,6 @@ public final class EventdConstants {
     		"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
-     * The SQL query to test for alarm reduction
-     */
-    public final static String SQL_DB_ALARM_REDUCTION_QUERY =
-            "SELECT alarmid " +
-            "  FROM alarms " +
-            " WHERE reductionKey = ?";
-
-    public static final String SQL_DB_UPDATE_EVENT_WITH_ALARM_ID =
-            "UPDATE events "+
-            "   SET alarmid = ? " +
-            " WHERE eventid = ?";
-
-    /**
-     * The SQL insertion string used by eventd to update an event as an alarm
-     * in the database.
-     */
-    public final static String SQL_DB_ALARM_UPDATE_EVENT =
-            "UPDATE alarms " +
-            "   SET counter = counter+1, lastEventID = ?, lastEventTime = ?, logmsg = ? " +
-            " WHERE reductionKey = ?";
-
-    /**
-     * The SQL insertion string used by eventd to store the event information as an alarm
-     * into the database.
-     */
-    public final static String SQL_DB_ALARM_INS_EVENT =
-            "INSERT" +
-            "  INTO alarms (alarmID, eventUei, dpName, nodeID, ipaddr, " +
-            "               serviceID, reductionKey, alarmType, counter, severity, " +
-            "               lastEventID, firstEventTime, lastEventTime, description, logMsg, " +
-            "               operInstruct, tticketID, tticketState, mouseOverText, suppressedUntil, " +
-            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei, " +
-            "               x733AlarmType, x733ProbableCause, clearKey, ifIndex, eventParms) " +
-            "VALUES (?,?,?,?,?," +
-            "        ?,?,?,?,?," +
-            "        ?,?,?," +
-            "        ?,?,?,?," +
-            "        ?,?,?," +
-            "        ?,?,?,?,?," +
-            "        ?,?,?,?,?)";
-
-    /**
-     * The SQL string used by eventd to update number of duplicate events in
-     * case of duplicate event suppression.
-     */
-    public final static String SQL_DB_UPDATE_EVENT_COUNT = "UPDATE events set eventSuppressedCount=? where (eventID=?)";
-
-    /**
      * The SQL statement necessary to convert the service name into a service id
      * using the distributed poller database.
      */

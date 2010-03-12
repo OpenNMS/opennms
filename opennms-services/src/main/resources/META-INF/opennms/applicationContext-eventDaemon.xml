@@ -65,7 +65,6 @@
         <ref local="eventExpander"/>
         <ref local="eventWriter"/>
         <ref local="eventIpcBroadcastProcessor"/>
-<!--        <ref local="alarmWriter"/> -->
       </list>
     </property>
   </bean>
@@ -85,17 +84,6 @@
     <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
   </bean>
 
-  <bean id="alarmWriter" class="org.opennms.netmgt.eventd.processor.JdbcAlarmWriter">
-    <property name="getNextIdString" ref="getNextAlarmIdSql"/>
-    <property name="dataSource" ref="dataSource"/>
-    <property name="eventdServiceManager" ref="eventdServiceManager"/>
-  </bean>
-  
-  <bean id="getNextAlarmIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getGetNextAlarmID"/>
-  </bean>
-  
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
     <property name="eventIpcManager" ref="eventIpcManager"/>
   </bean>

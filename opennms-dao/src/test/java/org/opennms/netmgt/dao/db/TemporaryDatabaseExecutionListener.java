@@ -46,6 +46,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionListener {
+    
+    private TemporaryDatabase m_database;
 
     public void afterTestMethod(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
@@ -87,17 +89,27 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     
     public void beforeTestMethod(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)\n", testContext);
+
+        // FIXME: Is there a better way to inject the instance into the test class?
+        if (testContext.getTestInstance() instanceof TemporaryDatabaseAware) {
+            System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: " + testContext.getTestInstance().getClass().getSimpleName() + "." + testContext.getTestMethod().getName());
+            ((TemporaryDatabaseAware)testContext.getTestInstance()).setTemporaryDatabase(m_database);
+        }
     }
 
     public void prepareTestInstance(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
         JUnitTemporaryDatabase jtd = findAnnotation(testContext);
         String dbName = getDatabaseName(testContext);
-        TemporaryDatabase dataSource = (jtd == null ? new TemporaryDatabase(dbName) : (jtd.tempDbClass()).getConstructor(String.class).newInstance(dbName));
-        dataSource.setPopulateSchema(jtd == null? true : jtd.populate());
-        dataSource.create();
-        
-        LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(dataSource);
+        m_database = (jtd == null ? new TemporaryDatabase(dbName) : (jtd.tempDbClass()).getConstructor(String.class).newInstance(dbName));
+        m_database.setPopulateSchema(jtd == null? true : jtd.populate());
+        try {
+            m_database.create();
+        } catch (Exception e) {
+            System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
+        }
+
+        LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
         
         DataSourceFactory.setInstance(proxy);
     }
