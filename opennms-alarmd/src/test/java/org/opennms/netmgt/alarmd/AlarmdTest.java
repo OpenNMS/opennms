@@ -36,7 +36,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.eventd.processor;
+package org.opennms.netmgt.alarmd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -101,7 +101,7 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
-public class JdbcAlarmWriterTest implements TemporaryDatabaseAware<MockDatabase> {
+public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     // private JdbcEventWriter m_jdbcEventWriter;
     private MockNetwork m_mockNetwork = new MockNetwork();
 
