@@ -69,9 +69,9 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     static class ListenerKeeper {
         EventListener m_listener;
 
-        Set m_ueiList;
+        Set<String> m_ueiList;
 
-        ListenerKeeper(EventListener listener, Set ueiList) {
+        ListenerKeeper(EventListener listener, Set<String> ueiList) {
             m_listener = listener;
             m_ueiList = ueiList;
         }
