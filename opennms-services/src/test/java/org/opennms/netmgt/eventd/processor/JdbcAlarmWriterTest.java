@@ -38,108 +38,165 @@
 //
 package org.opennms.netmgt.eventd.processor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
-import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
-import org.opennms.netmgt.eventd.processor.JdbcAlarmWriter;
-import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
+import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
+import org.opennms.netmgt.alarmd.Alarmd;
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.util.StringUtils;
 
-@Deprecated
-@Ignore
-public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
-    private JdbcAlarmWriter m_jdbcAlarmWriter;
-    private JdbcEventWriter m_jdbcEventWriter;
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+public class JdbcAlarmWriterTest implements TemporaryDatabaseAware<MockDatabase> {
+    // private JdbcEventWriter m_jdbcEventWriter;
     private MockNetwork m_mockNetwork = new MockNetwork();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    private Alarmd m_alarmd;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
+
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private JdbcTemplate m_jdbcTemplate;
+
+    @Autowired
+    private MockEventIpcManager m_eventdIpcMgr;
+
+    private MockDatabase m_database;
+
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_database = database;
+    }
+
+    @Before
+    public void setUp() throws Exception {
         m_mockNetwork.createStandardNetwork();
+
+        m_eventdIpcMgr.setEventWriter(m_database);
+
+        m_alarmd = new Alarmd();
+        m_alarmd.setEventForwarder(m_eventdIpcMgr);
+        m_alarmd.setEventSubscriptionService(m_eventdIpcMgr);
+        AlarmPersisterImpl persister = new AlarmPersisterImpl();
+        persister.setAlarmDao(m_alarmDao);
+        persister.setEventDao(m_eventDao);
+        m_alarmd.setPersister(persister);
+        m_alarmd.afterPropertiesSet();
+        // Doesn't do anything yet
+        m_alarmd.start();
         
-        JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
-        eventdServiceManager.setDataSource(getDataSource());
-        eventdServiceManager.afterPropertiesSet();
-        
-        m_jdbcEventWriter = new JdbcEventWriter();
-        m_jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
-        m_jdbcEventWriter.setDataSource(getDataSource());
-        m_jdbcEventWriter.setGetNextIdString("SELECT nextval('eventsNxtId')");
-        m_jdbcEventWriter.afterPropertiesSet();
-        
-        m_jdbcAlarmWriter = new JdbcAlarmWriter();
-        m_jdbcAlarmWriter.setEventdServiceManager(eventdServiceManager);
-        m_jdbcAlarmWriter.setDataSource(getDataSource());
-        m_jdbcAlarmWriter.setGetNextIdString("SELECT nextval('alarmsNxtId')");
-        m_jdbcAlarmWriter.afterPropertiesSet();
+        // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        m_nodeDao.save(node);
     }
 
-    /**
-     * tests sequence of newly initialized db
-     */
-    public void testNextAlarmId() {
-        int nextId = getJdbcTemplate().queryForInt(m_jdbcAlarmWriter.getGetNextIdString());
-        
-        // an empty db should produce '1' here
-        assertEquals(1, nextId);
+    @After
+    public void tearDown() throws Exception {
+        m_alarmd.destroy();
     }
-    
 
+    @Test
     public void testPersistAlarm() throws Exception {
         MockNode node = m_mockNetwork.getNode(1);
 
         //there should be no alarms in the alarms table
-        assertEquals(0, jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
-        assertEquals(1, jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
 
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
-        assertEquals(1, jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
 
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
         sendNodeDownEvent("DontReduceThis", node);
         Thread.sleep(1000);
-        assertEquals(2, jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(2, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
 
         MockUtil.println("Going for the print of the counter column");
-        getJdbcTemplate().getJdbcOperations().query("select reductionKey, sum(counter) from alarms group by reductionKey", new RowCallbackHandler() {
+        m_jdbcTemplate.query("select reductionKey, sum(counter) from alarms group by reductionKey", new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 MockUtil.println("count for reductionKey: " + rs.getString(1) + " is: " + rs.getObject(2));
             }
-            
+
         });
     }
-    
+
+    @Test
+    @Ignore
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         int numberOfAlarmsToReduce = 10;
-        
+
         //there should be no alarms in the alarms table
-        assertEquals(0, jdbcTemplate.queryForInt("select count(*) from alarms"));
+        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
 
         final String reductionKey = "countThese";
         final MockNode node = m_mockNetwork.getNode(1);
@@ -179,14 +236,14 @@ public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
-        int rowCount = jdbcTemplate.queryForInt("select count(*) from alarms");
-        Integer counterColumn = jdbcTemplate.queryForInt("select counter from alarms where reductionKey = ?", new Object[] { reductionKey });
+        int rowCount = m_jdbcTemplate.queryForInt("select count(*) from alarms");
+        Integer counterColumn = m_jdbcTemplate.queryForInt("select counter from alarms where reductionKey = ?", new Object[] { reductionKey });
         MockUtil.println("rowcCount is: "+rowCount+", expected 1.");
         MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
         assertEquals(1, rowCount);
         if (numberOfAlarmsToReduce != counterColumn) {
             final List<Integer> reducedEvents = new ArrayList<Integer>();
-            jdbcTemplate.getJdbcOperations().query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
+            m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
                 public void processRow(ResultSet rs) throws SQLException {
                     reducedEvents.add(rs.getInt(1));
                 }
@@ -194,77 +251,81 @@ public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
             Collections.sort(reducedEvents);
 
             final List<Integer> nonReducedEvents = new ArrayList<Integer>();
-            jdbcTemplate.getJdbcOperations().query("select eventid from events where alarmID is null", new RowCallbackHandler() {
+            m_jdbcTemplate.query("select eventid from events where alarmID is null", new RowCallbackHandler() {
                 public void processRow(ResultSet rs) throws SQLException {
                     nonReducedEvents.add(rs.getInt(1));
                 }
             });
             Collections.sort(nonReducedEvents);
-            
-            fail("number of alarms to reduce (" + numberOfAlarmsToReduce + ") were not reduced into a single alarm (only " + counterColumn + " were); "
+
+            fail("number of alarms to reduce (" + numberOfAlarmsToReduce + ") were not reduced into a single alarm (instead the counter column reads " + counterColumn + "); "
                     + "events that were reduced: " + StringUtils.collectionToCommaDelimitedString(reducedEvents) + "; events that were not reduced: "
                     + StringUtils.collectionToCommaDelimitedString(nonReducedEvents));
         }
-        
 
-        Integer alarmId = jdbcTemplate.queryForInt("select alarmId from alarms where reductionKey = ?", new Object[] { reductionKey });
-        rowCount = jdbcTemplate.queryForInt("select count(*) from events where alarmid = ?", new Object[] { alarmId });
+
+        Integer alarmId = m_jdbcTemplate.queryForInt("select alarmId from alarms where reductionKey = ?", new Object[] { reductionKey });
+        rowCount = m_jdbcTemplate.queryForInt("select count(*) from events where alarmid = ?", new Object[] { alarmId });
         MockUtil.println(String.valueOf(rowCount) + " of events with alarmid: "+alarmId);
-//      assertEquals(numberOfAlarmsToReduce, rowCount);
+        //      assertEquals(numberOfAlarmsToReduce, rowCount);
 
-        rowCount = jdbcTemplate.queryForInt("select count(*) from events where alarmid is null");
+        rowCount = m_jdbcTemplate.queryForInt("select count(*) from events where alarmid is null");
         MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
         assertEquals(0, rowCount);
 
     }
 
+    @Test
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("event argument must not be null"));
         try {
-            m_jdbcAlarmWriter.process(null, null);
+            m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testNoLogmsg() throws Exception {
         Event event = new Event();
         event.setAlarmData(new AlarmData());
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("event does not have a logmsg"));
+        ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_jdbcAlarmWriter.process(null, event);
+            m_alarmd.getPersister().persist(event);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
     }
-    
+
+    @Test
     public void testNoAlarmData() throws Exception {
         Event event = new Event();
         event.setLogmsg(new Logmsg());
-        
-        m_jdbcAlarmWriter.process(null, event);
+
+        m_alarmd.getPersister().persist(event);
     }
 
+    @Test
     public void testNoDbid() throws Exception {
         Event event = new Event();
         event.setLogmsg(new Logmsg());
         event.setAlarmData(new AlarmData());
-        
+
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("event does not have a dbid"));
+        ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_jdbcAlarmWriter.process(null, event);
+            m_alarmd.getPersister().persist(event);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
     }
-        
+
     private void sendNodeDownEvent(String reductionKey, MockNode node) throws SQLException {
         Event event = MockEventUtil.createNodeDownEvent("Test", node);
 
@@ -281,20 +342,7 @@ public class JdbcAlarmWriterTest extends PopulatedTemporaryDatabaseTestCase {
         logmsg.setDest("logndisplay");
         logmsg.setContent("testing");
         event.setLogmsg(logmsg);
-        
-//        if (e.getAlarmData() == null && econf.getAlarmData() != null) {
-//            AlarmData alarmData = new AlarmData();
-//            alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
-//            alarmData.setReductionKey(econf.getAlarmData().getReductionKey());
-//            alarmData.setClearUei(econf.getAlarmData().getClearUei());
-//            alarmData.setAutoClean(econf.getAlarmData().getAutoClean());
-//            alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
-//            alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
-//            alarmData.setClearKey(econf.getAlarmData().getClearKey());
-//            e.setAlarmData(alarmData);
-//        }
 
-        m_jdbcEventWriter.process(null, event);
-        m_jdbcAlarmWriter.process(null, event);
+        m_eventdIpcMgr.sendNow(event);
     }
 }

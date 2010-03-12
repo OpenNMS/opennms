@@ -78,7 +78,6 @@ import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventExpander;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.EventProcessor;
-import org.opennms.netmgt.eventd.processor.JdbcAlarmWriter;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -200,17 +199,10 @@ public class OpenNMSTestCase extends TestCase {
                 eventIpcBroadcastProcessor.setEventIpcBroadcaster(m_eventdIpcMgr);
                 eventIpcBroadcastProcessor.afterPropertiesSet();
 
-                JdbcAlarmWriter jdbcAlarmWriter = new JdbcAlarmWriter();
-                jdbcAlarmWriter.setEventdServiceManager(eventdServiceManager);
-                jdbcAlarmWriter.setDataSource(m_db);
-                jdbcAlarmWriter.setGetNextIdString("select nextVal('alarmsNxtId')"); // for HSQL: "SELECT max(alarmId)+1 from alarms"
-                jdbcAlarmWriter.afterPropertiesSet();
-                
                 List<EventProcessor> eventProcessors = new ArrayList<EventProcessor>(3);
                 eventProcessors.add(eventExpander);
                 eventProcessors.add(jdbcEventWriter);
                 eventProcessors.add(eventIpcBroadcastProcessor);
-                eventProcessors.add(jdbcAlarmWriter);
                 
                 DefaultEventHandlerImpl eventHandler = new DefaultEventHandlerImpl();
                 eventHandler.setEventProcessors(eventProcessors);

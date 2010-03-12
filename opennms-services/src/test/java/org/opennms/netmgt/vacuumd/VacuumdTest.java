@@ -39,6 +39,12 @@
  */
 package org.opennms.netmgt.vacuumd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -49,19 +55,44 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
+import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * Tests Vacuumd's execution of statements and automations
@@ -69,14 +100,59 @@ import org.opennms.test.mock.MockUtil;
  * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
  *
  */
-public class VacuumdTest extends OpenNMSTestCase {
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+})
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
     
     private Vacuumd m_vacuumd;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    private Alarmd m_alarmd;
+    
+    @Autowired
+    private AlarmDao m_alarmDao;
+
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private JdbcTemplate m_jdbcTemplate;
+
+    @Autowired
+    private MockEventIpcManager m_eventdIpcMgr;
+
+    private MockNetwork m_network;
+
+    private MockDatabase m_database;
+
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_database = database;
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        m_network = new MockNetwork();
+        m_network.createStandardNetwork();
+
         InputStream is = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/vacuumd/vacuumd-configuration.xml");
         try {
             VacuumdConfigFactory.setInstance(new VacuumdConfigFactory(is));
@@ -84,15 +160,38 @@ public class VacuumdTest extends OpenNMSTestCase {
             IOUtils.closeQuietly(is);
         }
 
+        m_eventdIpcMgr.setEventWriter(m_database);
+
         m_vacuumd = Vacuumd.getSingleton();
         m_vacuumd.setEventManager(m_eventdIpcMgr);
         m_vacuumd.init();
 
-        MockUtil.println("------------ Finished setup for: "+getName()+" --------------------------");
+        m_alarmd = new Alarmd();
+        m_alarmd.setEventForwarder(m_eventdIpcMgr);
+        m_alarmd.setEventSubscriptionService(m_eventdIpcMgr);
+        AlarmPersisterImpl persister = new AlarmPersisterImpl();
+        persister.setAlarmDao(m_alarmDao);
+        persister.setEventDao(m_eventDao);
+        m_alarmd.setPersister(persister);
+        m_alarmd.afterPropertiesSet();
+        // Doesn't do anything yet
+        m_alarmd.start();
+
+        // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        m_nodeDao.save(node);
+
+        node = new OnmsNode();
+        node.setId(2);
+        m_nodeDao.save(node);
+
+        MockUtil.println("------------ Finished setup for: "+ this.getClass().getName() +" --------------------------");
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        m_alarmd.destroy();
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
     }
@@ -100,6 +199,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Test for running statments
      */
+    @Test
     public final void testRunStatements() {
     	m_vacuumd.executeStatements();
     }
@@ -108,7 +208,10 @@ public class VacuumdTest extends OpenNMSTestCase {
      * This is an attempt at testing scheduled automations.
      * @throws InterruptedException
      */
+    @Test
+    @Ignore
     public final void testConcurrency() throws InterruptedException {
+        try {
         /*
          * Test status of threads
          */
@@ -139,60 +242,73 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //Get an alarm in the db
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(5000);
+        // Sleep and wait for the alarm to be written
+        Thread.sleep(1000);
         
         /*
          * Changes to the automations to the config will
          * probably affect this.  There should be one node down
          * alarm.
          */
-        assertEquals("alarm count", 1, verifyInitialAlarmState());
+        assertEquals("event count", 3, countEvents());
+        assertEquals("alarm count", 1, countAlarms());
+        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms"));
 
         // Create another node down event
         bringNodeDownCreatingEvent(1);
-        
         // Sleep and wait for the alarm to be written
-        Thread.sleep(1500);
-        assertEquals("counter in the alarm", 2, getJdbcTemplate().queryForInt("select counter from alarms"));
-                
+        Thread.sleep(1000);
+
+        // Make sure there's still one alarm...
+        assertEquals("alarm count", 1, countAlarms());
+        // ... with a counter value of 2
+        assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
+        
         /*
          * Get the current severity, sleep long enough for the escalation
          * automation to run, then check that it was escalated.
          */
-        int currentSeverity = getJdbcTemplate().queryForInt("select severity from alarms");
+        int currentSeverity = m_jdbcTemplate.queryForInt("select severity from alarms");
         Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
-        assertEquals("alarm severity -- should have been excalated", currentSeverity+1, verifyAlarmEscalated());
+        assertEquals("alarm severity -- should have been escalated", currentSeverity+1, verifyAlarmEscalated());
         
         EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
         Event e = builder.getEvent();
         m_eventdIpcMgr.sendNow(e);
-        
-        Thread.sleep(2000);
-                
+        } finally {
         //Stop what you start.
         m_vacuumd.stop();
+        }
     }
     
     /**
      * Test resultSetHasRequiredActionColumns method
      * @throws SQLException 
      */
+    @Test
     public final void testResultSetHasRequiredActionColumns() throws SQLException {
-        Connection conn = DataSourceFactory.getInstance().getConnection();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from events");
-        Collection<String> columns = new ArrayList<String>();
-        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
-        assertTrue(ap.getAction().resultSetHasRequiredActionColumns(rs, columns));
+        Connection conn = null;
+        try {
+            conn = DataSourceFactory.getInstance().getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select * from events");
+            Collection<String> columns = new ArrayList<String>();
+            AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+            assertTrue(ap.getAction().resultSetHasRequiredActionColumns(rs, columns));
+        } finally {
+            conn.close();
+        }
     }
 
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetAutomations() {
         assertEquals(7, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
+    @Test
     public final void testGetAutoEvents() {
         assertEquals(2, VacuumdConfigFactory.getInstance().getAutoEvents().size());
     }
@@ -200,6 +316,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetTriggers() {
         assertEquals(6,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
@@ -207,6 +324,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
@@ -217,6 +335,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetTrigger() {
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectAll"));
         assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount());
@@ -229,6 +348,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetAction() {
         assertNotNull(VacuumdConfigFactory.getInstance().getAction("clear"));
         assertNotNull(VacuumdConfigFactory.getInstance().getAction("escalate"));
@@ -238,6 +358,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test on a helper method.
      */
+    @Test
     public final void testGetAutomation() {
         assertNotNull(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
     }
@@ -245,6 +366,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Simple test running a trigger.
      */
+    @Test
     public final void testRunTrigger() throws InterruptedException {
         // Get all the triggers defined in the config
         Collection<Trigger> triggers = VacuumdConfigFactory.getInstance().getTriggers();
@@ -254,7 +376,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         String triggerSql = trigger.getStatement().getContent();
         MockUtil.println("Running trigger query: "+triggerSql);
         
-        int count = getJdbcTemplate().queryForList(triggerSql).size();
+        int count = m_jdbcTemplate.queryForList(triggerSql).size();
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         assertFalse("Testing the result rows:"+count+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
                 ap.getTrigger().triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), count));
@@ -266,48 +388,52 @@ public class VacuumdTest extends OpenNMSTestCase {
      * @throws SQLException
      * @throws InterruptedException 
      */
+    @Test
     public final void testRunAutomation() throws SQLException, InterruptedException {
         final int major = 6;
         
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(500);
+        Thread.sleep(1000);
         
-        assertEquals(1, verifyInitialAlarmState());
+        assertEquals(1, countAlarms());
         assertEquals(major, getSingleResultSeverity());
 
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
-        Thread.sleep(500);
+        Thread.sleep(1000);
         assertTrue(ap.runAutomation());        
         assertEquals(major+1, getSingleResultSeverity());
     }
     
+    @Test
     public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(500);
+        Thread.sleep(1000);
         
-        assertEquals(1, verifyInitialAlarmState());
+        assertEquals(1, countAlarms());
 
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         assertTrue(ap.runAutomation());
     }
     
+    @Test
     public final void testRunAutomationWithZeroResultsFromTrigger() throws InterruptedException, SQLException {
         bringNodeDownCreatingEvent(1);
-        Thread.sleep(500);
-        assertEquals(1, verifyInitialAlarmState());
+        Thread.sleep(1000);
+        assertEquals(1, countAlarms());
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults"));
-        Thread.sleep(200);
+        Thread.sleep(1000);
         assertTrue(ap.runAutomation());        
     }
     
     /**
-     * This tests the capabilities of the cosmicClear autmation as shipped in the standard build.
+     * This tests the capabilities of the cosmicClear automation as shipped in the standard build.
      * @throws InterruptedException 
      */
+    @Test
     public final void testCosmicClearAutomation() throws InterruptedException {
         // create node down events with severity 6
         bringNodeDownCreatingEvent(1);
@@ -317,47 +443,50 @@ public class VacuumdTest extends OpenNMSTestCase {
         bringNodeUpCreatingEvent(1);
         Thread.sleep(1000);
         
-        assertEquals("clearUei for nodeUp", "uei.opennms.org/nodes/nodeDown", getJdbcTemplate().queryForObject("select clearUei from alarms where eventUei = ?", String.class, "uei.opennms.org/nodes/nodeUp"));
-        
         // should have three alarms, one for each event
-        assertEquals("should have one alarm for each event", 3, getJdbcTemplate().queryForLong("select count(*) from alarms"));
+        assertEquals("should have one alarm for each event", 3, m_jdbcTemplate.queryForLong("select count(*) from alarms"));
 
-        // the automation should have cleared the nodeDown for node 1 so it should now have severity CLEARED == 2
-        assertEquals("alarms with severity == 2", 1, getJdbcTemplate().queryForLong("select count(*) from alarms where severity = 2"));
-
-        // There should still be a nodeUp alarm and an uncleared nodeDown alarm
-        assertEquals("alarms with severity > 2", 2, getJdbcTemplate().queryForLong("select count(*) from alarms where severity > 2"));
-
-        // run this automation again and make sure nothing happens since we've already processed the clear
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         ap.run();
         Thread.sleep(1000);
         
+        // the automation should have cleared the nodeDown for node 1 so it should now have severity CLEARED == 2
+        assertEquals("alarms with severity == 2", 1, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity = 2"));
+
+        // There should still be a nodeUp alarm and an uncleared nodeDown alarm
+        assertEquals("alarms with severity > 2", 2, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity > 2"));
+
+        // run this automation again and make sure nothing happens since we've already processed the clear
+        ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+        ap.run();
+        Thread.sleep(1000);
+        
         // same as above
-        assertEquals("alarms with severity == 2", 1, getJdbcTemplate().queryForLong("select count(*) from alarms where severity = 2"));
+        assertEquals("alarms with severity == 2", 1, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity = 2"));
 
         // save as above
-        assertEquals("alarms with severity > 2", 2, getJdbcTemplate().queryForLong("select count(*) from alarms where severity > 2"));
+        assertEquals("alarms with severity > 2", 2, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity > 2"));
     }
 
     /**
-     * This tests the capabilities of the cosmicClear automation as shipped in the standard build.
      * @throws InterruptedException 
      */
+    @Test
     public final void testSendEventWithParms() throws InterruptedException {
         // create node down events with severity 6
         bringNodeDownCreatingEventWithReason(1, "Testing node1");
         Thread.sleep(1000);
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("escalate"));
         ap.run();
-        Thread.sleep(500);
-        Map<String, Object> queryResult = getJdbcTemplate().queryForMap("SELECT eventuei, eventparms FROM events WHERE eventuei = 'uei.opennms.org/vacuumd/alarmEscalated'");
-        assertEquals("Parmater list sent from action event doesn't match", queryResult.get("eventParms"), "eventReason=Testing node1(string,text);alarmId=1(string,text)");
+        Thread.sleep(1000);
+        Map<String, Object> queryResult = m_jdbcTemplate.queryForMap("SELECT eventuei, eventparms FROM events WHERE eventuei = 'uei.opennms.org/vacuumd/alarmEscalated'");
+        assertEquals("Parameter list sent from action event doesn't match", "eventReason=Testing node1(string,text);alarmId=1(string,text)", queryResult.get("eventParms"));
     }
     
     /**
      * Test the ability to find tokens in a statement.
      */
+    @Test
     public void testGetTokenizedColumns() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
@@ -370,6 +499,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * Why not.
      */
+    @Test
     public final void testGetName() {
         assertEquals("OpenNMS.Vacuumd", m_vacuumd.getName());
     }
@@ -377,32 +507,32 @@ public class VacuumdTest extends OpenNMSTestCase {
     /**
      * 
      */
+    @Test
     public final void testRunUpdate() {
         //TODO Implement runUpdate().
     }
     
+    @Test
     public final void testGetTriggerSqlWithNoTriggerDefined() {
         Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
         AutomationProcessor ap = new AutomationProcessor(auto);
         assertEquals(null, ap.getTrigger().getTriggerSQL());
     }
     
-    /**
-     * Really only elminated some duplication here.  This
-     * method verifies that there is one alarm in the database
-     * when a test begins (based on setUp()).
-     * @return
-     */
-    private int verifyInitialAlarmState() {
-        return (int) getJdbcTemplate().queryForLong("select count(*) from alarms");
+    private int countAlarms() {
+        return (int) m_jdbcTemplate.queryForLong("select count(*) from alarms");
+    }
+
+    private int countEvents() {
+        return (int) m_jdbcTemplate.queryForLong("select count(*) from events");
     }
 
     /**
-     * Verifys for the concurrency test that the alarm escalated.
+     * Verifies for the concurrency test that the alarm escalated.
      * @return
      */
     private int verifyAlarmEscalated() {
-        return getJdbcTemplate().queryForInt("select severity from alarms");
+        return m_jdbcTemplate.queryForInt("select severity from alarms");
     }
 
     /**
@@ -410,7 +540,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * @return
      */
     private int getSingleResultSeverity() {
-        return getJdbcTemplate().queryForInt("select severity from alarms");
+        return m_jdbcTemplate.queryForInt("select severity from alarms");
     }
     
     private void bringNodeDownCreatingEvent(int nodeid) {

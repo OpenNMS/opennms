@@ -76,6 +76,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarmd</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
       <scope>compile</scope>
     </dependency>
