@@ -70,8 +70,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     @Transactional
     private void addOrReduceEventAsAlarm(Event event) {
+        //TODO: Understand why we use Assert
+        Assert.notNull(event, "Incoming event was null, aborting"); 
+        Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
         OnmsEvent e = m_eventDao.get(event.getDbid());
-        Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm."); //TODO: Understand why we use Assert
+        Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
     
         String reductionKey = event.getAlarmData().getReductionKey();
         log().debug("addOrReduceEventAsAlarm: looking for existing reduction key: "+reductionKey);
