@@ -319,6 +319,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     }    
     
+    @SuppressWarnings("unchecked")
     private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
@@ -549,6 +550,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
     
 
+    @SuppressWarnings("unchecked")
     private void syncMaps() throws ProvisioningAdapterException {
 
         try {
@@ -612,7 +614,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("syncMaps: map type: " + onmsMap.getType());
                             }
                         }
-                        // adding nodes to auto maps 
+                        // adding nodes to auto maps
                         for(OnmsNode node: m_onmsNodeDao.findAllProvisionedNodes()) {
                             log().debug("syncMaps: try to sync automated maps for node element: '" + node.getLabel() +"'");
                             Map<String, Celement> mapNameCelements = m_mapsAdapterConfig.getElementByAddress(getSuitableIp(node));
@@ -630,7 +632,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                        new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                     );
                                     m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
-                                } else {
+                                } else  if (m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_TYPE, onmsMap) == null &&
+                                            m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_HIDE_TYPE, onmsMap) == null) {
                                     m_onmsMapElementDao.save(
                                        new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                     );   
