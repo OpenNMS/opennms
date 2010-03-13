@@ -641,7 +641,7 @@ public class DBManager extends Manager {
 
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDelete);
-            statement.setString(1, Element.NODE_TYPE);
+            statement.setString(1, MapsConstants.NODE_TYPE);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -663,7 +663,7 @@ public class DBManager extends Manager {
 
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDelete);
-            statement.setString(1, Element.MAP_TYPE);
+            statement.setString(1, MapsConstants.MAP_TYPE);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -725,7 +725,7 @@ public class DBManager extends Manager {
         Connection conn = createConnection();
         String sqlQuery = null;
         try {
-            if (e.getType().equals(Element.MAP_TYPE)) {
+            if (e.getType().equals(MapsConstants.MAP_TYPE)) {
                 e.setIcon(Element.defaultMapIcon);
                 sqlQuery = "SELECT mapname FROM " + mapTable
                         + " WHERE mapId = ?";
@@ -737,7 +737,7 @@ public class DBManager extends Manager {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 e.setLabel(getLabel(rs.getString(1)));
-                if (e.getType().equals(Element.NODE_TYPE)) {
+                if (e.getType().equals(MapsConstants.NODE_TYPE)) {
                     String iconName = null;
                     if (rs.getString(2) != null
                             && getIconBySysoid(rs.getString(2)) != null) {
@@ -922,7 +922,7 @@ public class DBManager extends Manager {
             String sqlQuery = "select elementid,mapid from " + elementTable
                     + " where elementtype=?";
             PreparedStatement ps = conn.prepareStatement(sqlQuery);
-            ps.setString(1, Element.MAP_TYPE);
+            ps.setString(1, MapsConstants.MAP_TYPE);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Integer parentId = new Integer(rs.getInt("mapid"));
@@ -2050,11 +2050,11 @@ public class DBManager extends Manager {
             throws MapsException {
         log.debug("isElementNotDeleted: elementId=" + elementId + " type= "
                 + type);
-        if (type.equals(Element.MAP_TYPE)) {
+        if (type.equals(MapsConstants.MAP_TYPE)) {
             log.debug("isElementNotDeleted: elementId=" + elementId
                     + " type= " + type);
             return isMapInRow(elementId);
-        } else if (type.equals(Element.NODE_TYPE)) {
+        } else if (type.equals(MapsConstants.NODE_TYPE)) {
             log.debug("isElementNotDeleted: elementId=" + elementId
                     + " type= " + type);
             return isNodeInRow(elementId);

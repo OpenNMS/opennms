@@ -42,7 +42,6 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,56 +90,16 @@ public class RefreshMapController implements Controller {
 				.getOutputStream()));
 		VMap map = null;
 		try {
+            map = manager.openMap();
 			if (action.equals(MapsConstants.REFRESH_ACTION)) {
-				// First refresh Element objects
-				List<VElement> velements=manager.refreshMap();
-				//gets map refreshed
-				map = manager.openMap();
-				// Second Refresh Link Object on Map
-				// Now is done using a very simple way
-				// but really it's slow
-				// the alternative is anyway to analize all 
-				// links, 1 against other.
-				// So with this solution more traffic
-				// less stress on server
-				// more work on client
-				
-				// We are waiting to attempt to mapd
-				map.removeAllLinks();
-
-				// get all links on map
-				//List links = null;
-				List<VLink> links = manager.getLinks(velements);
-
-				// add links to map
-				map.addLinks(links.toArray(new VLink[links.size()]));
+				map = manager.refreshMap(map);
 			} 
 			
 			if (action.equals(MapsConstants.RELOAD_ACTION)) {
-				map = manager.openMap();
-				// First refresh Element objects
-				map = manager.reloadMap(map);
-				
-				// Second Refresh Link Object on Map
-				// Now is done using a very simple way
-				// but really it's slow
-				// the alternativ is anyway to analize all 
-				// links, 1 against other.
-				// So with this solution more traffic
-				// less stress on server
-				// more work on client
-				
-				// We are waiting to attempt to mapd
-				map.removeAllLinks();
-
-				// get all links on map
-				//List links = null;
-				List<VLink> links = manager.getLinks(map.getElements());
-
-				// add links to map
-				map.addLinks(links.toArray(new VLink[links.size()]));
+				map = manager.reloadMap(map);				
 			}
-			
+
+
 			if(map==null){
 				throw new MapNotFoundException();
 			}else{

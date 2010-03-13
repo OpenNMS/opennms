@@ -1,6 +1,7 @@
 // Here are defined all the global variables used in OpenNMS map application
 var suffix = "map";
 
+var failed_string = "Failed";
 //ACTIONS
 
 var LOADMAPS_ACTION = "LoadMaps";
@@ -33,6 +34,13 @@ var NEWMAP_ACTION = "NewMap";
 var OPENMAP_ACTION = "OpenMap";
 var CLOSEMAP_ACTION = "CloseMap";
 var SAVEMAP_ACTION = "SaveMap";
+
+function testResponse(action, response){
+		var tmpStr=response.substring(0,action.length+2);
+		if(tmpStr==(action+"OK"))
+			return true;
+		return false;
+}
 
 function loadDefaultMap(){
 	loading++;
@@ -177,10 +185,14 @@ function loadLabelMap(){
 }
 
 function handleLoadLabelMapResponse(data) {
-	if(data.success || data.status==200) {
-		var labelMap=eval("("+data.content+")");
-		for (var label in labelMap) {
-			alert(label);
+	var content= data.content;
+	if((data.success || data.status==200) && content.indexOf(failed_string) == -1) {
+	    
+		var labelMap=eval("("+content+")");
+		if ( labelMap != null ) {
+			for (var label in labelMap) {
+				alert(label);
+			}
 		}
 	}else{
 		alert("Load Label Map failed.");
@@ -622,28 +634,21 @@ function openMap(mapId){
 	loading++;
 	assertLoading();
 
-	getMapRequest ( OPENMAP_ACTION+"."+suffix+"?action="+OPENMAP_ACTION+"&MapId="+mapId+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&adminMode="+isAdminMode, null, handleLoadingMap, "text/xml", null );
+	getMapRequest ( OPENMAP_ACTION+"."+suffix+"?MapId="+mapId+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&adminMode="+isAdminMode, null, handleLoadingMap, "text/xml", null );
 }
 
 function handleLoadingMap(data) {
-	var str = '';
-	var failed = true;
-
-	if(data.success || data.status==200) {
-		str = data.content;
-		if(testResponse(OPENMAP_ACTION, str)){
-			str=str.substring(OPENMAP_ACTION.length+2,str.length);
-			action = OPENMAP_ACTION;
-			selectedMapInList=0;
-			failed = false;
-		}
-	}
-	if (failed) {
-		    alert('Open map failed');
-			loading--;
-			assertLoading();
-			enableMenu();
-			return;
+	var openingMap;
+    var failed = false;
+    var content = data.content;
+	if((data.success || data.status==200) && content.indexOf(OPENMAP_ACTION+failed_string) == -1) {
+		openingMap=eval("("+content+")");
+	} else {
+	    alert('Open map failed');
+		loading--;
+		assertLoading();
+		enableMenu();
+		return;
 	}
 
 	hideNodesIds = "";
@@ -651,91 +656,64 @@ function handleLoadingMap(data) {
 	hideMapsIds = "";
 	hasHideMaps = false;
 
-	var st = str.split("&");
-	for(var k=0;k<st.length;k++){
-		var nodeToken = st[k];
-		var nodeST = nodeToken.split("+");
-		if(k==0){
-			currentMapId=nodeST[0];
-			if(nodeST[1] !="null")
-				currentMapBackGround=nodeST[1];
-			else currentMapBackGround=DEFAULT_BG_COLOR;
+	currentMapId=openingMap.id
 
-			if(nodeST[2] !="null")
-			currentMapAccess=nodeST[2];
-					else currentMapAccess="";
+	if(openingMap.background !="null")
+		currentMapBackGround=openingMap.background;
+	else currentMapBackGround=DEFAULT_BG_COLOR;
 
-			if(nodeST[3] !="null")
-				currentMapName=nodeST[3];
-			else currentMapName="";
+	currentMapAccess=openingMap.accessMode;
 
-			if(nodeST[4] !="null")
-				currentMapOwner=nodeST[4];
-			else currentMapOwner="";
+	currentMapName=openingMap.name;
 
-			if(nodeST[5] !="null")
-				currentMapUserlast=nodeST[5];
-			else currentMapUserlast="";
+	currentMapOwner=openingMap.owner;
 
-			if(nodeST[6] !="null")
-				currentMapCreatetime=nodeST[6];
-			else currentMapCreatetime="";
+	currentMapUserlast=openingMap.userLastModifies;
 
-			if(nodeST[7] !="null")
-				currentMapLastmodtime=nodeST[7];
-			else currentMapLastmodtime="";
+	currentMapCreatetime=openingMap.createTimeString;
 
-			if(nodeST[8] !="null")
-				currentMapType=nodeST[8];
-			else currentMapType="";
+	currentMapLastmodtime=openingMap.lastModifiedTimeString;
 
-		}	
-		if (k>0 && nodeST.length > 6) {
-			var id,x,y,iconName,labelText,avail,status,severity;
+	if(openingMap.type !="null")
+		currentMapType=openingMap.type;
+	else currentMapType="";
+
+	for ( var elem in openingMap.elements ) {
+		var velem = openingMap.elements[elem];	
 			
-			id=nodeST[0];
-			x=nodeST[1];
-			y=nodeST[2];
-			iconName=nodeST[3];
-			labelText=nodeST[4];
-			avail=nodeST[5];
-			status=nodeST[6];
-			severity=nodeST[7];
+		if ( velem.node || velem.map ) {
+			var avail=velem.avail;
+			var status=velem.status;
+			var severity=velem.severity;
+ 		    var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
+		    var semaphoreFlash = getSemaphoreFlash(severity,avail);
+		    map.addMapElement(new MapElement(elem,velem.icon, velem.label, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity));
+		} else if (velem.hideNode ) {
+			if (hideNodesIds == "")
+				hideNodesIds=velem.id;
+			else 
+				hideNodesIds=hideNodesIds+','+velem.id;
+			hasHideNodes = true;
+		} else if ( velem.hideMap ) {
+			if (hideMapsIds == "")
+				hideMapsIds=velem.id;
+			else 
+				hideMapsIds=hideMapsIds+','+velem.id;
+			hasHideMaps = true;
 			
-			var testHideNode = id.indexOf('H');
-			var testHideMap = id.indexOf('W');
-			if ( testHideNode == -1 && testHideMap == -1 ) {
-			   var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
-			   var semaphoreFlash = getSemaphoreFlash(severity,avail);
-			   map.addMapElement(new MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
-			} else if (testHideMap == -1 ) {
-				var nodeid = id.substring(0,testHideNode);
-				if (hideNodesIds == "")
-					hideNodesIds=nodeid;
-				else 
-					hideNodesIds=hideNodesIds+','+nodeid;
-				hasHideNodes = true;
-			} else {
-				var mapid = id.substring(0,testHideMap);
-				if (hideMapsIds == "")
-					hideMapsIds=mapid;
-				else 
-					hideMapsIds=hideMapsIds+','+mapid;
-				hasHideMaps = true;
-				
-			}
 		}
-		if (k>0 && nodeST.length == 6) {
-			var id1,id2, typology, status,nodeid1,nodeid2;
-			id1=nodeST[0];
-			id2=nodeST[1];
-			typology=nodeST[2];
-			status=nodeST[3];
-			nodeid1=nodeST[4];
-			nodeid2=nodeST[5];
+	}
+	for ( var link in openingMap.links ) {
+		var id1, id2, typology, status,nodeid1,nodeid2;
+		var vlink = openingMap.links[link];
+		id1=vlink.first;
+		id2=vlink.second;
+		typology=vlink.linkTypeId;
+		status=vlink.linkStatusString;
+		nodeid1=vlink.firstNodeid;
+		nodeid2=vlink.secondNodeid;
 
-			map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
-		}
+		map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 	}
 	
 	savedMapString=getMapString();

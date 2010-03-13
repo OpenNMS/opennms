@@ -198,13 +198,6 @@ function trimAll(sString)
 	return sString;
 }
 
-function testResponse(action, response){
-		var tmpStr=response.substring(0,action.length+2);
-		if(tmpStr==(action+"OK"))
-			return true;
-		return false;
-}
-
 function openLink( link, params){
            var uriObj = parseUri(unescape(link));
 	   if ( uriObj.protocol =='' ) {

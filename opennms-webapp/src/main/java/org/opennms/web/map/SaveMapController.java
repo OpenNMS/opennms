@@ -112,7 +112,7 @@ public class SaveMapController implements Controller {
 				StringTokenizer nodeST = new StringTokenizer(nodeToken, ",");
 				int counter = 1;
 				String icon = "";
-				String type = Element.NODE_TYPE;
+				String type = MapsConstants.NODE_TYPE;
 
 				int id = 0, x = 0, y = 0;
 				while (nodeST.hasMoreTokens()) {
@@ -134,12 +134,12 @@ public class SaveMapController implements Controller {
 					}
 					counter++;
 				}
-				if (!type.equals(Element.NODE_TYPE)
-						&& !type.equals(Element.MAP_TYPE)) {
+				if (!type.equals(MapsConstants.NODE_TYPE)
+						&& !type.equals(MapsConstants.MAP_TYPE)) {
 					throw new MapsException("Map element type " + type
 							+ " not valid! Valid values are:"
-							+ Element.NODE_TYPE + " and "
-							+ Element.MAP_TYPE);
+							+ MapsConstants.NODE_TYPE + " and "
+							+ MapsConstants.MAP_TYPE);
 				}
 				
 				String label=null;

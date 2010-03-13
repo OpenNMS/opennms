@@ -62,7 +62,7 @@ public class VElement extends Element {
 	protected int severity = 0;
 
 	// this represents the global information elements
-	protected double rtc = 0;
+	protected double avail = 0;
 	
 	
 
@@ -118,12 +118,12 @@ public class VElement extends Element {
 			this.severity = severity;
 	}
 
-	public double getRtc() {
-		return rtc;
+	public double getAvail() {
+		return avail;
 	}
 	
-	public void setRtc(double rtc) {
-		this.rtc = rtc;
+	public void setAvail(double rtc) {
+		this.avail = rtc;
 	}
 	
     public boolean isChild() {
@@ -141,14 +141,14 @@ public class VElement extends Element {
     public boolean equalsIgnorePosition(VElement elem) {
     	if (this.getMapId() == elem.getMapId() &&
     		this.getId() == elem.getId() && this.type.equals( elem.getType()) &&
-    		this.rtc == elem.getRtc() && this.status == elem.getStatus() &&
+    		this.avail == elem.getAvail() && this.status == elem.getStatus() &&
 			this.severity == elem.getSeverity() && this.getLabel().equals( elem.getLabel() )) return true;
     	return false;
     }
 
     public boolean equalsIgnorePositionParentMap(VElement elem) {
     	if (this.getId() == elem.getId() && this.type.equals( elem.getType() ) &&
-    		this.rtc == elem.getRtc() && this.status == elem.getStatus() &&
+    		this.avail == elem.getAvail() && this.status == elem.getStatus() &&
 			this.severity == elem.getSeverity() && this.getLabel().equals( elem.getLabel())) return true;
     	return false;
     }

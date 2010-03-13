@@ -35,7 +35,6 @@
 package org.opennms.web.map.mapd;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +67,12 @@ public class ManagerMapdImpl implements Manager {
         
     }
 
+    public VMap createMapByLabelSearch(String label, String user)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public void deleteMap() throws MapsException, MapNotFoundException {
         // TODO Auto-generated method stub
         
@@ -84,13 +89,8 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public HashMap<Integer, Integer> getAllNodesOccursOnMap(VMap map)
+    public Map<Integer, Integer> getAllNodesOccursOnMap(VMap map)
             throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<String> getCategories() throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -112,7 +112,19 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
+    public InitializationObj getInitObj(boolean isUserAdmin)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public List<VLink> getLinks(Collection<VElement> elems)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Map<String, Set<Integer>> getNodeLabelToMaps(String user)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;
@@ -153,7 +165,7 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public List<VElement> refreshMap() throws MapsException {
+    public VMap refreshMap(VMap map) throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -166,22 +178,6 @@ public class ManagerMapdImpl implements Manager {
     public void save(VMap map) throws MapsException {
         // TODO Auto-generated method stub
         
-    }
-
-    public VMap createMapByLabelSearch(String label, String user) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Map<String, Set<Integer>> getNodeLabelToMaps(String user) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public InitializationObj getInitObj(boolean isUserAdmin)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

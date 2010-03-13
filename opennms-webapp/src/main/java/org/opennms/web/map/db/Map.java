@@ -8,6 +8,8 @@ package org.opennms.web.map.db;
 
 import java.sql.Timestamp;
 
+import org.opennms.web.map.view.VElement;
+
 // FIXME: We really need to rename this class so that it doesn't have the same class name as java.util.Map
 public class Map {
 
@@ -272,7 +274,7 @@ public class Map {
     }
 
     public void setId(int id) {
-        this.id = id;
+            this.id=id;
     }
 
     public boolean isNew() {

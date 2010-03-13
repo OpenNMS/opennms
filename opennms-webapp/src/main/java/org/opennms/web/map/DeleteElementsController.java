@@ -97,12 +97,12 @@ public class DeleteElementsController implements Controller {
 				log.debug("Got map from manager "+map);
 			
 			Integer[] nodeids = null;
-			String type = VElement.NODE_TYPE;
+			String type = MapsConstants.NODE_TYPE;
 
 			boolean actionfound = false;
 			if (action.equals(MapsConstants.DELETENODES_ACTION)) {
 				actionfound = true;
-				type = VElement.NODE_TYPE;
+				type = MapsConstants.NODE_TYPE;
 				String[] snodeids = elems.split(",");
 				nodeids = new Integer[snodeids.length];
 				for (int i = 0; i<snodeids.length;i++) {
@@ -112,7 +112,7 @@ public class DeleteElementsController implements Controller {
 			
 			if (action.equals(MapsConstants.DELETEMAPS_ACTION)) {
 				actionfound = true;
-				type = VElement.MAP_TYPE;
+				type = MapsConstants.MAP_TYPE;
 				String[] snodeids = elems.split(",");
 				nodeids = new Integer[snodeids.length];
 				for (int i = 0; i<snodeids.length;i++) {

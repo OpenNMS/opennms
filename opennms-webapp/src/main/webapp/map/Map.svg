@@ -84,8 +84,24 @@ function handleInit(data) {
 		reloadMap = mapsPropertiesFactory.reload;
 		contextMenuEnabled = mapsPropertiesFactory.contextMenuEnabled;
 		doubleClickEnabled = mapsPropertiesFactory.doubleClickEnabled;
-//		UNKNOWN_STATUS = mapsPropertiesFactory.unknownStatus.id;
 		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
+		
+		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
+		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
+		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
+		
+		NODE_TYPE = mapsPropertiesFactory.NODE_TYPE;
+		MAP_TYPE= mapsPropertiesFactory.MAP_TYPE;
+		NODE_HIDE_TYPE = mapsPropertiesFactory.NODE_HIDE_TYPE;
+		MAP_HIDE_TYPE= mapsPropertiesFactory.MAP_HIDE_TYPE;
+		
+		MAP_NOT_OPENED = mapsPropertiesFactory.MAP_NOT_OPENED;
+		NEW_MAP = mapsPropertiesFactory.NEW_MAP;
+		
+		currentMapId = MAP_NOT_OPENED;
+		currentMapBackGround = DEFAULT_BG_COLOR;
+		
+
 		var i=0;
 		
 		for (i=0;i<mapsPropertiesFactory.contextMenu.entries.length;i++) 
@@ -143,7 +159,7 @@ function handleInit(data) {
 		for(var icon in mapsPropertiesFactory.icons)
 		{
             MEIcons.push(icon);
-	    MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
+		    MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
         }
               
 		for (var image in mapsPropertiesFactory.backgroundImages)
@@ -178,17 +194,7 @@ function handleInit(data) {
 		refreshTimeMinsSorts.push(1200);
 		
 		refreshTimeMinsSortAss = assArrayPopulate(refreshTimeMins,refreshTimeMinsSorts);        
-               				
-		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
-		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
-		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
-		NODE_TYPE = mapsPropertiesFactory.NODE_TYPE;
-		MAP_TYPE= mapsPropertiesFactory.MAP_TYPE;
-		MAP_NOT_OPENED = mapsPropertiesFactory.MAP_NOT_OPENED;
-		NEW_MAP = mapsPropertiesFactory.NEW_MAP;
-		currentMapId = MAP_NOT_OPENED;
-		currentMapBackGround = DEFAULT_BG_COLOR;
-		categorySortAss = assArrayPopulate(categories,categorySorts);
+   		categorySortAss = assArrayPopulate(categories,categorySorts);
     	BGImagesSortAss = assArrayPopulate(BGImages,BGImagesSorts);		
     	MapElemDimSortAss = assArrayPopulate(MapElemDim,MapElemDimSorts);	
     	MEIconsSortAss = assArrayPopulate(MEIcons,MEIconsSorts);

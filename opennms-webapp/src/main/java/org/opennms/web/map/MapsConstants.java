@@ -55,7 +55,11 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String MAP_TYPE= "M";
 	
-	public static final String DEFAULT_BACKGROUND_COLOR = "ffffff";
+    public static final String NODE_HIDE_TYPE = "H";
+    
+    public static final String MAP_HIDE_TYPE= "W";
+
+    public static final String DEFAULT_BACKGROUND_COLOR = "ffffff";
 
 	// load infos
 	

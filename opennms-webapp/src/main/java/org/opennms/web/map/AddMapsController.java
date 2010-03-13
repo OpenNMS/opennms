@@ -95,7 +95,7 @@ public class AddMapsController implements Controller {
 			if(log.isDebugEnabled())
 				log.debug("Got map from manager "+map);
 			
-			String type = VElement.MAP_TYPE;
+			String type = MapsConstants.MAP_TYPE;
 			
 			log.debug("Adding maps by id: "+ elems);
 			String[] smapids = elems.split(",");
@@ -123,7 +123,7 @@ public class AddMapsController implements Controller {
 				} else {
 				    VElement ve = manager.newElement(id, type);
 	                try {
-	                    VElement hve = manager.getElement(map.getId(), id, VElement.MAP_HIDE_TYPE);
+	                    VElement hve = manager.getElement(map.getId(), id, MapsConstants.MAP_HIDE_TYPE);
 	                    if (hve.getLabel() != null) {
 	                        ve.setLabel(hve.getLabel());
 	                        log.debug("preserving label map is hidden: label found: " + hve.getLabel());
@@ -139,7 +139,7 @@ public class AddMapsController implements Controller {
 				//get links and add elements to map
 			if (velems != null) {
 				map.addElements(velems);
-				links = manager.getLinks(map.getElements());
+				links = manager.getLinks(map.getElements().values());
 			}
 			log.debug("After getting/adding links");
 			bw.write(ResponseAssembler.getAddMapsResponse(MapsConstants.ADDMAPS_ACTION, mapsWithLoop,velems, links));

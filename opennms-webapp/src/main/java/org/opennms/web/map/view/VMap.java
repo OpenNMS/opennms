@@ -42,12 +42,11 @@
 package org.opennms.web.map.view;
 
 import java.util.List;
-import java.sql.Timestamp;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
+
+import java.sql.Timestamp;
 
 import org.opennms.web.map.db.Map;
 
@@ -64,6 +63,9 @@ final public class VMap extends Map {
     
     public static final String DEFAULT_NAME = "NewMap";
     
+    String createTimeString;
+    String lastModifiedTimeString;
+    
     /**
      *  Create a new VMap with empty name.
      */
@@ -71,58 +73,7 @@ final public class VMap extends Map {
     	super();
     	super.setName(DEFAULT_NAME);
     }
-
-    public void setId(int id) {
-        super.setId(id);
-        VElement[] elements = getAllElements();
-        if (elements != null) {
-            for (VElement element : elements) {
-	            element.setMapId(id);
-	        }
-        }
-    }
-    
-    /**
-     * Copy constructor: create a VMap with all properties and elements of the input VMap without 
-     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.   
-     * @param map
-     */
-    public VMap(VMap map) {
-        super();
-        setAccessMode(map.getAccessMode());
-        setBackground(map.getBackground());
-        setName(map.getName());
-        setOffsetX(map.getOffsetX());
-        setOffsetY(map.getOffsetY());
-        setOwner(map.getOwner());
-        setScale(map.getScale());
-        setType(map.getType());
-        setWidth(map.getWidth());
-        setHeight(map.getHeight());
-        setUserLastModifies(map.getUserLastModifies());
-        addElements(map.getCloneAllElements());
-    }
-    
-    /**
-     * Copy constructor: create a VMap with all properties and elements of the input VMap without 
-     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.   
-     * @param map
-     */
-    public VMap(Map map) {
-        super();
-        setAccessMode(map.getAccessMode());
-        setBackground(map.getBackground());
-        setName(map.getName());
-        setOffsetX(map.getOffsetX());
-        setOffsetY(map.getOffsetY());
-        setOwner(map.getOwner());
-        setScale(map.getScale());
-        setType(map.getType());
-        setWidth(map.getWidth());
-        setHeight(map.getHeight());
-        setUserLastModifies(map.getUserLastModifies());
-    }
-    
+        
     /**
      * @param id
      * @param name
@@ -167,20 +118,7 @@ final public class VMap extends Map {
 
 
     public void addLink(VLink link) {
-    	// add a link only if map contains element.
-    	VElement first = link.getFirst();
-    	VElement second = link.getSecond();
-    	addElement(first);
-    	addElement(second);
     	links.put(link.getId(), link);
-    }
-
-    public void addLinks(VLink[] vl) {
-        if (vl != null) {
-	        for (VLink link : vl) {
-	            addLink(link);
-            }
-        }
     }
  
     public void addLinks(List<VLink> elems) {
@@ -205,20 +143,8 @@ final public class VMap extends Map {
     public VLink removeLink(VLink link) {
     	return links.remove(link.getId());
     }
-    
-    public VLink[] removeLinksOnElement(int id, String type) {
-     	VLink[] lnksToDelete = getLinksOnElement(id, type);
-    	List<VLink> links = new ArrayList<VLink>();
         
-    	for (int i = 0; i < lnksToDelete.length; i++) {
-    		links.add(removeLink(lnksToDelete[i])); 
-    	}
-        
-    	return links.toArray(new VLink[links.size()]);
-    }
-    
-    
-    public VLink[] getLinksOnElement(int id, String type) {
+    public List<VLink> getLinksOnElement(int id, String type) {
     	List<VLink> lns = new ArrayList<VLink>();
         
         for (String linkId : links.keySet()) {
@@ -227,11 +153,17 @@ final public class VMap extends Map {
     		}
     	}
         
-    	return lns.toArray(new VLink[lns.size()]);
+    	return lns;
     }
 
     public List<VLink> removeLinksOnElementList(int id, String type) {
-    	return Arrays.asList(removeLinksOnElement(id, type));
+        List<VLink> links = new ArrayList<VLink>();
+        
+        for (VLink vlink: getLinksOnElement(id, type)) {
+            links.add(removeLink(vlink)); 
+        }
+            
+    	return links;
     }
 
     public void removeElements(int[] ids, String type) {
@@ -246,41 +178,13 @@ final public class VMap extends Map {
     	return elements.get(getElementId(id, type));
     }
 
-    public VElement[] getAllElements() {
-    	if (elements.size() == 0) {
-    		return null;
-    	}
-        
-    	return elements.values().toArray(new VElement[elements.size()]);
+    public java.util.Map<String,VElement> getElements() {        
+        return elements;
     } 
 
-    public Collection<VElement> getElements() {        
-        return elements.values();
+    public java.util.Map<String,VLink> getLinks() {
+    	return links;
     } 
-
-    public VLink[] getAllLinks() {
-    	if (links.size() == 0) {
-    		return null;
-    	}
-        
-    	return links.values().toArray(new VLink[links.size()]);
-    } 
-
-    public VElement[] getCloneAllElements() {
-    	if (elements.size() == 0) {
-    		return null;
-    	}
-        
-    	VElement[] arrayElems = new VElement[elements.size()];
-    	Iterator<VElement> iterator = elements.values().iterator();
-    	int i = 0;
-        
-    	while (iterator.hasNext()) {
-    	    arrayElems[i++] = iterator.next().clone();
-    	}
-        
-        return arrayElems;
-    }     
     
     public void removeAllElements() {
         elements.clear();
@@ -369,4 +273,22 @@ final public class VMap extends Map {
     private String getElementId(int id, String type) {
         return id + type;
     }
+    
+    public String getCreateTimeString() {
+        return createTimeString;
+    }
+
+    public void setCreateTimeString(String createTimeString) {
+        this.createTimeString = createTimeString;
+    }
+
+    public String getLastModifiedTimeString() {
+        return lastModifiedTimeString;
+    }
+
+    public void setLastModifiedTimeString(String lastModifiedTimeString) {
+        this.lastModifiedTimeString = lastModifiedTimeString;
+    }
+
+
 }

@@ -105,7 +105,7 @@ public class AddNodesController implements Controller {
 				log.debug("Got map from manager "+map);
 			
 			Integer[] nodeids = null;
-			String type = VElement.NODE_TYPE;
+			String type = MapsConstants.NODE_TYPE;
 
 			boolean actionfound = false;
 			
@@ -184,7 +184,7 @@ public class AddNodesController implements Controller {
 
 					VElement ve = manager.newElement(elemId, type);
                     try {
-                        VElement hve = manager.getElement(map.getId(), elemId, VElement.NODE_HIDE_TYPE);
+                        VElement hve = manager.getElement(map.getId(), elemId, MapsConstants.NODE_HIDE_TYPE);
                         if (hve.getLabel() != null) {
                             ve.setLabel(hve.getLabel());
                             log.debug("preserving label map is hidden: label found: " + hve.getLabel());
@@ -201,7 +201,7 @@ public class AddNodesController implements Controller {
 				//get links and add elements to map
 				if (velems != null) {
 					map.addElements(velems);
-					links = manager.getLinks(map.getElements());
+					links = manager.getLinks(map.getElements().values());
 				}
 				
 				log.debug("After getting/adding links");

@@ -61,31 +61,21 @@ public class ResponseAssembler {
 	protected static String getRefreshResponse(String action, VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		VElement[] velements = map.getAllElements();
 		
 		
 		//checks for only changed velements 
 		String response=getActionOKMapResponse(action);
-		if (velements != null) {
-			for(int k=0; k<velements.length;k++){
-				VElement ve = velements[k];
-				response += "&" + ve.getId() + ve.getType() + "+"
-						+ ve.getIcon() + "+" + ve.getLabel();
-				response += "+" + ve.getRtc() + "+"
-						+ ve.getStatus() + "+" + ve.getSeverity()+ "+" + ve.getX()+ "+" + ve.getY();
-			}
+		for(VElement ve: map.getElements().values()){
+			response += "&" + ve.getId() + ve.getType() + "+"
+					+ ve.getIcon() + "+" + ve.getLabel();
+			response += "+" + ve.getAvail() + "+"
+					+ ve.getStatus() + "+" + ve.getSeverity()+ "+" + ve.getX()+ "+" + ve.getY();
 		}
-		VLink[] links = map.getAllLinks();
 		// construct string response considering links also
-		if (links != null) {
-			for(int k=0; k<links.length;k++){
-				VLink vl = (VLink) links[k];
-					response += "&" + vl.getFirst().getId()
-					+ vl.getFirst().getType() + "+"
-					+ vl.getSecond().getId()
-					+ vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
-					+ "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();
-			}
+		for(VLink vl : map.getLinks().values()){
+			response += "&" + vl.getFirst()+"+"
+			+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+			+ "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();
 		} 
 		log.debug("getRefreshResponse: String assembled: "+response);
 		return response;
@@ -109,7 +99,7 @@ public class ResponseAssembler {
 			VElement ve = it.next();
 			response += "&" + ve.getId() + ve.getType() + "+"
 			+ ve.getIcon() + "+" + ve.getLabel();
-			response += "+" + ve.getRtc() + "+"
+			response += "+" + ve.getAvail() + "+"
 			+ ve.getStatus() + "+" + ve.getSeverity() + "+" + "ADDED";
 		}
 		
@@ -118,10 +108,8 @@ public class ResponseAssembler {
 			Iterator<VLink> sub_ite = links.iterator();
 			while (sub_ite.hasNext()) {
 				VLink vl = sub_ite.next();
-				response += "&" + vl.getFirst().getId()
-						+ vl.getFirst().getType() + "+"
-						+ vl.getSecond().getId()
-	                    + vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+				response += "&" + vl.getFirst()+ "+"
+						+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
 	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
 				}
 		}		
@@ -151,7 +139,7 @@ public class ResponseAssembler {
 			VElement ve = it.next();
 			response += "&" + ve.getId() + ve.getType() + "+"
 			+ ve.getIcon() + "+" + ve.getLabel();
-			response += "+" + ve.getRtc() + "+"
+			response += "+" + ve.getAvail() + "+"
 			+ ve.getStatus() + "+" + ve.getSeverity() + "+"+"ADDED";
 		}
 		
@@ -160,10 +148,8 @@ public class ResponseAssembler {
 			Iterator<VLink> sub_ite = links.iterator();
 			while (sub_ite.hasNext()) {
 				VLink vl = sub_ite.next();
-				response += "&" + vl.getFirst().getId()
-						+ vl.getFirst().getType() + "+"
-						+ vl.getSecond().getId()
-	                    + vl.getSecond().getType()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+				response += "&" + vl.getFirst()+ "+"
+						+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
 	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
 				}
 		}		
@@ -216,68 +202,12 @@ public class ResponseAssembler {
 	 return strToSend;
 	}
 	
-	protected static String getMapResponse(String action, VMap map, float widthFactor, float heightFactor,boolean sendElements) {
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		
-		String strToSend=null;
-		String lastModTime = "";
-		String createTime = "";
-		String role = "";
-				
-		SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
-				
-		if(map!=null){
-			strToSend = action + "OK";
-			
-			if (map.getCreateTime() != null)
-				createTime = formatter.format(map.getCreateTime());
-			
-			if (map.getLastModifiedTime() != null)
-				lastModTime = formatter.format(map
-						.getLastModifiedTime());
-			if (map.getAccessMode() != null)
-				role = map.getAccessMode();
+	protected static String getMapResponse(VMap map) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
+        map.setLastModifiedTimeString(formatter.format(map.getLastModifiedTime()));
+        map.setCreateTimeString(formatter.format(map.getCreateTime()));
 
-			strToSend += map.getId() + "+" + map.getBackground();
-			strToSend +="+" + role + "+"
-				+ map.getName() + "+" + map.getOwner() + "+"
-				+ map.getUserLastModifies() + "+" + createTime
-				+ "+" + lastModTime+ "+" + map.getType();
-				
-			VElement[] elems = map.getAllElements();
-			if (elems != null) {
-				for (int i = 0; i < elems.length; i++) {
-					int x = (int) (elems[i].getX() * widthFactor);
-					int y = (int) (elems[i].getY() * heightFactor);
-	
-					strToSend += "&" + elems[i].getId()
-							+ elems[i].getType() + "+" + x + "+"
-							+ y + "+" + elems[i].getIcon() + "+"
-							+ elems[i].getLabel();
-					strToSend += "+" + elems[i].getRtc() + "+"
-							+ elems[i].getStatus() + "+"
-							+ elems[i].getSeverity();
-				}
-			}
-			
-			VLink[] links = map.getAllLinks();
-			if (links != null) {
-				for (int i = 0; i < links.length; i++) {
-					strToSend += "&" + links[i].getFirst().getId()
-							+ links[i].getFirst().getType() + "+"
-							+ links[i].getSecond().getId()
-							+ links[i].getSecond().getType()+ "+"
-							+links[i].getLinkTypeId() + "+"
-							+links[i].getLinkStatusString()+"+"
-							+ links[i].getFirstNodeid()+"+"+links[i].getSecondNodeid();         
-				}
-			}	
-		} else {
-			strToSend=action + "Failed";
-		}
-		log.debug("getMapResponse: String assembled: "+strToSend);
-		return strToSend;
+		 return JSONSerializer.toJSON(map).toString(); 
 	}
 	
 	protected static String getMapsResponse(String action, List<VMapInfo> maps) {

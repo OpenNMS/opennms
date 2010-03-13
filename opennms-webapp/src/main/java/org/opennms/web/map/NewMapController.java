@@ -101,7 +101,7 @@ public class NewMapController implements Controller {
 			VMap map = manager.newMap(VMap.DEFAULT_NAME, MapsConstants.ROLE_ADMIN, request
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.NEWMAP_ACTION, map, 1, 1, false));
+			bw.write(ResponseAssembler.getMapResponse(map));
 			} else {
 				log.warn(request.getRemoteUser() + ": User is not in Admin mode, cannot create new map");
 				bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));

@@ -92,8 +92,6 @@ public interface Manager {
 
     public void clearMap()throws MapNotFoundException, MapsException ;
 
-    public List<VLink> getLinks(Collection<VElement> elems) throws MapsException ;    
-    
     /**
      * gets all visible maps for user in input
      * @param user
@@ -164,7 +162,7 @@ public interface Manager {
      */
     public void save(VMap map) throws MapsException ;
         
-    public List<VElement> refreshMap() throws MapsException;
+    public VMap refreshMap(VMap map) throws MapsException;
         
     /**
      * Refreshs avail,severity and status of the map in input and its elements
@@ -179,6 +177,7 @@ public interface Manager {
 	
 	public VElementInfo[] getElementInfoLike(String like) throws MapsException;
 	
+    public List<VLink> getLinks(Collection<VElement> elems)  throws MapsException;
 	/**
      * Gets all nodes on the passed map (and its submaps) with theirs occurrences
      * @param map

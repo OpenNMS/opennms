@@ -11,14 +11,18 @@ import org.opennms.web.map.config.Severity;
 import org.opennms.web.map.config.Status;
 
 public class InitializationObj {
-	boolean availEnabled=true;
+    boolean isUserAdmin=false;
+    boolean reload=false;
+
 	boolean doubleClickEnabled=true;
 	boolean contextMenuEnabled=true;
-	boolean reload=false;
+    boolean availEnabled=true;
+    
 
-	boolean isUserAdmin=false;
-	
-	ContextMenu contextMenu;
+    int unknownstatusid;
+
+    ContextMenu contextMenu;
+
 	
 	List<Link> links;
 	List<LinkStatus> linkStatuses;
@@ -26,25 +30,28 @@ public class InitializationObj {
 	List<Severity> severities;
 	List<Avail> avails;
 	
-	java.util.Map<String,Icon> icons;
-	java.util.Map<String,String> iconsBySysoid;
+    int defaultMapElementDimension;
+    String mapScale;
+
+    java.util.Map<String,Icon> icons;
 	java.util.Map<String,String> backgroundImages;
 	java.util.Map<String, String> mapElementDimensions;
     
 	String defaultNodeIcon;
     String defaultMapIcon;
     String defaultBackgroundColor;
-    String mapScale;
+
 	
     String NODE_TYPE = MapsConstants.NODE_TYPE;
 	String MAP_TYPE=MapsConstants.MAP_TYPE;
+	String NODE_HIDE_TYPE=MapsConstants.NODE_HIDE_TYPE;
+	String MAP_HIDE_TYPE=MapsConstants.MAP_HIDE_TYPE;
 	
 	int MAP_NOT_OPENED = MapsConstants.MAP_NOT_OPENED;
 	int NEW_MAP = MapsConstants.NEW_MAP;
 
 	List<String> categories;
 	
-	int unknownstatusid;
 	
 	public int getUnknownstatusid() {
         return unknownstatusid;
@@ -166,14 +173,6 @@ public class InitializationObj {
         this.icons = icons;
     }
 
-    public java.util.Map<String, String> getIconsBySysoid() {
-        return iconsBySysoid;
-    }
-
-    public void setIconsBySysoid(java.util.Map<String, String> iconsBySysoid) {
-        this.iconsBySysoid = iconsBySysoid;
-    }
-
     public java.util.Map<String, String> getBackgroundImages() {
         return backgroundImages;
     }
@@ -229,6 +228,14 @@ public class InitializationObj {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public int getDefaultMapElementDimension() {
+        return defaultMapElementDimension;
+    }
+
+    public void setDefaultMapElementDimension(int defaultMapElementDimension) {
+        this.defaultMapElementDimension = defaultMapElementDimension;
     }
     
 }

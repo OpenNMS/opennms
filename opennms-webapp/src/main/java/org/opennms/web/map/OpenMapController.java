@@ -129,13 +129,13 @@ public class OpenMapController implements Controller {
 			 
 
 			if(map != null){
-				int oldMapWidth = map.getWidth();
-				int oldMapHeight = map.getHeight();
-				widthFactor = (float) mapWidth / oldMapWidth;
-				heightFactor = (float) mapHeight / oldMapHeight;
+				int dbMapWidth = map.getWidth();
+				int dbMapHeight = map.getHeight();
+				widthFactor = (float) mapWidth / dbMapWidth;
+				heightFactor = (float) mapHeight / dbMapHeight;
 
-				log.debug("Old saved mapWidth=" + oldMapWidth
-						+ " and MapHeight=" + oldMapHeight);
+				log.debug("Old saved mapWidth=" + dbMapWidth
+						+ " and MapHeight=" + dbMapHeight);
 				log.debug("widthFactor=" + widthFactor);
 				log.debug("heightFactor=" + heightFactor);
 				log.debug("Setting new width and height to the session map");
@@ -144,9 +144,13 @@ public class OpenMapController implements Controller {
 				map.setWidth(mapWidth);
 				map.setAccessMode(role);
 				
+				for (VElement ve : map.getElements().values()) {
+				    ve.setX((int) (ve.getX() * widthFactor));
+                    ve.setY((int) (ve.getY() * heightFactor));
+				}
 			}
 			
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.OPENMAP_ACTION, map,widthFactor,heightFactor,true));
+			bw.write(ResponseAssembler.getMapResponse(map));
 
 		} catch (Exception e) {
 			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user+", and role:"+role,e);
