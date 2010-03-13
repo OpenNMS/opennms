@@ -38,7 +38,6 @@ package org.opennms.netmgt.dao.castor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.reporting.DateParm;

@@ -87,33 +87,50 @@
 		</c:forEach>
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
-			<c:choose>
-				<c:when test="${ schedule && !date.useAbsoluteDate}">
-					<tr>
-						<td><c:out value="${date.displayName}"/></td>
-						<td>
-							<form:input path="dateParms[${dateParmRow.index}].count" />
-							<form:input path="dateParms[${dateParmRow.index}].interval" />
-							ago.
-						</td>
-					</tr>
-				</c:when>
-				<c:otherwise>
-					<tr>
-					<td>
-					<c:out value="${date.displayName}"/></td>
-						<td>
-							<form:input path="dateParms[${dateParmRow.index}].value" />
-							<script type="text/javascript">
-								Spring.addDecoration(new Spring.ElementDecoration({
-								elementId : "dateParms${dateParmRow.index}.value",
-								widgetType : "dijit.form.DateTextBox",
-								widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
-							</script>
-						</td>
-					</tr>
-				</c:otherwise>
-			</c:choose>
+			<tr>
+				<td><c:out value="${date.displayName}"/></td>
+				<td>
+				<c:choose>
+					<c:when test="${ schedule && !date.useAbsoluteDate}">
+						<form:select path="dateParms[${dateParmRow.index}].count">
+							<c:forEach var="count" begin="0" end="31">
+								<form:option value="${count}" />
+							</c:forEach>
+						</form:select>
+						<form:select path="dateParms[${dateParmRow.index}].interval">
+								<form:option value="day">day</form:option>
+								<form:option value="month">month</form:option>
+								<form:option value="year">year</form:option>
+	                	</form:select>	
+						ago.
+					</c:when>
+					<c:otherwise>
+						<form:input path="dateParms[${dateParmRow.index}].value" />
+						<script type="text/javascript">
+							Spring.addDecoration(new Spring.ElementDecoration({
+							elementId : "dateParms${dateParmRow.index}.value",
+							widgetType : "dijit.form.DateTextBox",
+							widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
+						</script>
+					</c:otherwise>
+				</c:choose>
+				<form:select path="dateParms[${dateParmRow.index}].hours">
+					<c:forEach var="hour" begin="0" end="23">
+						<form:option value="${hour}">
+							<fmt:formatNumber minIntegerDigits="2" value="${hour}" />
+						</form:option>
+					</c:forEach>
+				</form:select>
+				:
+				<form:select path="dateParms[${dateParmRow.index}].minutes">
+					<c:forEach var="minute" begin="0" end="59">
+						<form:option value="${minute}">
+							<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
+						</form:option>
+					</c:forEach>
+				</form:select>
+				</td>
+			</tr>
 		</c:forEach>
 	</table>
   

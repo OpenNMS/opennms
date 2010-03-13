@@ -216,9 +216,13 @@ public class AvailabilityReportService implements ReportService,
         }
 
         calculator.setCategoryName((String) reportParms.get("reportCategory"));
+        
+        log.debug("set availability calculator report category to: " + calculator.getCategoryName());
 
         calculator.setCalendar(new GregorianCalendar());
         calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
+        
+        log.debug("set availability calculator end date to: " + calculator.getPeriodEndDate().toString());
 
         calculator.setLogoURL(m_configDao.getLogo(reportId));
 
@@ -260,9 +264,14 @@ public class AvailabilityReportService implements ReportService,
         }
 
         calculator.setCategoryName((String) reportParms.get("reportCategory"));
+        
+        log.debug("set availability calculator report category to: " + calculator.getCategoryName());
+
 
         calculator.setCalendar(new GregorianCalendar());
         calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
+        
+        log.debug("set availability calculator end date to: " + calculator.getPeriodEndDate().toString());
 
         calculator.setLogoURL(m_configDao.getLogo(reportId));
 

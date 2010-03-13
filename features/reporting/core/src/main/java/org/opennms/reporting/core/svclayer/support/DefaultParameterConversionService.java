@@ -69,6 +69,12 @@ public class DefaultParameterConversionService implements
                 dateParm.setCount(new Integer((int) dates[i].getDefaultCount()));
                 dateParm.setInterval(dates[i].getDefaultInterval());
                 Calendar cal = Calendar.getInstance();
+                if (dates[i].getDefaultTime() != null) {
+                    dateParm.setHours(dates[i].getDefaultTime().getHours());
+                    cal.set(Calendar.HOUR, dateParm.getHours());
+                    dateParm.setMinutes(dates[i].getDefaultTime().getMinutes());
+                    cal.set(Calendar.MINUTE, dateParm.getMinutes());
+                }
                 int amount = 0 - dates[i].getDefaultCount();
                 if (dates[i].getDefaultInterval().equals("year")) {
                     cal.add(Calendar.YEAR, amount);
@@ -78,7 +84,7 @@ public class DefaultParameterConversionService implements
                     } else {
                         cal.add(Calendar.DATE, amount);
                     }
-                }   
+                }
                 dateParm.setValue(cal.getTime());
                 dateParms.add(dateParm);
             }
