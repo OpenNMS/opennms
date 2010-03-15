@@ -42,6 +42,19 @@ function testResponse(action, response){
 		return false;
 }
 
+function assArrayPopulate(arrayKeys,arrayValues) {
+	var returnArray = new Array();
+	if (arrayKeys.length != arrayValues.length) {
+		alert("Error: arrays do not have same length");
+	}
+	else {
+		for (i=0;i<arrayKeys.length;i++) {
+			returnArray[arrayKeys[i]] = arrayValues[i];
+		}
+	}
+	return returnArray;
+}
+
 function loadDefaultMap(){
 	loading++;
 	assertLoading();
@@ -126,6 +139,9 @@ function handleLoadMapsResponse(data) {
 	loading--;	
 	assertLoading();
 	mapsLoaded=true;
+	// Load also the maps label
+	loadLabelMap();
+	
 }
 
 function loadNodes(){
@@ -191,14 +207,22 @@ function handleLoadLabelMapResponse(data) {
 		var labelMap=eval("("+content+")");
 		if ( labelMap != null ) {
 			for (var label in labelMap) {
-				alert(label);
+//alert("Label found:" + label);
+			  var matchingMapLabels = new Array();
+			  for (var i=0; i<labelMap[label].length; i++) {
+					var mapid = labelMap[label][i];
+//alert("MapId found: " + mapid);
+//alert("MapName found: " + mapidSortAss[mapid]);
+			  	   matchingMapLabels.push(mapidSortAss[mapid]);
+			  }
+              nodeLabelMap[label]=matchingMapLabels;
 			}
 		}
 	}else{
 		alert("Load Label Map failed.");
 	}	
 	loading--;
-	assertLoading();
+	assertLoading();	
 }
 
 function addMapElement(id){

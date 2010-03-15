@@ -1,3 +1,7 @@
+// variable used only locally to this set of functions
+var selectedMapInList=0;
+var selMaps;
+
 // Menu Svg Object Basic Functions	
 function instantiateRWAdminMenu(){
 	mapMenu.removeChilds();
@@ -123,7 +127,7 @@ function instantiateMapGroupNormalMode() {
 	// *** MAP MENU FOR ADMINISTRATOR***
 	instantiateMapGroup();
 	id="AdminMode";
-	mapMenu.addElement(id, "Admin Mode", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp,null);
+	mapMenu.addElement(id, "Admin Mode", menuDeltaX,4*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp,null);
 }
 
 function instantiateMapGroup() {
@@ -131,7 +135,9 @@ function instantiateMapGroup() {
 	var id="Open";
 	mapMenu.addElement(id, id, menuDeltaX,menuDeltaY,menuWidth,menuHeight, addMapsList,null);
 	id="Close";
-	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, closeSetUp,null);	
+	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, closeSetUp,null);
+	id="Search";
+	mapMenu.addElement(id, id, menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, addSearchMapList,null);	
 }
 
 function instantiateRefreshGroupAdminMode() {
@@ -212,6 +218,67 @@ function newMapSetUp() {
 	newMap();
 }
 
+// Search Map
+function addSearchMapList()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterSearchMapSelectionList);
+	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
+	selMaps.sortList("asc");
+	selMaps.selectElementByPosition(0, false);
+	button1  = new button("button1","maps",searchMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+
+function filterSearchMapSelectionList(textboxId,value,changeType) {
+		
+		if (changeType == "change") {
+			var matchingMaps = new Array(); 
+			for(var i=0;i<nodeLabels.length;i++) {
+			    var nodeLabel = nodeLabels[i];
+//alert("parsing nodeLabel: " + nodeLabel + " against value: " + value);
+				if (nodeLabel.indexOf(value) >= 0) {
+				    var mapLbl = nodeLabelMap[nodeLabel];
+//alert("Map List size: " + mapLbl.length);
+					for (var j=0; j<mapLbl.length;j++ ){
+						alert("Adding matching map: " + mapLbl[j]);
+					    matchingMaps.push(mapLbl[j]);
+					}
+				}  
+			}
+			var elementInList = mapLabels.length;
+			for(var k=1;k<mapLabels.length;k++) {
+				var mapLabel = mapLabels[k];
+				var match = true;
+				for(var l=0;l<matchingMaps.length;l++) {
+					if (matchingMaps[l] == mapLabel ) {
+					   match = false;
+					   break;
+					}
+				}
+				if  ( match ) {
+					elementInList--;
+					if (selMaps.elementExists(mapLabel) >= 0) 
+						selMaps.deleteElement(mapLabel);
+				} else if (selMaps.elementExists(mapLabel) == -1 && match >= 0) {
+					selMaps.addElementAtPosition(mapLabel,k);
+				}
+			}
+		}
+}
+
+function searchMapSetUp(mapId)
+{
+
+	if (selectedMapInList == 0) {
+		alert("To be Implemented");
+	} else {
+		openMapSetUp(mapId);
+	}
+}
 // Open Map
 function addMapsList()
 {

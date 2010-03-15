@@ -33,19 +33,6 @@ function replaceSpecialChars(myString) {
 		return myString;
 }
 
-function assArrayPopulate(arrayKeys,arrayValues) {
-	var returnArray = new Array();
-	if (arrayKeys.length != arrayValues.length) {
-		alert("Error: arrays do not have same length");
-	}
-	else {
-		for (i=0;i<arrayKeys.length;i++) {
-			returnArray[arrayKeys[i]] = arrayValues[i];
-		}
-	}
-	return returnArray;
-}
-
 function httpRequest()
 {
     var xmlhttp;

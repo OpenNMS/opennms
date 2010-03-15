@@ -1,3 +1,4 @@
+
 //********* Variables to Manage Application ************
 
 //say if the menu is been opened or not
@@ -74,14 +75,14 @@ var hideNodesIds = "";
 var hasHideNodes = false;
 
 // variables for MAP ---maps are loaded by LoadMaps()
-var selectedMapInList=0;
-var selMaps;
-
 var mapLabels = [" "];
 var mapSortAss;
 var mapidSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
+
+// variables for search Map
+var nodeLabelMap =new Array();
 
 // variable to support the default map
 var defaultMap;

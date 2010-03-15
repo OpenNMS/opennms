@@ -65,7 +65,6 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 	
 	loadMaps();
 	loadNodes();
-	loadLabelMap();
 	loadDefaultMap();
 		
 	addLegend();
