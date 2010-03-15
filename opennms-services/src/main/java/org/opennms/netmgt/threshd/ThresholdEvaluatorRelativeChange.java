@@ -39,6 +39,7 @@ package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.apache.log4j.Category;
@@ -195,14 +196,16 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             eventParm = new Parm();
             eventParm.setParmName("value");
             parmValue = new Value();
-            parmValue.setContent(Double.toString(dsValue));
+            String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
+            DecimalFormat valueFormatter = new DecimalFormat(pattern);
+            parmValue.setContent(valueFormatter.format(dsValue));
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
             eventParm = new Parm();
             eventParm.setParmName("previousValue");
             parmValue = new Value();
-            parmValue.setContent(Double.toString(getPreviousTriggeringSample()));
+            parmValue.setContent(valueFormatter.format(getPreviousTriggeringSample()));
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 
