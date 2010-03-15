@@ -105,6 +105,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     // private JdbcEventWriter m_jdbcEventWriter;
     private MockNetwork m_mockNetwork = new MockNetwork();
 
+    @Autowired
     private Alarmd m_alarmd;
 
     @Autowired
@@ -134,17 +135,6 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
         m_eventdIpcMgr.setEventWriter(m_database);
 
-        m_alarmd = new Alarmd();
-        m_alarmd.setEventForwarder(m_eventdIpcMgr);
-        m_alarmd.setEventSubscriptionService(m_eventdIpcMgr);
-        AlarmPersisterImpl persister = new AlarmPersisterImpl();
-        persister.setAlarmDao(m_alarmDao);
-        persister.setEventDao(m_eventDao);
-        m_alarmd.setPersister(persister);
-        m_alarmd.afterPropertiesSet();
-        // Doesn't do anything yet
-        m_alarmd.start();
-        
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         OnmsNode node = new OnmsNode();
         node.setId(1);
@@ -191,7 +181,6 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     @Test
-    @Ignore
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         int numberOfAlarmsToReduce = 10;
 
