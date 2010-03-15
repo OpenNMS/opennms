@@ -648,6 +648,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             log().debug("passedThresholdFilters: resource=" + resourceDir.getName() + ", group=" + thresholdGroup + ", type=" + resourceType + ", filters=" + filters.length);
         }
         int count = 1;
+        String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
+        boolean andResult = true;
         for (ResourceFilter f : filters) {
             if (log().isDebugEnabled()) {
                 log().debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
@@ -664,8 +666,13 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                     if (log().isDebugEnabled()) {
                         log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
                     }
-                    if (pass) {
+                    if (operator.equals("or") && pass) {
                         return true;
+                    }
+                    if (operator.equals("and")) {
+                        andResult = andResult && pass;
+                        if (andResult == false)
+                            return false;
                     }
                 } catch (PatternSyntaxException e) {
                     log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
@@ -673,6 +680,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 }
             }
         }
+        if (operator.equals("and") && andResult)
+            return true;
         return false;
     }
     
