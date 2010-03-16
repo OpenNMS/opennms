@@ -207,13 +207,10 @@ function handleLoadLabelMapResponse(data) {
 		var labelMap=eval("("+content+")");
 		if ( labelMap != null ) {
 			for (var label in labelMap) {
-//alert("Label found:" + label);
 			  var matchingMapLabels = new Array();
 			  for (var i=0; i<labelMap[label].length; i++) {
-					var mapid = labelMap[label][i];
-//alert("MapId found: " + mapid);
-//alert("MapName found: " + mapidSortAss[mapid]);
-			  	   matchingMapLabels.push(mapidSortAss[mapid]);
+				var mapid = labelMap[label][i];
+			  	matchingMapLabels.push(mapidSortAss[mapid]);
 			  }
               nodeLabelMap[label]=matchingMapLabels;
 			}

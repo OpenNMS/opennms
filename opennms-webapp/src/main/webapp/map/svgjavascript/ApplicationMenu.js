@@ -239,10 +239,8 @@ function filterSearchMapSelectionList(textboxId,value,changeType) {
 			var matchingMaps = new Array(); 
 			for(var i=0;i<nodeLabels.length;i++) {
 			    var nodeLabel = nodeLabels[i];
-//alert("parsing nodeLabel: " + nodeLabel + " against value: " + value);
 				if (nodeLabel.indexOf(value) >= 0) {
 				    var mapLbl = nodeLabelMap[nodeLabel];
-//alert("Map List size: " + mapLbl.length);
 					for (var j=0; j<mapLbl.length;j++ ){
 						alert("Adding matching map: " + mapLbl[j]);
 					    matchingMaps.push(mapLbl[j]);
