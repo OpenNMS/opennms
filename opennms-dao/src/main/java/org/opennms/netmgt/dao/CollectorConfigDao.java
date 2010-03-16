@@ -42,14 +42,14 @@ import org.opennms.netmgt.config.collectd.Collector;
 
 public interface CollectorConfigDao {
 
-    public abstract int getSchedulerThreads();
+    int getSchedulerThreads();
 
-    public abstract Collection<Collector> getCollectors();
+    Collection<Collector> getCollectors();
 
-    public abstract void rebuildPackageIpListMap();
+    void rebuildPackageIpListMap();
     
-    public abstract Collection<CollectdPackage> getPackages();
+    Collection<CollectdPackage> getPackages();
     
-    public abstract CollectdPackage getPackage(String name);
+    CollectdPackage getPackage(String name);
 
 }

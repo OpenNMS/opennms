@@ -38,30 +38,30 @@ import org.opennms.netmgt.model.OnmsCriteria;
 
 public interface OnmsDao<T, K extends Serializable> {
     
-    public abstract void initialize(Object obj);
+    void initialize(Object obj);
 
-    public abstract void flush();
+    void flush();
 
-    public abstract void clear();
+    void clear();
 
-    public abstract int countAll();
+    int countAll();
 
-    public abstract void delete(T entity);
+    void delete(T entity);
 
-    public abstract List<T> findAll();
+    List<T> findAll();
     
-    public abstract List<T> findMatching(OnmsCriteria criteria);
+    List<T> findMatching(OnmsCriteria criteria);
 
-    public abstract int countMatching(final OnmsCriteria onmsCrit);
+    int countMatching(final OnmsCriteria onmsCrit);
     
-    public abstract T get(K id);
+    T get(K id);
 
-    public abstract T load(K id);
+    T load(K id);
 
-    public abstract void save(T entity);
+    void save(T entity);
 
-    public abstract void saveOrUpdate(T entity);
+    void saveOrUpdate(T entity);
 
-    public abstract void update(T entity);
+    void update(T entity);
 
 }

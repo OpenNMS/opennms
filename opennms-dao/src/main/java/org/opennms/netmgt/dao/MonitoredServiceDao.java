@@ -46,16 +46,16 @@ import org.opennms.netmgt.model.ServiceSelector;
  */
 public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integer> {
 
-    public abstract OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId);
+    OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId);
 
-    public abstract OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
+    OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
 
-    public abstract Collection<OnmsMonitoredService> findByType(String typeName);
+    Collection<OnmsMonitoredService> findByType(String typeName);
 
-    public abstract Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
+    Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
 
-    public abstract Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
+    Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
     
-    public abstract OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
+    OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
 
 }

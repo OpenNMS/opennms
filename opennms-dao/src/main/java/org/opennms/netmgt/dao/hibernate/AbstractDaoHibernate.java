@@ -53,6 +53,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     Class<T> m_entityClass;
 
     public AbstractDaoHibernate(Class<T> entityClass) {
+        super();
         m_entityClass = entityClass;
     }
 
