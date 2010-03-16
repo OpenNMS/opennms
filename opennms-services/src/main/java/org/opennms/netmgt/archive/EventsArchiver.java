@@ -255,7 +255,7 @@ public class EventsArchiver {
         // info logs
         if (m_logCat.isInfoEnabled()) {
             // get this in readable format
-            archAgeStr = (new java.util.Date(m_archAge)).toString();
+            archAgeStr = new java.util.Date(m_archAge).toString();
             m_logCat.info("Events archive age specified = " + archAgeStr);
             m_logCat.info("Events archive age in millisconds = " + archAge);
 

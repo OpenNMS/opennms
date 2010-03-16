@@ -88,6 +88,7 @@ public class JDBCPlugin extends AbstractPlugin {
      * Class constructor. Load the JDBC drivers.
      */
     public JDBCPlugin() {
+        super();
         log().info("JDBCPlugin class loaded");
     }
 

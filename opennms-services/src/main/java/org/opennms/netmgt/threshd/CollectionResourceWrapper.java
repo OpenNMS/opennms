@@ -211,7 +211,7 @@ public class CollectionResourceWrapper {
         }
         String value = null;
         File resourceDirectory = m_resource.getResourceDir(m_repository);
-        if (ds.equals("ID")) {
+        if ("ID".equals(ds)) {
             return resourceDirectory.getName();
         }
         try {

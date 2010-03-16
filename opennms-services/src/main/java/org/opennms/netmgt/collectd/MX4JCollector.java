@@ -47,6 +47,7 @@ import org.opennms.protocols.jmx.connectors.MX4JConnectionFactory;
 public class MX4JCollector extends JMXCollector {
 
   public MX4JCollector() {
+      super();
       setServiceName("mx4j");
       setUseFriendlyName(true);
   }

@@ -76,6 +76,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     private SnmpCollectionSet m_collectionSet;
 
     public SNMPCollectorEntry(Collection<SnmpAttributeType> attrList, SnmpCollectionSet collectionSet) {
+        super();
         if (attrList == null) {
             throw new NullPointerException("attrList is null!");
         }

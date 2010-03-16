@@ -260,7 +260,6 @@ public abstract class JMXCollector implements ServiceCollector {
         // Save local reference to singleton instance
 
         log.debug("initialize: successfully instantiated JNI interface to RRD.");
-        return;
     }
 
     /**
@@ -465,7 +464,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                     for(Object attribute : attrList) {
                                         List<String> compositeMemberKeys = new ArrayList<String>();
                                         Boolean isComposite = false;
-                                        Attribute attrib=(Attribute)attribute;;
+                                        Attribute attrib=(Attribute)attribute;
                                         for (String compAttrName : compAttribNames ) {
                                             String[] attribKeys = compAttrName.split("\\|", -1);
                                             if (attrib.getName().equals(attribKeys[0])) {
@@ -855,6 +854,7 @@ public abstract class JMXCollector implements ServiceCollector {
         CollectionAttributeType m_attribType;
         
         JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+            super();
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;

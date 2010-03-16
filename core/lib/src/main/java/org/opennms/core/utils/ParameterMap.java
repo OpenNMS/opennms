@@ -45,7 +45,7 @@ import java.util.StringTokenizer;
  * Convenience class for looking up string and integer values in a parameter
  * map.
  */
-public class ParameterMap extends Object {
+public abstract class ParameterMap {
 	
     /**
      * This method is used to lookup a specific key in the map. If the mapped
