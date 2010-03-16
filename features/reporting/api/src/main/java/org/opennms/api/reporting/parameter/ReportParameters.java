@@ -141,7 +141,9 @@ public class ReportParameters implements Serializable {
                     }
                 }
                 cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
-                cal.set(Calendar.MINUTE, parm.getMinutes());              
+                cal.set(Calendar.MINUTE, parm.getMinutes());
+                cal.set(Calendar.SECOND,0);
+                cal.set(Calendar.MILLISECOND,0);
                 parmMap.put(parm.getName(), cal.getTime());
             }
         }

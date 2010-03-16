@@ -14,6 +14,10 @@
 			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
 			</date-parm>
 			<int-parm name="offenderCount" display-name="top offender count" input-type="freeText">
 				<default>20</default>
@@ -30,6 +34,10 @@
 			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
 			</date-parm>
 			<int-parm name="offenderCount" display-name="top offender count" input-type="freeText">
 				<default>20</default>
