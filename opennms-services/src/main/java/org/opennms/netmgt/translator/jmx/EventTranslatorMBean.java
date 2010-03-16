@@ -38,12 +38,12 @@ package org.opennms.netmgt.translator.jmx;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public interface EventTranslatorMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public String status();
+    String status();
 
 }

@@ -44,25 +44,25 @@ import javax.management.MalformedObjectNameException;
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
 public interface SyslogHandlerMBean {
-    public void init();
+    void init();
 
-    public void destroy();
+    void destroy();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public void setPort(Integer port);
+    void setPort(Integer port);
 
-    public Integer getPort();
+    Integer getPort();
 
-    public int getStatus();
+    int getStatus();
 
-    public void addEventHandler(String name)
+    void addEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void removeEventHandler(String name)
+    void removeEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void setLogPrefix(String prefix);
+    void setLogPrefix(String prefix);
 }
