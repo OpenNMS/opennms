@@ -81,6 +81,7 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
@@ -123,6 +124,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     
     private Vacuumd m_vacuumd;
 
+    @Autowired
     private Alarmd m_alarmd;
     
     @Autowired
@@ -166,17 +168,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
         m_vacuumd.setEventManager(m_eventdIpcMgr);
         m_vacuumd.init();
 
-        m_alarmd = new Alarmd();
-        m_alarmd.setEventForwarder(m_eventdIpcMgr);
-        m_alarmd.setEventSubscriptionService(m_eventdIpcMgr);
-        AlarmPersisterImpl persister = new AlarmPersisterImpl();
-        persister.setAlarmDao(m_alarmDao);
-        persister.setEventDao(m_eventDao);
-        m_alarmd.setPersister(persister);
-        m_alarmd.afterPropertiesSet();
-        // Doesn't do anything yet
-        m_alarmd.start();
-
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         OnmsNode node = new OnmsNode();
         node.setId(1);
@@ -209,7 +200,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      * @throws InterruptedException
      */
     @Test
-    @Ignore
     public final void testConcurrency() throws InterruptedException {
         try {
         /*
@@ -240,47 +230,38 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
         assertEquals(PausableFiber.RUNNING, m_vacuumd.getStatus());
         assertEquals(PausableFiber.RUNNING, m_vacuumd.getScheduler().getStatus());
         
-        //Get an alarm in the db
+        // Get an alarm in the DB
         bringNodeDownCreatingEvent(1);
-        // Sleep and wait for the alarm to be written
-        Thread.sleep(1000);
-        
-        /*
-         * Changes to the automations to the config will
-         * probably affect this.  There should be one node down
-         * alarm.
-         */
-        assertEquals("event count", 3, countEvents());
+        // There should be one node down alarm
+        assertEquals("count of nodeDown events", 1, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
         assertEquals("alarm count", 1, countAlarms());
-        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms"));
+        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
+        // Fetch the initial severity of the alarm
+        int currentSeverity = m_jdbcTemplate.queryForInt("select severity from alarms");
 
         // Create another node down event
         bringNodeDownCreatingEvent(1);
-        // Sleep and wait for the alarm to be written
-        Thread.sleep(1000);
-
+        assertEquals("count of nodeDown events", 2, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
         // Make sure there's still one alarm...
         assertEquals("alarm count", 1, countAlarms());
         // ... with a counter value of 2
         assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
-        
-        /*
-         * Get the current severity, sleep long enough for the escalation
-         * automation to run, then check that it was escalated.
-         */
-        int currentSeverity = m_jdbcTemplate.queryForInt("select severity from alarms");
-        Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
-        assertEquals("alarm severity -- should have been escalated", currentSeverity+1, verifyAlarmEscalated());
-        
-        EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
-        Event e = builder.getEvent();
-        m_eventdIpcMgr.sendNow(e);
+
+        // Sleep long enough for the escalation automation to run, then check that it was escalated
+        Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval() + 500);
+        assertEquals("alarm severity wrong, should have been escalated", currentSeverity+1, verifyAlarmEscalated());
         } finally {
-        //Stop what you start.
+        // Stop what you start
         m_vacuumd.stop();
         }
     }
-    
+
+    public final void testConfigReload() {
+        EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
+        Event e = builder.getEvent();
+        m_eventdIpcMgr.sendNow(e);
+    }
+
     /**
      * Test resultSetHasRequiredActionColumns method
      * @throws SQLException 
@@ -390,20 +371,25 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      */
     @Test
     public final void testRunAutomation() throws SQLException, InterruptedException {
-        final int major = 6;
+        final int major = OnmsSeverity.MAJOR.getId();
         
         bringNodeDownCreatingEvent(1);
         Thread.sleep(1000);
         
         assertEquals(1, countAlarms());
         assertEquals(major, getSingleResultSeverity());
+        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms"));
 
         bringNodeDownCreatingEvent(1);
         Thread.sleep(1000);
 
+        assertEquals(1, countAlarms());
+        assertEquals(major, getSingleResultSeverity());
+        assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
+
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
+        assertTrue(ap.runAutomation());
         Thread.sleep(1000);
-        assertTrue(ap.runAutomation());        
         assertEquals(major+1, getSingleResultSeverity());
     }
     

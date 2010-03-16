@@ -56,7 +56,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /* (non-Javadoc)
+    /**
      * @see org.opennms.netmgt.alarmd.AlarmPersister#persist(org.opennms.netmgt.xml.event.Event)
      */
     public void persist(Event event) {
@@ -99,7 +99,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
     }
 
-    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
+    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
         // Update any dynamic fields that the user will want to see the latest 
@@ -110,7 +110,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         e.setAlarm(alarm);
     }
 
-    private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
+    private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
         OnmsAlarm alarm;
         alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());

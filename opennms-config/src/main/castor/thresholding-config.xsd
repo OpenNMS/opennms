@@ -171,6 +171,22 @@
         </documentation>
       </annotation>
     </attribute>
+    
+    <attribute name="filterOperator" use="optional" default="or">
+      <annotation>
+        <documentation>
+          The operator to be used when applying filters. The
+          default is "or". If you want to match all filters,
+          you should specify "and";
+        </documentation>
+      </annotation>
+      <simpleType>
+        <restriction base="string">
+          <pattern value="^([Oo][Rr])|([Aa][Nn][Dd])$"/>
+        </restriction>
+      </simpleType>
+    </attribute>
+    
   </complexType>
 
   <element name="resource-filter">

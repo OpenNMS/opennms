@@ -263,7 +263,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_distPoller = distPoller;
     }
 
-    // TODO change this to an Entity anre remove nodeid, ipaddr, serviceid
+    // TODO change this to an Entity and remove nodeid, ipaddr, serviceid
 	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")

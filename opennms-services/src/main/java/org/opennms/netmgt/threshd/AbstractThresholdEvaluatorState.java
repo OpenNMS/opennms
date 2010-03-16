@@ -2,6 +2,7 @@ package org.opennms.netmgt.threshd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         addEventParm(eventParms, "ds", getThresholdConfig().getDatasourceExpression());
         
         // Add last known value of the datasource fetched from its RRD file
-        addEventParm(eventParms, "value", Double.toString(dsValue));
+        addEventParm(eventParms, "value", formatValue(dsValue));
 
         // Add the instance name of the resource in question
         addEventParm(eventParms, "instance", resource.getInstance() != null ? resource.getInstance() : "null");
@@ -73,6 +74,12 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         event.setParms(eventParms);
         
         return event;
+    }
+
+    protected String formatValue(Double value) {
+        String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
+        DecimalFormat valueFormatter = new DecimalFormat(pattern);
+        return valueFormatter.format(value);
     }
 
     private void addEventParm(Parms parms, String key, String value) {
