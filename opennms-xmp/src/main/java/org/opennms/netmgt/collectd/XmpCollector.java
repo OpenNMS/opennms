@@ -363,7 +363,7 @@ public class XmpCollector implements ServiceCollector {
 
         // get our top-level object for our protocol config file,
         // xmp-config.xml, already parsed and ready to examine
-        XmpConfig protoConfig = XmpConfigFactory.getXmpConfig();
+        XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
 
         if (protoConfig.hasPort())
             xmpPort = protoConfig.getPort();

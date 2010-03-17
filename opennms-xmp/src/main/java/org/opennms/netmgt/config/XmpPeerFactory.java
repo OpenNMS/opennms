@@ -95,10 +95,6 @@ public class XmpPeerFactory extends PeerFactory {
         m_loaded = true;
     }
     
-    private static Category log() {
-        return ThreadCategory.getInstance(XmpPeerFactory.class);
-    }
-    
     public static synchronized void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         m_singleton = null;
         m_loaded = false;

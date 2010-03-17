@@ -79,7 +79,7 @@ public class XmpConfigFactory {
     private static XmpConfigFactory instance;
     private static boolean loadedFromFile = false;
     private static boolean initialized = false;
-    private static XmpConfig config = null;
+    private XmpConfig config = null;
 
     // initialize our class for the creation of instances
     public static void init() throws IOException, FileNotFoundException, MarshalException, ValidationException 
@@ -95,7 +95,7 @@ public class XmpConfigFactory {
         }
     }
 
-    public static XmpConfig getXmpConfig() { return config; }
+    public XmpConfig getXmpConfig() { return config; }
 
     public static XmpConfigFactory getInstance() { return instance; }
 

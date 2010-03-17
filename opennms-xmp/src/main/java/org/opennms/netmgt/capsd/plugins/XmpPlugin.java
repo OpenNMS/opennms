@@ -195,7 +195,7 @@ public final class XmpPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         Category log = ThreadCategory.getInstance(getClass());
-        XmpConfig protoConfig = XmpConfigFactory.getXmpConfig();
+        XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
         // TODO how to apply timeout and retry to XMP operations?
