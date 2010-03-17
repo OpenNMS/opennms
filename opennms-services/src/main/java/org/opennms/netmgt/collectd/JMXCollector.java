@@ -604,7 +604,6 @@ public abstract class JMXCollector implements ServiceCollector {
         return collectionSet;
     }
 
-    @SuppressWarnings("unchecked")
     private Set<ObjectName> getObjectNames(MBeanServerConnection mbeanServer, String objectName) throws IOException,
             MalformedObjectNameException {
         return mbeanServer.queryNames(new ObjectName(objectName), null);

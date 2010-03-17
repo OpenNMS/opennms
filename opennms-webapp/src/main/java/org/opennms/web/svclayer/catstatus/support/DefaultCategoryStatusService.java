@@ -144,17 +144,14 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		m_outageDao = outageDao;
 	}
 
-    @SuppressWarnings("unchecked")
     private List<Section> getSectionsForView(View view) {
         return view.getSectionCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getCategoriesForSection(Section section) {
         return section.getCategoryCollection();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getServicesForCategory(Category categoryDetail) {
         return categoryDetail.getServiceCollection();
     }

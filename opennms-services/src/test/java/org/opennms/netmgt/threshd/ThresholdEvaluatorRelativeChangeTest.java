@@ -355,14 +355,4 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
 		assertEquals("should not trigger", Status.NO_CHANGE, evaluator
 				.evaluate(-10.0));
     }
-
-
-    @SuppressWarnings("unchecked")
-    private static Collection<Parm> getParmCollection(Event event) {
-        if (event.getParms() == null) {
-            return new ArrayList<Parm>();
-        }
-        
-        return event.getParms().getParmCollection();
-    }
 }

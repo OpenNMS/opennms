@@ -112,7 +112,6 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
 
-    @SuppressWarnings("unchecked")
     private Set<AggregateStatusDefinition> getAggregateStatusDefinitionsForView(View view) {
         Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
         List<RowDef> rowDefs = view.getRows().getRowDefCollection();
@@ -131,7 +130,6 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
 
-    @SuppressWarnings("unchecked")
     private Set<OnmsCategory> getCategoriesForRowDef(RowDef rowDef) {
         Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
         
@@ -296,7 +294,6 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
 
-    @SuppressWarnings("unchecked")
     private RowDef getRowDef(View view, String rowLabel) {
         Rows rows = view.getRows();
         Collection<RowDef> rowDefs = rows.getRowDefCollection();

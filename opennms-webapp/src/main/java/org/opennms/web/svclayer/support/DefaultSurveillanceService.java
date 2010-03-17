@@ -331,7 +331,6 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return viewNames;
     }
     
-    @SuppressWarnings("unchecked")
     private Collection<View> getViewCollection() {
         return m_surveillanceConfigDao.getViews().getViewCollection();
     }

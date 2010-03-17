@@ -131,7 +131,6 @@ public class ScheduleEditorServlet extends HttpServlet {
             outages.remove(index);
         }
 
-        @SuppressWarnings("unchecked")
         private List<Outage> getOutages() {
             return m_outages.getOutageCollection();
         }
