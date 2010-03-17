@@ -1,5 +1,5 @@
 --- src/main/filtered/etc/eventconf.xml	2010-02-26 13:49:00.000000000 -0500
-+++ ./src/main/resources/contrib/qosdaemon/qos_example_configuration/opennms_fault_config/eventconf.xml	2010-01-05 15:46:07.000000000 -0500
++++ ./src/main/resources/contrib/qosdaemon/qos_example_configuration/opennms_fault_config/eventconf.xml	2010-03-17 10:42:09.000000000 -0400
 @@ -1,5 +1,8 @@
  <?xml version="1.0"?>
  <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
@@ -9,14 +9,7 @@
          <global>
                  <security>
                          <doNotOverride>logmsg</doNotOverride>
-@@ -263,16 +265,18 @@
-       <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
-       <descr>
-         &lt;p&gt;This event indicates the model-importer process has completed successfully. There 
--        is 1 parameter called importStats: %parm[importStats]%&lt;/p&gt;
-+        is 1 parameter called importStats: %parm[importStats]%&lt;/p&gt;
-       </descr>
-       <logmsg dest='logndisplay'>
+@@ -269,10 +272,12 @@
          &lt;p&gt;This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p&gt;
        </logmsg>
        <severity>Normal</severity>
@@ -39,7 +32,7 @@
      </event>
  <!-- New Importer Service Events -->
          <event>
-@@ -2191,8 +1749,11 @@
+@@ -2191,6 +2198,9 @@
    <event-file>events/Waverider.3000.events.xml</event-file>
    <event-file>events/Xerox-V2.events.xml</event-file>
    <event-file>events/Xerox.events.xml</event-file>
@@ -49,5 +42,3 @@
  
    <event-file>events/Standard.events.xml</event-file>
    <event-file>events/Translator.default.events.xml</event-file>
-   <event-file>events/default.events.xml</event-file>
- </events>
