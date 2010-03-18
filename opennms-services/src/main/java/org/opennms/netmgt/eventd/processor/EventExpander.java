@@ -732,13 +732,8 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 e.setMouseovertext(econf.getMouseovertext());
             }
 
-            // Copy the reductionKey
-            // TODO:  This isSecureTag call needs some research.  "You keep using that word.  I don't think it means what you think it means."
-            //        It looks to me like there should be an else here.  I could be wrong.
-            if (m_eventConfDao.isSecureTag("reduction-key") && m_eventConfDao.isSecureTag("alarm-type") && m_eventConfDao.isSecureTag("clear-uei")) {
-                e.setAlarmData(null);
-            }
-            
+            // TODO Do we need an isSecureTag() check here to see if any AlarmData fields 
+            // should be overridden?
             if (e.getAlarmData() == null && econf.getAlarmData() != null) {
                 AlarmData alarmData = new AlarmData();
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
