@@ -743,7 +743,6 @@ public final class EventExpander implements EventProcessor, InitializingBean {
                 AlarmData alarmData = new AlarmData();
                 alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
                 alarmData.setReductionKey(econf.getAlarmData().getReductionKey());
-                alarmData.setClearUei(econf.getAlarmData().getClearUei());
                 alarmData.setAutoClean(econf.getAlarmData().getAutoClean());
                 alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
                 alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());

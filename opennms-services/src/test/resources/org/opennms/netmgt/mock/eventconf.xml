@@ -843,7 +843,7 @@
     <logmsg dest='logndisplay'>Node %parm[nodelabel]% is up.</logmsg>
     <severity>Cleared</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2"
-      clear-uei="uei.opennms.org/nodes/nodeDown" />
+      clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" />
   </event>
   <event>
     <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>

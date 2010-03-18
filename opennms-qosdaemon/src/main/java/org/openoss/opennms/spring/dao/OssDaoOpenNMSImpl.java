@@ -566,12 +566,12 @@ public class OssDaoOpenNMSImpl {
 				"\t\tsuppressedTime \t" + 	alarm.getSuppressedTime()+"\n"+ //suppressedTime
 				"\t\talarmAckUser \t" + 	alarm.getAlarmAckUser()+"\n"+ //alarmAckUser
 				"\t\talarmAckTime \t" + 	alarm.getAlarmAckTime()+"\n"+ //alarmAckTime
-				"\t\tclearUei   \t" + 	alarm.getClearUei()+"\n"+ //clearUei        
+				"\t\tclearKey   \t" + 	alarm.getClearKey()+"\n"+ //clearKey
 				"\t\tmanagedObjectInstance \t" + 	alarm.getManagedObjectInstance()+"\n"+ //managedObjectInstance        
 				"\t\tmanagedObjectType \t" + 	alarm.getManagedObjectType()+"\n"+ //managedObjectType
 				"\t\tapplicationDN \t" + 	alarm.getApplicationDN()+"\n"+ //applicationDN
 				"\t\tossPrimaryKey \t" + 	alarm.getOssPrimaryKey()+"\n"+ //ossPrimaryKey
-				"\t\talarmID \t" + 	alarm.getId()+ //alarmID
+				"\t\talarmID \t" + 	alarm.getId()+"\n"+ //alarmID
 			    "\t\tqosAlarmState \t" + 	alarm.getQosAlarmState(); //qosAlarmState
 		}
 		return s;

@@ -920,8 +920,6 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# suppressedTime : time the alarm was suppressed
 --# alarmAckUser : user that acknowledged the alarm
 --# alarmAckTime : time user Ack'd the alarm
---# clearUei	   : Populated if alarm is a resolving alarm and can used
---#             : to clear problem alarms.
 --########################################################################
 
 create table alarms (
@@ -949,7 +947,6 @@ create table alarms (
 	suppressedTime		timestamp with time zone,
 	alarmAckUser			VARCHAR(256),
 	alarmAckTime			timestamp with time zone,
-	clearUei				VARCHAR(256),
 	managedObjectInstance	VARCHAR(512),
 	managedObjectType		VARCHAR(512),
 	applicationDN			VARCHAR(512),
