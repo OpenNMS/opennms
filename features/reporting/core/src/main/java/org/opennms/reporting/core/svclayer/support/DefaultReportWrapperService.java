@@ -41,8 +41,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -125,20 +125,20 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     }
 
-    public void run(ReportParameters reportParms,
+    public void run(ReportParameters parameters,
             DeliveryOptions deliveryOptions, String reportId) {
         if (!deliveryOptions.getPersist()) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BufferedOutputStream bout = new BufferedOutputStream(out);
             getReportService(reportId).runAndRender(
-                                                    reportParms.getReportParms(),
+                                                    parameters.getReportParms(),
                                                     reportId,
                                                     deliveryOptions.getFormat(),
                                                     bout);
             mailReport(deliveryOptions, out);
         } else {
             String outputPath = getReportService(reportId).run(
-                                                               reportParms.getReportParms(),
+                                                               parameters.getReportParms(),
                                                                reportId);
             ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
             catalogEntry.setReportId(reportId);
@@ -195,9 +195,9 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
     }
 
-    public boolean validate(ReportParameters reportParms, String reportId) {
+    public boolean validate(ReportParameters parameters, String reportId) {
         return getReportService(reportId).validate(
-                                                   reportParms.getReportParms(),
+                                                   parameters.getReportParms(),
                                                    reportId);
     }
 
@@ -214,10 +214,10 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         m_reportStoreService = reportStoreService;
     }
 
-    public void runAndRender(HashMap<String, Object> reportParms,
-            String reportId, ReportFormat format, OutputStream outputStream) {
+    public void runAndRender(ReportParameters parameters, OutputStream outputStream) {
 
         //TODO remove this debug code
+        Map <String, Object> reportParms = parameters.getReportParms();
         for (String key : reportParms.keySet()) {
             String value;
             if (reportParms.get(key) == null) {
@@ -228,8 +228,8 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             log.debug("param " + key + " set " + value);
         }
 
-        getReportService(reportId).runAndRender(reportParms, reportId,
-                                                format, outputStream);
+        getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(), parameters.getReportId(),
+                                                parameters.getFormat(), outputStream);
 
     }
 

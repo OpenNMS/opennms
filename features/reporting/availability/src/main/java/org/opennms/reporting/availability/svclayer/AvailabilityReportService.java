@@ -53,7 +53,6 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
-import org.opennms.api.reporting.ReportValidationService;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
@@ -67,8 +66,7 @@ import org.opennms.reporting.core.svclayer.ParameterConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
-public class AvailabilityReportService implements ReportService,
-        ReportValidationService {
+public class AvailabilityReportService implements ReportService {
 
     private AvailabilityCalculator m_classicCalculator;
 
