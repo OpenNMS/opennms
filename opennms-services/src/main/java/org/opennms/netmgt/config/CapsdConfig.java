@@ -55,24 +55,24 @@ public interface CapsdConfig {
      * ifindex in the ipinterface table for SNMP hosts that don't support
      * the MIB2 ipAddrTable
      */
-    public static final int LAME_SNMP_HOST_IFINDEX = -100;
+    static final int LAME_SNMP_HOST_IFINDEX = -100;
 
     /**
      * Saves the current in-memory configuration to disk and reloads
      */
-    public abstract void save() throws MarshalException, IOException, ValidationException;
+    void save() throws MarshalException, IOException, ValidationException;
 
     /**
      * Return the Capsd configuration object.
      */
-    public abstract CapsdConfiguration getConfiguration();
+    CapsdConfiguration getConfiguration();
 
     /**
      * Finds the SMB authentication object using the netbios name.
      * 
      * The target of the search.
      */
-    public abstract SmbAuth getSmbAuth(String target);
+    SmbAuth getSmbAuth(String target);
 
     /**
      * Checks the configuration to determine if the target is managed or
@@ -81,36 +81,36 @@ public interface CapsdConfig {
      * @param target
      *            The target to check against.
      */
-    public abstract boolean isAddressUnmanaged(InetAddress target);
+    boolean isAddressUnmanaged(InetAddress target);
 
     /**
      * 
      */
-    public abstract long getRescanFrequency();
+    long getRescanFrequency();
 
     /**
      * 
      */
-    public abstract long getInitialSleepTime();
+    long getInitialSleepTime();
 
     /**
      * 
      */
-    public abstract int getMaxSuspectThreadPoolSize();
+    int getMaxSuspectThreadPoolSize();
 
     /**
      * 
      */
-    public abstract int getMaxRescanThreadPoolSize();
+    int getMaxRescanThreadPoolSize();
 
     /**
      * Defines Capsd's behavior when, during a protocol scan, it gets a
      * java.net.NoRouteToHostException exception. If abort rescan property is
      * set to "true" then Capsd will not perform any additional protocol scans.
      */
-    public abstract boolean getAbortProtocolScansFlag();
+    boolean getAbortProtocolScansFlag();
 
-    public abstract boolean getDeletePropagationEnabled();
+    boolean getDeletePropagationEnabled();
 
     /**
      * Return the boolean xmlrpc as string to indicate if notification to
@@ -118,31 +118,31 @@ public interface CapsdConfig {
      * 
      * @return boolean flag as a string value
      */
-    public abstract String getXmlrpc();
+    String getXmlrpc();
     
-    public abstract boolean isXmlRpcEnabled();
+    boolean isXmlRpcEnabled();
     
-    public abstract ProtocolPlugin getProtocolPlugin(String svcName);
+    ProtocolPlugin getProtocolPlugin(String svcName);
 
-    public abstract void addProtocolPlugin(ProtocolPlugin plugin);
+    void addProtocolPlugin(ProtocolPlugin plugin);
     
-    public abstract InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict);
+    InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict);
 
-    public abstract List<String> getConfiguredProtocols();
+    List<String> getConfiguredProtocols();
 
-    public abstract List<ProtocolPlugin> getProtocolPlugins();
+    List<ProtocolPlugin> getProtocolPlugins();
 
-    public abstract List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin);
+    List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin);
 
-    public abstract List<String> getSpecifics(ProtocolConfiguration pluginConf);
+    List<String> getSpecifics(ProtocolConfiguration pluginConf);
 
-    public abstract List<Range> getRanges(ProtocolConfiguration pluginConf);
+    List<Range> getRanges(ProtocolConfiguration pluginConf);
 
-    public abstract List<Property> getPluginProperties(ProtocolPlugin plugin);
+    List<Property> getPluginProperties(ProtocolPlugin plugin);
 
-    public abstract List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf);
+    List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf);
 
-    public abstract long toLong(InetAddress start);
+    long toLong(InetAddress start);
 
 
 
