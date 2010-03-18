@@ -87,15 +87,15 @@ public class PollerConfigServlet extends HttpServlet {
 
     protected String redirectSuccess;
 
-    HashMap pollerServices = new HashMap();
+    HashMap<String, Service> pollerServices = new HashMap<String, Service>();
 
-    HashMap capsdProtocols = new HashMap();
+    HashMap<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
 
-    java.util.List capsdColl = new ArrayList();
+    java.util.List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
 
     org.opennms.netmgt.config.poller.Package pkg = null;
 
-    Collection pluginColl = null;
+    Collection<ProtocolPlugin> pluginColl = null;
 
     Properties props = new Properties();
 
@@ -104,13 +104,9 @@ public class PollerConfigServlet extends HttpServlet {
     CapsdConfig capsdFactory = null;
 
     public void init() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -137,13 +133,9 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     public void reloadFiles() throws ServletException {
-        String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
             PollerConfigFactory.init();
             pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
@@ -172,9 +164,9 @@ public class PollerConfigServlet extends HttpServlet {
     public void initCapsdProtocols() {
         pluginColl = capsdConfig.getProtocolPluginCollection();
         if (pluginColl != null) {
-            Iterator pluginiter = pluginColl.iterator();
+            Iterator<ProtocolPlugin> pluginiter = pluginColl.iterator();
             while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = (ProtocolPlugin) pluginiter.next();
+                ProtocolPlugin plugin = pluginiter.next();
                 capsdColl.add(plugin);
                 capsdProtocols.put(plugin.getProtocol(), plugin);
             }
@@ -199,16 +191,12 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletConfig config = this.getServletConfig();
-        ServletContext context = config.getServletContext();
-        String user_id = request.getRemoteUser();
-        Enumeration en = context.getAttributeNames();
         reloadFiles();
 
         String query = request.getQueryString();
         if (query != null) {
-            java.util.List checkedList = new ArrayList();
-            java.util.List deleteList = new ArrayList();
+            java.util.List<String> checkedList = new ArrayList<String>();
+            java.util.List<String> deleteList = new ArrayList<String>();
 
             props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
             StringTokenizer strTok = new StringTokenizer(query, "&");
@@ -240,7 +228,6 @@ public class PollerConfigServlet extends HttpServlet {
             adjustNonChecked(checkedList);
             deleteThese(deleteList);
 
-            StringWriter stringWriter = new StringWriter();
             FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
             FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
             try {
@@ -260,15 +247,15 @@ public class PollerConfigServlet extends HttpServlet {
 
     public void deleteCapsdInfo(String name) {
         if (capsdProtocols.get(name) != null) {
-            ProtocolPlugin tmpproto = (ProtocolPlugin) capsdProtocols.get(name);
+            ProtocolPlugin tmpproto = capsdProtocols.get(name);
             capsdProtocols.remove(name);
             pluginColl = capsdProtocols.values();
             capsdColl.remove(tmpproto);
-            capsdConfig.setProtocolPluginCollection(new ArrayList(pluginColl));
+            capsdConfig.setProtocolPluginCollection(new ArrayList<ProtocolPlugin>(pluginColl));
         }
     }
 
-    public void adjustNonChecked(java.util.List checkedList) {
+    public void adjustNonChecked(java.util.List<String> checkedList) {
         if (pkg != null) {
             Collection svcColl = pkg.getServiceCollection();
             Service svc = null;
@@ -288,10 +275,10 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
-    public void deleteThese(java.util.List deleteServices) throws IOException {
-        ListIterator lstIter = deleteServices.listIterator();
+    public void deleteThese(java.util.List<String> deleteServices) throws IOException {
+        ListIterator<String> lstIter = deleteServices.listIterator();
         while (lstIter.hasNext()) {
-            String svcname = (String) lstIter.next();
+            String svcname = lstIter.next();
 
             if (pkg != null) {
                 boolean flag = false;
