@@ -662,17 +662,20 @@ public class ThresholdingVisitorTest {
         
         /*
          * Run Visitor
-         * I must receive 2 warnings because getEntityMap should be called 2 times.
+         * I must receive 2 special info events because getEntityMap should be called 2 times.
          * One for each attribute and one for each resource.
          * Original code will throw a NullPointerException after call getEntityMap.
+         * Original code expects WARNs, but this message is now an INFO.
          */
-        m_defaultErrorLevelToCheck = Level.ERROR;
         resource.visit(visitor);
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("expecting 2 events", 2, events.length);
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
+        int count = 0;
+        String expectedMsg = "getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.";
         for (LoggingEvent e : events) {
-            assertEquals("getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.", e.getMessage());
+            if (e.getMessage().equals(expectedMsg))
+                count++;
         }
+        assertEquals("expecting 2 events", 2, count);
     }
 
     /*
