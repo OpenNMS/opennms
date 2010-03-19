@@ -57,7 +57,7 @@
           </complexType>
         </element>
 
-        <element name="auto-events">
+        <element name="auto-events" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
               <element ref="this:auto-event" maxOccurs="unbounded" minOccurs="0" />
