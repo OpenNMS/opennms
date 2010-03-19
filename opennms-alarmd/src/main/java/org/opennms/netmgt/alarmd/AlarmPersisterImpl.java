@@ -115,7 +115,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
-        alarm.setClearUei(event.getAlarmData().getClearUei());
         alarm.setCounter(1);
         alarm.setDescription(e.getEventDescr());
         alarm.setDistPoller(e.getDistPoller());

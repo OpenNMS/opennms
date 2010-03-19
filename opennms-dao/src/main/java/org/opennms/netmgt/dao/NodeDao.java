@@ -50,45 +50,45 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param lookupCriteria the criteria, either the node ID, or a colon-separated string of foreignSource:foreignId
      * @return the node
      */
-    public abstract OnmsNode get(String lookupCriteria);
+    OnmsNode get(String lookupCriteria);
     
-    public abstract Collection<OnmsNode> findByLabel(String label);
+    Collection<OnmsNode> findByLabel(String label);
     
-    public abstract Collection<OnmsNode> findNodes(OnmsDistPoller dp);
+    Collection<OnmsNode> findNodes(OnmsDistPoller dp);
     
-    public abstract OnmsNode getHierarchy(Integer id);
+    OnmsNode getHierarchy(Integer id);
     
-    public abstract Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
+    Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
+    Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
     
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
+    Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
             Collection<OnmsCategory> categories);
     
-    public abstract Collection<OnmsNode> findByCategory(OnmsCategory category);
+    Collection<OnmsNode> findByCategory(OnmsCategory category);
     
-    public abstract Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
+    Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
 
-    public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
+    Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
     
     /**
      * Returns a list of nodes ordered by label.
      */
-    public abstract List<OnmsNode> findAll();
+    List<OnmsNode> findAll();
 
-    public abstract List<OnmsNode> findByForeignSource(String foreignSource);
+    List<OnmsNode> findByForeignSource(String foreignSource);
     
-    public abstract OnmsNode findByForeignId(String foreignSource, String foreignId);
+    OnmsNode findByForeignId(String foreignSource, String foreignId);
 
-    public abstract int getNodeCountForForeignSource(String groupName);
+    int getNodeCountForForeignSource(String groupName);
     
-    public abstract List<OnmsNode> findAllProvisionedNodes();
+    List<OnmsNode> findAllProvisionedNodes();
     
-    public abstract List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp);
+    List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp);
 
-    public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
+    void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
-    public abstract void updateNodeScanStamp(Integer nodeId, Date scanStamp);
+    void updateNodeScanStamp(Integer nodeId, Date scanStamp);
 
-    public abstract Collection<Integer> getNodeIds();
+    Collection<Integer> getNodeIds();
 }

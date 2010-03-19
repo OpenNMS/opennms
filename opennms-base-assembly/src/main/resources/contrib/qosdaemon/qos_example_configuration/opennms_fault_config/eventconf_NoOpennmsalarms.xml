@@ -757,7 +757,8 @@
 		</logmsg>
 		<severity>Normal</severity>
         <!--
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/nodes/interfaceDown" />
+	FIXME: The clear-key field needs to be verified
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" />
 	-->
 	</event>
 	<event>
@@ -959,7 +960,8 @@
 		</logmsg>
 		<severity>Normal</severity>
         <!--
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-uei="uei.opennms.org/nodes/nodeLostService" />
+	FIXME: The clear-key field needs to be verified
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" />
 	-->
 	</event>
 	<event>
@@ -977,7 +979,8 @@
 		</logmsg>
 		<severity>Normal</severity>
         <!--
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.opennms.org/nodes/nodeDown"/>
+	FIXME: The clear-key field needs to be verified
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%"/>
 	-->
 	</event>
 	<event>

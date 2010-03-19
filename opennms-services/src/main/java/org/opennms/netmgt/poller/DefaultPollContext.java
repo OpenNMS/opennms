@@ -309,22 +309,18 @@ public class DefaultPollContext implements PollContext, EventListener {
                                 + criticalPath[0]);
             return true;
         }
-        try {
-            IcmpPlugin p = new IcmpPlugin();
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put(
-                    "retry",
-                    new Long(
-                             OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-            map.put(
-                    "timeout",
-                    new Long(
-                             OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
-    
-            result = p.isProtocolSupported(addr, map);
-        } catch (IOException e) {
-            log.error("IOException when testing critical path " + e);
-        }
+        IcmpPlugin p = new IcmpPlugin();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(
+                "retry",
+                new Long(
+                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
+        map.put(
+                "timeout",
+                new Long(
+                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
+
+        result = p.isProtocolSupported(addr, map);
         return result;
     }
 

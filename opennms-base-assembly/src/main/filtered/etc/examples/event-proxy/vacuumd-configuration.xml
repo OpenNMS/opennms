@@ -413,23 +413,6 @@
       </statement>
     </action>
   
-<!--
-    <action name="clearProblems" >
-      <statement>
-        UPDATE alarms 
-           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmType=1 
-           AND severity &gt; 2 
-           AND lastEventTime &lt;  ${lastEventTime} 
-           AND eventUei = ${clearUei} 
-           AND COALESCE(dpName, '') = COALESCE(${dpName}, '') 
-           AND COALESCE(nodeID, 0) = COALESCE(${nodeID}, 0) 
-           AND COALESCE(ipaddr, '') = COALESCE(${ipaddr}, '') 
-           AND COALESCE(serviceID, 0) = COALESCE(${serviceID}, 0)
-      </statement> 
-    </action>
--->
-
     <!--  New and optimized version of clearing problems -->
     <action name="clearProblems" >
       <statement>

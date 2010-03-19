@@ -382,7 +382,7 @@ public abstract class ThresholdingSet {
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
+                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();

@@ -42,13 +42,13 @@ import org.opennms.netmgt.model.OnmsCategory;
 
 public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
-    public abstract OnmsCategory findByName(String name);
+    OnmsCategory findByName(String name);
     
-    public abstract OnmsCategory findByName(String name, boolean useCached);
+    OnmsCategory findByName(String name, boolean useCached);
     
-    public abstract List<String> getAllCategoryNames();
+    List<String> getAllCategoryNames();
     
-    public abstract List<Criterion> getCriterionForCategorySetsUnion(String[]... categories);
+    List<Criterion> getCriterionForCategorySetsUnion(String[]... categories);
     
-    public abstract List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName);
+    List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName);
 }

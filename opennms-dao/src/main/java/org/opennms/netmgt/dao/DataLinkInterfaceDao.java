@@ -36,8 +36,8 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import java.util.Collection;
 
 public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer>{
-    public abstract Collection<DataLinkInterface> findAll(Integer offset, Integer limit);
-    public abstract DataLinkInterface findById(Integer id);
-    public abstract Collection<DataLinkInterface> findByNodeId(Integer nodeId);
-    public abstract Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId);
+    Collection<DataLinkInterface> findAll(Integer offset, Integer limit);
+    DataLinkInterface findById(Integer id);
+    Collection<DataLinkInterface> findByNodeId(Integer nodeId);
+    Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId);
 }

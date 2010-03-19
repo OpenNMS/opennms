@@ -53,30 +53,30 @@ public interface ServiceCollector {
     /**
      * Status of the collector object.
      */
-    public static final int COLLECTION_UNKNOWN = 0;
+    static final int COLLECTION_UNKNOWN = 0;
 
-    public static final int COLLECTION_SUCCEEDED = 1;
+    static final int COLLECTION_SUCCEEDED = 1;
 
-    public static final int COLLECTION_FAILED = 2;
+    static final int COLLECTION_FAILED = 2;
 
-    public static final String[] statusType = {
+    static final String[] statusType = {
         "Unknown",
         "COLLECTION_SUCCEEDED",
         "COLLECTION_FAILED"
         };
 
-    public void initialize(Map<String, String> parameters);
+    void initialize(Map<String, String> parameters);
 
-    public void release();
+    void release();
 
-    public void initialize(CollectionAgent agent, Map<String, String> parameters);
+    void initialize(CollectionAgent agent, Map<String, String> parameters);
 
-    public void release(CollectionAgent agent);
+    void release(CollectionAgent agent);
 
     /**
      * Invokes a collection on the object.
      */
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException;
+    CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) throws CollectionException;
 
-    public RrdRepository getRrdRepository(String collectionName);
+    RrdRepository getRrdRepository(String collectionName);
 }

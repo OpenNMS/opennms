@@ -87,7 +87,6 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 		return serviceInfo;
 	}
 
-    @SuppressWarnings("unchecked")
     private Set<ObjectName> queryMbeanServerForNames(ObjectName foo1, QueryExp foo2) {
         return (Set<ObjectName>) mbeanServer.queryNames(foo1, foo2);
     }

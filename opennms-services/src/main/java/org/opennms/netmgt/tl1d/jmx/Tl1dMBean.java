@@ -35,15 +35,15 @@
 package org.opennms.netmgt.tl1d.jmx;
 
 public interface Tl1dMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public int getStatus();
+    int getStatus();
 
-    public String status();
+    String status();
 
-    public String getStatusText();
+    String getStatusText();
 }

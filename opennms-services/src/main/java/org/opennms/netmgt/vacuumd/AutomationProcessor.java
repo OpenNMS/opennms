@@ -81,6 +81,10 @@ public class AutomationProcessor implements ReadyRunnable {
     private final Automation m_automation;
     private final TriggerProcessor m_trigger;
     private final ActionProcessor m_action;
+    
+    /** 
+     * @deprecated Associate {@link Automation} objects with {@link ActionEvent} instances instead.
+     */
     private final AutoEventProcessor m_autoEvent;
     private final ActionEventProcessor m_actionEvent;
     
@@ -414,11 +418,17 @@ public class AutomationProcessor implements ReadyRunnable {
         
     }
     
+    /**
+     * @deprecated Use {@link ActionEventProcessor} instead.
+     */
     static class AutoEventProcessor {
 
         private final String m_automationName;
         private final AutoEvent m_autoEvent;
         
+        /**
+         * @deprecated Use {@link ActionEventProcessor} instead.
+         */
         public AutoEventProcessor(String automationName, AutoEvent autoEvent) {
             m_automationName = automationName;
             m_autoEvent = autoEvent;

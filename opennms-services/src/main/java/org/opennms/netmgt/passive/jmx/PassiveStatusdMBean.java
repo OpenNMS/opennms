@@ -38,12 +38,12 @@
 package org.opennms.netmgt.passive.jmx;
 
 public interface PassiveStatusdMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public String status();
+    String status();
 
 }

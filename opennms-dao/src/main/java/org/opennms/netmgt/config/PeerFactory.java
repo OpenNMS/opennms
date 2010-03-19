@@ -42,9 +42,4 @@ package org.opennms.netmgt.config;
  */
 
 public class PeerFactory {
-
-    public PeerFactory() {
-        super();
-    }
-    
 }

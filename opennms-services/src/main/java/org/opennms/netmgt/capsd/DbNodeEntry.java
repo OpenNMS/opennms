@@ -353,7 +353,7 @@ final class DbNodeEntry {
             } else {
                 values.append(",?");
                 names.append(",nodeCreateTime");
-                m_createTime = new Timestamp((new Date()).getTime());
+                m_createTime = new Timestamp(new Date().getTime());
                 m_changed |= CHANGED_CREATE_TIME;
             }
 

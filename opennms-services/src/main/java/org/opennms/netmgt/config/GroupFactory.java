@@ -79,6 +79,7 @@ public class GroupFactory extends GroupManager {
      * @throws MarshalException 
      */
     public GroupFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super();
         reload();
     }
 

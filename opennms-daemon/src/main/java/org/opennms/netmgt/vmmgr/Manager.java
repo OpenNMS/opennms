@@ -247,7 +247,6 @@ public class Manager implements ManagerMBean {
         return ThreadCategory.getInstance(getClass());
     }
 
-    @SuppressWarnings("unchecked")
     private List<MBeanServer> getMBeanServers() {
         return MBeanServerFactory.findMBeanServer(null);
     }

@@ -95,7 +95,6 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         m_rrdStrategy.promoteEnqueuedFiles(files);
     }
 
-    @SuppressWarnings("unchecked")
     private Set<String> commaDelimitedListToSet(String fileList) {
         return StringUtils.commaDelimitedListToSet(fileList);
     }

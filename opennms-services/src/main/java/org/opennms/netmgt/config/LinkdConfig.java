@@ -62,7 +62,7 @@ public interface LinkdConfig {
      * @param pkg
      * @return
      */
-    public abstract List<String> getIpList(Package pkg);
+    List<String> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
@@ -80,7 +80,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public abstract boolean interfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean interfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * This method is used to determine if the named interface is included in
@@ -99,7 +99,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public abstract boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * Returns the first package that the ip belongs to, null if none.
@@ -112,7 +112,7 @@ public interface LinkdConfig {
      * 
      * @return the first package that the ip belongs to, null if none
      */
-    public abstract org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(String ipaddr);
+    org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(String ipaddr);
 
     /**
      * Returns true if the ip is part of atleast one package.
@@ -125,54 +125,54 @@ public interface LinkdConfig {
      * 
      * @return true if the ip is part of atleast one package, false otherwise
      */
-    public abstract List<String> getAllPackageMatches(String ipAddr);
+    List<String> getAllPackageMatches(String ipAddr);
     
-    public Enumeration<Package> enumeratePackage();
+    Enumeration<Package> enumeratePackage();
     
-    public Package getPackage(String pkgName);
+    Package getPackage(String pkgName);
     
-    public int getThreads();
+    int getThreads();
     
-    public boolean enableDiscoveryDownload();
+    boolean enableDiscoveryDownload();
     
-    public boolean useIpRouteDiscovery();
+    boolean useIpRouteDiscovery();
     
-    public boolean saveRouteTable();
+    boolean saveRouteTable();
     
-	public boolean useCdpDiscovery();
+	boolean useCdpDiscovery();
 
-	public boolean useBridgeDiscovery();
+	boolean useBridgeDiscovery();
 	
-	public boolean saveStpNodeTable();
+	boolean saveStpNodeTable();
 	
-	public boolean saveStpInterfaceTable();
+	boolean saveStpInterfaceTable();
 	
-	public long getInitialSleepTime();
+	long getInitialSleepTime();
 	
-	public long getSnmpPollInterval();
+	long getSnmpPollInterval();
 	
-	public long getDiscoveryLinkInterval();
+	long getDiscoveryLinkInterval();
 	
-	public boolean autoDiscovery();
+	boolean autoDiscovery();
 	
-	public boolean enableVlanDiscovery();
+	boolean enableVlanDiscovery();
 		
-	public void update() throws IOException, MarshalException, ValidationException;
+	void update() throws IOException, MarshalException, ValidationException;
     
-    public void save() throws MarshalException, IOException, ValidationException;
+    void save() throws MarshalException, IOException, ValidationException;
     
-    public abstract LinkdConfiguration getConfiguration();
+    LinkdConfiguration getConfiguration();
     
-    public abstract List<SnmpCollection> getSnmpCollections(String ipaddr, String sysoid);
+    List<SnmpCollection> getSnmpCollections(String ipaddr, String sysoid);
 
-    public abstract SnmpCollection getSnmpCollection(String ipaddr, String sysoid,String pkgName);
+    SnmpCollection getSnmpCollection(String ipaddr, String sysoid,String pkgName);
 
-    public abstract DiscoveryLink getDiscoveryLink(String pkgName);
+    DiscoveryLink getDiscoveryLink(String pkgName);
     
-    public void createPackageIpListMap();
+    void createPackageIpListMap();
     
-    public abstract String getClassName(String sysoid);
+    String getClassName(String sysoid);
     
-	public boolean hasClassName(String sysoid);
+	boolean hasClassName(String sysoid);
     
 }

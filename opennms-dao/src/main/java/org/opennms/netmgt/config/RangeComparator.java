@@ -53,8 +53,8 @@ public class RangeComparator implements Comparator<Range> {
     public int compare(Range rng1, Range rng2) {
         long compared = 0;
         try {
-            final long range1Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName((rng1).getBegin()));
-            final long range2Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName((rng2).getBegin()));
+            final long range1Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(rng1.getBegin()));
+            final long range2Begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(rng2.getBegin()));
             compared = range1Begin - range2Begin;
         } catch (UnknownHostException e) {
             log.error("compare: Exception sorting ranges.", e);

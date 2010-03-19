@@ -87,7 +87,7 @@ public final class XmlrpcUtil {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent(new Long(txNo).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -111,7 +111,7 @@ public final class XmlrpcUtil {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
         parmValue = new Value();
-        parmValue.setContent(new Integer(status).toString());
+        parmValue.setContent(String.valueOf(status));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -134,7 +134,7 @@ public final class XmlrpcUtil {
             eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
             parmValue = new Value();
-            parmValue.setContent(new Integer(failureFlag).toString());
+            parmValue.setContent(String.valueOf(failureFlag));
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
 

@@ -124,7 +124,7 @@ public class DaoWebEventRepository implements WebEventRepository {
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
                 case REVERSE_SEVERITY:
-                    criteria.addOrder(Order.asc("severity"));
+                    criteria.addOrder(Order.asc("eventSeverity"));
                     break;
                 case REVERSE_TIME:
                     criteria.addOrder(Order.asc("eventTime"));

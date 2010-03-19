@@ -509,10 +509,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
         return (int) m_jdbcTemplate.queryForLong("select count(*) from alarms");
     }
 
-    private int countEvents() {
-        return (int) m_jdbcTemplate.queryForLong("select count(*) from events");
-    }
-
     /**
      * Verifies for the concurrency test that the alarm escalated.
      * @return

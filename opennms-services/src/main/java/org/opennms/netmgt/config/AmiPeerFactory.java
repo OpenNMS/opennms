@@ -110,12 +110,14 @@ public class AmiPeerFactory extends PeerFactory {
      * @param configFile the path to the config file to load in.
      */
     private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        super();
         InputStream cfgIn = new FileInputStream(configFile);
         m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
     }
 
     public AmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+        super();
         m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, rdr);
     }
     

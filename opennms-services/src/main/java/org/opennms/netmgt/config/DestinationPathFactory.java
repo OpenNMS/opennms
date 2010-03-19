@@ -79,12 +79,6 @@ public class DestinationPathFactory extends DestinationPathManager {
     /**
      * 
      */
-    public DestinationPathFactory() {
-    }
-
-    /**
-     * 
-     */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (!initialized) {
             getInstance().reload();

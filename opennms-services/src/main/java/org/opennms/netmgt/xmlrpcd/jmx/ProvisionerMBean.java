@@ -38,12 +38,12 @@
 package org.opennms.netmgt.xmlrpcd.jmx;
 
 public interface ProvisionerMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public String status();
+    String status();
 
 }

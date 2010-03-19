@@ -63,7 +63,6 @@ public class EventHandlerMBeanProxy implements EventHandler {
 
     private ObjectName m_listener;
 
-    @SuppressWarnings("unchecked")
     private void findServer() throws InstanceNotFoundException {
         List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
         Iterator<MBeanServer> i = servers.iterator();

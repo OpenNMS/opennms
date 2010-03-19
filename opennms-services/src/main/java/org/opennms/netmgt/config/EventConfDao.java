@@ -55,31 +55,31 @@ public interface EventConfDao {
     /**
      * 
      */
-    public abstract void reload() throws DataAccessException;
+    void reload() throws DataAccessException;
 
     /**
      * 
      */
-    public abstract List<Event> getEvents(String uei);
+    List<Event> getEvents(String uei);
 
     /**
      */
-    public abstract List<String> getEventUEIs();
+    List<String> getEventUEIs();
 
     /**
      */
-    public abstract Map<String, String> getEventLabels();
+    Map<String, String> getEventLabels();
 
     /**
      */
-    public abstract String getEventLabel(String uei);
+    String getEventLabel(String uei);
 
     /**
      * 
      */
-    public abstract void saveCurrent();
+    void saveCurrent();
 
-    public abstract List<Event> getEventsByLabel();
+    List<Event> getEventsByLabel();
 
     /**
      * Adds the event to the root level event config storage (file).
@@ -87,7 +87,7 @@ public interface EventConfDao {
      * 
      * @param event The fully configured Event object to add.  
      */
-    public abstract void addEvent(Event event);
+    void addEvent(Event event);
 
     /**
      * Adds the given event to the programmatic event store.  This store currently implemented as a file (referenced from eventconf.xml)
@@ -96,7 +96,7 @@ public interface EventConfDao {
      * 
      * @param event The fully configured Event object to add.
      */
-    public abstract void addEventToProgrammaticStore(Event event);
+    void addEventToProgrammaticStore(Event event);
 
     /**
      * Removes the given event from the programmatic event store.  This store currently implemented as a file (referenced from eventconf.xml)
@@ -106,12 +106,12 @@ public interface EventConfDao {
      * @param event The fully configured Event object to remove.
      * @returns true if the event was removed, false if it wasn't found (either not in the programmatic store, or the store didn't exist)
      */
-    public abstract boolean removeEventFromProgrammaticStore(Event event);
+    boolean removeEventFromProgrammaticStore(Event event);
 
-    public abstract boolean isSecureTag(String tag);
+    boolean isSecureTag(String tag);
 
-    public abstract Event findByUei(String uei);
+    Event findByUei(String uei);
 
-    public abstract Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent);
+    Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent);
 
 }

@@ -91,7 +91,6 @@ public class WmiCollector implements ServiceCollector {
         return ThreadCategory.getInstance(getClass());
     }
 
-    @SuppressWarnings("unchecked")
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
 
         String collectionName = parameters.get("collection");

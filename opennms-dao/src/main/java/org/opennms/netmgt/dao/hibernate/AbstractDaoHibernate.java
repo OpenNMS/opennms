@@ -53,6 +53,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     Class<T> m_entityClass;
 
     public AbstractDaoHibernate(Class<T> entityClass) {
+        super();
         m_entityClass = entityClass;
     }
 
@@ -93,34 +94,32 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
 
     protected int queryInt(final String query) {
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<Number> callback = new HibernateCallback<Number>() {
 
-            public Object doInHibernate(Session session) throws HibernateException {
-                return session.createQuery(query).uniqueResult();
+            public Number doInHibernate(Session session) throws HibernateException {
+                return (Number)session.createQuery(query).uniqueResult();
             }
 
         };
 
-        Object result = getHibernateTemplate().execute(callback);
-        return ((Number) result).intValue();
+        return getHibernateTemplate().execute(callback).intValue();
     }
 
     protected int queryInt(final String queryString, final Object... args) {
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<Number> callback = new HibernateCallback<Number>() {
 
-            public Object doInHibernate(Session session)
+            public Number doInHibernate(Session session)
                     throws HibernateException, SQLException {
                 Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
                     query.setParameter(i, args[i]);
                 }
-                return query.uniqueResult();
+                return (Number)query.uniqueResult();
             }
 
         };
 
-        Object result = getHibernateTemplate().execute(callback);
-        return ((Number) result).intValue();
+        return getHibernateTemplate().execute(callback).intValue();
     }
 
     //TODO: This method duplicates below impl, delete this
@@ -164,7 +163,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         getHibernateTemplate().deleteAll(entities);
     }
 
-    @SuppressWarnings("unchecked")
     public List<T> findAll() throws DataAccessException {
         return getHibernateTemplate().loadAll(m_entityClass);
     }
@@ -218,18 +216,18 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     public int countMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Integer doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session)
                     .setProjection(Projections.rowCount());
                 
-                return attachedCrit.uniqueResult();
+                return (Integer)attachedCrit.uniqueResult();
                 
             }
             
         };
-        return ((Integer)getHibernateTemplate().execute(callback)).intValue();
+        return getHibernateTemplate().execute(callback).intValue();
     }
     
     public int bulkDelete(String hql, Object[] values ) throws DataAccessException {

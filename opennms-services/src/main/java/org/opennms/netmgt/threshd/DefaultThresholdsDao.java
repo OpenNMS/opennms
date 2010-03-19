@@ -53,8 +53,6 @@ import org.springframework.util.Assert;
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
-    public DefaultThresholdsDao() {}
-
     public ThresholdGroup get(String name) {
         return get(name, null);
     }

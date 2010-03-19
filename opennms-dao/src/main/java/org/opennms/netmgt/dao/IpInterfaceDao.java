@@ -50,21 +50,21 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
 
-    public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
+    OnmsIpInterface get(OnmsNode node, String ipAddress);
     
-    public abstract OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress);
+    OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress);
 
-    public abstract OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress);
+    OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress);
 
-    public abstract Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
+    Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
 
-    public abstract Collection<OnmsIpInterface> findByServiceType(String svcName);
+    Collection<OnmsIpInterface> findByServiceType(String svcName);
 
-    public abstract Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
+    Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
 
     /**
      * Returns a map of all IP to node ID mappings in the database.
      */
-    public abstract Map<String, Integer> getInterfacesForNodes();
+    Map<String, Integer> getInterfacesForNodes();
 
 }
