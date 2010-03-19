@@ -146,10 +146,7 @@ public class MapPropertiesFactory extends Object {
 	protected  String severityMapAs = "avg"; 
 
 	protected  ContextMenu cmenu;
-	
-	protected String mapScale ="disabled"; 
-	
-	
+		
 	public String getMapPropertiesFileString() {
 		return mapPropertiesFileString;
 	}
@@ -758,10 +755,7 @@ public class MapPropertiesFactory extends Object {
 					"Required Default Icon Node not found.");
 		}
 		log.debug("default node icon: "+defaultNodeIcon);
-		
-		mapScale = props.getProperty("icon.default.scale");
-		
-		
+				
 		String defaultMapElementDimensionString = props.getProperty("icon.default.mapelementdimension");
         if (defaultMapElementDimensionString != null) {
             defaultMapElementDimension = WebSecurityUtils.safeParseInt(defaultMapElementDimensionString);
@@ -779,11 +773,6 @@ public class MapPropertiesFactory extends Object {
 					+ ". Adding it.");
 			bgImagesMap.put(bg[i], filename);
 		}
-
-//		propertiesMaps = new Map[] { severitiesMap, statusesMap, availsMap,
-//				iconsMap, bgImagesMap};
-
-//		return (propertiesMaps);
 	}
 
 
@@ -807,10 +796,6 @@ public class MapPropertiesFactory extends Object {
 		return defaultNodeIcon;
 	}
 
-	public String getMapScale() {
-	    return mapScale;
-	}
-	
 	/**
 	 * Gets the array of ordered Severity by id.
 	 * 
@@ -981,10 +966,6 @@ public class MapPropertiesFactory extends Object {
     	return getDefaultStatus().getId();
     }
     
-    public String getDefaultSemaphoreColorBy() {
-    	return MapsConstants.COLOR_SEMAPHORE_BY_SEVERITY;
-    }
-
     public java.util.Map<String, String> getMapElementDimensions() {
     	// TODO To be implemented (via map.properties-MapPropertiesFactory)
     	java.util.Map<String, String> dims = new TreeMap<String, String>();

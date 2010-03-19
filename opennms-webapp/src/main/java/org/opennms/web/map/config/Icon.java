@@ -68,10 +68,10 @@ public class Icon {
     public void setTextSize(String textSize) {
         m_textSize = textSize;
     }
-    public String getTextAllign() {
+    public String getTextAlign() {
         return m_textAlign;
     }
-    public void setTextAllign(String textAllign) {
+    public void setTextAlign(String textAllign) {
         m_textAlign = textAllign;
     }
    

@@ -37,19 +37,17 @@
  */
 package org.opennms.web.map.view;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.web.map.InitializationObj;
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsException;
 
 
 /**
  * @author maurizio
- *  
+ * @author antonio 
  */
 public interface Manager {
 
@@ -57,14 +55,13 @@ public interface Manager {
      * Create a new VMap and return it
      * 
      * @param name
-     * @param accessMode
      * @param owner
      * @param userModifies
      * @param width 
      * @param height
      * @return the new VMap
      */
-    public VMap newMap(String name, String accessMode, String owner,String userModifies, int width, int height) ;
+    public VMap newMap(String name, String owner,String userModifies, int width, int height) ;
 
     /**
      * Close a VMap previusly opened.
@@ -109,17 +106,6 @@ public interface Manager {
      */
     public VMapInfo getDefaultMapsMenu(String user) throws MapsException;
 
-    /**
-     * Get a map element.
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type the node type
-     * @return the new VElement
-     * @throws MapsException
-     */
-    public VElement getElement(int mapId, int elementId, String type) throws MapsException ;    
-   
 	/**
      * Create a new (not child) empty Submap with the identifier setted to id.
      * 
@@ -127,7 +113,7 @@ public interface Manager {
      * @param type the node type
      * @throws MapsException
      */	
-	public VElement newElement(int elementId, String type) throws MapsException ;	
+	public VElement newElement(int mapid, int elementId, String type) throws MapsException ;	
 
 	/**
      * Create a new (not child) empty Submap with the identifier setted to id.
@@ -173,18 +159,8 @@ public interface Manager {
         
     public boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
     
-	public VElementInfo[] getAllElementInfo() throws MapsException;
+	public List<VElementInfo> getElementInfo() throws MapsException;
 	
-	public VElementInfo[] getElementInfoLike(String like) throws MapsException;
-	
-    public List<VLink> getLinks(Collection<VElement> elems)  throws MapsException;
-	/**
-     * Gets all nodes on the passed map (and its submaps) with theirs occurrences
-     * @param map
-     * @return HashMap<Integer, Integer> (nodeid, occurrences) containing all nodes on the passed map (and its submaps) with theirs occourrences
-     */
-    public Map<Integer, Integer> getAllNodesOccursOnMap(VMap map)throws MapsException;
-    
     /**
      * Get a Map of nodelabel to the 
      * container mapids. 
@@ -193,8 +169,21 @@ public interface Manager {
      */
     public Map<String,Set<Integer>> getNodeLabelToMaps(String user) throws MapsException;
     
-    public VMap createMapByLabelSearch(String label, String user) throws MapsException;
+    /**
+     * 
+     * @param name
+     * @param owner
+     * @param userModifies
+     * @param width
+     * @param height
+     * @param velems
+     * @return
+     * @throws MapsException
+     */
+    public VMap searchMap(String name, String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
     
-    public InitializationObj getInitObj(boolean isUserAdmin) throws MapsException;
+    public VProperties getProperties(boolean isUserAdmin) throws MapsException;
+    
+    public VMap addElements(VMap map, List<VElement> velems) throws MapsException;
 
 }

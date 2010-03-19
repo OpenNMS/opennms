@@ -88,61 +88,37 @@ public class AddMapsController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
 			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
-				throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
+				log.warn("Cannot add maps because not admin role for user: " + request.getRemoteUser() );
+				throw new MapsException("User has not role admin");
 			}
 			VMap map = manager.openMap();
-			if(log.isDebugEnabled())
-				log.debug("Got map from manager "+map);
-			
-			String type = MapsConstants.MAP_TYPE;
+            List<VElement> velems = new ArrayList<VElement>();
+            // response for addElement
+            List<Integer> mapsWithLoop = new ArrayList<Integer>();
+			log.debug("Got map from manager "+map);
 			
 			log.debug("Adding maps by id: "+ elems);
 			String[] smapids = elems.split(",");
-	         List<Integer> mapids = new ArrayList<Integer>(smapids.length);			
+
 			for (int i = 0; i<smapids.length;i++) {
-				mapids.add(new Integer(smapids[i]));
-			}
-			
-			List<VElement> velems = new ArrayList<VElement>();
-			List<VLink> links = new ArrayList<VLink>();
-			// response for addElement
-			List<Integer> mapsWithLoop = new ArrayList<Integer>();
-				
-			for (Integer id : mapids) {
-				if (map.containsElement(id, type)) {
-					log.debug(" Map Contains Element: " + id+type);
+			    Integer id = new Integer(smapids[i]);
+				if (map.containsElement(id, MapsConstants.MAP_TYPE)) {
+					log.debug(" Map Contains Element: " + id+MapsConstants.MAP_TYPE);
 					continue;
 					
 				}
 				boolean foundLoop = manager.foundLoopOnMaps(map,id);
-					
 
 				if(foundLoop) {
 					mapsWithLoop.add(id);
 				} else {
-				    VElement ve = manager.newElement(id, type);
-	                try {
-	                    VElement hve = manager.getElement(map.getId(), id, MapsConstants.MAP_HIDE_TYPE);
-	                    if (hve.getLabel() != null) {
-	                        ve.setLabel(hve.getLabel());
-	                        log.debug("preserving label map is hidden: label found: " + hve.getLabel());
-	                    }
-	                } catch (Exception e) {
-	                   log.debug("No Hidden Map found for id: " +id); 
-                    }
-	                log.debug("adding map element to map with id: " +id+type);
-					velems.add(ve);
+				    velems.add(manager.newElement(map.getId(),id, MapsConstants.MAP_TYPE));
 				}
 			} // end for
 
-				//get links and add elements to map
-			if (velems != null) {
-				map.addElements(velems);
-				links = manager.getLinks(map.getElements().values());
-			}
-			log.debug("After getting/adding links");
-			bw.write(ResponseAssembler.getAddMapsResponse(MapsConstants.ADDMAPS_ACTION, mapsWithLoop,velems, links));
+			//get map
+			map = manager.addElements(map, velems);
+			bw.write(ResponseAssembler.getAddElementResponse(MapsConstants.ADDMAPS_ACTION, mapsWithLoop,velems,map.getLinks().values()));
 		} catch (Exception e) {
 			log.error("Error while adding Maps: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));

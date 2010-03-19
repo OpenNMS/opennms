@@ -84,21 +84,16 @@ function handleInit(data) {
 		contextMenuEnabled = mapsPropertiesFactory.contextMenuEnabled;
 		doubleClickEnabled = mapsPropertiesFactory.doubleClickEnabled;
 		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
+		mapElemDimension = mapsPropertiesFactory.defaultMapElementDimension;
+		
 		
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
 		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
 		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
 		
-		NODE_TYPE = mapsPropertiesFactory.NODE_TYPE;
-		MAP_TYPE= mapsPropertiesFactory.MAP_TYPE;
-		NODE_HIDE_TYPE = mapsPropertiesFactory.NODE_HIDE_TYPE;
-		MAP_HIDE_TYPE= mapsPropertiesFactory.MAP_HIDE_TYPE;
-		
-		MAP_NOT_OPENED = mapsPropertiesFactory.MAP_NOT_OPENED;
-		NEW_MAP = mapsPropertiesFactory.NEW_MAP;
+		currentMapBackGround = DEFAULT_BG_COLOR;
 		
 		currentMapId = MAP_NOT_OPENED;
-		currentMapBackGround = DEFAULT_BG_COLOR;
 		
 
 		var i=0;
@@ -152,9 +147,6 @@ function handleInit(data) {
             AVAIL_FLASH[avail.id]=avail.flash;
 		}
 	
-		mapElemDimension=mapsPropertiesFactory.defaultMapElementDimension;
-		mapScale=mapsPropertiesFactory.mapScale;
-		
 		for(var icon in mapsPropertiesFactory.icons)
 		{
             MEIcons.push(icon);
@@ -206,9 +198,7 @@ function handleInit(data) {
 	    myMapElemDimResult = new MapElemDimResult();
 	    myMEIconsResult = new MEIconsResult();
 		myRefreshTimeMinsResult = new refreshTimeMinsResult();
-		
-		colorSemaphoreBy='S';
-					
+							
 		startUp();
 	}else{
 		alert("Initialization failed.");

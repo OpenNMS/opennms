@@ -34,21 +34,18 @@
  */
 package org.opennms.web.map.mapd;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.web.map.InitializationObj;
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsException;
-
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
-import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
+import org.opennms.web.map.view.VProperties;
 
 
 /**
@@ -56,6 +53,12 @@ import org.opennms.web.map.view.VMapInfo;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
 public class ManagerMapdImpl implements Manager {
+
+    public VMap addElements(VMap map, List<VElement> velems)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     public void clearMap() throws MapNotFoundException, MapsException {
         // TODO Auto-generated method stub
@@ -65,12 +68,6 @@ public class ManagerMapdImpl implements Manager {
     public void closeMap() {
         // TODO Auto-generated method stub
         
-    }
-
-    public VMap createMapByLabelSearch(String label, String user)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public void deleteMap() throws MapsException, MapNotFoundException {
@@ -84,47 +81,23 @@ public class ManagerMapdImpl implements Manager {
         return false;
     }
 
-    public VElementInfo[] getAllElementInfo() throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Map<Integer, Integer> getAllNodesOccursOnMap(VMap map)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public VElement getElement(int mapId, int elementId, String type)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public VElementInfo[] getElementInfoLike(String like)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public InitializationObj getInitObj(boolean isUserAdmin)
-            throws MapsException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<VLink> getLinks(Collection<VElement> elems)
-            throws MapsException {
+    public List<VElementInfo> getElementInfo() throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
 
     public Map<String, Set<Integer>> getNodeLabelToMaps(String user)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public VProperties getProperties(boolean isUserAdmin)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;
@@ -136,7 +109,7 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VElement newElement(int elementId, String type)
+    public VElement newElement(int mapid, int elementId, String type)
             throws MapsException {
         // TODO Auto-generated method stub
         return null;
@@ -148,8 +121,8 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VMap newMap(String name, String accessMode, String owner,
-            String userModifies, int width, int height) {
+    public VMap newMap(String name, String owner, String userModifies,
+            int width, int height) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -178,6 +151,13 @@ public class ManagerMapdImpl implements Manager {
     public void save(VMap map) throws MapsException {
         // TODO Auto-generated method stub
         
+    }
+
+    public VMap searchMap(String name, String owner, String userModifies,
+            int width, int height, List<VElement> velems)
+            throws MapsException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

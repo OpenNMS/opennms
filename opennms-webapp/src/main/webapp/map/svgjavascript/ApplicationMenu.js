@@ -241,9 +241,10 @@ function filterSearchMapSelectionList(textboxId,value,changeType) {
 			    var nodeLabel = nodeLabels[i];
 				if (nodeLabel.indexOf(value) >= 0) {
 				    var mapLbl = nodeLabelMap[nodeLabel];
-					for (var j=0; j<mapLbl.length;j++ ){
-						alert("Adding matching map: " + mapLbl[j]);
-					    matchingMaps.push(mapLbl[j]);
+				    if (mapLbl!=undefined) {
+						for (var j=0; j<mapLbl.length;j++ ){
+					    	matchingMaps.push(mapLbl[j]);
+						}
 					}
 				}  
 			}
@@ -270,13 +271,43 @@ function filterSearchMapSelectionList(textboxId,value,changeType) {
 
 function searchMapSetUp(mapId)
 {
+	if (verifyMapString()) return;
 
 	if (selectedMapInList == 0) {
-		alert("To be Implemented");
+		var elems = new String();
+		var first = true;
+		for ( var i = 1; i< selMaps.elementsArray.length; i++ ) {
+			if (first) {
+				elems = mapSortAss[selMaps.elementsArray[i]].id;
+				first = false;
+			} else {
+				elems = elems + "," + mapSortAss[selMaps.elementsArray[i]].id;
+			}
+		}
+		windowsClean();
+		clearTopInfo();
+		clearDownInfo();
+		searchMap(elems);
+		
 	} else {
 		openMapSetUp(mapId);
 	}
 }
+
+function openMapSetUp(mapId) {
+
+	var mapToOpen;
+	if(mapId != undefined && mapId > 0){
+		mapToOpen = mapId;
+	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
+		mapToOpen = mapSortAss[selectedMapInList].id;		
+	}else{
+		alert("No maps to open");
+		return;
+	}
+	openMap(mapToOpen);	
+}
+
 // Open Map
 function addMapsList()
 {
@@ -901,6 +932,7 @@ function addIconList()
 
 	selMEIcons = new selectionList("meicons","meicons",MEIcons,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myMEIconsResult);
 	selMEIcons.sortList("asc");
+	selMEIcons.selectElementByPosition(1,true)
 } 
 
 function setIconSetUp() {
@@ -935,7 +967,7 @@ MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal
         iconPreview.setAttributeNS(null,"y", 87);
         iconPreview.setAttributeNS(null,"width", 20);
         iconPreview.setAttributeNS(null,"height", 25);
-        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal] );
+        iconPreview.setAttributeNS(xlinkNS, "xlink:href",IMAGES_ELEMENTS_FOLDER+MEIconsSortAss[arrayVal].fileName );
         iconPreviewGroup.appendChild(iconPreviewRect);
         iconPreviewGroup.appendChild(iconPreview);
         selMEIcons.parentGroup.appendChild(iconPreviewGroup);

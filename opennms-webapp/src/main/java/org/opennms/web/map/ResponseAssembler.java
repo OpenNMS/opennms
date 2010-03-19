@@ -40,7 +40,9 @@
 package org.opennms.web.map;
 
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
+//import java.util.Iterator;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +56,7 @@ import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
+import org.opennms.web.map.view.VProperties;
 
 public class ResponseAssembler {
 	private static Category log;
@@ -80,23 +83,20 @@ public class ResponseAssembler {
 		log.debug("getRefreshResponse: String assembled: "+response);
 		return response;
 	}
-	
-	protected static String getAddMapsResponse(String action,  List<Integer> mapsWithLoopInfo, List<VElement> velems, List<VLink> links){
+
+	protected static String getAddElementResponse(String action,  List<Integer> mapsWithLoopInfo, Collection<VElement> elems, Collection<VLink> links){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
 		String response = getActionOKMapResponse(action);
 		
-		Iterator<Integer>  ite = mapsWithLoopInfo.iterator();
-		while(ite.hasNext()){
-			Integer entry = ite.next();
-			//if loop is found
-			response += "&loopfound" + entry;
-			log.debug("found loop for map "+entry);
+
+		if (mapsWithLoopInfo != null) {
+    		for (Integer entry: mapsWithLoopInfo) {
+    			response += "&loopfound" + entry;
+    			log.debug("found loop for map "+entry);
+    		}
 		}
-		
-		Iterator<VElement>it = velems.iterator();
-		while(it.hasNext()){
-			VElement ve = it.next();
+		for (VElement ve : elems) {
 			response += "&" + ve.getId() + ve.getType() + "+"
 			+ ve.getIcon() + "+" + ve.getLabel();
 			response += "+" + ve.getAvail() + "+"
@@ -104,15 +104,11 @@ public class ResponseAssembler {
 		}
 		
 		// add String to return containing Links
-		if (velems != null) {
-			Iterator<VLink> sub_ite = links.iterator();
-			while (sub_ite.hasNext()) {
-				VLink vl = sub_ite.next();
-				response += "&" + vl.getFirst()+ "+"
-						+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
-	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
-				}
-		}		
+	    for (VLink vl: links) {
+			response += "&" + vl.getFirst()+ "+"
+					+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
+                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
+		}
 		log.debug("getAddMapsResponse: String assembled: "+response);
 		return response;		
 	}
@@ -121,57 +117,24 @@ public class ResponseAssembler {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
 		String response = getActionOKMapResponse(action);
-		Iterator<VElement>it = velems.iterator();
-		while(it.hasNext()){
-			VElement ve = it.next();
+		for(VElement ve: velems) {
 			response += "&" + ve.getId() + ve.getType();
 		}
 		log.debug("getDeleteElementsResponse: String assembled: "+response);
 		return response;
 	}
-	
-	protected static String getAddElementResponse(String action, List<VElement> velems, List<VLink> links){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		String response = getActionOKMapResponse(action);
-		Iterator<VElement>it = velems.iterator();
-		while(it.hasNext()){
-			VElement ve = it.next();
-			response += "&" + ve.getId() + ve.getType() + "+"
-			+ ve.getIcon() + "+" + ve.getLabel();
-			response += "+" + ve.getAvail() + "+"
-			+ ve.getStatus() + "+" + ve.getSeverity() + "+"+"ADDED";
-		}
 		
-		// add String to return containing Links
-		if (velems != null) {
-			Iterator<VLink> sub_ite = links.iterator();
-			while (sub_ite.hasNext()) {
-				VLink vl = sub_ite.next();
-				response += "&" + vl.getFirst()+ "+"
-						+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
-	                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
-				}
-		}		
-		log.debug("getAddElementResponse: String assembled: "+response);
-		return response;
-	}
-
-	
-	protected static String getLoadNodesResponse(String action, VElementInfo[] elemInfos){
+	protected static String getLoadNodesResponse(String action, List<VElementInfo> elemInfos){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
 		String strToSend =getActionOKMapResponse(action);
-		if(elemInfos!=null){
-			for (int i = 0; i < elemInfos.length; i++) {
-				VElementInfo n = elemInfos[i];
-				if (i > 0) {
-					strToSend += "&";
-				}
-
-				String nodeStr = n.getId() + "+" + n.getLabel();
-				strToSend += nodeStr;
+		boolean first = true;
+		for (VElementInfo n: elemInfos) {
+			if (!first) {
+				strToSend += "&";
 			}
+			first = false;
+			strToSend += n.getId() + "+" + n.getLabel();
 		}
 		log.debug("getLoadNodesResponse: String assembled: "+strToSend);
 		return strToSend;
@@ -204,10 +167,18 @@ public class ResponseAssembler {
 	
 	protected static String getMapResponse(VMap map) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
-        map.setLastModifiedTimeString(formatter.format(map.getLastModifiedTime()));
-        map.setCreateTimeString(formatter.format(map.getCreateTime()));
+        Date now = new Date();
+        if (map.getLastModifiedTime() != null)
+            map.setLastModifiedTimeString(formatter.format(map.getLastModifiedTime()));
+        else
+            map.setLastModifiedTimeString(formatter.format(now));
 
-		 return JSONSerializer.toJSON(map).toString(); 
+        if (map.getCreateTime() != null)
+            map.setCreateTimeString(formatter.format(map.getCreateTime()));
+        else 
+            map.setCreateTimeString(formatter.format(now));
+
+        return JSONSerializer.toJSON(map).toString(); 
 	}
 	
 	protected static String getMapsResponse(String action, List<VMapInfo> maps) {
@@ -234,36 +205,23 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 
-	   protected static String getMapsResponse(String action, VMapInfo map) {
-	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-	        log = ThreadCategory.getInstance(ResponseAssembler.class);
-	        
-	        String strToSend=getActionOKMapResponse(action);
-	                
-	        if(map!=null){
-	            // create the string containing the main informations about maps
-	            // the string will have the form:
-	            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
-	                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
-	        } else {
-	            strToSend=getMapErrorResponse(action);
-	        }
-	        log.debug("getMapsResponse: String assembled: "+strToSend);
-	        return strToSend;
-	    }
+   protected static String getMapsResponse(String action, VMapInfo map) {
+        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+        log = ThreadCategory.getInstance(ResponseAssembler.class);
+        
+        String strToSend=getActionOKMapResponse(action);
+                
+        if(map!=null){
+            strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
+        } else {
+            strToSend=getMapErrorResponse(action);
+        }
+        log.debug("getMapsResponse: String assembled: "+strToSend);
+        return strToSend;
+    }
 
-	protected static String getCloseMapResponse(String action) {
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		
-		String strToSend = action+"OK";
-		strToSend += MapsConstants.MAP_NOT_OPENED + "+" + MapsConstants.DEFAULT_BACKGROUND_COLOR;
-		log.debug("getCloseMapResponse: String assembled: "+strToSend);
-		return strToSend;
-		
-	}
 	
-    protected static String getStartupResponse(InitializationObj initObj)throws Exception{
+    protected static String getStartupResponse(VProperties initObj)throws Exception{
          return JSONSerializer.toJSON(initObj).toString();
     }
 

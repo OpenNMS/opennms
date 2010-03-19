@@ -101,15 +101,13 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 }
 
 
-MapElement.prototype.setDimension = function(newDimension){
-        if (mapScale != "disabled" ) {
-     	this.width = newDimension;
-	this.height = newDimension;
+MapElement.prototype.setDimension = function(newDimension) {
+	this.width = newDimension;
+	this.height = newDimension*4/3;
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	this.label.setFontSize(newDimension/2);
 	this.semaphore.setDimension(newDimension/4);
-        }
 }
 
 MapElement.prototype.getMapId = function() {

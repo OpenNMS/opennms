@@ -109,6 +109,9 @@
     <property name="manager" ref="manager" />
   </bean>
 
+  <bean name="/SearchMap.map" class="org.opennms.web.map.SearchMapsController">
+    <property name="manager" ref="manager" />
+  </bean>
 
   <bean name="/LoadMaps.map" class="org.opennms.web.map.LoadMapsController">
     <property name="manager" ref="manager" />

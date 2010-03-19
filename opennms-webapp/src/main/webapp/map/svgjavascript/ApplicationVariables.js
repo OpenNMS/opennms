@@ -35,8 +35,6 @@ var refreshNodesIntervalInSec=300;
 // variable for setting element dimension
 var mapElemDimension=25;	
 
-var mapScale="enabled";
-
 // Variable that states the current mode of the map. If true the user can modify the maps
 var isAdminMode = false;
 	
@@ -176,16 +174,9 @@ var CM_PARAMS = new Array();
 var DEFAULT_ICON;
 var DEFAULT_MAP_ICON;
 var DEFAULT_BG_COLOR;
-var NODE_TYPE;
-var MAP_TYPE;
-var NODE_HIDE_TYPE;
-var MAP_HIDE_TYPE;
-var MAP_NOT_OPENED;
-var NEW_MAP;
-
 
 // Global variable to define the color of semaphore
-var colorSemaphoreBy;
+var colorSemaphoreBy='S';
 
 // Variable for the map history
 var mapHistory = new Array();

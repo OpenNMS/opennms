@@ -1,39 +1,5 @@
-// Here are defined all the global variables used in OpenNMS map application
 var suffix = "map";
-
 var failed_string = "Failed";
-//ACTIONS
-
-var LOADMAPS_ACTION = "LoadMaps";
-var LOADNODES_ACTION = "LoadNodes";
-var LOADLABELMAP_ACTION = "LoadLabelMap";
-
-var ADDNODES_ACTION = "AddNodes";
-var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
-var ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
-var ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";
-var ADDNODES_NEIG_ACTION = "AddNodesNeig";
-var ADDRANGE_ACTION = "AddRange";
-
-var ADDMAPS_ACTION = "AddMaps";
-
-var REFRESH_BASE_ACTION="RefreshMap";
-var REFRESH_ACTION = "Refresh";
-var RELOAD_ACTION = "Reload";
-
-var DELETEELEMENT_ACTION = "DeleteElements";
-var DELETENODES_ACTION = "DeleteNodes";
-var DELETEMAPS_ACTION = "DeleteMaps";
-
-var SWITCH_MODE_ACTION = "SwitchRole";
-
-var CLEAR_ACTION = "ClearMap";
-var DELETEMAP_ACTION = "DeleteMap";
-var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
-var NEWMAP_ACTION = "NewMap";
-var OPENMAP_ACTION = "OpenMap";
-var CLOSEMAP_ACTION = "CloseMap";
-var SAVEMAP_ACTION = "SaveMap";
 
 function testResponse(action, response){
 		var tmpStr=response.substring(0,action.length+2);
@@ -262,11 +228,11 @@ function addMapElementWithNeighbors(elem){
 	getMapRequest ( ADDNODES_ACTION+"."+suffix+"?action="+ADDNODES_WITH_NEIG_ACTION+"&elems="+elem, null, handleAddElementResponse, "text/xml", null );
 }
 
-function addMapAsNode(mapId){ 
+function addMapAsNode(mapIds){ 
 	loading++;
 	assertLoading();
 
-	getMapRequest ( ADDMAPS_ACTION+"."+suffix+"?elems="+mapId, null, handleAddElementResponse, "text/xml", null );
+	getMapRequest ( ADDMAPS_ACTION+"."+suffix+"?elems="+mapIds, null, handleAddElementResponse, "text/xml", null );
 }
 
 function handleAddElementResponse(data) {
@@ -315,7 +281,7 @@ function handleAddElementResponse(data) {
 		enableMenu();
 		return;
 	}
-	var nodesAdded=false;
+
 	var nodesToAdd = new Array();
 	var linksToAdd = new Array();
 	var st = str.split("&");
@@ -333,7 +299,7 @@ function handleAddElementResponse(data) {
 		//MapElement
 		if (nodeST.length > 6) {
 
-			var id,iconName=DEFAULT_ICON,labelText="",avail=100,status=0,severity=0;
+			var id,iconName,labelText,avail,status,severity;
 			//read the information of the map (id, name, ecc.)
 			
 			id=nodeST[0];
@@ -370,42 +336,38 @@ function handleAddElementResponse(data) {
 		}
 		
 	}
-	if(!nodesAdded){
-		nodesAdded=true;
-		var freePoints = null;
-		var alerted = false;
-		do{     // try to add the elements
-		   freePoints = getFreePoints();
 
-		   if(freePoints.length>=nodesToAdd.length){
-			break;
-		   }else{
-			if(!alerted)
-				alert('Not enough space for all elements; their dimensions will be reduced');
-			alerted=true;
-		   }
-		   var decrResult = decreaseMapElemDim();
+	var freePoints = getFreePoints();
+	var alerted = false;
+	while(freePoints.length<nodesToAdd.length) {
 
-		   if(decrResult==false) // space problems
-			{
-			alert('No space available for elements');
-			return;
-			}	   
-		}while(freePoints.length<nodesToAdd.length);
-		
-		for(el in map.mapElements){
-			map.mapElements[el].setDimension(mapElemDimension);
-		}
-		map.render();
-		
-		var index = 0;
-		for(nd in nodesToAdd){	
-			var point = freePoints[index++];
-			//alert(point.x+" "+point.y);
-			var me = new MapElement(nodesToAdd[nd].id, nodesToAdd[nd].icon, nodesToAdd[nd].label.text, nodesToAdd[nd].semaphore.svgNode.getAttribute("fill"), getSemaphoreFlash(nodesToAdd[nd].severity,nodesToAdd[nd].avail), point.x, point.y, mapElemDimension, nodesToAdd[nd].status, nodesToAdd[nd].avail, nodesToAdd[nd].severity);
-			map.addMapElement(me);
-		}				
+	   if(freePoints.length>=nodesToAdd.length){
+		break;
+	   }else{
+		if(!alerted)
+			alert('Not enough space for all elements; their dimensions will be reduced');
+		alerted=true;
+	   }
+	   var decrResult = decreaseMapElemDim();
+
+	   if(decrResult==false) // space problems
+		{
+		alert('No space available for elements');
+		return;
+		}	   
 	}
+	
+	for(el in map.mapElements){
+		map.mapElements[el].setDimension(mapElemDimension);
+	}
+	
+	var index = 0;
+	for(nd in nodesToAdd){	
+		var point = freePoints[index++];
+
+		var me = new MapElement(nodesToAdd[nd].id, nodesToAdd[nd].icon, nodesToAdd[nd].label.text, nodesToAdd[nd].semaphore.svgNode.getAttribute("fill"), getSemaphoreFlash(nodesToAdd[nd].severity,nodesToAdd[nd].avail), point.x, point.y, mapElemDimension, nodesToAdd[nd].status, nodesToAdd[nd].avail, nodesToAdd[nd].severity);
+		map.addMapElement(me);
+	}				
 
 	var msg = "Added "+nodesToAdd.length+" nodes to the map";
 	if(nodesToAdd.length==0){
@@ -500,91 +462,6 @@ function handleDeleteNodeResponse(data) {
 
 }
 
-function newMap(){
-
-	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
-	
-	loading++;
-	assertLoading();
-	
-	getMapRequest (  NEWMAP_ACTION+"."+suffix+"?MapWidth="+mapWidth+"&MapHeight="+mapHeight, null, handleLoadingNewMap, "text/xml", null );
-}
-
-function handleLoadingNewMap(data) {
-	var str = '';
-	var failed = true;
-
-	if(data.success || data.status==200) {
-		str = data.content;
-		if(testResponse(NEWMAP_ACTION, str)){
-			str=str.substring(NEWMAP_ACTION.length+2,str.length);
-			failed = false;
-		}
-	}
-	if (failed) {
-		    alert('Loading New map failed');
-			loading--;
-			assertLoading();
-			enableMenu();
-			return;
-	}
-
-	var nodeST = str.split("+");
-	currentMapId=nodeST[0];
-	if(nodeST[1] !="null")
-		currentMapBackGround=nodeST[1];
-	else currentMapBackGround=DEFAULT_BG_COLOR;
-
-	if(nodeST[2] !="null")
-	currentMapAccess=nodeST[2];
-			else currentMapAccess="";
-
-	if(nodeST[3] !="null")
-		currentMapName=nodeST[3];
-	else currentMapName="";
-
-	if(nodeST[4] !="null")
-		currentMapOwner=nodeST[4];
-	else currentMapOwner="";
-
-	if(nodeST[5] !="null")
-		currentMapUserlast=nodeST[5];
-	else currentMapUserlast="";
-
-	if(nodeST[6] !="null")
-		currentMapCreatetime=nodeST[6];
-	else currentMapCreatetime="";
-
-	if(nodeST[7] !="null")
-		currentMapLastmodtime=nodeST[7];
-	else currentMapLastmodtime="";
-
-	currentMapType="U"
-		
-	//save the map in the map history
-	map.setBGvalue(currentMapBackGround);
-	map.render();
-	reloadGrid();
-	
-	loading--;
-	assertLoading();
-
-	savedMapString=getMapString();
-	saveMapInHistory();
-	
-	writeMapInfo();
-	showHistory();				
-
-
-	enableMenu();
-}
-
 function close(){
 
 	hideNodesIds = "";
@@ -648,6 +525,22 @@ function handleLoadingCloseMap(data) {
 	enableMenu();
 }
 
+function newMap(){
+
+	hideNodesIds = "";
+	hasHideNodes = false;
+
+	hideMapsIds = "";
+	hasHideMaps = false;
+
+	map.clear();
+	
+	loading++;
+	assertLoading();
+	
+	getMapRequest (  NEWMAP_ACTION+"."+suffix+"?MapWidth="+mapWidth+"&MapHeight="+mapHeight, null, handleLoadingMap, "text/xml", null );
+}
+
 function openMap(mapId){ 		
 
 	map.clear();
@@ -658,11 +551,33 @@ function openMap(mapId){
 	getMapRequest ( OPENMAP_ACTION+"."+suffix+"?MapId="+mapId+"&MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&adminMode="+isAdminMode, null, handleLoadingMap, "text/xml", null );
 }
 
+function searchMap(mapIds){
+ 
+ 	hideNodesIds = "";
+	hasHideNodes = false;
+
+	hideMapsIds = "";
+	hasHideMaps = false;
+
+	map.clear();
+	
+	loading++;
+	assertLoading();
+	var requestUrl=SEARCHMAPS_ACTION+"."+suffix+"?MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&MapElemDimension="+mapElemDimension+"&elems="+mapIds;
+	alert(requestUrl);
+	getMapRequest ( requestUrl , null, handleLoadingMap, "text/xml", null );
+}
+
+
 function handleLoadingMap(data) {
 	var openingMap;
     var failed = false;
     var content = data.content;
-	if((data.success || data.status==200) && content.indexOf(OPENMAP_ACTION+failed_string) == -1) {
+	if((data.success || data.status==200) 
+	&& content.indexOf(OPENMAP_ACTION+failed_string) == -1 
+	&& content.indexOf(SEARCHMAPS_ACTION+failed_string) == -1
+	&& content.indexOf(NEWMAP_ACTION+failed_string) == -1
+	) {
 		openingMap=eval("("+content+")");
 	} else {
 	    alert('Open map failed');

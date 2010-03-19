@@ -48,7 +48,7 @@ import java.util.Hashtable;
 
 import java.sql.Timestamp;
 
-import org.opennms.web.map.db.Map;
+import org.opennms.web.map.db.DbMap;
 
 /**
  * @author micmas
@@ -56,13 +56,14 @@ import org.opennms.web.map.db.Map;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-final public class VMap extends Map {
+final public class VMap extends DbMap {
     Hashtable<String, VElement> elements = new Hashtable<String, VElement>();
     
     Hashtable<String, VLink> links = new Hashtable<String, VLink>();
     
     public static final String DEFAULT_NAME = "NewMap";
     
+    public static final String SEARCH_NAME = "SearchMap";
     String createTimeString;
     String lastModifiedTimeString;
     

@@ -42,6 +42,7 @@
 package org.opennms.web.map.db;
 
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -54,7 +55,9 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
@@ -62,19 +65,21 @@ import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.map.InitializationObj;
+
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.MapsManagementException;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.db.datasources.DataSourceInterface;
+
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
+import org.opennms.web.map.view.VProperties;
 
 /**
  * @author maurizio
@@ -122,6 +127,8 @@ public class ManagerDefaultImpl implements Manager {
     String filter = null;
 
     VMap sessionMap = null;
+
+    VMap searchMap = null;
 
     boolean adminMode = false;
 
@@ -195,11 +202,6 @@ public class ManagerDefaultImpl implements Manager {
         }
     }
 
-    public List<VLink> getLinks(Collection<VElement> elems)
-            throws MapsException {
-        return getLinkArray(elems);
-    }
-
     public VMap openMap() throws MapNotFoundException {
         if (sessionMap != null) {
             return sessionMap;
@@ -227,6 +229,10 @@ public class ManagerDefaultImpl implements Manager {
             throws MapsManagementException, MapNotFoundException,
             MapsException {
 
+        if (id == MapsConstants.SEARCH_MAP) {
+            sessionMap = searchMap;
+            return sessionMap;
+        }
         List<VMapInfo> visibleMaps = getMapsMenuByuser(user);
 
         Iterator<VMapInfo> it = visibleMaps.iterator();
@@ -242,17 +248,6 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
-     * Create a new empty VMap and return it.
-     * 
-     * @return the new VMap created.
-     */
-    public VMap newMap() {
-        VMap m = new VMap();
-        sessionMap = m;
-        return m;
-    }
-
-    /**
      * Create a new VMap and return it
      * 
      * @param name
@@ -263,18 +258,18 @@ public class ManagerDefaultImpl implements Manager {
      * @param height
      * @return the new VMap
      */
-    public VMap newMap(String name, String accessMode, String owner,
+    public VMap newMap(String name, String owner,
             String userModifies, int width, int height) {
         VMap m = new VMap();
-        m.setAccessMode(accessMode);
         m.setName(name);
         m.setOwner(owner);
         m.setUserLastModifies(userModifies);
         m.setWidth(width);
         m.setHeight(height);
         m.setId((MapsConstants.NEW_MAP));
-        m.setBackground(MapsConstants.DEFAULT_BACKGROUND_COLOR);
-        m.setAccessMode(MapsConstants.ROLE_ADMIN);
+        m.setBackground(mapsPropertiesFactory.getDefaultBackgroundColor());
+        m.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
+        m.setType(MapsConstants.USER_GENERATED_MAP);
         sessionMap = m;
         return m;
     }
@@ -299,7 +294,7 @@ public class ManagerDefaultImpl implements Manager {
             MapsException {
         VMap retVMap = null;
 
-        Map m = dbManager.getMap(id);
+        DbMap m = dbManager.getMap(id);
         if (m == null) {
             throw new MapNotFoundException("Map with id " + id
                     + " doesn't exist.");
@@ -310,10 +305,10 @@ public class ManagerDefaultImpl implements Manager {
                            m.getType(), m.getWidth(), m.getHeight());
         retVMap.setCreateTime(m.getCreateTime());
         retVMap.setLastModifiedTime(m.getLastModifiedTime());
-        Element[] mapElems = dbManager.getElementsOfMap(id);
+        DbElement[] mapElems = dbManager.getElementsOfMap(id);
         VElement elem = null;
         if (mapElems != null) {
-            for (Element mapElem : mapElems) {
+            for (DbElement mapElem : mapElems) {
                 elem = new VElement(mapElem);
                 elem.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
                 elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
@@ -339,86 +334,6 @@ public class ManagerDefaultImpl implements Manager {
         log.debug("Ending adding links for map with id " + id);
         sessionMap = retVMap;
         return retVMap;
-    }
-
-    public void deleteElementsOfMap(int mapId) throws MapsException {
-        if (sessionMap == null) {
-            throw new MapNotFoundException("session map is null");
-        }
-        if (sessionMap.getId() != mapId) {
-            throw new MapsException(
-                                    "No current session map: cannot delete elements of map "
-                                            + mapId);
-        }
-        sessionMap.removeAllElements();
-        dbManager.deleteElementsOfMap(mapId);
-    }
-
-    /**
-     * Take the map label and type in input and return it in VMap form.
-     * 
-     * @param mapname
-     * @param maptype
-     * @param refreshElems
-     *            says if refresh map's elements
-     * @return the VMap[] with corresponding mapname and maptype
-     * @throws MapsException
-     */
-
-    public VMap[] getMap(String mapname, String maptype, boolean refreshElems)
-            throws MapsManagementException, MapNotFoundException,
-            MapsException {
-
-        VMap retVMap = null;
-        if (!maptype.equals(VMap.AUTOMATICALLY_GENERATED_MAP)
-                && !maptype.equals(VMap.USER_GENERATED_MAP)) {
-            throw new MapNotFoundException("Map with uncorrect maptype "
-                    + maptype);
-        }
-        Vector<VMap> ve = new Vector<VMap>();
-
-        Map[] maps = dbManager.getMaps(mapname, maptype);
-        if (maps == null) {
-            throw new MapNotFoundException("Map with mapname " + mapname
-                    + "and maptype " + maptype + " doesn't exist.");
-        }
-        for (Map m : maps) {
-            retVMap = new VMap(m.getId(), m.getName(), m.getBackground(),
-                               m.getOwner(), m.getAccessMode(),
-                               m.getUserLastModifies(), m.getScale(),
-                               m.getOffsetX(), m.getOffsetY(), m.getType(),
-                               m.getWidth(), m.getHeight());
-            retVMap.setCreateTime(m.getCreateTime());
-            retVMap.setLastModifiedTime(m.getLastModifiedTime());
-            Element[] mapElems = dbManager.getElementsOfMap(m.getId());
-            VElement elem = null;
-            if (mapElems != null) {
-                for (Element mapElem : mapElems) {
-                    elem = new VElement(mapElem);
-                    elem.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
-                    elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
-                    elem.setAvail(mapsPropertiesFactory.getDisabledAvail().getId());
-                    // here we must add all the stuff required
-                    retVMap.addElement(elem);
-                }
-            }
-            if (refreshElems) {
-                log.debug("Starting refreshing elems for map with name "
-                        + mapname + " and id " + retVMap.getId());
-                for (VElement changedElem : localRefreshElements(retVMap.getElements().values())) {
-                    retVMap.removeElement(changedElem.getId(),
-                                          changedElem.getType());
-                    retVMap.addElement(changedElem);
-                }
-                log.debug("Ending refreshing elems for map with name "
-                        + mapname + " and id " + retVMap.getId());
-            }
-            retVMap.addLinks(getLinks(retVMap.getElements().values()));
-            ve.add(retVMap);
-        }
-        VMap[] vmaps = new VMap[ve.size()];
-        vmaps = ve.toArray(vmaps);
-        return vmaps;
     }
 
     private List<VElement> localRefreshElements(
@@ -464,7 +379,7 @@ public class ManagerDefaultImpl implements Manager {
     public VMap[] getMapsLike(String likeLabel, boolean refreshElems)
             throws MapsException {
         VMap[] retVMap = null;
-        Map[] m = dbManager.getMapsLike(likeLabel);
+        DbMap[] m = dbManager.getMapsLike(likeLabel);
         if (m == null) {
             throw new MapNotFoundException("Maps with label like "
                     + likeLabel + " don't exist.");
@@ -488,7 +403,7 @@ public class ManagerDefaultImpl implements Manager {
     public VMap[] getMapsByName(String mapName, boolean refreshElems)
             throws MapNotFoundException, MapsException {
         VMap[] retVMap = null;
-        Map[] m = dbManager.getMapsByName(mapName);
+        DbMap[] m = dbManager.getMapsByName(mapName);
         if (m == null) {
             throw new MapNotFoundException("Maps with name " + mapName
                     + " don't exist.");
@@ -511,7 +426,7 @@ public class ManagerDefaultImpl implements Manager {
     public VMap[] getAllMaps(boolean refreshElems)
             throws MapNotFoundException, MapsException {
         VMap[] retVMap = null;
-        Map[] m = dbManager.getAllMaps();
+        DbMap[] m = dbManager.getAllMaps();
         if (m == null) {
             throw new MapNotFoundException("No Maps found.");
         }
@@ -576,18 +491,18 @@ public class ManagerDefaultImpl implements Manager {
                                     + user + " owns the map");
                             return vmapsinfo[i];
                         } else {
-                            Map map = dbManager.getMap(vmapsinfo[i].getId());
+                            DbMap map = dbManager.getMap(vmapsinfo[i].getId());
                             log.debug("getDefaultMapsMenu: map: "
                                     + map.getId() + " mapName: "
                                     + map.getName() + " Access: "
                                     + map.getAccessMode() + " Group: "
                                     + map.getGroup());
                             if (map.getAccessMode().trim().toUpperCase().equals(
-                                                                                Map.ACCESS_MODE_ADMIN.toUpperCase())
+                                                                                MapsConstants.ACCESS_MODE_ADMIN.toUpperCase())
                                     || map.getAccessMode().trim().toUpperCase().equals(
-                                                                                       Map.ACCESS_MODE_USER.toUpperCase())
+                                                                                       MapsConstants.ACCESS_MODE_USER.toUpperCase())
                                     || (map.getAccessMode().trim().toUpperCase().equals(
-                                                                                        Map.ACCESS_MODE_GROUP.toUpperCase()) && map.getGroup().equals(
+                                                                                        MapsConstants.ACCESS_MODE_GROUP.toUpperCase()) && map.getGroup().equals(
                                                                                                                                                       group.getName()))) {
                                 log.info("getDefaultMapsMenu: found! user: "
                                         + user + " has access to map: "
@@ -771,36 +686,41 @@ public class ManagerDefaultImpl implements Manager {
      */
     public VElement newElement(int mapId, int elementId, String type)
             throws MapsException {
-        if (sessionMap == null) {
-            throw new MapNotFoundException("session map is null");
-        }
-        if (sessionMap.getId() != mapId) {
-            throw new MapsException(
-                                    "No current session map: cannot create new element of map "
-                                            + mapId);
-        }
-        Element elem = dbManager.newElement(elementId, mapId, type);
-        VElement velem = new VElement(elem);
+        VElement velem = new VElement(dbManager.newElement(elementId, mapId, type));
+        
+        if (velem.isNode())
+            velem.setIcon(getIconBySysoid(velem.getSysoid()));
+        else if (velem.isMap())
+            velem.setIcon(mapsPropertiesFactory.getDefaultMapIcon());
+
         velem.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
         velem.setAvail(mapsPropertiesFactory.getUndefinedAvail().getMin());
         velem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
         log.debug("Adding velement to map " + velem.toString());
-        sessionMap.addElement(velem);
+
         return velem;
 
     }
 
-    /**
-     * Create a new element child of the map with mapId (this map must be the
-     * sessionMap)
-     */
-    public VElement newElement(int elementId, String type)
-            throws MapsException {
-        if (sessionMap == null) {
-            throw new MapNotFoundException("session map in null");
+    private String getIconBySysoid(String sysoid) throws MapsException {
+        try {
+            java.util.Map<String, String> iconsBySysoid = mapsPropertiesFactory.getIconsBySysoid();
+            if (iconsBySysoid != null) {
+                log.debug("getIconBySysoid: sysoid = " + sysoid);
+                for (String key : iconsBySysoid.keySet()) {
+                    log.debug("getIconBySysoid: key = " + key);
+                    if (key.equals(sysoid)) {
+                        log.debug("getIconBySysoid: iconBySysoid = "
+                                + iconsBySysoid.get(key));
+                        return iconsBySysoid.get(key);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception while getting icons by sysoid");
+            throw new MapsException(e);
         }
-        return newElement(sessionMap.getId(), elementId, type);
-
+        return mapsPropertiesFactory.getDefaultNodeIcon();
     }
 
     /**
@@ -817,19 +737,17 @@ public class ManagerDefaultImpl implements Manager {
     public VElement newElement(int mapId, int elementId, String type,
             String iconname, int x, int y) throws MapsException {
         VElement velem = newElement(mapId, elementId, type);
+        if (iconname == null ) {
+            if (type == MapsConstants.MAP_TYPE)
+                iconname = mapsPropertiesFactory.getDefaultMapIcon();
+            else 
+                iconname = mapsPropertiesFactory.getDefaultNodeIcon();
+        }
         velem.setIcon(iconname);
         velem.setX(x);
         velem.setY(y);
         return velem;
 
-    }
-
-    public VElement newElement(int elementId, String type, String iconname,
-            int x, int y) throws MapsException {
-        if (sessionMap == null) {
-            throw new MapNotFoundException("session map in null");
-        }
-        return newElement(sessionMap.getId(), elementId, type, iconname, x, y);
     }
 
     /**
@@ -920,12 +838,12 @@ public class ManagerDefaultImpl implements Manager {
      * @throws MapsException
      */
     synchronized public void save(VMap map) throws MapsException {
-        if (!map.isNew()) {
-            dbManager.deleteElementsOfMap(map.getId());
+        Collection<DbElement> dbe = new ArrayList<DbElement>();
+        for (VElement velem : map.getElements().values()) {
+            dbe.add(new DbElement(velem));
         }
-        dbManager.saveMap(map);
-        dbManager.saveElements(map.getElements().values().toArray(
-                                                                  new VElement[0]));
+        dbManager.saveMap(map, dbe);
+
     }
 
     /**
@@ -954,7 +872,7 @@ public class ManagerDefaultImpl implements Manager {
      */
     public VMap reloadMap(VMap map) throws MapsException {
 
-        Element[] elems = dbManager.getElementsOfMap(map.getId());
+        DbElement[] elems = dbManager.getElementsOfMap(map.getId());
         List<VElement> velems = new ArrayList<VElement>(elems.length);
         for (int i = 0; i < elems.length; i++) {
             velems.add(new VElement(elems[i]));
@@ -1040,59 +958,16 @@ public class ManagerDefaultImpl implements Manager {
      */
     public Set<Integer> getNodeidsOnElement(VElement velem)
             throws MapsException {
-        Element elem = new Element(velem);
+        DbElement elem = new DbElement(velem);
         return dbManager.getNodeidsOnElement(elem);
     }
 
-    public VElementInfo[] getAllElementInfo() throws MapsException {
+    public List<VElementInfo> getElementInfo() throws MapsException {
         return dbManager.getAllElementInfo();
-    }
-
-    public VElementInfo[] getElementInfoLike(String like)
-            throws MapsException {
-        return dbManager.getElementInfoLike(like);
     }
 
     public org.opennms.web.map.db.Manager getDataAccessManager() {
         return dbManager;
-    }
-
-    /**
-     * Gets all nodes on the passed map (and its submaps) with theirs
-     * occurrences
-     * 
-     * @param map
-     * @return HashMap<Integer, Integer> (nodeid, occurrences) containing all
-     *         nodes on the passed map (and its submaps) with theirs
-     *         occourrences
-     */
-    public HashMap<Integer, Integer> getAllNodesOccursOnMap(VMap map)
-            throws MapsException {
-        HashMap<Integer, Integer> result = new HashMap<Integer, Integer>();
-        for (VElement elem : map.getElements().values()) {
-            if (elem.getType() == MapsConstants.MAP_TYPE) {
-                Set<Integer> nodeids = getNodeidsOnElement(elem);
-                Iterator<Integer> iter = nodeids.iterator();
-                while (iter.hasNext()) {
-                    Integer nid = iter.next();
-                    Integer occ = result.get(nid);
-                    if (occ == null) {
-                        occ = 0;
-                    }
-                    occ++;
-                    result.put(nid, occ);
-                }
-            } else {
-                Integer nid = elem.getId();
-                Integer occ = result.get(nid);
-                if (occ == null) {
-                    occ = 0;
-                }
-                occ++;
-                result.put(nid, occ);
-            }
-        }
-        return result;
     }
 
     private String getSeverityLabel(int severity) throws MapsException {
@@ -1352,7 +1227,7 @@ public class ManagerDefaultImpl implements Manager {
                                                        linkinfo.snmpifspeed);
     }
 
-    private List<VLink> getLinkArray(Collection<VElement> elems) throws MapsException {
+    private List<VLink> getLinks(Collection<VElement> elems) throws MapsException {
         if (elems == null)
             return null;
         String multilinkStatus = mapsPropertiesFactory.getMultilinkStatus();
@@ -1449,22 +1324,7 @@ public class ManagerDefaultImpl implements Manager {
             return 1;
         return linfo.snmpifadminstatus;
     }
-/* TODO Questo metodo potrebbe essere utile
-    private List<VLink> getLinksOnElement(VElement[] elems, VElement elem)
-            throws MapsException {
-        if (elems == null || elem == null) {
-            return null;
-        }
-        ArrayList<VElement> listOfElems = new ArrayList<VElement>();
-        for (VElement elem2 : elems) {
-            if (elem2 != null) {
-                listOfElems.add(elem2);
-            }
-        }
-        listOfElems.add(elem);
-        return getLinkArray(listOfElems);
-    }
-*/
+
     private String unescapeHtmlChars(String input) {
         return (input == null ? null
                              : input.replaceAll("&amp;", "&").replaceAll(
@@ -1482,14 +1342,28 @@ public class ManagerDefaultImpl implements Manager {
         m_groupDao = groupDao;
     }
 
-    public VElement getElement(int mapId, int elementId, String type)
+    private VElement getElement(int mapId, int elementId, String type)
             throws MapsException {
         return new VElement(dbManager.getElement(elementId, mapId, type));
     }
 
-    public VMap createMapByLabelSearch(String label, String user) {
-        // TODO Auto-generated method stub
-        return null;
+    public VMap searchMap(String name, String owner,String userModifies, int width, int height, List<VElement> elems) throws MapsException {
+        VMap m = new VMap();
+        m.setName(name);
+        m.setOwner(owner);
+        m.setUserLastModifies(userModifies);
+        m.setWidth(width);
+        m.setHeight(height);
+        m.setId((MapsConstants.SEARCH_MAP));
+        m.setBackground(mapsPropertiesFactory.getDefaultBackgroundColor());
+        m.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
+        
+        m.addElements(elems);
+        m.addLinks(getLinks(elems));
+        
+        sessionMap = m;
+        searchMap = m;
+        return m;    
     }
 
     public java.util.Map<String, Set<Integer>> getNodeLabelToMaps(String user)
@@ -1498,10 +1372,10 @@ public class ManagerDefaultImpl implements Manager {
         for (VMapInfo mapinfo : getMapsMenuByuser(user)) {
             maps.add(new Integer(mapinfo.getId()));
         }
-        Element[] elems = dbManager.getAllElements();
+        DbElement[] elems = dbManager.getAllElements();
         java.util.Map<String, Set<Integer>> nodelabelMap = new HashMap<String, Set<Integer>>();
         for (int i = 0; i < elems.length; i++) {
-            Element elem = elems[i];
+            DbElement elem = elems[i];
             String label = elem.getLabel();
             log.debug("getNodeLabelToMaps: found element with label: "
                     + label);
@@ -1523,9 +1397,9 @@ public class ManagerDefaultImpl implements Manager {
         return nodelabelMap;
     }
 
-    public InitializationObj getInitObj(boolean isUserAdmin)
+    public VProperties getProperties(boolean isUserAdmin)
             throws MapsException {
-        InitializationObj inObj = new InitializationObj();
+        VProperties inObj = new VProperties();
         inObj.setAvailEnabled(mapsPropertiesFactory.isAvailEnabled());
         inObj.setDoubleClickEnabled(mapsPropertiesFactory.isDoubleClickEnabled());
         inObj.setContextMenuEnabled(mapsPropertiesFactory.isContextMenuEnabled());
@@ -1541,12 +1415,32 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setMapElementDimensions(mapsPropertiesFactory.getMapElementDimensions());
         inObj.setDefaultNodeIcon(mapsPropertiesFactory.getDefaultNodeIcon());
         inObj.setDefaultMapIcon(mapsPropertiesFactory.getDefaultMapIcon());
-        inObj.setMapScale(mapsPropertiesFactory.getMapScale());
         inObj.setDefaultBackgroundColor(mapsPropertiesFactory.getDefaultBackgroundColor());
         inObj.setUserAdmin(isUserAdmin);
         inObj.setCategories(getCategories());
         inObj.setUnknownstatusid(mapsPropertiesFactory.getDefaultStatusId());
         inObj.setDefaultMapElementDimension(mapsPropertiesFactory.getDefaultMapElementDimension());
         return inObj;
+    }
+
+    public VMap addElements(VMap map, List<VElement> velems) throws MapsException {
+        map.removeAllLinks();
+        for (VElement ve: velems) {
+            log.debug("adding map element to map with id: " +ve.getId()+ve.getType());
+            try {
+                String type = MapsConstants.NODE_HIDE_TYPE;
+                if (ve.isMap()) type =MapsConstants.MAP_HIDE_TYPE;
+                VElement hve = getElement(map.getId(), ve.getId(), type);
+                if (hve.getLabel() != null) {
+                    ve.setLabel(hve.getLabel());
+                    log.debug("preserving label map is hidden: label found: " + hve.getLabel());
+                }
+            } catch (Exception e) {
+               log.debug("No Hidden Element found for id: " +ve.getId()+ve.getType()); 
+            }
+            map.addElement(ve);
+        }            
+        map.addLinks(getLinks(map.getElements().values()));
+        return map;
     }
 }

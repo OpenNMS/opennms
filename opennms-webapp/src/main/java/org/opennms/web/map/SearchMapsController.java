@@ -38,16 +38,25 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
+
+
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+
 
 /**
  * @author mmigliore
@@ -56,9 +65,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * proper session objects to use when working with maps
  * 
  */
-public class CloseMapController implements Controller {
-	
-
+public class SearchMapsController implements Controller {
 	Category log;
 
 	private Manager manager;
@@ -72,27 +79,68 @@ public class CloseMapController implements Controller {
 		this.manager = manager;
 	}
 
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
+	    int mapWidth = WebSecurityUtils.safeParseInt(request
+	                                                   .getParameter("MapWidth"));
+        int mapHeight = WebSecurityUtils.safeParseInt(request
+	                                                       .getParameter("MapHeight"));
+
+        log.debug("Current mapWidth=" + mapWidth + " and MapHeight=" + mapHeight);
+
+        int d = WebSecurityUtils.safeParseInt(request
+                                                     .getParameter("MapElemDimension"));
+
+        int n = mapWidth /4/d;
+        log.debug("Map row at max elements="+n );
+
+        String elems = request.getParameter("elems");
+		log.debug("Adding Searching Maps: elems="+elems );
 		
-		BufferedWriter  bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 
 		try {
+            List<VElement> velems = new ArrayList<VElement>();
+            // response for addElement
 			
-			manager.closeMap();
-			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLOSEMAP_ACTION));
+			log.debug("Adding maps by id: "+ elems);
+			String[] smapids = elems.split(",");
+			int x = -1;
+            int y = -1;
+            int s = 1;
+
+			for (int i = 0; i<smapids.length;i++) {
+
+			    if (x < n) {
+			        x++;
+			    } else {
+	               y++;
+       		        if (s==1) {
+       		            x=1;
+       		            s--;
+       		        } else {
+                        x=0;
+                        s++;
+       		        }
+			    }
+			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, new Integer(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*d+d));
+			} // end for
+
+			//get map
+            VMap map = manager.searchMap(VMap.SEARCH_NAME, request
+                                         .getRemoteUser(), request.getRemoteUser(),
+                                         mapWidth, mapHeight,velems);
+            log.debug("Got search map from manager "+map);
+			bw.write(ResponseAssembler.getMapResponse(map));
 		} catch (Exception e) {
-			log.error(this.getClass().getName()+" Failure: "+e);
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLOSEMAP_ACTION));
+			log.error("Error while adding Maps: ",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SEARCHMAPS_ACTION));
 		} finally {
 			bw.close();
 		}
-		
-		
+
 		return null;
 	}
 

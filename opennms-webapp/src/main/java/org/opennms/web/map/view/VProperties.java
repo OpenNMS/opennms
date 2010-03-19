@@ -1,4 +1,4 @@
-package org.opennms.web.map;
+package org.opennms.web.map.view;
 
 import java.util.List;
 
@@ -10,7 +10,14 @@ import org.opennms.web.map.config.LinkStatus;
 import org.opennms.web.map.config.Severity;
 import org.opennms.web.map.config.Status;
 
-public class InitializationObj {
+public class VProperties {
+    
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     boolean isUserAdmin=false;
     boolean reload=false;
 
@@ -31,7 +38,6 @@ public class InitializationObj {
 	List<Avail> avails;
 	
     int defaultMapElementDimension;
-    String mapScale;
 
     java.util.Map<String,Icon> icons;
 	java.util.Map<String,String> backgroundImages;
@@ -40,16 +46,7 @@ public class InitializationObj {
 	String defaultNodeIcon;
     String defaultMapIcon;
     String defaultBackgroundColor;
-
 	
-    String NODE_TYPE = MapsConstants.NODE_TYPE;
-	String MAP_TYPE=MapsConstants.MAP_TYPE;
-	String NODE_HIDE_TYPE=MapsConstants.NODE_HIDE_TYPE;
-	String MAP_HIDE_TYPE=MapsConstants.MAP_HIDE_TYPE;
-	
-	int MAP_NOT_OPENED = MapsConstants.MAP_NOT_OPENED;
-	int NEW_MAP = MapsConstants.NEW_MAP;
-
 	List<String> categories;
 	
 	
@@ -59,22 +56,6 @@ public class InitializationObj {
 
     public void setUnknownstatusid(int unknownstatusid) {
         this.unknownstatusid = unknownstatusid;
-    }
-
-    public String getNODE_TYPE() {
-        return NODE_TYPE;
-    }
-
-    public String getMAP_TYPE() {
-        return MAP_TYPE;
-    }
-
-    public int getMAP_NOT_OPENED() {
-        return MAP_NOT_OPENED;
-    }
-
-    public int getNEW_MAP() {
-        return NEW_MAP;
     }
 
     public boolean isAvailEnabled() {
@@ -212,14 +193,6 @@ public class InitializationObj {
 
     public void setDefaultBackgroundColor(String defaultBackgroundColor) {
         this.defaultBackgroundColor = defaultBackgroundColor;
-    }
-
-    public String getMapScale() {
-        return mapScale;
-    }
-
-    public void setMapScale(String mapScale) {
-        this.mapScale = mapScale;
     }
 
     public List<String> getCategories() {

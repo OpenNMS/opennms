@@ -33,6 +33,7 @@ package org.opennms.web.map;
 
 
 import java.io.BufferedWriter;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -43,7 +44,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.map.db.Element;
 
 import org.opennms.web.map.view.*;
 
@@ -152,18 +152,15 @@ public class SaveMapController implements Controller {
                 if (label != null )
                     ve.setLabel(label);                    
                 
-                log.debug("adding map element to map with id: " +id+type + "and label: " + ve.getLabel());
+                log.debug("adding map element to map with id: " +id+type + " and label: " + ve.getLabel());
 				elems.add(ve);
 			}
 
-			log.info("removing all links and elements.");
 			map.removeAllLinks();
 			map.removeAllElements();
-			log.info("saving all elements.");
 				
-			for(VElement elem: elems) {
-				map.addElement(elem);
-			}
+			map.addElements(elems);
+
 				
 			map.setUserLastModifies(request.getRemoteUser());
 			map.setName(mapName);
@@ -171,10 +168,15 @@ public class SaveMapController implements Controller {
 			map.setWidth(mapWidth);
 			map.setHeight(mapHeight);
 			
-			if (map.isNew())
-				map.setType(VMap.USER_GENERATED_MAP);
-			else if (map.getType().trim().equalsIgnoreCase(VMap.AUTOMATICALLY_GENERATED_MAP))
-			    map.setType(VMap.AUTOMATIC_SAVED_MAP);
+			if (map.isNew()) {
+			    log.debug("Map is New Map");
+				map.setType(MapsConstants.USER_GENERATED_MAP);
+				map.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
+			}
+			else if (map.getType().trim().equalsIgnoreCase(MapsConstants.AUTOMATICALLY_GENERATED_MAP)) {
+                log.debug("Map is Automated Map, saving as Static");
+                map.setType(MapsConstants.AUTOMATIC_SAVED_MAP);
+			}
 			manager.save(map);
 				
 			log.info(map.getName() + " Map saved");

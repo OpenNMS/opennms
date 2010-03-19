@@ -42,7 +42,7 @@
 package org.opennms.web.map.view;
 
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.db.Element;
+import org.opennms.web.map.db.DbElement;
 
 /**
  * @author micmas
@@ -50,7 +50,7 @@ import org.opennms.web.map.db.Element;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class VElement extends Element {
+public class VElement extends DbElement {
 
 	// boolean that represents if this is a childnode mandatory to avoid loops  
 	protected boolean isChild = false;
@@ -76,7 +76,7 @@ public class VElement extends Element {
     /**
      * @param e
      */
-    public VElement(Element e) throws MapsException {
+    public VElement(DbElement e) throws MapsException {
         super(e);
     }
 

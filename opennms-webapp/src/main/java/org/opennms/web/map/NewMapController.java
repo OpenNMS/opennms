@@ -96,9 +96,8 @@ public class NewMapController implements Controller {
 		try {
 			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 				
-				if (log.isInfoEnabled())
-					log.info("New Map in admin mode: creating new map");
-			VMap map = manager.newMap(VMap.DEFAULT_NAME, MapsConstants.ROLE_ADMIN, request
+			log.info("New Map in admin mode: creating new map");
+			VMap map = manager.newMap(VMap.DEFAULT_NAME, request
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
 			bw.write(ResponseAssembler.getMapResponse(map));

@@ -93,11 +93,8 @@ public class OpenMapController implements Controller {
 		
 		String user = request.getRemoteUser();
 		
-		String role = MapsConstants.ROLE_USER;
-
 		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))) {
-			role=MapsConstants.ROLE_ADMIN;
-			log.info(user + " has Admin mode");
+			log.info(user + " has Admin admin Role");
 		}					
 
 		float widthFactor = 1;
@@ -142,7 +139,6 @@ public class OpenMapController implements Controller {
 				
 				map.setHeight(mapHeight);
 				map.setWidth(mapWidth);
-				map.setAccessMode(role);
 				
 				for (VElement ve : map.getElements().values()) {
 				    ve.setX((int) (ve.getX() * widthFactor));
@@ -153,7 +149,7 @@ public class OpenMapController implements Controller {
 			bw.write(ResponseAssembler.getMapResponse(map));
 
 		} catch (Exception e) {
-			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user+", and role:"+role,e);
+			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.OPENMAP_ACTION));
 		} finally {
 			bw.close();

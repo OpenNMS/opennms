@@ -42,15 +42,18 @@ package org.opennms.web.map;
  * This class contains some constants for Maps application
  *
  */
-public final class MapsConstants extends JSTLConstants{
-    private static final long serialVersionUID = 1L;
+public final class MapsConstants {
 
     public static final String LOG4J_CATEGORY = "OpenNMS.Map";
 	
+    // map default ids
 	public static final int MAP_NOT_OPENED = -1;
 	
 	public static final int NEW_MAP = -2;
 	
+    public static final int SEARCH_MAP = -3;
+
+    // map types
 	public static final String NODE_TYPE = "N";
 	
 	public static final String MAP_TYPE= "M";
@@ -59,10 +62,7 @@ public final class MapsConstants extends JSTLConstants{
     
     public static final String MAP_HIDE_TYPE= "W";
 
-    public static final String DEFAULT_BACKGROUND_COLOR = "ffffff";
-
-	// load infos
-	
+	// actions	
 	public static final String MAPS_STARTUP_ACTION = "MapStartUp";
 	
 	public static final String LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
@@ -72,8 +72,6 @@ public final class MapsConstants extends JSTLConstants{
 	public static final String LOADNODES_ACTION = "LoadNodes";
 
 	public static final String LOADLABELMAP_ACTION = "LoadLabelMap";
-	
-	//map action
 	
 	public static final String NEWMAP_ACTION = "NewMap";
 
@@ -91,13 +89,13 @@ public final class MapsConstants extends JSTLConstants{
 
 	public static final String REFRESH_ACTION = "Refresh";
 	
-	// element action (a map should be opened )
-	
 	public static final String ADDRANGE_ACTION = "AddRange";
 	
 	public static final String ADDNODES_ACTION = "AddNodes";
 
 	public static final String ADDMAPS_ACTION = "AddMaps";
+	
+	public static final String SEARCHMAPS_ACTION = "SearchMap";
 
 	public static final String ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
 	
@@ -113,29 +111,23 @@ public final class MapsConstants extends JSTLConstants{
 
 	public static final String DELETEMAPS_ACTION = "DeleteMaps";
 	
-	// action mode
 	public static final String SWITCH_MODE_ACTION = "SwitchRole";
-	
-	// map roles
-	public static final String ROLE_USER = "RO";
+		
+    // map types
+	public static final String USER_GENERATED_MAP = "U";
 
-	public static final String ROLE_ADMIN = "RW";
-	
-	
+    public static final String AUTOMATICALLY_GENERATED_MAP = "A";
+    
+    public static final String AUTOMATIC_SAVED_MAP = "S";
 
-	/**
-	 * setting value to have no refresh
-	 */
-	
-	public static final int NO_REFRESH_TIME=-1;
-	
-	/**
-	 * setting value to have continous refresh
-	 */
-	
-	public static final int AUTO_REFRESH_TIME=0;
-	
-	
+    // map access 
+    public static final String ACCESS_MODE_ADMIN = "RW";
+
+    public static final String ACCESS_MODE_USER = "RO";
+    
+    public static final String ACCESS_MODE_GROUP = "RWRO";
+		
+	// COLOR_SEMAPHORE
 	public static final String COLOR_SEMAPHORE_BY_SEVERITY = "S";
 	
 	public static final String COLOR_SEMAPHORE_BY_STATUS = "T";
