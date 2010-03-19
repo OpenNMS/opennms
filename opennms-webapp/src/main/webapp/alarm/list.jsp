@@ -212,6 +212,7 @@
 
 
       <!-- menu -->
+    <c:if test="${param.nolinks != 'true'}">
       <div id="linkbar">
       <ul>
       <li><a href="<%=this.makeLink( parms, new ArrayList<org.opennms.web.alarm.filter.Filter>())%>" title="Remove all search constraints" >View all alarms</a></li>
@@ -227,6 +228,7 @@
       </li>
       </ul>
       </div>
+    </c:if>
       <!-- end menu -->      
 
       <!-- hidden form for acknowledging the result set --> 
@@ -240,7 +242,9 @@
 
 
 
+          <c:if test="${param.noquerypanel != 'true'}">
             <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+          </c:if>
           
             <% if( alarmCount > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
@@ -275,7 +279,9 @@
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=org.opennms.web.Util.makeHiddenTags(req)%>
       <% } %>
+		<c:if test="${param.nolegend != 'true'}">
 			<jsp:include page="/includes/key.jsp" flush="false" />
+		</c:if>
       <table>
 				<thead>
 					<tr>
@@ -306,12 +312,12 @@
 
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-              <td class="divider" rowspan="1">
+              <td class="divider" rowspan="1"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>>
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
                 </nobr>
           <% } else { %>
-            <td rowspan="1" class="divider">&nbsp;
+            <td rowspan="1" class="divider"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>>&nbsp;
           <% } %>
           </td>
 
@@ -320,7 +326,7 @@
             
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
-          <td class="divider">
+          <td class="divider"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>>
 	    <% if(alarms[i].getNodeId() != 0 && alarms[i].getNodeLabel()!= null ) { %>
               <% org.opennms.web.alarm.filter.Filter nodeFilter = new NodeFilter(alarms[i].getNodeId()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
@@ -334,7 +340,7 @@
               <% } %>
             <% } %>
           </td>          
-          <td class="divider" rowspan="1" >
+          <td class="divider" rowspan="1" <c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>>
 	    <% if(alarms[i].getId() > 0 ) { %>
               <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
                 <nobr>
@@ -344,14 +350,21 @@
             <%=alarms[i].getCount()%>
             <% } %>
           </td>
-          <td class="divider">
+          <td class="divider"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>>
             <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEventID() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
-          <td class="divider"><%=alarms[i].getLogMessage()%></td>
+      <c:choose>
+        <c:when test="${param.nowrap == 'true'}">
+          <td class="divider"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>><%=alarms[i].getLogMessage().replaceAll("<p", "<span").replaceAll("</p>", "↩&nbsp;</span>").replaceAll(" ", "&nbsp;")%></td>
+        </c:when>
+        <c:otherwise>
+          <td class="divider"<c:if test="${param.nowrap == 'true'}"> style="white-space:nowrap;"</c:if>><%=alarms[i].getLogMessage()%></td>
+        </c:otherwise>
+      </c:choose>
        
       <% } /*end for*/%>
 
