@@ -128,6 +128,9 @@ var MAP_NOT_OPENED = -1;
 var NEW_MAP = -2;
 var SEARCH_MAP = -3;
 
+var NEW_MAP_NAME = "NewMap";
+var SEARCH_MAP_NAME = "SearchMap";
+
 var NODE_TYPE = "N";
 var MAP_TYPE= "M";
 var NODE_HIDE_TYPE = "H";
