@@ -79,6 +79,8 @@ function handleLoadMapsResponse(data) {
 		assertLoading();			
 	}
 	mapLabels = [" "];
+	
+	var labels = [" "];
     var mapSorts = [null];
     var mapids = [null];
     var st = str.split("&");
@@ -97,11 +99,18 @@ function handleLoadMapsResponse(data) {
 			var tmpMap = new ElemMap(id, name, owner);
 			mapids.push(id);
 			mapLabels.push(name);
+			labels.push(name)
 			mapSorts.push(tmpMap);
 		}
 	}
-	mapSortAss = assArrayPopulate(mapLabels,mapSorts);	
-	mapidSortAss = assArrayPopulate(mapids,mapLabels);	
+	var searchMap = new ElemMap(SEARCH_MAP,SEARCH_MAP_NAME,"admin");
+
+	mapids.push(SEARCH_MAP);	
+	labels.push(SEARCH_MAP_NAME);
+	mapSorts.push(searchMap);
+
+	mapSortAss = assArrayPopulate(labels,mapSorts);	
+	mapidSortAss = assArrayPopulate(mapids,labels);	
 	loading--;	
 	assertLoading();
 	mapsLoaded=true;

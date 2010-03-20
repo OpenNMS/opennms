@@ -343,7 +343,7 @@ function openMapSetUp(mapId) {
 	if (verifyMapString()) return;
 
 	var mapToOpen;
-	if(mapId != undefined && mapId > 0){
+	if(mapId != undefined && (mapId > 0 || mapId == SEARCH_MAP )){
 		mapToOpen = mapId;
 	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
 		mapToOpen = mapSortAss[selectedMapInList].id;		
