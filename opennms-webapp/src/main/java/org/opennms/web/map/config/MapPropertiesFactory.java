@@ -965,7 +965,11 @@ public class MapPropertiesFactory extends Object {
     public int getDefaultStatusId() {
     	return getDefaultStatus().getId();
     }
-    
+
+    public int getUnknownStatusId() {
+        return getUnknownStatus().getId();
+    }
+
     public java.util.Map<String, String> getMapElementDimensions() {
     	// TODO To be implemented (via map.properties-MapPropertiesFactory)
     	java.util.Map<String, String> dims = new TreeMap<String, String>();

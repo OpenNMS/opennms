@@ -564,7 +564,6 @@ function searchMap(mapIds){
 	loading++;
 	assertLoading();
 	var requestUrl=SEARCHMAPS_ACTION+"."+suffix+"?MapWidth="+mapWidth+"&MapHeight="+mapHeight+"&MapElemDimension="+mapElemDimension+"&elems="+mapIds;
-	alert(requestUrl);
 	getMapRequest ( requestUrl , null, handleLoadingMap, "text/xml", null );
 }
 
@@ -666,6 +665,10 @@ function handleLoadingMap(data) {
 	writeMapInfo();
 	showHistory();				
 
+	if ( currentMapId == SEARCH_MAP && !isAdminMode ) {
+	    refreshNodesSetUp();
+    }
+    
 	if (!countdownStarted && !isAdminMode) {	
 		startRefreshNodesTime();		    	
 	}
@@ -857,8 +860,6 @@ function handleSwitchRole(data) {
 	}
 
 	isAdminMode = !isAdminMode;
-	map.render();
-	enableMenu();	
 	
 	if (isAdminMode) {
 		showMapInfo();
@@ -868,13 +869,14 @@ function handleSwitchRole(data) {
 			map.mapElements[mapElemId].setSemaphoreColor(getSemaphoreColorForNode(0,0,0));
 			map.mapElements[mapElemId].setSemaphoreFlash(getSemaphoreFlash(0,0));
 		}
+		map.render();
 	}else{
 		addLegend();
 		if (currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP) {
 			refreshNodesSetUp();
 		}
 	}
-	
+	enableMenu();		
 }
 
 function refreshNodes(){

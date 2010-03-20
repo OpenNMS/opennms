@@ -92,23 +92,41 @@ public class SearchMapsController implements Controller {
 
         int d = WebSecurityUtils.safeParseInt(request
                                                      .getParameter("MapElemDimension"));
+        
+        log.debug("default element dimension: "+d );
 
-        int n = mapWidth /4/d;
-        log.debug("Map row at max elements="+n );
 
         String elems = request.getParameter("elems");
-		log.debug("Adding Searching Maps: elems="+elems );
+        log.debug("Adding Searching Maps: elems="+elems );
+
+
+        int n = mapWidth /4/d;
+        int k = mapHeight/2/d;
+        log.debug("Max number of element on the row: "+n );
+        log.debug("Max number of element in the map: "+n * k );
+
+        String[] smapids = elems.split(",");
+
+        log.debug("Map Element to add to the Search Map: " + smapids.length);
+
+        while (smapids.length > n*k) {
+            log.info("the map dimension is too big: resizing");
+            d = d - 5;
+            log.info("new element dimension: " + d);
+            n = mapWidth /4/d;
+            k = mapHeight/2/d;
+            log.debug("Recalculated - Max number of element on the row: "+n );
+            log.debug("Recalculated - Max number of element in the map: "+n * k );
+        }
 		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 
 		try {
             List<VElement> velems = new ArrayList<VElement>();
             // response for addElement
 			
-			log.debug("Adding maps by id: "+ elems);
-			String[] smapids = elems.split(",");
 			int x = -1;
-            int y = -1;
+            int y = 0;
             int s = 1;
 
 			for (int i = 0; i<smapids.length;i++) {
@@ -125,7 +143,7 @@ public class SearchMapsController implements Controller {
                         s++;
        		        }
 			    }
-			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, new Integer(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*d+d));
+			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, new Integer(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*2*d+d));
 			} // end for
 
 			//get map

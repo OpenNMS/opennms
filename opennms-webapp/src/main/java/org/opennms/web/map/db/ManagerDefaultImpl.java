@@ -1418,7 +1418,7 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setDefaultBackgroundColor(mapsPropertiesFactory.getDefaultBackgroundColor());
         inObj.setUserAdmin(isUserAdmin);
         inObj.setCategories(getCategories());
-        inObj.setUnknownstatusid(mapsPropertiesFactory.getDefaultStatusId());
+        inObj.setUnknownstatusid(mapsPropertiesFactory.getUnknownStatusId());
         inObj.setDefaultMapElementDimension(mapsPropertiesFactory.getDefaultMapElementDimension());
         return inObj;
     }

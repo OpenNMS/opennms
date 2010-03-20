@@ -294,20 +294,6 @@ function searchMapSetUp(mapId)
 	}
 }
 
-function openMapSetUp(mapId) {
-
-	var mapToOpen;
-	if(mapId != undefined && mapId > 0){
-		mapToOpen = mapId;
-	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
-		mapToOpen = mapSortAss[selectedMapInList].id;		
-	}else{
-		alert("No maps to open");
-		return;
-	}
-	openMap(mapToOpen);	
-}
-
 // Open Map
 function addMapsList()
 {
