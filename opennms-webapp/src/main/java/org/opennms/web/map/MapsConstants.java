@@ -53,6 +53,10 @@ public final class MapsConstants {
 	
     public static final int SEARCH_MAP = -3;
 
+    public static final String NEW_MAP_NAME = "NewMap";
+    
+    public static final String SEARCH_MAP_NAME = "SearchMap";
+
     // map types
 	public static final String NODE_TYPE = "N";
 	
@@ -132,8 +136,7 @@ public final class MapsConstants {
 	
 	public static final String COLOR_SEMAPHORE_BY_STATUS = "T";
 	
-	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";
-	
+	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";	
 	
 	public MapsConstants() {
 		super();

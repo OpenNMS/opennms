@@ -61,7 +61,7 @@ public interface Manager {
      * @param height
      * @return the new VMap
      */
-    public VMap newMap(String name, String owner,String userModifies, int width, int height) ;
+    public VMap newMap(String owner,String userModifies, int width, int height) ;
 
     /**
      * Close a VMap previusly opened.
@@ -180,7 +180,7 @@ public interface Manager {
      * @return
      * @throws MapsException
      */
-    public VMap searchMap(String name, String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
+    public VMap searchMap(String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
     
     public VProperties getProperties(boolean isUserAdmin) throws MapsException;
     

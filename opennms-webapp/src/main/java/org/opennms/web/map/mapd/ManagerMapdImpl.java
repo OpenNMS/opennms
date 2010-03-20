@@ -121,7 +121,7 @@ public class ManagerMapdImpl implements Manager {
         return null;
     }
 
-    public VMap newMap(String name, String owner, String userModifies,
+    public VMap newMap(String owner, String userModifies,
             int width, int height) {
         // TODO Auto-generated method stub
         return null;
@@ -153,11 +153,11 @@ public class ManagerMapdImpl implements Manager {
         
     }
 
-    public VMap searchMap(String name, String owner, String userModifies,
-            int width, int height, List<VElement> velems)
-            throws MapsException {
+    public VMap searchMap(String owner, String userModifies, int width,
+            int height, List<VElement> velems) throws MapsException {
         // TODO Auto-generated method stub
         return null;
     }
+
 
 }

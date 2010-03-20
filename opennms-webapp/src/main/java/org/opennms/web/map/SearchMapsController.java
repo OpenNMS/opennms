@@ -147,7 +147,7 @@ public class SearchMapsController implements Controller {
 			} // end for
 
 			//get map
-            VMap map = manager.searchMap(VMap.SEARCH_NAME, request
+            VMap map = manager.searchMap(request
                                          .getRemoteUser(), request.getRemoteUser(),
                                          mapWidth, mapHeight,velems);
             log.debug("Got search map from manager "+map);

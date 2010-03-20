@@ -258,10 +258,9 @@ public class ManagerDefaultImpl implements Manager {
      * @param height
      * @return the new VMap
      */
-    public VMap newMap(String name, String owner,
+    public VMap newMap(String owner,
             String userModifies, int width, int height) {
-        VMap m = new VMap();
-        m.setName(name);
+        VMap m = new VMap(MapsConstants.NEW_MAP_NAME);
         m.setOwner(owner);
         m.setUserLastModifies(userModifies);
         m.setWidth(width);
@@ -1347,9 +1346,8 @@ public class ManagerDefaultImpl implements Manager {
         return new VElement(dbManager.getElement(elementId, mapId, type));
     }
 
-    public VMap searchMap(String name, String owner,String userModifies, int width, int height, List<VElement> elems) throws MapsException {
-        VMap m = new VMap();
-        m.setName(name);
+    public VMap searchMap(String owner,String userModifies, int width, int height, List<VElement> elems) throws MapsException {
+        VMap m = new VMap(MapsConstants.SEARCH_MAP_NAME);
         m.setOwner(owner);
         m.setUserLastModifies(userModifies);
         m.setWidth(width);
@@ -1357,6 +1355,7 @@ public class ManagerDefaultImpl implements Manager {
         m.setId((MapsConstants.SEARCH_MAP));
         m.setBackground(mapsPropertiesFactory.getDefaultBackgroundColor());
         m.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
+        m.setType(MapsConstants.USER_GENERATED_MAP);
         
         m.addElements(elems);
         m.addLinks(getLinks(elems));

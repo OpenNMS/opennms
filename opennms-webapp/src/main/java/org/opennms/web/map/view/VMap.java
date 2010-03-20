@@ -61,18 +61,15 @@ final public class VMap extends DbMap {
     
     Hashtable<String, VLink> links = new Hashtable<String, VLink>();
     
-    public static final String DEFAULT_NAME = "NewMap";
-    
-    public static final String SEARCH_NAME = "SearchMap";
     String createTimeString;
     String lastModifiedTimeString;
     
     /**
      *  Create a new VMap with empty name.
      */
-    public VMap() {
+    public VMap(String mapName) {
     	super();
-    	super.setName(DEFAULT_NAME);
+    	super.setName(mapName);
     }
         
     /**
