@@ -149,6 +149,24 @@
 	           </artifactItems>
 	         </configuration>
 	       </execution>
+          <execution>
+            <id>unpack-monitor-webapp</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}/dependency-remote-monitor</outputDirectory>
+	           <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+	       </execution>
         </executions>
       </plugin>
       <plugin>

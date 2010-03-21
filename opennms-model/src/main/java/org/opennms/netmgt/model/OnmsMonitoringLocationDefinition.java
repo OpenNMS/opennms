@@ -35,13 +35,15 @@ import java.io.Serializable;
 
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private String m_area;
 
     private String m_name;
 
     private String m_pollingPackageName;
+
+	private String m_geolocation;
     
     public OnmsMonitoringLocationDefinition() {
         
@@ -56,6 +58,13 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
         m_area = area;
+    }
+
+    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area, String geolocation) {
+    	m_name = name;
+    	m_pollingPackageName = pollingPackageName;
+    	m_area = area;
+    	m_geolocation = geolocation;
     }
 
     public String getArea() {
@@ -82,8 +91,16 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
         m_pollingPackageName = pollingPackageName;
     }
     
+	public void setGeolocation(String location) {
+		m_geolocation = location;
+	}
+	
+	public String getGeolocation() {
+		return m_geolocation;
+	}
+
     @Override
     public String toString() {
-        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\"";
+        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\"";
     }
 }

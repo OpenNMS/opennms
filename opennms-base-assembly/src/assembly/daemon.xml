@@ -57,8 +57,7 @@
       <outputDirectory>lib</outputDirectory>
       <excludes>
         <exclude>opennms-webapp-*.jar</exclude>
-        <exclude>org.opennms.features.springframework-security*.jar</exclude>
-        <exclude>gwt-*.jar</exclude>
+        <exclude>gwt*.jar</exclude>
         <exclude>extremecomponents-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
         <exclude>jsp-api-*.jar</exclude>
@@ -71,8 +70,7 @@
       <outputDirectory>jetty-webapps/opennms/WEB-INF/lib</outputDirectory>
       <includes>
         <include>opennms-webapp-*.jar</include>
-        <include>org.opennms.features.springframework-security*.jar</include>
-        <include>gwt-*.jar</include>
+        <include>gwt*.jar</include>
         <include>extremecomponents-*.jar</include>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
@@ -92,8 +90,7 @@
       <outputDirectory>lib</outputDirectory>
       <excludes>
         <exclude>opennms-webapp-*.jar</exclude>
-        <exclude>org.opennms.features.springframework-security*.jar</exclude>
-        <exclude>gwt-*.jar</exclude>
+        <exclude>gwt*.jar</exclude>
         <exclude>extremecomponents-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
         <exclude>jsp-api-*.jar</exclude>
@@ -106,8 +103,40 @@
       <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF/lib</outputDirectory>
       <includes>
         <include>opennms-webapp-*.jar</include>
-        <include>org.opennms.features.springframework-security*.jar</include>
-        <include>gwt-*.jar</include>
+        <include>gwt*.jar</include>
+        <include>extremecomponents-*.jar</include>
+        <exclude>jsp-api-*.jar</exclude>
+        <exclude>jstl-*.jar</exclude>
+        <exclude>servlet-api-*.jar</exclude>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency-remote-monitor</directory>
+      <outputDirectory>jetty-webapps/opennms-remote-monitor-ui</outputDirectory>
+      <excludes>
+        <exclude>WEB-INF/lib/*</exclude>
+        <exclude>WEB-INF/log4j.properties</exclude>
+        <exclude>xsds</exclude>
+        <exclude>xsds/*</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency-remote-monitor/WEB-INF/lib</directory>
+      <outputDirectory>lib</outputDirectory>
+      <excludes>
+        <exclude>*gwt*.jar</exclude>
+        <exclude>extremecomponents-*.jar</exclude>
+        <exclude>jstl-*.jar</exclude>
+        <exclude>jsp-api-*.jar</exclude>
+        <exclude>servlet-api-*.jar</exclude>
+         <exclude>com.springsource.javax.xml.bind*.jar</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency-remote-monitor/WEB-INF/lib</directory>
+      <outputDirectory>jetty-webapps/opennms-remote-monitor-ui/WEB-INF/lib</outputDirectory>
+      <includes>
+        <include>*gwt*.jar</include>
         <include>extremecomponents-*.jar</include>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
