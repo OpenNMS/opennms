@@ -55,6 +55,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
@@ -648,6 +649,7 @@ public class ThresholdingVisitorTest {
      * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
+    @Ignore
     public void testBug3227() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-bug3227.xml");
         ThresholdingVisitor visitor = createVisitor();
